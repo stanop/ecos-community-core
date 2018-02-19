@@ -917,7 +917,7 @@ function getWidgets() {
             widgets: buildSitesForUser(accessibleSites,{
                     id: "HEADER_SITES_SEARCH",
                     label: "header.find-sites.label",
-                    url: "/share/page/site-finder"
+                    url: "/share/page/custom-site-finder"
                 },
                 {
                     id: "HEADER_SITES_CREATE",
