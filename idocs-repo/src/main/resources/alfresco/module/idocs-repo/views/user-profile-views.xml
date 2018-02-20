@@ -192,7 +192,23 @@
                         return false;
                     };
 
-                    isAlfrescoAdmins();
+                    function isAuthenticationMutable() {
+                        var username = node.impl().getAttribute("cm:userName").value();
+                        var result;
+
+                        Alfresco.util.Ajax.jsonGet({
+                            url: Alfresco.constants.PROXY_URI + "citeck/util/isAuthenticationMutable?username=" + username,
+                            successCallback: {
+                                fn: function(response) {
+                                    result = response.isAuthenticationMutable;
+                                }
+                            }
+                        });
+
+                        return result;
+                    };
+
+                    isAlfrescoAdmins() && isAuthenticationMutable();
                 ]]></invariant>
             </field>
         </view>
