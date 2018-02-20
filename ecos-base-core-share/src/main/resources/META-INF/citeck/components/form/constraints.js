@@ -570,7 +570,8 @@
                 execScripts: true,
                 successCallback: {
                     fn: function(response) {
-                        $('.orgstruct-console .toolbar').hide();
+                        $('.orgstruct-console .selected-item-details .toolbar').hide();
+                        $('.orgstruct-console .selected-item-details .dynamic-tree-list>.ygtvitem').hide();
 
                         YAHOO.Bubbling.fire("metadataRefresh");
                         // get right section - block were we will show the views

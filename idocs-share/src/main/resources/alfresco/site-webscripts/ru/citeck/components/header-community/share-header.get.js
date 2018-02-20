@@ -136,7 +136,6 @@ if (siteMenuItems.length) {
         name: "alfresco/header/AlfMenuBarPopup",
         config: {
             id: "HEADER_SITE_MENU",
-            showArrow: !isSlideMenu,
             label: "",
             style: isMobile ? "padding-left: 5px; padding-right: 5px" :  "padding-left: 10px;",
             widgets: siteMenuItems
@@ -359,11 +358,10 @@ if (!context.externalAuthentication) {
 
 var HEADER_USER_MENU = {
     id: "HEADER_USER_MENU",
-    name: "alfresco/header/AlfMenuBarPopup",
+    name: "js/citeck/menus/citeckMenuBarPopup",
     config: {
         id: "HEADER_USER_MENU",
         label: user.fullName,
-        showArrow: !isSlideMenu,
         widgets: [{
             name: "js/citeck/menus/citeckMenuGroup",
             config: {
@@ -509,7 +507,6 @@ var HEADER_SITES_VARIANTS = {
         name: "alfresco/menus/AlfMenuBarPopup",
         config: {
             id: "HEADER_CREATE_CASE",
-            showArrow: false,
             widgets: buildCreateVariants(accessibleSites)
         }
     },
@@ -532,7 +529,7 @@ if (isSlideMenu) {
     // USER MENU BAR
     if (user && user.properties && getPhoto(user.properties.nodeRef)) {
         HEADER_USER_MENU.config.iconClass = "user-photo-header";
-        HEADER_USER_MENU.config.iconSrc = "/share/proxy/alfresco/api/node/content;ecos:photo/" + user.properties.nodeRef.replace(":/", "") + "/image.jpg"
+        HEADER_USER_MENU.config.profileIconSrc = "api/node/content;ecos:photo/" + user.properties.nodeRef.replace(":/", "") + "/image.jpg"
     }
     userMenuBar.config.widgets.push(HEADER_USER_MENU);
 

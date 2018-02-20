@@ -312,7 +312,7 @@
 							text: Alfresco.util.message("association.assoc.deleteAll.inProgress"),
 							displayTime: 5
 						});
-						deleteProducts();
+						deleteAssocs();
 						this.destroy();
 					}
 				},
@@ -326,27 +326,28 @@
 		});
 
 
-		var opts = _parseAddCommandOptions(options);
+		var opts = _parseAddCommandOptions(options),
+			sourceRef = opts.nodeRef,
+			assocTypes = options.assocType,
+			deleteChildren = options.deleteChildren === "true",
+			nodes = "",
+			url = Alfresco.constants.PROXY_URI + "citeck/assocs?nodeRef=" + sourceRef + "&assocTypes=" + assocTypes,
+			deleteNodesUrl = "/citeck/node?nodeRef=";
 
-		var sourceRef = opts.nodeRef;
-		var assocTypes = options.assocType;
-		var targetRefs = "";
-		var url = Alfresco.constants.PROXY_URI + "citeck/assocs?nodeRef=" + sourceRef + "&assocTypes=" + assocTypes;
-		var deleteAssocScript = "/citeck/node?nodeRef=";
-
-
-		function deleteProducts() {
+		function deleteAssocs() {
 			YAHOO.util.Connect.asyncRequest(
 				'GET',
 				url, {
 					success: function (response) {
 						if (response.responseText) {
-							var data = eval('({' + response.responseText + '})');
-							if (data.assocs[0].targets.length > 0) {
-								var timeDelay = data.assocs[0].targets.length * 800;
-								for (var i = 0; i < data.assocs[0].targets.length; i++) {
-									targetRefs = data.assocs[0].targets[i]['nodeRef'];
-									deleteRequest(targetRefs);
+							var data = eval('({' + response.responseText + '})'),
+								dataToDelete = deleteChildren ? data.assocs[0].children : data.assocs[0].targets;
+
+							if (dataToDelete.length > 0) {
+								var timeDelay = dataToDelete.length * 800;
+								for (var i = 0; i < dataToDelete.length; i++) {
+                                    nodes = dataToDelete[i]['nodeRef'];
+									deleteRequest(nodes);
 									sleep(600);
 								}
 								_.delay(function () {
@@ -361,7 +362,7 @@
 					}
 				});
 		}
-		
+
 		function sleep(ms) {
 			ms += new Date().getTime();
 			while (new Date() < ms) {}
@@ -369,15 +370,15 @@
 
 		function deleteRequest(nodeRef) {
 			Alfresco.util.Ajax.request({
-				url: Alfresco.constants.PROXY_URI + deleteAssocScript + nodeRef,
+				url: Alfresco.constants.PROXY_URI + deleteNodesUrl + nodeRef,
 				method: Alfresco.util.Ajax.DELETE,
 				successCallback: {
 					fn: function () {
-						
+
 					},
 					scope: this
 				},
-				failureMessage: Alfresco.util.message("message.delete.failure", targetRefs),
+				failureMessage: Alfresco.util.message("message.delete.failure", nodes),
 				scope: this
 			});
 		}

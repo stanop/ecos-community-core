@@ -269,7 +269,8 @@
             }
 
             // show toolbar
-            $('.orgstruct-console .toolbar').show();
+            $('.orgstruct-console .selected-item-details .toolbar').show();
+            $('.orgstruct-console .selected-item-details .dynamic-tree-list>.ygtvitem').show();
 
             // get the right section - block were we will show the views
             var showArea = $('#' + this.widgets.list.id);
@@ -486,7 +487,6 @@
 
             this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, mode: mode/*'edit'*/});
             this.widgets.viewItem.subscribe("itemEdited", this.onItemEdited, this, true);
-            $('.orgstruct-console .toolbar').hide();
         },
 
         /**
