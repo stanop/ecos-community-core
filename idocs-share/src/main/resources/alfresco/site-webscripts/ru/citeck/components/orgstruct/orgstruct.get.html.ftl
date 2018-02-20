@@ -188,7 +188,7 @@
                                         Alfresco.constants.Citeck.userIsAdmin ? "editItem" : "",
                                         Alfresco.constants.Citeck.userIsAdmin ? "deleteItem" : "" ],
                                     "USER": [
-                                        Alfresco.constants.Citeck.userIsAdmin ? "editItem" : "",
+                                        Alfresco.constants.Citeck.userIsAdmin ? "editItemInplaced" : "",
                                         Alfresco.constants.Citeck.userIsAdmin ? "deleteItem" : "" ]
                                     },
                                 },
