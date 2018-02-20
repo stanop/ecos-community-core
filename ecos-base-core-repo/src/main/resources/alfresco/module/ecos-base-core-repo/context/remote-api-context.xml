@@ -231,4 +231,10 @@
         </property>
     </bean>
 
+    <bean id="webscript.ru.citeck.util.isAuthenticationMutable.get"
+          class="ru.citeck.ecos.webscripts.IsAuthenticationMutableGet"
+          parent="webscript">
+        <property name="authenticationService" ref="AuthenticationService" />
+    </bean>
+
 </beans>
