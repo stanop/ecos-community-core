@@ -326,8 +326,8 @@
 		});
 
 
-		var opts = _parseAddCommandOptions(options);
-		var sourceRef = opts.nodeRef,
+		var opts = _parseAddCommandOptions(options),
+			sourceRef = opts.nodeRef,
 			assocTypes = options.assocType,
 			deleteChildren = options.deleteChildren === "true",
 			nodes = "",
