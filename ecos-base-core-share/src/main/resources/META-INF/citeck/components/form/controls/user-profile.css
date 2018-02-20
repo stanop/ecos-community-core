@@ -42,11 +42,16 @@
 }
 
 .ecos-form .form-fields .user-profile-custom-container .form-field {
-    /*margin: 0 15px 20px;*/
     margin-top: 0;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     margin-left: 15px;
     padding-right: 15px;
+    min-height: 55px;
+    padding-bottom: 0;
+}
+
+.ecos-form .form-fields .user-profile-custom-container .form-field .block-region .form-region {
+    margin-bottom: 0;
 }
 
 .ecos-form .form-fields .user-profile-custom-container .form-field .form-region.template-user-groups ol {
@@ -106,6 +111,10 @@
 .invariants-form .form-fields .user-profile-custom-container .form-field.template-block {
     min-width: initial;
     width: initial;
+}
+
+.invariants-form .form-fields .user-profile-custom-container > div:not(.user-profile-header) .form-field.template-block {
+    width: calc(30% - 15px);
 }
 
 .invariants-form .user-profile-custom-container .template-wide .template-blockset:after {
@@ -210,6 +219,10 @@
 .ecos-form .form-errors {
     margin-left: 0;
     margin-right: 0;
+}
+
+.ecos-form.invariants-form .user-profile-custom-container .template-wide .template-block .template-message span.validation-message {
+    margin-top: 7px;
 }
 
 /* --------------------------- user profile mobile view ----------------------------------- */
