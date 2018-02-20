@@ -52,6 +52,7 @@
                                 <package name="citeckMenuGroup" location="js/citeck/menus/citeckMenuGroup"/>
                                 <package name="citeckMenuItem" location="js/citeck/menus/citeckMenuItem"/>
                                 <package name="citeckLogo" location="js/citeck/logo/citeckLogo"/>
+                                <package name="citeckMenuBarPopup" location="js/citeck/menus/citeckMenuBarPopup"/>
                             </packages>
                         </dojo-pages>
                     </web-framework>

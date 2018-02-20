@@ -5498,8 +5498,13 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .alf-header-menu-bar.alf-menu-groups .alf-menu-group .alf-menu-group-title {
     margin: 8px 8px 0 0;
     font-weight: 900;
-    color: white;
+    color: #3c5877;
     border-bottom: none;
+}
+
+.yui-skin-citeckTheme.alfresco-share .alf-menu-group-items .dijitMenuItem,
+.yui-skin-citeckTheme.alfresco-share .alf-menu-group-items .dijitMenuItem:hover {
+    color: #fff;
 }
 
 .alfresco-share .alf-menu-group-items td.dijitMenuItemIconCell {
@@ -5899,6 +5904,22 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme #bd .site-finder .search-text input {
     padding: 4px;
 }
+
+/* header profile photo */
+.yui-skin-citeckTheme.alfresco-share div.user-photo-header,
+.yui-skin-citeckTheme.alfresco-share div.user-photo-header > div{
+    height: 35px;
+    width: 35px;
+}
+
+.yui-skin-citeckTheme.alfresco-share div.user-photo-header > div{
+    margin-top: 2.5px;
+}
+
+.yui-skin-citeckTheme.alfresco-share .mm-slideout #HEADER_USER_MENU .alfresco-menus-AlfMenuBarPopup__arrow {
+    padding-top: 11px !important;
+}
+
 
 
 /* MOBILE DEVICES */

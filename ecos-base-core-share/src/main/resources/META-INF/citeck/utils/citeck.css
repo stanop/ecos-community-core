@@ -330,14 +330,34 @@
   margin: 0;
 }
 
-.alfresco-share img.user-photo-header {
-  height: 20px;
-  width: 20px;
+.alfresco-share div.user-photo-header {
+  height: 25px;
+  width: 25px;
   border-radius: 50%;
-  float: right;
-  margin-left: 5px;
+  padding-left: 5px;
+}
+
+.alfresco-share div.user-photo-header > div{
+  height: 25px;
+  width: 25px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 50% 0;
+  border-radius: 50%;
+}
+
+.mm-slideout #HEADER_USER_MENU {
+  display: inline-flex;
+}
+
+.alfresco-share #HEADER_USER_MENU {
+  max-width: 300px;
 }
 
 .mobile #HEADER_CREATE_CASE_dropdown {
   left: 0 !important;
+}
+
+#HEADER_CREATE_CASE .alfresco-menus-AlfMenuBarPopup__arrow {
+  display: none;
 }
