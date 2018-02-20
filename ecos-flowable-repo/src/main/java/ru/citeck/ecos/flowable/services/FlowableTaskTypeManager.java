@@ -1,8 +1,8 @@
 package ru.citeck.ecos.flowable.services;
 
 import org.alfresco.service.cmr.dictionary.TypeDefinition;
-import org.flowable.engine.delegate.DelegateTask;
-import org.flowable.engine.task.Task;
+import org.flowable.task.api.Task;
+import org.flowable.task.service.delegate.DelegateTask;
 
 /**
  * Flowable task type manager interface

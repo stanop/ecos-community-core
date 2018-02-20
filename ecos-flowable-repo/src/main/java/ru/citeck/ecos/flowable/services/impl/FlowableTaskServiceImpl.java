@@ -1,7 +1,7 @@
 package ru.citeck.ecos.flowable.services.impl;
 
 import org.flowable.engine.TaskService;
-import org.flowable.engine.task.Task;
+import org.flowable.task.api.Task;
 import ru.citeck.ecos.flowable.services.FlowableTaskService;
 
 import java.util.List;

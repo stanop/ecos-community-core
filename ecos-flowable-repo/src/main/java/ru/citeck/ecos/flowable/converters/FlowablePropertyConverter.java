@@ -17,16 +17,18 @@ import org.alfresco.util.collections.CollectionUtils;
 import org.alfresco.util.collections.EntryTransformer;
 import org.apache.commons.lang.ObjectUtils;
 import org.flowable.engine.TaskService;
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.identitylink.service.IdentityLinkType;
+import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.history.HistoricTaskInstance;
-import org.flowable.engine.impl.persistence.entity.TaskEntity;
-import org.flowable.engine.task.IdentityLink;
-import org.flowable.engine.task.IdentityLinkType;
-import org.flowable.engine.task.Task;
+import org.flowable.task.api.history.HistoricTaskInstance;
+import org.flowable.task.api.Task;
+import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.FlowableHistoryService;
+import ru.citeck.ecos.flowable.services.FlowableProcessDefinitionService;
 import ru.citeck.ecos.flowable.services.FlowableTaskService;
 import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
@@ -93,6 +95,11 @@ public class FlowablePropertyConverter {
      * Flowable history service
      */
     private FlowableHistoryService flowableHistoryService;
+
+    /**
+     * Flowable process definition service
+     */
+    private FlowableProcessDefinitionService flowableProcessDefinitionService;
 
     /**
      * Type manager
@@ -179,7 +186,7 @@ public class FlowablePropertyConverter {
             variables = new HashMap<String, Object>();
             variables.putAll(localVariables);
 
-            Map<String, Object> executionVariables = task.getExecution().getVariables();
+            Map<String, Object> executionVariables = task.getVariables();
 
             for (Map.Entry<String, Object> entry : executionVariables.entrySet()) {
                 String key = entry.getKey();
@@ -415,17 +422,20 @@ public class FlowablePropertyConverter {
 
         String description = (String) existingValues.get(WorkflowModel.PROP_DESCRIPTION);
         if (description == null || description.length() == 0) {
-            String processDefinitionKey = ((TaskEntity) task).getExecution().getProcessDefinitionKey();
-            description = factory.getTaskDescription(typeDefinition, factory.buildGlobalId(processDefinitionKey), null, task.getTaskDefinitionKey());
-            if (description != null && description.length() > 0) {
-                defaultValues.put(WorkflowModel.PROP_DESCRIPTION, description);
-            } else {
-                String descriptionKey = factory.mapQNameToName(WorkflowModel.PROP_WORKFLOW_DESCRIPTION);
-                description = (String) task.getExecution().getVariable(descriptionKey);
+            ProcessDefinition processDefinition = flowableProcessDefinitionService.getProcessDefinitionById(task.getProcessDefinitionId());
+            if (processDefinition != null && processDefinition.getKey() != null) {
+                String processDefinitionKey = processDefinition.getKey();
+                description = factory.getTaskDescription(typeDefinition, factory.buildGlobalId(processDefinitionKey), null, task.getTaskDefinitionKey());
                 if (description != null && description.length() > 0) {
                     defaultValues.put(WorkflowModel.PROP_DESCRIPTION, description);
                 } else {
-                    defaultValues.put(WorkflowModel.PROP_DESCRIPTION, task.getName());
+                    String descriptionKey = factory.mapQNameToName(WorkflowModel.PROP_WORKFLOW_DESCRIPTION);
+                    description = (String) task.getVariable(descriptionKey);
+                    if (description != null && description.length() > 0) {
+                        defaultValues.put(WorkflowModel.PROP_DESCRIPTION, description);
+                    } else {
+                        defaultValues.put(WorkflowModel.PROP_DESCRIPTION, task.getName());
+                    }
                 }
             }
 
@@ -602,7 +612,15 @@ public class FlowablePropertyConverter {
     }
 
     /**
-     * Set flowanle history service
+     * Set flowable process definition service
+     * @param flowableProcessDefinitionService Flowable process definition service
+     */
+    public void setFlowableProcessDefinitionService(FlowableProcessDefinitionService flowableProcessDefinitionService) {
+        this.flowableProcessDefinitionService = flowableProcessDefinitionService;
+    }
+
+    /**
+     * Set flowable history service
      * @param flowableHistoryService Flowable history service
      */
     public void setFlowableHistoryService(FlowableHistoryService flowableHistoryService) {

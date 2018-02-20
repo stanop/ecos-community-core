@@ -1,7 +1,7 @@
 package ru.citeck.ecos.flowable.example;
 
-import org.flowable.engine.delegate.DelegateTask;
-import org.flowable.engine.delegate.Expression;
+import org.flowable.engine.common.api.delegate.Expression;
+import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.engine.delegate.TaskListener;
 
 /**
@@ -16,7 +16,7 @@ public class FlowableVariablePull implements TaskListener {
 
     @Override
     public void notify(DelegateTask task) {
-        Object value = task.getExecution().getVariable(executionVariable != null ? executionVariable : variable);
+        Object value = task.getVariable(executionVariable != null ? executionVariable : variable);
         if(!ifNotNull || value != null) {
             task.setVariableLocal(taskVariable != null ? taskVariable : variable, value);
         }

@@ -5,8 +5,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
-import org.flowable.engine.delegate.DelegateTask;
-import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
+import org.flowable.task.service.delegate.DelegateTask;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 import ru.citeck.ecos.notification.AbstractNotificationSender;
 
@@ -51,8 +50,7 @@ public class CompleteTaskListener implements GlobalCompleteTaskListener {
     @Override
     public void notify(DelegateTask delegateTask) {
         if(enabled) {
-            ExecutionEntity executionEntity = ((ExecutionEntity) delegateTask.getExecution()).getProcessInstance();
-            Boolean value = (Boolean) executionEntity.getVariable("cwf_sendNotification");
+            Boolean value = (Boolean) delegateTask.getVariable("cwf_sendNotification");
             if (Boolean.TRUE.equals(value)) {
                 WorkflowTask wfTask = workflowService.getTaskById(ENGINE_PREFIX + delegateTask.getId());
                 if (conditions != null && wfTask != null) {

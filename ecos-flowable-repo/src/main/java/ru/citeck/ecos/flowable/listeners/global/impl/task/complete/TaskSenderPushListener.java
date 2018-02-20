@@ -8,7 +8,7 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.task.service.delegate.DelegateTask;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 
@@ -54,7 +54,7 @@ public class TaskSenderPushListener implements GlobalCompleteTaskListener {
      */
     @Override
     public void notify(DelegateTask delegateTask) {
-        delegateTask.getExecution().setVariable(
+        delegateTask.setVariable(
                 qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_SENDER),
                 delegateTask.getAssignee()
         );
@@ -76,7 +76,7 @@ public class TaskSenderPushListener implements GlobalCompleteTaskListener {
             if (!StringUtils.isEmpty(lastName)) {
                 name += StringUtils.isEmpty(firstName)? lastName : " " + lastName;
             }
-            task.getExecution().setVariable(
+            task.setVariable(
                     qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_SENDER_NAME),
                     name
             );

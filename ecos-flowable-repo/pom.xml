@@ -19,7 +19,7 @@
 
 
     <properties>
-        <flowable.version>6.1.2</flowable.version>
+        <flowable.version>6.2.1</flowable.version>
     </properties>
 
     <dependencies>

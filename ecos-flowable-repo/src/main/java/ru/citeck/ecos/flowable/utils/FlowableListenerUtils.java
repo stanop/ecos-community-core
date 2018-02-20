@@ -10,10 +10,10 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.RegexQNamePattern;
-import org.flowable.engine.delegate.DelegateTask;
-import org.flowable.engine.delegate.VariableScope;
-import org.flowable.engine.task.IdentityLink;
-import org.flowable.engine.task.IdentityLinkType;
+import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.identitylink.service.IdentityLinkType;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.flowable.variable.api.delegate.VariableScope;
 import ru.citeck.ecos.utils.ReflectionUtils;
 
 import java.util.*;

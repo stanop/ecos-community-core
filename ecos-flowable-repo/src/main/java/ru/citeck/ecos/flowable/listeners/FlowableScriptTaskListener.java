@@ -2,11 +2,9 @@ package ru.citeck.ecos.flowable.listeners;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.flowable.engine.delegate.DelegateTask;
 import org.flowable.engine.delegate.TaskListener;
+import org.flowable.task.service.delegate.DelegateTask;
 import ru.citeck.ecos.flowable.scripts.FlowableScriptBase;
-
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,10 +63,10 @@ public class FlowableScriptTaskListener extends FlowableScriptBase implements Ta
         }
 
         scriptModel.put(TASK_BINDING_NAME, delegateTask);
-        scriptModel.put(EXECUTION_BINDING_NAME, delegateTask.getExecution());
+        scriptModel.put(EXECUTION_BINDING_NAME, delegateTask);
 
         /** Variables */
-        Map<String, Object> variables = delegateTask.getExecution().getVariables();
+        Map<String, Object> variables = delegateTask.getVariables();
 
         for (Map.Entry<String, Object> varEntry : variables.entrySet()) {
             scriptModel.put(varEntry.getKey(), varEntry.getValue());

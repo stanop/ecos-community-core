@@ -1,7 +1,6 @@
 package ru.citeck.ecos.flowable.listeners.global.impl.task.create;
 
-import org.flowable.engine.delegate.DelegateExecution;
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.task.service.delegate.DelegateTask;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 
 /**
@@ -15,8 +14,7 @@ public class TaskPriorityPullListener implements GlobalCreateTaskListener {
      */
     @Override
     public void notify(DelegateTask delegateTask) {
-        DelegateExecution execution = delegateTask.getExecution();
-        Object workflowPriority = execution.getVariable("bpm_workflowPriority");
+        Object workflowPriority = delegateTask.getVariable("bpm_workflowPriority");
         if(workflowPriority != null && workflowPriority instanceof Integer) {
             delegateTask.setPriority((Integer) workflowPriority);
         }
