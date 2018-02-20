@@ -28,8 +28,7 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
         NodeServicePolicies.OnUpdatePropertiesPolicy,
         NodeServicePolicies.BeforeDeleteNodePolicy {
 
-    protected NodeService nodeService;
-
+    private NodeService nodeService;
     private PolicyComponent policyComponent;
     private QName type;
 
@@ -90,22 +89,6 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
         beforeDeleteCalculateOrder(nodeRef);
     }
 
-    protected List<NodeRef> getEntityRefs(NodeRef entityRef) {
-        List<NodeRef> entityRefs = new ArrayList<>();
-
-        List<NodeRef> sources = RepoUtils.getSourceNodeRefs(entityRef,
-                ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES,
-                nodeService);
-
-        if (CollectionUtils.isNotEmpty(sources)) {
-            List<NodeRef> pasEntityRefs = RepoUtils.getTargetAssoc(sources.get(0),
-                    ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
-            entityRefs.addAll(pasEntityRefs);
-        }
-
-        return entityRefs;
-    }
-
     private void onCreateCalculateOrder(NodeRef currentPasEntity) {
         List<NodeRef> pasEntityRefs = getEntityRefs(currentPasEntity);
         int maxOrder = -1;
@@ -142,6 +125,22 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
                 }
             }
         }
+    }
+
+    private List<NodeRef> getEntityRefs(NodeRef entityRef) {
+        List<NodeRef> entityRefs = new ArrayList<>();
+
+        List<NodeRef> sources = RepoUtils.getSourceNodeRefs(entityRef,
+                ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES,
+                nodeService);
+
+        if (CollectionUtils.isNotEmpty(sources)) {
+            List<NodeRef> pasEntityRefs = RepoUtils.getTargetAssoc(sources.get(0),
+                    ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
+            entityRefs.addAll(pasEntityRefs);
+        }
+
+        return entityRefs;
     }
 
     public void setNodeService(NodeService nodeService) {
