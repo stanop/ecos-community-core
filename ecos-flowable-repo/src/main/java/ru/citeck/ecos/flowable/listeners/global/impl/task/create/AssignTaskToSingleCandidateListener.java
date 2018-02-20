@@ -2,9 +2,9 @@ package ru.citeck.ecos.flowable.listeners.global.impl.task.create;
 
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
-import org.flowable.engine.delegate.DelegateTask;
-import org.flowable.engine.impl.persistence.entity.TaskEntity;
-import org.flowable.engine.task.IdentityLink;
+import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import ru.citeck.ecos.flowable.listeners.global.GlobalAssignmentTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 

@@ -10,6 +10,8 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.history.*;
+import org.flowable.task.api.history.HistoricTaskInstance;
+import org.flowable.task.api.history.HistoricTaskInstanceQuery;
 import ru.citeck.ecos.flowable.services.FlowableHistoryService;
 
 import java.util.*;

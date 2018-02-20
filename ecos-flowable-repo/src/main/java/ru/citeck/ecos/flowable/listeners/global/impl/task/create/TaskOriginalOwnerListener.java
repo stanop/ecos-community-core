@@ -1,7 +1,7 @@
 package ru.citeck.ecos.flowable.listeners.global.impl.task.create;
 
-import org.flowable.engine.delegate.DelegateTask;
-import org.flowable.engine.task.IdentityLinkType;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.flowable.identitylink.service.IdentityLinkType;
 import ru.citeck.ecos.deputy.TaskDeputyListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 import ru.citeck.ecos.providers.ApplicationContextProvider;

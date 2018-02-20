@@ -2,10 +2,10 @@ package ru.citeck.ecos.flowable.services;
 
 import org.alfresco.service.cmr.workflow.*;
 import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.history.HistoricTaskInstance;
+import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.engine.task.Task;
+import org.flowable.task.api.Task;
 
 import java.util.List;
 

@@ -2,8 +2,7 @@ package ru.citeck.ecos.flowable.listeners.global.impl.task.complete;
 
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
-import org.flowable.engine.delegate.DelegateExecution;
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.task.service.delegate.DelegateTask;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 
 /**
@@ -27,7 +26,6 @@ public class TaskOutcomePushListener implements GlobalCompleteTaskListener {
      */
     @Override
     public void notify(DelegateTask delegateTask) {
-        DelegateExecution execution = delegateTask.getExecution();
 
         QName propertyQName = (QName) delegateTask.getVariable("bpm_outcomePropertyName");
         if(propertyQName == null) {
@@ -36,7 +34,7 @@ public class TaskOutcomePushListener implements GlobalCompleteTaskListener {
 
         String propertyName = propertyQName.toPrefixString(namespaceService).replace(":", "_");
         Object outcome = delegateTask.getVariable(propertyName);
-        execution.setVariable(outcomePropertyName, outcome);
+        delegateTask.setVariable(outcomePropertyName, outcome);
     }
 
     /**

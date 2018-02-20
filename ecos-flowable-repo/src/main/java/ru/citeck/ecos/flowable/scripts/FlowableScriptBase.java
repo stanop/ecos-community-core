@@ -6,10 +6,10 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowException;
 import org.flowable.engine.common.impl.javax.el.Expression;
-import org.flowable.engine.delegate.VariableScope;
 import org.flowable.engine.impl.bpmn.listener.ScriptExecutionListener;
 import org.flowable.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.flowable.engine.impl.context.Context;
+import org.flowable.variable.api.delegate.VariableScope;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 
 import java.util.Map;

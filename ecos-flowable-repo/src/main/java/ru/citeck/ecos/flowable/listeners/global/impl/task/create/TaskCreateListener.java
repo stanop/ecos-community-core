@@ -6,10 +6,10 @@ import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PersonService;
 import org.flowable.engine.FormService;
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.identitylink.service.IdentityLinkType;
+import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.engine.form.FormData;
-import org.flowable.engine.impl.persistence.entity.TaskEntity;
-import org.flowable.engine.task.IdentityLinkType;
+import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import ru.citeck.ecos.flowable.converters.FlowablePropertyConverter;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 
@@ -64,7 +64,7 @@ public class TaskCreateListener implements GlobalCreateTaskListener {
         }
 
         /** Set initiator variable */
-        NodeRef initiatorNode = (NodeRef) delegateTask.getExecution().getVariable(WorkflowConstants.PROP_INITIATOR);
+        NodeRef initiatorNode = (NodeRef) delegateTask.getVariable(WorkflowConstants.PROP_INITIATOR);
         if(initiatorNode != null) {
             delegateTask.addUserIdentityLink(personService.getPerson(initiatorNode).getUserName(),
                     IdentityLinkType.STARTER);

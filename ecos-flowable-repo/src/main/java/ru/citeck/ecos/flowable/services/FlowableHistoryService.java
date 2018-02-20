@@ -4,7 +4,7 @@ import org.alfresco.service.cmr.workflow.WorkflowInstanceQuery;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
 import org.flowable.engine.history.HistoricActivityInstance;
 import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.engine.history.HistoricTaskInstance;
+import org.flowable.task.api.history.HistoricTaskInstance;
 
 import java.util.List;
 import java.util.Map;

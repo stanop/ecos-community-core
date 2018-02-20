@@ -72,6 +72,7 @@
 		<property name="flowableHistoryService" ref="flowableCustomHistoryService"/>
 		<property name="handlerRegistry" ref="flowableWorkflowPropertyHandlerRegistry"/>
 		<property name="typeManager" ref="flowableTaskTypeManager"/>
+		<property name="flowableProcessDefinitionService" ref="flowableCustomProcessDefinitionService"/>
 	</bean>
 
 	<bean id="flowableGrantWorkflowPackageHelper" class="ru.citeck.ecos.flowable.utils.FlowableGrantWorkflowPackageHelper">

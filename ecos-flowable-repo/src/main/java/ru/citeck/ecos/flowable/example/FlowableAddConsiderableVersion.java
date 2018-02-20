@@ -11,7 +11,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.engine.delegate.TaskListener;
 import org.json.JSONException;
 import ru.citeck.ecos.confirm.ConfirmService;

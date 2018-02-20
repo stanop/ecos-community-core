@@ -1,6 +1,6 @@
 package ru.citeck.ecos.flowable.listeners.global.impl.task.complete;
 
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.task.service.delegate.DelegateTask;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 
 /**
@@ -36,7 +36,7 @@ public class VariablePushListener implements GlobalCompleteTaskListener {
     public void notify(DelegateTask delegateTask) {
         Object value = delegateTask.getVariable(taskVariable != null ? taskVariable : variable);
         if(!ifNotNull || value != null) {
-            delegateTask.getExecution().setVariableLocal(executionVariable != null ? executionVariable : variable, value);
+            delegateTask.setVariableLocal(executionVariable != null ? executionVariable : variable, value);
         }
     }
 

@@ -6,7 +6,7 @@ import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.apache.commons.lang.StringUtils;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
-import org.flowable.engine.impl.persistence.entity.TaskEntity;
+import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.flowable.utils.FlowableCasePerformUtils;
 import ru.citeck.ecos.model.CasePerformModel;

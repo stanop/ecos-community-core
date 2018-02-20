@@ -1,6 +1,6 @@
 package ru.citeck.ecos.flowable.listeners.global.impl.task.create;
 
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.task.service.delegate.DelegateTask;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 
 /**
@@ -34,7 +34,7 @@ public class VariablePullListener implements GlobalCreateTaskListener {
      */
     @Override
     public void notify(DelegateTask delegateTask) {
-        Object value = delegateTask.getExecution().getVariable(executionVariable != null ? executionVariable : variable);
+        Object value = delegateTask.getVariable(executionVariable != null ? executionVariable : variable);
         if(!ifNotNull || value != null) {
             delegateTask.setVariableLocal(taskVariable != null ? taskVariable : variable, value);
         }

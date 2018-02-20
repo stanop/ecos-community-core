@@ -2,7 +2,7 @@ package ru.citeck.ecos.flowable.listeners.global.impl.process.end;
 
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.impl.context.Context;
-import org.flowable.engine.task.Task;
+import org.flowable.task.api.Task;
 import ru.citeck.ecos.flowable.listeners.global.GlobalEndExecutionListener;
 import ru.citeck.ecos.flowable.utils.FlowableGrantWorkflowPackageHelper;
 

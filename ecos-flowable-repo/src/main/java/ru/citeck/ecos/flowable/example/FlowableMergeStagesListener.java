@@ -1,8 +1,8 @@
 package ru.citeck.ecos.flowable.example;
 
+import org.flowable.engine.common.api.delegate.Expression;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.ExecutionListener;
-import org.flowable.engine.delegate.Expression;
 import ru.citeck.ecos.utils.JSONUtils;
 
 import java.util.*;
