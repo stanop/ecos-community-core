@@ -105,6 +105,13 @@ editEvent.subscribe(dashlet.onEditConfig, dashlet, true);
 		
 		<@journals.renderCreateReportMenu id />
 
+		<#if (journalsListId!"") == "global-tasks">
+			<span data-bind="yuiButton: { type: 'push' }">
+				<span class="first-child">
+					<a href="/share/page/start-workflow" target="_blank">${msg("button.start-workflow")}</a>
+				</span>
+			</span>
+		</#if>
 
 		<span class="buttons align-right">
 		
