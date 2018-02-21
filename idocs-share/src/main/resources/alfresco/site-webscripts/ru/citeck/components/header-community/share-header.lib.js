@@ -74,3 +74,21 @@ function toMobileWidget(object) {
 function buildSiteUrl(sitename) {
   return sitename ? "site/" + encodeURIComponent(sitename) + "/" : "";
 };
+
+function getHeaderMobileLogoUrl() {
+    // Generate the source for the logo...
+    var logoSrc = context.getSiteConfiguration().getProperty("mobileLogo");
+    if (logoSrc && logoSrc.length() > 0) {
+        // Use the site configured logo as the source for the logo image.
+        logoSrc = url.context + "/proxy/alfresco/api/node/" + logoSrc.replace("://", "/") + "/content";
+    } else {
+        // Use the message bundled configured logo as the logo source.
+        // This is theme specific
+        var propsLogo = msg.get("header.mobile-logo");
+        if (propsLogo == "header.mobile-logo") {
+            propsLogo = "app-logo-mobile.png";
+        }
+        logoSrc = url.context + "/res/themes/" + theme + "/images/" + propsLogo;
+    }
+    return logoSrc;
+}

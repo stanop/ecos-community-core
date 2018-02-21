@@ -330,6 +330,24 @@
   margin: 0;
 }
 
+#alfresco-console .application .logo {
+  min-width: 170px;
+}
+
+#alfresco-console .application .logo img {
+  max-width: 170px;
+}
+
+#HEADER_APP_MENU_BAR #HEADER_LOGO img {
+  max-width: 111px;
+  max-height: 20px;
+}
+
+#HEADER_APP_MENU_BAR #HEADER_MOBILE_LOGO img {
+  max-width: 16px;
+  max-height: 16px;
+}
+
 .alfresco-share div.user-photo-header {
   height: 25px;
   width: 25px;
