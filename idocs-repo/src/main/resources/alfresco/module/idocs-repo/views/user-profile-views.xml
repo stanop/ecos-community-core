@@ -29,6 +29,7 @@
         <param name="customClass">user-profile-custom-container</param>
         <param name="invariantsRuntimeCache">false</param>
         <param name="preloadInvariants">true</param>
+        <view id="pesron-add--user-profile-css--file" template="profile-styles" />
 
         <view id="cm_person_header" template="wide">
             <param name="customClass">user-profile-header</param>
@@ -52,14 +53,17 @@
                     <field prop="cm:firstName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
+                        <invariant on="mandatory" language="explicit">false</invariant>
                     </field>
                     <field prop="cm:middleName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
+                        <invariant on="mandatory" language="explicit">false</invariant>
                     </field>
                     <field prop="cm:lastName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
+                        <invariant on="mandatory" language="explicit">false</invariant>
                     </field>
                 </view>
             </view>
@@ -80,7 +84,9 @@
                 <view id="cm_person_general_info--fio" template="blockset">
                     <field prop="cm:firstName" template="block"/>
                     <field prop="cm:middleName" template="block"/>
-                    <field prop="cm:lastName" template="block"/>
+                    <field prop="cm:lastName" template="block">
+                        <invariant on="mandatory" language="explicit">false</invariant>
+                    </field>
                 </view>
             </view>
 
@@ -262,6 +268,7 @@
         <param name="customClass">user-profile-custom-container</param>
         <param name="invariantsRuntimeCache">false</param>
         <param name="preloadInvariants">true</param>
+        <view id="pesron-add--user-profile-css--file" template="profile-styles" />
 
         <view id="cm_person_header" template="wide">
             <param name="customClass">user-profile-header</param>
@@ -285,14 +292,17 @@
                     <field prop="cm:firstName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
+                        <invariant on="mandatory" language="explicit">false</invariant>
                     </field>
                     <field prop="cm:middleName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
+                        <invariant on="mandatory" language="explicit">false</invariant>
                     </field>
                     <field prop="cm:lastName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
+                        <invariant on="mandatory" language="explicit">false</invariant>
                     </field>
                 </view>
             </view>
@@ -313,7 +323,9 @@
                 <view id="cm_person_general_info--fio" template="blockset">
                     <field prop="cm:firstName" template="block"/>
                     <field prop="cm:middleName" template="block"/>
-                    <field prop="cm:lastName" template="block"/>
+                    <field prop="cm:lastName" template="block">
+                        <invariant on="mandatory" language="explicit">false</invariant>
+                    </field>
                 </view>
             </view>
 

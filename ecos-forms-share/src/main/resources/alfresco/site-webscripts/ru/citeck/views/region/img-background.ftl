@@ -26,7 +26,7 @@
     <#assign title = "" />
 </#if>
 
-<div class="img-cover" id="${imgId}--cover">
+<div class="img-cover" id="${imgId}--cover" data-bind="click: showEditableField, clickBubble: false">
     <!-- ko if: empty -->
     <div class="img-back-container"
          title="${title}"
