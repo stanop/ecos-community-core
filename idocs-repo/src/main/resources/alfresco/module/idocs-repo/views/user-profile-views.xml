@@ -53,17 +53,17 @@
                     <field prop="cm:firstName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <invariant on="mandatory" language="explicit">false</invariant>
+                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                     <field prop="cm:middleName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <invariant on="mandatory" language="explicit">false</invariant>
+                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                     <field prop="cm:lastName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <invariant on="mandatory" language="explicit">false</invariant>
+                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                 </view>
             </view>
@@ -82,7 +82,9 @@
 
             <view template="wide">
                 <view id="cm_person_general_info--fio" template="blockset">
-                    <field prop="cm:firstName" template="block"/>
+                    <field prop="cm:firstName" template="block">
+                        <invariant on="mandatory" language="javascript">true</invariant>
+                    </field>
                     <field prop="cm:middleName" template="block"/>
                     <field prop="cm:lastName" template="block">
                         <invariant on="mandatory" language="explicit">false</invariant>
@@ -292,17 +294,17 @@
                     <field prop="cm:firstName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <invariant on="mandatory" language="explicit">false</invariant>
+                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                     <field prop="cm:middleName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <invariant on="mandatory" language="explicit">false</invariant>
+                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                     <field prop="cm:lastName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <invariant on="mandatory" language="explicit">false</invariant>
+                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                 </view>
             </view>
@@ -321,7 +323,9 @@
 
             <view template="wide">
                 <view id="cm_person_general_info--fio" template="blockset">
-                    <field prop="cm:firstName" template="block"/>
+                    <field prop="cm:firstName" template="block">
+                        <invariant on="mandatory" language="javascript">true</invariant>
+                    </field>
                     <field prop="cm:middleName" template="block"/>
                     <field prop="cm:lastName" template="block">
                         <invariant on="mandatory" language="explicit">false</invariant>
