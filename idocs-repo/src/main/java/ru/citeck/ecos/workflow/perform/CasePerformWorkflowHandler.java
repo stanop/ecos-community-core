@@ -118,7 +118,7 @@ public class CasePerformWorkflowHandler implements Serializable {
 
                 if (StringUtils.isNotBlank(authorityName)) {
                     TaskConfig config = new TaskConfig();
-                    config.setAssignee(authorityName);
+                    config.setPerformer(authorityName);
                     taskConfigs.add(config);
                 }
             }
@@ -159,7 +159,7 @@ public class CasePerformWorkflowHandler implements Serializable {
 
             String authorityName = utils.getAuthorityName((NodeRef) taskConfigObj);
             if (StringUtils.isNotBlank(authorityName)) {
-                taskConfig.setAssignee(authorityName);
+                taskConfig.setPerformer(authorityName);
             }
 
             taskConfig.setDueDate((Date) execution.getVariable("bpm_workflowDueDate"));
