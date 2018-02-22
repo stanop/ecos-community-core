@@ -1,8 +1,0 @@
-<webscript>
-    <shortname>Is authentication mutable</shortname>
-    <description>Determines whether this user's authentication may be mutated via the other methods</description>
-    <url>/citeck/util/isAuthenticationMutable?username={username}</url>
-    <format default="json"/>
-    <authentication>user</authentication>
-    <transaction allow="readonly">required</transaction>
-</webscript>

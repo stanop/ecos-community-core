@@ -1,1 +1,0 @@
-{"isAuthenticationMutable" : ${isAuthenticationMutable?c}}

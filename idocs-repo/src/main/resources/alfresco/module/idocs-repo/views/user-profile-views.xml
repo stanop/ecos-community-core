@@ -192,35 +192,7 @@
                         return false;
                     };
 
-                    function isAuthenticationMutable(username) {
-                        if (username == null) {
-                            return false;
-                        }
-
-                        if (typeof Alfresco.constants.Citeck == "undefined" || !Alfresco.constants.Citeck) {
-                            Alfresco.constants.Citeck = {};
-                        };
-
-                        if (!Alfresco.constants.Citeck.isAuthenticationMutable) {
-                            Alfresco.constants.Citeck.isAuthenticationMutable = ko.observable(false);
-
-                            Alfresco.util.Ajax.jsonGet({
-                                url: Alfresco.constants.PROXY_URI + "citeck/util/isAuthenticationMutable",
-                                dataObj: { username: username },
-                                successCallback: {
-                                    fn: function(response) {
-                                        Alfresco.constants.Citeck.isAuthenticationMutable(response.json.isAuthenticationMutable);
-                                    }
-                                }
-                            });
-                        }
-
-                        return !!Alfresco.constants.Citeck.isAuthenticationMutable();
-                    };
-
-                    var username = node.impl().getAttribute("cm:userName").value();
-
-                    isAlfrescoAdmins() && isAuthenticationMutable(username);
+                    isAlfrescoAdmins();
                 ]]></invariant>
             </field>
         </view>

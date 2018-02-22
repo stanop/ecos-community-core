@@ -65,7 +65,6 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 
     private static final String ERROR_BAD_CREDENTIALS = "message.error-bad-credentials";
     private static final String ERROR_NO_PERMISSIONS = "message.error-you-have-no-permissions";
-    private static final String ERROR_NON_MUTABLE_AUTHENTICATION = "message.error-authentication-can-not-be-mutated";
 
     private ServiceRegistry serviceRegistry;
     private NodeService nodeService;
@@ -285,10 +284,6 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 
         QName nodeType = nodeInfo.getType();
 
-        String currentAuthUser = AuthenticationUtil.getFullyAuthenticatedUser();
-
-        boolean currentAuthUserIsAdmin = authorityService.isAdminAuthority(currentAuthUser);
-
         if(nodeRef != null) {
             if (ContentModel.TYPE_PERSON.equals(nodeService.getType(nodeRef))) {
                 Map<QName,Serializable> properties = nodeInfo.getProperties();
@@ -296,7 +291,8 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
                 String oldPass = (String) properties.get(EcosModel.PROP_OLD_PASS);
                 String newPass = (String) properties.get(EcosModel.PROP_PASS);
                 String newPassVerify = (String) properties.get(EcosModel.PROP_PASS_VERIFY);
-                if (StringUtils.isNotEmpty(newPass) && StringUtils.isNotEmpty(newPassVerify)) {
+                if (StringUtils.isNotEmpty(newPass)
+                        && StringUtils.isNotEmpty(newPassVerify)) {
                     if (StringUtils.isNotEmpty(oldPass)) {
                         try {
                             authenticationService.updateAuthentication(userName, oldPass.toCharArray(), newPass.toCharArray());
@@ -304,7 +300,8 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
                             throw new AlfrescoRuntimeException(I18NUtil.getMessage(ERROR_BAD_CREDENTIALS));
                         }
                     } else {
-                        if (currentAuthUserIsAdmin) {
+                        String currentAuthUser = AuthenticationUtil.getFullyAuthenticatedUser();
+                        if (authorityService.isAdminAuthority(currentAuthUser)) {
                             authenticationService.setAuthentication(userName, newPass.toCharArray());
                         } else {
                             throw new AlfrescoRuntimeException(I18NUtil.getMessage(ERROR_NO_PERMISSIONS));
@@ -315,13 +312,9 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
                 properties.remove(EcosModel.PROP_PASS);
                 properties.remove(EcosModel.PROP_PASS_VERIFY);
                 Serializable isPersonDisabled = properties.get(EcosModel.PROP_IS_PERSON_DISABLED);
-                if (isPersonDisabled != null) {
-                    if (!currentAuthUserIsAdmin) {
-                        throw new AlfrescoRuntimeException(I18NUtil.getMessage(ERROR_NO_PERMISSIONS));
-                    } else if (!authenticationService.isAuthenticationMutable(userName)) {
-                        throw new AlfrescoRuntimeException(I18NUtil.getMessage(ERROR_NON_MUTABLE_AUTHENTICATION));
-                    }
-                    authenticationService.setAuthenticationEnabled(userName, Boolean.FALSE.equals(isPersonDisabled));
+                if (isPersonDisabled != null && authenticationService.isAuthenticationMutable(userName)) {
+                    authenticationService.setAuthenticationEnabled(userName,
+                            Boolean.FALSE.equals(isPersonDisabled));
                 }
             }
             persist(nodeRef, nodeInfo, full);
@@ -363,21 +356,14 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
             personProperties.put(ContentModel.PROP_EMAIL, properties.get(ContentModel.PROP_EMAIL));
             nodeRef = personService.createPerson(personProperties);
 
-            if (!currentAuthUserIsAdmin) {
-                throw new AlfrescoRuntimeException(I18NUtil.getMessage(ERROR_NO_PERMISSIONS));
-            }
-
             authenticationService.createAuthentication((String)properties.get(ContentModel.PROP_USERNAME),
                     ((String) properties.get(EcosModel.PROP_PASS)).toCharArray());
-
             properties.remove(EcosModel.PROP_PASS);
             properties.remove(EcosModel.PROP_PASS_VERIFY);
 
             if (authenticationService.isAuthenticationMutable(userName)) {
                 authenticationService.setAuthenticationEnabled(userName,
                         Boolean.FALSE.equals(properties.get(EcosModel.PROP_IS_PERSON_DISABLED)));
-            } else {
-                throw new AlfrescoRuntimeException(I18NUtil.getMessage(ERROR_NON_MUTABLE_AUTHENTICATION));
             }
 
             if (parent != null) {
