@@ -39,11 +39,20 @@
     <!-- ko foreach: multipleValues -->
     <!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") -->
     <!-- ko if: $parent.getValueTitle($data) -->
+    <!-- ko ifnot: !!Citeck.imgUser -->
     <div class="img-back-container"
          title="${title}"
          id="${imgId}"
          data-bind="attr: { style: 'background-image: url(' + window.location.origin + '/share/proxy/alfresco/api/node/content;${property}/workspace/SpacesStore/'+ $parent.getValueTitle($data) +'/image.jpg);' }"
     ></div>
+    <!-- /ko -->
+    <!-- ko if: !!Citeck.imgUser -->
+    <div class="img-back-container"
+         title="${title}"
+         id="${imgId}"
+         data-bind="attr: { style: 'background-image: url(' + Citeck.imgUser +');' }"
+    ></div>
+    <!-- /ko -->
     <!-- /ko -->
     <!-- /ko -->
     <!-- /ko -->
@@ -53,9 +62,15 @@
 <#-- show uploaded image -->
 <script type="text/javascript">//<![CDATA[
 (function() {
+    Citeck.imgUser = Citeck.imgUser || '';
+    Citeck.imgUserFileName = Citeck.imgUserFileName || '';
+
     YAHOO.Bubbling.on('file-uploaded-${propertyU}', function(layer, args) {
         var reader = new FileReader();
         reader.addEventListener("load", function(event) {
+            Citeck.imgUserFileName = args[1].name;
+            Citeck.imgUser = event.target.result;
+
             var imgDiv = document.querySelector('#${imgId}');
             var imgCover = imgDiv.parentNode;
             var imgCoverParent = imgCover.parentNode;
