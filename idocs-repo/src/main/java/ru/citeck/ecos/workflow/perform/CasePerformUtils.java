@@ -23,6 +23,10 @@ import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
+import ru.citeck.ecos.workflow.variable.type.NodeRefToNodeRefsMap;
+import ru.citeck.ecos.workflow.variable.type.NodeRefsList;
+import ru.citeck.ecos.workflow.variable.type.StringsList;
+import ru.citeck.ecos.workflow.variable.type.TaskConfigs;
 
 import java.io.Serializable;
 import java.util.*;
@@ -156,16 +160,20 @@ public class CasePerformUtils {
         return false;
     }
 
-    <T> Collection<T> getCollection(VariableScope scope, String key) {
-        if (scope.hasVariable(key)) {
-            Object var = scope.getVariable(key);
-            if (var instanceof Collection) {
-                return (Collection<T>) var;
-            }
+    public NodeRefsList getNodeRefsList(VariableScope scope, String key) {
+        Object scopeVar = scope.getVariable(key);
+        if (scopeVar != null && ArrayList.class.equals(scopeVar.getClass())) {
+            scopeVar = new NodeRefsList((ArrayList) scopeVar);
         }
-        Collection<T> varCollection = new ArrayList<>();
-        scope.setVariable(key, varCollection);
-        return varCollection;
+        return scopeVar != null ? (NodeRefsList) scopeVar : new NodeRefsList();
+    }
+
+    public StringsList getStringsList(VariableScope scope, String key) {
+        Object scopeVar = scope.getVariable(key);
+        if (scopeVar != null && ArrayList.class.equals(scopeVar.getClass())) {
+            scopeVar = new StringsList((ArrayList) scopeVar);
+        }
+        return scopeVar != null ? (StringsList) scopeVar : new StringsList();
     }
 
     public static <K, V> Map<K, V> getMap(VariableScope scope, String key) {
@@ -302,11 +310,13 @@ public class CasePerformUtils {
 
     NodeRef getCaseRole(NodeRef performer, ExecutionEntity execution) {
 
-        Map<NodeRef, List<NodeRef>> pool = getMap(execution, PERFORMERS_ROLES_POOL);
+        Map<NodeRef, List<NodeRef>> pool = getRolesPool(execution);
 
         List<NodeRef> roles = pool.get(performer);
         if (roles != null && !roles.isEmpty()) {
-            return roles.remove(roles.size() - 1);
+            NodeRef result = roles.remove(roles.size() - 1);
+            execution.setVariable(PERFORMERS_ROLES_POOL, pool);
+            return result;
         }
 
         return null;
@@ -336,8 +346,8 @@ public class CasePerformUtils {
 
     void fillRolesByPerformers(ExecutionEntity execution) {
 
-        Map<NodeRef, List<NodeRef>> pool = getMap(execution, PERFORMERS_ROLES_POOL);
-        Collection<NodeRef> performers = getCollection(execution, CasePerformUtils.PERFORMERS);
+        Map<NodeRef, List<NodeRef>> pool = getRolesPool(execution);
+        Collection<NodeRef> performers = getNodeRefsList(execution, CasePerformUtils.PERFORMERS);
 
         List<NodeRef> roles = getTaskRoles(execution);
 
@@ -350,10 +360,32 @@ public class CasePerformUtils {
             }
             pool.put(performer, performerRoles);
         }
+
+        execution.setVariable(PERFORMERS_ROLES_POOL, pool);
     }
 
     String getAuthorityName(NodeRef authority) {
         return RepoUtils.getAuthorityName(authority, nodeService, dictionaryService);
+    }
+
+    public TaskConfigs getTaskConfigs(VariableScope scope) {
+        Object configs = scope.getVariable(TASK_CONFIGS);
+        TaskConfigs result;
+        if (configs instanceof TaskConfigs) {
+            result = (TaskConfigs) configs;
+        } else {
+            result = new TaskConfigs();
+            scope.setVariable(TASK_CONFIGS, result);
+        }
+        return result;
+    }
+
+    public NodeRefToNodeRefsMap getRolesPool(VariableScope scope) {
+        Object result =  scope.getVariable(PERFORMERS_ROLES_POOL);
+        if (result == null) {
+            result = new NodeRefToNodeRefsMap();
+        }
+        return (NodeRefToNodeRefsMap) result;
     }
 
     public void setNodeService(NodeService nodeService) {
