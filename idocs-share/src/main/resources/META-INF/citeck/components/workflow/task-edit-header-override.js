@@ -1,8 +1,8 @@
 /**
  * TaskEditHeader component.
  *
- * @namespace Alfresco.component
- * @class Alfresco.component.TaskEditHeader
+ * @namespace Citeck
+ * @class Citeck.TaskEditHeader
  */
 (function()
 {
@@ -24,18 +24,18 @@
     * TaskEditHeader constructor.
     *
     * @param {String} htmlId The HTML id of the parent element
-    * @return {Alfresco.component.TaskEditHeader} The new TaskEditHeader instance
+    * @return {Citeck.TaskEditHeader} The new TaskEditHeader instance
     * @constructor
     */
-   Alfresco.component.TaskEditHeader = function TaskEditHeader_constructor(htmlId)
+   Citeck.TaskEditHeader = function TaskEditHeader_constructor(htmlId)
    {
-      Alfresco.component.TaskEditHeader.superclass.constructor.call(this, htmlId, ["button"]);
+      Citeck.TaskEditHeader.superclass.constructor.call(this, htmlId, ["button"]);
 
       // Re-register with our own name
-      this.name = "Alfresco.component.TaskEditHeader";
+      this.name = "Citeck.TaskEditHeader";
 
       // Instance variables
-      this.options = YAHOO.lang.merge(this.options, Alfresco.component.TaskEditHeader.superclass.options);
+      this.options = YAHOO.lang.merge(this.options, Citeck.TaskEditHeader.superclass.options);
       Alfresco.util.ComponentManager.reregister(this);
       this.isRunning = false;
       this.taskId = null;
@@ -46,7 +46,7 @@
       return this;
    };
 
-   YAHOO.extend(Alfresco.component.TaskEditHeader, Alfresco.component.ShareFormManager,
+   YAHOO.extend(Citeck.TaskEditHeader, Alfresco.component.ShareFormManager,
    {
 
       /**
