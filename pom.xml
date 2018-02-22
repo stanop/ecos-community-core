@@ -578,7 +578,7 @@
             <plugin>
                 <groupId>ru.citeck.maven.plugin</groupId>
                 <artifactId>ecos-maven-plugin</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.1-SNAPSHOT</version>
 
                 <configuration>
 
@@ -592,6 +592,19 @@
                     <enableShare>true</enableShare>
                     <!-- Enable the REST API Explorer -->
                     <enableApiExplorer>true</enableApiExplorer>
+
+                    <tomcatCustomConfigs>
+                        <tomcatUsers>${project.build.testOutputDirectory}/tomcat/tomcat-users.xml</tomcatUsers>
+                        <contextFile>${project.build.testOutputDirectory}/tomcat/tomcat-context.xml</contextFile>
+                    </tomcatCustomConfigs>
+
+                    <tomcatCustomWebapps>
+                        <webapp>
+                            <groupId>ru.citeck.maven.tomcat</groupId>
+                            <artifactId>manager</artifactId>
+                            <version>1.0</version>
+                        </webapp>
+                    </tomcatCustomWebapps>
 
                     <!--
                         JARs and AMPs that should be overlayed/applied to the Platform/Repository WAR
