@@ -1,7 +1,7 @@
 <#macro renderOrgstructBody el>
 <div id="${el}-body" class="orgstruct-console">
 
-    <div id="${el}-tree-resizer" class="orgstruct-tree-resizer" style="width: 20%; min-width: 300px;">
+    <div id="${el}-tree-resizer" class="orgstruct-tree-resizer" style="width: 20%; min-width: 380px;">
         <div class="orgstruct-config-selector">
             <button type="button" id="${el}-filter"></button>
             <select id="${el}-filter-select" name="filter-select">
