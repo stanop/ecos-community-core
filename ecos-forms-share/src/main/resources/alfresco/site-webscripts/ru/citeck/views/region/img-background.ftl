@@ -63,12 +63,10 @@
 <script type="text/javascript">//<![CDATA[
 (function() {
     Citeck.imgUser = Citeck.imgUser || '';
-    Citeck.imgUserFileName = Citeck.imgUserFileName || '';
 
     YAHOO.Bubbling.on('file-uploaded-${propertyU}', function(layer, args) {
         var reader = new FileReader();
         reader.addEventListener("load", function(event) {
-            Citeck.imgUserFileName = args[1].name;
             Citeck.imgUser = event.target.result;
 
             var imgDiv = document.querySelector('#${imgId}');
