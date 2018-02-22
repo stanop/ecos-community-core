@@ -262,7 +262,8 @@
 }
 
 .mm-navbars_top .mm-navbar img:not(.menu-mobile-icon) {
-    height: 20px;
+    max-height: 20px;
+    max-width: 200px;
 }
 
 .mm-navbar a,.mm-navbar a:hover {
@@ -3513,7 +3514,6 @@ label.mm-check:before {
 /*MENU ICON*/
 
 .menu-mobile-icon {
-    width: 25px;
     left: 10px;
     top: 0;
     bottom: 0;
@@ -3524,6 +3524,11 @@ label.mm-check:before {
     -moz-transition: opacity .1s ease;
     -webkit-transition: opacity .1s ease;
     -o-transition: opacity .1s ease;
+}
+
+#menu .menu-mobile-icon {
+    max-width: 25px;
+    max-height: 25px;
 }
 
 [class*=mm-wrapper_sidebar-collapsed-]:not(.mm-wrapper_opening) .mm-menu_hidenavbar .mm-navbar .menu-mobile-icon {

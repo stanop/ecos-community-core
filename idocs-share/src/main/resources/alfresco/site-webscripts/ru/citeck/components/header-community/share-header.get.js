@@ -542,7 +542,7 @@ if (isSlideMenu) {
             isMobile: isMobile,
             userName: user.name,
             logoSrc: getHeaderLogoUrl(),
-            logoSrcMobile: url.context + "/res/themes/" + theme + "/images/app-logo-mobile.png",
+            logoSrcMobile: getHeaderMobileLogoUrl(),
             widgets: getWidgets()
         }
     },
@@ -752,8 +752,8 @@ function buildSitesForUser(sites, anotherItems) {
             }
         }
     }
-    if (anotherItems) {
-        sitesPresets.push(anotherItems);
+    if (anotherItems && anotherItems.length) {
+        sitesPresets = sitesPresets.concat(anotherItems);
     }
     return isSlideMenu ? sitesPresets : buildItems(sitesPresets, "SITE");
 };
@@ -895,7 +895,7 @@ function buildLogo(isMobile) {
             id: isMobile ? "HEADER_MOBILE_LOGO" : "HEADER_LOGO",
             logoClasses: "alfresco-logo-only",
             currentTheme: theme,
-            logoSrc: isMobile ? url.context + "/res/themes/" + theme + "/images/app-logo-mobile.png" : getHeaderLogoUrl(),
+            logoSrc: isMobile ? getHeaderMobileLogoUrl() : getHeaderLogoUrl(),
             targetUrl: "user/" + encodeURIComponent(user.name) + "/dashboard"
         }
     };
@@ -911,15 +911,16 @@ function getWidgets() {
         {
             id: "HEADER_MENU_SITES",
             sectionTitle: "header.sites.label",
-            widgets: buildSitesForUser(accessibleSites,{
+            widgets: buildSitesForUser(accessibleSites,[{
                     id: "HEADER_SITES_SEARCH",
                     label: "header.find-sites.label",
                     url: "/share/page/custom-site-finder"
                 },
                 {
                     id: "HEADER_SITES_CREATE",
-                    label: "header.create-site.label"
-                })
+                    label: "header.create-site.label",
+                    clickEvent: createSiteClickEvent
+                }])
         },
         {
             id: "HEADER_MENU_ORGSTRUCT",

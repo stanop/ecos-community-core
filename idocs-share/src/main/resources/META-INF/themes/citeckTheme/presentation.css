@@ -2176,6 +2176,10 @@ table td.thumbnail img
     float: left;
 }
 
+.yui-skin-citeckTheme #menu .menu-mobile-icon {
+    width: 25px;
+}
+
 /*.yui-skin-citeckTheme .mm-slideout #HEADER_USER_MENU_BAR {*/
     /*margin: 2px;*/
 /*}*/
