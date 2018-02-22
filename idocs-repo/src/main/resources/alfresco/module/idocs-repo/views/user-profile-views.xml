@@ -53,17 +53,14 @@
                     <field prop="cm:firstName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                     <field prop="cm:middleName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                     <field prop="cm:lastName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                 </view>
             </view>
@@ -294,17 +291,14 @@
                     <field prop="cm:firstName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                     <field prop="cm:middleName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                     <field prop="cm:lastName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <!--<invariant on="mandatory" language="explicit">false</invariant>-->
                     </field>
                 </view>
             </view>
