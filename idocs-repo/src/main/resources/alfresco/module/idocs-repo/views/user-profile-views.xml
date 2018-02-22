@@ -192,23 +192,35 @@
                         return false;
                     };
 
-                    function isAuthenticationMutable() {
-                        var username = node.impl().getAttribute("cm:userName").value();
-                        var result;
+                    function isAuthenticationMutable(username) {
+                        if (username == null) {
+                            return false;
+                        }
 
-                        Alfresco.util.Ajax.jsonGet({
-                            url: Alfresco.constants.PROXY_URI + "citeck/util/isAuthenticationMutable?username=" + username,
-                            successCallback: {
-                                fn: function(response) {
-                                    result = response.isAuthenticationMutable;
+                        if (typeof Alfresco.constants.Citeck == "undefined" || !Alfresco.constants.Citeck) {
+                            Alfresco.constants.Citeck = {};
+                        };
+
+                        if (!Alfresco.constants.Citeck.isAuthenticationMutable) {
+                            Alfresco.constants.Citeck.isAuthenticationMutable = ko.observable(false);
+
+                            Alfresco.util.Ajax.jsonGet({
+                                url: Alfresco.constants.PROXY_URI + "citeck/util/isAuthenticationMutable",
+                                dataObj: { username: username },
+                                successCallback: {
+                                    fn: function(response) {
+                                        Alfresco.constants.Citeck.isAuthenticationMutable(response.json.isAuthenticationMutable);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
 
-                        return result;
+                        return !!Alfresco.constants.Citeck.isAuthenticationMutable();
                     };
 
-                    isAlfrescoAdmins() && isAuthenticationMutable();
+                    var username = node.impl().getAttribute("cm:userName").value();
+
+                    isAlfrescoAdmins() && isAuthenticationMutable(username);
                 ]]></invariant>
             </field>
         </view>

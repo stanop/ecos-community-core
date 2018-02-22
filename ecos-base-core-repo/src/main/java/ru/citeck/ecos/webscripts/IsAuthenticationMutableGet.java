@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2008-2018 Citeck LLC.
+ *
+ * This file is part of Citeck EcoS
+ *
+ * Citeck EcoS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Citeck EcoS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ru.citeck.ecos.webscripts;
 
 import org.alfresco.service.cmr.security.MutableAuthenticationService;
@@ -8,6 +27,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Web-script to check whether user's authentication may be mutated
+ * via the other methods.
+ *
+ * @author Andrew Timokhin
+ */
 public class IsAuthenticationMutableGet extends DeclarativeWebScript {
 
     private static final String IS_AUTHENTICATION_MUTABLE = "isAuthenticationMutable";
