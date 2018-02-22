@@ -33,6 +33,8 @@ import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.config.EcosConfigService;
+import ru.citeck.ecos.workflow.variable.type.NodeRefsList;
+import ru.citeck.ecos.workflow.variable.type.StringsList;
 
 import java.io.Serializable;
 import java.util.*;
@@ -118,7 +120,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
     private Map<QName, Serializable> getWorkflowProperties(NodeRef taskRef, String workflowDefinitionName) {
 
-        Map<QName, Serializable> workflowProperties = new HashMap<QName, Serializable>();
+        Map<QName, Serializable> workflowProperties = new HashMap<>();
 
         setWorkflowPropertiesFromITask(workflowProperties, taskRef);
 
@@ -134,7 +136,23 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
         workflowProperties.putAll(getTransmittedVariables(workflowDefinitionName));
 
-        return workflowProperties;
+        Map<QName, Serializable> result = new HashMap<>();
+        workflowProperties.forEach((k, v) -> {
+            if (v instanceof List && ((List) v).size() > 0) {
+                Object value = ((List) v).get(0);
+                if (value instanceof NodeRef) {
+                    result.put(k, new NodeRefsList((List) v));
+                } else if (value instanceof String) {
+                    result.put(k, new StringsList((List) v));
+                } else {
+                    result.put(k, v);
+                }
+            } else {
+                result.put(k, v);
+            }
+        });
+
+        return result;
     }
 
     private Map<QName, Serializable> getTransmittedVariables(String workflowDefinitionName) {
