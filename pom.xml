@@ -852,7 +852,7 @@
                         </goals>
                         <configuration>
                             <source>
-                                project.properties.versionWithOutPrefix = project.version.replace('-RC2-1-SNAPSHOT', '')
+                                project.properties.versionWithOutPrefix = project.version.replace('-RC2-2-SNAPSHOT', '')
                             </source>
                         </configuration>
                     </execution>
