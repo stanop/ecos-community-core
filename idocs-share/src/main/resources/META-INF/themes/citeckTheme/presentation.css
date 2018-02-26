@@ -4966,6 +4966,16 @@ body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header
     box-shadow: inset 15px -1px 10px -15px grey;
 }
 
+body:not(.mobile).yui-skin-citeckTheme #bd .site-document-types {
+    box-shadow: inset 15px -1px 10px -15px grey;
+    padding-left: 15px;
+}
+
+body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="case-documents"] {
+    box-shadow: inset 15px -1px 10px -15px grey;
+    padding-left: 4px;
+}
+
 body:not(.mobile).yui-skin-citeckTheme .sticky-footer .footer {
     box-shadow: inset 15px -1px 10px -15px grey, 0px 10px 15px -10px grey inset;
 }
