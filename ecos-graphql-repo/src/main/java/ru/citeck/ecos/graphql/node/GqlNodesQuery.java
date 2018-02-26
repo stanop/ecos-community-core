@@ -4,10 +4,7 @@ import graphql.annotations.annotationTypes.*;
 import graphql.schema.DataFetchingEnvironment;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.search.LimitBy;
-import org.alfresco.service.cmr.search.ResultSet;
-import org.alfresco.service.cmr.search.SearchParameters;
-import org.alfresco.service.cmr.search.SearchService;
+import org.alfresco.service.cmr.search.*;
 import ru.citeck.ecos.graphql.Defaults;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLQueryDefinition;
@@ -35,23 +32,27 @@ public class GqlNodesQuery {
                                       @GraphQLDefaultValue(DefaultSearchLanguage.class)
                                       String lang,
                                       @GraphQLName("offset")
-                                      @GraphQLDefaultValue(Defaults.IntZero.class)
                                       Integer offset,
                                       @GraphQLName("first")
-                                      @GraphQLDefaultValue(Defaults.IntZero.class)
-                                      Integer first) {
+                                      Integer first,
+                                      @GraphQLName("consistency")
+                                      QueryConsistency consistency) {
 
         SearchParameters parameters = new SearchParameters();
         parameters.setQuery(query);
         parameters.setLanguage(lang);
         parameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
 
-        if (first > 0) {
+        if (consistency != null) {
+            parameters.setQueryConsistency(consistency);
+        }
+
+        if (first != null) {
             parameters.setLimitBy(LimitBy.FINAL_SIZE);
             parameters.setLimit(first);
         }
 
-        if (offset > 0) {
+        if (offset != null) {
             parameters.setSkipCount(offset);
         }
 
