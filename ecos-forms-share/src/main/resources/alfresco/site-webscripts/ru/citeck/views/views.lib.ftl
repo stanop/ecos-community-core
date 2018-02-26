@@ -287,7 +287,6 @@
 <#macro nodeViewStyles>
 	<@link rel="stylesheet" href="${url.context}/res/citeck/components/invariants/invariants.css" group="node-view" />
 	<@link rel="stylesheet" href="${url.context}/res/yui/calendar/assets/calendar.css" group="node-view"/>
-	<@link rel="stylesheet" href="${url.context}/res/citeck/components/form/controls/user-profile.css" group="node-view"/>
 </#macro>
 
 <#macro nodeViewScripts>

@@ -228,3 +228,11 @@
 .ygtvcell.USER.available-true {
 	cursor: pointer;
 }
+
+#bd [id$="orgstruct"] .orgstruct-console .orgstruct-tree-resizer {
+	padding-right: 0;
+}
+
+#bd [id$="orgstruct"] .orgstruct-console .orgstruct-tree-resizer .dynamic-tree-list .ygtvcontent {
+	padding-right: 80px;
+}
