@@ -138,9 +138,11 @@ define(['dojo/_base/declare',
                 var self = this;
                 $(document).ready(
                     function() {
-                        $('.mm-page.mm-slideout').contents().appendTo($('body'));
-                        $('body>.sticky-wrapper').appendTo($('.mm-page.mm-slideout'));
-                        $('body>.sticky-footer').appendTo($('.mm-page.mm-slideout'));
+                        if (this.documentURI.indexOf("faceted-search") == -1){
+                            $('.mm-page.mm-slideout').contents().appendTo($('body'));
+                            $('body>.sticky-wrapper').appendTo($('.mm-page.mm-slideout'));
+                            $('body>.sticky-footer').appendTo($('.mm-page.mm-slideout'));
+                        }
 
                         if (!self.isMobile) {
                             $(".mm-panel").niceScroll({autohidemode: "scroll"});
