@@ -9,7 +9,7 @@
 <!-- ko ifnot: $data instanceof koutils.koclass("invariants.Node") -->
 <span id="${span_id}">
     <ol></ol>
-    <span id=${span_id + "_data"} data-bind="text: $parent.getValueTitle($data)" ></span>
+    <span id=${span_id + "_data"} data-bind="text: $parent.getValueTitle($data)" style="display: none;"></span>
     <script type="text/javascript">//<![CDATA[
     (function() {
         var vTimer = setInterval(function () {

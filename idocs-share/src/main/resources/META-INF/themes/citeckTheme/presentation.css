@@ -2176,6 +2176,10 @@ table td.thumbnail img
     float: left;
 }
 
+.yui-skin-citeckTheme #menu .menu-mobile-icon {
+    width: 25px;
+}
+
 /*.yui-skin-citeckTheme .mm-slideout #HEADER_USER_MENU_BAR {*/
     /*margin: 2px;*/
 /*}*/
@@ -4960,6 +4964,16 @@ body:not(.mobile).yui-skin-citeckTheme #bd > div[id*="site-finder"],
 body:not(.mobile).yui-skin-citeckTheme #bd .orgstruct-console .orgstruct-tree-resizer,
 body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header-Warning__warnings {
     box-shadow: inset 15px -1px 10px -15px grey;
+}
+
+body:not(.mobile).yui-skin-citeckTheme #bd .site-document-types {
+    box-shadow: inset 15px -1px 10px -15px grey;
+    padding-left: 15px;
+}
+
+body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="case-documents"] {
+    box-shadow: inset 15px -1px 10px -15px grey;
+    padding-left: 4px;
 }
 
 body:not(.mobile).yui-skin-citeckTheme .sticky-footer .footer {

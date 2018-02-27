@@ -545,17 +545,19 @@
 
         params = params || {};
         var msg = Alfresco.util.message,
-            id = Alfresco.util.generateDomId(),
-            viewId = listId,
+            containerId = Alfresco.util.generateDomId(),
             header = params.title || msg("actions.document.dialog-form"),
             destination = params.destination || "",
             destinationAssoc = params.destinationAssoc || "",
             width = params.width || "500px",
             height = params.height || "auto"
         ;
+        // create container
+        var container = document.createElement('div');
+        container.id = '' + containerId;
 
         var newDialog = function() {
-            var dataObj = { htmlid: viewId, mode: mode, viewId: formId };
+            var dataObj = { htmlid: containerId, mode: mode, viewId: formId };
             dataObj[paramName] = itemId;
             if (mode === 'create') dataObj["destination"] = destination;
 
@@ -580,10 +582,6 @@
                         // remove height limitation
                         showArea.parent().css('height', 'initial');
 
-                        // create container
-                        var container = document.createElement('div');
-                        container.id = '' + id;
-
                         // save form params
                         $(container).attr('data-itemId', itemId);
                         $(container).attr('data-formId', formId);
@@ -598,7 +596,7 @@
                         // define submit handler
                         var onSubmit = function(layer, args) {
                             var runtime = args[1].runtime;
-                            if (mode != 'create' && runtime.key() != viewId) return;
+                            if (mode != 'create' && runtime.key() != containerId) return;
 
                             var node = args[1].node;
 
@@ -628,7 +626,7 @@
                         // define cancel handler
                         var onCancel = function(layer, args) {
                             var runtime = args[1].runtime;
-                            if (runtime.key() != viewId) return;
+                            if (runtime.key() != containerId) return;
                             runtime.terminate();
 
                             // get saved form params
@@ -670,11 +668,9 @@
                 successCallback: { fn: function(response) {
                     if (response.json.exists) {
                         newDialog();
-                    } else if(response.json.defaultExists) {
+                    } else {
                         formId = "";
                         newDialog();
-                    } else {
-                        oldDialog();
                     }
                 }},
                 failureCallback: { fn: function(response) {
@@ -683,7 +679,9 @@
             });
         } else {
             newDialog();
-        }
+        };
+
+        this.containerId = containerId;
     };
 
 

@@ -25,6 +25,16 @@
         <association name="contracts:contractor">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="value-title" language="javascript">value.properties["idocs:fullOrganizationName"]</invariant>
+            <invariant on="value" language="javascript">
+                <![CDATA[
+                (function() {
+                    if (view.params.idocs_contractor) {
+                        return view.params.idocs_contractor;
+                    }
+                    return null;
+                })()
+                ]]>
+            </invariant>
         </association>
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>

@@ -9,18 +9,6 @@
         <import uri="http://www.citeck.ru/model/content/ecos/1.0" prefix="ecos" />
     </imports>
 
-    <views mode="create">
-        <fields kind="mode-just-view" template="none" />
-    </views>
-
-    <views mode="edit">
-        <fields kind="mode-just-view" template="none" />
-    </views>
-
-    <views mode="view">
-        <fields kind="mode-not-view" template="none" />
-    </views>
-
     <views mode="edit">
         <fields prop="ecos:isPersonDisabled">
             <regions name="label" template="label">
@@ -37,11 +25,11 @@
         </fields>
     </views>
 
-    <view class="cm:person">
+    <view class="cm:person" id="create-edit">
         <param name="customClass">user-profile-custom-container</param>
-        <!--<param name="inlineEdit">false</param>-->
         <param name="invariantsRuntimeCache">false</param>
         <param name="preloadInvariants">true</param>
+        <view id="pesron-add--user-profile-css--file" template="profile-styles" />
 
         <view id="cm_person_header" template="wide">
             <param name="customClass">user-profile-header</param>
@@ -91,9 +79,251 @@
 
             <view template="wide">
                 <view id="cm_person_general_info--fio" template="blockset">
-                    <field prop="cm:firstName" template="block"/>
+                    <field prop="cm:firstName" template="block">
+                        <invariant on="mandatory" language="javascript">true</invariant>
+                    </field>
                     <field prop="cm:middleName" template="block"/>
-                    <field prop="cm:lastName" template="block"/>
+                    <field prop="cm:lastName" template="block">
+                        <invariant on="mandatory" language="explicit">false</invariant>
+                    </field>
+                </view>
+            </view>
+
+            <view id="cm_person_general_info--nameInGenitiveCase">
+                <param name="customClass">field-width-full</param>
+                <field prop="idocs:nameInGenitiveCase"/>
+            </view>
+
+            <view id="cm_person_general_info__last_sub_group" kind="2-column">
+                <field prop="ecos:birthDate"/>
+                <field prop="ecos:sex">
+                    <region name="input" template="select"/>
+                </field>
+                <field prop="ecos:city"/>
+                <field prop="cm:organization"/>
+                <field prop="cm:jobtitle"/>
+            </view>
+        </view>
+
+        <view id="cm_person_contacts">
+            <param name="preloadInvariants">true</param>
+            <param name="title">person_contacts_title</param>
+            <view id="cm_person_contacts--phones" kind="2-column">
+                <field prop="ecos:phoneWorking"/>
+                <field prop="ecos:phoneInternal"/>
+                <field prop="cm:mobile"/>
+            </view>
+
+            <view id="cm_person_contacts--location">
+                <param name="customClass">field-width-full</param>
+                <field prop="cm:location"/>
+            </view>
+
+            <view id="cm_person_contacts--el" kind="2-column">
+                <field prop="cm:skype"/>
+                <field prop="cm:email">
+                    <invariant on="mandatory" language="explicit">true</invariant>
+                    <invariant on="valid" language="javascript">
+                        /.+@.+\..+/.test(value)
+                    </invariant>
+                </field>
+            </view>
+        </view>
+
+        <view id="cm_person_other_info">
+            <param name="customClass">field-width-full</param>
+            <param name="preloadInvariants">true</param>
+            <param name="title">person_other_title</param>
+            <field prop="cm:userStatus" />
+            <field prop="org:preset" />
+            <view class="deputy:availability">
+                <param name="preloadInvariants">true</param>
+                <field prop="deputy:available" template="row">
+                    <invariant on="mandatory" language="explicit">true</invariant>
+                    <invariant on="default" language="explicit">true</invariant>
+                </field>
+            </view>
+            <field prop="ecos:isPersonDisabled" template="row">
+                <invariant on="relevant" language="javascript"><![CDATA[
+                    function isAlfrescoAdmins() {
+                        if (typeof Alfresco.constants.Citeck == "undefined" || !Alfresco.constants.Citeck) {
+                            Alfresco.constants.Citeck = {};
+                        };
+
+                        var username = Alfresco.constants.USERNAME;
+
+                        var roleWhitelist = ["ALFRESCO_ADMINISTRATORS"];
+
+                        if (Alfresco.constants.Citeck.userIsAdmin === undefined && !Alfresco.constants.Citeck.userIsAdminKO) {
+                            Alfresco.constants.Citeck.userIsAdminKO = ko.observable(false);
+                            var username = Alfresco.constants.USERNAME;
+
+                            Alfresco.util.Ajax.jsonGet({
+                                url: Alfresco.constants.PROXY_URI + "api/orgstruct/people/" + username + "/groups",
+                                successCallback: {
+                                    fn: function(response) {
+                                        var roles = response.json;
+                                        for (var r in roles) {
+                                            if (Alfresco.constants.Citeck.userIsAdminKO()) break;
+                                            for (var rwl in roleWhitelist) {
+                                                if (roles[r].shortName.indexOf(roleWhitelist[rwl]) != -1) {
+                                                    Alfresco.constants.Citeck.userIsAdminKO(true);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+
+                        if (Alfresco.constants.Citeck.userIsAdmin === true || Alfresco.constants.Citeck.userIsAdminKO()) {
+                            return true;
+                        }
+
+                        return false;
+                    };
+
+                    isAlfrescoAdmins();
+                ]]></invariant>
+            </field>
+        </view>
+
+        <view id="cm_person_password">
+            <param name="title">person_password_title</param>
+            <field prop="ecos:oldPass">
+                <region name="input" template="password" />
+                <invariant on="relevant" language="javascript"><![CDATA[
+                    (function() {
+                        var nodeUserName = node.impl().getAttribute("cm:userName").value(),
+                            authorisedUserName = Alfresco.constants.USERNAME;
+
+                        return view.mode == 'edit' && authorisedUserName == nodeUserName;
+                    })();
+                ]]></invariant>
+                <invariant on="mandatory" language="javascript"><![CDATA[
+                    (function() {
+                        var nodeUserName = node.impl().getAttribute("cm:userName").value(),
+                            authorisedUserName = Alfresco.constants.USERNAME;
+
+                        return view.mode == 'edit' &&
+                               authorisedUserName == nodeUserName &&
+                               ( (!!node.impl().getAttribute("ecos:pass").value() && node.impl().getAttribute("ecos:pass").value().length) ||
+                                 (!!node.impl().getAttribute("ecos:passVerify").value() && node.impl().getAttribute("ecos:passVerify").value().length)
+                               );
+                    })();
+                ]]></invariant>
+            </field>
+            <field prop="ecos:pass">
+                <region name="input" template="password" />
+                <invariant on="mandatory" language="javascript"><![CDATA[
+                    (function() {
+                        return view.mode == "create" && !!node.impl;
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
+                    (function() {
+                        var val = value;
+                        return !!val.match(/^[0-9a-zA-Z\`\~\!@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}$/);
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="passwords_must_match"><![CDATA[
+                    (function() {
+                        return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
+                    })();
+                ]]></invariant>
+            </field>
+            <field prop="ecos:passVerify">
+                <region name="input" template="password" />
+                <invariant on="mandatory" language="javascript"><![CDATA[
+                    (function() {
+                        return view.mode == "create" && !!node.impl;
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
+                    (function() {
+                        var val = value;
+                        return !!val.match(/^[0-9a-zA-Z\`\~\!@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}$/);
+                    })();
+                ]]></invariant>
+                <invariant on="valid" language="javascript" description="passwords_must_match"><![CDATA[
+                    (function() {
+                        return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
+                    })();
+                ]]></invariant>
+            </field>
+        </view>
+    </view>
+
+    <view class="cm:person" mode="create">
+        <view class="cm:person" id="create-edit" />
+    </view>
+
+    <view class="cm:person" mode="edit">
+        <view class="cm:person" id="create-edit" />
+    </view>
+
+    <view class="cm:person" mode="view">
+        <param name="customClass">user-profile-custom-container</param>
+        <param name="invariantsRuntimeCache">false</param>
+        <param name="preloadInvariants">true</param>
+        <view id="pesron-add--user-profile-css--file" template="profile-styles" />
+
+        <view id="cm_person_header" template="wide">
+            <param name="customClass">user-profile-header</param>
+            <view id="cm_person_header--ecos_photo" template="wide">
+                <param name="customClass">user-profile-header__column user-profile-header__column--photo</param>
+                <view id="cm_person_header--ecos_photo--inner">
+                    <field prop="ecos:photo">
+                        <param name="useViewTemplate">true</param>
+                        <region name="label" template="none"/>
+                        <region name="input" template="img-background">
+                            <param name="width">90</param>
+                            <param name="alt">This is user's photo</param>
+                        </region>
+                    </field>
+                </view>
+            </view>
+
+            <view id="cm_person_header--fio--outer" mode="view" template="wide">
+                <param name="customClass">user-profile-header__column user-profile-header__column--fio</param>
+                <view id="cm_person_header--fio" template="blockset">
+                    <field prop="cm:firstName" template="block">
+                        <param name="hideInlineEditButton">true</param>
+                        <region name="label" template="none"/>
+                    </field>
+                    <field prop="cm:middleName" template="block">
+                        <param name="hideInlineEditButton">true</param>
+                        <region name="label" template="none"/>
+                    </field>
+                    <field prop="cm:lastName" template="block">
+                        <param name="hideInlineEditButton">true</param>
+                        <region name="label" template="none"/>
+                    </field>
+                </view>
+            </view>
+        </view>
+
+        <view id="cm_person_general_info">
+            <param name="preloadInvariants">true</param>
+            <param name="title">person_basic_title</param>
+            <param name="invariantsRuntimeCache">false</param>
+
+            <field prop="cm:userName" id="user-name">
+                <param name="hideInlineEditButton">true</param>
+                <invariant on="protected" language="javascript">view &amp;&amp; view.mode != "create"</invariant>
+                <invariant on="relevant" language="javascript">true</invariant>
+            </field>
+
+            <view template="wide">
+                <view id="cm_person_general_info--fio" template="blockset">
+                    <field prop="cm:firstName" template="block">
+                        <invariant on="mandatory" language="javascript">true</invariant>
+                    </field>
+                    <field prop="cm:middleName" template="block"/>
+                    <field prop="cm:lastName" template="block">
+                        <invariant on="mandatory" language="explicit">false</invariant>
+                    </field>
                 </view>
             </view>
 
@@ -200,7 +430,7 @@
         <view id="cm_person_user_groups" kind="2-column">
             <param name="customClass">user-groups</param>
             <param name="title">person_groups_title</param>
-            <field prop="cm:userName" id="user-groups" kind="mode-just-view">
+            <field prop="cm:userName" id="user-groups">
                 <param name="hideInlineEditButton">true</param>
                 <param name="useViewTemplate">true</param>
                 <region name="label" template="none" />
@@ -209,81 +439,12 @@
             </field>
         </view>
 
-        <view id="cm_person_password">
-            <param name="title">person_password_title</param>
-            <field prop="ecos:oldPass" kind="mode-not-view">
-                <region name="input" template="password" />
-                <invariant on="relevant" language="javascript"><![CDATA[
-                    (function() {
-                        var nodeUserName = node.impl().getAttribute("cm:userName").value(),
-                            authorisedUserName = Alfresco.constants.USERNAME;
-
-                        return view.mode == 'edit' && authorisedUserName == nodeUserName;
-                    })();
-                ]]></invariant>
-                <invariant on="mandatory" language="javascript"><![CDATA[
-                    (function() {
-                        var nodeUserName = node.impl().getAttribute("cm:userName").value(),
-                            authorisedUserName = Alfresco.constants.USERNAME;
-
-                        return view.mode == 'edit' &&
-                               authorisedUserName == nodeUserName &&
-                               ( (!!node.impl().getAttribute("ecos:pass").value() && node.impl().getAttribute("ecos:pass").value().length) ||
-                                 (!!node.impl().getAttribute("ecos:passVerify").value() && node.impl().getAttribute("ecos:passVerify").value().length)
-                               );
-                    })();
-                ]]></invariant>
-            </field>
-            <field prop="ecos:pass" kind="mode-not-view">
-                <region name="input" template="password" />
-                <invariant on="mandatory" language="javascript"><![CDATA[
-                    (function() {
-                        return view.mode == "create" && !!node.impl;
-                    })();
-                ]]></invariant>
-                <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
-                    (function() {
-                        var val = value;
-                        return !!val.match(/^[0-9a-zA-Z\`\~\!@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}$/);
-                    })();
-                ]]></invariant>
-                <invariant on="valid" language="javascript" description="passwords_must_match"><![CDATA[
-                    (function() {
-                        return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
-                    })();
-                ]]></invariant>
-            </field>
-            <field prop="ecos:passVerify" kind="mode-not-view">
-                <region name="input" template="password" />
-                <invariant on="mandatory" language="javascript"><![CDATA[
-                    (function() {
-                        return view.mode == "create" && !!node.impl;
-                    })();
-                ]]></invariant>
-                <invariant on="valid" language="javascript" description="password_incorrect"><![CDATA[
-                    (function() {
-                        var val = value;
-                        return !!val.match(/^[0-9a-zA-Z\`\~\!@\#\$\%\^\&\*\(\)\-\_\+\=\|\\\/\,\.\?\<\>\[\]\;\'\{\}\:\"\ ]{3,}$/);
-                    })();
-                ]]></invariant>
-                <invariant on="valid" language="javascript" description="passwords_must_match"><![CDATA[
-                    (function() {
-                        return node.impl().getAttribute("ecos:pass").value() === node.impl().getAttribute("ecos:passVerify").value();
-                    })();
-                ]]></invariant>
-            </field>
-        </view>
-    </view>
-
-    <views class="cm:person" mode="view">
-        <param name="preloadInvariants">true</param>
         <views class="deputy:availability">
-            <param name="preloadInvariants">true</param>
             <fields prop="deputy:available">
                 <regions name="input" template="view">
                     <param name="emptyLabel">label.yes</param>
                 </regions>
             </fields>
         </views>
-    </views>
+    </view>
 </views>
