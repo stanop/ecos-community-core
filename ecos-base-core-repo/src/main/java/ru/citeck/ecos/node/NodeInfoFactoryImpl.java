@@ -312,9 +312,9 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
                 properties.remove(EcosModel.PROP_PASS);
                 properties.remove(EcosModel.PROP_PASS_VERIFY);
                 Serializable isPersonDisabled = properties.get(EcosModel.PROP_IS_PERSON_DISABLED);
-                if (isPersonDisabled != null) {
+                if (isPersonDisabled != null && authenticationService.isAuthenticationMutable(userName)) {
                     authenticationService.setAuthenticationEnabled(userName,
-                            Boolean.FALSE.equals((boolean) isPersonDisabled));
+                            Boolean.FALSE.equals(isPersonDisabled));
                 }
             }
             persist(nodeRef, nodeInfo, full);
@@ -361,8 +361,10 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
             properties.remove(EcosModel.PROP_PASS);
             properties.remove(EcosModel.PROP_PASS_VERIFY);
 
-            authenticationService.setAuthenticationEnabled(userName,
-                    Boolean.FALSE.equals((boolean) properties.get(EcosModel.PROP_IS_PERSON_DISABLED)));
+            if (authenticationService.isAuthenticationMutable(userName)) {
+                authenticationService.setAuthenticationEnabled(userName,
+                        Boolean.FALSE.equals(properties.get(EcosModel.PROP_IS_PERSON_DISABLED)));
+            }
 
             if (parent != null) {
                 String authName = (String) nodeService.getProperty(parent, ContentModel.PROP_AUTHORITY_NAME);
