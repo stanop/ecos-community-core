@@ -48,6 +48,7 @@
         <option name="createVariantRedirectionMethod">back</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
+            <header key="cm:created" default="false" />
             <header key="contracts:subjectCode" default="true" />
             <header key="contracts:subjectName" default="true" />
             <header key="cm:taggable" />
@@ -62,6 +63,7 @@
         <option name="createVariantRedirectionMethod">back</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
+            <header key="cm:created" default="false" />
             <header key="cm:name" default="true" />
             <header key="payments:periodStart" default="true" />
             <header key="payments:periodEnd" default="true" />
@@ -112,6 +114,7 @@
         <option name="createVariantRedirectionMethod">back</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
+            <header key="cm:created" default="false" />
             <header key="cm:name" default="true" />
         </headers>
     </journal>

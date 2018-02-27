@@ -16,6 +16,7 @@
         <option name="createVariantRedirectionMethod">card</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
+            <header key="cm:created" default="false" />
             <header key="idocs:registrationNumber" default="true"/>
             <header key="idocs:registrationDate" default="true"/>
             <header key="op:visitorFullName" default="true"/>

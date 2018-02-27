@@ -15,6 +15,7 @@
         <option name="formId">filters</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
+            <header key="cm:created" default="false" />
             <header key="idocs:documentStatus" default="true" />
             <header key="idocs:registrationDate" default="true" />
             <header key="idocs:registrationNumber" default="true" />
@@ -38,6 +39,7 @@
         <option name="formId">filters</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
+            <header key="cm:created" default="false" />
             <header key="idocs:documentStatus" default="true" />
             <header key="idocs:registrationNumber" default="true" />
             <header key="idocs:registrationDate" default="true" />

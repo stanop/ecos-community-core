@@ -16,6 +16,7 @@
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
+            <header key="cm:created" default="false" />
             <header key="tk:kind" default="true" />
             <header key="idocs:documentStatus" default="true" />
             <header key="orders:branch" default="true" />

@@ -13,6 +13,7 @@
         <option name="type">meet:meeting</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
+            <header key="cm:created" default="false" />
             <header key="meet:meetingNumber" default="true" />
             <header key="idocs:documentStatus" default="true" />
             <header key="meet:initiator" default="true" />
