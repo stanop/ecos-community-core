@@ -379,3 +379,7 @@
 #HEADER_CREATE_CASE .alfresco-menus-AlfMenuBarPopup__arrow {
   display: none;
 }
+
+.mm-page .alfresco-footer-AlfStickyFooter > div.wrapper {
+  background-color: white;
+}
