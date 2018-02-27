@@ -22,6 +22,7 @@ var logger = Alfresco.logger,
 		noneActionGroupId = "none",
 		buttonsActionGroupId = "buttons",
 		defaultActionGroupId = "injournal",
+        customRecordLoader = ko.observable(),
 		BulkLoader = Citeck.utils.BulkLoader,
 		journalsListIdRegexp = new RegExp('^([^-]+)(-(.+))?-([^-]+)$'),
 		koclass = koutils.koclass,
@@ -131,7 +132,7 @@ CreateVariant
 		// redirect back after submit from journal page only
 		var options = this.resolve("journal.type.options");
 		if (window.location.pathname.indexOf("journals2") != -1 && options) {
-			var redirectionMethod = options["createVariantRedirectionMethod"] || "back";
+			var redirectionMethod = options["createVariantRedirectionMethod"] || "card";
 			urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
 		}
 
@@ -494,14 +495,19 @@ JournalType
 			if (!predicates || predicates.length == 0) return;
 			return { field: attr.name(), predicate: predicates[0].id(), value: "" }
 		});
-
-		return new Filter({
-			nodeRef: null,
-			title: null,
-			permissions: { Write: false, Delete: false},
-			journalTypes: [ this.id() ],
-			criteria: _.compact(criteria)
-		});
+        var loadingCriteria = _.filter(criteria, function(item) {
+            return item == undefined;
+        });
+        if (criteria.length && !loadingCriteria.length) {
+            return new Filter({
+                nodeRef: null,
+                title: null,
+                permissions: { Write: false, Delete: false},
+                journalTypes: [ this.id() ],
+                criteria: _.compact(criteria)
+            });
+        }
+        return null;
 	})
 	.computed('defaultSettings', function() {
 		return new Settings({
@@ -838,8 +844,6 @@ JournalsWidget
 	.property('journal', Journal)
 	.property('filter', Filter)
 	.property('settings', Settings)
-    .property('recordsQueryCache', o)
-    .property('recordsDataCache', o)
 	.property('_filter', Filter)
 	.property('_settings', Settings)
 
@@ -959,7 +963,7 @@ JournalsWidget
 	// datatable interface: fields, columns, records
 	.shortcut('actionGroupId', 'journal.type.options.actionGroupId', defaultActionGroupId)
 	.computed('columns', function() {
-		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'), records = this.records(),
+		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'),
 				recordUrl = this.recordUrl(), linkSupplied = recordUrl == null,
 				recordLinkAttribute = this.recordLinkAttribute() || "cm:name",
 				recordPriorityAttribute = this.recordPriorityAttribute() || "cm:name";
@@ -1046,7 +1050,7 @@ JournalsWidget
 				columns.unshift(new ActionsColumn({
 					id: 'actions',
 					label: this.msg("column.actions"),
-					formatter: formatters.journalActions(records)
+					formatter: formatters.journalActions(this.records())
 				}));
 			}
 		}
@@ -1240,11 +1244,10 @@ JournalsWidget
 			// reset filter and settings
 			this.filter(null);
 			this.settings(null);
-
 			this.propSortBy([]);
 			this.skipCount(0);
 			this.selectedId(null);
-
+            this.maxItems(this.defaultMaxItems() || 10);
 			this.performSearch();
 		}, this);
 		this.currentFilter.subscribe(function() {
@@ -1663,42 +1666,36 @@ JournalsWidget
 
 			logger.info("Loading records with query: " + JSON.stringify(query));
 
-            if (JSON.stringify(this.recordsQueryCache()) != JSON.stringify(query)) {
-                this.recordsQueryCache(query);
-                Alfresco.util.Ajax.jsonPost({
-                    url: Alfresco.constants.PROXY_URI + "search/criteria-search",
-                    dataObj: query,
-                    successCallback: {
-                        scope: this,
-                        fn: function(response) {
-                            var data = response.json;
-                            var newModel = {
-                                records: data.results,
-                                skipCount: data.paging.skipCount,
-                                maxItems: data.paging.maxItems,
-                                totalItems: data.paging.totalItems,
-                                hasMore: data.paging.hasMore
-                            };
-                            this.model(newModel);
-                            this.recordsDataCache(newModel);
-                        }
-                    }
-                });
+            Alfresco.util.Ajax.jsonPost({
+                url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+                dataObj: query,
+                successCallback: {
+                    scope: this,
+                    fn: function(response) {
+                        var data = response.json, self = this;
 
-            } else {
-                this.model(this.recordsDataCache());
-            }
+                        customRecordLoader(new Citeck.utils.DoclibRecordLoader(self.actionGroupId()));
+
+                        this.model({
+                            records: data.results,
+                            skipCount: data.paging.skipCount,
+                            maxItems: data.paging.maxItems,
+                            totalItems: data.paging.totalItems,
+                            hasMore: data.paging.hasMore
+                        });
+                    }
+                }
+            });
 		};
 		load.call(this);
 	})
 	;
-
-var recordLoader = new Citeck.utils.DoclibRecordLoader(defaultActionGroupId);
+    
 Record
 	// TODO define load method - to load selected records
 	.load('doclib', function(record) {
 		if(record.isDoclibNode() === true) {
-			recordLoader.load(record.nodeRef(), function(id, model) {
+            customRecordLoader().load(record.nodeRef(), function(id, model) {
 				record.model({ doclib: model });
 			});
 		} else if(record.isDoclibNode() === false) {

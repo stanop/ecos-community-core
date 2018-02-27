@@ -108,6 +108,24 @@
                     eventArgs: {
                         type: "role",
                     },
+                },
+                {
+                    id: "editItemInplaced",
+                    event: "editItemInplaced",
+                    eventArgs: {
+                        type: "orgstruct",
+                        mode: "edit"
+                    },
+                },
+                {
+                    id: "createUser",
+                    event: "createUser",
+                    eventArgs: {
+                        itemId: "cm:person",
+                        // type: "person",
+                        // formId: "person",
+                        mode: "create",
+                    },
                 }
             ]
         });
@@ -160,7 +178,9 @@
             $buttonSubscribe("addDeputy", this.onAddDeputy, this, ids);
             $buttonSubscribe("addAssistant", this.onAddAssistant, this, ids);
             $buttonSubscribe("editItem", this.onEditItem, this, ids);
+
             $buttonSubscribe("editItemInplaced", this.onEditItemInplaced, this, ids);
+
             $buttonSubscribe("viewItem", this.onViewItem, this, ids);
             $buttonSubscribe("deleteItem", this.onDeleteItem, this, ids);
             $buttonSubscribe("search", this.onSearch, this, ids);
@@ -168,6 +188,8 @@
             $buttonSubscribe("convertToGroup", this.onConvertToGroup, this, ids);
             $buttonSubscribe("convertToBranch", this.onEditItem, this, ids);
             $buttonSubscribe("convertToRole", this.onEditItem, this, ids);
+
+            $buttonSubscribe("createUser", this.onCreateUser, this, ids);
 
             // subscribe on search "Enter"
             this.searchKeyListener = new YAHOO.util.KeyListener(this.id + "-search-input", { keys: 13 }, {
@@ -186,6 +208,14 @@
             this._initFilters();
             this._updateFilter();
 
+            var self = this;
+            $(document).bind("DOMNodeRemoved", function(e) {
+                if (e.target && e.target.classList && !!~Array.prototype.indexOf.call(e.target.classList, 'user-profile-view-inner-container')) {
+                    setTimeout(function () {
+                        self._clearViewJunk.call(self);
+                    });
+                }
+            });
         },
 
         /**
@@ -232,8 +262,17 @@
 
         },
 
+        // save created views ids
+        _saveJunkId: function (formId) {
+            this.widgets.consts = this.widgets.consts || {};
+            this.widgets.consts.junkIdsArray = this.widgets.consts.junkIdsArray || [];
+            this.widgets.consts.junkIdsArray.push(formId);
+        },
+
         // clear junk created by onViewItem
         _clearViewJunk: function () {
+            var killRuntime = this.readKillRuntimeSign();
+
             // unsubscribe
             try {YAHOO.Bubbling.unsubscribe("node-view-submit", onSubmit);} catch(e) {
                 if (e.message !== 'onSubmit is not defined') {
@@ -246,11 +285,15 @@
                 }
             }
 
+            // show toolbar
+            $('.orgstruct-console .selected-item-details .toolbar').show();
+            $('.orgstruct-console .selected-item-details .dynamic-tree-list>.ygtvitem').show();
+
             // get the right section - block were we will show the views
             var showArea = $('#' + this.widgets.list.id);
 
             // terminate runtime
-            if (showArea[0].querySelector('.ecos-form')) {
+            if (killRuntime && showArea[0].querySelector('.ecos-form')) {
                 var ecosFormId = showArea[0].querySelector('.ecos-form').id;
                 try { Alfresco.util.ComponentManager.get(ecosFormId).runtime.terminate(); } catch (e) { }
             }
@@ -259,6 +302,18 @@
             showArea.children('.user-profile-view-inner-container').each(function () {
                 $("[id^='"+ $(this).attr('id')+ "']").remove();
             });
+
+            var idx;
+            if (this.widgets.consts && this.widgets.consts.junkIdsArray && this.widgets.consts.junkIdsArray.length) {
+                var tempArr = this.widgets.consts.junkIdsArray.slice();
+                this.widgets.consts.junkIdsArray.forEach(function (item, i, arr) {
+                    if ($("[id^='" + item + "']").remove().length) {
+                        idx = tempArr.indexOf(item);
+                        tempArr.splice(idx, 1);
+                    }
+                });
+                this.widgets.consts.junkIdsArray = tempArr;
+            }
 
             // remove previous node views
             showArea.children('.user-profile-view-inner-container').remove();
@@ -274,11 +329,12 @@
             var parent = node.parent.data;
 
             // clear junk created by onViewItem
-            this._clearViewJunk(item);
+            this._clearViewJunk();
 
             // bind widgets to model
             this.widgets.list.setContext(item, parent);
             this.widgets.listToolbar.setContext(item, parent);
+
             // update model
             this.model.updateChildren(item);
             return false; // do not toggle
@@ -295,7 +351,7 @@
 
             if (item.item.authorityType === 'USER') {
                 // clear junc created by onViewItem
-                this._clearViewJunk(item);
+                this._clearViewJunk();
 
                 // bind widgets to model
                 this.widgets.list.setContext(item, parent);
@@ -374,10 +430,10 @@
             var item = this.model.getItem(itemId);
 
             // clear junc created by onViewItem
-            this._clearViewJunk(item);
+            this._clearViewJunk();
 
-            var htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
             itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
+            // var htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
             // this.widgets.editItemDialog = new Citeck.widget.EditFormDialog(htmlid, itemId, formId, item, this.name);
             // this.widgets.editItemDialog.options.width = '50em';
             this.widgets.editItemDialog = new Citeck.forms.dialog(itemId, formId, function () {}, {width: "800px", mode: mode});
@@ -391,7 +447,7 @@
          * Show view form
          */
         onViewItem: function(args) {
-            var htmlid, formId, itemId, item;
+            var formId, itemId, item;
 
             if (args.node) {
                 formId = 'orgstruct';
@@ -403,13 +459,30 @@
             item = this.model.getItem(itemId);
 
             // clear junc created by onViewItem
-            this._clearViewJunk(item);
+            this._clearViewJunk();
 
-            htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
             itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
-
             this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id/*, mode: 'edit'*/});
-            this.widgets.viewItem.subscribe("itemEdited", this.onItemEdited, this, true);
+        },
+
+        onCreateUser: function (args) {
+            var formId, itemId, item;
+
+            if (args.node) {
+                formId = 'orgstruct';
+                item = args.node.data._item_name_;
+            } else {
+                formId = args.type;
+                item = args.item;
+                itemId = args.itemId;
+            }
+            item = this.model.getItem(item);
+
+            // clear junc created by onViewItem
+            this._clearViewJunk();
+
+            var destItemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
+            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, destination: destItemId, mode: 'create'} );
         },
 
         /**
@@ -417,26 +490,39 @@
          * Show EditItemInplaced form
          */
         onEditItemInplaced: function(args) {
-            var htmlid, mode, formId, itemId, item;
+            var mode, formId, itemId, item;
 
-            formId = 'orgstruct';
+            mode = args.mode;
             if (args.node) {
+                formId = 'orgstruct';
                 itemId = args.node.data._item_name_;
             } else {
-                mode = args.mode;
                 formId = args.type;
                 itemId = args.item;
             }
             item = this.model.getItem(itemId);
 
             // clear junc created by onViewItem
-            this._clearViewJunk(item);
-
-            htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
+            this._clearViewJunk();
+            this.markKillRuntime();
 
             itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
-            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, mode: 'edit'});
-            this.widgets.viewItem.subscribe("itemEdited", this.onItemEdited, this, true);
+            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, mode: mode}); // mode == edit
+            this.widgets.viewItem.containerId && this._saveJunkId(this.widgets.viewItem.containerId);
+        },
+
+        markKillRuntime: function () {
+            this.widgets = this.widgets || {};
+            this.widgets.consts = this.widgets.consts || {};
+            this.widgets.consts.KillRuntime = true;
+        },
+
+        readKillRuntimeSign: function () {
+            this.widgets = this.widgets || {};
+            this.widgets.consts = this.widgets.consts || {};
+            var killRuntime = this.widgets.consts.KillRuntime || false;
+            this.widgets.consts.KillRuntime = false;
+            return killRuntime;
         },
 
         /**

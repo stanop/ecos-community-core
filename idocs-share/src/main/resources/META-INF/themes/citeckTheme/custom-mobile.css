@@ -125,7 +125,7 @@
 .yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .toolbar h2 {
     padding: 10px 15px;
     color: white;
-    background-color: #2d3541;
+    background-color: #b5cfea;
 }
 
 .yui-skin-citeckTheme.mobile #alfresco-journals #alf-filters .items-list li {
@@ -148,7 +148,7 @@
     min-height: 0;
     box-shadow: none;
     border-top: 1px solid white;
-    border-bottom: 1px solid #2d3541;
+    border-bottom: 1px solid #b5cfea;
     margin: 0 0 10px 0;
     overflow: visible;
 }
@@ -188,10 +188,10 @@
 }
 
 .yui-skin-citeckTheme.mobile .alfresco-header-Header .dijitMenuBar #HEADER_SITE_MENU {
-    padding-top: 6px;
+    padding-top: 9px;
 }
 
-.yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header {
+.yui-skin-citeckTheme.mobile #alf-hd #SHARE_VERTICAL_LAYOUT #SHARE_HEADER {
     padding: 0;
 }
 
@@ -200,7 +200,7 @@
 }
 
 .yui-skin-citeckTheme.mobile #HEADER_SEARCHBOX_FORM_FIELD {
-    width: 22px !important;
+    max-width: 22px !important;
 }
 
 .yui-skin-citeckTheme.mobile .alfresco-header-Header .dijitMenuBar #HEADER_CHANGE_LANGUAGE {
@@ -213,21 +213,25 @@
     width: auto !important;
 }
 
+.mobile.yui-skin-citeckTheme.alfresco-share .mm-slideout #HEADER_USER_MENU_BAR #HEADER_USER_MENU {
+    padding-right: 0;
+}
+
 @media screen and (min-width: 360px) {
     .yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header #HEADER_SEARCHBOX_FORM_FIELD {
-        width: 60px !important;
+        max-width: 55px !important;
     }
 }
 
 @media screen and (min-width: 400px) {
     .yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header #HEADER_SEARCHBOX_FORM_FIELD {
-        width: 115px !important;
+        max-width: 105px !important;
     }
 }
 
 @media screen and (min-width: 600px) {
     .yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header #HEADER_SEARCHBOX_FORM_FIELD {
-        width: 200px !important;
+        max-width: 200px !important;
     }
 }
 

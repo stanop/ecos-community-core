@@ -1,7 +1,12 @@
 <#macro renderOrgstructBody el>
 <div id="${el}-body" class="orgstruct-console">
 
-    <div id="${el}-tree-resizer" class="orgstruct-tree-resizer" style="width: 30%">
+    <div id="${el}-tree-resizer" class="orgstruct-tree-resizer" style="width: 20%; min-width: 380px;">
+        <div class="orgstruct-config-selector">
+            <button type="button" id="${el}-filter"></button>
+            <select id="${el}-filter-select" name="filter-select">
+            </select>
+        </div>
         <div id="${el}-tree-toolbar" class="toolbar theme-bg-2">
             <div>
 			<span id="${el}-tree-toolbar-button-styles">
@@ -18,11 +23,6 @@
         <div id="${el}-list-toolbar" class="toolbar theme-bg-2">
             <div>
                 <span id="${el}-list-toolbar-buttons" class="toolbar-buttons"></span>
-			<span class="orgstruct-config-selector">
-				<button type="button" id="${el}-filter"></button>
-				<select id="${el}-filter-select" name="filter-select">
-                </select>
-			</span>
             </div>
         </div>
         <div id="${el}-list" class="dynamic-tree-list dynamic-list color-hover color-highlight hide-buttons">

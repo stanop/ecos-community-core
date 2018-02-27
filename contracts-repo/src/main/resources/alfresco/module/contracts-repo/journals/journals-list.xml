@@ -44,6 +44,7 @@
 		<option name="type">contracts:subject</option>
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="createVariantRedirectionMethod">back</option>
 		<headers>
 			<header key="contracts:subjectCode" default="true" />
 			<header key="contracts:subjectName" default="true" />
@@ -56,6 +57,7 @@
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<option name="formId">filters</option>
+		<option name="createVariantRedirectionMethod">back</option>
 		<headers>
 			<header key="cm:name" default="true" />
 			<header key="payments:periodStart" default="true" />
@@ -103,6 +105,7 @@
 		<option name="type">contracts:documentType</option>
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<option name="createVariantRedirectionMethod">back</option>
 		<headers>
 			<header key="cm:name" default="true" />
 		</headers>
@@ -169,6 +172,7 @@
 		<option name="doubleClickId">nodeRef</option>
 		<option name="doubleClickLink">card-details?nodeRef={id}</option>
 		<option name="type">contracts:originalLocation</option>
+		<option name="createVariantRedirectionMethod">back</option>
 		<headers>
 			<header key="cm:name" default="true" />
 			<header key="cm:title" default="true" />

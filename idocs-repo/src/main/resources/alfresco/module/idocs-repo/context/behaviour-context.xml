@@ -551,11 +551,11 @@
     <bean id="SiteDocumentTypesBehaviour" class="ru.citeck.ecos.behavior.tk.SiteDocumentTypesBehaviour" init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="NodeService"/>
+        <property name="mlAwareNodeService" ref="mlAwareNodeService" />
         <property name="siteService" ref="SiteService"/>
         <property name="namespaceService" ref="NamespaceService"/>
         <property name="searchService" ref="searchService"/>
     </bean>
-
 
 	<bean id="idocs.EventTitleGenerationBehaviour" parent="TitleGenerationBehaviour">
 		<property name="className" value="history:basicEvent"/>
@@ -674,11 +674,11 @@
     </bean>
 
 
-    <bean id="productsAndServicesBehaviour" class="ru.citeck.ecos.behavior.idocs.ProductsAndServicesBehavior" init-method="init">
+    <bean id="productsAndServicesBehaviour" class="ru.citeck.ecos.behavior.idocs.ProductsAndServicesBehavior"
+          init-method="init">
         <property name="nodeService" ref="nodeService" />
         <property name="policyComponent" ref="policyComponent" />
-        <property name="namespace" value="http://www.citeck.ru/model/products-and-services/1.0"/>
-        <property name="type" value="pasEntityCopied"/>
+        <property name="type" value="pas:pasEntityCopied"/>
     </bean>
 
     <bean id="idocs.addressByPartsNamingBehaviour" parent="AutoNameBehaviour">

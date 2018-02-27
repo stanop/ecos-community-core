@@ -1,26 +1,26 @@
-.invariants-form .form-fields .user-profile-custom-container {
+.ecos-form.invariants-form .form-fields .user-profile-custom-container {
     margin-left: -15px;
     margin-right: -20px;
     width: auto;
 }
 
-.invariants-form .form-fields .user-profile-custom-container>.form-view.template-person-edit-btn {
+.ecos-form.invariants-form .form-fields .user-profile-custom-container>.form-view.template-person-edit-btn {
     height: 50px;
     padding-right: 20px;
 }
 
-.invariants-form .form-fields .user-profile-custom-container>.form-view.template-rowset {
+.ecos-form.invariants-form .form-fields .user-profile-custom-container>.form-view.template-rowset {
     display: inline-block;
     margin: 0 20px 25px 15px;
-    width: 363px;
+    width: 410px;
     border: 1px solid #e1e1e1;
-    box-shadow: 0 0 0px 1px #f5f5f5;
+    box-shadow: 0 0 0 1px #f5f5f5;
     border-radius: 3px;
     vertical-align: top;
     background-color: #fff;
 }
 
-.invariants-form .user-profile-custom-container .form-view .title,
+.ecos-form.invariants-form .user-profile-custom-container .form-view .title,
 .user-profile-custom-container .form-view .title {
     padding-top: 13px;
     padding-left: 11px;
@@ -33,20 +33,25 @@
     border-top-right-radius: 3px;
 }
 
-.invariants-form:not(.view-form) .user-profile-custom-container .template-rowset .title {
+.ecos-form.invariants-form:not(.view-form) .user-profile-custom-container .template-rowset .title {
     margin: 0 0 13px 0;
 }
 
-.invariants-form:not(.view-form) .user-profile-custom-container .template-rowset:after {
+.ecos-form.invariants-form:not(.view-form) .user-profile-custom-container .template-rowset:after {
     display: none;
 }
 
 .ecos-form .form-fields .user-profile-custom-container .form-field {
-    /*margin: 0 15px 20px;*/
-    margin-top: 0px;
-    margin-bottom: 20px;
+    margin-top: 0;
+    margin-bottom: 15px;
     margin-left: 15px;
     padding-right: 15px;
+    min-height: 55px;
+    padding-bottom: 0;
+}
+
+.ecos-form .form-fields .user-profile-custom-container .form-field .block-region .form-region {
+    margin-bottom: 0;
 }
 
 .ecos-form .form-fields .user-profile-custom-container .form-field .form-region.template-user-groups ol {
@@ -74,6 +79,11 @@
     font-weight: normal;
     float: none;
     color: #212121;
+    margin-left: 0;
+}
+
+.ecos-form .form-fields .user-profile-custom-container .form-field.invalid .form-region.template-message {
+    color: red;
 }
 
 .ecos-form .form-fields .user-profile-custom-container .form-field.template-half-width {
@@ -88,8 +98,8 @@
     display: none;
 }
 
-.invariants-form .form-fields .user-profile-custom-container .user-profile-header {
-    /*.invariants-form .form-fields .user-profile-custom-container>.form-view:nth-child(2) {*/
+.ecos-form.invariants-form .form-fields .user-profile-custom-container .user-profile-header {
+    /*.ecos-form.invariants-form .form-fields .user-profile-custom-container>.form-view:nth-child(2) {*/
     display: block;
     width: initial;
     border-radius: 0;
@@ -97,35 +107,40 @@
 }
 
 /* remove widths for blocks in header */
-.invariants-form .form-fields .user-profile-custom-container .user-profile-header .form-field,
-.invariants-form .form-fields .user-profile-custom-container .form-field.template-block {
+.ecos-form.invariants-form .form-fields .user-profile-custom-container .user-profile-header .form-field,
+.ecos-form.invariants-form .form-fields .user-profile-custom-container .form-field.template-block {
     min-width: initial;
     width: initial;
 }
 
-.invariants-form .user-profile-custom-container .template-wide .template-blockset:after {
+.ecos-form.invariants-form .form-fields .user-profile-custom-container > div:not(.user-profile-header) .form-field.template-block {
+    width: calc(30% - 15px);
+}
+
+.ecos-form.invariants-form .user-profile-custom-container .template-wide .template-blockset:after {
     background-color: initial;
 }
 
-.invariants-form .user-profile-custom-container .field-width-full .form-field .form-region {
+.ecos-form.invariants-form .user-profile-custom-container .field-width-full .form-field .form-region {
     width: 100%;
 }
 
-.invariants-form .user-profile-custom-container .template-mandatory {
+.ecos-form.invariants-form .user-profile-custom-container .template-mandatory {
     left: -10px;
 }
 
-.invariants-form .user-profile-custom-container .user-profile-header .template-mandatory {
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header .template-mandatory {
     left: -20px;
 }
 
-.invariants-form .user-profile-custom-container .user-profile-header {
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header {
     margin: 0 15px 20px;
 }
 
-.ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region {
+.ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region.template-text,
+.ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region span:not(.validation-message) {
     color: white;
-    font-size: 150%;
+    font-size: 26px;
     font-weight: bold;
 }
 
@@ -133,41 +148,191 @@
     font-size: 59%;
 }
 
-.invariants-form .user-profile-custom-container .user-profile-header__column,
-.invariants-form .user-profile-custom-container .user-profile-header__column--fio {
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column,
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--fio {
     display: inline-block;
     vertical-align: top;
 }
 
-.invariants-form .user-profile-custom-container .user-profile-header__column--fio {
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--fio {
     margin-top: 62px;
 }
 
 
-.invariants-form .user-profile-custom-container .user-profile-header__column--photo {
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--photo {
     margin-top: 22px;
     margin-left: 35px;
 }
 
-.invariants-form .user-profile-custom-container .user-profile-header__column--photo .block-region-label {
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--photo .block-region-label {
     margin: 0;
 }
 
-.invariants-form .user-profile-custom-container .user-profile-header__column .form-field {
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column .form-field {
     margin-bottom: 0;
 }
 
-.invariants-form .user-profile-custom-container .user-profile-header__column--photo .template-blockset:after {
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--photo .template-blockset:after {
     content: none;
 }
 
-.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region {
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region {
     margin-bottom: 5px;
 }
 
-.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region.template-img .img-cover {
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region.template-img .img-cover,
+.ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region.template-img-background .img-cover {
     width: 90px;
     height: 90px;
     border-radius: 50%;
     overflow: hidden;
+}
+
+.img-back-container {
+    width: 90px;
+    height: 90px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50% 0;
+}
+
+.user-profile .ecos-form:not(.edit-form) .form-fields {
+    padding: 15px 40px 0 0;
+}
+
+.ecos-form .edit-form .user-profile-custom-container.form-view {
+    margin-left: -30px;
+}
+
+.ecos-form.invariants-form .user-profile-custom-container .block-region .form-region.template-view {
+    width: auto;
+}
+
+.ecos-form.invariants-form.view-form .user-profile-custom-container .template-view .value-item {
+    padding-right: 0;
+}
+
+.orgstruct-console .ecos-form.invariants-form.edit-form .form-fields {
+    padding: 0;
+}
+
+.ecos-form .form-errors {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.ecos-form.invariants-form .user-profile-custom-container .template-wide .template-block .template-message span.validation-message {
+    margin-top: 7px;
+}
+
+.user-profile.static .ecos-form.invariants-form .form-view.template-table,
+.static .ecos-form.invariants-form .form-view.template-table {
+    width: auto;
+}
+
+/* --------------------------- user profile mobile view ----------------------------------- */
+@media (max-width: 585px) {
+    .userprofile .members-bar-links:after {
+        content: '';
+        clear: both;
+        display: table;
+    }
+
+    .userprofile .members-bar-links .link {
+        padding-top: 10px;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+
+    .user-profile.node-view.static {
+        padding: 0 0 15px 0 !important;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
+    .user-profile.node-view.static > .ecos-form.view-form {
+        padding-top: 0;
+    }
+
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .user-profile-header {
+        margin-right: 0;
+        margin-left: 0;
+        padding: 10px;
+    }
+
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .user-profile-header__column--photo {
+        margin-left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region.template-img-background .img-cover {
+        width: auto;
+        height: auto;
+    }
+
+    .form-view.user-profile-custom-container .template-img-background .img-cover .img-back-container,
+    .form-view.user-profile-custom-container .template-img-background .img-cover .img-back-container {
+        width: 40vw;
+        height: 40vw;
+    }
+
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .user-profile-header .user-profile-header__column--fio {
+        margin-top: 20px;
+    }
+
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .user-profile-header__column--fio .form-field .form-region.template-text {
+        font-size: 100%;
+    }
+
+    .ecos-form.invariants-form .user-profile-custom-container .form-view .title, .user-profile-custom-container .form-view .title {
+        border: 0;
+        border-radius: 0;
+    }
+
+    .ecos-form.invariants-form .form-fields .form-view.user-profile-custom-container > .form-view {
+        display: block;
+        width: auto;
+        margin-right: 0;
+        margin-left: 0;
+        margin-bottom: 0;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .form-view .form-field.template-half-width,
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .form-view .form-field {
+        width: auto;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .ecos-form.invariants-form .form-view.user-profile-custom-container .form-view.user-profile-header .form-field {
+        padding-left: 0;
+    }
+
+    .toolbar.userprofile {
+        padding: 0 10px 10px;
+    }
+
+    .user-profile .user-profile__edit-link  {
+        margin-left: 25px;
+    }
+
+    .sticky-footer .footer-content {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .toolbar.userprofile .separator, .toolbar.userprofile .link {
+        float: none;
+        display: inline-block;
+        vertical-align: top;
+}
+
+    .mobile .ecos-form .form-fields .template-table .form-field:after {
+         border-bottom: 0;
+         margin-bottom: 0;
+    }
 }

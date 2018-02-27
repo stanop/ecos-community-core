@@ -13,9 +13,7 @@
 
 .orgstruct-console .orgstruct-config-selector 
 {
-	/*float: right;*/
-	position: absolute;
-	right: 40px;
+	margin-bottom: 20px;
 }
 
 /*
@@ -95,7 +93,7 @@
 
 .orgstruct-console .selected-item-details 
 {
-	height: 600px;
+	min-height: 600px;
 	overflow: hidden;
     padding-left: 15px;
 }
@@ -229,4 +227,12 @@
 
 .ygtvcell.USER.available-true {
 	cursor: pointer;
+}
+
+#bd [id$="orgstruct"] .orgstruct-console .orgstruct-tree-resizer {
+	padding-right: 0;
+}
+
+#bd [id$="orgstruct"] .orgstruct-console .orgstruct-tree-resizer .dynamic-tree-list .ygtvcontent {
+	padding-right: 80px;
 }

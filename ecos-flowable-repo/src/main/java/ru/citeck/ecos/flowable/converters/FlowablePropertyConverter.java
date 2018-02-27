@@ -9,11 +9,13 @@ import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
+import org.alfresco.service.cmr.workflow.WorkflowException;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.alfresco.util.collections.CollectionUtils;
 import org.alfresco.util.collections.EntryTransformer;
+import org.apache.commons.lang.ObjectUtils;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.delegate.DelegateTask;
 import org.flowable.engine.history.HistoricActivityInstance;
@@ -516,8 +518,27 @@ public class FlowablePropertyConverter {
     }
 
     /**
+     * Set task owner
+     * @param task Task Task instance
+     * @param properties Map<QName, Serializable> Map of parameters
+     */
+    public void setTaskOwner(Task task, Map<QName, Serializable> properties) {
+        QName ownerKey = ContentModel.PROP_OWNER;
+        if (properties.containsKey(ownerKey)) {
+            Serializable owner = properties.get(ownerKey);
+            if (owner != null && !(owner instanceof String)) {
+                throw new WorkflowException("Task property " + ownerKey + " has to be not null and be instance of java.lang.String");
+            }
+            String assignee = (String) owner;
+            String currentAssignee = task.getAssignee();
+            if (ObjectUtils.equals(currentAssignee, assignee) == false) {
+                taskService.setAssignee(task.getId(), assignee);
+            }
+        }
+    }
+
+    /**
      * Set task service
-     *
      * @param taskService Task service
      */
     public void setTaskService(TaskService taskService) {
@@ -526,7 +547,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Set authority manager
-     *
      * @param authorityManager Authority manager
      */
     public void setAuthorityManager(WorkflowAuthorityManager authorityManager) {
@@ -535,7 +555,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Set namespace prefix resolver
-     *
      * @param namespaceService Namespace prefix resolver
      */
     public void setNamespaceService(NamespacePrefixResolver namespaceService) {
@@ -544,7 +563,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Dictionary service
-     *
      * @param dictionaryService Dictionary service
      */
     public void setDictionaryService(DictionaryService dictionaryService) {
@@ -553,7 +571,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Set tenant service
-     *
      * @param tenantService Tenant service
      */
     public void setTenantService(TenantService tenantService) {
@@ -562,7 +579,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Set message service
-     *
      * @param messageService Message service
      */
     public void setMessageService(MessageService messageService) {
@@ -571,7 +587,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Set node service
-     *
      * @param nodeService Node service
      */
     public void setNodeService(NodeService nodeService) {
@@ -580,7 +595,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Set flowable task service
-     *
      * @param flowableTaskService Flowable task service
      */
     public void setFlowableTaskService(FlowableTaskService flowableTaskService) {
@@ -589,7 +603,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Set flowanle history service
-     *
      * @param flowableHistoryService Flowable history service
      */
     public void setFlowableHistoryService(FlowableHistoryService flowableHistoryService) {
@@ -598,7 +611,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Set person service
-     *
      * @param personService Person service
      */
     public void setPersonService(PersonService personService) {
@@ -607,7 +619,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Set handler registry
-     *
      * @param handlerRegistry Handler registry
      */
     public void setHandlerRegistry(FlowableWorkflowPropertyHandlerRegistry handlerRegistry) {
@@ -616,7 +627,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Set type manager
-     *
      * @param typeManager Type manager
      */
     public void setTypeManager(FlowableTaskTypeManager typeManager) {
@@ -625,7 +635,6 @@ public class FlowablePropertyConverter {
 
     /**
      * Get workflow object factory
-     *
      * @return Workflow object factory
      */
     public WorkflowObjectFactory getFactory() {

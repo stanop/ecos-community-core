@@ -7,14 +7,15 @@
     <version>1.0</version>
 
     <imports>
-        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
-        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
-        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl"/>
-        <import uri="http://www.citeck.ru/model/lifecycle/1.0" prefix="lc"/>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+        <import uri="http://www.citeck.ru/model/lifecycle/1.0" prefix="lc" />
+        <import uri="http://www.citeck.ru/model/indexing/1.0" prefix="ind" />
     </imports>
 
     <namespaces>
-        <namespace uri="http://www.citeck.ru/model/activity/1.0" prefix="activ"/>
+        <namespace uri="http://www.citeck.ru/model/activity/1.0" prefix="activ" />
     </namespaces>
 
     <types>
@@ -74,7 +75,7 @@
             <mandatory-aspects>
                 <aspect>cm:titled</aspect>
                 <aspect>activ:hasState</aspect>
-                <!--<aspect>activ:doNotIndexTypeCompletely</aspect>-->
+                <aspect>ind:doNotIndexTypeCompletely</aspect>
             </mandatory-aspects>
         </type>
     </types>

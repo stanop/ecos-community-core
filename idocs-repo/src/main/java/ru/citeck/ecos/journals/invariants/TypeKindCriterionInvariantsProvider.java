@@ -48,9 +48,9 @@ public class TypeKindCriterionInvariantsProvider extends CriterionInvariantsProv
         if (ClassificationModel.PROP_DOCUMENT_TYPE.equals(attribute)) {
 
             invariants.add(builder
-                    .feature(Feature.OPTIONS)
-                    .explicit(getSubCategories(TYPES_ROOT))
-                    .build());
+                      .feature(Feature.OPTIONS)
+                      .explicit(getSubCategories(TYPES_ROOT))
+                      .build());
 
         } else if (ClassificationModel.PROP_DOCUMENT_KIND.equals(attribute)) {
 
@@ -60,9 +60,9 @@ public class TypeKindCriterionInvariantsProvider extends CriterionInvariantsProv
             if (StringUtils.isNotBlank(defaultType) && NodeRef.isNodeRef(defaultType)) {
 
                 invariants.add(builder
-                        .feature(Feature.OPTIONS)
-                        .explicit(getSubCategories(new NodeRef(defaultType)))
-                        .build());
+                          .feature(Feature.OPTIONS)
+                          .explicit(getSubCategories(new NodeRef(defaultType)))
+                          .build());
             }
         }
 

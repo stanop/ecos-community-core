@@ -237,38 +237,30 @@ ko.components.register("number", {
         this.id = params.id;
         this.step = params.step && _.isNumber(params.step) ? params.step : "any";
         this.disable = params.disable;
+        this.isInteger = params.isInteger == true;
         this.value = params.value;
 
-        this.lastSymbolIsPeriod = this.value() && this.value().indexOf(".") == this.value().length - 1;
-        this.hasPeriodSymbol = this.value() && this.value().indexOf(".") >= 0;
-        this.noValue = _.isEmpty(this.value());
-
         this.validation = function(data, event) {
-            var whiteNumbers = _.range(48, 58),
-                whiteKeys = [8, 46, 37, 39],
-                whitePeriod = [44, 46],
-                code = event.keyCode || event.charCode;
-
-            // only one period symbol in string
-            if (_.contains(whitePeriod, event.charCode)) {
-                if (self.hasPeriodSymbol) return false;
-                if (self.noValue || self.lastSymbolIsPeriod) return false;
-            };
-
-            // only predefined symbols
-            if (!_.contains(_.union(whiteNumbers, whiteKeys, whitePeriod), code)) return false;
-
-            return true;
+            var newValue = document.getElementById(self.id).value + event.key;
+            if (self.isInteger) {
+                var regExp = /^[0-9]*$/;
+                return regExp.test(newValue);
+            }
+            if (newValue && isFinite(newValue)) {
+                return true;
+            }
+            return false;
         };
 
-        this.value.subscribe(function(newValue) {
-            self.hasPeriodSymbol = newValue ?
-                _.any([",", "."], function(period) { return newValue.indexOf(period) >= 0 }) : false;
-            self.noValue = self.lastSymbolIsPeriod = _.isEmpty(newValue);
-        });
+        this.OnBlurEvent = function(data, event) {
+            // for Google Chrome (incorrect processing of a value with a dot at the end)
+            if (isNaN(document.getElementById(self.id).valueAsNumber)) {
+                document.getElementById(self.id).value = null;
+            }
+        };
     },
     template:
-       '<input type="number" data-bind="value: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
+       '<input type="number" data-bind="value: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation, blur: OnBlurEvent }" />'
 });
 
 // ---------------
@@ -527,6 +519,8 @@ ko.components.register("datetime", {
         this.fieldId = params["fieldId"];
         this.value = params["value"];
         this.disabled = params["protected"];
+        this.isFocus = ko.observable(false);
+        this.intermediateValue = ko.observable();
 
         if(!this.mode || !Citeck.HTML5.supportInput("datetime-local")){
             this.calendar = function() {
@@ -610,6 +604,11 @@ ko.components.register("datetime", {
             }
         });
 
+        this.isFocus.subscribe(function(focus) {
+            if (!focus) {
+                self.value(self.intermediateValue());
+            }
+        });
         this.dateValue = ko.computed({
             read: function() {
                 return  Alfresco.util.toISO8601(self.value(), { milliseconds: false, hideTimezone: true });
@@ -619,18 +618,20 @@ ko.components.register("datetime", {
                     var newDate = new Date(newValue);
 
                     if (newDate != "Invalid Date") {
-                        self.value(newDate);
+                        self.intermediateValue(newDate);
                         return;
                     }
                 }
 
-                if (self.value() != null) self.value(null)
+                if (self.intermediateValue() != null) {
+                    self.intermediateValue(null);
+                }
             }
         });
     },
     template:
        '<!-- ko if: Citeck.HTML5.supportInput("datetime-local") && mode -->\
-            <input type="datetime-local" data-bind="value: dateValue, disable: disabled" />\
+            <input type="datetime-local" data-bind="value: dateValue, hasFocus: isFocus, disable: disabled" />\
         <!-- /ko -->\
         <!-- ko if: !mode || !Citeck.HTML5.supportInput("datetime-local") -->\
             <input type="text" data-bind="value: textValue, disable: disabled, attr: { placeholder: localization.formatIE }" />\

@@ -73,6 +73,7 @@
     display: none;
 }
 
+.mobile #HEADER_APP_MENU_BAR #HEADER_CREATE_CASE,
 .mobile #HEADER_APP_MENU_BAR #HEADER_MOBILE_MENU,
 #HEADER_APP_MENU_BAR .dijitMenuItem {
     display: inline-block;
@@ -120,6 +121,13 @@
     border-radius: 0;
 }
 
+.mobile #alf-hd #SHARE_HEADER {
+    padding: 0 10px;
+}
+
+.mobile #SHARE_HEADER #HEADER_USER_MENU_BAR #HEADER_USER_MENU {
+    padding-left: 5px;
+}
 
 .mobile #share-header .alfresco-header-Header {
     margin: 0;
@@ -149,9 +157,6 @@
     #HEADER_USER_MENU_text {
         font-size: 0;
         display: block;
-        background-image: url(/share/res/components/images/header/user-profile.png);
-        width: 20px;
-        height: 20px;
         float: left;
         background-repeat: no-repeat;
         background-position: center;

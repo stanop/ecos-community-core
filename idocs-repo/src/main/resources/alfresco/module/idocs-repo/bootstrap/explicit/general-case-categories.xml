@@ -14,9 +14,9 @@
                 <view:mlvalue view:locale="en_US">General Case</view:mlvalue>
                 <view:mlvalue view:locale="ru_RU">Стандартный кейс</view:mlvalue>
             </cm:title>
-            <tk:appliedType>{http://www.citeck.ru/model/content/ecos/1.0}document</tk:appliedType>
+            <tk:appliedType>{http://www.citeck.ru/model/content/ecos/1.0}case</tk:appliedType>
             <tk:appliedAspects>{http://www.citeck.ru/model/icase/1.0}case</tk:appliedAspects>
-            <tk:journalType>ecos-documents</tk:journalType>
+            <tk:journalType>general-case</tk:journalType>
         </view:properties>
 
         <cm:subcategories>

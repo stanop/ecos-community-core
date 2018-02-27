@@ -51,7 +51,7 @@ define(["dojo/_base/declare",
              * @type {string}
              * @default "alfresco-logo-large"
              */
-            logoClasses: "alfresco-logo-large",
+            logoClasses: "",
 
             /**
              * @instance
@@ -94,7 +94,8 @@ define(["dojo/_base/declare",
             targetUrl: null,
 
             buildRendering: function alfresco_logo_Logo__buildRendering() {
-                this.templateString = '<div class="logo alfresco-logo-Logo"><a href="/share/page/' + this.targetUrl + '"><img src= "' + this.logoSrc + '" style="display: block;"></a></div>';
+                this.templateString = '<div class="logo alfresco-logo-Logo '+ (this.logoClasses || "") +'" ><a'+
+                    (this.targetUrl ? ' href="/share/page/' + this.targetUrl + '"': "") +'><img src= "' + this.logoSrc + '" style="display: block;"></a></div>';
                 if (this.logoSrc) {
                     this.imgNodeStyle = "display: block;";
                 }

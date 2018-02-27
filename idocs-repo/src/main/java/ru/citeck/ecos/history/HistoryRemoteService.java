@@ -30,6 +30,12 @@ public interface HistoryRemoteService {
     void sendHistoryEventsByDocumentToRemoteService(NodeRef documentRef);
 
     /**
+     * Send history event to remote service by event reference
+     * @param eventRef Event reference
+     */
+    void sendHistoryEventToRemoteService(NodeRef eventRef);
+
+    /**
      * Update document history status
      * @param documentNodeRef Document node reference
      * @param newStatus New document status

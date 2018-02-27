@@ -34,6 +34,8 @@ public class ICaseTaskModel {
     // types
     public static final QName TYPE_TASK = QName.createQName(NAMESPACE, "task");
     public static final QName TYPE_DEFAULT_TASK = QName.createQName(NAMESPACE, "defaultTask");
+    public static final QName TYPE_HUMAN_TASK = QName.createQName(NAMESPACE, "humanTask");
+    public static final QName TYPE_PROCESS_TASK = QName.createQName(NAMESPACE, "processTask");
 
     // aspects
 

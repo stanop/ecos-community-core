@@ -56,7 +56,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             "taskEventInstanceId", "documentVersion", "propertyName", "expectedPerformTime"
     };
     private static final String HISTORY_RECORD_FILE_NAME = "history_record";
-    private static final String DELIMETER = ";";
+    private static final String DELIMITER = "||";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
     private static final SimpleDateFormat importDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     private static final String SEND_NEW_RECORD_QUEUE = "send_new_record_queue";
@@ -158,43 +158,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         List<Map<String, Object>> result = new ArrayList<>(associations.size());
         /** Create entries */
         for (AssociationRef associationRef : associations) {
-            Map<String, Object> entryMap = new HashMap<>();
             NodeRef eventRef = associationRef.getSourceRef();
-            entryMap.put(DocumentHistoryConstants.DOCUMENT_ID.getValue(), documentRef.getId());
-            entryMap.put(DocumentHistoryConstants.NODE_REF.getValue(), eventRef.getId());
-            entryMap.put(DocumentHistoryConstants.EVENT_TYPE.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.PROP_NAME));
-            entryMap.put(DocumentHistoryConstants.DOCUMENT_VERSION.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.PROP_DOCUMENT_VERSION));
-            entryMap.put(DocumentHistoryConstants.COMMENTS.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_COMMENT));
-            entryMap.put(DocumentHistoryConstants.DOCUMENT_DATE.getValue(),
-                    importDateFormat.format((Date) nodeService.getProperty(eventRef, HistoryModel.PROP_DATE)));
-            entryMap.put(DocumentHistoryConstants.TASK_ROLE.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_ROLE));
-            entryMap.put(DocumentHistoryConstants.TASK_OUTCOME.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_OUTCOME));
-            QName taskType = (QName) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_TYPE);
-            entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(),taskType != null ? taskType.getLocalName() : "");
-            entryMap.put(FULL_TASK_TYPE,taskType != null ? taskType.toString() : "");
-            /** Workflow */
-            entryMap.put(WORKFLOW_INSTANCE_ID, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
-            entryMap.put(WORKFLOW_DESCRIPTION, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_DESCRIPTION));
-            entryMap.put(TASK_EVENT_INSTANCE_ID, nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_INSTANCE_ID));
-            entryMap.put(INITIATOR, nodeService.getProperty(eventRef, HistoryModel.ASSOC_INITIATOR));
-            QName propertyName = (QName) properties.get(HistoryModel.PROP_PROPERTY_NAME);
-            entryMap.put(PROPERTY_NAME, propertyName != null ? propertyName.getLocalName() : null);
-            /** Event task */
-            NodeRef taskNodeRef = (NodeRef) nodeService.getProperty(eventRef, HistoryModel.PROP_CASE_TASK);
-            if (taskNodeRef != null) {
-                Integer expectedPerformTime = (Integer) nodeService.getProperty(taskNodeRef, ICaseTaskModel.PROP_EXPECTED_PERFORM_TIME);
-                entryMap.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
-            }
-            /** Username and user id */
-            String username = (String) nodeService.getProperty(eventRef, HistoryModel.MODIFIER_PROPERTY);
-            NodeRef userNodeRef = personService.getPerson(username);
-            entryMap.put(USER_ID, userNodeRef != null ? userNodeRef.getId() : null);
-            entryMap.put(USERNAME, username);
+            Map<String, Object> entryMap = getEventMap(eventRef, documentRef);
             result.add(entryMap);
         }
         /** Send data */
@@ -216,6 +181,75 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         } catch (Exception exception) {
             logger.error(exception);
         }
+
+        /** Remove old nodes */
+        for (AssociationRef associationRef : associations) {
+            nodeService.deleteNode(associationRef.getSourceRef());
+        }
+    }
+
+    /**
+     * Send history event to remote service by event reference
+     * @param eventRef Event reference
+     */
+    public void sendHistoryEventToRemoteService(NodeRef eventRef) {
+        List<AssociationRef> associations = nodeService.getTargetAssocs(eventRef, HistoryModel.ASSOC_DOCUMENT);
+        NodeRef documentRef = null;
+        if (associations.size() > 0) {
+            documentRef = associations.get(0).getTargetRef();
+        }
+        if (documentRef == null) {
+            return;
+        }
+        Map<String, Object> requestParams = getEventMap(eventRef, documentRef);
+        sendHistoryEventToRemoteService(requestParams);
+        nodeService.deleteNode(eventRef);
+    }
+
+    /**
+     * Get event request params
+     * @param eventRef Event reference
+     * @param documentRef Document reference
+     * @return Event request params
+     */
+    private Map<String, Object> getEventMap(NodeRef eventRef, NodeRef documentRef) {
+        Map<String, Object> entryMap = new HashMap<>();
+        entryMap.put(DocumentHistoryConstants.DOCUMENT_ID.getValue(), documentRef.getId());
+        entryMap.put(DocumentHistoryConstants.NODE_REF.getValue(), eventRef.getId());
+        entryMap.put(DocumentHistoryConstants.EVENT_TYPE.getValue(),
+                nodeService.getProperty(eventRef, HistoryModel.PROP_NAME));
+        entryMap.put(DocumentHistoryConstants.DOCUMENT_VERSION.getValue(),
+                nodeService.getProperty(eventRef, HistoryModel.PROP_DOCUMENT_VERSION));
+        entryMap.put(DocumentHistoryConstants.COMMENTS.getValue(),
+                nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_COMMENT));
+        entryMap.put(DocumentHistoryConstants.DOCUMENT_DATE.getValue(),
+                importDateFormat.format((Date) nodeService.getProperty(eventRef, HistoryModel.PROP_DATE)));
+        entryMap.put(DocumentHistoryConstants.TASK_ROLE.getValue(),
+                nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_ROLE));
+        entryMap.put(DocumentHistoryConstants.TASK_OUTCOME.getValue(),
+                nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_OUTCOME));
+        QName taskType = (QName) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_TYPE);
+        entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(),taskType != null ? taskType.getLocalName() : "");
+        entryMap.put(FULL_TASK_TYPE,taskType != null ? taskType.toString() : "");
+        /** Workflow */
+        entryMap.put(WORKFLOW_INSTANCE_ID, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
+        entryMap.put(WORKFLOW_DESCRIPTION, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_DESCRIPTION));
+        entryMap.put(TASK_EVENT_INSTANCE_ID, nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_INSTANCE_ID));
+        entryMap.put(INITIATOR, nodeService.getProperty(eventRef, HistoryModel.ASSOC_INITIATOR));
+        QName propertyName = (QName) properties.get(HistoryModel.PROP_PROPERTY_NAME);
+        entryMap.put(PROPERTY_NAME, propertyName != null ? propertyName.getLocalName() : null);
+        /** Event task */
+        NodeRef taskNodeRef = (NodeRef) nodeService.getProperty(eventRef, HistoryModel.PROP_CASE_TASK);
+        if (taskNodeRef != null) {
+            Integer expectedPerformTime = (Integer) nodeService.getProperty(taskNodeRef, ICaseTaskModel.PROP_EXPECTED_PERFORM_TIME);
+            entryMap.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
+        }
+        /** Username and user id */
+        String username = (String) nodeService.getProperty(eventRef, HistoryModel.MODIFIER_PROPERTY);
+        NodeRef userNodeRef = personService.getPerson(username);
+        entryMap.put(USER_ID, userNodeRef != null ? userNodeRef.getId() : null);
+        entryMap.put(USERNAME, username);
+        return entryMap;
     }
 
     /**
@@ -251,7 +285,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         StringBuilder csvResult = new StringBuilder();
         for (String key : KEYS) {
             Object value = requestParams.get(key);
-            csvResult.append((value != null ? value.toString() : "") + DELIMETER);
+            csvResult.append((value != null ? value.toString() : "") + DELIMITER);
         }
         /** Create file */
         String currentDate = dateFormat.format(new Date());

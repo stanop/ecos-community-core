@@ -2,6 +2,25 @@
 <extension>
     <modules>
         <module>
+            <id>Add JQuery</id>
+            <version>1.0</version>
+            <auto-deploy>true</auto-deploy>
+            <auto-deploy-index>1</auto-deploy-index>
+            <evaluator type='default.extensibility.evaluator'/>
+            <configurations>
+                <config evaluator="string-compare" condition="WebFramework" replace="false">
+                    <web-framework>
+                        <dojo-pages>
+                            <packages>
+                                <package name='jquerymmenu' location='/share/res/js/citeck/lib' main='jquery.mmenu.all'/>
+                                <package name='jqueryscrollbar' location='/share/res/js/citeck/lib' main='jquery.nicescroll.min'/>
+                            </packages>
+                        </dojo-pages>
+                    </web-framework>
+                </config>
+            </configurations>
+        </module>
+        <module>
             <id>Custom Share Community Header Menu</id>
             <auto-deploy>true</auto-deploy>
             <version>1.0</version>
@@ -33,6 +52,7 @@
                                 <package name="citeckMenuGroup" location="js/citeck/menus/citeckMenuGroup"/>
                                 <package name="citeckMenuItem" location="js/citeck/menus/citeckMenuItem"/>
                                 <package name="citeckLogo" location="js/citeck/logo/citeckLogo"/>
+                                <package name="citeckMenuBarPopup" location="js/citeck/menus/citeckMenuBarPopup"/>
                             </packages>
                         </dojo-pages>
                     </web-framework>

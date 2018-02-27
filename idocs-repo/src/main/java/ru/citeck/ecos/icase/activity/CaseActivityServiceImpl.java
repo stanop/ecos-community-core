@@ -2,12 +2,14 @@ package ru.citeck.ecos.icase.activity;
 
 import com.google.common.collect.Lists;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.QNamePattern;
 import org.alfresco.service.namespace.RegexQNamePattern;
@@ -16,8 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.icase.activity.create.ActivityCreateVariant;
 import ru.citeck.ecos.icase.activity.create.CreateVariantsProvider;
-import ru.citeck.ecos.model.ActivityModel;
-import ru.citeck.ecos.model.LifeCycleModel;
+import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies.*;
@@ -38,6 +39,8 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     private DictionaryService dictionaryService;
     private PolicyComponent policyComponent;
     private NodeService nodeService;
+    private MessageService messageService;
+    private NamespaceService namespaceService;
 
     private ClassPolicyDelegate<BeforeCaseActivityStartedPolicy> beforeStartedDelegate;
     private ClassPolicyDelegate<OnCaseActivityStartedPolicy> onStartedDelegate;
@@ -49,6 +52,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     private Map<String, List<String>> allowedTransitions = new HashMap<>();
 
     private List<CreateVariantsProvider> createVariantsProviders = new ArrayList<>();
+    private List<QName> createMenuTypes = Collections.emptyList();
 
     public void init() {
 
@@ -285,27 +289,27 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     public List<ActivityCreateVariant> getCreateVariants() {
 
         List<ActivityCreateVariant> variants = new ArrayList<>();
+        for (QName menuType : createMenuTypes) {
+            ActivityCreateVariant variant = new ActivityCreateVariant();
+            variant.setTitle(dictionaryService.getType(menuType).getTitle(messageService));
+            variant.setType(menuType);
+            variant.setId(menuType.toPrefixString(namespaceService));
+            variant.setCanBeCreated(false);
+            variants.add(variant);
+        }
 
         for (CreateVariantsProvider provider : createVariantsProviders) {
             for (ActivityCreateVariant variant : provider.getCreateVariants()) {
-                addCreateVariant(variants, variant);
+                for (ActivityCreateVariant baseVariant : variants) {
+                    if (dictionaryService.isSubClass(variant.getType(), baseVariant.getType())) {
+                        baseVariant.addChild(variant);
+                        break;
+                    }
+                }
             }
         }
 
         return variants;
-    }
-
-    private void addCreateVariant(List<ActivityCreateVariant> variants, ActivityCreateVariant variant) {
-        for (ActivityCreateVariant existing : variants) {
-            if (Objects.equals(variant.getType(), existing.getType())) {
-                break;
-            }
-            if (dictionaryService.isSubClass(variant.getType(), existing.getType())) {
-                addCreateVariant(existing.getChildren(), variant);
-                return;
-            }
-        }
-        variants.add(variant);
     }
 
     private void resetActivity(NodeRef activityRef) {
@@ -392,5 +396,17 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     public void setDictionaryService(DictionaryService dictionaryService) {
         this.dictionaryService = dictionaryService;
+    }
+
+    public void setMessageService(MessageService messageService) {
+        this.messageService = messageService;
+    }
+
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
+    }
+
+    public void setCreateMenuTypes(List<QName> createMenuTypes) {
+        this.createMenuTypes = createMenuTypes;
     }
 }

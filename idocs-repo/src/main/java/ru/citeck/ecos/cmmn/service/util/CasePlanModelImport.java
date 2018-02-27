@@ -220,7 +220,7 @@ public class CasePlanModelImport {
         Integer typeVersion = StringUtils.isNotBlank(typeVersionStr) ? Integer.parseInt(typeVersionStr) : null;
         properties.put(ActivityModel.PROP_TYPE_VERSION, typeVersion);
 
-        nodeService.setProperties(nodeRef, properties);
+        nodeService.addProperties(nodeRef, properties);
 
         for (Map.Entry<javax.xml.namespace.QName, QName> entry : CMMNUtils.STATUS_ASSOCS_MAPPING.entrySet()) {
             String status = attributes.get(entry.getKey());

@@ -7,4 +7,5 @@ public class BpmModel {
 
     public static final QName TYPE_BPM_PACKAGE = QName.createQName(BPM_NAMESPASE, "package");
     public static final QName PROPERTY_TASK_ID = QName.createQName(BPM_NAMESPASE, "taskId");
+    public static final QName PROPERTY_COMMENT = QName.createQName(BPM_NAMESPASE, "comment");
 }
