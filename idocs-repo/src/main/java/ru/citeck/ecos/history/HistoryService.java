@@ -45,6 +45,7 @@ import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
 
+import javax.transaction.UserTransaction;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -332,63 +333,50 @@ public class HistoryService {
         }
     }
 
-    public String sendAndRemoveAllOldEvents(Integer offset, Integer maxItemsCount, Integer stopCount, Integer threads) {
+    public String sendAndRemoveAllOldEvents(Integer offset, Integer maxItemsCount, Integer stopCount) {
         if (isHistoryTransferring) {
             return "History is transferring";
         }
-        isHistoryTransferring = true;
-        final Integer threadsCount;
-        if (threads != null && threads > 0) {
-            threadsCount = threads;
-        } else {
-            threadsCount = 1;
+        if (!isEnabledRemoteHistoryService()) {
+            return "Remote history service isn't enabled";
         }
-        logger.info("History transferring started with threads " + threadsCount);
+        isHistoryTransferring = true;
         logger.info("History transferring started from position - " + offset);
         logger.info("History transferring. Max load size - " + maxItemsCount);
-
         try {
             /** Load first documents */
-            AuthenticationUtil.runAsSystem(() -> {
-                int documentsTransferred = 0;
-                int skipCount = offset;
-                ResultSet resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
-                boolean hasMore;
+            int documentsTransferred = 0;
+            int skipCount = offset;
+            ResultSet resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
+            boolean hasMore;
 
-                /** Start processing */
-                do {
-                    List<NodeRef> documents = resultSet.getNodeRefs();
-                    hasMore = resultSet.hasMore();
-                    /** Process each document */
-                    for (NodeRef documentRef : documents) {
-                        if (isHistoryTransferringInterrupted) {
-                            logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
-                            return null;
-                        }
-                        RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
-                        BatchProcessor<NodeRef> batchProcessor = new BatchProcessor<>(
-                                TRANSFER_PROCESS_NAME,
-                                retryingTransactionHelper,
-                                new HistoryTransferProvider(getEventsByDocumentRef(documentRef)),
-                                threadsCount, BATCH_SIZE,
-                                null, null, LOGGING_INTERVAL
-                        );
-                        batchProcessor.process(new HistoryTransferWorker(historyRemoteService), true);
-                        historyRemoteService.updateDocumentHistoryStatus(documentRef, true);
-                        documentsTransferred++;
-                    }
-                    skipCount += documents.size();
-                    resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
+            /** Start processing */
+            do {
+                if (isHistoryTransferringInterrupted) {
                     logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
-                    if (stopCount != null && stopCount > 0) {
-                        if (stopCount < documentsTransferred) {
-                            break;
-                        }
+                    return "History transferring was interrupted";
+                }
+                List<NodeRef> documents = resultSet.getNodeRefs();
+                hasMore = resultSet.hasMore();
+                /** Process each document */
+                for (NodeRef documentRef : documents) {
+                    if (isHistoryTransferringInterrupted) {
+                        logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
+                        return "History transferring was interrupted";
                     }
-                } while (hasMore);
-                logger.info("History transferring - all documents have been transferred - " + (documentsTransferred + offset));
-                return null;
-            });
+                    sendEventsByDocumentRef(documentRef);
+                    documentsTransferred++;
+                }
+                skipCount += documents.size();
+                resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
+                logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
+                if (stopCount != null && stopCount > 0) {
+                    if (stopCount < documentsTransferred) {
+                        break;
+                    }
+                }
+            } while (hasMore);
+            logger.info("History transferring - all documents have been transferred - " + (documentsTransferred + offset));
             return "History transferring - documents have been transferred";
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -396,6 +384,22 @@ public class HistoryService {
         } finally {
             isHistoryTransferring = false;
             isHistoryTransferringInterrupted = false;
+        }
+    }
+
+    private void sendEventsByDocumentRef(NodeRef documentRef)  {
+        UserTransaction trx = transactionService.getNonPropagatingUserTransaction(false);
+        /** Do processing in transaction */
+        try {
+            trx.begin();
+            for (NodeRef eventRef : getEventsByDocumentRef(documentRef)) {
+                historyRemoteService.sendHistoryEventToRemoteService(eventRef);
+            }
+            historyRemoteService.updateDocumentHistoryStatus(documentRef, true);
+            trx.commit();
+        } catch (Exception e) {
+            logger.error("Document " + documentRef.getId() + " hadn't been processed correctly");
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -613,10 +617,7 @@ public class HistoryService {
 
         @Override
         public void process(NodeRef eventRef) throws Throwable {
-            AuthenticationUtil.runAsSystem(() -> {
-                historyService.sendHistoryEventToRemoteService(eventRef);
-                return null;
-            });
+            historyService.sendHistoryEventToRemoteService(eventRef);
         }
     }
 
