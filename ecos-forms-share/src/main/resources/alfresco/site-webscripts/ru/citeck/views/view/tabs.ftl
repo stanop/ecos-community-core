@@ -44,7 +44,7 @@
 	<#list tabs as tab>
 		<#assign tabId = tab.id!tab.params.setId />
 
-		 <#if tab.params.warningMessage??>
+         <#if tab.params.warningMessage??>
              <!-- ko component: { name: "free-content", params: {
                          func: ko.computed(function() { ${tab.params.warningMessage} })
              }} --><!-- /ko -->
