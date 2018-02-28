@@ -2696,6 +2696,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
             if (this.options.model.inlineEdit) {
                 $("body").mousedown(function(e, a) {
+                    if (!self.runtime) {
+                        return;
+                    };
                     var node = self.runtime.node(),
                         isDraft = node.properties["invariants:isDraft"],
                         form = $("#" + self.options.model.key),
