@@ -31,6 +31,7 @@ class CurrencyFactory {
                 currency = new CurrencyEur(locale);
                 break;
             }
+            case "BYN":
             case "BYR": {
                 currency = new CurrencyByr(locale);
                 break;

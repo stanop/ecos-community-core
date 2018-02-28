@@ -170,29 +170,58 @@
 		<property name="templateName" value="payment-number-template" />
 	</bean>
 
-	<bean id="productsAndServicesBehaviourContracts" class="ru.citeck.ecos.behavior.contracts.ProductsAndServicesBehaviorContracts" init-method="init">
-		<property name="nodeService" ref="nodeService" />
-		<property name="policyComponent" ref="policyComponent" />
-		<property name="namespace" value="http://www.citeck.ru/model/products-and-services/1.0"/>
-		<property name="type" value="pasEntityCopied"/>
+	<bean id="productsAndServicesTotalAmountInDocument"
+		  class="ru.citeck.ecos.behavior.contracts.ProductsAndServicesTotalAmountInDocumentBehaviour"
+		  init-method="init">
+		<property name="allowedTypes">
+			<map>
+				<entry key="payments:payment" value="payments:paymentAmount"/>
+				<entry key="contracts:closingDocument" value="contracts:closingDocumentAmount"/>
+			</map>
+		</property>
 	</bean>
 
 	<bean id="paymentsBehaviour" class="ru.citeck.ecos.behavior.contracts.PaymentsBehaviour" init-method="init">
 		<property name="nodeService" ref="nodeService"/>
 		<property name="searchService" ref="searchService"/>
 		<property name="policyComponent" ref="policyComponent"/>
-		<property name="namespace" value="http://www.citeck.ru/model/payments/1.0"/>
-		<property name="type" value="payment"/>
+		<property name="type" value="payments:payment"/>
 		<property name="order" value="80"/>
 	</bean>
 
-	<bean id="contracts.closingDocumentBehaviour" class="ru.citeck.ecos.behavior.contracts.ClosingDocumentBehaviour" init-method="init">
+	<bean id="amountInWords.payments" class="ru.citeck.ecos.behavior.common.AmountInWordBehaviour" init-method="init">
+		<property name="docType" value="payments:payment"/>
+		<property name="amountProperty" value="payments:paymentAmount"/>
+		<property name="amountInWordProperty" value="payments:paymentAmountInWords"/>
+		<property name="currencyAssoc" value="payments:currency"/>
+	</bean>
+
+	<bean id="contracts.closingDocumentBehaviour" class="ru.citeck.ecos.behavior.contracts.ClosingDocumentBehaviour"
+		  init-method="init">
 		<property name="nodeService" ref="nodeService" />
 		<property name="searchService" ref="searchService"/>
 		<property name="policyComponent" ref="policyComponent" />
 		<property name="namespace" value="http://www.citeck.ru/model/contracts/1.0"/>
 		<property name="type" value="closingDocument"/>
 		<property name="order" value="80"/>
+	</bean>
+
+	<bean id="payment.relay-currency.pas"
+		  class="ru.citeck.ecos.behavior.common.RelayCurrencyToAssocsBehaviour"
+		  init-method="init">
+		<property name="docType" value="payments:payment"/>
+		<property name="targetAssoc" value="pas:containsProductsAndServices"/>
+		<property name="sourceCurrencyAssoc" value="payments:currency"/>
+		<property name="targetCurrencyAssoc" value="pas:currency"/>
+	</bean>
+
+	<bean id="closingDocument.relay-currency.pas"
+		  class="ru.citeck.ecos.behavior.common.RelayCurrencyToAssocsBehaviour"
+		  init-method="init">
+		<property name="docType" value="contracts:closingDocument"/>
+		<property name="targetAssoc" value="pas:containsProductsAndServices"/>
+		<property name="sourceCurrencyAssoc" value="contracts:closingDocumentCurrency"/>
+		<property name="targetCurrencyAssoc" value="pas:currency"/>
 	</bean>
 
 </beans>

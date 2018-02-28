@@ -18,6 +18,34 @@
             <invariant on="mandatory" language="explicit" description="Введено некорректное значение">true</invariant>
             <invariant on="value" language="javascript">Math.round(node.properties["pas:pricePerUnit"] * node.properties["pas:quantity"] * 10000) / 10000</invariant>
         </property>
+        <association name="pas:currency">
+            <invariant on="default" language="javascript">
+                <![CDATA[
+                    (function() {
+                        var destinationNode = (view.params && view.params.destination) ? new Node(view.params.destination) : null;
+                        if (destinationNode) {
+                            var destinationCurrency = (destinationNode.assocs["idocs:currencyDocument"] != null
+                            && destinationNode.assocs["idocs:currencyDocument"].length > 0) ? destinationNode.assocs["idocs:currencyDocument"][0] : null;
+
+                            if (destinationCurrency) {
+                                return destinationCurrency;
+                            }
+                        }
+
+
+                        var parentCurrency = (node.parent && node.parent.assocs["idocs:currencyDocument"] != null
+                            && node.parent.assocs["idocs:currencyDocument"].length > 0) ? node.parent.assocs["idocs:currencyDocument"][0] : null;
+
+                        if (parentCurrency) {
+                            return parentCurrency;
+                        }
+
+                        return new Node('workspace://SpacesStore/currency-rur');
+                    })()
+                ]]>
+            </invariant>
+            <invariant on="protected" language="explicit">true</invariant>
+        </association>
     </type>
 
     <type name="pas:pasEntity">
