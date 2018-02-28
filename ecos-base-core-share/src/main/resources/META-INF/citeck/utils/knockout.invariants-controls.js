@@ -712,8 +712,12 @@ ko.bindingHandlers.dateControl = {
                     // selected date
                     calendar.selectEvent.subscribe(function() {
                         if (calendar.getSelectedDates().length > 0) {
-                            var selectedDate = calendar.getSelectedDates()[0];
-                            value(selectedDate.toString("yyyy-MM-dd"));
+                            var selectedDate = calendar.getSelectedDates()[0],
+                                nowDate = new Date;
+
+                            selectedDate.setHours(-nowDate.getTimezoneOffset()/60);
+
+                            value(selectedDate);
                         }
                         calendarDialog.hide();
                     });
