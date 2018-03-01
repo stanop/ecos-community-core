@@ -281,6 +281,7 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                     successCallback: {
                         scope: this,
                         fn: function(response) {
+                            YAHOO.Bubbling.fire("metadataRefresh");
                             var results = response.json;
                             var downloadReportUrl = results && results[0] && results[0].url;
 
