@@ -21,7 +21,7 @@ import java.util.Map;
 @Service
 public class GraphQLService {
 
-    private static final String GRAPHQL_BASE_PACKAGE = "ru.citeck.ecos.graphql";
+    private static final String GRAPHQL_BASE_PACKAGE = "ru.citeck.ecos";
     private static final String QUERY_TYPE = "Query";
 
     @Autowired

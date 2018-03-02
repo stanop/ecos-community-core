@@ -25,38 +25,40 @@ import org.alfresco.service.namespace.QName;
 
 public interface JournalType {
     
-    public String getId();
+    String getId();
     
-    public Map<String, String> getOptions();
+    Map<String, String> getOptions();
     
-    public List<QName> getAttributes();
+    List<QName> getAttributes();
     
-    public List<QName> getDefaultAttributes();
+    List<QName> getDefaultAttributes();
     
-    public List<QName> getVisibleAttributes();
+    List<QName> getVisibleAttributes();
     
-    public List<QName> getSearchableAttributes();
+    List<QName> getSearchableAttributes();
     
-    public List<QName> getSortableAttributes();
+    List<QName> getSortableAttributes();
     
-    public List<QName> getGroupableAttributes();
+    List<QName> getGroupableAttributes();
     
-    public Map<String, String> getAttributeOptions(QName attributeKey);
+    Map<String, String> getAttributeOptions(QName attributeKey);
     
-    public boolean isAttributeDefault(QName attributeKey);
+    boolean isAttributeDefault(QName attributeKey);
     
-    public boolean isAttributeVisible(QName attributeKey);
+    boolean isAttributeVisible(QName attributeKey);
     
-    public boolean isAttributeSearchable(QName attributeKey);
+    boolean isAttributeSearchable(QName attributeKey);
     
-    public boolean isAttributeSortable(QName attributeKey);
+    boolean isAttributeSortable(QName attributeKey);
     
-    public boolean isAttributeGroupable(QName attributeKey);
+    boolean isAttributeGroupable(QName attributeKey);
 
-    public List<JournalBatchEdit> getBatchEdit(QName attributeKey);
+    List<JournalBatchEdit> getBatchEdit(QName attributeKey);
 
-    public List<JournalGroupAction> getGroupActions();
+    List<JournalGroupAction> getGroupActions();
 
-    public JournalCriterion getCriterion(QName attributeKey);
+    JournalCriterion getCriterion(QName attributeKey);
+    
+    String getFieldsSchema();
     
 }

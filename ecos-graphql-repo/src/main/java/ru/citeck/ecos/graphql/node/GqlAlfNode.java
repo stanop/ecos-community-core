@@ -5,11 +5,13 @@ import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
 import graphql.schema.DataFetchingEnvironment;
 import lombok.Getter;
+import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.GqlContext;
 
@@ -20,7 +22,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class GqlNode {
+public class GqlAlfNode {
 
     private NodeRef nodeRef;
 
@@ -39,9 +41,53 @@ public class GqlNode {
 
     private GqlContext context;
 
-    public GqlNode(NodeRef nodeRef, GqlContext context) {
+    public GqlAlfNode(NodeRef nodeRef, GqlContext context) {
         this.nodeRef = nodeRef;
         this.context = context;
+    }
+
+    @GraphQLField
+    public String displayName() {
+
+        QName type = getType();
+
+        if (type.equals(ContentModel.TYPE_PERSON)) {
+
+            Attribute firstName = getAttribute(ContentModel.PROP_FIRSTNAME);
+            Attribute lastName = getAttribute(ContentModel.PROP_LASTNAME);
+
+            Optional value = firstName.value();
+            StringBuilder result = new StringBuilder();
+            if (value.isPresent()) {
+                result.append(value.get());
+            }
+            value = lastName.value();
+            if (value.isPresent()) {
+                if (result.length() > 0) {
+                    result.append(" ");
+                }
+                result.append(value.get());
+            }
+
+            if (result.length() == 0) {
+                Attribute userName = getAttribute(ContentModel.PROP_USERNAME);
+                result.append(userName.value().orElse(nodeRef.toString()));
+            }
+
+            return result.toString();
+
+        } else if (type.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
+
+            Attribute displayName = getAttribute(ContentModel.PROP_AUTHORITY_DISPLAY_NAME);
+            Attribute authorityName = getAttribute(ContentModel.PROP_AUTHORITY_NAME);
+
+            return displayName.value().orElseGet(() -> authorityName.value().orElse(null));
+
+        } else {
+            Attribute title = getAttribute(ContentModel.PROP_TITLE);
+            Attribute name = getAttribute(ContentModel.PROP_NAME);
+            return title.value().orElseGet(() -> name.value().orElse(null));
+        }
     }
 
     @GraphQLField
@@ -55,12 +101,11 @@ public class GqlNode {
     }
 
     @GraphQLField
-    public Attribute attribute(DataFetchingEnvironment env,
-                               @GraphQLName("name") String name) {
+    public Attribute attribute(@GraphQLName("name") String name) {
+        return getAttribute(QName.resolveToQName(context.getNamespaceService(), name));
+    }
 
-        GqlContext context = env.getContext();
-        QName qname = QName.resolveToQName(context.getNamespaceService(), name);
-
+    private Attribute getAttribute(QName qname) {
         return getAttributes().computeIfAbsent(qname, attName -> {
             QName prefixedName = attName.getPrefixedQName(context.getNamespaceService());
             return new Attribute(prefixedName, getAttributeType(prefixedName), this, context);

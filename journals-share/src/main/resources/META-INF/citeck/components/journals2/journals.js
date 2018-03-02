@@ -1664,11 +1664,16 @@ JournalsWidget
 			query.skipCount = this.skipCount() || 0;
 			query.maxItems = this.maxItems() || this.defaultMaxItems() || 10;
 
-			logger.info("Loading records with query: " + JSON.stringify(query));
+			var queryString = JSON.stringify(query);
 
-            Alfresco.util.Ajax.jsonPost({
-                url: Alfresco.constants.PROXY_URI + "search/criteria-search",
-                dataObj: query,
+			logger.info("Loading records with query: " + queryString);
+
+            Alfresco.util.Ajax.jsonGet({
+                url: Alfresco.constants.PROXY_URI + "/api/journals/records",
+                dataObj: {
+                    query: queryString,
+                    journalId: journal.type().id()
+                },
                 successCallback: {
                     scope: this,
                     fn: function(response) {
