@@ -35,7 +35,7 @@ public class DisablingPersonBehaviour implements NodeServicePolicies.OnUpdatePro
                 ContentModel.TYPE_PERSON,
                 new OrderedBehaviour(this,
                         "onUpdateProperties",
-                        Behaviour.NotificationFrequency.EVERY_EVENT,
+                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT,
                         order)
         );
     }
