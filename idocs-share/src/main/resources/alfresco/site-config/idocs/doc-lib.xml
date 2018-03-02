@@ -444,13 +444,13 @@
         
         <!-- disable multi-select actions for task mirrors -->
         <multi-select>
-            <action notAspect="wfm:attributes" id="onActionDownload" />
-            <action notAspect="wfm:attributes" id="onActionCopyTo" />
-            <action notAspect="wfm:attributes" id="onActionMoveTo" />
+            <action notAspect="wfm:attributes" label="group-action.select.download" id="onActionDownload" />
+            <action notAspect="wfm:attributes" label="group-action.select.copy-to" id="onActionCopyTo" />
+            <action notAspect="wfm:attributes" label="group-action.select.move-to" id="onActionMoveTo" />
             <!-- disable start-workflow -->
             <!-- TODO configure hidden-workflows instead -->
             <action notAspect="cm:auditable" id="onActionAssignWorkflow" />
-            <action notAspect="wfm:attributes" id="onActionDelete" isDoclib="false" />
+            <action notAspect="wfm:attributes" label="group-action.select.delete" id="onActionDelete" isDoclib="false" />
         </multi-select>
 
         <!-- global associations UI configuration -->
