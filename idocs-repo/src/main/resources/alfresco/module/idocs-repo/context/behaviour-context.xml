@@ -786,5 +786,12 @@
           class="ru.citeck.ecos.cmmn.behaviour.CaseTemplateContentSyncBehaviour">
     </bean>
 
+    <bean id="ru.citeck.ecos.disablingPersonBehaviour" class="ru.citeck.ecos.behavior.authority.DisablingPersonBehaviour"
+          init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="authorityService" ref="authorityService" />
+        <property name="authenticationService" ref="AuthenticationService" />
+    </bean>
+
 </beans>
 
