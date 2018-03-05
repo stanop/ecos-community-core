@@ -4962,7 +4962,8 @@ body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper,
 body:not(.mobile).yui-skin-citeckTheme #HEADER_TITLE_BAR,
 body:not(.mobile).yui-skin-citeckTheme #bd > div[id*="site-finder"],
 body:not(.mobile).yui-skin-citeckTheme #bd .orgstruct-console .orgstruct-tree-resizer,
-body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header-Warning__warnings {
+body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header-Warning__warnings,
+body:not(.mobile).yui-skin-citeckTheme .alfresco-footer-AlfStickyFooter > div.wrapper {
     box-shadow: inset 15px -1px 10px -15px grey;
 }
 

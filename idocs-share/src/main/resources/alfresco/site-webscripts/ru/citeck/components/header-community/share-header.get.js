@@ -23,10 +23,10 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
     navigationMenuBar = findObjectById(model.jsonModel.widgets, "HEADER_NAVIGATION_MENU_BAR"),
     customizeUserDashboard = findObjectById(model.jsonModel.widgets, "HEADER_CUSTOMIZE_USER_DASHBOARD"),
     currentSite = page.url.templateArgs.site || getLastSiteFromCookie(),
-    currentUser = user.getUser(user.id),
     accessibleSites = getSitesForUser(user.name),
     isSlideMenu = getMenuConfig("default-ui-main-menu") == "left",
     isCascadCreateMenu = getMenuConfig("default-ui-create-menu") == "cascad",
+    siteData = getSiteData(),
     myTools = [
         { id: "task-journals", url: "journals2/list/tasks", iconImage: "/share/res/components/images/header/my-tasks.png" },
         { id: "my-workflows", url: "my-workflows", iconImage: "/share/res/components/images/header/my-workflows.png" },
@@ -109,26 +109,140 @@ if (navigationMenuBar && navigationMenuBar.config.widgets.length) {
 }
 
 if (titleMenu && titleMenu.config.widgets.length) {
-    titleMenu.config.widgets = titleMenu.config.widgets.map(function(item) {
-        if(item.id == "HEADER_SITE_CONFIGURATION_DROPDOWN") {
-            item.name = "js/citeck/menus/citeckMenuGroup";
-            item.config.label = msg.get("header.menu.siteConfig.altText");
-            if (item.config.widgets.length) {
-                item.config.widgets = item.config.widgets.map(function(widget) {
-                    widget.name = "js/citeck/header/citeckMenuItem";
-                    return widget;
-                })
-            }
-
-        }
+    titleMenu.config.widgets = titleMenu.config.widgets.filter(function(item) {
         if(item.id == "HEADER_SITE_INVITE") {
             item.name = "js/citeck/header/citeckMenuItem";
             item.config.label = msg.get("header.menu.invite.altText");
         }
-        return item;
+        if(item.id != "HEADER_SITE_CONFIGURATION_DROPDOWN") {
+            return item;
+        }
     });
     siteMenuItems = siteMenuItems.concat(titleMenu.config.widgets);
 }
+
+if (page.url.templateArgs.site && siteData) {
+    // If the user is an admin, and a site member, but NOT the site manager then
+// add the menu item to let them become a site manager...
+    if (user.isAdmin && siteData.userIsMember && !siteData.userIsSiteManager) {
+        siteMenuItems.push({
+            id: "HEADER_BECOME_SITE_MANAGER",
+            name: "alfresco/menus/AlfMenuItem",
+            config: {
+                id: "HEADER_BECOME_SITE_MANAGER",
+                label: "become_site_manager.label",
+                iconClass: "alf-cog-icon",
+                publishTopic: "ALF_BECOME_SITE_MANAGER",
+                publishPayload: {
+                    site: page.url.templateArgs.site,
+                    siteTitle: siteData.profile.title,
+                    user: user.name,
+                    userFullName: user.fullName,
+                    reloadPage: true
+                }
+            }
+        });
+    }
+
+// If the user is a site manager then let them make custmomizations...
+    if (siteData.userIsSiteManager) {
+
+        // Add Customize Dashboard
+        siteMenuItems.push({
+            id: "HEADER_CUSTOMIZE_SITE_DASHBOARD",
+            name: "alfresco/menus/AlfMenuItem",
+            config: {
+                id: "HEADER_CUSTOMIZE_SITE_DASHBOARD",
+                label: "customize_dashboard.label",
+                iconClass: "alf-cog-icon",
+                targetUrl: "site/" + page.url.templateArgs.site + "/customise-site-dashboard"
+            }
+        });
+
+        // Add the regular site manager options (edit site, customize site, leave site)
+        siteMenuItems.push(
+            {
+                id: "HEADER_EDIT_SITE_DETAILS",
+                name: "alfresco/menus/AlfMenuItem",
+                config: {
+                    id: "HEADER_EDIT_SITE_DETAILS",
+                    label: "edit_site_details.label",
+                    iconClass: "alf-edit-icon",
+                    publishTopic: "ALF_EDIT_SITE",
+                    publishPayload: {
+                        site: page.url.templateArgs.site,
+                        siteTitle: siteData.profile.title,
+                        user: user.name,
+                        userFullName: user.fullName
+                    }
+                }
+            },
+            {
+                id: "HEADER_CUSTOMIZE_SITE",
+                name: "alfresco/menus/AlfMenuItem",
+                config: {
+                    id: "HEADER_CUSTOMIZE_SITE",
+                    label: "customize_site.label",
+                    iconClass: "alf-cog-icon",
+                    targetUrl: "site/" + page.url.templateArgs.site + "/customise-site"
+                }
+            },
+            {
+                id: "HEADER_LEAVE_SITE",
+                name: "alfresco/menus/AlfMenuItem",
+                config: {
+                    id: "HEADER_LEAVE_SITE",
+                    label: "leave_site.label",
+                    iconClass: "alf-leave-icon",
+                    publishTopic: "ALF_LEAVE_SITE",
+                    publishPayload: {
+                        site: page.url.templateArgs.site,
+                        siteTitle: siteData.profile.title,
+                        user: user.name,
+                        userFullName: user.fullName
+                    }
+                }
+            }
+        );
+    } else if (siteData.userIsMember) {
+        // If the user is a member of a site then give them the option to leave...
+        siteMenuItems.push({
+            id: "HEADER_LEAVE_SITE",
+            name: "alfresco/menus/AlfMenuItem",
+            config: {
+                id: "HEADER_LEAVE_SITE",
+                label: "leave_site.label",
+                iconClass: "alf-leave-icon",
+                publishTopic: "ALF_LEAVE_SITE",
+                publishPayload: {
+                    site: page.url.templateArgs.site,
+                    siteTitle: siteData.profile.title,
+                    user: user.name,
+                    userFullName: user.fullName
+                }
+            }
+        });
+    } else if (siteData.profile.visibility != "PRIVATE" || user.isAdmin) {
+        // If the member is not a member of a site then give them the option to join...
+        siteMenuItems.push({
+            id: "HEADER_JOIN_SITE",
+            name: "alfresco/menus/AlfMenuItem",
+            config: {
+                id: "HEADER_JOIN_SITE",
+                label: (siteData.profile.visibility == "MODERATED" ? "join_site_moderated.label" : "join_site.label"),
+                iconClass: "alf-leave-icon",
+                publishTopic: (siteData.profile.visibility == "MODERATED" ? "ALF_REQUEST_SITE_MEMBERSHIP" : "ALF_JOIN_SITE"),
+                publishPayload: {
+                    site: page.url.templateArgs.site,
+                    siteTitle: siteData.profile.title,
+                    user: user.name,
+                    userFullName: user.fullName
+                }
+            }
+        });
+    }
+}
+
 
 if (siteMenuItems.length) {
     userMenuBar.config.widgets = [{
@@ -230,29 +344,9 @@ if (config.global.flags.getChildValue("client-debug") == "true") {
 }
 
 
-// TITLE MENU
-
-var siteConfig = findObjectById(model.jsonModel.widgets, "HEADER_SITE_CONFIGURATION_DROPDOWN"),
-    siteData = getSiteData();
-
-if (siteConfig && siteData.userIsSiteManager) {
-    if (!page.titleId && !hasWidget("HEADER_CUSTOMIZE_SITE_DASHBOARD")) {
-        siteConfig.config.widgets.splice(0, 0, {
-            id: "HEADER_CUSTOMIZE_SITE_DASHBOARD",
-            name: "js/citeck/menus/citeckMenuItem",
-            config: {
-                label: "customize_dashboard.label",
-                iconClass: "alf-cog-icon",
-                targetUrl: "site/" + page.url.templateArgs.site + "/customise-site-dashboard"
-            }
-        });
-    }
-}
-
-
 // USER MENU ITEMS
 
-var availability = "make-" + (currentUser.properties.available === false ? "" : "not") + "available",
+var availability = "make-" + (user.properties.available === false ? "" : "not") + "available",
     clickEvent = function (event, element) {
         Citeck.forms.dialog("deputy:selfAbsenceEvent", "", {
             scope: this,
@@ -290,8 +384,8 @@ var availability = "make-" + (currentUser.properties.available === false ? "" : 
                 id: "HEADER_USER_MENU_AVAILABILITY",
                 label: "header." + availability + ".label",
                 iconImage: "/share/res/components/images/header/" + availability + ".png",
-                targetUrl: "/components/deputy/make-available?available=" + (currentUser.properties.available === false ? "true" : "false"),
-                clickEvent: "" + (currentUser.properties.available === false ? "" : clickEvent.toString())
+                targetUrl: "/components/deputy/make-available?available=" + (user.properties.available === false ? "true" : "false"),
+                clickEvent: "" + (user.properties.available === false ? "" : clickEvent.toString())
             }
         }
     ];

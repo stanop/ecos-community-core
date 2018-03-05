@@ -1,54 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <journals xmlns="http://www.citeck.ru/ecos/journals/1.0">
 
-	<imports>
-		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
-		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
-		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
-		<import uri="http://www.citeck.ru/model/letters/1.0" prefix="letters" />
-	</imports>
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/letters/1.0" prefix="letters" />
+    </imports>
 
-	<journal id="letters-income">
-		<option name="type">letters:income</option>
-		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
-		<option name="formId">filters</option>
-		<headers>
-			<header key="idocs:documentStatus" default="true" />
-			<header key="idocs:registrationDate" default="true" />
-			<header key="idocs:registrationNumber" default="true" />
-			<header key="letters:nomenclature" default="true" />
-			<header key="tk:kind" default="true" />
-			<header key="letters:deliveryMethod" />
-			<header key="letters:reporterOrganization" default="true" />
-			<header key="letters:letterWriter" default="true" />
-			<header key="letters:subdivision" default="true" />
-			<header key="letters:receiver" default="true" />
-			<header key="idocs:summary" />
-			<header key="idocs:note" />
-			<header key="idocs:pagesNumber" />
-			<header key="idocs:appendixPagesNumber" />
-		</headers>
-	</journal>
-	<journal id="letters-outcome">
-		<option name="type">letters:outcome</option>
-		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
-		<option name="formId">filters</option>
-		<headers>
-			<header key="idocs:documentStatus" default="true" />
-			<header key="idocs:registrationNumber" default="true" />
-			<header key="idocs:registrationDate" default="true" />
-			<header key="letters:outcomeNomenclature" default="true" />
-			<header key="tk:kind" default="true" />
-			<header key="letters:deliveryMethod" />
-			<header key="letters:addressee" default="true" />
-			<header key="idocs:performer" default="true" />
-			<header key="idocs:signatory" default="true" />
-			<header key="idocs:summary" />
-			<header key="idocs:note" />
-			<header key="idocs:pagesNumber" />
-			<header key="idocs:appendixPagesNumber" />
-		</headers>
-	</journal>
+    <journal id="letters-income">
+        <option name="type">letters:income</option>
+        <option name="doubleClickId">nodeRef</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="formId">filters</option>
+        <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
+        <headers>
+            <header key="cm:created" default="false" />
+            <header key="idocs:documentStatus" default="true" />
+            <header key="idocs:registrationDate" default="true" />
+            <header key="idocs:registrationNumber" default="true" />
+            <header key="letters:nomenclature" default="true" />
+            <header key="tk:kind" default="true" />
+            <header key="letters:deliveryMethod" />
+            <header key="letters:reporterOrganization" default="true" />
+            <header key="letters:letterWriter" default="true" />
+            <header key="letters:subdivision" default="true" />
+            <header key="letters:receiver" default="true" />
+            <header key="idocs:summary" />
+            <header key="idocs:note" />
+            <header key="idocs:pagesNumber" />
+            <header key="idocs:appendixPagesNumber" />
+        </headers>
+    </journal>
+    <journal id="letters-outcome">
+        <option name="type">letters:outcome</option>
+        <option name="doubleClickId">nodeRef</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="formId">filters</option>
+        <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
+        <headers>
+            <header key="cm:created" default="false" />
+            <header key="idocs:documentStatus" default="true" />
+            <header key="idocs:registrationNumber" default="true" />
+            <header key="idocs:registrationDate" default="true" />
+            <header key="letters:outcomeNomenclature" default="true" />
+            <header key="tk:kind" default="true" />
+            <header key="letters:deliveryMethod" />
+            <header key="letters:addressee" default="true" />
+            <header key="idocs:performer" default="true" />
+            <header key="idocs:signatory" default="true" />
+            <header key="idocs:summary" />
+            <header key="idocs:note" />
+            <header key="idocs:pagesNumber" />
+            <header key="idocs:appendixPagesNumber" />
+        </headers>
+    </journal>
 </journals>
