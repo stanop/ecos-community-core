@@ -6,14 +6,15 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
-import ru.citeck.ecos.graphql.node.GqlNode;
+import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.graphql.node.GqlAlfNode;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GqlContext {
 
-    private Map<NodeRef, GqlNode> nodes = new ConcurrentHashMap<>();
+    private Map<NodeRef, GqlAlfNode> nodes = new ConcurrentHashMap<>();
 
     private ServiceRegistry serviceRegistry;
 
@@ -21,8 +22,8 @@ public class GqlContext {
         this.serviceRegistry = serviceRegistry;
     }
 
-    public GqlNode getNode(NodeRef nodeRef) {
-        return nodes.computeIfAbsent(nodeRef, r -> new GqlNode(r, this));
+    public GqlAlfNode getNode(NodeRef nodeRef) {
+        return nodes.computeIfAbsent(nodeRef, r -> new GqlAlfNode(r, this));
     }
 
     public DictionaryService getDictionaryService() {
@@ -43,5 +44,9 @@ public class GqlContext {
 
     public ServiceRegistry getServiceRegistry() {
         return serviceRegistry;
+    }
+
+    public <T> T getService(QName name) {
+        return (T) serviceRegistry.getService(name);
     }
 }

@@ -40,13 +40,22 @@ class JournalTypeImpl implements JournalType {
     private final Map<String, String> options;
     private final List<QName> attributes;
     private final List<JournalGroupAction> groupActions;
-    private final BitSet defaultAttributes, visibleAttributes, searchableAttributes, sortableAttributes, groupableAttributes;
+
+    private final BitSet defaultAttributes;
+    private final BitSet visibleAttributes;
+    private final BitSet searchableAttributes;
+    private final BitSet sortableAttributes;
+    private final BitSet groupableAttributes;
+
     private final Map<QName, Map<String, String>> attributeOptions;
     private final Map<QName, List<JournalBatchEdit>> batchEdit;
     private final Map<QName, JournalCriterion> criterion;
-    
+
+    private String fieldsSchema;
+
     public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver, ServiceRegistry serviceRegistry,
                            SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
+
         this.id = journal.getId();
         this.options = Collections.unmodifiableMap(getOptions(journal.getOption()));
         this.groupActions = Collections.unmodifiableList(getGroupActions(journal, serviceRegistry));
@@ -61,28 +70,47 @@ class JournalTypeImpl implements JournalType {
         searchableAttributes = new BitSet(allAttributes.size());
         sortableAttributes = new BitSet(allAttributes.size());
         groupableAttributes = new BitSet(allAttributes.size());
+
         this.attributeOptions = new TreeMap<>();
 
+        StringBuilder fieldsSchemaBuilder = new StringBuilder("fragment journalFields on GqlAlfNode {");
+        fieldsSchemaBuilder.append("nodeRef\n");
+
         int index = 0;
-        for(Header header : headers) {
+        for (Header header : headers) {
 
             QName attributeKey = QName.createQName(header.getKey(), prefixResolver);
 
             allAttributes.add(attributeKey);
-            if(header.isDefault()) defaultAttributes.set(index);
-            if(header.isVisible()) visibleAttributes.set(index);
-            if(header.isSearchable()) searchableAttributes.set(index);
-            if(header.isSortable()) sortableAttributes.set(index);
-            if(header.isGroupable()) groupableAttributes.set(index);
-            if(header.getOption().size() > 0) {
-                this.attributeOptions.put(attributeKey,
-                        Collections.unmodifiableMap(getOptions(header.getOption())));
+            if (header.isDefault()) {
+                defaultAttributes.set(index);
             }
+            if (header.isVisible()) {
+                visibleAttributes.set(index);
+            }
+            if (header.isSearchable()) {
+                searchableAttributes.set(index);
+            }
+            if (header.isSortable()) {
+                sortableAttributes.set(index);
+            }
+            if (header.isGroupable()) {
+                groupableAttributes.set(index);
+            }
+
+            Map<String, String> headerOptions = Collections.unmodifiableMap(getOptions(header.getOption()));
+            this.attributeOptions.put(attributeKey, headerOptions);
+
+            fieldsSchemaBuilder.append(header.getKey().replaceAll(":", "_"));
+            String attributeSchema = headerOptions.get("attributeSchema");
+            fieldsSchemaBuilder.append(": attribute(name:\"").append(header.getKey()).append("\"){");
+            fieldsSchemaBuilder.append(attributeSchema != null ? attributeSchema : "value").append("}\n");
+
             List<JournalBatchEdit> attributeBatchEdit = new ArrayList<>();
             for (BatchEdit batchEdit : header.getBatchEdit()) {
                 attributeBatchEdit.add(new JournalBatchEdit(batchEdit, journal.getId(),
-                                                            attributeKey, prefixResolver,
-                                                            serviceRegistry));
+                        attributeKey, prefixResolver,
+                        serviceRegistry));
             }
 
             batchEdit.put(attributeKey, attributeBatchEdit);
@@ -91,7 +119,15 @@ class JournalTypeImpl implements JournalType {
 
             index++;
         }
+        fieldsSchemaBuilder.append("}");
+
+        this.fieldsSchema = fieldsSchemaBuilder.toString();
         this.attributes = Collections.unmodifiableList(allAttributes);
+    }
+
+    @Override
+    public String getFieldsSchema() {
+        return fieldsSchema;
     }
 
     @Override
@@ -139,7 +175,7 @@ class JournalTypeImpl implements JournalType {
         Map<String, String> result = attributeOptions.get(attributeKey);
         return result != null ? result : Collections.<String, String>emptyMap();
     }
-    
+
     @Override
     public boolean isAttributeDefault(QName attributeKey) {
         return checkFeature(attributeKey, defaultAttributes);
@@ -195,12 +231,12 @@ class JournalTypeImpl implements JournalType {
 
     private List<QName> getFeaturedAttributes(BitSet featuredAttributes) {
         List<QName> result = new LinkedList<>();
-        for (int i = featuredAttributes.nextSetBit(0); i >= 0; i = featuredAttributes.nextSetBit(i+1)) {
+        for (int i = featuredAttributes.nextSetBit(0); i >= 0; i = featuredAttributes.nextSetBit(i + 1)) {
             result.add(attributes.get(i));
         }
         return Collections.unmodifiableList(result);
     }
-    
+
     private boolean checkFeature(QName attributeKey, BitSet featuredAttributes) {
         int index = attributes.indexOf(attributeKey);
         return index >= 0 ? featuredAttributes.get(index) : false;

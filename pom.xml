@@ -400,6 +400,14 @@
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-graphql-repo</artifactId>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
