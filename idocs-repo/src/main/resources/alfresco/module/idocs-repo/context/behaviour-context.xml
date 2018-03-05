@@ -143,12 +143,6 @@
         <property name="nodeService" ref="NodeService"/>
     </bean>
 
-    <bean id="templateChange" class="ru.citeck.ecos.behavior.common.TemplateChangeBehaviour" init-method="init">
-        <property name="policyComponent" ref="policyComponent"/>
-        <property name="nodeService" ref="nodeService"/>
-        <property name="serviceRegistry" ref="ServiceRegistry"/>
-    </bean>
-
     <bean id="ConfiscatedAspectBehaviour" class="ru.citeck.ecos.security.ConfiscatedBehaviour"
           init-method="init">
         <property name="walker" ref="ConfiscateServiceWalker"/>
