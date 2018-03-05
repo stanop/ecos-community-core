@@ -19,15 +19,15 @@
 define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/invariants/invariants'], function(ko, koutils) {
 
 var logger = Alfresco.logger,
-		noneActionGroupId = "none",
-		buttonsActionGroupId = "buttons",
-		defaultActionGroupId = "injournal",
+        noneActionGroupId = "none",
+        buttonsActionGroupId = "buttons",
+        defaultActionGroupId = "injournal",
         customRecordLoader = ko.observable(),
-		BulkLoader = Citeck.utils.BulkLoader,
-		journalsListIdRegexp = new RegExp('^([^-]+)(-(.+))?-([^-]+)$'),
-		koclass = koutils.koclass,
-		formatters = Citeck.format,
-		msg = Alfresco.util.message;
+        BulkLoader = Citeck.utils.BulkLoader,
+        journalsListIdRegexp = new RegExp('^([^-]+)(-(.+))?-([^-]+)$'),
+        koclass = koutils.koclass,
+        formatters = Citeck.format,
+        msg = Alfresco.util.message;
 
 var defaultFormatters = {
     "qname": formatters.qname(false),
@@ -44,69 +44,69 @@ var defaultFormatters = {
 
 // class declarations:
 var criteriaCounter = 0,
-	s = String,
-	n = Number,
-	b = Boolean,
-	o = Object,
-	d = Date,
-	JournalsList = koclass('JournalsList'),
-	JournalType = koclass('JournalType'),
-	Journal = koclass('Journal'),
-	Filter = koclass('Filter'),
-	Settings = koclass('Settings'),
-	Criterion = koclass('Criterion'),
-	CreateVariant = koclass('CreateVariant'),
-	Invariant = koclass('invariants.Invariant'),
-	Attribute = koclass('Attribute'),
-	AttributeInfo = koclass('AttributeInfo'),
-	AttributeFilter = koclass('AttributeFilter'),
-	Predicate = koclass('Predicate'),
-	PredicateList = koclass('PredicateList'),
-	Datatype = koclass('Datatype'),
-	FormInfo = koclass('FormInfo'),
-	Action = koclass('Action'),
-	Record = koclass('Record'),
-	Column = koclass('Column'),
-	ActionsColumn = koclass('ActionsColumn'),
-	JournalsWidget = koclass('JournalsWidget'),
-	SortBy = koclass('SortBy'),
+    s = String,
+    n = Number,
+    b = Boolean,
+    o = Object,
+    d = Date,
+    JournalsList = koclass('JournalsList'),
+    JournalType = koclass('JournalType'),
+    Journal = koclass('Journal'),
+    Filter = koclass('Filter'),
+    Settings = koclass('Settings'),
+    Criterion = koclass('Criterion'),
+    CreateVariant = koclass('CreateVariant'),
+    Invariant = koclass('invariants.Invariant'),
+    Attribute = koclass('Attribute'),
+    AttributeInfo = koclass('AttributeInfo'),
+    AttributeFilter = koclass('AttributeFilter'),
+    Predicate = koclass('Predicate'),
+    PredicateList = koclass('PredicateList'),
+    Datatype = koclass('Datatype'),
+    FormInfo = koclass('FormInfo'),
+    Action = koclass('Action'),
+    Record = koclass('Record'),
+    Column = koclass('Column'),
+    ActionsColumn = koclass('ActionsColumn'),
+    JournalsWidget = koclass('JournalsWidget'),
+    SortBy = koclass('SortBy'),
     Node = koclass('invariants.Node'),
     QName = koclass('invariants.QName'),
-	last;
+    last;
 
 // class definitions:
 JournalsList
-	.key('id', s)
-	.property('documentNodeRef', s)
-	.property('title', s)
-	.property('journals', [ Journal ])
-	.property('default', Journal)
-	.computed('scope', function() {
-		return this.id() ? this.id().replace(journalsListIdRegexp, '$1') : '';
-	})
-	.computed('scopeId', function() {
-		return this.id() ? this.id().replace(journalsListIdRegexp, '$3') : '';
-	})
-	.computed('listId', function() {
-		return this.id() ? this.id().replace(journalsListIdRegexp, '$4') : '';
-	})
-  	.constructor([String, String], function(id, nodeRef) {
-		var jl = new JournalsList(id);
-		jl.documentNodeRef(nodeRef);
-		return jl;
-	}, true)
-	;
+    .key('id', s)
+    .property('documentNodeRef', s)
+    .property('title', s)
+    .property('journals', [ Journal ])
+    .property('default', Journal)
+    .computed('scope', function() {
+        return this.id() ? this.id().replace(journalsListIdRegexp, '$1') : '';
+    })
+    .computed('scopeId', function() {
+        return this.id() ? this.id().replace(journalsListIdRegexp, '$3') : '';
+    })
+    .computed('listId', function() {
+        return this.id() ? this.id().replace(journalsListIdRegexp, '$4') : '';
+    })
+    .constructor([String, String], function(id, nodeRef) {
+        var jl = new JournalsList(id);
+        jl.documentNodeRef(nodeRef);
+        return jl;
+    }, true)
+    ;
 
 var featuredProperty = function(featureName) {
     return function() {
-    	var attribute = this.attribute();
+        var attribute = this.attribute();
         return attribute ? attribute[featureName + 'Evaluator'](this.invariantsModel()).value : null;
     }
 };
 
 CreateVariant
-	.property('url', s)
-	.load('url', function() {
+    .property('url', s)
+    .load('url', function() {
       YAHOO.util.Connect.asyncRequest('GET', Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/templates/url-template", {
           success: function(response) {
               var result = response.responseText;
@@ -117,31 +117,31 @@ CreateVariant
       );
     })
 
-	.property('title', s)
-	.property('destination', s)
-	.property('type', s)
-	.property('formId', s)
-	.property('canCreate', b)
-	.property('isDefault', b)
-	.property('journal', Journal)
+    .property('title', s)
+    .property('destination', s)
+    .property('type', s)
+    .property('formId', s)
+    .property('canCreate', b)
+    .property('isDefault', b)
+    .property('journal', Journal)
 
-	.computed('link', function() {
-		var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
-				urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
+    .computed('link', function() {
+        var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
+                urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
 
-		// redirect back after submit from journal page only
-		var options = this.resolve("journal.type.options");
-		if (window.location.pathname.indexOf("journals2") != -1 && options) {
-			var redirectionMethod = options["createVariantRedirectionMethod"] || "card";
-			urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
-		}
+        // redirect back after submit from journal page only
+        var options = this.resolve("journal.type.options");
+        if (window.location.pathname.indexOf("journals2") != -1 && options) {
+            var redirectionMethod = options["createVariantRedirectionMethod"] || "card";
+            urlTemplate += "&onsubmit=" + encodeURIComponent(redirectionMethod);
+        }
 
-		return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
-			if(typeof value == "function") { return value(); }
-			return value;
-		}));
-	})
-	;
+        return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
+            if(typeof value == "function") { return value(); }
+            return value;
+        }));
+    })
+    ;
 
     Criterion
         .constructor([Criterion], function(criterion) {
@@ -452,49 +452,49 @@ CreateVariant
     ;
 
 JournalType
-	.key('id', s)
-	.property('journal', Journal)
-	.property('options', o)
-	.property('formInfo', FormInfo)
-	.property('attributes', [ Attribute ])
-	.property('filters', [ Filter ])
-	.property('settings', [ Settings ])
-	.property('groupActions', [ Action ])
+    .key('id', s)
+    .property('journal', Journal)
+    .property('options', o)
+    .property('formInfo', FormInfo)
+    .property('attributes', [ Attribute ])
+    .property('filters', [ Filter ])
+    .property('settings', [ Settings ])
+    .property('groupActions', [ Action ])
 
-	.computed('visibleAttributes', function() {
-		return _.invoke(_.filter(this.attributes(), function(attr) {
-			return attr.visible();
-		}), '_info');
-	})
-	.computed('searchableAttributes', function() {
-		return _.invoke(_.filter(this.attributes(), function(attr) {
-			return attr.searchable();
-		}), '_info');
-	})
-	.computed('sortableAttributes', function() {
-		return _.invoke(_.filter(this.attributes(), function(attr) {
-			return attr.sortable();
-		}), '_info');
-	})
-	.computed('groupableAttributes', function() {
-		return _.invoke(_.filter(this.attributes(), function(attr) {
-			return attr.groupable();
-		}), '_info');
-	})
-	.computed('defaultAttributes', function() {
-		return _.invoke(_.filter(this.attributes(), function(attr) {
-			return attr.isDefault();
-		}), '_info');
-	})
-	.computed('defaultSearchableAttributes', function(attr) {
-		return _.intersection(this.defaultAttributes(), this.searchableAttributes());
-	})
-	.computed('defaultFilter', function() {
-		var criteria = _.map(this.defaultSearchableAttributes(), function(attr) {
-			var predicates = attr.resolve("datatype.predicates");
-			if (!predicates || predicates.length == 0) return;
-			return { field: attr.name(), predicate: predicates[0].id(), value: "" }
-		});
+    .computed('visibleAttributes', function() {
+        return _.invoke(_.filter(this.attributes(), function(attr) {
+            return attr.visible();
+        }), '_info');
+    })
+    .computed('searchableAttributes', function() {
+        return _.invoke(_.filter(this.attributes(), function(attr) {
+            return attr.searchable();
+        }), '_info');
+    })
+    .computed('sortableAttributes', function() {
+        return _.invoke(_.filter(this.attributes(), function(attr) {
+            return attr.sortable();
+        }), '_info');
+    })
+    .computed('groupableAttributes', function() {
+        return _.invoke(_.filter(this.attributes(), function(attr) {
+            return attr.groupable();
+        }), '_info');
+    })
+    .computed('defaultAttributes', function() {
+        return _.invoke(_.filter(this.attributes(), function(attr) {
+            return attr.isDefault();
+        }), '_info');
+    })
+    .computed('defaultSearchableAttributes', function(attr) {
+        return _.intersection(this.defaultAttributes(), this.searchableAttributes());
+    })
+    .computed('defaultFilter', function() {
+        var criteria = _.map(this.defaultSearchableAttributes(), function(attr) {
+            var predicates = attr.resolve("datatype.predicates");
+            if (!predicates || predicates.length == 0) return;
+            return { field: attr.name(), predicate: predicates[0].id(), value: "" }
+        });
         var loadingCriteria = _.filter(criteria, function(item) {
             return item == undefined;
         });
@@ -508,101 +508,101 @@ JournalType
             });
         }
         return null;
-	})
-	.computed('defaultSettings', function() {
-		return new Settings({
-			nodeRef: null,
-			title: null,
-			permissions: { Write: false, Delete: false},
-			journalTypes: [ this.id() ],
-			visibleAttributes: _.invoke(this.defaultAttributes(), 'name')
-		});
-	})
+    })
+    .computed('defaultSettings', function() {
+        return new Settings({
+            nodeRef: null,
+            title: null,
+            permissions: { Write: false, Delete: false},
+            journalTypes: [ this.id() ],
+            visibleAttributes: _.invoke(this.defaultAttributes(), 'name')
+        });
+    })
 
-	.method('attribute', function(name) {
-		return _.find(this.attributes(), function(attr) {
-			return attr.name() == name;
-		});
-	})
+    .method('attribute', function(name) {
+        return _.find(this.attributes(), function(attr) {
+            return attr.name() == name;
+        });
+    })
 
 
-	;
+    ;
 
 Journal
-	.key('nodeRef', s)
-	.property('title', s)
-	.property('type', JournalType)
-	.property('criteria', [ Criterion ])
-	.property('createVariants', [ CreateVariant ])
-	
-	.computed('availableCreateVariants', function() {
-		return _.filter(this.createVariants(), function(variant) {
-			return variant.canCreate();
-		});
-	})
+    .key('nodeRef', s)
+    .property('title', s)
+    .property('type', JournalType)
+    .property('criteria', [ Criterion ])
+    .property('createVariants', [ CreateVariant ])
 
-	.shortcut('options', 'type.options')
+    .computed('availableCreateVariants', function() {
+        return _.filter(this.createVariants(), function(variant) {
+            return variant.canCreate();
+        });
+    })
 
-	.init(function() {
-		this.criteria.extend({ rateLimit: 0 });
-	})
-	;
+    .shortcut('options', 'type.options')
+
+    .init(function() {
+        this.criteria.extend({ rateLimit: 0 });
+    })
+    ;
 
 Filter
-	.key('nodeRef', s)
-	.property('title', s)
-	.property('permissions', o)
-	.property('journalTypes', [ JournalType ])
-	.property('criteria', [ Criterion ])
-	.computed('valid', function() {
-		return this.criteria().length > 0;
-	})
-	.computed('shortModel', function() {
-		return {
-			criteria: _.invoke(this.criteria(), 'shortModel')
-		};
-	})
-	.computed('saveModel', function() {
-		return {
-			criteria: _.invoke(this.criteria(), 'shortModel'),
-			title: this.title(),
-			journalTypes: _.invoke(this.journalTypes(), 'id')
-		};
-	})
-	.computed('usableCriteria', function() {
-		return _.filter(this.criteria(), function(criterion) {
-			if (criterion.predicate().id().indexOf("choose") == -1 &&
-				(criterion.value() || criterion.predicate().id().indexOf("empty") != -1)) return true;
-			return false;
-		});
-	})
-	.init(function() {
-		this.criteria.extend({ rateLimit: 0 });
-	})
-	;
+    .key('nodeRef', s)
+    .property('title', s)
+    .property('permissions', o)
+    .property('journalTypes', [ JournalType ])
+    .property('criteria', [ Criterion ])
+    .computed('valid', function() {
+        return this.criteria().length > 0;
+    })
+    .computed('shortModel', function() {
+        return {
+            criteria: _.invoke(this.criteria(), 'shortModel')
+        };
+    })
+    .computed('saveModel', function() {
+        return {
+            criteria: _.invoke(this.criteria(), 'shortModel'),
+            title: this.title(),
+            journalTypes: _.invoke(this.journalTypes(), 'id')
+        };
+    })
+    .computed('usableCriteria', function() {
+        return _.filter(this.criteria(), function(criterion) {
+            if (criterion.predicate().id().indexOf("choose") == -1 &&
+                (criterion.value() || criterion.predicate().id().indexOf("empty") != -1)) return true;
+            return false;
+        });
+    })
+    .init(function() {
+        this.criteria.extend({ rateLimit: 0 });
+    })
+    ;
 
 Settings
-	.key('nodeRef', s)
-	.property('title', s)
-	.property('permissions', o)
-	.property('journalTypes', [ JournalType ])
-	.property('visibleAttributes', [ AttributeInfo ])
-	.computed('valid', function() {
-		return this.visibleAttributes().length > 0;
-	})
-	.computed('shortModel', function() {
-		return {
-			visibleAttributes: _.invoke(this.visibleAttributes(), 'name')
-		};
-	})
-	.computed('saveModel', function() {
-		return {
-			visibleAttributes: _.invoke(this.visibleAttributes(), 'name'),
-			title: this.title(),
-			journalTypes: _.invoke(this.journalTypes(), 'id')
-		};
-	})
-	;
+    .key('nodeRef', s)
+    .property('title', s)
+    .property('permissions', o)
+    .property('journalTypes', [ JournalType ])
+    .property('visibleAttributes', [ AttributeInfo ])
+    .computed('valid', function() {
+        return this.visibleAttributes().length > 0;
+    })
+    .computed('shortModel', function() {
+        return {
+            visibleAttributes: _.invoke(this.visibleAttributes(), 'name')
+        };
+    })
+    .computed('saveModel', function() {
+        return {
+            visibleAttributes: _.invoke(this.visibleAttributes(), 'name'),
+            title: this.title(),
+            journalTypes: _.invoke(this.journalTypes(), 'id')
+        };
+    })
+    ;
 
 var notNull = function(value) { return value !== null; };
 var isFalse = function(value) { return value === false; };
@@ -668,48 +668,48 @@ Attribute
     ;
 
 AttributeInfo
-	.key('name', s)
-	.property('type', s)
-	.property('displayName', s)
-	.property('datatype', Datatype)
-	.property('labels', o)
-	.property('nodetype', s)
-	.property('journalType', JournalType)
-	.property('attribute', Attribute)
+    .key('name', s)
+    .property('type', s)
+    .property('displayName', s)
+    .property('datatype', Datatype)
+    .property('labels', o)
+    .property('nodetype', s)
+    .property('journalType', JournalType)
+    .property('attribute', Attribute)
 
-	.method('customDisplayName', function() {
-		var optionLabel = null;
-		if (this.attribute() && this.attribute().settings()) {
-			optionLabel = this.attribute().settings().customLabel;
-		}
-		if (optionLabel) {
-			return Alfresco.util.message(optionLabel);
-		}
-		return this.displayName();
-	})
-	;
+    .method('customDisplayName', function() {
+        var optionLabel = null;
+        if (this.attribute() && this.attribute().settings()) {
+            optionLabel = this.attribute().settings().customLabel;
+        }
+        if (optionLabel) {
+            return Alfresco.util.message(optionLabel);
+        }
+        return this.displayName();
+    })
+    ;
 
 Datatype
-	.key('name', s)
-	.property('predicateList', PredicateList)
-	.shortcut('predicates', 'predicateList.predicates', [])
+    .key('name', s)
+    .property('predicateList', PredicateList)
+    .shortcut('predicates', 'predicateList.predicates', [])
 
-	.load('predicateList', function(datatype) {
+    .load('predicateList', function(datatype) {
         YAHOO.util.Connect.asyncRequest(
             'GET',
             Alfresco.constants.URL_PAGECONTEXT + "search/search-predicates?datatype=" + datatype.name(),
             {
                 success: function(response) {
                     var result = JSON.parse(response.responseText),
-                    	predicates = [];
+                        predicates = [];
 
                     for (var i in result.predicates) {
-                    	predicates.push(new Predicate(result.predicates[i]))
+                        predicates.push(new Predicate(result.predicates[i]))
                     };
 
                     this.predicateList(new PredicateList({
-                    	id: result.datatype,
-                    	predicates: predicates
+                        id: result.datatype,
+                        predicates: predicates
                     }));
                 },
 
@@ -722,17 +722,17 @@ Datatype
         );
     })
 
-	;
+    ;
 
 Predicate
-	.key('id', s)
-	.property('label', s)
-	.property('needsValue', b)
-	;
+    .key('id', s)
+    .property('label', s)
+    .property('needsValue', b)
+    ;
 
 PredicateList
-	.key('id', s)
-	.property('predicates', [ Predicate ])
+    .key('id', s)
+    .property('predicates', [ Predicate ])
     .init(function() {
         if (this.predicates() && this.predicates()[0].id().indexOf("boolean") != -1) {
             var choosePredicate = new Predicate({
@@ -743,340 +743,340 @@ PredicateList
             this.predicates().unshift(choosePredicate);
         }
     })
-	;
+    ;
 
 FormInfo
-	.property('type', s)
-	.property('formId', s)
-	;
+    .property('type', s)
+    .property('formId', s)
+    ;
 
 Record
-	.key('nodeRef', s)
-	.property('attributes', o)
-	.property('permissions', o)
-	.computed('aspects', function() {
-		var resAspectList = this.attributes()['attr:aspects'];
-		var aspectList = [];
-		for (var i = 0; i < resAspectList.length; i++) {
-			aspectList.push(resAspectList[i].shortQName);
-		}
-		return aspectList;
-	})
-	.property('isDocument', b)
-	.property('isContainer', b)
+    .key('nodeRef', s)
+    .property('attributes', o)
+    .property('permissions', o)
+    .computed('aspects', function() {
+        var resAspectList = this.attributes()['attr:aspects'];
+        var aspectList = [];
+        for (var i = 0; i < resAspectList.length; i++) {
+            aspectList.push(resAspectList[i].shortQName);
+        }
+        return aspectList;
+    })
+    .property('isDocument', b)
+    .property('isContainer', b)
 
-	.property('selected', b)
-	.load('selected', function() { this.selected(false) })
+    .property('selected', b)
+    .load('selected', function() { this.selected(false) })
 
-	.computed('isDoclibNode', function() {
-		if(this.isDocument() === true || this.isContainer() === true) {
-			return true;
-		}
-		if(this.isDocument() === false && this.isContainer() === false) {
-			return false;
-		}
-		return null;
-	})
-	.property('doclib', o) // document library record data
+    .computed('isDoclibNode', function() {
+        if(this.isDocument() === true || this.isContainer() === true) {
+            return true;
+        }
+        if(this.isDocument() === false && this.isContainer() === false) {
+            return false;
+        }
+        return null;
+    })
+    .property('doclib', o) // document library record data
     .method('hasAspect', function(aspect) {
         return _.contains(this.aspects(), aspect);
     })
     .method('hasPermission', function(permission) {
         return this.permissions()[permission] === true;
     })
-	;
+    ;
 
 Column
-	.property('id', s)
-	.computed('key', function() {
-		var id = this.id();
-		return id.match(':') ? 'attributes[\'' + id + '\']' : id;
-	})
-	.property('_info', AttributeInfo)
-	.init(function() {
-		this.model({ _info: this.id() });
-	})
-	.property('formatter', o)
-	.property('sortable', b)
-	.shortcut('label', '_info.customDisplayName')
-	.shortcut('datatype', '_info.datatype.name')
-	.shortcut('labels', '_info.labels')
-	;
+    .property('id', s)
+    .computed('key', function() {
+        var id = this.id();
+        return id.match(':') ? 'attributes[\'' + id + '\']' : id;
+    })
+    .property('_info', AttributeInfo)
+    .init(function() {
+        this.model({ _info: this.id() });
+    })
+    .property('formatter', o)
+    .property('sortable', b)
+    .shortcut('label', '_info.customDisplayName')
+    .shortcut('datatype', '_info.datatype.name')
+    .shortcut('labels', '_info.labels')
+    ;
 
 Action
-	.key('id', s)
-	.property('attribute', Attribute)
-	.property('func', s)
-	.property('label', s)
-	.property('isDoclib', b)
-	.property('permission', s)
-	.property('requiredAspect', s)
-	.property('forbiddenAspect', s)
-	.property('syncMode', s)
-	.property('settings', o)
-	;
+    .key('id', s)
+    .property('attribute', Attribute)
+    .property('func', s)
+    .property('label', s)
+    .property('isDoclib', b)
+    .property('permission', s)
+    .property('requiredAspect', s)
+    .property('forbiddenAspect', s)
+    .property('syncMode', s)
+    .property('settings', o)
+    ;
 
 ActionsColumn
-	.property('id', s)
-	.shortcut('key', 'id')
-	.property('formatter', o)
-	.constant('sortable', false)
-	.property('label', s)
-	;
+    .property('id', s)
+    .shortcut('key', 'id')
+    .property('formatter', o)
+    .constant('sortable', false)
+    .property('label', s)
+    ;
 
 
 SortBy
-	.property('id', s)
-	.property('order', s)
-	.computed('query', function() {
-		return {
-			attribute: this.id(),
-			order: this.order()
-		};
-	})
-	;
+    .property('id', s)
+    .property('order', s)
+    .computed('query', function() {
+        return {
+            attribute: this.id(),
+            order: this.order()
+        };
+    })
+    ;
 
 JournalsWidget
-  	.property('documentNodeRef', s)
-	.property('journalsLists', [JournalsList])
-	.property('journals', [Journal])
-	.property('journalsList', JournalsList)
-	.property('journal', Journal)
-	.property('filter', Filter)
-	.property('settings', Settings)
-	.property('_filter', Filter)
-	.property('_settings', Settings)
+    .property('documentNodeRef', s)
+    .property('journalsLists', [JournalsList])
+    .property('journals', [Journal])
+    .property('journalsList', JournalsList)
+    .property('journal', Journal)
+    .property('filter', Filter)
+    .property('settings', Settings)
+    .property('_filter', Filter)
+    .property('_settings', Settings)
 
-	.shortcut('filters', 'journal.type.filters', [])
-	.shortcut('settingsList', 'journal.type.settings', [])
-	.shortcut('currentFilter', 'filter', 'journal.type.defaultFilter', null)
-	.shortcut('currentSettings', 'settings', 'journal.type.defaultSettings', null)
-	
-	.computed('journalsListId', {
-		read: function() {
-			return this.resolve('journalsList.id', '');
-		},
-		write: function(value) {
-			value ? this.journalsList(new JournalsList(value, this.documentNodeRef())) : this.journalsList(null);
-		}
-	})
-	.computed('journalId', {
-		read: function() {
-			return this.resolve('journal.nodeRef', '');
-		},
-		write: function(value) {
-			value ? this.journal(new Journal(value)) : this.journal(this.resolve('journalsList.default'));
-		}
-	})
-	.computed('filterId', {
-		read: function() {
-			var filter = this.filter();
-			if(!filter) return "";
-			if(filter.nodeRef()) return filter.nodeRef();
-			return JSON.stringify(filter.shortModel());
-		},
-		write: function(value) {
-			if(!value) {
-				this.filter(null);
-				return;
-			} else if(value.match('^workspace')) {
-				this.filter(new Filter(value));
-			} else {
-				this.filter(new Filter(_.defaults(JSON.parse(value), {
-					nodeRef: null,
-					title: "",
-					criteria: [],
-					journalTypes: [],
-					permissions: { Write: true, Delete: true },
-				})));
-			}
-		}
-	})
-	.computed('settingsId', {
-		read: function() {
-			var settings = this.settings();
-			if(!settings) return "";
-			if(settings.nodeRef()) return settings.nodeRef();
-			return JSON.stringify(settings.shortModel());
-		},
-		write: function(value) {
-			if(!value) {
-				this.settings(null);
-				return;
-			} else if(value.match('^workspace')) {
-				this.settings(new Settings(value));
-			} else {
-				this.settings(new Settings(_.defaults(JSON.parse(value), {
-					nodeRef: null,
-					title: "",
-					visibleAttributes: [],
-					journalTypes: [],
-					permissions: { Write: true, Delete: true },
-				})));
-			}
-		}
-	})
+    .shortcut('filters', 'journal.type.filters', [])
+    .shortcut('settingsList', 'journal.type.settings', [])
+    .shortcut('currentFilter', 'filter', 'journal.type.defaultFilter', null)
+    .shortcut('currentSettings', 'settings', 'journal.type.defaultSettings', null)
 
-	// paging
-	.property('skipCount', n)
-	.property('maxItems', n)
-	.property('defaultMaxItems', n)
-	.property('totalItems', n)
-	.property('hasMore', b)
-	.computed('totalEstimate', function() {
-		var total = this.totalItems();
-		if(typeof total != "undefined" && total !== null) {
-			return total;
-		} else {
-			// allow one page only
-			return this.skipCount() + this.maxItems() + (this.hasMore() ? 1 : 0);
-		}
-	})
-	.computed('skipCountId', koutils.numberSerializer('skipCount'))
-	.computed('maxItemsId', koutils.numberSerializer('maxItems'))
-	.property('records', [ Record ])
+    .computed('journalsListId', {
+        read: function() {
+            return this.resolve('journalsList.id', '');
+        },
+        write: function(value) {
+            value ? this.journalsList(new JournalsList(value, this.documentNodeRef())) : this.journalsList(null);
+        }
+    })
+    .computed('journalId', {
+        read: function() {
+            return this.resolve('journal.nodeRef', '');
+        },
+        write: function(value) {
+            value ? this.journal(new Journal(value)) : this.journal(this.resolve('journalsList.default'));
+        }
+    })
+    .computed('filterId', {
+        read: function() {
+            var filter = this.filter();
+            if(!filter) return "";
+            if(filter.nodeRef()) return filter.nodeRef();
+            return JSON.stringify(filter.shortModel());
+        },
+        write: function(value) {
+            if(!value) {
+                this.filter(null);
+                return;
+            } else if(value.match('^workspace')) {
+                this.filter(new Filter(value));
+            } else {
+                this.filter(new Filter(_.defaults(JSON.parse(value), {
+                    nodeRef: null,
+                    title: "",
+                    criteria: [],
+                    journalTypes: [],
+                    permissions: { Write: true, Delete: true },
+                })));
+            }
+        }
+    })
+    .computed('settingsId', {
+        read: function() {
+            var settings = this.settings();
+            if(!settings) return "";
+            if(settings.nodeRef()) return settings.nodeRef();
+            return JSON.stringify(settings.shortModel());
+        },
+        write: function(value) {
+            if(!value) {
+                this.settings(null);
+                return;
+            } else if(value.match('^workspace')) {
+                this.settings(new Settings(value));
+            } else {
+                this.settings(new Settings(_.defaults(JSON.parse(value), {
+                    nodeRef: null,
+                    title: "",
+                    visibleAttributes: [],
+                    journalTypes: [],
+                    permissions: { Write: true, Delete: true },
+                })));
+            }
+        }
+    })
 
-	// selected records
-	.computed('selectedRecords', function() {
-		return _.filter(this.records(), function(record) {
-			return record.selected();
-		});
-	})
-	.computed('selectedRecordsAreDoclib', function() {
-		return _.all(this.selectedRecords(), function(record) {
-			return record.isDoclibNode();
-		});
-	})
-	.computed('selectedRecordsAllowedPermissions', function() {
-		var records = this.selectedRecords(),
-			recordsPermissions = _.invoke(records, 'permissions'),
-			allPermissions = _.flatten(_.map(recordsPermissions, _.pairs), true);
-		return _.reduce(allPermissions, function(permissions, permission) {
-			var name = permission[0], allowed = permission[1];
-			if(!_.has(permissions, name) || !allowed) {
-				   permissions[name] = allowed;
-			}
-			return permissions;
-		}, {});
-	})
+    // paging
+    .property('skipCount', n)
+    .property('maxItems', n)
+    .property('defaultMaxItems', n)
+    .property('totalItems', n)
+    .property('hasMore', b)
+    .computed('totalEstimate', function() {
+        var total = this.totalItems();
+        if(typeof total != "undefined" && total !== null) {
+            return total;
+        } else {
+            // allow one page only
+            return this.skipCount() + this.maxItems() + (this.hasMore() ? 1 : 0);
+        }
+    })
+    .computed('skipCountId', koutils.numberSerializer('skipCount'))
+    .computed('maxItemsId', koutils.numberSerializer('maxItems'))
+    .property('records', [ Record ])
 
-	// datatable interface: fields, columns, records
-	.shortcut('actionGroupId', 'journal.type.options.actionGroupId', defaultActionGroupId)
-	.computed('columns', function() {
-		var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'),
-				recordUrl = this.recordUrl(), linkSupplied = recordUrl == null,
-				recordLinkAttribute = this.recordLinkAttribute() || "cm:name",
-				recordPriorityAttribute = this.recordPriorityAttribute() || "cm:name";
+    // selected records
+    .computed('selectedRecords', function() {
+        return _.filter(this.records(), function(record) {
+            return record.selected();
+        });
+    })
+    .computed('selectedRecordsAreDoclib', function() {
+        return _.all(this.selectedRecords(), function(record) {
+            return record.isDoclibNode();
+        });
+    })
+    .computed('selectedRecordsAllowedPermissions', function() {
+        var records = this.selectedRecords(),
+            recordsPermissions = _.invoke(records, 'permissions'),
+            allPermissions = _.flatten(_.map(recordsPermissions, _.pairs), true);
+        return _.reduce(allPermissions, function(permissions, permission) {
+            var name = permission[0], allowed = permission[1];
+            if(!_.has(permissions, name) || !allowed) {
+                   permissions[name] = allowed;
+            }
+            return permissions;
+        }, {});
+    })
 
-		if (!linkSupplied) {
-			linkSupplied = !!(_.find(visibleAttributes, function(attr) {
-				return recordLinkAttribute.indexOf(attr.name()) >= 0;
-			}));
-		}
+    // datatable interface: fields, columns, records
+    .shortcut('actionGroupId', 'journal.type.options.actionGroupId', defaultActionGroupId)
+    .computed('columns', function() {
+        var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'),
+                recordUrl = this.recordUrl(), linkSupplied = recordUrl == null,
+                recordLinkAttribute = this.recordLinkAttribute() || "cm:name",
+                recordPriorityAttribute = this.recordPriorityAttribute() || "cm:name";
 
-		// set priority attribute to the first
-		var priorityAttribute = recordPriorityAttribute.split(",").map(function(attr) { return attr.trim() }).reverse();
-		for(var pa in priorityAttribute) {
-			var attribute = _.find(visibleAttributes, function(attr) { return attr.name() == priorityAttribute[pa] });
-			if (attribute) {
-				var index = visibleAttributes.indexOf(attribute);
-				visibleAttributes.splice(index, 1);
-				visibleAttributes.unshift(attribute);
-			}
-		}
+        if (!linkSupplied) {
+            linkSupplied = !!(_.find(visibleAttributes, function(attr) {
+                return recordLinkAttribute.indexOf(attr.name()) >= 0;
+            }));
+        }
 
-		// init columns
-		var columns = _.map(visibleAttributes, function(attr) {
-			var options = journalType ? journalType.attribute(attr.name()) : null,
-				formatter = null,
-				includeLink = false,
-				withoutMultiple = false,
-				labelByCode = null;
-			if (options) {
-				formatter = options.settings().formatter;
-				withoutMultiple = options.settings().withoutMultiple;
-			}
-			if (attr.labels()) {
-				labelByCode = formatters.labelByCode(attr.labels());
-			}
+        // set priority attribute to the first
+        var priorityAttribute = recordPriorityAttribute.split(",").map(function(attr) { return attr.trim() }).reverse();
+        for(var pa in priorityAttribute) {
+            var attribute = _.find(visibleAttributes, function(attr) { return attr.name() == priorityAttribute[pa] });
+            if (attribute) {
+                var index = visibleAttributes.indexOf(attribute);
+                visibleAttributes.splice(index, 1);
+                visibleAttributes.unshift(attribute);
+            }
+        }
 
-			if (formatter) {
-				formatter = formatters.loadedFormatter(formatter);
-			} else if (labelByCode) {
-				var classPrefix = attr.name().replace(/\W/g, '_') + "-";
-				formatter = formatters._code(labelByCode, classPrefix, classPrefix);
-				includeLink = !linkSupplied;
-			} else if (attr.datatype()) {
-				formatter = defaultFormatters[attr.datatype().name()];
-				if (!formatter) includeLink = !linkSupplied;
-			} else {
-				formatter = formatters.loading();
-			}
+        // init columns
+        var columns = _.map(visibleAttributes, function(attr) {
+            var options = journalType ? journalType.attribute(attr.name()) : null,
+                formatter = null,
+                includeLink = false,
+                withoutMultiple = false,
+                labelByCode = null;
+            if (options) {
+                formatter = options.settings().formatter;
+                withoutMultiple = options.settings().withoutMultiple;
+            }
+            if (attr.labels()) {
+                labelByCode = formatters.labelByCode(attr.labels());
+            }
 
-			if (recordLinkAttribute) {
-				if (recordLinkAttribute.indexOf(attr.name()) != -1) includeLink = true;
-			}
+            if (formatter) {
+                formatter = formatters.loadedFormatter(formatter);
+            } else if (labelByCode) {
+                var classPrefix = attr.name().replace(/\W/g, '_') + "-";
+                formatter = formatters._code(labelByCode, classPrefix, classPrefix);
+                includeLink = !linkSupplied;
+            } else if (attr.datatype()) {
+                formatter = defaultFormatters[attr.datatype().name()];
+                if (!formatter) includeLink = !linkSupplied;
+            } else {
+                formatter = formatters.loading();
+            }
 
-			if(includeLink) {
-				formatter = formatters.doubleClickLink(recordUrl, this.recordIdField(), formatter, this.linkTarget());
-				linkSupplied = true;
-			}
+            if (recordLinkAttribute) {
+                if (recordLinkAttribute.indexOf(attr.name()) != -1) includeLink = true;
+            }
 
-			if(!withoutMultiple && formatter) {
-				formatter = formatters.multiple(formatter);
-			} else if (labelByCode) {
-				formatter = formatters.transformUseLabel(labelByCode, formatter);
-			}
+            if(includeLink) {
+                formatter = formatters.doubleClickLink(recordUrl, this.recordIdField(), formatter, this.linkTarget());
+                linkSupplied = true;
+            }
 
-			return {
-				id: attr.name(),
-				sortable: options ? options.sortable() : false,
-				formatter: formatter
-			};
-		}, this);
+            if(!withoutMultiple && formatter) {
+                formatter = formatters.multiple(formatter);
+            } else if (labelByCode) {
+                formatter = formatters.transformUseLabel(labelByCode, formatter);
+            }
 
-		columns = _.map(columns, Column);
+            return {
+                id: attr.name(),
+                sortable: options ? options.sortable() : false,
+                formatter: formatter
+            };
+        }, this);
 
-		// init action column. Not for mobile version
-		if (!Citeck.mobile.isMobileDevice() && !Citeck.mobile.hasTouchEvent()) {
-			var actionGroupId = this.actionGroupId();
-			if(actionGroupId == buttonsActionGroupId) {
-				columns.unshift(new ActionsColumn({
-					id: 'actions',
-					label: this.msg("column.actions"),
-					formatter: formatters.buttons()
-				}));
-			} else if(actionGroupId != noneActionGroupId) {
-				columns.unshift(new ActionsColumn({
-					id: 'actions',
-					label: this.msg("column.actions"),
-					formatter: formatters.journalActions(this.records())
-				}));
-			}
-		}
-		
-		// init selected column
-		columns.unshift(new ActionsColumn({
-			id: 'selected',
-			label: '<input type="checkbox" data-action="select-all" />',
-			formatter: formatters.checkbox('selected')
-		}));
-		return columns;
-	})
-	.computed('fields', function() {
-		var defaultFields = [
-			{ key: 'nodeRef' },
-			{ key: 'type' }
-		];
-		var attributes = this.resolve('journal.type.attributes', []);
-		return _.map(attributes, function(attr) {
-			var id = attr.name();
-			return {
-				key: id.match(':') ? 'attributes[\'' + id + '\']' : id
-			};
-		}).concat(defaultFields);
-	})
-	.property('sortBy', [ SortBy ])
+        columns = _.map(columns, Column);
+
+        // init action column. Not for mobile version
+        if (!Citeck.mobile.isMobileDevice() && !Citeck.mobile.hasTouchEvent()) {
+            var actionGroupId = this.actionGroupId();
+            if(actionGroupId == buttonsActionGroupId) {
+                columns.unshift(new ActionsColumn({
+                    id: 'actions',
+                    label: this.msg("column.actions"),
+                    formatter: formatters.buttons()
+                }));
+            } else if(actionGroupId != noneActionGroupId) {
+                columns.unshift(new ActionsColumn({
+                    id: 'actions',
+                    label: this.msg("column.actions"),
+                    formatter: formatters.journalActions(this.records())
+                }));
+            }
+        }
+
+        // init selected column
+        columns.unshift(new ActionsColumn({
+            id: 'selected',
+            label: '<input type="checkbox" data-action="select-all" />',
+            formatter: formatters.checkbox('selected')
+        }));
+        return columns;
+    })
+    .computed('fields', function() {
+        var defaultFields = [
+            { key: 'nodeRef' },
+            { key: 'type' }
+        ];
+        var attributes = this.resolve('journal.type.attributes', []);
+        return _.map(attributes, function(attr) {
+            var id = attr.name();
+            return {
+                key: id.match(':') ? 'attributes[\'' + id + '\']' : id
+            };
+        }).concat(defaultFields);
+    })
+    .property('sortBy', [ SortBy ])
     .computed('propSortBy', {
         read: function () {
             var result = this.sortBy();
@@ -1100,51 +1100,51 @@ JournalsWidget
         }
         return result;
     })
-	.computed('sortByQuery', function() {
-		return _.invoke(this.propSortBy() || [], 'query');
-	})
-	.computed('sortByFirst', {
-		read: function() {
-			if(this.propSortBy().length == 0) {
-				return null;
-			}
-			var sortBy = this.propSortBy()[0];
-			return {
-				key: 'attributes[\'' + sortBy.id() + '\']',
-				dir: sortBy.order() == 'asc' ? 'yui-dt-asc' : 'yui-dt-desc'
-			};
-		},
-		write: function(value) {
-			this.propSortBy([
-				new SortBy({
-					id: value.key.replace(/^attributes\[\'(.*)\'\]$/, '$1'),
-					order: value.dir == 'yui-dt-asc' ? 'asc' : 'desc'
-				})
-			]);
-		}
-	})
-	.computed('loading', function() {
-		return !this.records.loaded();
-	})
-	.property('selectedId', s)
-	.shortcut('recordIdField', 'journal.type.options.doubleClickId', 'nodeRef')
-	.shortcut('recordUrl', 'journal.type.options.doubleClickLink', null)
-	.shortcut('linkTarget', 'journal.type.options.linkTarget', '_self')
-	.shortcut('recordLinkAttribute', 'journal.type.options.clickLinkAttribute', null)
-	.shortcut('recordPriorityAttribute', 'journal.type.options.priorityAttribute', null)
-	.computed('gotoAddress', function() {
-		var id = this.selectedId(),
-			url = this.recordUrl();
-		if(!id || !url) return null;
-		return YAHOO.lang.substitute(url, {
-			id: id
-		});
-	})
-	.computed('dependencies', function() {
-		var journalOptions = this.resolve('journal.type.options', {});
-		return _.compact([ journalOptions.js, journalOptions.css ]);
-	})
-	.property('multiActions', [ Action ])
+    .computed('sortByQuery', function() {
+        return _.invoke(this.propSortBy() || [], 'query');
+    })
+    .computed('sortByFirst', {
+        read: function() {
+            if(this.propSortBy().length == 0) {
+                return null;
+            }
+            var sortBy = this.propSortBy()[0];
+            return {
+                key: 'attributes[\'' + sortBy.id() + '\']',
+                dir: sortBy.order() == 'asc' ? 'yui-dt-asc' : 'yui-dt-desc'
+            };
+        },
+        write: function(value) {
+            this.propSortBy([
+                new SortBy({
+                    id: value.key.replace(/^attributes\[\'(.*)\'\]$/, '$1'),
+                    order: value.dir == 'yui-dt-asc' ? 'asc' : 'desc'
+                })
+            ]);
+        }
+    })
+    .computed('loading', function() {
+        return !this.records.loaded();
+    })
+    .property('selectedId', s)
+    .shortcut('recordIdField', 'journal.type.options.doubleClickId', 'nodeRef')
+    .shortcut('recordUrl', 'journal.type.options.doubleClickLink', null)
+    .shortcut('linkTarget', 'journal.type.options.linkTarget', '_self')
+    .shortcut('recordLinkAttribute', 'journal.type.options.clickLinkAttribute', null)
+    .shortcut('recordPriorityAttribute', 'journal.type.options.priorityAttribute', null)
+    .computed('gotoAddress', function() {
+        var id = this.selectedId(),
+            url = this.recordUrl();
+        if(!id || !url) return null;
+        return YAHOO.lang.substitute(url, {
+            id: id
+        });
+    })
+    .computed('dependencies', function() {
+        var journalOptions = this.resolve('journal.type.options', {});
+        return _.compact([ journalOptions.js, journalOptions.css ]);
+    })
+    .property('multiActions', [ Action ])
     .computed('allowedMultiActions', function() {
         var records = this.selectedRecords(),
             doclibMode = _.all(records, function(record) {
@@ -1159,30 +1159,30 @@ JournalsWidget
 
         if(records.length == 0) return [];
 
-		var actions = this.multiActions(),
-			journal = this.journal(),
-			journalType = journal.type();
+        var actions = this.multiActions(),
+            journal = this.journal(),
+            journalType = journal.type();
 
-		if (journal && journalType) {
-			// get attribute actions
-			var attributes = journalType.attributes();
-			actions = _.uniq(_.reduce(attributes, function(actions, att){
-				return actions.concat(att.batchEdit());
-			}, actions));
+        if (journal && journalType) {
+            // get attribute actions
+            var attributes = journalType.attributes();
+            actions = _.uniq(_.reduce(attributes, function(actions, att){
+                return actions.concat(att.batchEdit());
+            }, actions));
 
-			// get group actions
-			var groupActions = journalType.groupActions();
-			actions = actions.concat(groupActions);
-		}
+            // get group actions
+            var groupActions = journalType.groupActions();
+            actions = actions.concat(groupActions);
+        }
 
-		var filteredActions = _.filter(actions, function(action) {
-			// sync mode check:
-			if (action.syncMode() != null) return false;
-			
-			// doclib mode check:
-			if (!doclibMode && action.isDoclib()) return false;
+        var filteredActions = _.filter(actions, function(action) {
+            // sync mode check:
+            if (action.syncMode() != null) return false;
 
-			// permission check
+            // doclib mode check:
+            if (!doclibMode && action.isDoclib()) return false;
+
+            // permission check
             var permission = action.permission();
             if (permission && !_.all(records, _.partial(hasPermission, _, permission))) {
                 return false;
@@ -1206,467 +1206,467 @@ JournalsWidget
         return filteredActions;
     })
 
-	.computed('fullscreenLink', function() {
-		var journalsList = this.journalsList(),
-			journalId = this.journalId(),
-			filterId = this.filterId(),
-			settingsId = this.settingsId(),
-			prefix = '',
-			postfix = '',
-			tokens = {
-				journal: this.journalId(),
-				filter: this.filterId(),
-				settings: this.settingsId(),
-				skipCount: this.skipCountId(),
-				maxItems: this.maxItemsId()
-			},
-			hash = _.map(tokens, function(value, key) {
-				return key + '=' + value;
-			}).join('&');
-		if(journalsList != null) {
-			if(journalsList.scope() != 'global') {
-				prefix = journalsList.scope() + '/' + journalsList.scopeId() + '/';
-			}
-			postfix = '/list/' + journalsList.listId();
-		}
-		return YAHOO.lang.substitute('{context}{prefix}journals2{postfix}#{hash}', {
-			context: Alfresco.constants.URL_PAGECONTEXT,
-			prefix: prefix,
-			postfix: postfix,
-			hash: hash
-		});
-	})
+    .computed('fullscreenLink', function() {
+        var journalsList = this.journalsList(),
+            journalId = this.journalId(),
+            filterId = this.filterId(),
+            settingsId = this.settingsId(),
+            prefix = '',
+            postfix = '',
+            tokens = {
+                journal: this.journalId(),
+                filter: this.filterId(),
+                settings: this.settingsId(),
+                skipCount: this.skipCountId(),
+                maxItems: this.maxItemsId()
+            },
+            hash = _.map(tokens, function(value, key) {
+                return key + '=' + value;
+            }).join('&');
+        if(journalsList != null) {
+            if(journalsList.scope() != 'global') {
+                prefix = journalsList.scope() + '/' + journalsList.scopeId() + '/';
+            }
+            postfix = '/list/' + journalsList.listId();
+        }
+        return YAHOO.lang.substitute('{context}{prefix}journals2{postfix}#{hash}', {
+            context: Alfresco.constants.URL_PAGECONTEXT,
+            prefix: prefix,
+            postfix: postfix,
+            hash: hash
+        });
+    })
 
-	.init(function() {
-		this.columns.extend({ rateLimit: 100 });
-		this.records.extend({ rateLimit: 100 });
-		this.journal.subscribe(function() {
-			// reset filter and settings
-			this.filter(null);
-			this.settings(null);
-			this.propSortBy([]);
-			this.skipCount(0);
-			this.selectedId(null);
+    .init(function() {
+        this.columns.extend({ rateLimit: 100 });
+        this.records.extend({ rateLimit: 100 });
+        this.journal.subscribe(function() {
+            // reset filter and settings
+            this.filter(null);
+            this.settings(null);
+            this.propSortBy([]);
+            this.skipCount(0);
+            this.selectedId(null);
             this.maxItems(this.defaultMaxItems() || 10);
-			this.performSearch();
-		}, this);
-		this.currentFilter.subscribe(function() {
-			this.skipCount(0);
-			this._filter(this.resolve('currentFilter.clone'));
-			this.performSearch();
-		}, this);
-		this.currentSettings.subscribe(function() {
-			this._settings(this.resolve('currentSettings.clone'));
-		}, this);
+            this.performSearch();
+        }, this);
+        this.currentFilter.subscribe(function() {
+            this.skipCount(0);
+            this._filter(this.resolve('currentFilter.clone'));
+            this.performSearch();
+        }, this);
+        this.currentSettings.subscribe(function() {
+            this._settings(this.resolve('currentSettings.clone'));
+        }, this);
 
-		this.skipCount.subscribe(this.performSearch, this);
-		this.maxItems.subscribe(this.performSearch, this);
-		this.sortByQuery.subscribe(this.performSearch, this);
-	})
+        this.skipCount.subscribe(this.performSearch, this);
+        this.maxItems.subscribe(this.performSearch, this);
+        this.sortByQuery.subscribe(this.performSearch, this);
+    })
 
-	.method('performSearch', function() {
-		this.records.reload();
-	})
+    .method('performSearch', function() {
+        this.records.reload();
+    })
 
-	.property('createReportType', s)
-	.property('createReportDownload', b)
-	.property('createReportFormId', s)
-	.computed('createReportTarget', function() {
-		if (this.createReportDownload() == true)
-			return "_self";
-		else
-			return '_blank';
-	})
-	.computed('createReportLink', function() {
-		var isDownload = (this.createReportDownload() == true);
-		var token = "";
+    .property('createReportType', s)
+    .property('createReportDownload', b)
+    .property('createReportFormId', s)
+    .computed('createReportTarget', function() {
+        if (this.createReportDownload() == true)
+            return "_self";
+        else
+            return '_blank';
+    })
+    .computed('createReportLink', function() {
+        var isDownload = (this.createReportDownload() == true);
+        var token = "";
 
-		if (Alfresco.util.CSRFPolicy && Alfresco.util.CSRFPolicy.isFilterEnabled()) {
-			token = "&" + Alfresco.util.CSRFPolicy.getParameter() + "="
-						+ encodeURIComponent(Alfresco.util.CSRFPolicy.getToken());
-		}
+        if (Alfresco.util.CSRFPolicy && Alfresco.util.CSRFPolicy.isFilterEnabled()) {
+            token = "&" + Alfresco.util.CSRFPolicy.getParameter() + "="
+                        + encodeURIComponent(Alfresco.util.CSRFPolicy.getToken());
+        }
 
-		return Alfresco.constants.PROXY_URI + "report/criteria-report?download=" + isDownload + token;
-	})
-	.computed('createReportQuery', function() {
-		var journal = this.journal();
-		if (journal) {
-			var journalCriteria = journal.criteria();
-			if (journal.criteria.loaded()) {
-				var filter = this.currentFilter();
-				if (filter) {
-					var filterCriteria = filter.usableCriteria();
-					if (filter.criteria.loaded()) {
-						var query = _.reduce(_.flatten([
-							journalCriteria,
-							filterCriteria
-						]), function(query, criterion) {
-							return _.extend(query, criterion.query());
-						}, {});
+        return Alfresco.constants.PROXY_URI + "report/criteria-report?download=" + isDownload + token;
+    })
+    .computed('createReportQuery', function() {
+        var journal = this.journal();
+        if (journal) {
+            var journalCriteria = journal.criteria();
+            if (journal.criteria.loaded()) {
+                var filter = this.currentFilter();
+                if (filter) {
+                    var filterCriteria = filter.usableCriteria();
+                    if (filter.criteria.loaded()) {
+                        var query = _.reduce(_.flatten([
+                            journalCriteria,
+                            filterCriteria
+                        ]), function(query, criterion) {
+                            return _.extend(query, criterion.query());
+                        }, {});
 
-						query.sortBy = this.sortByQuery();
-						query.reportType = this.createReportType();
-						query.reportTitle = journal.title();
+                        query.sortBy = this.sortByQuery();
+                        query.reportType = this.createReportType();
+                        query.reportTitle = journal.title();
 
-						var reportColumns = [];
-						var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []);
+                        var reportColumns = [];
+                        var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []);
 
-						if (visibleAttributes) {
-							reportColumns.push({
-								attribute: "rowNum",
-								title: "№"
-							});
+                        if (visibleAttributes) {
+                            reportColumns.push({
+                                attribute: "rowNum",
+                                title: "№"
+                            });
 
-							for (var i = 0; i < visibleAttributes.length; i++) {
-								reportColumns.push({
-									attribute: visibleAttributes[i].name._value(),
-									title: visibleAttributes[i].customDisplayName()
-								});
-							}
-						}
+                            for (var i = 0; i < visibleAttributes.length; i++) {
+                                reportColumns.push({
+                                    attribute: visibleAttributes[i].name._value(),
+                                    title: visibleAttributes[i].customDisplayName()
+                                });
+                            }
+                        }
 
-						query.reportColumns = reportColumns;
-						query.reportFilename = query.reportTitle + "." + query.reportType;
+                        query.reportColumns = reportColumns;
+                        query.reportFilename = query.reportTitle + "." + query.reportType;
 
-						return JSON.stringify(query);
-					}
-				}
-			}
-		}
+                        return JSON.stringify(query);
+                    }
+                }
+            }
+        }
 
-		return "{}";
-	})
-	.method('createReport', function(reportType, isDownload) {
-		this.createReportType(reportType);
-		this.createReportDownload(isDownload);
-		var reportForm = Dom.get(this.createReportFormId());
+        return "{}";
+    })
+    .method('createReport', function(reportType, isDownload) {
+        this.createReportType(reportType);
+        this.createReportDownload(isDownload);
+        var reportForm = Dom.get(this.createReportFormId());
 
-		if (this.createReportQuery() != "{}")
-			reportForm.submit();
-	})
-	.method('createReportFormInit', function(reportFormId) {
-		this.createReportFormId(reportFormId);
-	})
-	.computed('reportButtonDisabled', function() {
-		var records = this.records();
-		if (typeof records != "undefined" && records !== null)
-			return (records.length == 0);
-		else
-			return true;
-	})
+        if (this.createReportQuery() != "{}")
+            reportForm.submit();
+    })
+    .method('createReportFormInit', function(reportFormId) {
+        this.createReportFormId(reportFormId);
+    })
+    .computed('reportButtonDisabled', function() {
+        var records = this.records();
+        if (typeof records != "undefined" && records !== null)
+            return (records.length == 0);
+        else
+            return true;
+    })
 
-	.method('selectAllRecords', function() {
-		_.each(this.records(), function(record) {
-			record.selected(true);
-		});
-	})
-	.method('selectInvertRecords', function() {
-		_.each(this.records(), function(record) {
-			record.selected(!record.selected());
-		});
-	})
-	.method('deselectAllRecords', function() {
-		_.each(this.records(), function(record) {
-			record.selected(false);
-		});
-	})
+    .method('selectAllRecords', function() {
+        _.each(this.records(), function(record) {
+            record.selected(true);
+        });
+    })
+    .method('selectInvertRecords', function() {
+        _.each(this.records(), function(record) {
+            record.selected(!record.selected());
+        });
+    })
+    .method('deselectAllRecords', function() {
+        _.each(this.records(), function(record) {
+            record.selected(false);
+        });
+    })
 
-	/*********************************************************/
-	/*             FILTERS AND SETTINGS FUNCTIONS            */
-	/*********************************************************/
+    /*********************************************************/
+    /*             FILTERS AND SETTINGS FUNCTIONS            */
+    /*********************************************************/
 
-	.methods({
-		addCriterion: function(field, predicate, value) {
-			// TODO add default predicate according to journal field settings
-			this._filter().criteria.push(new Criterion({
-				field: field,
-				predicate: predicate || null,
-				value: value || ""
-			}));
-		},
+    .methods({
+        addCriterion: function(field, predicate, value) {
+            // TODO add default predicate according to journal field settings
+            this._filter().criteria.push(new Criterion({
+                field: field,
+                predicate: predicate || null,
+                value: value || ""
+            }));
+        },
 
-		applyCriteria: function() {
-			this.skipCount(0);
-			this.filter(this._filter());
-		},
+        applyCriteria: function() {
+            this.skipCount(0);
+            this.filter(this._filter());
+        },
 
-		clearCriteria: function() {
-			this.filter(null);
-			this._filter(this.currentFilter().clone());
-		},
+        clearCriteria: function() {
+            this.filter(null);
+            this._filter(this.currentFilter().clone());
+        },
 
-		applySettings: function() {
-			this.settings(this._settings().clone());
-		},
+        applySettings: function() {
+            this.settings(this._settings().clone());
+        },
 
-		resetSettings: function() {
-			this.settings(null);
-			this._settings(this.currentSettings().clone());
-		},
-	})
+        resetSettings: function() {
+            this.settings(null);
+            this._settings(this.currentSettings().clone());
+        },
+    })
 
-	/*********************************************************/
-	/*            SELECT, SAVE AND REMOVE METHODS            */
-	/*********************************************************/
+    /*********************************************************/
+    /*            SELECT, SAVE AND REMOVE METHODS            */
+    /*********************************************************/
 
-	.methods({
+    .methods({
 
-		selectJournalsList: function(id) {
-			this.journalsList(id ? new JournalsList(id) : null);
-		},
+        selectJournalsList: function(id) {
+            this.journalsList(id ? new JournalsList(id) : null);
+        },
 
-		selectJournal: function(journalId) {
-			this.journal(journalId ? new Journal(journalId) : null);
-		},
+        selectJournal: function(journalId) {
+            this.journal(journalId ? new Journal(journalId) : null);
+        },
 
-		selectFilter: function(filterId) {
-			this.filter(filterId ? new Filter(filterId) : null);
-		},
+        selectFilter: function(filterId) {
+            this.filter(filterId ? new Filter(filterId) : null);
+        },
 
-		selectSettings: function(settingsId) {
-			this.settings(settingsId ? new Settings(settingsId) : null);
-		},
+        selectSettings: function(settingsId) {
+            this.settings(settingsId ? new Settings(settingsId) : null);
+        },
 
-		saveFilter: function() {
-			if(!this.resolve('_filter.valid', false)) return;
-			this._filter().journalTypes.push(this.journal().type());
-			Filter.save(this._filter(), {
-				scope: this,
-				fn: function(newFilter) {
-					this.filter(newFilter);
-					this.journal().type().filters.push(newFilter);
-				}
-			});
-		},
+        saveFilter: function() {
+            if(!this.resolve('_filter.valid', false)) return;
+            this._filter().journalTypes.push(this.journal().type());
+            Filter.save(this._filter(), {
+                scope: this,
+                fn: function(newFilter) {
+                    this.filter(newFilter);
+                    this.journal().type().filters.push(newFilter);
+                }
+            });
+        },
 
-		removeFilter: function(filter) {
-			if(!filter.nodeRef()) return;
-			Filter.remove(filter, {
-				scope: this,
-				fn: function() {
-					var journalType = this.resolve('journal.type');
-					if(journalType) {
-						journalType.filters.remove(filter);
-					}
-					if(this.filter() == filter) {
-						this.filter(null);
-					}
-				}
-			});
-		},
+        removeFilter: function(filter) {
+            if(!filter.nodeRef()) return;
+            Filter.remove(filter, {
+                scope: this,
+                fn: function() {
+                    var journalType = this.resolve('journal.type');
+                    if(journalType) {
+                        journalType.filters.remove(filter);
+                    }
+                    if(this.filter() == filter) {
+                        this.filter(null);
+                    }
+                }
+            });
+        },
 
-		saveSettings: function() {
-			if(!this.resolve('_settings.valid', false)) return;
-			this._settings().journalTypes.push(this.journal().type());
-			Settings.save(this._settings(), {
-				scope: this,
-				fn: function(newSettings) {
-					this.settings(newSettings);
-					this.journal().type().settings.push(newSettings);
-				}
-			});
-		},
+        saveSettings: function() {
+            if(!this.resolve('_settings.valid', false)) return;
+            this._settings().journalTypes.push(this.journal().type());
+            Settings.save(this._settings(), {
+                scope: this,
+                fn: function(newSettings) {
+                    this.settings(newSettings);
+                    this.journal().type().settings.push(newSettings);
+                }
+            });
+        },
 
-		removeSettings: function(settings) {
-			if(!settings.nodeRef()) return;
-			Settings.remove(settings, {
-				scope: this,
-				fn: function() {
-					var journalType = this.resolve('journal.type');
-					if(journalType) {
-						journalType.settings.remove(settings);
-					}
-					if(this.settings() == settings) {
-						this.settings(null);
-					}
-				}
-			});
-		},
+        removeSettings: function(settings) {
+            if(!settings.nodeRef()) return;
+            Settings.remove(settings, {
+                scope: this,
+                fn: function() {
+                    var journalType = this.resolve('journal.type');
+                    if(journalType) {
+                        journalType.settings.remove(settings);
+                    }
+                    if(this.settings() == settings) {
+                        this.settings(null);
+                    }
+                }
+            });
+        },
 
-		_removeRecord: function(record) {
-			Record.remove(record, {
-				scope: this,
-				fn: function() {
-					this.records.remove(record);
-				}
-			});
-		},
+        _removeRecord: function(record) {
+            Record.remove(record, {
+                scope: this,
+                fn: function() {
+                    this.records.remove(record);
+                }
+            });
+        },
 
-		removeRecord: function(record) {
-			if(!record.nodeRef()) return;
-			this._removeRecord(record);
-		},
+        removeRecord: function(record) {
+            if(!record.nodeRef()) return;
+            this._removeRecord(record);
+        },
 
-		removeRecords: function(records) {
-			_.each(records, this._removeRecord, this);
-		},
-	})
+        removeRecords: function(records) {
+            _.each(records, this._removeRecord, this);
+        },
+    })
 
-	;
+    ;
 
 /*********************************************************/
 /*                        REST API                       */
 /*********************************************************/
 
 JournalsList
-	.load('*', koutils.simpleLoad({
-		url: Alfresco.constants.PROXY_URI + "api/journals/list?journalsList={id}&nodeRef={documentNodeRef}"
-	}))
-	;
+    .load('*', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/list?journalsList={id}&nodeRef={documentNodeRef}"
+    }))
+    ;
 
 JournalType
-	.load('filters', koutils.simpleLoad({
-		url: Alfresco.constants.PROXY_URI + "api/journals/filters?journalType={id}",
-		resultsMap: { filters: 'filters' }
-	}))
-	.load('settings', koutils.simpleLoad({
-		url: Alfresco.constants.PROXY_URI + "api/journals/settings?journalType={id}",
-		resultsMap: { settings: 'settings' }
-	}))
+    .load('filters', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/filters?journalType={id}",
+        resultsMap: { filters: 'filters' }
+    }))
+    .load('settings', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/settings?journalType={id}",
+        resultsMap: { settings: 'settings' }
+    }))
 
-	.load('*', koutils.simpleLoad({
-		url: Alfresco.constants.PROXY_URI + "api/journals/types/{id}",
-		resultsMap: function(data) {
-			return mapObject = {
-				attributes: data.attributes,
-				options: data.settings,
-				groupActions: data.groupActions,
-				formInfo: {
-					type: data.settings ? data.settings.type : "",
-					formId: data.settings ? data.settings.formId : ""
-				}
-			};
-		},
-		postprocessing: function(model) { model["journal"] = this; }
-	}))
-	;
+    .load('*', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/types/{id}",
+        resultsMap: function(data) {
+            return mapObject = {
+                attributes: data.attributes,
+                options: data.settings,
+                groupActions: data.groupActions,
+                formInfo: {
+                    type: data.settings ? data.settings.type : "",
+                    formId: data.settings ? data.settings.formId : ""
+                }
+            };
+        },
+        postprocessing: function(model) { model["journal"] = this; }
+    }))
+    ;
 
 Journal
-	.load('*', koutils.simpleLoad({
-		url: Alfresco.constants.PROXY_URI + "api/journals/journals-config?nodeRef={nodeRef}",
-		postprocessing: function(model) {
-			for (var c in model.createVariants) { model.createVariants[c]["journal"] = this; }
-		}
-	}))
-	;
+    .load('*', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/journals-config?nodeRef={nodeRef}",
+        postprocessing: function(model) {
+            for (var c in model.createVariants) { model.createVariants[c]["journal"] = this; }
+        }
+    }))
+    ;
 
 Filter
-	.load('*', koutils.simpleLoad({
-		url: Alfresco.constants.PROXY_URI + "api/journals/filter?nodeRef={nodeRef}"
-	}))
-	.save(koutils.simpleSave({
-		url: Alfresco.constants.PROXY_URI + "api/journals/filter",
-		toRequest: function(filter) {
-			return filter.saveModel();
-		},
-		toResult: function(model) {
-			return new Filter(model);
-		}
-	}))
-	.remove(koutils.simpleSave({
-		method: "DELETE",
-		url: Alfresco.constants.PROXY_URI + "api/journals/filter?nodeRef={nodeRef}"
-	}))
-	;
+    .load('*', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/filter?nodeRef={nodeRef}"
+    }))
+    .save(koutils.simpleSave({
+        url: Alfresco.constants.PROXY_URI + "api/journals/filter",
+        toRequest: function(filter) {
+            return filter.saveModel();
+        },
+        toResult: function(model) {
+            return new Filter(model);
+        }
+    }))
+    .remove(koutils.simpleSave({
+        method: "DELETE",
+        url: Alfresco.constants.PROXY_URI + "api/journals/filter?nodeRef={nodeRef}"
+    }))
+    ;
 
 Settings
-	.load('*', koutils.simpleLoad({
-		url: Alfresco.constants.PROXY_URI + "api/journals/selected-attributes?nodeRef={nodeRef}"
-	}))
-	.save(koutils.simpleSave({
-		url: Alfresco.constants.PROXY_URI + "api/journals/settings-save",
-		toRequest: function(settings) {
-			return settings.saveModel();
-		},
-		toResult: function(model) {
-			return new Settings(model);
-		}
-	}))
-	.remove(koutils.simpleSave({
-		method: "DELETE",
-		url: Alfresco.constants.PROXY_URI + "api/journals/settings?nodeRef={nodeRef}"
-	}))
-	;
+    .load('*', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/selected-attributes?nodeRef={nodeRef}"
+    }))
+    .save(koutils.simpleSave({
+        url: Alfresco.constants.PROXY_URI + "api/journals/settings-save",
+        toRequest: function(settings) {
+            return settings.saveModel();
+        },
+        toResult: function(model) {
+            return new Settings(model);
+        }
+    }))
+    .remove(koutils.simpleSave({
+        method: "DELETE",
+        url: Alfresco.constants.PROXY_URI + "api/journals/settings?nodeRef={nodeRef}"
+    }))
+    ;
 
 AttributeInfo
-	.load('*', koutils.bulkLoad(new BulkLoader({
-		url: Alfresco.constants.PROXY_URI + "components/journals/journals-metadata",
-		method: "GET",
-		emptyFn: function() { 
-			return { attributes: [] }; 
-		},
-		addFn: function(query, id) {
-			if(id) {
-				query.attributes.push(id);
-				return true;
-			} else {
-				return false;
-			}
-		},
-		getFn: function(response) { 
-			return response.json.attributes; 
-		}
-	}), 'name'))
-	;
+    .load('*', koutils.bulkLoad(new BulkLoader({
+        url: Alfresco.constants.PROXY_URI + "components/journals/journals-metadata",
+        method: "GET",
+        emptyFn: function() {
+            return { attributes: [] };
+        },
+        addFn: function(query, id) {
+            if(id) {
+                query.attributes.push(id);
+                return true;
+            } else {
+                return false;
+            }
+        },
+        getFn: function(response) {
+            return response.json.attributes;
+        }
+    }), 'name'))
+    ;
 
 JournalsWidget
-	.load('journalsLists', koutils.simpleLoad({
-		url: Alfresco.constants.PROXY_URI + "api/journals/lists",
-		resultsMap: { journalsLists: 'journalsLists' }
-	}))
-	.load('journals', koutils.simpleLoad({
-		url: Alfresco.constants.PROXY_URI + "api/journals/all",
-		resultsMap: { journals: 'journals' }
-	}))
-	.load('records', function() {
-		var load = function() {
-			if(this.records.loaded()) {
-				logger.debug("Records are already loaded, skipping");
-				return;
-			}
+    .load('journalsLists', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/lists",
+        resultsMap: { journalsLists: 'journalsLists' }
+    }))
+    .load('journals', koutils.simpleLoad({
+        url: Alfresco.constants.PROXY_URI + "api/journals/all",
+        resultsMap: { journals: 'journals' }
+    }))
+    .load('records', function() {
+        var load = function() {
+            if(this.records.loaded()) {
+                logger.debug("Records are already loaded, skipping");
+                return;
+            }
 
-			var journal = this.journal();
-			if(!journal) {
-				logger.debug("Journal is not loaded, deferring search");
-				koutils.subscribeOnce(this.journal, load, this);
-				return;
-			}
+            var journal = this.journal();
+            if(!journal) {
+                logger.debug("Journal is not loaded, deferring search");
+                koutils.subscribeOnce(this.journal, load, this);
+                return;
+            }
 
-			var journalCriteria = journal.criteria();
-			if(!journal.criteria.loaded()) {
-				logger.debug("Journal criteria are not loaded, deferring search");
-				koutils.subscribeOnce(journal.criteria, load, this);
-				return;
-			}
+            var journalCriteria = journal.criteria();
+            if(!journal.criteria.loaded()) {
+                logger.debug("Journal criteria are not loaded, deferring search");
+                koutils.subscribeOnce(journal.criteria, load, this);
+                return;
+            }
 
-			var filter = this.currentFilter();
-			if(!filter) {
-				logger.debug("Filter is not loaded, deferring search");
-				koutils.subscribeOnce(this.currentFilter, load, this);
-				return;
-			}
+            var filter = this.currentFilter();
+            if(!filter) {
+                logger.debug("Filter is not loaded, deferring search");
+                koutils.subscribeOnce(this.currentFilter, load, this);
+                return;
+            }
 
-			var filterCriteria = filter.usableCriteria();
-			if(!filter.criteria.loaded()) {
-				logger.debug("Filter criteria are not loaded, deferring search");
-				koutils.subscribeOnce(filter.criteria, load, this);
-				return;
-			}
+            var filterCriteria = filter.usableCriteria();
+            if(!filter.criteria.loaded()) {
+                logger.debug("Filter criteria are not loaded, deferring search");
+                koutils.subscribeOnce(filter.criteria, load, this);
+                return;
+            }
 
-			var query = _.reduce(_.flatten([
-				journalCriteria,
-				filterCriteria
-			]), function(query, criterion) {
-				return _.extend(query, criterion.query());
-			}, {});
+            var query = _.reduce(_.flatten([
+                journalCriteria,
+                filterCriteria
+            ]), function(query, criterion) {
+                return _.extend(query, criterion.query());
+            }, {});
 
-			query.sortBy = this.sortByQuery();
-			query.skipCount = this.skipCount() || 0;
-			query.maxItems = this.maxItems() || this.defaultMaxItems() || 10;
+            query.sortBy = this.sortByQuery();
+            query.skipCount = this.skipCount() || 0;
+            query.maxItems = this.maxItems() || this.defaultMaxItems() || 10;
 
-			var queryString = JSON.stringify(query);
+            var queryString = JSON.stringify(query);
 
-			logger.info("Loading records with query: " + queryString);
+            logger.info("Loading records with query: " + queryString);
 
             Alfresco.util.Ajax.jsonGet({
                 url: Alfresco.constants.PROXY_URI + "/api/journals/records",
@@ -1691,29 +1691,29 @@ JournalsWidget
                     }
                 }
             });
-		};
-		load.call(this);
-	})
-	;
+        };
+        load.call(this);
+    })
+    ;
     
 Record
-	// TODO define load method - to load selected records
-	.load('doclib', function(record) {
-		if(record.isDoclibNode() === true) {
+    // TODO define load method - to load selected records
+    .load('doclib', function(record) {
+        if(record.isDoclibNode() === true) {
             customRecordLoader().load(record.nodeRef(), function(id, model) {
-				record.model({ doclib: model });
-			});
-		} else if(record.isDoclibNode() === false) {
-			record.doclib(null);
-		} else {
-			// if it is not loaded yet - do not do anything
-		}
-	})
-	.remove(koutils.simpleSave({
-		method: "DELETE",
-		url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef={nodeRef}"
-	}))
-	;
+                record.model({ doclib: model });
+            });
+        } else if(record.isDoclibNode() === false) {
+            record.doclib(null);
+        } else {
+            // if it is not loaded yet - do not do anything
+        }
+    })
+    .remove(koutils.simpleSave({
+        method: "DELETE",
+        url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef={nodeRef}"
+    }))
+    ;
 
 
 /*********************************************************/
@@ -1728,58 +1728,58 @@ JournalsWidget
 //	.extend('columns', { rateLimit: 0 })
 //	.extend('records', { rateLimit: 0 })
 //	.extend('*', { rateLimit: 0 })
-	;
+    ;
 
 AttributeInfo
-	.extend('*', rateLimit)
-	;
+    .extend('*', rateLimit)
+    ;
 
 Datatype
-	.extend('*', rateLimit)
-	;
+    .extend('*', rateLimit)
+    ;
 
 Column
-	.extend('*', rateLimit)
-	;
+    .extend('*', rateLimit)
+    ;
 
 // Journals widget class
 
 var Journals = function(name, htmlid, dependencies, ViewModelClass) {
-	Journals.superclass.constructor.call(this, name || "Citeck.widgets.Journals", htmlid, dependencies);
-	this.viewModel = new ViewModelClass({});
+    Journals.superclass.constructor.call(this, name || "Citeck.widgets.Journals", htmlid, dependencies);
+    this.viewModel = new ViewModelClass({});
 
-	// inject msg method
-	this.viewModel.msg = this.bind(this.msg);
+    // inject msg method
+    this.viewModel.msg = this.bind(this.msg);
 };
 
 YAHOO.extend(Journals, Alfresco.component.Base, {
 
-	options: {
+    options: {
 
-		predicateLists: [],
+        predicateLists: [],
 
-	},
+    },
 
-	onReady: function() {
-		// init objects from cache
-		this.initCachedObjects();
+    onReady: function() {
+        // init objects from cache
+        this.initCachedObjects();
 
-		// init viewmodel
-		this.viewModel.model(this.options.model);
+        // init viewmodel
+        this.viewModel.model(this.options.model);
 
-		// init views
-		ko.applyBindings(this.viewModel, Dom.get(this.id));
-	},
+        // init views
+        ko.applyBindings(this.viewModel, Dom.get(this.id));
+    },
 
-	initCachedObjects: function() {
-		_.each(this.options.cache, function(models, className) {
-			var constructor = koclass(className);
-			_.each(models, function(model) {
-				if(!model) return;
-				new constructor(model);
-			});
-		});
-	},
+    initCachedObjects: function() {
+        _.each(this.options.cache, function(models, className) {
+            var constructor = koclass(className);
+            _.each(models, function(model) {
+                if(!model) return;
+                new constructor(model);
+            });
+        });
+    },
 
 });
 
