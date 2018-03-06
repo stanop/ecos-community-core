@@ -27,10 +27,7 @@
         <fields prop="tk:kind">
             <region name="input" template="view" />
         </fields>
-
     </views>
-
-
 
     <views mode="view">
         <fields kind="mode-view" template="none" />
@@ -183,7 +180,7 @@
                 </region>
             </field>
         </view>
-        <field prop="dms:updateContent" kind="mode-view">
+        <field prop="dms:updateContent">
             <region name="label" template="label">
                 <param name="key">dms_dms.property.dms_updateContent.title</param>
             </region>
@@ -468,17 +465,6 @@
             <field assoc="contracts:closingDocumentAgreement" >
                 <region name="select" template="select-journal" >
                     <param name="journalType">contract-agreements</param>
-                    <!--<param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
-                    <param name="defaultCriteria">
-                        [
-                            {attribute: 'type', predicate: 'type-not-equals', value: 'contracts:closingDocument'},
-                            {attribute: 'type', predicate: 'type-not-equals', value: 'payments:payment'},
-                            {attribute: 'type', predicate: 'type-not-equals', value: 'letters:income'},
-                            {attribute: 'type', predicate: 'type-not-equals', value: 'letters:outcome'},
-                            {attribute: 'type', predicate: 'type-not-equals', value: 'orders:internal'}
-                        ]</param>
-                    <param name="defaultVisibleAttributes">cm:title, tk:type</param>
-                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>-->
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -603,7 +589,6 @@
                     <param name="key">contracts_contractsModel.association.contracts_contractor.title</param>
                 </region>
             </field>
-            <!-- <field prop="contracts:contractWith" /> -->
         </view>
         <view>
             <field assoc="contracts:agreementSubject" >
@@ -707,7 +692,7 @@
                 </region>
             </field>
         </view>
-        <field prop="dms:updateContent" kind="mode-view">
+        <field prop="dms:updateContent">
             <region name="label" template="label">
                 <param name="key">dms_dms.property.dms_updateContent.title</param>
             </region>
