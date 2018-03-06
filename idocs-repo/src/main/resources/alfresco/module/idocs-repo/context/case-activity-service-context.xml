@@ -136,6 +136,7 @@
                     <list>
                         <value>optionalPerformers</value>
                         <value>excludedPerformers</value>
+                        <value>cwf:lastcomment</value>
                     </list>
                 </entry>
                 <entry key="activiti$registration">
