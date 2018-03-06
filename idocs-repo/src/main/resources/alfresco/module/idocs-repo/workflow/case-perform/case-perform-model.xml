@@ -75,6 +75,7 @@
                 <aspect>wfcp:basePerformData</aspect>
                 <aspect>cwf:optionalTaskAspect</aspect>
                 <aspect>cwf:hasTaskTitle</aspect>
+                <aspect>cwf:lastcomment</aspect>
             </mandatory-aspects>
         </type>
 
