@@ -1,7 +1,6 @@
 package ru.citeck.ecos.search.graphql;
 
 import graphql.annotations.annotationTypes.GraphQLField;
-import graphql.annotations.annotationTypes.GraphQLName;
 import graphql.schema.DataFetchingEnvironment;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
@@ -33,10 +32,10 @@ public class GqlCriteriaSearchResult {
     @GraphQLField
     public GqlCriteriaSearchResultPaging paging() {
         GqlCriteriaSearchResultPaging result = new GqlCriteriaSearchResultPaging();
-        result.totalCount = results.getTotalCount();
-        result.hasMore = results.hasMore();
-        result.totalItems = results.getResults().size();
         SearchCriteria criteria = results.getCriteria();
+        result.hasMore = results.hasMore();
+        result.totalCount = results.getResults().size();
+        result.totalItems = results.getTotalCount();
         result.maxItems = criteria.getLimit();
         result.skipCount = criteria.getSkip();
         return result;
@@ -65,8 +64,8 @@ public class GqlCriteriaSearchResult {
         @GraphQLField
         public Integer skipCount = 0;
         @GraphQLField
-        public Integer totalItems = 0;
+        public Long totalItems = 0L;
         @GraphQLField
-        public Long totalCount = 0L;
+        public Integer totalCount = 0;
     }
 }
