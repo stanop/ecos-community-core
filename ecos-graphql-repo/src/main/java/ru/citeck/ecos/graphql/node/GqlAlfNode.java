@@ -7,6 +7,7 @@ import graphql.schema.DataFetchingEnvironment;
 import lombok.Getter;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -28,7 +29,6 @@ public class GqlAlfNode {
 
     @Getter(lazy = true)
     private final QName type = evalType();
-
     @Getter(lazy = true)
     private final Map<QName, Serializable> properties = evalProperties();
     @Getter(lazy = true)
@@ -36,8 +36,8 @@ public class GqlAlfNode {
     @Getter(lazy = true)
     private final Map<QName, List<NodeRef>> childAssocs = evalChildAssocs();
 
-    private Map<QName, List<NodeRef>> assocs;
-    private Map<QName, Attribute> attributes;
+    private Map<QName, List<NodeRef>> assocs = new ConcurrentHashMap<>();
+    private Map<QName, Attribute> attributes = new ConcurrentHashMap<>();
 
     private GqlContext context;
 
@@ -101,12 +101,28 @@ public class GqlAlfNode {
     }
 
     @GraphQLField
+    @GraphQLName("isContainer")
+    public boolean isContainer() {
+        DictionaryService dd = context.getDictionaryService();
+        QName type = getType();
+        return dd.isSubClass(type, ContentModel.TYPE_FOLDER) &&
+              !dd.isSubClass(type, ContentModel.TYPE_SYSTEM_FOLDER);
+    }
+
+    @GraphQLField
+    @GraphQLName("isDocument")
+    public boolean isDocument() {
+        DictionaryService dd = context.getDictionaryService();
+        return dd.isSubClass(getType(), ContentModel.TYPE_CONTENT);
+    }
+
+    @GraphQLField
     public Attribute attribute(@GraphQLName("name") String name) {
         return getAttribute(QName.resolveToQName(context.getNamespaceService(), name));
     }
 
     private Attribute getAttribute(QName qname) {
-        return getAttributes().computeIfAbsent(qname, attName -> {
+        return attributes.computeIfAbsent(qname, attName -> {
             QName prefixedName = attName.getPrefixedQName(context.getNamespaceService());
             return new Attribute(prefixedName, getAttributeType(prefixedName), this, context);
         });
@@ -118,13 +134,11 @@ public class GqlAlfNode {
                                       @GraphQLDefaultValue(DefaultAttributesTypes.class)
                                       List<Attribute.Type> types) {
 
-        Map<QName, Attribute> result = getAttributes();
-
         BiConsumer<Map<QName, ?>, Attribute.Type> addAttributes = (input, attType) -> input.forEach((key, value) -> {
-            if (!result.containsKey(key)) {
+            if (!attributes.containsKey(key)) {
                 QName name = key.getPrefixedQName(context.getNamespaceService());
                 Attribute attr = new Attribute(name, value, attType, this, env.getContext());
-                result.put(name, attr);
+                attributes.put(name, attr);
             }
         });
 
@@ -156,7 +170,7 @@ public class GqlAlfNode {
     }
 
     private List<NodeRef> getTargetAssoc(QName assocName) {
-        return getAssocs().computeIfAbsent(assocName, name ->
+        return assocs.computeIfAbsent(assocName, name ->
             context.getNodeService()
                    .getTargetAssocs(nodeRef, name)
                    .stream()
@@ -166,7 +180,7 @@ public class GqlAlfNode {
     }
 
     private List<NodeRef> getChildAssoc(QName assocName) {
-        return getAssocs().computeIfAbsent(assocName, name ->
+        return assocs.computeIfAbsent(assocName, name ->
             context.getNodeService()
                    .getChildAssocs(nodeRef, name, q -> true)
                    .stream()
@@ -196,7 +210,7 @@ public class GqlAlfNode {
             nodes.add(assocRef.getTargetRef());
         });
 
-        result.forEach(getAssocs()::putIfAbsent);
+        result.forEach(assocs::putIfAbsent);
 
         return result;
     }
@@ -212,31 +226,9 @@ public class GqlAlfNode {
             nodes.add(assocRef.getChildRef());
         });
 
-        result.forEach(getAssocs()::putIfAbsent);
+        result.forEach(assocs::putIfAbsent);
 
         return result;
-    }
-
-    private Map<QName, Attribute> getAttributes() {
-        if (attributes == null) {
-            synchronized (this) {
-                if (attributes == null) {
-                    attributes = new ConcurrentHashMap<>();
-                }
-            }
-        }
-        return attributes;
-    }
-
-    private Map<QName, List<NodeRef>> getAssocs() {
-        if (assocs == null) {
-            synchronized (this) {
-                if (assocs == null) {
-                    assocs = new ConcurrentHashMap<>();
-                }
-            }
-        }
-        return assocs;
     }
 
     private Attribute.Type getAttributeType(QName name) {

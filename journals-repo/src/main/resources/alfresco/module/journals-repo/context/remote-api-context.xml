@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="webscript.ru.citeck.journals2.records.records.post" parent="webscript"
+          class="ru.citeck.ecos.journals.webscripts.JournalRecordsPost">
+        <property name="gqlBaseQuery">
+            <value>
+                query getJournalRecords($query: String, $language: String) {
+                    criteriaSearch(q: $query, lang: $language) {
+                        paging{hasMore, maxItems, skipCount, totalCount, totalItems}
+                        query {language, value}
+                        results {...journalFields}
+                    }
+                }
+            </value>
+        </property>
+        <property name="newApiByDefault" value="false" />
+    </bean>
+
+</beans>
