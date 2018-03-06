@@ -15,7 +15,7 @@
                 }
             </value>
         </property>
-        <property name="newApiByDefault" value="false" />
+        <property name="newApiByDefault" value="true" />
     </bean>
 
 </beans>
