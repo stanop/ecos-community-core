@@ -383,4 +383,20 @@
         <property name="mimetypeService" ref="mimetypeService"/>
     </bean>
 
+    <bean id="webscript.ru.citeck.cases.case-activity.get" class="ru.citeck.ecos.webscripts.cases.CaseActivityGet" parent="webscript">
+        <property name="remoteCaseModelService" ref="remoteCaseModelService"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="templateNodeService" ref="TemplateNodeService"/>
+        <property name="permissionService" ref="permissionService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.cases.case-activities.get" class="ru.citeck.ecos.webscripts.cases.CaseActivitiesGet" parent="webscript">
+        <property name="remoteCaseModelService" ref="remoteCaseModelService"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="templateNodeService" ref="TemplateNodeService"/>
+        <property name="permissionService" ref="permissionService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
 </beans>
