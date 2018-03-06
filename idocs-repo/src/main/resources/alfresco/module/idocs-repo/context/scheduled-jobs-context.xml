@@ -77,6 +77,32 @@
         </property>
         <property name="enabled" value="${job.availability-change.enabled}"/>
     </bean>
+
+    <bean id="SendAndRemoveCompletedCasesJob" class="org.alfresco.util.CronTriggerBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.JobDetailBean">
+                <property name="jobClass">
+                    <value>ru.citeck.ecos.job.SendAndRemoveCompletedCasesJob</value>
+                </property>
+                <property name="jobDataAsMap">
+                    <map>
+                        <entry key="searchService" value-ref="searchService"/>
+                        <entry key="remoteCaseModelService" value-ref="remoteCaseModelService"/>
+                        <entry key="jobLockService">
+                            <ref bean="jobLockService"/>
+                        </entry>
+                    </map>
+                </property>
+            </bean>
+        </property>
+        <property name="startDelayMinutes" value="1"/>
+        <property name="scheduler" ref="schedulerFactory"/>
+        <property name="cronExpression">
+            <value>${citeck.remote.case.service.cron.job.schedule}</value>
+        </property>
+        <property name="enabled" value="${citeck.remote.case.service.enabled}"/>
+    </bean>
+    
     <!-- not tested -->
 	<!--bean id="RemoveDetachedJob" class="org.alfresco.util.CronTriggerBean">
         <property name="jobDetail">

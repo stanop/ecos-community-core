@@ -149,6 +149,14 @@
         <type name="idocs:doc">
             <parent>dms:doc</parent>
             <properties>
+                <property name="idocs:caseCompleted">
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+                <property name="idocs:caseModelsSent">
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
                 <property name="history:useNewHistory">
                     <type>d:boolean</type>
                 </property>
