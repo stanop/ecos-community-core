@@ -1668,12 +1668,9 @@ JournalsWidget
 
             logger.info("Loading records with query: " + queryString);
 
-            Alfresco.util.Ajax.jsonGet({
-                url: Alfresco.constants.PROXY_URI + "/api/journals/records",
-                dataObj: {
-                    query: queryString,
-                    journalId: journal.type().id()
-                },
+            Alfresco.util.Ajax.jsonPost({
+                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journal.type().id(),
+                dataObj: query,
                 successCallback: {
                     scope: this,
                     fn: function(response) {

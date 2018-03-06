@@ -1553,10 +1553,15 @@
 
 		assocOrProps: function(props, delimeter) {
 			if (!props) props = "cm:name";
+
+			var propsArr = props.split(",").map(function (p) {return p.trim();});
+			var propsArrKeys = propsArr.map(function (p) {return p.replace(/:/g, "_");});
 			
 			if (delimeter == null) delimeter = ", ";
 
 			return function(elCell, oRecord, oColumn, sData) {
+
+
 				var request = function(nodeRef) {
 					Alfresco.util.Ajax.request({
 						url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef + "&props=" + props + "&replaceColon=_",
@@ -1590,7 +1595,14 @@
 
 				if (sData instanceof Object) {
 					var renderRequest = function(object) {
-						if (_.has(object, "nodeRef")) { 
+                        var hasReqData = propsArrKeys.every(function(k) {
+                        	return _.has(object, k);
+                        });
+                        if (hasReqData) {
+                            if (elCell.innerHTML) elCell.innerHTML += "<br>";
+							var values = propsArrKeys.map(function (k) {return object[k].value;});
+							elCell.innerHTML = values.join(delimeter);
+                        } else if (_.has(object, "nodeRef")) {
 							request(object.nodeRef) 
 						} else {
 							if (elCell.innerHTML) elCell.innerHTML += "<br>";
