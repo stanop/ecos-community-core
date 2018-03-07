@@ -13,10 +13,7 @@ import org.alfresco.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.extensions.webscripts.AbstractWebScript;
-import org.springframework.extensions.webscripts.Status;
-import org.springframework.extensions.webscripts.WebScriptRequest;
-import org.springframework.extensions.webscripts.WebScriptResponse;
+import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
@@ -86,6 +83,8 @@ public class JournalRecordsPost extends AbstractWebScript {
         if (journalType == null) {
             throw new RuntimeException(String.format("journal with id %s not found!", journalId));
         }
+
+        res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
 
         String datasource = journalType.getOptions().get(OPTION_DATASOURCE);
 
