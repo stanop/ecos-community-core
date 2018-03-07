@@ -14,8 +14,8 @@ import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
-import ru.citeck.ecos.dto.CaseModelDto;
-import ru.citeck.ecos.dto.StageDto;
+import ru.citeck.ecos.dto.*;
+import ru.citeck.ecos.model.ActionModel;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.StagesModel;
 import ru.citeck.ecos.template.TemplateNodeService;
@@ -204,6 +204,24 @@ public class CaseActivityGet extends DeclarativeWebScript {
     private QName getCaseModelType(CaseModelDto caseModelDto) {
         if (caseModelDto instanceof StageDto) {
             return StagesModel.TYPE_STAGE;
+        }
+        if (caseModelDto instanceof ExecutionScriptDto) {
+            return ActionModel.ExecuteScript.TYPE;
+        }
+        if (caseModelDto instanceof FailDto) {
+            return ActionModel.Fail.TYPE;
+        }
+        if (caseModelDto instanceof MailDto) {
+            return ActionModel.Mail.TYPE;
+        }
+        if (caseModelDto instanceof SetProcessVariableDto) {
+            return ActionModel.SetProcessVariable.TYPE;
+        }
+        if (caseModelDto instanceof SetPropertyValueDto) {
+            return ActionModel.SetPropertyValue.TYPE;
+        }
+        if (caseModelDto instanceof StartWorkflowDto) {
+            return ActionModel.StartWorkflow.TYPE;
         }
         return ActivityModel.TYPE_ACTIVITY;
     }

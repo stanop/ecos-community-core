@@ -17,8 +17,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
-import ru.citeck.ecos.dto.CaseModelDto;
-import ru.citeck.ecos.dto.StageDto;
+import ru.citeck.ecos.dto.*;
+import ru.citeck.ecos.model.ActionModel;
 import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.model.StagesModel;
@@ -181,6 +181,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         objectNode.put("autoEvents", (Boolean) nodeService.getProperty(caseModelRef, ActivityModel.PROP_AUTO_EVENTS));
         objectNode.put("repeatable", (Boolean) nodeService.getProperty(caseModelRef, ActivityModel.PROP_REPEATABLE));
         objectNode.put("typeVersion", (Integer) nodeService.getProperty(caseModelRef, ActivityModel.PROP_TYPE_VERSION));
+        fillAdditionalInfo(dtoType, caseModelRef, objectNode);
         /** Child activities */
         ArrayNode arrayNode = objectMapper.createArrayNode();
         for (NodeRef childCaseRef : getCaseModelsByNode(caseModelRef)) {
@@ -204,6 +205,24 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         if (StageDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalStageInfo(caseModelRef, objectNode);
         }
+        if (ExecutionScriptDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalExecutionScriptInfo(caseModelRef, objectNode);
+        }
+        if (FailDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalFailInfo(caseModelRef, objectNode);
+        }
+        if (MailDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalMailInfo(caseModelRef, objectNode);
+        }
+        if (SetProcessVariableDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalSetProcessVariableInfo(caseModelRef, objectNode);
+        }
+        if (SetPropertyValueDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalSetPropertyValueInfo(caseModelRef, objectNode);
+        }
+        if (StartWorkflowDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalStartWorkflowInfo(caseModelRef, objectNode);
+        }
     }
 
     /**
@@ -213,6 +232,67 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
      */
     private void fillAdditionalStageInfo(NodeRef caseModelRef, ObjectNode objectNode) {
         objectNode.put("documentStatus", (String) nodeService.getProperty(caseModelRef, StagesModel.PROP_DOCUMENT_STATUS));
+    }
+
+    /**
+     * Fill additional execution script info
+     * @param caseModelRef Case model node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalExecutionScriptInfo(NodeRef caseModelRef, ObjectNode objectNode) {
+        objectNode.put("executeScript", (String) nodeService.getProperty(caseModelRef, ActionModel.ExecuteScript.PROP_SCRIPT));
+    }
+
+    /**
+     * Fill additional info fail info
+     * @param caseModelRef Case model node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalFailInfo(NodeRef caseModelRef, ObjectNode objectNode) {
+        objectNode.put("failMessage", (String) nodeService.getProperty(caseModelRef, ActionModel.Fail.PROP_MESSAGE));
+    }
+
+    /**
+     * Fill additional info mail info
+     * @param caseModelRef Case model node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalMailInfo(NodeRef caseModelRef, ObjectNode objectNode) {
+        objectNode.put("mailTo", (String) nodeService.getProperty(caseModelRef, ActionModel.Mail.PROP_TO));
+        objectNode.put("toMany", (String) nodeService.getProperty(caseModelRef, ActionModel.Mail.PROP_TO_MANY));
+        objectNode.put("subject", (String) nodeService.getProperty(caseModelRef, ActionModel.Mail.PROP_SUBJECT));
+        objectNode.put("fromUser", (String) nodeService.getProperty(caseModelRef, ActionModel.Mail.PROP_FROM));
+        objectNode.put("mailText", (String) nodeService.getProperty(caseModelRef, ActionModel.Mail.PROP_TEXT));
+        objectNode.put("mailHtml", (String) nodeService.getProperty(caseModelRef, ActionModel.Mail.PROP_HTML));
+    }
+
+    /**
+     * Fill additional info set process variable info
+     * @param caseModelRef Case model node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalSetProcessVariableInfo(NodeRef caseModelRef, ObjectNode objectNode) {
+        objectNode.put("processVariableName", (String) nodeService.getProperty(caseModelRef, ActionModel.SetProcessVariable.PROP_VARIABLE));
+        objectNode.put("processVariableValue", (String) nodeService.getProperty(caseModelRef, ActionModel.SetProcessVariable.PROP_VALUE));
+    }
+
+    /**
+     * Fill additional info set property value info
+     * @param caseModelRef Case model node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalSetPropertyValueInfo(NodeRef caseModelRef, ObjectNode objectNode) {
+        objectNode.put("propertyFullName", (String) nodeService.getProperty(caseModelRef, ActionModel.SetPropertyValue.PROP_PROPERTY));
+        objectNode.put("propertyValue", (String) nodeService.getProperty(caseModelRef, ActionModel.SetPropertyValue.PROP_VALUE));
+    }
+
+    /**
+     * Fill additional info start workflow info
+     * @param caseModelRef Case model node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalStartWorkflowInfo(NodeRef caseModelRef, ObjectNode objectNode) {
+        objectNode.put("workflowName", (String) nodeService.getProperty(caseModelRef, ActionModel.StartWorkflow.PROP_WORKFLOW_NAME));
     }
 
     /**
@@ -226,6 +306,24 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         }
         if (dictionaryService.isSubClass(nodeType, StagesModel.TYPE_STAGE)) {
             return StageDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ActionModel.ExecuteScript.TYPE)) {
+            return ExecutionScriptDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ActionModel.Fail.TYPE)) {
+            return FailDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ActionModel.Mail.TYPE)) {
+            return MailDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ActionModel.SetProcessVariable.TYPE)) {
+            return SetProcessVariableDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ActionModel.SetPropertyValue.TYPE)) {
+            return SetPropertyValueDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ActionModel.StartWorkflow.TYPE)) {
+            return StartWorkflowDto.DTO_TYPE;
         }
         return CaseModelDto.DTO_TYPE;
     }
