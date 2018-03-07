@@ -17,6 +17,7 @@ import ru.citeck.ecos.cases.RemoteCaseModelService;
 import ru.citeck.ecos.dto.*;
 import ru.citeck.ecos.model.ActionModel;
 import ru.citeck.ecos.model.ActivityModel;
+import ru.citeck.ecos.model.CaseTimerModel;
 import ru.citeck.ecos.model.StagesModel;
 import ru.citeck.ecos.template.TemplateNodeService;
 
@@ -222,6 +223,9 @@ public class CaseActivityGet extends DeclarativeWebScript {
         }
         if (caseModelDto instanceof StartWorkflowDto) {
             return ActionModel.StartWorkflow.TYPE;
+        }
+        if (caseModelDto instanceof CaseTimerDto) {
+            return CaseTimerModel.TYPE_TIMER;
         }
         return ActivityModel.TYPE_ACTIVITY;
     }

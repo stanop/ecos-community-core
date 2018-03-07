@@ -18,10 +18,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
 import ru.citeck.ecos.dto.*;
-import ru.citeck.ecos.model.ActionModel;
-import ru.citeck.ecos.model.ActivityModel;
-import ru.citeck.ecos.model.IdocsModel;
-import ru.citeck.ecos.model.StagesModel;
+import ru.citeck.ecos.model.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -96,11 +93,13 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
      */
     @Override
     public List<NodeRef> getCaseModelsByNode(NodeRef nodeRef) {
-        List<ChildAssociationRef> caseAssocs = nodeService.getChildAssocs(nodeRef, null, ActivityModel.ASSOC_ACTIVITIES);
+        List<ChildAssociationRef> caseAssocs = nodeService.getChildAssocs(nodeRef);
         List<NodeRef> result = new ArrayList<>(caseAssocs.size());
         for (ChildAssociationRef caseAssoc : caseAssocs) {
-            NodeRef caseRef = caseAssoc.getChildRef();
-            result.add(caseRef);
+            if (ActivityModel.ASSOC_ACTIVITIES.equals(caseAssoc.getTypeQName())) {
+                NodeRef caseRef = caseAssoc.getChildRef();
+                result.add(caseRef);
+            }
         }
         return result;
     }
@@ -223,6 +222,9 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         if (StartWorkflowDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalStartWorkflowInfo(caseModelRef, objectNode);
         }
+        if (CaseModelDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalCaseTimerInfo(caseModelRef, objectNode);
+        }
     }
 
     /**
@@ -282,7 +284,8 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
      * @param objectNode Object node
      */
     private void fillAdditionalSetPropertyValueInfo(NodeRef caseModelRef, ObjectNode objectNode) {
-        objectNode.put("propertyFullName", (String) nodeService.getProperty(caseModelRef, ActionModel.SetPropertyValue.PROP_PROPERTY));
+        QName propertyName = (QName) nodeService.getProperty(caseModelRef, ActionModel.SetPropertyValue.PROP_PROPERTY);
+        objectNode.put("propertyFullName", propertyName != null ? propertyName.toString() : "");
         objectNode.put("propertyValue", (String) nodeService.getProperty(caseModelRef, ActionModel.SetPropertyValue.PROP_VALUE));
     }
 
@@ -293,6 +296,22 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
      */
     private void fillAdditionalStartWorkflowInfo(NodeRef caseModelRef, ObjectNode objectNode) {
         objectNode.put("workflowName", (String) nodeService.getProperty(caseModelRef, ActionModel.StartWorkflow.PROP_WORKFLOW_NAME));
+    }
+
+    /**
+     * Fill additional info case timer info
+     * @param caseModelRef Case model node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalCaseTimerInfo(NodeRef caseModelRef, ObjectNode objectNode) {
+        objectNode.put("expressionType", (String) nodeService.getProperty(caseModelRef, CaseTimerModel.PROP_EXPRESSION_TYPE));
+        objectNode.put("timerExpression", (String) nodeService.getProperty(caseModelRef, CaseTimerModel.PROP_TIMER_EXPRESSION));
+        objectNode.put("datePrecision", (String) nodeService.getProperty(caseModelRef, CaseTimerModel.PROP_DATE_PRECISION));
+        objectNode.put("computedExpression", (String) nodeService.getProperty(caseModelRef, CaseTimerModel.PROP_COMPUTED_EXPRESSION));
+        objectNode.put("repeatCounter", (Integer) nodeService.getProperty(caseModelRef, CaseTimerModel.PROP_REPEAT_COUNTER));
+        if (nodeService.getProperty(caseModelRef, CaseTimerModel.PROP_OCCUR_DATE) != null) {
+            objectNode.put("occurDate", dateTimeFormat.format((Date) nodeService.getProperty(caseModelRef, CaseTimerModel.PROP_OCCUR_DATE)));
+        }
     }
 
     /**
@@ -324,6 +343,9 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         }
         if (dictionaryService.isSubClass(nodeType, ActionModel.StartWorkflow.TYPE)) {
             return StartWorkflowDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, CaseTimerModel.TYPE_TIMER)) {
+            return CaseTimerDto.DTO_TYPE;
         }
         return CaseModelDto.DTO_TYPE;
     }
