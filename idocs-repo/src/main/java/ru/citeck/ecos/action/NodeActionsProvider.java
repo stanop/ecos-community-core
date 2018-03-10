@@ -20,7 +20,6 @@ public abstract class NodeActionsProvider {
 
     public void setNodeActionsService(NodeActionsService nodeActionsService) {
         nodeActionsService.addActionProvider(this);
-
     }
 
     public abstract List<NodeActionDefinition> getNodeActions(NodeRef nodeRef);
