@@ -1,4 +1,4 @@
-<#include "/ru/citeck/search/search-macros.ftl">
+<#import "/ru/citeck/search/search-macros.ftl" as search>
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
     <#if args["details"]?has_content && args["details"]?lower_case == "true">
@@ -13,9 +13,9 @@
                 "${key}": <#if !(attributes[key]??)>
                     null
                 <#elseif nodeService.isContentProperty(attributes[key])>
-                    <@printValue document.properties[key] />
+                    <@search.printValue document.properties[key] />
                 <#else>
-                    <@printValue attributes[key] />
+                    <@search.printValue attributes[key] />
                 </#if><#if key_has_next>,</#if>
             </#list>
         },
