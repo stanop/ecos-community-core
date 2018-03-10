@@ -56,7 +56,7 @@ public class JournalRecordsPost extends AbstractWebScript {
     private static final String KEY_CRITERIA_SEARCH = "criteriaSearch";
 
     private static final Pattern FORMATTER_ATTRIBUTES_PATTERN = Pattern.compile("['\"]\\s*?(\\S+?:\\S+?\\s*?" +
-            "(,\\s*?\\S+?:\\S+?\\s*?)*?)['\"]");
+                                                                                "(,\\s*?\\S+?:\\S+?\\s*?)*?)['\"]");
     private boolean newApiByDefault = false;
 
     private Properties globalProperties;
@@ -69,6 +69,8 @@ public class JournalRecordsPost extends AbstractWebScript {
 
     private String gqlBaseQuery;
     private Map<String, JournalRecordsQuery> gqlQueryByJournalId = new ConcurrentHashMap<>();
+
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -144,7 +146,6 @@ public class JournalRecordsPost extends AbstractWebScript {
                 }
             });
 
-            ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(res.getOutputStream(), result);
 
         } else { //old behaviour from criteria-search.post

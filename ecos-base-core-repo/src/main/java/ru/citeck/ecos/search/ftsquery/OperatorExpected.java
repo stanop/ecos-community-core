@@ -74,4 +74,9 @@ public interface OperatorExpected {
      * Get copy of query
      */
     OperatorExpected copy();
+
+    /**
+     * Set bulk fetch
+     */
+    OperatorExpected bulkFetch(boolean value);
 }

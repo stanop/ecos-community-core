@@ -21,6 +21,8 @@ public class GraphQLWebscript extends AbstractWebScript {
     @Autowired
     GraphQLService graphQLService;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
@@ -35,8 +37,7 @@ public class GraphQLWebscript extends AbstractWebScript {
 
         ExecutionResult result = graphQLService.execute(query, parameters);
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(res.getOutputStream(), result.toSpecification());
+        objectMapper.writeValue(res.getOutputStream(), result.toSpecification());
         res.setStatus(Status.STATUS_OK);
     }
 
