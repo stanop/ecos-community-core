@@ -20,6 +20,7 @@ package ru.citeck.ecos.journals;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.Unmarshaller;
 
@@ -53,7 +54,7 @@ class JournalServiceImpl implements JournalService {
     private SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry;
 
     private LazyNodeRef journalsRoot;
-    private Map<String, JournalType> journalTypes = new TreeMap<>();
+    private Map<String, JournalType> journalTypes = new ConcurrentHashMap<>();
 
     private List<CriterionInvariantsProvider> criterionInvariantsProviders = Collections.synchronizedList(new ArrayList<>());
 

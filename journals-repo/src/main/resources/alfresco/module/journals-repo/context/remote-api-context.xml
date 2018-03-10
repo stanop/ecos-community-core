@@ -18,4 +18,9 @@
         <property name="newApiByDefault" value="true" />
     </bean>
 
+    <bean id="webscript.ru.citeck.journals2.create-variants.get" parent="webscript"
+          class="ru.citeck.ecos.journals.webscripts.CreateVariantsGet">
+        <property name="cacheAgeSeconds" value="600" />
+    </bean>
+
 </beans>

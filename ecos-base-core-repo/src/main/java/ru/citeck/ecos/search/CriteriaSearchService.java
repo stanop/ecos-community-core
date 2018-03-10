@@ -147,6 +147,7 @@ public class CriteriaSearchService {
         parameters.setQuery(query);
         parameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
         parameters.setQueryConsistency(QueryConsistency.EVENTUAL);
+        parameters.setBulkFetchEnabled(false);
         return parameters;
     }
 

@@ -143,13 +143,13 @@
         <property name="nodeService" ref="NodeService"/>
     </bean>
 
-    <bean id="ConfiscatedAspectBehaviour" class="ru.citeck.ecos.security.ConfiscatedBehaviour"
+    <!--<bean id="ConfiscatedAspectBehaviour" class="ru.citeck.ecos.security.ConfiscatedBehaviour"
           init-method="init">
         <property name="walker" ref="ConfiscateServiceWalker"/>
         <property name="confiscateService" ref="ConfiscateService"/>
         <property name="policyComponent" ref="policyComponent"/>
         <property name="className" value="{http://www.citeck.ru/model/grant-permission/1.0}confiscated" />
-    </bean>
+    </bean>-->
 
 	<bean id="DynamicClassificationBehaviour" class="ru.citeck.ecos.behavior.tk.DynamicClassificationBehaviour" init-method="init">
 		<property name="policyComponent" ref="policyComponent" />
@@ -752,6 +752,8 @@
     <bean class="ru.citeck.ecos.behavior.icase.UpdateCasePerformAssignees" init-method="init">
         <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
+
+    <bean class="ru.citeck.ecos.behavior.icase.ClearNodeActionsCache" />
 
     <bean id="ecos.splitChildrenBehaviour" class="ru.citeck.ecos.behavior.common.SplitChildrenBehaviour"
           init-method="init" abstract="true">
