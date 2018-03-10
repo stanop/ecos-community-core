@@ -4917,7 +4917,7 @@ div#HEADER_USER_STATUS {
 }
 
 /*case status*/
-.yui-skin-citeckTheme .cardlet div[id*="case-status"] span.panel-body {
+.yui-skin-citeckTheme .cardlet div[id*="case-status"] div.panel-body {
     color: #008c03;
 }
 
