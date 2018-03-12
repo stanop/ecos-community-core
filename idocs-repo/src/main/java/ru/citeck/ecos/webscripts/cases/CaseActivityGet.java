@@ -15,10 +15,7 @@ import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
 import ru.citeck.ecos.dto.*;
-import ru.citeck.ecos.model.ActionModel;
-import ru.citeck.ecos.model.ActivityModel;
-import ru.citeck.ecos.model.CaseTimerModel;
-import ru.citeck.ecos.model.StagesModel;
+import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.template.TemplateNodeService;
 
 import java.text.SimpleDateFormat;
@@ -229,6 +226,9 @@ public class CaseActivityGet extends DeclarativeWebScript {
         }
         if (caseModelDto instanceof CaseTimerDto) {
             return CaseTimerModel.TYPE_TIMER;
+        }
+        if (caseModelDto instanceof CaseTaskDto) {
+            return ICaseTaskModel.TYPE_TASK;
         }
         return ActivityModel.TYPE_ACTIVITY;
     }

@@ -230,6 +230,9 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         if (CaseModelDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalCaseTimerInfo(caseModelRef, objectNode);
         }
+        if (CaseTaskDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalCaseTaskInfo(caseModelRef, objectNode);
+        }
     }
 
     /**
@@ -319,7 +322,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
                 }
                 statusObjectNode.put("creator", (String) nodeService.getProperty(statusRef, ContentModel.PROP_CREATOR));
                 if (nodeService.getProperty(statusRef, ContentModel.PROP_MODIFIED) != null) {
-                    objectNode.put("modified", dateTimeFormat.format((Date) nodeService.getProperty(statusRef, ContentModel.PROP_MODIFIED)));
+                    statusObjectNode.put("modified", dateTimeFormat.format((Date) nodeService.getProperty(statusRef, ContentModel.PROP_MODIFIED)));
                 }
                 statusObjectNode.put("modifier", (String) nodeService.getProperty(statusRef, ContentModel.PROP_MODIFIER));
                 statusObjectNode.put("title", (String) nodeService.getProperty(statusRef, ContentModel.PROP_TITLE));
@@ -344,6 +347,47 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         objectNode.put("repeatCounter", (Integer) nodeService.getProperty(caseModelRef, CaseTimerModel.PROP_REPEAT_COUNTER));
         if (nodeService.getProperty(caseModelRef, CaseTimerModel.PROP_OCCUR_DATE) != null) {
             objectNode.put("occurDate", dateTimeFormat.format((Date) nodeService.getProperty(caseModelRef, CaseTimerModel.PROP_OCCUR_DATE)));
+        }
+    }
+
+    /**
+     * Fill additional info case task info
+     * @param caseModelRef Case model node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalCaseTaskInfo(NodeRef caseModelRef, ObjectNode objectNode) {
+        QName type = nodeService.getType(caseModelRef);
+        objectNode.put("taskTypeFullName", type.toString());
+        objectNode.put("workflowDefinitionName", (String) nodeService.getProperty(caseModelRef, ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME));
+        objectNode.put("workflowInstanceId", (String) nodeService.getProperty(caseModelRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID));
+        if (nodeService.getProperty(caseModelRef, ICaseTaskModel.PROP_DEADLINE) != null) {
+            objectNode.put("dueDate", dateTimeFormat.format((Date) nodeService.getProperty(caseModelRef, ICaseTaskModel.PROP_DEADLINE)));
+        }
+        objectNode.put("priority", (Integer) nodeService.getProperty(caseModelRef, ICaseTaskModel.PROP_PRIORITY));
+        /** BPM Package */
+        List<AssociationRef> packageAssocs = nodeService.getTargetAssocs(caseModelRef, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
+        if (!CollectionUtils.isEmpty(packageAssocs)) {
+            if (packageAssocs.get(0).getTargetRef() != null) {
+                NodeRef packageRef = packageAssocs.get(0).getTargetRef();
+                ObjectNode packageNode = objectMapper.createObjectNode();
+                if (nodeService.getProperty(packageRef, ContentModel.PROP_CREATED) != null) {
+                    packageNode.put("created", dateTimeFormat.format((Date) nodeService.getProperty(packageRef, ContentModel.PROP_CREATED)));
+                }
+                packageNode.put("creator", (String) nodeService.getProperty(packageRef, ContentModel.PROP_CREATOR));
+                if (nodeService.getProperty(packageRef, ContentModel.PROP_MODIFIED) != null) {
+                    packageNode.put("modified", dateTimeFormat.format((Date) nodeService.getProperty(packageRef, ContentModel.PROP_MODIFIED)));
+                }
+                packageNode.put("modifier", (String) nodeService.getProperty(packageRef, ContentModel.PROP_MODIFIER));
+                packageNode.put("title", (String) nodeService.getProperty(packageRef, ContentModel.PROP_TITLE));
+                packageNode.put("description", (String) nodeService.getProperty(packageRef, ContentModel.PROP_DESCRIPTION));
+                packageNode.put("nodeUUID", packageRef.getId());
+
+                packageNode.put("workflowInstanceId", (String) nodeService.getProperty(packageRef, BpmPackageModel.PROP_WORKFLOW_INSTANCE_ID));
+                packageNode.put("workflowDefinitionName", (String) nodeService.getProperty(packageRef, BpmPackageModel.PROP_WORKFLOW_DEFINITION_NAME));
+                packageNode.put("isSystemPackage", (Boolean) nodeService.getProperty(packageRef, BpmPackageModel.PROP_IS_SYSTEM_PACKAGE));
+
+                objectNode.set("bpmPackage", packageNode);
+            }
         }
     }
 
@@ -382,6 +426,9 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         }
         if (dictionaryService.isSubClass(nodeType, CaseTimerModel.TYPE_TIMER)) {
             return CaseTimerDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ICaseTaskModel.TYPE_TASK)) {
+            return CaseTaskDto.DTO_TYPE;
         }
         return CaseModelDto.DTO_TYPE;
     }
