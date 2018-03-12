@@ -26,7 +26,8 @@ import java.util.List;
         @JsonSubTypes.Type(value = SetPropertyValueDto.class, name = SetPropertyValueDto.DTO_TYPE),
         @JsonSubTypes.Type(value = StartWorkflowDto.class, name = StartWorkflowDto.DTO_TYPE),
         @JsonSubTypes.Type(value = CaseTimerDto.class, name = CaseTimerDto.DTO_TYPE),
-        @JsonSubTypes.Type(value = SetCaseStatusDto.class, name = SetCaseStatusDto.DTO_TYPE)
+        @JsonSubTypes.Type(value = SetCaseStatusDto.class, name = SetCaseStatusDto.DTO_TYPE),
+        @JsonSubTypes.Type(value = CaseTaskDto.class, name = CaseTaskDto.DTO_TYPE)
 })
 public class CaseModelDto extends AbstractEntityDto implements Serializable {
 
