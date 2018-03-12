@@ -11,6 +11,11 @@ import java.util.Date;
 public class AbstractEntityDto implements Serializable {
 
     /**
+     * Node uuid
+     */
+    private String nodeUUID;
+
+    /**
      * Created datetime
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -43,6 +48,14 @@ public class AbstractEntityDto implements Serializable {
     private String description;
 
     /** Getters and setters */
+
+    public String getNodeUUID() {
+        return nodeUUID;
+    }
+
+    public void setNodeUUID(String nodeUUID) {
+        this.nodeUUID = nodeUUID;
+    }
 
     public Date getCreated() {
         return created;
