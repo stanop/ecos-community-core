@@ -10,7 +10,6 @@ import ru.citeck.ecos.graphql.GraphQLQueryDefinition;
 
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @GraphQLQueryDefinition
 public class GqlNodesQuery {
@@ -60,10 +59,7 @@ public class GqlNodesQuery {
         ResultSet resultSet = context.getSearchService()
                                      .query(parameters);
         try {
-            return resultSet.getNodeRefs()
-                            .stream()
-                            .map(context::getNode)
-                            .collect(Collectors.toList());
+            return context.getNodes(resultSet.getNodeRefs());
         } finally {
             if (resultSet != null) {
                 resultSet.close();

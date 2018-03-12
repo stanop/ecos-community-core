@@ -212,15 +212,11 @@ public class JournalRecordsPost extends AbstractWebScript {
                     isMultiple = false;
                 }
             }
-            if (attributeWithNodes) {
-                String nodeSchema = getAttributeNodeSchema(attributeOptions);
-                schemaBuilder.append("nodes{").append(nodeSchema).append("}");
-                attributesMapping.put(underscoredKey, new Pair<>(prefixedKey, "nodes"));
-            } else {
-                String attributeDataKey = isMultiple ? "values" : "value";
-                schemaBuilder.append(attributeDataKey);
-                attributesMapping.put(underscoredKey, new Pair<>(prefixedKey, attributeDataKey));
-            }
+
+            String attrSchema = getAttributeSchema(attributeOptions, isMultiple, attributeWithNodes);
+            String attributeDataKey = StringUtils.substringBefore(attrSchema, "{").trim();
+            attributesMapping.put(underscoredKey, new Pair<>(prefixedKey, attributeDataKey));
+            schemaBuilder.append(attrSchema);
 
             schemaBuilder.append("}");
         }
@@ -230,16 +226,23 @@ public class JournalRecordsPost extends AbstractWebScript {
         return new JournalRecordsQuery(schemaBuilder.toString(), attributesMapping);
     }
 
-    private String getAttributeNodeSchema(Map<String, String> attributeOptions) {
-        String nodeSchema = attributeOptions.get("nodeSchema");
-        if (StringUtils.isNotBlank(nodeSchema)) {
-            return nodeSchema;
+    private String getAttributeSchema(Map<String, String> attributeOptions, boolean isMultiple, boolean isNodes) {
+
+        String schema = attributeOptions.get("attributeSchema");
+        if (StringUtils.isNotBlank(schema)) {
+            return schema;
         }
+
         String formatter = attributeOptions.get("formatter");
-        if (StringUtils.isNotBlank(formatter)) {
-            Map<String, String> linkedNodeAttributes = new HashMap<>();
+        formatter = formatter != null ? formatter : "";
+
+        Map<String, String> childrenAttributes = new HashMap<>();
+        String value = null;
+
+        if (isNodes) {
+            value = "nodes";
             if (formatter.contains("Link") || formatter.contains("nodeRef")) {
-                linkedNodeAttributes.put("nodeRef", "nodeRef");
+                childrenAttributes.put("nodeRef", "nodeRef");
             }
             Matcher attrMatcher = FORMATTER_ATTRIBUTES_PATTERN.matcher(formatter);
             if (attrMatcher.find()) {
@@ -247,22 +250,35 @@ public class JournalRecordsPost extends AbstractWebScript {
                     String attributes = attrMatcher.group(1);
                     for (String attr : attributes.split(",")) {
                         attr = attr.trim();
-                        if (!linkedNodeAttributes.containsKey(attr)) {
+                        if (!childrenAttributes.containsKey(attr)) {
                             String key = attr.replaceAll(":", "_");
-                            linkedNodeAttributes.put(key, "attribute(name:\"" + attr + "\"){value}");
+                            childrenAttributes.put(key, "attribute(name:\"" + attr + "\"){value}");
                         }
                     }
                 } while (attrMatcher.find());
             } else {
-                linkedNodeAttributes.put("displayName", "displayName");
+                childrenAttributes.put("displayName", "displayName");
             }
-            StringBuilder sb = new StringBuilder();
-            linkedNodeAttributes.forEach((k, v) -> sb.append(k).append(':').append(v).append(','));
-            nodeSchema = sb.toString();
         } else {
-            nodeSchema = "displayName";
+            if (formatter.contains("typeName")) {
+                value = "qname";
+                childrenAttributes.put("displayName", "classTitle");
+            }
         }
-        return nodeSchema;
+
+        StringBuilder schemaBuilder = new StringBuilder();
+        if (value == null) {
+            schemaBuilder.append(isMultiple ? "values" : "value");
+        } else {
+            if (childrenAttributes.size() == 0) {
+                childrenAttributes.put("displayName", "displayName");
+            }
+            schemaBuilder.append(value).append("{");
+            childrenAttributes.forEach((k, v) -> schemaBuilder.append(k).append(':').append(v).append(','));
+            schemaBuilder.append("}");
+        }
+
+        return schemaBuilder.toString();
     }
 
     public boolean isNewApiByDefault() {

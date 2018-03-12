@@ -114,7 +114,7 @@ public class GqlAlfNode {
     }
 
     @GraphQLField
-    public GqlQName typeQName() {
+    public Optional<GqlQName> typeQName() {
         return context.getQName(getType());
     }
 
@@ -208,11 +208,7 @@ public class GqlAlfNode {
     }
 
     private List<GqlQName> evalAspects() {
-        return context.getNodeService()
-                      .getAspects(nodeRef)
-                      .stream()
-                      .map(context::getQName)
-                      .collect(Collectors.toList());
+        return context.getQNames(context.getNodeService().getAspects(nodeRef));
     }
 
     private QName evalType() {

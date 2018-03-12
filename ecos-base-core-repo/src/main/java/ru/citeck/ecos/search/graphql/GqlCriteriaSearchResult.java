@@ -8,7 +8,6 @@ import ru.citeck.ecos.search.CriteriaSearchResults;
 import ru.citeck.ecos.search.SearchCriteria;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GqlCriteriaSearchResult {
 
@@ -23,10 +22,7 @@ public class GqlCriteriaSearchResult {
     @GraphQLField
     public List<GqlAlfNode> results(DataFetchingEnvironment env) {
         GqlContext context = env.getContext();
-        return results.getResults()
-                      .stream()
-                      .map(context::getNode)
-                      .collect(Collectors.toList());
+        return context.getNodes(results.getResults());
     }
 
     @GraphQLField
