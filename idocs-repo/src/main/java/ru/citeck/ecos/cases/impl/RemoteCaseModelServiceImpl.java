@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -13,6 +14,7 @@ import org.alfresco.service.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -222,6 +224,9 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         if (StartWorkflowDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalStartWorkflowInfo(caseModelRef, objectNode);
         }
+        if (SetCaseStatusDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalSetCaseStatusInfo(caseModelRef, objectNode);
+        }
         if (CaseModelDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalCaseTimerInfo(caseModelRef, objectNode);
         }
@@ -299,6 +304,34 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     }
 
     /**
+     * Fill additional info set case status info
+     * @param caseModelRef Case model node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalSetCaseStatusInfo(NodeRef caseModelRef, ObjectNode objectNode) {
+        List<AssociationRef> assocs = nodeService.getTargetAssocs(caseModelRef, ActionModel.SetCaseStatus.PROP_STATUS);
+        if (!CollectionUtils.isEmpty(assocs)) {
+            NodeRef statusRef = assocs.get(0).getTargetRef();
+            if (statusRef != null) {
+                ObjectNode statusObjectNode = objectMapper.createObjectNode();
+                if (nodeService.getProperty(statusRef, ContentModel.PROP_CREATED) != null) {
+                    statusObjectNode.put("created", dateTimeFormat.format((Date) nodeService.getProperty(statusRef, ContentModel.PROP_CREATED)));
+                }
+                statusObjectNode.put("creator", (String) nodeService.getProperty(statusRef, ContentModel.PROP_CREATOR));
+                if (nodeService.getProperty(statusRef, ContentModel.PROP_MODIFIED) != null) {
+                    objectNode.put("modified", dateTimeFormat.format((Date) nodeService.getProperty(statusRef, ContentModel.PROP_MODIFIED)));
+                }
+                statusObjectNode.put("modifier", (String) nodeService.getProperty(statusRef, ContentModel.PROP_MODIFIER));
+                statusObjectNode.put("title", (String) nodeService.getProperty(statusRef, ContentModel.PROP_TITLE));
+                statusObjectNode.put("description", (String) nodeService.getProperty(statusRef, ContentModel.PROP_DESCRIPTION));
+                statusObjectNode.put("nodeUUID", statusRef.getId());
+                /** Set status */
+                objectNode.set("caseStatus", statusObjectNode);
+            }
+        }
+    }
+
+    /**
      * Fill additional info case timer info
      * @param caseModelRef Case model node reference
      * @param objectNode Object node
@@ -343,6 +376,9 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         }
         if (dictionaryService.isSubClass(nodeType, ActionModel.StartWorkflow.TYPE)) {
             return StartWorkflowDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ActionModel.SetCaseStatus.TYPE)) {
+            return SetCaseStatusDto.DTO_TYPE;
         }
         if (dictionaryService.isSubClass(nodeType, CaseTimerModel.TYPE_TIMER)) {
             return CaseTimerDto.DTO_TYPE;
