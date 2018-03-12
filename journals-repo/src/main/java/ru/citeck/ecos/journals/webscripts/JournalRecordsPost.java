@@ -130,13 +130,14 @@ public class JournalRecordsPost extends AbstractWebScript {
                             Pair<String, String> mapping = query.attributesMapping.get(recordKey);
                             if (mapping != null) {
                                 attributes.put(mapping.getFirst(), ((Map) recordValue).get(mapping.getSecond()));
+                            } else if (recordKey.equals("attr_aspects")) {
+                                attributes.put("attr:aspects", recordValue);
                             } else {
-                                newRecord.putIfAbsent(recordKey, recordValue);
+                                newRecord.put(recordKey, recordValue);
                             }
                         });
 
-                        newRecord.putIfAbsent(KEY_ATTRIBUTES, attributes);
-
+                        newRecord.put(KEY_ATTRIBUTES, attributes);
                         newResultsList.add(newRecord);
                     }
                     result.put(KEY_RESULTS, newResultsList);
@@ -181,6 +182,7 @@ public class JournalRecordsPost extends AbstractWebScript {
         schemaBuilder.append("nodeRef\n");
         schemaBuilder.append("isContainer\n");
         schemaBuilder.append("isDocument\n");
+        schemaBuilder.append("attr_aspects: aspects {shortQName: shortName}\n");
 
         Map<String, Pair<String, String>> attributesMapping = new HashMap<>();
 

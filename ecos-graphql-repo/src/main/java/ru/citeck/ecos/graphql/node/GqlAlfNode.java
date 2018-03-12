@@ -12,7 +12,6 @@ import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.GqlContext;
 
@@ -35,6 +34,8 @@ public class GqlAlfNode {
     private final Map<QName, List<NodeRef>> targetAssocs = evalTargetAssocs();
     @Getter(lazy = true)
     private final Map<QName, List<NodeRef>> childAssocs = evalChildAssocs();
+    @Getter(lazy = true)
+    private final List<GqlQName> aspects = evalAspects();
 
     private Map<QName, List<NodeRef>> assocs = new ConcurrentHashMap<>();
     private Map<QName, Attribute> attributes = new ConcurrentHashMap<>();
@@ -91,6 +92,18 @@ public class GqlAlfNode {
     }
 
     @GraphQLField
+    public List<GqlQName> aspects() {
+        return getAspects();
+    }
+
+    @GraphQLField
+    public List<String> aspectNames() {
+        return getAspects().stream()
+                           .map(GqlQName::shortName)
+                           .collect(Collectors.toList());
+    }
+
+    @GraphQLField
     public String nodeRef() {
         return nodeRef.toString();
     }
@@ -98,6 +111,11 @@ public class GqlAlfNode {
     @GraphQLField
     public String type() {
         return getType().toPrefixString();
+    }
+
+    @GraphQLField
+    public GqlQName typeQName() {
+        return context.getQName(getType());
     }
 
     @GraphQLField
@@ -187,6 +205,14 @@ public class GqlAlfNode {
                    .map(ChildAssociationRef::getChildRef)
                    .collect(Collectors.toCollection(ArrayList::new))
         );
+    }
+
+    private List<GqlQName> evalAspects() {
+        return context.getNodeService()
+                      .getAspects(nodeRef)
+                      .stream()
+                      .map(context::getQName)
+                      .collect(Collectors.toList());
     }
 
     private QName evalType() {
