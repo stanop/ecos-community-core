@@ -72,10 +72,8 @@
                     while (parent &amp;&amp; parent.isSubType("activ:activity")) {
                         parent = parent.parent;
                     }
-                    if (parent.impl().getAttribute("icaseRole:roles") &amp;&amp; parent.impl().getAttribute("icaseRole:roles").value()) {
-                        return parent.impl().getAttribute("icaseRole:roles").value();
-                    }
-                    return [];
+                    var roles = parent ? parent.impl().getAttribute("icaseRole:roles") : {};
+                    return roles &amp;&amp; roles.value() ? roles.value() : [];
                 })()
             </invariant>
         </field>
