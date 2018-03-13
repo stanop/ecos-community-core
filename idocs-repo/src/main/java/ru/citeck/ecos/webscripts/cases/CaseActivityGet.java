@@ -98,7 +98,7 @@ public class CaseActivityGet extends DeclarativeWebScript {
             resultMap.put("executionResult", objectNode.toString());
             return resultMap;
         } else {
-            CaseModelDto dto = remoteCaseModelService.getCaseModelByNodeUUID(nodeRef.getId());
+            CaseModelDto dto = remoteCaseModelService.getCaseModelByNodeUUID(nodeRef.getId(), false);
             Map<String, Object> resultMap = new HashMap<>();
             if (dto != null) {
                 resultMap.put("executionResult", "{}");
@@ -174,10 +174,10 @@ public class CaseActivityGet extends DeclarativeWebScript {
         QName type = getCaseModelType(caseModelDto);
         ObjectNode objectNode = objectMapper.createObjectNode();
         objectNode.put("nodeRef", caseModelDto.getNodeUUID());
-        objectNode.put("type", type.toPrefixString(serviceRegistry.getNamespaceService())); // temp
+        objectNode.put("type", type.toPrefixString(serviceRegistry.getNamespaceService()));
         objectNode.put("index", caseModelDto.getIndex());
         objectNode.put("title", caseModelDto.getTitle());
-        objectNode.put("typeTitle", templateNodeService.getClassTitle(type.toString())); // temp
+        objectNode.put("typeTitle", templateNodeService.getClassTitle(type.toString()));
         objectNode.put("description", caseModelDto.getDescription());
         objectNode.put("plannedStartDate", caseModelDto.getPlannedStartDate() != null ? dateFormat.format(caseModelDto.getPlannedStartDate()) : null);
         objectNode.put("plannedEndDate", caseModelDto.getPlannedEndDate() != null ? dateFormat.format(caseModelDto.getPlannedEndDate()) : null);
