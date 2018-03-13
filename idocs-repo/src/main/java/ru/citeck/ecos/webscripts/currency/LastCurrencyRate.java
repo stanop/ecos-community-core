@@ -72,8 +72,7 @@ public class LastCurrencyRate extends DeclarativeWebScript {
         try {
             List<NodeRef> result = resultSet.getNodeRefs();
             return result.stream().findFirst();
-        }
-        finally {
+        } finally {
             if (resultSet != null) {
                 resultSet.close();
             }
