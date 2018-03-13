@@ -29,7 +29,7 @@ public interface RemoteCaseModelService {
      * @param verboseInformation Verbose information
      * @return Case model or null
      */
-    CaseModelDto getCaseModelByNodeUUID(String nodeUUID,  Boolean verboseInformation);
+    CaseModelDto getCaseModelByNodeUUID(String nodeUUID, Boolean verboseInformation);
 
     /**
      * Get case models by node reference
@@ -38,4 +38,10 @@ public interface RemoteCaseModelService {
      * @return List of case model
      */
     List<CaseModelDto> getCaseModelsByNodeRef(NodeRef nodeRef, Boolean verboseInformation);
+
+    /**
+     * Delete case models by document id
+     * @param documentId Document id
+     */
+    void deleteCaseModelsByDocumentId(String documentId);
 }
