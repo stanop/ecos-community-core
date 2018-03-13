@@ -45,6 +45,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     private static final String GET_CASE_MODEL_BY_NODE_ID = "/case_models/case_model_by_id/";
     private static final String GET_CASE_MODELS_BY_DOCUMENT_ID = "/case_models/case_models_by_document_id/";
     private static final String GET_CASE_MODELS_BY_PARENT_CASE_MODEL_ID = "/case_models/case_models_by_parent_case_models_id/";
+    private static final String DELETE_CASE_MODELS_BY_DOCUMENT_ID = "/case_models/delete_case_models_by_document_id/";
 
     /**
      * Object mapper
@@ -229,7 +230,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         if (SetCaseStatusDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalSetCaseStatusInfo(caseModelRef, objectNode);
         }
-        if (CaseModelDto.DTO_TYPE.equals(dtoType)) {
+        if (CaseTimerDto.DTO_TYPE.equals(dtoType)) {
             fillAdditionalCaseTimerInfo(caseModelRef, objectNode);
         }
         if (CaseTaskDto.DTO_TYPE.equals(dtoType)) {
@@ -497,6 +498,15 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             e.printStackTrace();
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * Delete case models by document id
+     * @param documentId Document id
+     */
+    @Override
+    public void deleteCaseModelsByDocumentId(String documentId) {
+        restTemplate.delete(properties.getProperty(CASE_MODELS_SERVICE_HOST) + DELETE_CASE_MODELS_BY_DOCUMENT_ID + documentId);
     }
 
     /**
