@@ -72,7 +72,10 @@
                     while (parent &amp;&amp; parent.isSubType("activ:activity")) {
                         parent = parent.parent;
                     }
-                    return parent.childAssocs["icaseRole:roles"] || [];
+                    if (parent.impl().getAttribute("icaseRole:roles") &amp;&amp; parent.impl().getAttribute("icaseRole:roles").value()) {
+                        return parent.impl().getAttribute("icaseRole:roles").value();
+                    }
+                    return [];
                 })()
             </invariant>
         </field>
