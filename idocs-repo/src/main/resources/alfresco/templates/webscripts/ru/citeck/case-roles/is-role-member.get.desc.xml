@@ -1,5 +1,5 @@
 <webscript>
-    <shortname><is-role-member></is-role-member></shortname>
+    <shortname>is-role-member</shortname>
     <description>Check that you have permission by role</description>
     <url>/citeck/is-role-member?nodeRef={nodeRef}&amp;user={user}&amp;role={role}</url>
     <format default="json"/>
