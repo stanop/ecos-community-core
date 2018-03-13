@@ -3,6 +3,7 @@ package ru.citeck.ecos.journals.webscripts;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.cache.CacheStats;
 import com.google.common.cache.LoadingCache;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.MLPropertyInterceptor;
@@ -24,10 +25,7 @@ import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -210,6 +208,15 @@ public class CreateVariantsGet extends AbstractWebScript {
         createVariantsByNodeType.invalidateAll();
         createVariantsBySite.invalidateAll();
         createVariantsData.invalidateAll();
+    }
+
+    public Map<String, CacheStats> getCacheStats() {
+        Map<String, CacheStats> result = new HashMap<>();
+        result.put("createVariantsByJournalType", createVariantsByJournalType.stats());
+        result.put("createVariantsByNodeType", createVariantsByNodeType.stats());
+        result.put("createVariantsBySite", createVariantsBySite.stats());
+        result.put("createVariantsData", createVariantsData.stats());
+        return result;
     }
 
     @Autowired
