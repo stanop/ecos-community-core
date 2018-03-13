@@ -25,6 +25,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.CollectionUtils;
 import ru.citeck.ecos.config.EcosConfigService;
+import ru.citeck.ecos.flowable.FlowableIntegrationNotInitializedException;
 import ru.citeck.ecos.flowable.services.FlowableModelerService;
 
 import javax.xml.stream.XMLInputFactory;
@@ -62,6 +63,10 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
     @Override
     public void importProcessModel(NodeRef nodeRef) {
+        if (!integrationIsInitialized()) {
+            throw new FlowableIntegrationNotInitializedException("Integration is not initialized");
+        }
+
         if (nodeRef == null || !nodeService.exists(nodeRef)) {
             throw new IllegalArgumentException("NodeRef does not exist");
         }
@@ -79,6 +84,10 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
     @Override
     public void importProcessModel(InputStream inputStream) {
+        if (!integrationIsInitialized()) {
+            throw new FlowableIntegrationNotInitializedException("Integration is not initialized");
+        }
+
         BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
         XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
         XMLStreamReader xmlStreamReader;
@@ -139,6 +148,10 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
     @Override
     public void importProcessModel() {
+        if (!integrationIsInitialized()) {
+            throw new FlowableIntegrationNotInitializedException("Integration is not initialized");
+        }
+
         logger.info("Start import process to Flowable Modeler from locations");
 
         if (CollectionUtils.isEmpty(locations)) {
