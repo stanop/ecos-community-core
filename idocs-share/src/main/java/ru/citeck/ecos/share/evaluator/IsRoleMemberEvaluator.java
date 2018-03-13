@@ -17,7 +17,7 @@ import org.springframework.extensions.webscripts.connector.Response;
  * @author Roman Velikoselsky
  */
 
-public class IsCaseRolesEvaluator extends BaseEvaluator {
+public class IsRoleMemberEvaluator extends BaseEvaluator {
 
     private static final String URL_TEMPLATE = "/citeck/is-role-member?nodeRef=%s&user=%s&role=%s";
 
