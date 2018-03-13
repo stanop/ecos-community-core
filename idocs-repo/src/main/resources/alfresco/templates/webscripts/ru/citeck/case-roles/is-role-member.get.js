@@ -2,14 +2,12 @@
     var nodeRef = args.nodeRef;
     var user = args.user;
     var role = args.role;
+    var isRoleMember = "false";
 
-    if (!nodeRef || !user || !role) {
-        status.setStatus(status.STATUS_BAD_REQUEST, "Argument is missing");
-        return;
+    if (nodeRef && user && role) {
+        isRoleMember = caseRoleService.isRoleMember(nodeRef, role, user);
     }
 
-    var isRoleMember = caseRoleService.isRoleMember(nodeRef, role, user);
-
-    model.isRoleMember = isRoleMember.toString();
+    model.isRoleMember = isRoleMember ? "true" : "false";
 
 })();
