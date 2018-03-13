@@ -71,12 +71,7 @@ public class LastCurrencyRate extends DeclarativeWebScript {
         ResultSet resultSet = searchService.query(searchParameters);
         try {
             List<NodeRef> result = resultSet.getNodeRefs();
-            try {
-                return Optional.ofNullable(result.get(0));
-            }
-            catch (Exception e) {
-                return Optional.empty();
-            }
+            return result.stream().findFirst();
         }
         finally {
             if (resultSet != null) {
