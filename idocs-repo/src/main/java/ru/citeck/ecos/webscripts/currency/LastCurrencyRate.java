@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class LastCurrencyRate extends DeclarativeWebScript {
 
@@ -49,16 +50,16 @@ public class LastCurrencyRate extends DeclarativeWebScript {
         String date = getParameter(req, DATE_PARAM_NAME);
 
         String query = String.format(QUERY_TEMPLATE, baseCurrency, targetCurrency, date);
-        List<NodeRef> result = search(query);
+        Optional<NodeRef> result = search(query);
 
-        double rate = (result.size() > 0)
-                ? getRateFromCurrencyRateRecord(result.get(0))
-                : getRateFromCurrency(baseCurrency, targetCurrency);
+        double rate = result
+                .map(nodeRef -> getRateFromCurrencyRateRecord(nodeRef, baseCurrency, targetCurrency))
+                .orElseGet(() -> getRateFromCurrency(baseCurrency, targetCurrency));
 
         return createModel(rate);
     }
 
-    private List<NodeRef> search(String query) {
+    private Optional<NodeRef> search(String query) {
         SearchParameters searchParameters = new SearchParameters();
         searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
         searchParameters.setQuery(query);
@@ -69,7 +70,13 @@ public class LastCurrencyRate extends DeclarativeWebScript {
 
         ResultSet resultSet = searchService.query(searchParameters);
         try {
-            return resultSet.getNodeRefs();
+            List<NodeRef> result = resultSet.getNodeRefs();
+            try {
+                return Optional.ofNullable(result.get(0));
+            }
+            catch (Exception e) {
+                return Optional.empty();
+            }
         }
         finally {
             if (resultSet != null) {
@@ -88,9 +95,11 @@ public class LastCurrencyRate extends DeclarativeWebScript {
         return param;
     }
 
-    private double getRateFromCurrencyRateRecord(NodeRef nodeRef) {
+    private double getRateFromCurrencyRateRecord(NodeRef nodeRef, String baseCurrency, String targetCurrency) {
         Serializable value = nodeService.getProperty(nodeRef, IdocsModel.PROP_CRR_VALUE);
-        return (double) value;
+        return (value != null)
+                ? (double) value
+                : getRateFromCurrency(baseCurrency, targetCurrency);
     }
 
     private double getRateFromCurrency(String base, String target) {
