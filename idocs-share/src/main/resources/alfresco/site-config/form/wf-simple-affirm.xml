@@ -8,6 +8,14 @@
 		</forms>
 	</config>
 
+	<config evaluator="string-compare" condition="flowable$flowable-simple-affirm">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/simple-affirm/submit-affirm-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
 	<config evaluator="task-type" condition="wfsa:affirmStartTask">
 		<forms>
 			<form>

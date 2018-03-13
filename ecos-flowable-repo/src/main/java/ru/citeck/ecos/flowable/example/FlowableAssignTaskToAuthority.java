@@ -10,9 +10,11 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.QName;
 import org.flowable.engine.common.api.delegate.Expression;
-import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.engine.delegate.TaskListener;
+import org.flowable.task.service.delegate.DelegateTask;
 import ru.citeck.ecos.providers.ApplicationContextProvider;
+
+import java.util.List;
 
 /**
  * Assign task to authority task listener
@@ -26,54 +28,61 @@ public class FlowableAssignTaskToAuthority implements TaskListener {
 
         Object authorityObj = authority.getValue(delegateTask);
 
-        if(authorityObj == null) return;
+        if (authorityObj == null) {
+            return;
+        }
 
-        ServiceRegistry services = ApplicationContextProvider.getBean(ServiceDescriptorRegistry.class);;
-        if(services == null) return;
+        if (authorityObj instanceof List) {
+            List asList = (List) authorityObj;
+            if (!asList.isEmpty()) {
+                authorityObj = asList.get(0);
+            }
+        }
+
+        ServiceRegistry services = ApplicationContextProvider.getBean(ServiceDescriptorRegistry.class);
+
+        if (services == null) {
+            return;
+        }
 
         NodeRef authorityRef = null;
         String authorityName = null;
 
-        if(authorityObj instanceof NodeRef) {
+        if (authorityObj instanceof NodeRef) {
             authorityRef = (NodeRef) authorityObj;
-        } else if(authorityObj instanceof String) {
+        } else if (authorityObj instanceof String) {
             String authorityString = (String) authorityObj;
-            if(NodeRef.isNodeRef(authorityString)) {
+            if (NodeRef.isNodeRef(authorityString)) {
                 authorityRef = new NodeRef((String) authorityObj);
             } else {
                 authorityName = authorityString;
             }
-        } else if(authorityObj instanceof ScriptGroup) {
-            authorityName = ((ScriptGroup)authorityObj).getFullName();
-        } else if(authorityObj instanceof ScriptUser) {
-            authorityName = ((ScriptUser)authorityObj).getUserName();
-        } else if(authorityObj instanceof ScriptNode) {
-            authorityRef = ((ScriptNode)authorityObj).getNodeRef();
+        } else if (authorityObj instanceof ScriptGroup) {
+            authorityName = ((ScriptGroup) authorityObj).getFullName();
+        } else if (authorityObj instanceof ScriptUser) {
+            authorityName = ((ScriptUser) authorityObj).getUserName();
+        } else if (authorityObj instanceof ScriptNode) {
+            authorityRef = ((ScriptNode) authorityObj).getNodeRef();
         } else {
             throw new IllegalArgumentException("Can not convert value of type " + authorityObj.getClass().getName() + " to NodeRef");
         }
 
-        if(authorityName == null) {
+        if (authorityName == null) {
 
-            if(authorityRef == null || !services.getNodeService().exists(authorityRef))
+            if (authorityRef == null || !services.getNodeService().exists(authorityRef))
                 return;
 
             QName authorityType = services.getNodeService().getType(authorityRef);
-            if(services.getDictionaryService().isSubClass(authorityType, ContentModel.TYPE_PERSON))
-            {
+            if (services.getDictionaryService().isSubClass(authorityType, ContentModel.TYPE_PERSON)) {
                 authorityName = (String) services.getNodeService().getProperty(authorityRef, ContentModel.PROP_USERNAME);
-            }
-            else if(services.getDictionaryService().isSubClass(authorityType, ContentModel.TYPE_AUTHORITY_CONTAINER))
-            {
+            } else if (services.getDictionaryService().isSubClass(authorityType, ContentModel.TYPE_AUTHORITY_CONTAINER)) {
                 authorityName = (String) services.getNodeService().getProperty(authorityRef, ContentModel.PROP_AUTHORITY_NAME);
-            }
-            else
-            {
+            } else {
                 throw new IllegalArgumentException("Unknown authority type: " + authorityType + " of node " + authorityRef);
             }
         }
 
-        if(authorityName.startsWith(AuthorityType.GROUP.getPrefixString())) {
+        if (authorityName.startsWith(AuthorityType.GROUP.getPrefixString())) {
             // if authority is group - add to candidate groups
             delegateTask.addCandidateGroup(authorityName);
         } else {

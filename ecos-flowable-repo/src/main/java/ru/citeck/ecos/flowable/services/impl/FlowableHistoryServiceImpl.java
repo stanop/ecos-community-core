@@ -45,6 +45,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Set history service
+     *
      * @param historyService History service
      */
     public void setHistoryService(HistoryService historyService) {
@@ -53,6 +54,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Set person service
+     *
      * @param personService Person service
      */
     public void setPersonService(PersonService personService) {
@@ -61,6 +63,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get history process instance by id
+     *
      * @param processInstanceId Process instance id
      * @return History process instance
      */
@@ -71,6 +74,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get history task instance by id
+     *
      * @param taskId Task id
      * @return History task instance
      */
@@ -96,6 +100,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get all completed process instances
+     *
      * @return List of process instances
      */
     @Override
@@ -105,6 +110,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get all active process instances
+     *
      * @return List of process instances
      */
     @Override
@@ -114,6 +120,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get all process instances
+     *
      * @return List of process instances
      */
     @Override
@@ -123,6 +130,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get process instances by query
+     *
      * @param workflowInstanceQuery Workflow query
      * @param maxItems              Max items
      * @param skipCount             Skip count
@@ -137,6 +145,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get process instances by query
+     *
      * @param workflowInstanceQuery Workflow query
      * @return List of process instances
      */
@@ -149,6 +158,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get process instances count by query
+     *
      * @param workflowInstanceQuery Workflow query
      * @return Process instances count
      */
@@ -160,58 +170,64 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Build process instance query
+     *
      * @param workflowInstanceQuery Workflow instance query
      * @return History process instance query
      */
     private HistoricProcessInstanceQuery buildProcessInstanceQuery(WorkflowInstanceQuery workflowInstanceQuery) {
         HistoricProcessInstanceQuery query = historyService.createHistoricProcessInstanceQuery();
-        /** Workflow definition */
+        // Workflow definition
         if (workflowInstanceQuery.getWorkflowDefinitionId() != null) {
             query = query.processDefinitionId(getLocalValue(workflowInstanceQuery.getWorkflowDefinitionId()));
         }
-        /** Start after */
+        // Start after
         if (workflowInstanceQuery.getStartAfter() != null) {
             query = query.startedAfter(workflowInstanceQuery.getStartAfter());
         }
-        /** Start before */
+        // Start before
         if (workflowInstanceQuery.getStartBefore() != null) {
             query = query.startedBefore(workflowInstanceQuery.getStartBefore());
         }
-        /** Active status */
+        // Active status
         if (workflowInstanceQuery.getActive() != null) {
             query = workflowInstanceQuery.getActive() ? query.unfinished() : query.finished();
         }
-        /** Initiator */
-        if (workflowInstanceQuery.getCustomProps().containsKey(INITIATOR_QNAME)) {
-            NodeRef initiator = (NodeRef) workflowInstanceQuery.getCustomProps().get(INITIATOR_QNAME);
-            PersonService.PersonInfo personInfo = personService.getPerson(initiator);
-            query = query.variableValueEquals(INITIATOR_USERNAME_QNAME.getLocalName(), personInfo.getUserName());
-        }
-        /** Priority */
-        if (workflowInstanceQuery.getCustomProps().containsKey(PRIORITY_QNAME)) {
-            String priorityValue = (String) workflowInstanceQuery.getCustomProps().get(PRIORITY_QNAME);
-            query = query.variableValueEquals(PRIORITY_VARIABLE_NAME, Integer.valueOf(priorityValue));
-        }
-        /** Due date */
-        if (workflowInstanceQuery.getCustomProps().containsKey(DUE_DATE_QNAME)) {
-            Object datesProperty = workflowInstanceQuery.getCustomProps().get(DUE_DATE_QNAME);
-            if (datesProperty != null) {
-                Map<WorkflowInstanceQuery.DatePosition, Date> dates = (Map<WorkflowInstanceQuery.DatePosition, Date>) datesProperty;
-                if (dates.get(WorkflowInstanceQuery.DatePosition.BEFORE) != null) {
-                    query = query.variableValueLessThanOrEqual(DUE_DATE_VARIABLE_NAME, dates.get(WorkflowInstanceQuery.DatePosition.BEFORE));
+
+        if (workflowInstanceQuery.getCustomProps() != null) {
+            // Initiator
+            if (workflowInstanceQuery.getCustomProps().containsKey(INITIATOR_QNAME)) {
+                NodeRef initiator = (NodeRef) workflowInstanceQuery.getCustomProps().get(INITIATOR_QNAME);
+                PersonService.PersonInfo personInfo = personService.getPerson(initiator);
+                query = query.variableValueEquals(INITIATOR_USERNAME_QNAME.getLocalName(), personInfo.getUserName());
+            }
+            // Priority
+            if (workflowInstanceQuery.getCustomProps().containsKey(PRIORITY_QNAME)) {
+                String priorityValue = (String) workflowInstanceQuery.getCustomProps().get(PRIORITY_QNAME);
+                query = query.variableValueEquals(PRIORITY_VARIABLE_NAME, Integer.valueOf(priorityValue));
+            }
+            // Due date
+            if (workflowInstanceQuery.getCustomProps().containsKey(DUE_DATE_QNAME)) {
+                Object datesProperty = workflowInstanceQuery.getCustomProps().get(DUE_DATE_QNAME);
+                if (datesProperty != null) {
+                    Map<WorkflowInstanceQuery.DatePosition, Date> dates = (Map<WorkflowInstanceQuery.DatePosition, Date>) datesProperty;
+                    if (dates.get(WorkflowInstanceQuery.DatePosition.BEFORE) != null) {
+                        query = query.variableValueLessThanOrEqual(DUE_DATE_VARIABLE_NAME, dates.get(WorkflowInstanceQuery.DatePosition.BEFORE));
+                    }
+                    if (dates.get(WorkflowInstanceQuery.DatePosition.AFTER) != null) {
+                        query = query.variableValueGreaterThanOrEqual(DUE_DATE_VARIABLE_NAME, dates.get(WorkflowInstanceQuery.DatePosition.AFTER));
+                    }
+                } else {
+                    query.variableValueEquals(DUE_DATE_VARIABLE_NAME, null);
                 }
-                if (dates.get(WorkflowInstanceQuery.DatePosition.AFTER) != null) {
-                    query = query.variableValueGreaterThanOrEqual(DUE_DATE_VARIABLE_NAME, dates.get(WorkflowInstanceQuery.DatePosition.AFTER));
-                }
-            } else {
-                query.variableValueEquals(DUE_DATE_VARIABLE_NAME, null);
             }
         }
+
         return query;
     }
 
     /**
      * Get tasks by workflow task query
+     *
      * @param workflowTaskQuery Workflow task query
      * @return List of tasks
      */
@@ -222,6 +238,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get tasks count by workflow task query
+     *
      * @param workflowTaskQuery Workflow task query
      * @return Tasks count
      */
@@ -232,16 +249,17 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Build task query
+     *
      * @param workflowTaskQuery Workflow task query
      * @return Task query
      */
     private HistoricTaskInstanceQuery buildTaskQuery(WorkflowTaskQuery workflowTaskQuery) {
         HistoricTaskInstanceQuery taskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
-        /** Process instance id */
+        // Process instance id
         if (workflowTaskQuery.getProcessId() != null) {
             taskInstanceQuery = taskInstanceQuery.processInstanceId(workflowTaskQuery.getProcessId());
         }
-        /** State */
+        // State
         if (workflowTaskQuery.getTaskState() != null) {
             if (workflowTaskQuery.getTaskState() == WorkflowTaskState.IN_PROGRESS) {
                 taskInstanceQuery = taskInstanceQuery.unfinished();
@@ -254,8 +272,9 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get history activity instance
+     *
      * @param processInstanceId Process instance id
-     * @param startActivityId Start activity id
+     * @param startActivityId   Start activity id
      * @return History activity instance
      */
     @Override
@@ -268,6 +287,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get variables by activity id
+     *
      * @param activityId Activity id
      * @return Map of variables
      */
@@ -279,6 +299,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Het history variables
+     *
      * @param query History detail query
      * @return Map of parameters
      */
@@ -289,39 +310,37 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Convert a list of history details to a map with key-value pairs.
+     *
      * @param details History details
      * @return Map of parameters
      */
     public Map<String, Object> convertHistoricDetails(List<HistoricDetail> details) {
-        HashMap<String, HistoricVariableUpdate> updateMap = new HashMap<String, HistoricVariableUpdate>();
-        HistoricVariableUpdate previous = null;
-        HistoricVariableUpdate current = null;
-        boolean isMoreRecent = false;
-        for(HistoricDetail detail : details) {
+        HashMap<String, HistoricVariableUpdate> updateMap = new HashMap<>();
+        HistoricVariableUpdate previous;
+        HistoricVariableUpdate current;
+        boolean isMoreRecent;
+        for (HistoricDetail detail : details) {
             current = (HistoricVariableUpdate) detail;
             previous = updateMap.get(current.getVariableName());
-            if(previous == null) {
+            if (previous == null) {
                 isMoreRecent = true;
-            }
-            else {
-                if(current.getTime().equals(previous.getTime())) {
-                    if(current.getRevision() == previous.getRevision()) {
+            } else {
+                if (current.getTime().equals(previous.getTime())) {
+                    if (current.getRevision() == previous.getRevision()) {
                         isMoreRecent = Long.valueOf(current.getId()).longValue() > Long.valueOf(previous.getId()).longValue();
-                    }
-                    else {
+                    } else {
                         isMoreRecent = current.getRevision() > previous.getRevision();
                     }
-                }
-                else {
+                } else {
                     isMoreRecent = current.getTime().after(previous.getTime());
                 }
             }
-            if(isMoreRecent) {
+            if (isMoreRecent) {
                 updateMap.put(current.getVariableName(), current);
             }
         }
-        HashMap<String, Object> variables = new HashMap<String, Object>();
-        for(Map.Entry<String, HistoricVariableUpdate> entry : updateMap.entrySet()) {
+        HashMap<String, Object> variables = new HashMap<>();
+        for (Map.Entry<String, HistoricVariableUpdate> entry : updateMap.entrySet()) {
             variables.put(entry.getKey(), entry.getValue().getValue());
         }
         return variables;
@@ -329,6 +348,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
     /**
      * Get local value
+     *
      * @param rawValue Raw value
      * @return Local value
      */
