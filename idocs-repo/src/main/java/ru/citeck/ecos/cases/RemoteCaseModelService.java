@@ -26,14 +26,16 @@ public interface RemoteCaseModelService {
     /**
      * Get case model by node uuid
      * @param nodeUUID Node uuid
+     * @param verboseInformation Verbose information
      * @return Case model or null
      */
-    CaseModelDto getCaseModelByNodeUUID(String nodeUUID);
+    CaseModelDto getCaseModelByNodeUUID(String nodeUUID,  Boolean verboseInformation);
 
     /**
      * Get case models by node reference
      * @param nodeRef Node reference
+     * @param verboseInformation Verbose information
      * @return List of case model
      */
-    List<CaseModelDto> getCaseModelsByNodeRef(NodeRef nodeRef);
+    List<CaseModelDto> getCaseModelsByNodeRef(NodeRef nodeRef, Boolean verboseInformation);
 }

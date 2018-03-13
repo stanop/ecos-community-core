@@ -387,6 +387,7 @@
           class="ru.citeck.ecos.webscripts.currency.LastCurrencyRateGet"
           parent="webscript">
         <property name="currencyService" ref="currencyService"/>
+        <property name="authenticationService" ref="authenticationService"/>
     </bean>
 
 </beans>

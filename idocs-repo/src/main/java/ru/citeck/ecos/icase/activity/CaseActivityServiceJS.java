@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.icase.activity.create.ActivityCreateVariant;
@@ -21,8 +22,19 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
 
     private CaseActivityService caseActivityService;
     private NamespaceService namespaceService;
+    private RemoteRestoreCaseModelService remoteRestoreCaseModelService;
 
     public void startActivity(Object stageRef) {
+        /** Call restore activity */
+        if (stageRef instanceof String) {
+            String stageRefUUID = (String) stageRef;
+            if (((String) stageRef).startsWith(RemoteRestoreCaseModelService.RESTORE_CASE_MODEL_UUID)) {
+                NodeRef documentRef = new NodeRef(stageRefUUID.substring(RemoteRestoreCaseModelService.RESTORE_CASE_MODEL_UUID.length()));
+                remoteRestoreCaseModelService.restoreCaseModels(documentRef);
+                return;
+            }
+        }
+        /** Call common activity */
         NodeRef ref = JavaScriptImplUtils.getNodeRef(stageRef);
         caseActivityService.startActivity(ref);
     }
@@ -117,5 +129,9 @@ public class CaseActivityServiceJS extends AlfrescoScopableProcessorExtension {
 
     public void setNamespaceService(NamespaceService namespaceService) {
         this.namespaceService = namespaceService;
+    }
+
+    public void setRemoteRestoreCaseModelService(RemoteRestoreCaseModelService remoteRestoreCaseModelService) {
+        this.remoteRestoreCaseModelService = remoteRestoreCaseModelService;
     }
 }

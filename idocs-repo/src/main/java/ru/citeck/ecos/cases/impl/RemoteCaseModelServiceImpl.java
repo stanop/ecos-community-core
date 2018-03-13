@@ -17,7 +17,9 @@ import org.springframework.http.*;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
 import ru.citeck.ecos.dto.*;
 import ru.citeck.ecos.model.*;
@@ -436,20 +438,25 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     /**
      * Get case model by node uuid
      * @param nodeUUID Node uuid
+     * @param verboseInformation Verbose information
      * @return Case model or null
      */
     @Override
-    public CaseModelDto getCaseModelByNodeUUID(String nodeUUID) {
-        return getForObject(GET_CASE_MODEL_BY_NODE_ID + nodeUUID, new LinkedMultiValueMap<>(), CaseModelDto.class);
+    public CaseModelDto getCaseModelByNodeUUID(String nodeUUID,  Boolean verboseInformation) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(GET_CASE_MODEL_BY_NODE_ID + nodeUUID)
+                .queryParam("verboseInformation", verboseInformation);
+        return getForObject(builder.build().toString(),
+                new LinkedMultiValueMap<>(), CaseModelDto.class);
     }
 
     /**
      * Get case models by node reference
      * @param nodeRef Node reference
+     * @param verboseInformation Verbose information
      * @return List of case model
      */
     @Override
-    public List<CaseModelDto> getCaseModelsByNodeRef(NodeRef nodeRef) {
+    public List<CaseModelDto> getCaseModelsByNodeRef(NodeRef nodeRef,  Boolean verboseInformation) {
         if (nodeRef == null) {
             return Collections.emptyList();
         }
@@ -457,13 +464,19 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             if (dictionaryService.isSubClass(
                     nodeService.getType(nodeRef),
                     IdocsModel.TYPE_DOC)) {
-                String result = getForObject(GET_CASE_MODELS_BY_DOCUMENT_ID + nodeRef.getId(), new LinkedMultiValueMap<>(), String.class);
+                UriComponentsBuilder builder = UriComponentsBuilder.fromPath(GET_CASE_MODELS_BY_DOCUMENT_ID + nodeRef.getId())
+                        .queryParam("verboseInformation", verboseInformation);
+                String result = getForObject(builder.build().toString(),
+                        new LinkedMultiValueMap<>(), String.class);
                 return convertJsonToCaseModels(result);
             } else {
                 return Collections.emptyList();
             }
         } else {
-            String result = getForObject(GET_CASE_MODELS_BY_PARENT_CASE_MODEL_ID + nodeRef.getId(), new LinkedMultiValueMap<>(), String.class);
+            UriComponentsBuilder builder = UriComponentsBuilder.fromPath(GET_CASE_MODELS_BY_PARENT_CASE_MODEL_ID + nodeRef.getId())
+                    .queryParam("verboseInformation", verboseInformation);
+            String result = getForObject(builder.build().toString(),
+                    new LinkedMultiValueMap<>(), String.class);
             return convertJsonToCaseModels(result);
         }
     }
@@ -475,6 +488,9 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
      */
     private List<CaseModelDto> convertJsonToCaseModels(String jsonString) {
         try {
+            if (StringUtils.isEmpty(jsonString)) {
+                return Collections.emptyList();
+            }
             CaseModelDto[] parseResult = objectMapper.readValue(jsonString, CaseModelDto[].class);
             return Arrays.asList(parseResult);
         } catch (IOException e) {

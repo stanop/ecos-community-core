@@ -1,13 +1,16 @@
 package ru.citeck.ecos.webscripts.cases;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.security.AuthenticationService;
+import org.alfresco.service.namespace.QName;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
-import ru.citeck.ecos.cases.RemoteCaseModelService;
+import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
 import ru.citeck.ecos.dto.CaseModelDto;
+import ru.citeck.ecos.model.ActionModel;
 import ru.citeck.ecos.model.IdocsModel;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +21,11 @@ import java.util.Map;
  * Case activities get web-script
  */
 public class CaseActivitiesGet extends CaseActivityGet {
+
+    /**
+     * Authentication service
+     */
+    private AuthenticationService authenticationService;
 
     /**
      * Execute implementation
@@ -38,12 +46,17 @@ public class CaseActivitiesGet extends CaseActivityGet {
         /** Load and transform data */
         Map<String, Object> resultMap = new HashMap<>();
         if (areCaseModelsSent(nodeRef)) {
-            List<CaseModelDto> caseModels = remoteCaseModelService.getCaseModelsByNodeRef(nodeRef);
-            resultMap.put("executionResult", createArrayNodeFromRemoteCaseModels(caseModels).toString());
+            List<CaseModelDto> caseModels = remoteCaseModelService.getCaseModelsByNodeRef(nodeRef, false);
+            ArrayNode arrayNode = createArrayNodeFromRemoteCaseModels(caseModels);
+            if (isRequiredRestoreTask(nodeRef)) {
+                arrayNode.add(createRestoreCaseModel(nodeRef));
+            }
+            resultMap.put("executionResult", arrayNode.toString());
             return resultMap;
         } else {
             List<NodeRef> caseModels = remoteCaseModelService.getCaseModelsByNode(nodeRef);
-            resultMap.put("executionResult", createArrayNodeFromNodeRefs(caseModels).toString());
+            ArrayNode arrayNode = createArrayNodeFromNodeRefs(caseModels);
+            resultMap.put("executionResult", arrayNode.toString());
             return resultMap;
         }
     }
@@ -75,6 +88,37 @@ public class CaseActivitiesGet extends CaseActivityGet {
     }
 
     /**
+     * Create restore case model
+     * @param documentRef Document reference
+     * @return Object node
+     */
+    protected ObjectNode createRestoreCaseModel(NodeRef documentRef) {
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        QName type = ActionModel.ExecuteScript.TYPE;
+
+        objectNode.put("nodeRef", RemoteRestoreCaseModelService.RESTORE_CASE_MODEL_UUID + documentRef.toString());
+        objectNode.put("type", type.toPrefixString(serviceRegistry.getNamespaceService()));
+        objectNode.put("index", 0);
+        objectNode.put("title", "Восстановить case models");
+        objectNode.put("typeTitle", templateNodeService.getClassTitle(type.toString()));
+        objectNode.put("description", "");
+        objectNode.putNull("plannedStartDate");
+        objectNode.putNull("plannedEndDate");
+        objectNode.putNull("actualStartDate");
+        objectNode.putNull("actualEndDate");
+        objectNode.putNull("expectedPerformTime");
+
+        /** Flags */
+        objectNode.put("startable", true);
+        objectNode.put("stoppable", false);
+        objectNode.put("editable", false);
+        objectNode.put("removable", false);
+        objectNode.put("composite", false);
+        return objectNode;
+    }
+
+
+    /**
      * Check - are case models sent
      * @param nodeRef Node reference (document)
      * @return Check result
@@ -90,4 +134,30 @@ public class CaseActivitiesGet extends CaseActivityGet {
         return sentFlag != null ? sentFlag : false;
     }
 
+    /**
+     * Check - is required restore task
+     * @param nodeRef Node reference (document)
+     * @return Check result
+     */
+    private boolean isRequiredRestoreTask(NodeRef nodeRef) {
+        if (nodeRef == null) {
+            return false;
+        }
+        if (!nodeService.exists(nodeRef)) {
+            return false;
+        }
+        if (!"admin".equals(authenticationService.getCurrentUserName())) {
+            return false;
+        }
+        Boolean sentFlag = (Boolean) nodeService.getProperty(nodeRef, IdocsModel.PROP_CASE_MODELS_SENT);
+        return sentFlag != null ? sentFlag : false;
+    }
+
+    /**
+     * Set authentication service
+     * @param authenticationService Authentication service
+     */
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 }
