@@ -4494,7 +4494,7 @@ div#HEADER_USER_STATUS {
   border-color: #ccc;
 }
 
-#alfresco-console .application .row {
+.yui-skin-citeckTheme #alfresco-console .application .row {
   height: auto;
   overflow: auto;
   padding: 5px 15px;

@@ -92,3 +92,20 @@ function getHeaderMobileLogoUrl() {
     }
     return logoSrc;
 }
+
+function addSubWidgetsToSectionSlideMenu(sectionId, newItem, insetToTop) {
+    var slideMenu = findObjectById(model.jsonModel.widgets, "HEADER_SLIDE_MENU");
+    if (slideMenu && slideMenu.config && slideMenu.config.widgets && slideMenu.config.widgets.length) {
+        slideMenu.config.widgets = slideMenu.config.widgets.map(function(widget) {
+            if (widget.id == sectionId) {
+                widget.widgets = widget.widgets || [];
+                if (insetToTop == true) {
+                    widget.widgets.unshift(newItem);
+                } else {
+                    widget.widgets.push(newItem);
+                }
+            }
+            return widget;
+        });
+    }
+}
