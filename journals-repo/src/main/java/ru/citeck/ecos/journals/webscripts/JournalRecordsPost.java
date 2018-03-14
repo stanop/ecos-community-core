@@ -60,6 +60,11 @@ public class JournalRecordsPost extends AbstractWebScript {
 
     private static final Pattern FORMATTER_ATTRIBUTES_PATTERN = Pattern.compile("['\"]\\s*?(\\S+?:\\S+?\\s*?" +
                                                                                 "(,\\s*?\\S+?:\\S+?\\s*?)*?)['\"]");
+
+    private static final List<QName> NODE_PROP_TYPES = Arrays.asList(DataTypeDefinition.NODE_REF,
+                                                                     DataTypeDefinition.CATEGORY);
+    private static final List<QName> QNAME_PROP_TYPES = Collections.singletonList(DataTypeDefinition.QNAME);
+
     private boolean newApiByDefault = false;
 
     private Properties globalProperties;
@@ -212,25 +217,29 @@ public class JournalRecordsPost extends AbstractWebScript {
             schemaBuilder.append(underscoredKey);
             schemaBuilder.append(": attribute(name:\"").append(prefixedKey).append("\"){");
 
-            boolean attributeWithNodes;
+            boolean attWithNodes;
+            boolean attWithQName;
             boolean isMultiple;
 
             PropertyDefinition propertyDef = dictionaryService.getProperty(attribute);
             if (propertyDef != null) {
-                attributeWithNodes = propertyDef.getDataType().getName().equals(DataTypeDefinition.NODE_REF);
+                QName typeName = propertyDef.getDataType().getName();
+                attWithNodes = NODE_PROP_TYPES.contains(typeName);
+                attWithQName = QNAME_PROP_TYPES.contains(typeName);
                 isMultiple = propertyDef.isMultiValued();
             } else {
                 AssociationDefinition assocDef = dictionaryService.getAssociation(attribute);
                 if (assocDef != null) {
-                    attributeWithNodes = true;
+                    attWithNodes = true;
                     isMultiple = true;
                 } else {
-                    attributeWithNodes = false;
+                    attWithNodes = false;
                     isMultiple = false;
                 }
+                attWithQName = false;
             }
 
-            String attrSchema = getAttributeSchema(attributeOptions, isMultiple, attributeWithNodes);
+            String attrSchema = getAttributeSchema(attributeOptions, isMultiple, attWithNodes, attWithQName);
             String attributeDataKey = StringUtils.substringBefore(attrSchema, "{").trim();
             attributesMapping.put(underscoredKey, new Pair<>(prefixedKey, attributeDataKey));
             schemaBuilder.append(attrSchema);
@@ -243,7 +252,10 @@ public class JournalRecordsPost extends AbstractWebScript {
         return new JournalRecordsQuery(schemaBuilder.toString(), attributesMapping, virtualAttributes);
     }
 
-    private String getAttributeSchema(Map<String, String> attributeOptions, boolean isMultiple, boolean isNodes) {
+    private String getAttributeSchema(Map<String, String> attributeOptions,
+                                      boolean isMultiple,
+                                      boolean isNodes,
+                                      boolean isQName) {
 
         String schema = attributeOptions.get("attributeSchema");
         if (StringUtils.isNotBlank(schema)) {
@@ -276,10 +288,12 @@ public class JournalRecordsPost extends AbstractWebScript {
             } else {
                 childrenAttributes.put("displayName", "displayName");
             }
-        } else {
+        } else if (isQName) {
+            value = "qname";
             if (formatter.contains("typeName")) {
-                value = "qname";
                 childrenAttributes.put("displayName", "classTitle");
+            } else {
+                childrenAttributes.put("shortQName", "shortName");
             }
         }
 
