@@ -10,12 +10,16 @@ public class ICaseEventModel {
 
     public static final String NAMESPACE = "http://www.citeck.ru/model/icaseEvent/1.0";
 
+    // properties
+    public static final QName PROPERTY_TYPE = QName.createQName(NAMESPACE, "type");
+
     // types
     public static final QName TYPE_ACTIVITY_EVENT = QName.createQName(NAMESPACE, "activityEvent");
     public static final QName TYPE_ACTIVITY_STARTED_EVENT = QName.createQName(NAMESPACE, "activityStartedEvent");
     public static final QName TYPE_ACTIVITY_STOPPED_EVENT = QName.createQName(NAMESPACE, "activityStoppedEvent");
     public static final QName TYPE_STAGE_CHILDREN_STOPPED = QName.createQName(NAMESPACE, "stageChildrenStopped");
     public static final QName TYPE_CASE_CREATED = QName.createQName(NAMESPACE, "caseCreated");
+    public static final QName TYPE_CASE_PROPERTIES_CHANGED = QName.createQName(NAMESPACE, "casePropertiesChanged");
 
     // associations
     public static final QName ASSOC_ACTIVITY_START_EVENTS = QName.createQName(NAMESPACE, "activityStartEvents");
