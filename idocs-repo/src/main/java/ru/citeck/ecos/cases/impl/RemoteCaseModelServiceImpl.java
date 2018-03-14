@@ -145,16 +145,8 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         ObjectNode objectNode = objectMapper.createObjectNode();
         String dtoType = getCaseModelType(nodeService.getType(caseModelRef));
         objectNode.put("dtoType", dtoType);
-        if (nodeService.getProperty(caseModelRef, ContentModel.PROP_CREATED) != null) {
-            objectNode.put("created", dateTimeFormat.format((Date) nodeService.getProperty(caseModelRef, ContentModel.PROP_CREATED)));
-        }
-        objectNode.put("creator", (String) nodeService.getProperty(caseModelRef, ContentModel.PROP_CREATOR));
-        if (nodeService.getProperty(caseModelRef, ContentModel.PROP_MODIFIED) != null) {
-            objectNode.put("modified", dateTimeFormat.format((Date) nodeService.getProperty(caseModelRef, ContentModel.PROP_MODIFIED)));
-        }
-        objectNode.put("modifier", (String) nodeService.getProperty(caseModelRef, ContentModel.PROP_MODIFIER));
-        objectNode.put("title", (String) nodeService.getProperty(caseModelRef, ContentModel.PROP_TITLE));
-        objectNode.put("description", (String) nodeService.getProperty(caseModelRef, ContentModel.PROP_DESCRIPTION));
+        fillBaseNodeInfo(caseModelRef, objectNode);
+        /** Document id */
         ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(caseModelRef);
         if (parentAssoc != null) {
             if (parentAssoc.getParentRef() != null) {
@@ -165,7 +157,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
                 }
             }
         }
-        objectNode.put("nodeUUID", caseModelRef.getId());
+        /** Case info */
         if (nodeService.getProperty(caseModelRef, ActivityModel.PROP_PLANNED_START_DATE) != null) {
             objectNode.put("plannedStartDate", dateFormat.format((Date) nodeService.getProperty(caseModelRef, ActivityModel.PROP_PLANNED_START_DATE)));
         }
@@ -185,6 +177,8 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         objectNode.put("autoEvents", (Boolean) nodeService.getProperty(caseModelRef, ActivityModel.PROP_AUTO_EVENTS));
         objectNode.put("repeatable", (Boolean) nodeService.getProperty(caseModelRef, ActivityModel.PROP_REPEATABLE));
         objectNode.put("typeVersion", (Integer) nodeService.getProperty(caseModelRef, ActivityModel.PROP_TYPE_VERSION));
+        /** Additional info */
+        fillEventsInfo(caseModelRef, objectNode);
         fillAdditionalInfo(dtoType, caseModelRef, objectNode);
         /** Child activities */
         ArrayNode arrayNode = objectMapper.createArrayNode();
@@ -197,6 +191,113 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         }
         objectNode.put("childCases", arrayNode);
         return objectNode;
+    }
+
+    /**
+     * Fill base node info
+     * @param nodeRef Node reference
+     * @param objectNode Object node
+     */
+    private void fillBaseNodeInfo(NodeRef nodeRef, ObjectNode objectNode) {
+        objectNode.put("nodeUUID", nodeRef.getId());
+        if (nodeService.getProperty(nodeRef, ContentModel.PROP_CREATED) != null) {
+            objectNode.put("created", dateTimeFormat.format((Date) nodeService.getProperty(nodeRef, ContentModel.PROP_CREATED)));
+        }
+        objectNode.put("creator", (String) nodeService.getProperty(nodeRef, ContentModel.PROP_CREATOR));
+        if (nodeService.getProperty(nodeRef, ContentModel.PROP_MODIFIED) != null) {
+            objectNode.put("modified", dateTimeFormat.format((Date) nodeService.getProperty(nodeRef, ContentModel.PROP_MODIFIED)));
+        }
+        objectNode.put("modifier", (String) nodeService.getProperty(nodeRef, ContentModel.PROP_MODIFIER));
+        objectNode.put("title", (String) nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE));
+        objectNode.put("description", (String) nodeService.getProperty(nodeRef, ContentModel.PROP_DESCRIPTION));
+    }
+
+    /**
+     * Fill events info
+     * @param caseModelRef Case model reference
+     * @param objectNode Object node
+     */
+    private void fillEventsInfo(NodeRef caseModelRef, ObjectNode objectNode) {
+        List<ChildAssociationRef> caseAssocs = nodeService.getChildAssocs(caseModelRef);
+
+        ArrayNode startEventsNode = objectMapper.createArrayNode();
+        ArrayNode endEventsNode = objectMapper.createArrayNode();
+        ArrayNode restartEventsNode = objectMapper.createArrayNode();
+        ArrayNode resetEventsNode = objectMapper.createArrayNode();
+
+        for (ChildAssociationRef caseAssoc : caseAssocs) {
+            if (ICaseEventModel.ASSOC_ACTIVITY_START_EVENTS.equals(caseAssoc.getTypeQName())) {
+                NodeRef eventRef = caseAssoc.getChildRef();
+                ObjectNode eventNode = createEventObjectNode(eventRef);
+                startEventsNode.add(eventNode);
+            }
+            if (ICaseEventModel.ASSOC_ACTIVITY_END_EVENTS.equals(caseAssoc.getTypeQName())) {
+                NodeRef eventRef = caseAssoc.getChildRef();
+                ObjectNode eventNode = createEventObjectNode(eventRef);
+                endEventsNode.add(eventNode);
+            }
+            if (ICaseEventModel.ASSOC_ACTIVITY_RESTART_EVENTS.equals(caseAssoc.getTypeQName())) {
+                NodeRef eventRef = caseAssoc.getChildRef();
+                ObjectNode eventNode = createEventObjectNode(eventRef);
+                restartEventsNode.add(eventNode);
+            }
+            if (ICaseEventModel.ASSOC_ACTIVITY_RESET_EVENTS.equals(caseAssoc.getTypeQName())) {
+                NodeRef eventRef = caseAssoc.getChildRef();
+                ObjectNode eventNode = createEventObjectNode(eventRef);
+                resetEventsNode.add(eventNode);
+            }
+        }
+
+        objectNode.put("startEvents", startEventsNode);
+        objectNode.put("endEvents", endEventsNode);
+        objectNode.put("restartEvents", restartEventsNode);
+        objectNode.put("resetEvents", resetEventsNode);
+    }
+
+    /**
+     * Create event object node
+     * @param eventNodeRef Event node reference
+     * @return Object node
+     */
+    private ObjectNode createEventObjectNode(NodeRef eventNodeRef) {
+        ObjectNode eventNode = objectMapper.createObjectNode();
+        String dtoType = getEventType(nodeService.getType(eventNodeRef));
+        fillBaseNodeInfo(eventNodeRef, eventNode);
+        eventNode.put("dtoType", dtoType);
+        /** Event info */
+        eventNode.put("type", (String) nodeService.getProperty(eventNodeRef, ICaseEventModel.PROPERTY_TYPE));
+        fillAdditionalEventInfo(dtoType, eventNodeRef, eventNode);
+        /** Source info */
+        List<AssociationRef> sourcesAssocs = nodeService.getTargetAssocs(eventNodeRef, EventModel.ASSOC_EVENT_SOURCE);
+        if (!CollectionUtils.isEmpty(sourcesAssocs)) {
+            NodeRef sourceRef = sourcesAssocs.get(0).getTargetRef();
+            String sourceType = getCaseModelType(nodeService.getType(sourceRef));
+            eventNode.put("sourceCaseId", sourceRef.getId());
+            eventNode.put("isSourceCase", sourceType != null);
+        }
+        return eventNode;
+    }
+
+    /**
+     * Fill additional event info
+     * @param dtoType Dto type
+     * @param eventNodeRef Event node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalEventInfo(String dtoType, NodeRef eventNodeRef, ObjectNode objectNode) {
+        if (UserActionEventDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalUserActionEventInfo(eventNodeRef, objectNode);
+        }
+    }
+
+    /**
+     * Fill additional user action event infp
+     * @param eventNodeRef Event node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalUserActionEventInfo(NodeRef eventNodeRef, ObjectNode objectNode) {
+        objectNode.put("additionalDataType", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_ADDITIONAL_DATA_TYPE));
+        objectNode.put("confirmationMessage", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_CONFIRMATION_MESSAGE));
     }
 
     /**
@@ -320,17 +421,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             NodeRef statusRef = assocs.get(0).getTargetRef();
             if (statusRef != null) {
                 ObjectNode statusObjectNode = objectMapper.createObjectNode();
-                if (nodeService.getProperty(statusRef, ContentModel.PROP_CREATED) != null) {
-                    statusObjectNode.put("created", dateTimeFormat.format((Date) nodeService.getProperty(statusRef, ContentModel.PROP_CREATED)));
-                }
-                statusObjectNode.put("creator", (String) nodeService.getProperty(statusRef, ContentModel.PROP_CREATOR));
-                if (nodeService.getProperty(statusRef, ContentModel.PROP_MODIFIED) != null) {
-                    statusObjectNode.put("modified", dateTimeFormat.format((Date) nodeService.getProperty(statusRef, ContentModel.PROP_MODIFIED)));
-                }
-                statusObjectNode.put("modifier", (String) nodeService.getProperty(statusRef, ContentModel.PROP_MODIFIER));
-                statusObjectNode.put("title", (String) nodeService.getProperty(statusRef, ContentModel.PROP_TITLE));
-                statusObjectNode.put("description", (String) nodeService.getProperty(statusRef, ContentModel.PROP_DESCRIPTION));
-                statusObjectNode.put("nodeUUID", statusRef.getId());
+                fillBaseNodeInfo(statusRef, statusObjectNode);
                 /** Set status */
                 objectNode.set("caseStatus", statusObjectNode);
             }
@@ -373,18 +464,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             if (packageAssocs.get(0).getTargetRef() != null) {
                 NodeRef packageRef = packageAssocs.get(0).getTargetRef();
                 ObjectNode packageNode = objectMapper.createObjectNode();
-                if (nodeService.getProperty(packageRef, ContentModel.PROP_CREATED) != null) {
-                    packageNode.put("created", dateTimeFormat.format((Date) nodeService.getProperty(packageRef, ContentModel.PROP_CREATED)));
-                }
-                packageNode.put("creator", (String) nodeService.getProperty(packageRef, ContentModel.PROP_CREATOR));
-                if (nodeService.getProperty(packageRef, ContentModel.PROP_MODIFIED) != null) {
-                    packageNode.put("modified", dateTimeFormat.format((Date) nodeService.getProperty(packageRef, ContentModel.PROP_MODIFIED)));
-                }
-                packageNode.put("modifier", (String) nodeService.getProperty(packageRef, ContentModel.PROP_MODIFIER));
-                packageNode.put("title", (String) nodeService.getProperty(packageRef, ContentModel.PROP_TITLE));
-                packageNode.put("description", (String) nodeService.getProperty(packageRef, ContentModel.PROP_DESCRIPTION));
-                packageNode.put("nodeUUID", packageRef.getId());
-
+                fillBaseNodeInfo(packageRef, packageNode);
                 packageNode.put("workflowInstanceId", (String) nodeService.getProperty(packageRef, BpmPackageModel.PROP_WORKFLOW_INSTANCE_ID));
                 packageNode.put("workflowDefinitionName", (String) nodeService.getProperty(packageRef, BpmPackageModel.PROP_WORKFLOW_DEFINITION_NAME));
                 packageNode.put("isSystemPackage", (Boolean) nodeService.getProperty(packageRef, BpmPackageModel.PROP_IS_SYSTEM_PACKAGE));
@@ -433,8 +513,39 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         if (dictionaryService.isSubClass(nodeType, ICaseTaskModel.TYPE_TASK)) {
             return CaseTaskDto.DTO_TYPE;
         }
-        return CaseModelDto.DTO_TYPE;
+        return null;
     }
+
+    /**
+     * Get event type
+     * @param nodeType Node type
+     * @return Event type as string
+     */
+    private String getEventType(QName nodeType) {
+        if (nodeType == null) {
+            throw new RuntimeException("Node Type must not be null");
+        }
+        if (dictionaryService.isSubClass(nodeType, ICaseEventModel.TYPE_ACTIVITY_STARTED_EVENT)) {
+            return ActivityStartedEventDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ICaseEventModel.TYPE_ACTIVITY_STOPPED_EVENT)) {
+            return ActivityStoppedEventDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ICaseEventModel.TYPE_STAGE_CHILDREN_STOPPED)) {
+            return StageChildrenStoppedEventDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ICaseEventModel.TYPE_CASE_CREATED)) {
+            return CaseCreatedEventDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ICaseEventModel.TYPE_CASE_PROPERTIES_CHANGED)) {
+            return CasePropertiesChangedEventDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, EventModel.TYPE_USER_ACTION)) {
+            return UserActionEventDto.DTO_TYPE;
+        }
+        return EventDto.DTO_TYPE;
+    }
+
 
     /**
      * Get case model by node uuid

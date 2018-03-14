@@ -110,6 +110,26 @@ public class CaseModelDto extends AbstractEntityDto implements Serializable {
      */
     private Boolean hasChildCases;
 
+    /**
+     * Start events
+     */
+    private List<EventDto> startEvents;
+
+    /**
+     * End events
+     */
+    private List<EventDto> endEvents;
+
+    /**
+     * Restart events
+     */
+    private List<EventDto> restartEvents;
+
+    /**
+     * Reset events
+     */
+    private List<EventDto> resetEvents;
+
     /** Getters and setters */
 
     public String getDocumentId() {
@@ -222,5 +242,37 @@ public class CaseModelDto extends AbstractEntityDto implements Serializable {
 
     public void setHasChildCases(Boolean hasChildCases) {
         this.hasChildCases = hasChildCases;
+    }
+
+    public List<EventDto> getStartEvents() {
+        return startEvents;
+    }
+
+    public void setStartEvents(List<EventDto> startEvents) {
+        this.startEvents = startEvents;
+    }
+
+    public List<EventDto> getEndEvents() {
+        return endEvents;
+    }
+
+    public void setEndEvents(List<EventDto> endEvents) {
+        this.endEvents = endEvents;
+    }
+
+    public List<EventDto> getRestartEvents() {
+        return restartEvents;
+    }
+
+    public void setRestartEvents(List<EventDto> restartEvents) {
+        this.restartEvents = restartEvents;
+    }
+
+    public List<EventDto> getResetEvents() {
+        return resetEvents;
+    }
+
+    public void setResetEvents(List<EventDto> resetEvents) {
+        this.resetEvents = resetEvents;
     }
 }
