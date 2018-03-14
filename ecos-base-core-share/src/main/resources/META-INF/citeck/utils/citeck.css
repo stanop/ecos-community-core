@@ -383,3 +383,7 @@
 .mm-page .alfresco-footer-AlfStickyFooter > div.wrapper {
   background-color: white;
 }
+
+#alfresco-console .application .row {
+  height: 3.5em;
+}

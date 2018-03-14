@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Get latest currency rate</shortname>
+    <description><![CDATA[
+        The script looks for the latest available currency rate with date which is equals or less than the date
+        provided as script parameter.
+        <br/>
+
+        Mandatory parameters:
+            <ul>
+            <li>baseCurrency - nodeRef of base curency,
+            <li>targetCurrency - nodeRef of target currency,
+            <li>date - the latest date (yyyy-mm-dd) from which to start search
+            </ul>
+        <br/>
+
+        Json returned:
+            <pre>{
+                data: <currency rate as double value>
+            }</pre>
+    ]]></description>
+    <url>/citeck/currency/last-currency-rate?baseCurrency={baseCurrency}&amp;targetCurrency={targetCurrency}&amp;date={date}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

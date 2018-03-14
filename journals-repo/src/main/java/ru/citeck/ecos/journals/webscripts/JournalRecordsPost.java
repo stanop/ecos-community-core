@@ -1,11 +1,13 @@
 package ru.citeck.ecos.journals.webscripts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import graphql.ExecutionResult;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -14,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.webscripts.*;
+import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
@@ -57,6 +60,11 @@ public class JournalRecordsPost extends AbstractWebScript {
 
     private static final Pattern FORMATTER_ATTRIBUTES_PATTERN = Pattern.compile("['\"]\\s*?(\\S+?:\\S+?\\s*?" +
                                                                                 "(,\\s*?\\S+?:\\S+?\\s*?)*?)['\"]");
+
+    private static final List<QName> NODE_PROP_TYPES = Arrays.asList(DataTypeDefinition.NODE_REF,
+                                                                     DataTypeDefinition.CATEGORY);
+    private static final List<QName> QNAME_PROP_TYPES = Collections.singletonList(DataTypeDefinition.QNAME);
+
     private boolean newApiByDefault = false;
 
     private Properties globalProperties;
@@ -66,6 +74,7 @@ public class JournalRecordsPost extends AbstractWebScript {
     private DictionaryService dictionaryService;
     private SearchCriteriaParser criteriaParser;
     private CriteriaSearchService criteriaSearchService;
+    private VirtualScriptAttributes virtualScriptAttributes;
 
     private String gqlBaseQuery;
     private Map<String, JournalRecordsQuery> gqlQueryByJournalId = new ConcurrentHashMap<>();
@@ -105,11 +114,11 @@ public class JournalRecordsPost extends AbstractWebScript {
             params.put(GQL_PARAM_QUERY, criteriaQuery);
             params.put(GQL_PARAM_LANGUAGE, SEARCH_LANGUAGE);
 
-            Map<String, Object> queryResult = graphQLService.execute(query.query, params).toSpecification();
-            Map<String, Object> result = new HashMap<>();
-
-            Map<String, Map<String, Object>> data = (Map<String, Map<String, Object>>) queryResult.get(KEY_DATA);
+            ExecutionResult executeResult = graphQLService.execute(query.query, params);
+            Map<String, Map<String, Object>> data = executeResult.getData();
             Map<String, Object> resultData = data.get(KEY_CRITERIA_SEARCH);
+
+            Map<String, Object> result = new HashMap<>();
 
             //map results to meet criteria-search format
             resultData.forEach((queryResultKey, queryResultValue) -> {
@@ -135,6 +144,13 @@ public class JournalRecordsPost extends AbstractWebScript {
                             } else {
                                 newRecord.put(recordKey, recordValue);
                             }
+                        });
+
+                        NodeRef recordRef = new NodeRef((String) record.get("nodeRef"));
+                        query.virtualAttributes.forEach(a -> {
+                            String attName = a.toPrefixString(namespaceService);
+                            Object value = virtualScriptAttributes.getAttribute(recordRef, a);
+                            attributes.put(attName, value);
                         });
 
                         newRecord.put(KEY_ATTRIBUTES, attributes);
@@ -185,8 +201,14 @@ public class JournalRecordsPost extends AbstractWebScript {
         schemaBuilder.append("attr_aspects: aspects {shortQName: shortName}\n");
 
         Map<String, Pair<String, String>> attributesMapping = new HashMap<>();
+        Set<QName> virtualAttributes = new HashSet<>();
 
         for (QName attribute : journalType.getAttributes()) {
+
+            if (virtualScriptAttributes.provides(attribute)) {
+                virtualAttributes.add(attribute);
+                continue;
+            }
 
             Map<String, String> attributeOptions = journalType.getAttributeOptions(attribute);
             String prefixedKey = attribute.toPrefixString(namespaceService);
@@ -195,25 +217,29 @@ public class JournalRecordsPost extends AbstractWebScript {
             schemaBuilder.append(underscoredKey);
             schemaBuilder.append(": attribute(name:\"").append(prefixedKey).append("\"){");
 
-            boolean attributeWithNodes;
+            boolean attWithNodes;
+            boolean attWithQName;
             boolean isMultiple;
 
             PropertyDefinition propertyDef = dictionaryService.getProperty(attribute);
             if (propertyDef != null) {
-                attributeWithNodes = propertyDef.getDataType().getName().equals(DataTypeDefinition.NODE_REF);
+                QName typeName = propertyDef.getDataType().getName();
+                attWithNodes = NODE_PROP_TYPES.contains(typeName);
+                attWithQName = QNAME_PROP_TYPES.contains(typeName);
                 isMultiple = propertyDef.isMultiValued();
             } else {
                 AssociationDefinition assocDef = dictionaryService.getAssociation(attribute);
                 if (assocDef != null) {
-                    attributeWithNodes = true;
+                    attWithNodes = true;
                     isMultiple = true;
                 } else {
-                    attributeWithNodes = false;
+                    attWithNodes = false;
                     isMultiple = false;
                 }
+                attWithQName = false;
             }
 
-            String attrSchema = getAttributeSchema(attributeOptions, isMultiple, attributeWithNodes);
+            String attrSchema = getAttributeSchema(attributeOptions, isMultiple, attWithNodes, attWithQName);
             String attributeDataKey = StringUtils.substringBefore(attrSchema, "{").trim();
             attributesMapping.put(underscoredKey, new Pair<>(prefixedKey, attributeDataKey));
             schemaBuilder.append(attrSchema);
@@ -223,10 +249,13 @@ public class JournalRecordsPost extends AbstractWebScript {
 
         schemaBuilder.append("}");
 
-        return new JournalRecordsQuery(schemaBuilder.toString(), attributesMapping);
+        return new JournalRecordsQuery(schemaBuilder.toString(), attributesMapping, virtualAttributes);
     }
 
-    private String getAttributeSchema(Map<String, String> attributeOptions, boolean isMultiple, boolean isNodes) {
+    private String getAttributeSchema(Map<String, String> attributeOptions,
+                                      boolean isMultiple,
+                                      boolean isNodes,
+                                      boolean isQName) {
 
         String schema = attributeOptions.get("attributeSchema");
         if (StringUtils.isNotBlank(schema)) {
@@ -259,10 +288,12 @@ public class JournalRecordsPost extends AbstractWebScript {
             } else {
                 childrenAttributes.put("displayName", "displayName");
             }
-        } else {
+        } else if (isQName) {
+            value = "qname";
             if (formatter.contains("typeName")) {
-                value = "qname";
                 childrenAttributes.put("displayName", "classTitle");
+            } else {
+                childrenAttributes.put("shortQName", "shortName");
             }
         }
 
@@ -330,6 +361,11 @@ public class JournalRecordsPost extends AbstractWebScript {
     }
 
     @Autowired
+    public void setVirtualScriptAttributes(VirtualScriptAttributes virtualScriptAttributes) {
+        this.virtualScriptAttributes = virtualScriptAttributes;
+    }
+
+    @Autowired
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         namespaceService = serviceRegistry.getNamespaceService();
         dictionaryService = serviceRegistry.getDictionaryService();
@@ -338,11 +374,13 @@ public class JournalRecordsPost extends AbstractWebScript {
     private static class JournalRecordsQuery {
 
         String query;
+        Set<QName> virtualAttributes;
         Map<String, Pair<String, String>> attributesMapping;
 
-        JournalRecordsQuery(String query, Map<String, Pair<String, String>> mapping) {
+        JournalRecordsQuery(String query, Map<String, Pair<String, String>> mapping, Set<QName> virtualAttributes) {
             this.query = query;
             this.attributesMapping = mapping;
+            this.virtualAttributes = virtualAttributes;
         }
     }
 }
