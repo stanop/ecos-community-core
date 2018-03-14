@@ -26,6 +26,7 @@ import ru.citeck.ecos.flowable.listeners.global.GlobalExecutionListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalTaskListener;
 import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
+import ru.citeck.ecos.flowable.services.impl.ModelMapper;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
 
 import javax.sql.DataSource;
@@ -50,6 +51,8 @@ public class FlowableConfiguration {
     private static final String FLOWABLE_DB_PASSWORD = "flowable.db.password";
     private static final String FLOWABLE_DRIVER_CLASS_NAME = "flowable.db.driver.class.name";
 
+    private static final List<String> EXCLUDE_JS_SERVICES = Collections.singletonList("flowableModelerServiceJS");
+
     /**
      * Application context provider
      */
@@ -65,6 +68,7 @@ public class FlowableConfiguration {
 
     /**
      * Flowable data source bean
+     *
      * @return Flowable data source
      */
     @Bean(name = "flowableDataSource")
@@ -84,7 +88,8 @@ public class FlowableConfiguration {
 
     /**
      * Flowable process engine configuration
-     * @param dataSource Flowable data source
+     *
+     * @param dataSource         Flowable data source
      * @param descriptorRegistry Service descriptor registry
      * @return Process engine configuration
      */
@@ -95,18 +100,28 @@ public class FlowableConfiguration {
             StandaloneProcessEngineConfiguration engineConfiguration = new StandaloneProcessEngineConfiguration();
             engineConfiguration.setDataSource(dataSource);
             engineConfiguration.setAsyncExecutorActivate(false);
-            engineConfiguration.setDatabaseSchemaUpdate("true");
-            /** Beans */
+            engineConfiguration.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE);
+
+            Set<Class<?>> customMybatisMappers = new HashSet<>();
+            customMybatisMappers.add(ModelMapper.class);
+            engineConfiguration.setCustomMybatisMappers(customMybatisMappers);
+
+            // Beans
             Map<Object, Object> beans = new HashMap<>();
             beans.put(FlowableConstants.SERVICE_REGISTRY_BEAN_KEY, descriptorRegistry);
             setGlobalListenerBeans(beans);
-            /** Javascipt services */
+
+            // Javascipt services
             Map<String, BaseScopableProcessorExtension> servicesMap = applicationContext.getBeansOfType(BaseScopableProcessorExtension.class);
             for (BaseScopableProcessorExtension extension : servicesMap.values()) {
-                beans.put(extension.getExtensionName(), extension);
+                if (!EXCLUDE_JS_SERVICES.contains(extension.getExtensionName())) {
+                    beans.put(extension.getExtensionName(), extension);
+                }
             }
+
             engineConfiguration.setBeans(beans);
-            /** Listeners and handlers */
+
+            // Listeners and handlers
             List<BpmnParseHandler> parseHandlers = new ArrayList<>(2);
             parseHandlers.add(new ProcessBpmnParseHandler());
             parseHandlers.add(new UserTaskBpmnParseHandler());
@@ -119,6 +134,7 @@ public class FlowableConfiguration {
 
     /**
      * Set global listener beans
+     *
      * @param beans Beans map
      */
     private void setGlobalListenerBeans(Map<Object, Object> beans) {
@@ -130,10 +146,11 @@ public class FlowableConfiguration {
         for (String key : taskListenerMap.keySet()) {
             beans.put(key, taskListenerMap.get(key));
         }
-     }
+    }
 
     /**
      * Flowable engine bean
+     *
      * @param flowableEngineConfiguration Flowable engine configuration
      * @return Flowable engine
      */
@@ -149,8 +166,9 @@ public class FlowableConfiguration {
 
     /**
      * Flowable service bean
+     *
      * @param processEngine Process engine
-     * @return  service
+     * @return service
      */
     @Bean(name = "flowableRepositoryService")
     public RepositoryService flowableRepositoryService(ProcessEngine processEngine) {
@@ -163,6 +181,7 @@ public class FlowableConfiguration {
 
     /**
      * Flowable runtime service bean
+     *
      * @param processEngine Process engine
      * @return Runtime service
      */
@@ -177,6 +196,7 @@ public class FlowableConfiguration {
 
     /**
      * Flowable task service bean
+     *
      * @param processEngine Process engine
      * @return Task service
      */
@@ -191,6 +211,7 @@ public class FlowableConfiguration {
 
     /**
      * Flowable history service bean
+     *
      * @param processEngine Process engine
      * @return History service
      */
@@ -205,6 +226,7 @@ public class FlowableConfiguration {
 
     /**
      * Flowable management service bean
+     *
      * @param processEngine Process engine
      * @return Management service
      */
@@ -219,6 +241,7 @@ public class FlowableConfiguration {
 
     /**
      * Flowable form service bean
+     *
      * @param processEngine Process engine
      * @return Form service
      */
@@ -233,6 +256,7 @@ public class FlowableConfiguration {
 
     /**
      * Flowable node converter
+     *
      * @param descriptorRegistry Service registry
      * @return Flowable node converter
      */
@@ -243,9 +267,10 @@ public class FlowableConfiguration {
 
     /**
      * Flowable workflow property handler registry bean
+     *
      * @param flowableNodeConverter Flowable node converter
-     * @param messageService Message service
-     * @param namespaceService Namespace service
+     * @param messageService        Message service
+     * @param namespaceService      Namespace service
      * @return Flowable workflow property handler registry
      */
     @Bean(name = "flowableWorkflowPropertyHandlerRegistry")
@@ -265,10 +290,11 @@ public class FlowableConfiguration {
 
     /**
      * Flowable task type manager bean
-     * @param formService Form service
-     * @param namespaceService Namespace service
-     * @param tenantService Tenant service
-     * @param messageService Message service
+     *
+     * @param formService       Form service
+     * @param namespaceService  Namespace service
+     * @param tenantService     Tenant service
+     * @param messageService    Message service
      * @param dictionaryService Dictionary service
      * @return Flowable task type manager
      */
@@ -279,7 +305,7 @@ public class FlowableConfiguration {
                                                            MessageService messageService,
                                                            DictionaryService dictionaryService
     ) {
-        /** Qname converter */
+        // QName converter
         WorkflowQNameConverter workflowQNameConverter = new WorkflowQNameConverter(namespaceService);
         WorkflowObjectFactory workflowObjectFactory = new WorkflowObjectFactory(workflowQNameConverter,
                 tenantService, messageService, dictionaryService, FLOWABLE_ENGINE_NAME, null);

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.citeck.ru/workflow/simple-affirm/1.0">
+    <process id="flowable-simple-affirm" name="Simple affirming proccess (flowable)" isExecutable="true">
+        <extensionElements>
+            <flowable:executionListener event="start" class="ru.citeck.ecos.flowable.example.FlowableDocumentSetListener"></flowable:executionListener>
+                <flowable:executionListener event="start" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptExecutionListener">
+                <flowable:field name="script">
+                    <flowable:expression><![CDATA[if (execution.getVariable("bpm_workflowDescription") == "") {
+
+	if (execution.getVariable("document") != null)
+		execution.setVariable("bpm_workflowDescription", document.name);
+
+}]]></flowable:expression>
+                </flowable:field>
+            </flowable:executionListener>
+        </extensionElements>
+        <startEvent id="startevent1" name="Affirm Task" flowable:formKey="wfsa:affirmStartTask"></startEvent>
+        <userTask id="usertask1" name="Affirm Task" flowable:dueDate="${bpm_workflowDueDate}" flowable:formKey="wfsa:affirmTask">
+            <extensionElements>
+                <flowable:taskListener event="create" class="ru.citeck.ecos.flowable.example.FlowableAssignTaskToAuthority">
+                    <flowable:field name="authority">
+                        <flowable:expression><![CDATA[${wfsa_affirmAgent}]]></flowable:expression>
+                    </flowable:field>
+                </flowable:taskListener>
+            </extensionElements>
+        </userTask>
+        <endEvent id="endevent1" name="End"></endEvent>
+        <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+        <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="endevent1"></sequenceFlow>
+    </process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_flowable-simple-affirm">
+        <bpmndi:BPMNPlane bpmnElement="flowable-simple-affirm" id="BPMNPlane_flowable-simple-affirm">
+            <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+                <omgdc:Bounds height="30.0" width="30.0" x="80.0" y="80.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+                <omgdc:Bounds height="55.0" width="105.0" x="180.0" y="70.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+                <omgdc:Bounds height="28.0" width="28.0" x="336.0" y="80.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+                <omgdi:waypoint x="109.99752127569984" y="95.27268220501271"></omgdi:waypoint>
+                <omgdi:waypoint x="180.0" y="96.54545454545455"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+                <omgdi:waypoint x="285.0" y="95.93617021276596"></omgdi:waypoint>
+                <omgdi:waypoint x="336.006206825098" y="94.41683639244391"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</definitions>

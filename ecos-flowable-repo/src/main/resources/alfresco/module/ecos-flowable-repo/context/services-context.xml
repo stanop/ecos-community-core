@@ -48,6 +48,21 @@
 		<property name="personService" ref="PersonService"/>
 	</bean>
 
+	<bean id="flowableModelerService" class="ru.citeck.ecos.flowable.services.impl.FlowableModelerServiceImpl">
+		<property name="managementService" ref="flowableManagementService"/>
+		<property name="locations">
+			<bean factory-bean="resourceResolver" factory-method="getResources">
+				<constructor-arg>
+					<list>
+						<value>classpath*:alfresco/workflow/**/*flowable*.xml</value>
+						<value>classpath*:alfresco/module/*/workflow/**/*flowable*.xml</value>
+						<value>classpath*:alfresco/extension/workflow/**/*flowable*.xml</value>
+					</list>
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
+
 	<!-- Utils -->
 	<bean id="flowableCasePerformUtils" class="ru.citeck.ecos.flowable.utils.FlowableCasePerformUtils">
 		<property name="nodeService" ref="nodeService" />
@@ -269,6 +284,13 @@
 	<bean name="FlowableConfirmDecisionsJS" class="ru.citeck.ecos.flowable.example.FlowableConfirmDecisionsJS" parent="baseJavaScriptExtension">
 		<property name="extensionName" value="flowableConfirmDecisions" />
 		<property name="impl" ref="FlowableConfirmHelper" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+	<bean id="flowableModelerServiceJS" name="FlowableModelerServiceJS" class="ru.citeck.ecos.flowable.services.FlowableModelerServiceJS"
+		  parent="baseJavaScriptExtension">
+		<property name="extensionName" value="flowableModelerService"/>
+		<property name="flowableModelerService" ref="flowableModelerService"/>
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 	</bean>
 

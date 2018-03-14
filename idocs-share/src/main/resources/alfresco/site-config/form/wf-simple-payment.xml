@@ -39,6 +39,14 @@
 			</form>
 		</forms>
 	</config>
+
+	<config evaluator="string-compare" condition="flowable$flowable-simple-payment">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/simple-payment/simple-payment.ftl" />
+			</form>
+		</forms>
+	</config>
 	
     <config evaluator="task-type" condition="wfsp:paymentStartTask">
         <forms>

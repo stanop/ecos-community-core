@@ -3,6 +3,8 @@ package ru.citeck.ecos.webscripts;
 import org.alfresco.web.config.forms.FormConfigElement;
 import org.alfresco.web.config.forms.Mode;
 import org.alfresco.web.scripts.forms.FormUIGet;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
@@ -14,6 +16,8 @@ import java.util.Map;
  * Advanced form ui get webscript
  */
 public class AdvancedFormUIGet extends FormUIGet {
+
+    private static Log logger = LogFactory.getLog(AdvancedFormUIGet.class);
 
     /**
      * Constants
@@ -37,6 +41,9 @@ public class AdvancedFormUIGet extends FormUIGet {
         String modeParam = this.getParameter(request, "mode", "edit");
         String formId = this.getParameter(request, "formId");
         Mode mode = Mode.modeFromString(modeParam);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Showing " + mode + " form (id=" + formId + ") for item: [" + itemKind + "]" + itemId);
+        }
 
         FormConfigElement formConfig = this.getFormConfig(itemId, formId, itemKind);
         List<String> visibleFields = this.getVisibleFields(mode, formConfig);
@@ -65,7 +72,7 @@ public class AdvancedFormUIGet extends FormUIGet {
     protected FormConfigElement getFormConfig(String itemId, String formId, String itemKind) {
         FormConfigElement config = super.getFormConfig(itemId, formId);
         if (config == null) {
-            /** Load default for workflow item kind */
+            // Load default for workflow item kind
             if (itemKind.equals(WORKFLOW_ITEM_KIND)) {
                 return super.getFormConfig(DEFAULT_TASK_VIEW, formId);
             } else {

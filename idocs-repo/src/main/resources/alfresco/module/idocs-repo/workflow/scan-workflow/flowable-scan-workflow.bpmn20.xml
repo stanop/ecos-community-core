@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.citeck.ru/workflow/scan/1.0">
+    <process id="flowable-scan" name="Scan Workflow (flowable)" isExecutable="true">
+        <startEvent id="startevent1" name="Submit Sign Task" flowable:formKey="wfscan:submitScanTask"></startEvent>
+        <endEvent id="endevent1" name="End"></endEvent>
+        <userTask id="usertask1" name="Scan Task" flowable:dueDate="${bpm_workflowDueDate}" flowable:formKey="wfscan:scanTask">
+            <extensionElements>
+                <flowable:taskListener event="create" class="ru.citeck.ecos.flowable.example.FlowableAssignTaskToAuthority">
+                    <flowable:field name="authority">
+                        <flowable:expression><![CDATA[${wfscan_clerk}]]></flowable:expression>
+                    </flowable:field>
+                </flowable:taskListener>
+                <flowable:taskListener event="create" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptTaskListener">
+                    <flowable:field name="script">
+                        <flowable:expression><![CDATA[task.setVariableLocal("grantedPermission", "Collaborator");]]></flowable:expression>
+                    </flowable:field>
+                </flowable:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+        <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="endevent1"></sequenceFlow>
+    </process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_flowable-scan">
+        <bpmndi:BPMNPlane bpmnElement="flowable-scan" id="BPMNPlane_flowable-scan">
+            <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+                <omgdc:Bounds height="30.0" width="30.0" x="21.0" y="182.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+                <omgdc:Bounds height="28.0" width="28.0" x="290.0" y="182.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+                <omgdc:Bounds height="55.0" width="105.0" x="120.0" y="172.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+                <omgdi:waypoint x="50.9974848335286" y="197.2746792094053"></omgdi:waypoint>
+                <omgdi:waypoint x="120.0" y="198.53846153846155"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+                <omgdi:waypoint x="225.0" y="198.10266159695817"></omgdi:waypoint>
+                <omgdi:waypoint x="290.00495623572823" y="196.3724916591251"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</definitions>
