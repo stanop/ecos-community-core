@@ -694,6 +694,10 @@ table.batch-edit-results,
 	padding: 10px;
 }
 
+#batch-edit-div .batch-edit-criterion {
+	overflow-y: hidden;
+}
+
 #batch-edit-div .criterion-value .criterion-value-field-input {
 	float: right;
 }
