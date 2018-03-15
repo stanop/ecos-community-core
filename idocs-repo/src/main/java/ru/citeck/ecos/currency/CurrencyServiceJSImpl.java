@@ -5,6 +5,7 @@ import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author alexander.nemerov
@@ -66,5 +67,10 @@ public class CurrencyServiceJSImpl extends AlfrescoScopableProcessorExtension
 
     public void setCurrencyService(CurrencyService currencyService) {
         this.currencyService = currencyService;
+    }
+
+    @Override
+    public BigDecimal getLastCurrencyRate(NodeRef baseCurrency, NodeRef targetCurrency, Date date) {
+        return currencyService.getLastCurrencyRate(baseCurrency, targetCurrency, date);
     }
 }
