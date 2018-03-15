@@ -272,6 +272,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         /** Event info */
         eventNode.put("type", (String) nodeService.getProperty(eventNodeRef, ICaseEventModel.PROPERTY_TYPE));
         fillAdditionalEventInfo(dtoType, eventNodeRef, eventNode);
+        fillConditionsInfo(eventNodeRef, eventNode);
         /** Source info */
         List<AssociationRef> sourcesAssocs = nodeService.getTargetAssocs(eventNodeRef, EventModel.ASSOC_EVENT_SOURCE);
         if (!CollectionUtils.isEmpty(sourcesAssocs)) {
@@ -281,6 +282,125 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             eventNode.put("isSourceCase", sourceType != null);
         }
         return eventNode;
+    }
+
+    /**
+     * Fill conditions info
+     * @param eventNodeRef Event node reference
+     * @param objectNode Object node
+     */
+    private void fillConditionsInfo(NodeRef eventNodeRef, ObjectNode objectNode) {
+        List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(eventNodeRef);
+        ArrayNode conditionsNode = objectMapper.createArrayNode();
+        for (ChildAssociationRef childAssoc : childAssocs) {
+            if (EventModel.ASSOC_CONDITIONS.equals(childAssoc.getTypeQName())) {
+                ObjectNode conditionNode = createConditionObjectNode(childAssoc.getChildRef());
+                conditionsNode.add(conditionNode);
+            }
+        }
+        objectNode.put("conditions", conditionsNode);
+    }
+
+    /**
+     * Create condition object node
+     * @param conditionNodeRef Condition node reference
+     * @return Object node
+     */
+    private ObjectNode createConditionObjectNode(NodeRef conditionNodeRef) {
+        ObjectNode conditionNode = objectMapper.createObjectNode();
+        fillBaseNodeInfo(conditionNodeRef, conditionNode);
+        String dtoType = getConditionType(nodeService.getType(conditionNodeRef));
+        conditionNode.put("dtoType", dtoType);
+        fillAdditionalConditionInfo(dtoType, conditionNodeRef, conditionNode);
+        return conditionNode;
+    }
+
+    /**
+     * Fill additional condition info
+     * @param dtoType Dto type
+     * @param conditionNodeRef Condition node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalConditionInfo(String dtoType, NodeRef conditionNodeRef, ObjectNode objectNode) {
+        if (CompareProcessVariableConditionDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalCompareProcessVariableConditionInfo(conditionNodeRef, objectNode);
+        }
+        if (ComparePropertyValueConditionDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalComparePropertyValueConditionInfo(conditionNodeRef, objectNode);
+        }
+        if (EvaluateScriptConditionDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalEvaluateScriptConditionInfo(conditionNodeRef, objectNode);
+        }
+        if (UserHasPermissionConditionDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalUserHasPermissionConditionInfo(conditionNodeRef, objectNode);
+        }
+        if (UserInDocumentConditionDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalUserInDocumentConditionInfo(conditionNodeRef, objectNode);
+        }
+        if (UserInGroupConditionDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalUserInGroupConditionInfo(conditionNodeRef, objectNode);
+        }
+    }
+
+    /**
+     * Fill additional compare process variable condition info
+     * @param conditionNodeRef Condition node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalCompareProcessVariableConditionInfo(NodeRef conditionNodeRef, ObjectNode objectNode) {
+        objectNode.put("processVariable", (String) nodeService.getProperty(conditionNodeRef, ConditionModel.CompareProcessVariable.PROP_VARIABLE));
+        objectNode.put("processVariableValue", (String) nodeService.getProperty(conditionNodeRef, ConditionModel.CompareProcessVariable.PROP_VALUE));
+    }
+
+    /**
+     * Fill additional compare property value condition info
+     * @param conditionNodeRef Condition node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalComparePropertyValueConditionInfo(NodeRef conditionNodeRef, ObjectNode objectNode) {
+        QName propertyName = (QName) nodeService.getProperty(conditionNodeRef, ConditionModel.ComparePropertyValue.PROP_PROPERTY);
+        objectNode.put("propertyName", propertyName != null ? propertyName.toString() : null);
+        objectNode.put("propertyValue", (String) nodeService.getProperty(conditionNodeRef, ConditionModel.ComparePropertyValue.PROP_VALUE));
+        objectNode.put("propertyOperation", (String) nodeService.getProperty(conditionNodeRef, ConditionModel.ComparePropertyValue.PROP_OPERATION));
+    }
+
+    /**
+     * Fill additional evaluate script condition info
+     * @param conditionNodeRef Condition node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalEvaluateScriptConditionInfo(NodeRef conditionNodeRef, ObjectNode objectNode) {
+        objectNode.put("evaluateScript", (String) nodeService.getProperty(conditionNodeRef, ConditionModel.EvaluateScript.PROP_SCRIPT));
+    }
+
+    /**
+     * Fill additional user has permission condition info
+     * @param conditionNodeRef Condition node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalUserHasPermissionConditionInfo(NodeRef conditionNodeRef, ObjectNode objectNode) {
+        objectNode.put("permission", (String) nodeService.getProperty(conditionNodeRef, ConditionModel.UserHasPermission.PROP_PERMISSION));
+        objectNode.put("permissionUsername", (String) nodeService.getProperty(conditionNodeRef, ConditionModel.UserHasPermission.PROP_USERNAME));
+    }
+
+    /**
+     * Fill additional user in document condition info
+     * @param conditionNodeRef Condition node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalUserInDocumentConditionInfo(NodeRef conditionNodeRef, ObjectNode objectNode) {
+        objectNode.put("documentProperty", (String) nodeService.getProperty(conditionNodeRef, ConditionModel.UserInDocument.PROP_PROPERTY));
+        objectNode.put("documentUsername", (String) nodeService.getProperty(conditionNodeRef, ConditionModel.UserInDocument.PROP_USERNAME));
+    }
+
+    /**
+     * Fill additional user in group condition info
+     * @param conditionNodeRef Condition node reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalUserInGroupConditionInfo(NodeRef conditionNodeRef, ObjectNode objectNode) {
+        objectNode.put("groupName", (String) nodeService.getProperty(conditionNodeRef, ConditionModel.UserInGroup.PROP_GROUPNAME));
+        objectNode.put("groupUsername", (String) nodeService.getProperty(conditionNodeRef, ConditionModel.UserInGroup.PROP_USERNAME));
     }
 
     /**
@@ -296,7 +416,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     }
 
     /**
-     * Fill additional user action event infp
+     * Fill additional user action event info
      * @param eventNodeRef Event node reference
      * @param objectNode Object node
      */
@@ -549,6 +669,36 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             return UserActionEventDto.DTO_TYPE;
         }
         return EventDto.DTO_TYPE;
+    }
+
+    /**
+     * Get condition type
+     * @param nodeType Node type
+     * @return Condition type as string
+     */
+    private String getConditionType(QName nodeType) {
+        if (nodeType == null) {
+            throw new RuntimeException("Node Type must not be null");
+        }
+        if (dictionaryService.isSubClass(nodeType, ConditionModel.CompareProcessVariable.TYPE)) {
+            return CompareProcessVariableConditionDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ConditionModel.ComparePropertyValue.TYPE)) {
+            return ComparePropertyValueConditionDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ConditionModel.EvaluateScript.TYPE)) {
+            return EvaluateScriptConditionDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ConditionModel.UserHasPermission.TYPE)) {
+            return UserHasPermissionConditionDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ConditionModel.UserInDocument.TYPE)) {
+            return UserInDocumentConditionDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, ConditionModel.UserInGroup.TYPE)) {
+            return UserInGroupConditionDto.DTO_TYPE;
+        }
+        return ConditionDto.DTO_TYPE;
     }
 
 
