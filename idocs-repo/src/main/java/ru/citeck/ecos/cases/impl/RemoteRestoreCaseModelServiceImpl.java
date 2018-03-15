@@ -182,6 +182,33 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         if (sourceRef != null) {
             nodeService.createAssociation(eventRef, sourceRef, EventModel.ASSOC_EVENT_SOURCE);
         }
+        fillAdditionalInfo(eventDto, eventRef);
+        /** Conditions */
+        for (ConditionDto conditionDto : eventDto.getConditions()) {
+            restoreCondition(conditionDto, eventRef);
+        }
+    }
+
+    /**
+     * Restore condition
+     * @param conditionDto Condition data transfer object
+     * @param parentEventRef Parent event node reference
+     */
+    private void restoreCondition(ConditionDto conditionDto, NodeRef parentEventRef) {
+        /** Create properties map */
+        Map<QName, Serializable> properties = new HashMap<>();
+        properties.put(ContentModel.PROP_CREATED, conditionDto.getCreated());
+        properties.put(ContentModel.PROP_CREATOR, conditionDto.getCreator());
+        properties.put(ContentModel.PROP_MODIFIED, conditionDto.getModified());
+        properties.put(ContentModel.PROP_MODIFIER, conditionDto.getModifier());
+        properties.put(ContentModel.PROP_TITLE, conditionDto.getTitle());
+        properties.put(ContentModel.PROP_DESCRIPTION, conditionDto.getDescription());
+        /** Create node */
+        QName conditionType = getConditionType(conditionDto);
+        ChildAssociationRef childAssociationRef = nodeService.createNode(parentEventRef,
+                EventModel.ASSOC_CONDITIONS, EventModel.ASSOC_CONDITIONS, conditionType, properties);
+        NodeRef conditionRef = childAssociationRef.getChildRef();
+        fillAdditionalInfo(conditionDto, conditionRef);
     }
 
     /**
@@ -207,34 +234,178 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
     private void fillAdditionalInfo(CaseModelDto caseModelDto, NodeRef caseModelRef) {
         if (caseModelDto instanceof StageDto) {
             fillAdditionalStageInfo((StageDto) caseModelDto, caseModelRef);
+            return;
         }
         if (caseModelDto instanceof ExecutionScriptDto) {
             fillAdditionalExecutionScriptInfo((ExecutionScriptDto) caseModelDto, caseModelRef);
+            return;
         }
         if (caseModelDto instanceof FailDto) {
             fillAdditionalFailInfo((FailDto) caseModelDto, caseModelRef);
+            return;
         }
         if (caseModelDto instanceof MailDto) {
             fillAdditionalMailInfo((MailDto) caseModelDto, caseModelRef);
+            return;
         }
         if (caseModelDto instanceof SetProcessVariableDto) {
             fillAdditionalSetProcessVariableInfo((SetProcessVariableDto) caseModelDto, caseModelRef);
+            return;
         }
         if (caseModelDto instanceof SetPropertyValueDto) {
             fillAdditionalSetPropertyValueInfo((SetPropertyValueDto) caseModelDto, caseModelRef);
+            return;
         }
         if (caseModelDto instanceof StartWorkflowDto) {
             fillAdditionalStartWorkflowInfo((StartWorkflowDto) caseModelDto, caseModelRef);
+            return;
         }
         if (caseModelDto instanceof SetCaseStatusDto) {
             fillAdditionalSetCaseStatusInfo((SetCaseStatusDto) caseModelDto, caseModelRef);
+            return;
         }
         if (caseModelDto instanceof CaseTimerDto) {
             fillAdditionalCaseTimerInfo((CaseTimerDto) caseModelDto, caseModelRef);
+            return;
         }
         if (caseModelDto instanceof CaseTaskDto) {
             fillAdditionalCaseTaskInfo((CaseTaskDto) caseModelDto, caseModelRef);
+            return;
         }
+    }
+
+    /**
+     * Fill additional info
+     * @param eventDto Event data transfer object
+     * @param eventRef Event node reference
+     */
+    private void fillAdditionalInfo(EventDto eventDto, NodeRef eventRef) {
+        if (eventDto instanceof UserActionEventDto) {
+            fillAdditionalUserActionEventInfo((UserActionEventDto) eventDto, eventRef);
+            return;
+        }
+    }
+
+    /**
+     * Fill additional info
+     * @param conditionDto Condition data transfer object
+     * @param conditionRef Condition node reference
+     */
+    private void fillAdditionalInfo(ConditionDto conditionDto, NodeRef conditionRef) {
+        if (conditionDto instanceof CompareProcessVariableConditionDto) {
+            fillAdditionalCompareProcessVariableConditionInfo(
+                    (CompareProcessVariableConditionDto) conditionDto,
+                    conditionRef
+            );
+            return;
+        }
+        if (conditionDto instanceof ComparePropertyValueConditionDto) {
+            fillAdditionalComparePropertyValueConditionInfo(
+                    (ComparePropertyValueConditionDto) conditionDto,
+                    conditionRef
+            );
+            return;
+        }
+        if (conditionDto instanceof EvaluateScriptConditionDto) {
+            fillAdditionalEvaluateScriptConditionInfo(
+                    (EvaluateScriptConditionDto) conditionDto,
+                    conditionRef
+            );
+            return;
+        }
+        if (conditionDto instanceof UserHasPermissionConditionDto) {
+            fillAdditionalUserHasPermissionConditionInfo(
+                    (UserHasPermissionConditionDto) conditionDto,
+                    conditionRef
+            );
+            return;
+        }
+        if (conditionDto instanceof UserInDocumentConditionDto) {
+            fillAdditionalUserInDocumentConditionInfo(
+                    (UserInDocumentConditionDto) conditionDto,
+                    conditionRef
+            );
+            return;
+        }
+        if (conditionDto instanceof UserInGroupConditionDto) {
+            fillAdditionalUserInGroupConditionInfo(
+                    (UserInGroupConditionDto) conditionDto,
+                    conditionRef
+            );
+            return;
+        }
+    }
+
+    /**
+     * Fill additional user action event info
+     * @param eventRef Event node reference
+     * @param eventDto Event data transfer object
+     */
+    private void fillAdditionalUserActionEventInfo(UserActionEventDto eventDto, NodeRef eventRef) {
+        nodeService.setProperty(eventRef, EventModel.PROP_ADDITIONAL_DATA_TYPE, eventDto.getAdditionalDataType());
+        nodeService.setProperty(eventRef, EventModel.PROP_CONFIRMATION_MESSAGE, eventDto.getConfirmationMessage());
+    }
+
+    /**
+     * Fill additional compare process variable condition info
+     * @param conditionRef Condition node reference
+     * @param conditionDto Condition data transfer object
+     */
+    private void fillAdditionalCompareProcessVariableConditionInfo(CompareProcessVariableConditionDto conditionDto, NodeRef conditionRef) {
+        nodeService.setProperty(conditionRef, ConditionModel.CompareProcessVariable.PROP_VARIABLE, conditionDto.getProcessVariable());
+        nodeService.setProperty(conditionRef, ConditionModel.CompareProcessVariable.PROP_VALUE, conditionDto.getProcessVariableValue());
+
+    }
+
+    /**
+     * Fill additional compare property value condition info
+     * @param conditionRef Condition node reference
+     * @param conditionDto Condition data transfer object
+     */
+    private void fillAdditionalComparePropertyValueConditionInfo(ComparePropertyValueConditionDto conditionDto, NodeRef conditionRef) {
+        QName propertyName = QName.createQName(conditionDto.getPropertyName());
+        nodeService.setProperty(conditionRef, ConditionModel.ComparePropertyValue.PROP_PROPERTY, propertyName);
+        nodeService.setProperty(conditionRef, ConditionModel.ComparePropertyValue.PROP_VALUE, conditionDto.getPropertyValue());
+        nodeService.setProperty(conditionRef, ConditionModel.ComparePropertyValue.PROP_OPERATION, conditionDto.getPropertyOperation());
+    }
+
+    /**
+     * Fill additional evaluate script condition info
+     * @param conditionRef Condition node reference
+     * @param conditionDto Condition data transfer object
+     */
+    private void fillAdditionalEvaluateScriptConditionInfo(EvaluateScriptConditionDto conditionDto, NodeRef conditionRef) {
+        nodeService.setProperty(conditionRef, ConditionModel.EvaluateScript.PROP_SCRIPT, conditionDto.getEvaluateScript());
+    }
+
+    /**
+     * Fill additional user has permission condition info
+     * @param conditionRef Condition node reference
+     * @param conditionDto Condition data transfer object
+     */
+    private void fillAdditionalUserHasPermissionConditionInfo(UserHasPermissionConditionDto conditionDto, NodeRef conditionRef) {
+        nodeService.setProperty(conditionRef, ConditionModel.UserHasPermission.PROP_PERMISSION, conditionDto.getPermission());
+        nodeService.setProperty(conditionRef, ConditionModel.UserHasPermission.PROP_USERNAME, conditionDto.getPermissionUsername());
+    }
+
+    /**
+     * Fill additional user in document condition info
+     * @param conditionRef Condition node reference
+     * @param conditionDto Condition data transfer object
+     */
+    private void fillAdditionalUserInDocumentConditionInfo(UserInDocumentConditionDto conditionDto, NodeRef conditionRef) {
+        nodeService.setProperty(conditionRef, ConditionModel.UserInDocument.PROP_PROPERTY, conditionDto.getDocumentProperty());
+        nodeService.setProperty(conditionRef, ConditionModel.UserInDocument.PROP_USERNAME, conditionDto.getDocumentUsername());
+    }
+
+    /**
+     * Fill additional user in group condition info
+     * @param conditionRef Condition node reference
+     * @param conditionDto Condition data transfer object
+     */
+    private void fillAdditionalUserInGroupConditionInfo(UserInGroupConditionDto conditionDto, NodeRef conditionRef) {
+        nodeService.setProperty(conditionRef, ConditionModel.UserInGroup.PROP_GROUPNAME, conditionDto.getGroupName());
+        nodeService.setProperty(conditionRef, ConditionModel.UserInGroup.PROP_USERNAME, conditionDto.getGroupUsername());
     }
 
     /**
@@ -418,6 +589,34 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         }
         if (eventDto instanceof StageChildrenStoppedEventDto) {
             return ICaseEventModel.TYPE_STAGE_CHILDREN_STOPPED;
+        }
+        return null;
+    }
+
+    /**
+     * Get condition type
+     * @param conditionDto Condition data transfer object
+     * @return Condition type
+     */
+    private QName getConditionType(ConditionDto conditionDto) {
+        if (conditionDto instanceof CompareProcessVariableConditionDto) {
+            return ConditionModel.CompareProcessVariable.TYPE;
+        }
+        if (conditionDto instanceof ComparePropertyValueConditionDto) {
+            return ConditionModel.ComparePropertyValue.TYPE;
+        }
+        if (conditionDto instanceof EvaluateScriptConditionDto) {
+            return ConditionModel.EvaluateScript.TYPE;
+        }
+
+        if (conditionDto instanceof UserHasPermissionConditionDto) {
+            return ConditionModel.UserHasPermission.TYPE;
+        }
+        if (conditionDto instanceof UserInDocumentConditionDto) {
+            return ConditionModel.UserInDocument.TYPE;
+        }
+        if (conditionDto instanceof UserInGroupConditionDto) {
+            return ConditionModel.UserInGroup.TYPE;
         }
         return null;
     }
