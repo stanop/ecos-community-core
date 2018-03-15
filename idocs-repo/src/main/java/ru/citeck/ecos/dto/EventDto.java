@@ -3,6 +3,8 @@ package ru.citeck.ecos.dto;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import java.util.List;
+
 /**
  * Event data transfer object
  */
@@ -41,6 +43,11 @@ public class EventDto extends AbstractEntityDto {
      */
     private Boolean isSourceCase;
 
+    /**
+     * Conditions
+     */
+    private List<ConditionDto> conditions;
+
     /** Getters and setters */
 
     public String getType() {
@@ -65,5 +72,13 @@ public class EventDto extends AbstractEntityDto {
 
     public void setIsSourceCase(Boolean sourceCase) {
         isSourceCase = sourceCase;
+    }
+
+    public List<ConditionDto> getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(List<ConditionDto> conditions) {
+        this.conditions = conditions;
     }
 }
