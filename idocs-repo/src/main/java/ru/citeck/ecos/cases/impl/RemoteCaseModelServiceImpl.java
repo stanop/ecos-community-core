@@ -117,17 +117,22 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     public void sendAndRemoveCaseModelsByDocument(NodeRef documentRef) {
         transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
             ArrayNode arrayNode = objectMapper.createArrayNode();
+            List<NodeRef> forDelete = new ArrayList<>();
             /** Create json array */
             for (NodeRef caseRef : getCaseModelsByNode(documentRef)) {
                 ObjectNode objectNode = createObjectNodeFromCaseModel(caseRef);
                 if (objectNode != null) {
                     arrayNode.add(objectNode);
                 }
-                nodeService.deleteNode(caseRef);
+                forDelete.add(caseRef);
             }
             nodeService.setProperty(documentRef, IdocsModel.PROP_CASE_MODELS_SENT, true);
             /** Send request */
             postForObject(SAVE_CASE_MODELS_METHOD, arrayNode.toString(), String.class);
+            /** Delete nodes */
+            for (NodeRef caseNodeRef : forDelete) {
+                nodeService.deleteNode(caseNodeRef);
+            }
             return null;
         });
     }

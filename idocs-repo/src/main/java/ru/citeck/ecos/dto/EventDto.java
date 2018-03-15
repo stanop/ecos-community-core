@@ -59,11 +59,11 @@ public class EventDto extends AbstractEntityDto {
         this.sourceCaseId = sourceCaseId;
     }
 
-    public boolean getIsSourceCase() {
+    public Boolean getIsSourceCase() {
         return isSourceCase;
     }
 
-    public void setIsSourceCase(boolean sourceCase) {
+    public void setIsSourceCase(Boolean sourceCase) {
         isSourceCase = sourceCase;
     }
 }

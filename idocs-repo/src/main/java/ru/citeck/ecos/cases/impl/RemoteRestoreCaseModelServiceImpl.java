@@ -47,8 +47,13 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
             caseModelDto.setChildCases(childCaseModels);
         }
         /** Restore data */
+        Map<CaseModelDto, NodeRef> restoreMap = new HashMap<>();
         for (CaseModelDto caseModelDto : caseModels) {
-            restoreCaseModelNodeRef(caseModelDto, documentRef);
+            restoreCaseModelNodeRef(caseModelDto, documentRef, restoreMap);
+        }
+        /** Restore events data */
+        for (CaseModelDto caseModelDto : caseModels) {
+            restoreCaseEventsNodeRefs(caseModelDto, restoreMap);
         }
         /** Remote useless data and set flags */
         nodeService.setProperty(documentRef, IdocsModel.PROP_DOCUMENT_CASE_COMPLETED, false);
@@ -74,8 +79,9 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
      * Restore case model node reference
      * @param caseModelDto Case model data transfer object
      * @param parentNodeRef Parent node reference
+     * @param restoreMap Restore map
      */
-    private void restoreCaseModelNodeRef(CaseModelDto caseModelDto, NodeRef parentNodeRef) {
+    private void restoreCaseModelNodeRef(CaseModelDto caseModelDto, NodeRef parentNodeRef, Map<CaseModelDto, NodeRef> restoreMap) {
         /** Create properties map */
         Map<QName, Serializable> properties = new HashMap<>();
         properties.put(ContentModel.PROP_CREATED, caseModelDto.getCreated());
@@ -102,10 +108,95 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
                 ActivityModel.ASSOC_ACTIVITIES, ActivityModel.ASSOC_ACTIVITIES, caseType, properties);
         NodeRef caseModelRef = childAssociationRef.getChildRef();
         fillAdditionalInfo(caseModelDto, caseModelRef);
+        restoreMap.put(caseModelDto, caseModelRef);
         /** Restore child cases */
         for (CaseModelDto childCaseModel : caseModelDto.getChildCases()) {
-            restoreCaseModelNodeRef(childCaseModel, caseModelRef);
+            restoreCaseModelNodeRef(childCaseModel, caseModelRef, restoreMap);
         }
+    }
+
+    /**
+     * Restore case events node references
+     * @param caseModelDto Case model data transfer object
+     * @param restoreMap Restore map
+     */
+    private void restoreCaseEventsNodeRefs(CaseModelDto caseModelDto, Map<CaseModelDto, NodeRef> restoreMap) {
+        NodeRef caseModelRef = restoreMap.get(caseModelDto);
+        if (caseModelRef == null) {
+            return;
+        }
+        /** Start events */
+        for (EventDto eventDto : caseModelDto.getStartEvents()) {
+            restoreEvent(eventDto, caseModelRef, ICaseEventModel.ASSOC_ACTIVITY_START_EVENTS, restoreMap);
+        }
+
+        /** End events */
+        for (EventDto eventDto : caseModelDto.getEndEvents()) {
+            restoreEvent(eventDto, caseModelRef, ICaseEventModel.ASSOC_ACTIVITY_END_EVENTS, restoreMap);
+        }
+
+        /** Restart events */
+        for (EventDto eventDto : caseModelDto.getRestartEvents()) {
+            restoreEvent(eventDto, caseModelRef, ICaseEventModel.ASSOC_ACTIVITY_RESTART_EVENTS, restoreMap);
+        }
+
+        /** Reset events */
+        for (EventDto eventDto : caseModelDto.getResetEvents()) {
+            restoreEvent(eventDto, caseModelRef, ICaseEventModel.ASSOC_ACTIVITY_RESET_EVENTS, restoreMap);
+        }
+    }
+
+    /**
+     * Restore event
+     * @param eventDto Event data transfer object
+     * @param parentCaseModelRef Parent case model reference
+     * @param assocType Assoc type
+     * @param restoreMap Restore map
+     */
+    private void restoreEvent(EventDto eventDto, NodeRef parentCaseModelRef, QName assocType, Map<CaseModelDto, NodeRef> restoreMap) {
+        /** Create properties map */
+        Map<QName, Serializable> properties = new HashMap<>();
+        properties.put(ContentModel.PROP_CREATED, eventDto.getCreated());
+        properties.put(ContentModel.PROP_CREATOR, eventDto.getCreator());
+        properties.put(ContentModel.PROP_MODIFIED, eventDto.getModified());
+        properties.put(ContentModel.PROP_MODIFIER, eventDto.getModifier());
+        properties.put(ContentModel.PROP_TITLE, eventDto.getTitle());
+        properties.put(ContentModel.PROP_DESCRIPTION, eventDto.getDescription());
+        /** Create node */
+        QName eventType = getEventType(eventDto);
+        ChildAssociationRef childAssociationRef = nodeService.createNode(parentCaseModelRef,
+                assocType, assocType, eventType, properties);
+        NodeRef eventRef = childAssociationRef.getChildRef();
+        /** Source */
+        NodeRef sourceRef = null;
+        if (eventDto.getSourceCaseId() != null) {
+            if (eventDto.getIsSourceCase() != null && eventDto.getIsSourceCase()) {
+                sourceRef = getCaseModelBySourceId(eventDto.getSourceCaseId(), restoreMap);
+            } else {
+                sourceRef = new NodeRef(WORKSPACE_PREFIX + eventDto.getSourceCaseId());
+                if (!nodeService.exists(sourceRef)) {
+                    sourceRef = null;
+                }
+            }
+        }
+        if (sourceRef != null) {
+            nodeService.createAssociation(eventRef, sourceRef, EventModel.ASSOC_EVENT_SOURCE);
+        }
+    }
+
+    /**
+     * Get case model by source id from restore map
+     * @param sourceId Source id
+     * @param restoreMap Restore map
+     * @return Case model node reference
+     */
+    private NodeRef getCaseModelBySourceId(String sourceId, Map<CaseModelDto, NodeRef> restoreMap) {
+        for (CaseModelDto caseModelDto : restoreMap.keySet()) {
+            if (sourceId.equals(caseModelDto.getNodeUUID())) {
+                return restoreMap.get(caseModelDto);
+            }
+        }
+        return null;
     }
 
     /**
@@ -302,6 +393,33 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
             return QName.createQName(((CaseTaskDto) caseModelDto).getTaskTypeFullName());
         }
         return ActivityModel.TYPE_ACTIVITY;
+    }
+
+    /**
+     * Get event type
+     * @param eventDto Event data transfer object
+     * @return Type name
+     */
+    private QName getEventType(EventDto eventDto) {
+        if (eventDto instanceof UserActionEventDto) {
+            return EventModel.TYPE_USER_ACTION;
+        }
+        if (eventDto instanceof ActivityStartedEventDto) {
+            return ICaseEventModel.TYPE_ACTIVITY_STARTED_EVENT;
+        }
+        if (eventDto instanceof ActivityStoppedEventDto) {
+            return ICaseEventModel.TYPE_ACTIVITY_STOPPED_EVENT;
+        }
+        if (eventDto instanceof CaseCreatedEventDto) {
+            return ICaseEventModel.TYPE_CASE_CREATED;
+        }
+        if (eventDto instanceof CasePropertiesChangedEventDto) {
+            return ICaseEventModel.TYPE_CASE_PROPERTIES_CHANGED;
+        }
+        if (eventDto instanceof StageChildrenStoppedEventDto) {
+            return ICaseEventModel.TYPE_STAGE_CHILDREN_STOPPED;
+        }
+        return null;
     }
 
     /**
