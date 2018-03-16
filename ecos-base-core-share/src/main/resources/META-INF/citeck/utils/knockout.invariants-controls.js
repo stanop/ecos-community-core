@@ -2925,7 +2925,7 @@ ko.bindingHandlers.orgstructControl = {
 
                     buildTreeNode: function(p_oItem, p_oParent, p_expanded) {
                         var textNode = new YAHOO.widget.TextNode({
-                                label: $html(p_oItem[tree.fn.getNodeLabelKey(p_oItem)] || p_oItem.displayName || p_oItem.shortName),
+                                label: $html(p_oItem[tree.fn.getNodeLabelKey(p_oItem)]) || p_oItem.displayName || p_oItem.shortName,
                                 nodeRef: p_oItem.nodeRef,
                                 shortName: p_oItem.shortName,
                                 displayName: p_oItem.displayName,
