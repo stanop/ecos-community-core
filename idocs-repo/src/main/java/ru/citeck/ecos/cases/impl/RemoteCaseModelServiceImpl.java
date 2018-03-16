@@ -433,6 +433,78 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             rolesNode.add(roleNode);
         }
         objectNode.put("roles", rolesNode);
+        /** Additional items */
+        ArrayNode additionalItems = objectMapper.createArrayNode();
+        List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(eventNodeRef);
+        for (ChildAssociationRef childAssociationRef : childAssocs) {
+            if (EventModel.ASSOC_ADDITIONAL_DATA_ITEMS.equals(childAssociationRef.getTypeQName())) {
+                ObjectNode addItemNode = createAdditionalItemData(childAssociationRef.getChildRef());
+                additionalItems.add(addItemNode);
+            }
+        }
+        objectNode.put("additionalDataItems", additionalItems);
+    }
+
+    /**
+     * Create additional item data
+     * @param additionalDataRef Additional item data reference
+     * @return Object node
+     */
+    private ObjectNode createAdditionalItemData(NodeRef additionalDataRef) {
+        ObjectNode additionalDataNode = objectMapper.createObjectNode();
+        fillBaseNodeInfo(additionalDataRef, additionalDataNode);
+        String dtoType = getAdditionalItemType(nodeService.getType(additionalDataRef));
+        additionalDataNode.put("dtoType", dtoType);
+        additionalDataNode.put("comment", (String) nodeService.getProperty(additionalDataRef, EventModel.PROP_COMMENT));
+        fillAdditionalAddDataItemInfo(dtoType, additionalDataRef, additionalDataNode);
+        return additionalDataNode;
+    }
+
+    /**
+     * Fill additional additional item info
+     * @param dtoType Dto type
+     * @param additionalDataRef Additional item data reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalAddDataItemInfo(String dtoType, NodeRef additionalDataRef, ObjectNode objectNode) {
+        if (AdditionalConfirmerDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalConfirmerInfo(additionalDataRef, objectNode);
+        }
+        if (AdditionalPerformersDto.DTO_TYPE.equals(dtoType)) {
+            fillAdditionalPerformersInfo(additionalDataRef, objectNode);
+        }
+    }
+
+    /**
+     * Fill additional confirmer info
+     * @param additionalDataRef Additional data reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalConfirmerInfo(NodeRef additionalDataRef, ObjectNode objectNode) {
+        List<AssociationRef> assocs = nodeService.getTargetAssocs(additionalDataRef, EventModel.ASSOC_CONFIRMER);
+        if (!CollectionUtils.isEmpty(assocs)) {
+            NodeRef confirmerRef = assocs.get(0).getTargetRef();
+            ObjectNode confirmerNode = objectMapper.createObjectNode();
+            fillBaseNodeInfo(confirmerRef, confirmerNode);
+            objectNode.put("confirmer", confirmerNode);
+
+        }
+    }
+
+    /**
+     * Fill additional performers info
+     * @param additionalDataRef Additional data reference
+     * @param objectNode Object node
+     */
+    private void fillAdditionalPerformersInfo(NodeRef additionalDataRef, ObjectNode objectNode) {
+        List<AssociationRef> assocs = nodeService.getTargetAssocs(additionalDataRef, EventModel.ASSOC_PERFORMERS);
+        ArrayNode performersNode = objectMapper.createArrayNode();
+        for (AssociationRef associationRef : assocs) {
+            ObjectNode performerNode = objectMapper.createObjectNode();
+            fillBaseNodeInfo(associationRef.getTargetRef(), performerNode);
+            performersNode.add(performerNode);
+        }
+        objectNode.put("performers", performersNode);
     }
 
     /**
@@ -709,6 +781,24 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             return UserInGroupConditionDto.DTO_TYPE;
         }
         return ConditionDto.DTO_TYPE;
+    }
+
+    /**
+     * Get additional item type
+     * @param nodeType Node type
+     * @return Additional item type as string
+     */
+    private String getAdditionalItemType(QName nodeType) {
+        if (nodeType == null) {
+            throw new RuntimeException("Node Type must not be null");
+        }
+        if (dictionaryService.isSubClass(nodeType, EventModel.TYPE_ADDITIONAL_CONFIRMER)) {
+            return AdditionalConfirmerDto.DTO_TYPE;
+        }
+        if (dictionaryService.isSubClass(nodeType, EventModel.TYPE_ADDITIONAL_PERFORMERS)) {
+            return AdditionalPerformersDto.DTO_TYPE;
+        }
+        return AdditionalDataItemDto.DTO_TYPE;
     }
 
 
