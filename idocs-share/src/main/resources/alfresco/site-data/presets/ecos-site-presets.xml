@@ -7,7 +7,7 @@
 				<template-instance>dashboard-2-columns-wide-right</template-instance>
 				<authentication>user</authentication>
 				<properties>
-					<sitePages>[{"pageId":"documentlibrary"}, {"pageId":"journals"}, {"pageId":"site-document-types"}]</sitePages>
+					<sitePages>[{"pageId":"documentlibrary"}, {"pageId":"calendar"}, {"pageId":"journals"}, {"pageId":"site-document-types"}]</sitePages>
 				</properties>
 			</page>
 		</pages>
@@ -41,6 +41,12 @@
 				<region-id>component-1-2</region-id>
 				<source-id>site/${siteid}/dashboard</source-id>
 				<url>/components/dashlets/colleagues</url>
+			</component>
+			<component>
+				<scope>page</scope>
+				<region-id>component-1-3</region-id>
+				<source-id>site/${siteid}/dashboard</source-id>
+				<url>/components/dashlets/calendar</url>
 			</component>
 			<component>
 				<scope>page</scope>
@@ -96,6 +102,12 @@
 				<region-id>component-1-2</region-id>
 				<source-id>site/${siteid}/dashboard</source-id>
 				<url>/components/dashlets/colleagues</url>
+			</component>
+			<component>
+				<scope>page</scope>
+				<region-id>component-1-3</region-id>
+				<source-id>site/${siteid}/dashboard</source-id>
+				<url>/components/dashlets/calendar</url>
 			</component>
 		</components>
 	</preset>
