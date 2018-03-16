@@ -27,6 +27,11 @@ public class UserActionEventDto extends EventDto {
      */
     private List<RoleDto> roles;
 
+    /**
+     * Additional data items
+     */
+    private List<AdditionalDataItemDto> additionalDataItems;
+
     /** Getters and setters */
 
     public String getAdditionalDataType() {
@@ -51,6 +56,14 @@ public class UserActionEventDto extends EventDto {
 
     public void setRoles(List<RoleDto> roles) {
         this.roles = roles;
+    }
+
+    public List<AdditionalDataItemDto> getAdditionalDataItems() {
+        return additionalDataItems;
+    }
+
+    public void setAdditionalDataItems(List<AdditionalDataItemDto> additionalDataItems) {
+        this.additionalDataItems = additionalDataItems;
     }
 
 }
