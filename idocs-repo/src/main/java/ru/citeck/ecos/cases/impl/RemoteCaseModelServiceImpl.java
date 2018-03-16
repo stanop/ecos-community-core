@@ -192,7 +192,6 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             if (childCaseNode != null) {
                 arrayNode.add(childCaseNode);
             }
-            nodeService.deleteNode(childCaseRef);
         }
         objectNode.put("childCases", arrayNode);
         return objectNode;
@@ -423,6 +422,17 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     private void fillAdditionalUserActionEventInfo(NodeRef eventNodeRef, ObjectNode objectNode) {
         objectNode.put("additionalDataType", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_ADDITIONAL_DATA_TYPE));
         objectNode.put("confirmationMessage", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_CONFIRMATION_MESSAGE));
+        /** Roles */
+        ArrayNode rolesNode = objectMapper.createArrayNode();
+        List<AssociationRef> rolesAssocs = nodeService.getTargetAssocs(eventNodeRef, EventModel.ASSOC_AUTHORIZED_ROLES);
+        for (AssociationRef associationRef : rolesAssocs) {
+            ObjectNode roleNode = objectMapper.createObjectNode();
+            fillBaseNodeInfo(associationRef.getTargetRef(), roleNode);
+            roleNode.put("varName", (String) nodeService.getProperty(associationRef.getTargetRef(), ICaseRoleModel.PROP_VARNAME));
+            roleNode.put("isReferenceRole", (Boolean) nodeService.getProperty(associationRef.getTargetRef(), ICaseRoleModel.PROP_IS_REFERENCE_ROLE));
+            rolesNode.add(roleNode);
+        }
+        objectNode.put("roles", rolesNode);
     }
 
     /**

@@ -1,5 +1,7 @@
 package ru.citeck.ecos.dto;
 
+import java.util.List;
+
 /**
  * User action event data transfer object
  */
@@ -20,6 +22,11 @@ public class UserActionEventDto extends EventDto {
      */
     private String confirmationMessage;
 
+    /**
+     * Roles
+     */
+    private List<RoleDto> roles;
+
     /** Getters and setters */
 
     public String getAdditionalDataType() {
@@ -36,6 +43,14 @@ public class UserActionEventDto extends EventDto {
 
     public void setConfirmationMessage(String confirmationMessage) {
         this.confirmationMessage = confirmationMessage;
+    }
+
+    public List<RoleDto> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RoleDto> roles) {
+        this.roles = roles;
     }
 
 }
