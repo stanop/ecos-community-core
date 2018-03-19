@@ -181,11 +181,6 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         } catch (Exception exception) {
             logger.error(exception);
         }
-
-        /** Remove old nodes */
-        for (AssociationRef associationRef : associations) {
-            nodeService.deleteNode(associationRef.getSourceRef());
-        }
     }
 
     /**
@@ -203,7 +198,6 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         }
         Map<String, Object> requestParams = getEventMap(eventRef, documentRef);
         sendHistoryEventToRemoteService(requestParams);
-        nodeService.deleteNode(eventRef);
     }
 
     /**
