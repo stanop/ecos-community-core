@@ -104,22 +104,42 @@ function getWritePermission(nodeRef) {
     return response;
 }
 
-function getViewData(args) {
-    var serviceURI = '/citeck/invariants/view?';
+function _convertNodeViewGetParams(args) {
 
-    // try-block is used to protect from absense of page object in model.
-    // typeof page somehow fails with exception:
-    // Invalid JavaScript value of type java.util.HashMap
-    try {
-        for(var name in page.url.args) {
-            if(!name.match(/^param_/)) continue;
-            serviceURI += name + '=' + encodeURIComponent(page.url.args[name]) + '&';
+    var params = {};
+    var paramsList = ["formKey", "formMode", "formType"];
+    for (var idx in paramsList) {
+        var key = paramsList[idx];
+        if (args[key]) {
+            params[key] = args[key];
         }
-    } catch(e) {}
+    }
 
-    for(var name in args) {
-        if(name == 'htmlid') continue;
-        serviceURI += name + '=' + encodeURIComponent(args[name]) + '&';
+    if (!params.formType) {
+        if (args.nodeRef) {
+            params.formType = "nodeRef";
+            params.formKey = args.nodeRef;
+        } else if (args.type) {
+            params.formType = "type";
+            params.formKey = args.type;
+        } else {
+            throw "Parameters must contain either type or nodeRef";
+        }
+    }
+
+    if (!params.formMode && args.mode) {
+        params.formMode = args.mode;
+    }
+    return params;
+}
+
+function getViewData(args) {
+
+    var serviceURI = '/citeck/ecos/forms/node-view?';
+
+    var params = _convertNodeViewGetParams(args);
+    for (var name in params) {
+        serviceURI += name + '=' + encodeURIComponent(params[name]) + '&';
     }
 
     var response = remote.call(serviceURI);

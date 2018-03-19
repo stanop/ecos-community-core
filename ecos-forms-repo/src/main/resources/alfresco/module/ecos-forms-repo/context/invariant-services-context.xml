@@ -184,7 +184,6 @@
 		<property name="nodeService" ref="nodeService" />
 		<property name="nodeViewService" ref="nodeViewService" />
 		<property name="prefixResolver" ref="namespaceService" />
-		<property name="dictionaryService" ref="dictionaryService" />
 		<property name="namespaceService" ref="namespaceService" />
 		<property name="nodeAttributeService" ref="NodeAttributeService" />
 	</bean>

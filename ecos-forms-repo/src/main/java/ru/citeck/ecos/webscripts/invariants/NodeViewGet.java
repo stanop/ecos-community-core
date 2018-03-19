@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.webscripts.invariants;
 
-import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
@@ -32,7 +31,6 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewService;
-import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.webscripts.utils.WebScriptUtils;
 
 import java.util.HashMap;
@@ -57,7 +55,6 @@ public class NodeViewGet extends DeclarativeWebScript {
     private NodeService nodeService;
     private NodeViewService nodeViewService;
     private NamespacePrefixResolver prefixResolver;
-    private DictionaryService dictionaryService;
     private NodeAttributeService nodeAttributeService;
     private NamespaceService namespaceService;
 
@@ -77,7 +74,7 @@ public class NodeViewGet extends DeclarativeWebScript {
 
         if (typeParam != null && !typeParam.isEmpty()) {
             builder.className(typeParam);
-            canBeDraft = canBeDraft(QName.resolveToQName(prefixResolver, typeParam));
+            canBeDraft = nodeViewService.canBeDraft(QName.resolveToQName(prefixResolver, typeParam));
         } else if (nodeRefParam != null && !nodeRefParam.isEmpty()) {
             if (!NodeRef.isNodeRef(nodeRefParam)) {
                 status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_NODEREF + "' should contain nodeRef");
@@ -96,7 +93,7 @@ public class NodeViewGet extends DeclarativeWebScript {
                 }
             }
             builder.className(nodeService.getType(nodeRef));
-            canBeDraft = canBeDraft(nodeRef);
+            canBeDraft = nodeViewService.canBeDraft(nodeRef);
         } else {
             status.setCode(Status.STATUS_BAD_REQUEST, "Either type, or nodeRef parameters should be set");
             return null;
@@ -134,23 +131,6 @@ public class NodeViewGet extends DeclarativeWebScript {
         return templateParams;
     }
 
-    private boolean canBeDraft(QName type) {
-        Set<QName> defaultAspects = dictionaryService.getType(type).getDefaultAspectNames();
-        return defaultAspects.contains(InvariantsModel.ASPECT_DRAFT);
-    }
-
-    private boolean canBeDraft(NodeRef nodeRef) {
-        if (!nodeService.hasAspect(nodeRef, InvariantsModel.ASPECT_DRAFT)) {
-            return false;
-        }
-        Boolean isDraft = (Boolean) nodeService.getProperty(nodeRef, InvariantsModel.PROP_IS_DRAFT);
-        if (isDraft == null || isDraft) {
-            return true;
-        }
-        Boolean canReturnToDraft = (Boolean) nodeService.getProperty(nodeRef, InvariantsModel.PROP_CAN_RETURN_TO_DRAFT);
-        return canReturnToDraft != null && canReturnToDraft;
-    }
-
     private NodeRef getNodeRefByAttribute(NodeRef nodeRef, String attribute) {
 
         QName attrQName = QName.resolveToQName(namespaceService, attribute);
@@ -176,10 +156,6 @@ public class NodeViewGet extends DeclarativeWebScript {
 
     public void setPrefixResolver(NamespacePrefixResolver prefixResolver) {
         this.prefixResolver = prefixResolver;
-    }
-
-    public void setDictionaryService(DictionaryService dictionaryService) {
-        this.dictionaryService = dictionaryService;
     }
 
     public void setNodeAttributeService(NodeAttributeService nodeAttributeService) {

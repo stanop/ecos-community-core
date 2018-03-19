@@ -37,6 +37,12 @@
         </dependency>
 
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-forms-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+        </dependency>
+
+        <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-engine</artifactId>
             <version>${flowable.version}</version>
