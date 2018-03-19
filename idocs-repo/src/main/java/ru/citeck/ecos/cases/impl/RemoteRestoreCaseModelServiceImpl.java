@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.springframework.util.CollectionUtils;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
 import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
 import ru.citeck.ecos.dto.*;
@@ -351,6 +352,79 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
                 nodeService.createAssociation(eventRef, roleNodeRef, EventModel.ASSOC_AUTHORIZED_ROLES);
             }
         }
+        /** Additional data item */
+        for (AdditionalDataItemDto dataItemDto : eventDto.getAdditionalDataItems()) {
+            restoreAdditionalDataItem(dataItemDto, eventRef);
+        }
+    }
+
+    /**
+     * Restore additional data item
+     * @param dataItemDto Additional data item data transfer object
+     * @param eventRef Parent event reference
+     */
+    private void restoreAdditionalDataItem(AdditionalDataItemDto dataItemDto, NodeRef eventRef) {
+        /** Create properties map */
+        Map<QName, Serializable> properties = new HashMap<>();
+        properties.put(ContentModel.PROP_CREATED, dataItemDto.getCreated());
+        properties.put(ContentModel.PROP_CREATOR, dataItemDto.getCreator());
+        properties.put(ContentModel.PROP_MODIFIED, dataItemDto.getModified());
+        properties.put(ContentModel.PROP_MODIFIER, dataItemDto.getModifier());
+        properties.put(ContentModel.PROP_TITLE, dataItemDto.getTitle());
+        properties.put(ContentModel.PROP_DESCRIPTION, dataItemDto.getDescription());
+        properties.put(EventModel.PROP_COMMENT, dataItemDto.getComment());
+        /** Create node */
+        QName dataItemType = getAdditionalItemType(dataItemDto);
+        ChildAssociationRef childAssociationRef = nodeService.createNode(eventRef,
+                EventModel.ASSOC_ADDITIONAL_DATA_ITEMS, EventModel.ASSOC_ADDITIONAL_DATA_ITEMS, dataItemType, properties);
+        NodeRef conditionRef = childAssociationRef.getChildRef();
+        fillAdditionalInfo(dataItemDto, conditionRef);
+    }
+
+    /**
+     * Fill additional data item info
+     * @param dataItemDto Additional data item info
+     * @param dataItemRef Additional data item reference
+     */
+    private void fillAdditionalInfo(AdditionalDataItemDto dataItemDto, NodeRef dataItemRef) {
+        if (dataItemDto instanceof AdditionalPerformersDto) {
+            fillAdditionalPerformersInfo((AdditionalPerformersDto) dataItemDto, dataItemRef);
+            return;
+        }
+        if (dataItemDto instanceof AdditionalConfirmerDto) {
+            fillAdditionalConfirmerInfo((AdditionalConfirmerDto) dataItemDto, dataItemRef);
+            return;
+        }
+    }
+
+    /**
+     * Fill additional performers info
+     * @param dataItemDto  Additional data item info
+     * @param dataItemRef Additional data item reference
+     */
+    private void fillAdditionalPerformersInfo(AdditionalPerformersDto dataItemDto, NodeRef dataItemRef) {
+        if (!CollectionUtils.isEmpty(dataItemDto.getPerformers())) {
+            for (AuthorityDto authorityDto : dataItemDto.getPerformers()) {
+                NodeRef authorityRef = new NodeRef(WORKSPACE_PREFIX + authorityDto.getNodeUUID());
+                if (nodeService.exists(authorityRef)) {
+                    nodeService.createAssociation(dataItemRef, authorityRef, EventModel.ASSOC_PERFORMERS);
+                }
+            }
+        }
+    }
+
+    /**
+     * Fill additional confirmer info
+     * @param dataItemDto  Additional data item info
+     * @param dataItemRef Additional data item reference
+     */
+    private void fillAdditionalConfirmerInfo(AdditionalConfirmerDto dataItemDto, NodeRef dataItemRef) {
+        if (dataItemDto.getConfirmer() != null) {
+            NodeRef authorityRef = new NodeRef(WORKSPACE_PREFIX + dataItemDto.getConfirmer().getNodeUUID());
+            if (nodeService.exists(authorityRef)) {
+                nodeService.createAssociation(dataItemRef, authorityRef, EventModel.ASSOC_CONFIRMER);
+            }
+        }
     }
 
     /**
@@ -626,6 +700,22 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
             return ConditionModel.UserInGroup.TYPE;
         }
         return null;
+    }
+
+    /**
+     * Get additional item type
+     * @param additionalDataItemDto Additional data item data transfer object
+     * @return Additional item type
+     */
+    private QName getAdditionalItemType(AdditionalDataItemDto additionalDataItemDto) {
+        if (additionalDataItemDto instanceof AdditionalConfirmerDto) {
+            return EventModel.TYPE_ADDITIONAL_CONFIRMER;
+        }
+        if (additionalDataItemDto instanceof AdditionalPerformersDto) {
+            return EventModel.TYPE_ADDITIONAL_PERFORMERS;
+        } else {
+            return EventModel.TYPE_ADDITIONAL_DATA;
+        }
     }
 
     /**
