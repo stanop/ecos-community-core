@@ -45,6 +45,11 @@ public class CaseTaskDto extends CaseModelDto {
      */
     private BpmPackageDto bpmPackage;
 
+    /**
+     * Task properties
+     */
+    private String taskProperties;
+
     /** Getters and setters */
 
     public String getTaskTypeFullName() {
@@ -93,5 +98,13 @@ public class CaseTaskDto extends CaseModelDto {
 
     public void setBpmPackage(BpmPackageDto bpmPackage) {
         this.bpmPackage = bpmPackage;
+    }
+
+    public String getTaskProperties() {
+        return taskProperties;
+    }
+
+    public void setTaskProperties(String taskProperties) {
+        this.taskProperties = taskProperties;
     }
 }

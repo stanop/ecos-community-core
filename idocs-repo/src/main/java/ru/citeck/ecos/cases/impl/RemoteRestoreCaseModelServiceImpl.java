@@ -1,17 +1,27 @@
 package ru.citeck.ecos.cases.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
 import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
 import ru.citeck.ecos.dto.*;
 import ru.citeck.ecos.model.*;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +31,25 @@ import java.util.Map;
  */
 public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModelService {
 
+    /**
+     * Object mapper
+     */
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    /**
+     * Workspace prefix
+     */
     private static final String WORKSPACE_PREFIX = "workspace://SpacesStore/";
+
+    /**
+     * Logger
+     */
+    private static Log logger = LogFactory.getLog(RemoteRestoreCaseModelServiceImpl.class);
+
+    /**
+     * Datetime format
+     */
+    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
      * Node service
@@ -606,6 +634,55 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
                 nodeService.createAssociation(caseModelRef, packageNodeRef, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
             }
         }
+        restoreTaskProperties(caseModelRef, caseModelDto);
+    }
+
+    /**
+     * Restore task properties
+     * @param taskModelRef Task model reference
+     * @param caseTaskDto Case task data transfer object
+     */
+    private void restoreTaskProperties(NodeRef taskModelRef, CaseTaskDto caseTaskDto) {
+        try {
+            ArrayNode arrayNode = objectMapper.readValue(caseTaskDto.getTaskProperties(), ArrayNode.class);
+            for (int i = 0; i < arrayNode.size(); i++) {
+                JsonNode paramNode =  arrayNode.get(i);
+                TaskPropertyDto propertyDto =  objectMapper.treeToValue(paramNode, TaskPropertyDto.class);
+                /** Create property */
+                QName typeName = QName.createQName(propertyDto.getTypeName());
+                Class clazz = Class.forName(propertyDto.getValueClass());
+                Serializable propertyValue = getPropertyValue(clazz, propertyDto.getValue());
+                nodeService.setProperty(taskModelRef, typeName, propertyValue);
+                clazz.toString();
+            }
+        } catch (Exception e) {
+            logger.error(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get property value
+     * @param className Value class name
+     * @param rawValue Raw value
+     * @return Serializable object
+     * @throws ParseException
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws InstantiationException
+     */
+    private Serializable getPropertyValue(Class className, String rawValue) throws ParseException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        if (className.equals(String.class)) {
+            return rawValue;
+        }
+        if (className.equals(Date.class)) {
+            return dateTimeFormat.parse(rawValue);
+        }
+        if (className.isAssignableFrom(Number.class) || className.equals(Boolean.class)) {
+            return (Serializable) className.getDeclaredConstructor(String.class).newInstance(rawValue);
+        }
+        return null;
     }
 
     /**
