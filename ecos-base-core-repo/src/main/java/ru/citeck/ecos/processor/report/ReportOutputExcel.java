@@ -268,9 +268,9 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
     }
 
 	private String replaceIllegalChars(String source) {
-    	return source != null
-				? source.replaceAll("[\\\\/:*?\"<>|]", "_")
-				: null;
+        return source != null
+                ? source.replaceAll("[\\\\/:*?\"<>|]", "_")
+                : null;
 	}
     
     public void removeRow(Sheet sheet, int rowIndex) {
