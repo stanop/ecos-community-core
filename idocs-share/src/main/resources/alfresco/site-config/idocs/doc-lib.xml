@@ -231,8 +231,8 @@
             </action>
 
             <!-- task actions -->
-            <action id="task-edit-metadata" type="pagelink" label="actions.task.edit-metadata">
-                <param name="page">task-edit?taskId={node.properties.cm:name}</param>
+            <action id="task-edit-metadata" type="javascript" label="actions.task.edit-metadata">
+                <param name="function">onShowViewForm</param>
                 <evaluator>evaluator.task.isActive</evaluator>
             </action>
 

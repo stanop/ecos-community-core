@@ -588,6 +588,30 @@ YAHOO.Bubbling.fire("registerAction", {
 	}
 });
 
+YAHOO.Bubbling.fire("registerAction", {
+	actionName: "onShowViewForm",
+	fn: function(record) {
+		var jsNode = record.jsNode,
+			nodeRef = jsNode.nodeRef;
+
+		Alfresco.util.Ajax.jsonGet({
+			url: Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?nodeRef=" + nodeRef.nodeRef,
+			successCallback: {
+				scope: this,
+				fn: function(response) {
+                    var redirection = '/share/page';
+                    if(response.serverResponse.status != 401 && response.serverResponse.status != 200) {
+                        throw "Can not check view existence: " + response.json.message;
+                    } else if(response.serverResponse.status == 200) {
+                        redirection = '/share/page/task-view-edit?taskId=' + jsNode.properties['cm:name'];
+                    }
+					window.location = redirection;
+				}
+			}
+		});
+	}
+});
+
 function getSiteNameFromLocation(location) {
 	var result = null;
 	if (location) {
@@ -669,24 +693,24 @@ Citeck.format.openCalendar = function() {
 		}
 	});
 
-	YAHOO.Bubbling.fire("registerAction", {
-		actionName: "onShowSignedVersion",
-		fn: function(record) {
-			var jsNode = record.jsNode,
-				nodeRef = jsNode.nodeRef;
+YAHOO.Bubbling.fire("registerAction", {
+	actionName: "onShowSignedVersion",
+	fn: function(record) {
+		var jsNode = record.jsNode,
+			nodeRef = jsNode.nodeRef;
 
-			Alfresco.util.Ajax.jsonGet({
-				url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef.nodeRef,
-				successCallback: {
-					scope: this,
-					fn: function(response) {
-						var redirection = '/share/page/card-details?nodeRef=' + response.json.childAssocs["idocs:signedVersion"][0];
-						window.location = redirection;
-					}
+		Alfresco.util.Ajax.jsonGet({
+			url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef.nodeRef,
+			successCallback: {
+				scope: this,
+				fn: function(response) {
+					var redirection = '/share/page/card-details?nodeRef=' + response.json.childAssocs["idocs:signedVersion"][0];
+					window.location = redirection;
 				}
-			});
-		}
-	});
+			}
+		});
+	}
+});
 
 
 YAHOO.Bubbling.fire("registerAction", {

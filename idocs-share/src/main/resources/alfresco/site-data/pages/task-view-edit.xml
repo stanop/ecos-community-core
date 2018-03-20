@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+    <title>Task View Edit</title>
+    <title-id>page.taskEdit.title</title-id>
+    <description>Page for editing task details</description>
+    <description-id>page.taskEdit.description</description-id>
+    <template-instance>workflow-details-with-preview</template-instance>
+    <authentication>user</authentication>
+    <components>
+
+        <!-- Data Header -->
+        <component>
+            <region-id>data-header</region-id>
+            <url>/components/workflow/task-edit-header</url>
+        </component>
+
+        <component>
+            <region-id>node-view</region-id>
+            <url>/citeck/components/node-view</url>
+            <properties>
+                <nodeRef>{taskId}</nodeRef>
+                <viewId>{viewId}</viewId>
+                <mode>edit</mode>
+                <runtimeKey>node-edit</runtimeKey>
+            </properties>
+        </component>
+
+        <component>
+            <region-id>data-loader</region-id>
+            <url>/components/data/data-loader</url>
+            <properties>
+                <url>api/task-instances/{taskId}?detailed=true</url>
+                <eventName>taskDetailedData</eventName>
+                <eventData>data</eventData>
+                <failureMessageKey>message.task-data.failure</failureMessageKey>
+            </properties>
+        </component>
+
+    </components>
+</page>
