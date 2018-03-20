@@ -73,4 +73,12 @@ public class StrategyExtractingTextPosition extends SimpleTextExtractionStrategy
             return value;
         }
     }
+
+    public boolean isFoundX() {
+        return !coordX.isEmpty();
+    }
+
+    public boolean isFoundY() {
+        return !coordY.isEmpty();
+    }
 }
