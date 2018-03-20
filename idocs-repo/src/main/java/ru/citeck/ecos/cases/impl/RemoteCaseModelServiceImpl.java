@@ -25,6 +25,7 @@ import ru.citeck.ecos.dto.*;
 import ru.citeck.ecos.model.*;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -32,6 +33,22 @@ import java.util.*;
  * Remote case model service
  */
 public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
+
+    /**
+     * Exclude properties
+     */
+    private static final QName[] EXCLUDE_PROPERTIES = {
+            ContentModel.PROP_NODE_UUID, ContentModel.PROP_NODE_DBID,
+            ContentModel.PROP_CREATED, ContentModel.PROP_CREATOR,
+            ContentModel.PROP_MODIFIED, ContentModel.PROP_MODIFIER,
+            ContentModel.PROP_TITLE,  ContentModel.PROP_DESCRIPTION,
+            ActivityModel.PROP_EXPECTED_PERFORM_TIME,
+            ActivityModel.PROP_ACTUAL_START_DATE, ActivityModel.PROP_ACTUAL_END_DATE,
+            ActivityModel.PROP_PLANNED_START_DATE, ActivityModel.PROP_PLANNED_END_DATE,
+            ActivityModel.PROP_AUTO_EVENTS, ActivityModel.PROP_INDEX,
+            ActivityModel.PROP_MANUAL_STARTED, ActivityModel.PROP_MANUAL_STOPPED,
+            ActivityModel.PROP_REPEATABLE, ActivityModel.PROP_TYPE_VERSION
+    };
 
     /**
      * Properties keys
@@ -679,6 +696,43 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
                 objectNode.set("bpmPackage", packageNode);
             }
         }
+        /** Task properties */
+        ArrayNode taskPropertiesNode = objectMapper.createArrayNode();
+        Map<QName, Serializable> properties = nodeService.getProperties(caseModelRef);
+        List<QName> excludeProperties = Arrays.asList(EXCLUDE_PROPERTIES);
+        for (QName key : properties.keySet()) {
+            if (!excludeProperties.contains(key)) {
+                Serializable value = properties.get(key);
+                if (value != null) {
+                    ObjectNode propertyNode = createPropertyObjectNode(key, value);
+                    if (propertyNode != null) {
+                        taskPropertiesNode.add(propertyNode);
+                    }
+                }
+            }
+        }
+        objectNode.put("taskProperties", taskPropertiesNode.toString());
+    }
+
+    /**
+     * Create property object node
+     * @param typeName Type name
+     * @param value Value
+     * @return Property type name
+     */
+    private ObjectNode createPropertyObjectNode(QName typeName, Serializable value) {
+        ObjectNode resultNode = objectMapper.createObjectNode();
+        resultNode.put("typeName", typeName.toString());
+        resultNode.put("valueClass", value.getClass().getName());
+        if (value instanceof Date) {
+            resultNode.put("value", dateTimeFormat.format((Date) value));
+            return resultNode;
+        }
+        if (value instanceof Number || value instanceof String || value instanceof Boolean) {
+            resultNode.put("value", value.toString());
+            return resultNode;
+        }
+        return null;
     }
 
     /**
