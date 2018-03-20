@@ -89,7 +89,7 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 			// set titles
 			if (model.get(REPORT_TITLE) != null) {
 				String reportTitle = (String) model.get(REPORT_TITLE);
-				wb.setSheetName(wb.getSheetIndex(sheet), reportTitle);
+				wb.setSheetName(wb.getSheetIndex(sheet), replaceIllegalChars(reportTitle));
 				
 				String firstCenter = firstHeader.getCenter(); 
 				if (firstCenter != null) {
@@ -266,6 +266,12 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 	    	cell.setCellValue(newValue);
     	}
     }
+
+	private String replaceIllegalChars(String source) {
+    	return source != null
+				? source.replaceAll("[\\\\/:*?\"<>|]", "_")
+				: null;
+	}
     
     public void removeRow(Sheet sheet, int rowIndex) {
         int lastRowNum = sheet.getLastRowNum();
