@@ -4980,3 +4980,8 @@ body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="case-documents"] 
 body:not(.mobile).yui-skin-citeckTheme .sticky-footer .footer {
     box-shadow: inset 15px -1px 10px -15px grey, 0px 10px 15px -10px grey inset;
 }
+
+.yui-skin-citeckTheme .user-calendar .yui-dt tr.yui-dt-even,
+.yui-skin-citeckTheme .user-calendar .yui-dt tr.yui-dt-odd {
+    background-color: transparent;
+}

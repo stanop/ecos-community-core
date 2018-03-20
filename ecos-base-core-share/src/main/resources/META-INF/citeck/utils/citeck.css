@@ -13,6 +13,17 @@
 
 /* ---------------- UI ---------------- */
 
+
+/* calendar */
+
+#Share #bd {
+  margin: 0;
+}
+
+#Share #bd div.fullCalendar .fc-content {
+  left: 0;
+}
+
 .wait-indicator-envelope {
   position: absolute;
   width: 100%;
