@@ -33,6 +33,7 @@
     <bean id="CiteckUtilsJS" class="ru.citeck.ecos.utils.CiteckUtilsJS" parent="baseJavaScriptExtension">
         <property name="extensionName" value="citeckUtils" />
         <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="prefixResolver" ref="ecosNsPrefixResolver" />
     </bean>
 
     <bean id="idocs.core.spring.PropertyEditorConfig" class="org.springframework.beans.factory.config.CustomEditorConfigurer">

@@ -24,7 +24,6 @@ import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.NamespacePrefixResolverProvider;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
 import java.io.Serializable;
@@ -39,13 +38,14 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension implements
     private static final Charset UTF8 = Charset.forName("UTF-8");
 
     private ValueConverter converter = new ValueConverter();
+    private NamespacePrefixResolver prefixResolver;
 
     public QName createQName(String s) {
         QName qname;
         if (s.indexOf(QName.NAMESPACE_BEGIN) != -1) {
             qname = QName.createQName(s);
         } else {
-            qname = QName.createQName(s, this.serviceRegistry.getNamespaceService());
+            qname = QName.createQName(s, prefixResolver);
         }
         return qname;
     }
@@ -63,11 +63,10 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension implements
                                                                       + " expected: " + Map.class.getName());
         }
 
-        NamespaceService namespaceService = this.serviceRegistry.getNamespaceService();
         @SuppressWarnings("unchecked")
         Map<String, Object> values = (Map<String, Object>) value;
         for (Map.Entry<String, Object> entry : values.entrySet()) {
-            result.put(QName.resolveToQName(namespaceService, entry.getKey()), entry.getValue());
+            result.put(QName.resolveToQName(prefixResolver, entry.getKey()), entry.getValue());
         }
 
         return result;
@@ -104,6 +103,10 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension implements
 
     @Override
     public NamespacePrefixResolver getNamespacePrefixResolver() {
-        return serviceRegistry.getNamespaceService();
+        return prefixResolver;
+    }
+
+    public void setPrefixResolver(NamespacePrefixResolver prefixResolver) {
+        this.prefixResolver = prefixResolver;
     }
 }

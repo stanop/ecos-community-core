@@ -1,10 +1,9 @@
 package ru.citeck.ecos.flowable.services.rest;
 
-import org.codehaus.jackson.map.DeserializationConfig;
 import org.flowable.form.model.FormModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.http.BasicAuthInterceptor;
@@ -34,8 +33,8 @@ public class RestFormService {
 
     @PostConstruct
     public void init() {
-        MappingJacksonHttpMessageConverter converter = new MappingJacksonHttpMessageConverter();
-        converter.getObjectMapper().configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        //converter.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         converters.add(converter);

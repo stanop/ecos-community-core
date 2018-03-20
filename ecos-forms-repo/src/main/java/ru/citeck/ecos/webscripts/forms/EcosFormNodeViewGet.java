@@ -2,7 +2,6 @@ package ru.citeck.ecos.webscripts.forms;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.AbstractWebScript;
@@ -18,6 +17,8 @@ import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewElement;
 import ru.citeck.ecos.invariants.view.NodeViewRegion;
 import ru.citeck.ecos.search.SearchCriteria;
+import ru.citeck.ecos.service.namespace.EcosNsPrefixProvider;
+import ru.citeck.ecos.service.namespace.EcosNsPrefixResolver;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
     @Autowired
     private EcosFormService ecosFormService;
     @Autowired
-    private NamespaceService namespaceService;
+    private EcosNsPrefixResolver prefixResolver;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -77,7 +78,7 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
         if (qname == null) {
             return null;
         }
-        return qname.toPrefixString(namespaceService);
+        return qname.toPrefixString(prefixResolver);
     }
 
     private String formatToString(Object value) {
@@ -95,6 +96,7 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
     }
 
     class Element {
+
         public String type;
         public String id;
         public String kind;
@@ -121,6 +123,7 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
     }
 
     class Scope {
+
         @JsonProperty(value = "class")
         public String clazz;
         public String classKind;
