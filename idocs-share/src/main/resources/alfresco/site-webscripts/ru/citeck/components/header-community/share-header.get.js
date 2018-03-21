@@ -103,6 +103,9 @@ if (navigationMenuBar && navigationMenuBar.config.widgets.length) {
     }
     navigationMenuBar.config.widgets = navigationMenuBar.config.widgets.filter(function(item) {
         item.name = "alfresco/header/AlfMenuItem";
+        if (isSlideMenu && item.id == "HEADER_SITE_CALENDAR") {
+            return false;
+        }
         return user.isAdmin || item.id != "HEADER_SITE_SITE-DOCUMENT-TYPES";
     });
     siteMenuItems = siteMenuItems.concat(navigationMenuBar.config.widgets);
@@ -831,10 +834,15 @@ function buildSitesForUser(sites, anotherItems) {
                 };
 
                 site.widgets.push({
-                    id: "HEADER_DOCUMENTLIBRARY",
-                    label: "header.documentlibrary.label",
-                    url: "/share/page/" + buildSiteUrl(sites[sd].shortName) + "documentlibrary"
-                });
+                        id: "HEADER_DOCUMENTLIBRARY",
+                        label: "header.documentlibrary.label",
+                        url: "/share/page/" + buildSiteUrl(sites[sd].shortName) + "documentlibrary"
+                    }, {
+                        id: "HEADER_SITE_CALENDAR",
+                        label: "header.calendar.label",
+                        url: "/share/page/" + buildSiteUrl(sites[sd].shortName) + "calendar"
+                    }
+                );
 
                 sitesPresets.push(site);
             } else {

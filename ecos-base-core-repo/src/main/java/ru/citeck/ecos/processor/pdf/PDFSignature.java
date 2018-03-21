@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2018 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -35,6 +35,7 @@ import ru.citeck.ecos.processor.DataBundleProcessor;
 import ru.citeck.ecos.processor.transform.AffineTransformCalculator;
 
 import java.awt.geom.AffineTransform;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -79,11 +80,11 @@ public class PDFSignature extends AbstractDataBundleLine {
         int addShiftUp = Integer.parseInt(super.evaluateExpression(shiftUp, input.getModel()).toString());
 
         // get stamp stream:
-        List<DataBundle> stampInputs = new ArrayList<DataBundle>(1);
+        List<DataBundle> stampInputs = new ArrayList<>(1);
         stampInputs.add(new DataBundle(input.getModel()));
         List<DataBundle> stampOutputs = stampProcessor.process(stampInputs);
 
-        InputStream pdfStampStream = null;
+        InputStream pdfStampStream;
         if(stampOutputs.size() > 0) {
             pdfStampStream = stampOutputs.get(0).getInputStream();
         } else {
@@ -107,7 +108,8 @@ public class PDFSignature extends AbstractDataBundleLine {
     }
 
     // stamp pdf with stamp
-    private void stampPDF(OutputStream outputStream, InputStream pdfInputStream, InputStream pdfStampStream, int addShiftRight, int addShiftUp) {
+    private void stampPDF(OutputStream outputStream, InputStream pdfInputStream, InputStream pdfStampStream,
+                          int addShiftRight, int addShiftUp) {
         PdfReader reader = null;
         PdfReader stampReader = null;
         PdfStamper stamper = null;
@@ -120,20 +122,21 @@ public class PDFSignature extends AbstractDataBundleLine {
             PdfImportedPage stamp = stamper.getImportedPage(stampReader, 1);
             Rectangle stampSize = stampReader.getPageSize(1);
 
-            int numOfPages = reader.getNumberOfPages();
             if (!findString.isEmpty()) {
                 if (positionFindString.isEmpty()) {
                     positionFindString = "middle";
                 }
-                StrategyExtractingTextPosition strategy = new StrategyExtractingTextPosition(findString, positionFindString);
-                PdfTextExtractor.getTextFromPage(reader, numOfPages, strategy);
+                StrategyExtractingTextPosition strategy = new StrategyExtractingTextPosition(findString,
+                        positionFindString);
+                int positionPage = findSignPosition(reader, strategy);
 
                 // get transformation matrix
                 double[] m = new double[6];
-                AffineTransform transform = transformCalculator.calculate(stampSize.getWidth(), stampSize.getHeight(), strategy.getX() + addShiftRight, strategy.getY() + addShiftUp);
+                AffineTransform transform = transformCalculator.calculate(stampSize.getWidth(), stampSize.getHeight(),
+                        strategy.getX() + addShiftRight, strategy.getY() + addShiftUp);
                 transform.getMatrix(m);
 
-                PdfContentByte page = foreground ? stamper.getUnderContent(numOfPages) : stamper.getOverContent(numOfPages);
+                PdfContentByte page = foreground ? stamper.getUnderContent(positionPage) : stamper.getOverContent(positionPage);
                 page.addTemplate(stamp, (float) m[0], (float) m[1], (float) m[2], (float) m[3], (float) m[4], (float) m[5]);
             }
 
@@ -154,6 +157,19 @@ public class PDFSignature extends AbstractDataBundleLine {
                 }
             }
         }
+    }
+
+    private int findSignPosition(PdfReader pdfReader, StrategyExtractingTextPosition strategy) throws IOException {
+        int numOfPages = pdfReader.getNumberOfPages();
+
+        for (int i = numOfPages; i > 0; i--) {
+            PdfTextExtractor.getTextFromPage(pdfReader, i, strategy);
+            if (strategy.isFoundX() && strategy.isFoundY()) {
+                return i;
+            }
+        }
+
+        throw new IllegalStateException("Place to sign not found. Place template: <" + findString + ">");
     }
 
     /**
