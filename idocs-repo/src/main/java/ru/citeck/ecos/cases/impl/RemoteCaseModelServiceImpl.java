@@ -10,6 +10,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.namespace.RegexQNamePattern;
 import org.alfresco.service.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,11 +44,20 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             ContentModel.PROP_MODIFIED, ContentModel.PROP_MODIFIER,
             ContentModel.PROP_TITLE,  ContentModel.PROP_DESCRIPTION,
             ActivityModel.PROP_EXPECTED_PERFORM_TIME,
+            ICaseTaskModel.PROP_PRIORITY, ICaseTaskModel.PROP_DEADLINE,
+            ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID, ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME,
             ActivityModel.PROP_ACTUAL_START_DATE, ActivityModel.PROP_ACTUAL_END_DATE,
             ActivityModel.PROP_PLANNED_START_DATE, ActivityModel.PROP_PLANNED_END_DATE,
             ActivityModel.PROP_AUTO_EVENTS, ActivityModel.PROP_INDEX,
             ActivityModel.PROP_MANUAL_STARTED, ActivityModel.PROP_MANUAL_STOPPED,
             ActivityModel.PROP_REPEATABLE, ActivityModel.PROP_TYPE_VERSION
+    };
+
+    /**
+     * Exclude assocs
+     */
+    private static final QName[] EXCLUDE_ASSOCS = {
+            ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE
     };
 
     /**
@@ -712,6 +722,19 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             }
         }
         objectNode.put("taskProperties", taskPropertiesNode.toString());
+        /** Task assocs */
+        List<QName> excludeAssocs = Arrays.asList(EXCLUDE_ASSOCS);
+        List<AssociationRef> assocs =  nodeService.getTargetAssocs(caseModelRef, RegexQNamePattern.MATCH_ALL);
+        ArrayNode assocsNode = objectMapper.createArrayNode();
+        for (AssociationRef associationRef : assocs) {
+            if (!excludeAssocs.contains(associationRef.getTypeQName())) {
+                ObjectNode assocNode = objectMapper.createObjectNode();
+                assocNode.put("assocType", associationRef.getTypeQName().toString());
+                assocNode.put("nodeRef", associationRef.getTargetRef().getId());
+                assocsNode.add(assocNode);
+            }
+        }
+        objectNode.put("taskAssocs", assocsNode.toString());
     }
 
     /**

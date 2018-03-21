@@ -635,6 +635,31 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
             }
         }
         restoreTaskProperties(caseModelRef, caseModelDto);
+        restoreTaskAssocs(caseModelRef, caseModelDto);
+    }
+
+    /**
+     * Restore task assocs
+     * @param taskModelRef Task model reference
+     * @param caseTaskDto Case task data transfer object
+     */
+    private void restoreTaskAssocs(NodeRef taskModelRef, CaseTaskDto caseTaskDto) {
+        try {
+            ArrayNode arrayNode = objectMapper.readValue(caseTaskDto.getTaskAssocs(), ArrayNode.class);
+            for (int i = 0; i < arrayNode.size(); i++) {
+                JsonNode paramNode =  arrayNode.get(i);
+                TaskAssocDto assocDto =  objectMapper.treeToValue(paramNode, TaskAssocDto.class);
+                /** Create property */
+                QName assocTypeName = QName.createQName(assocDto.getAssocType());
+                NodeRef nodeRef = new NodeRef(WORKSPACE_PREFIX + assocDto.getNodeRef());
+                if (nodeService.exists(nodeRef)) {
+                    nodeService.createAssociation(taskModelRef, nodeRef, assocTypeName);
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e);
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -653,7 +678,6 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
                 Class clazz = Class.forName(propertyDto.getValueClass());
                 Serializable propertyValue = getPropertyValue(clazz, propertyDto.getValue());
                 nodeService.setProperty(taskModelRef, typeName, propertyValue);
-                clazz.toString();
             }
         } catch (Exception e) {
             logger.error(e);
@@ -679,7 +703,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         if (className.equals(Date.class)) {
             return dateTimeFormat.parse(rawValue);
         }
-        if (className.isAssignableFrom(Number.class) || className.equals(Boolean.class)) {
+        if (Number.class.isAssignableFrom(className) || className.equals(Boolean.class)) {
             return (Serializable) className.getDeclaredConstructor(String.class).newInstance(rawValue);
         }
         return null;
