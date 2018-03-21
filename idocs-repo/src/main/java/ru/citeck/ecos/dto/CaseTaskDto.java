@@ -50,6 +50,11 @@ public class CaseTaskDto extends CaseModelDto {
      */
     private String taskProperties;
 
+    /**
+     * Task assocs
+     */
+    private String taskAssocs;
+
     /** Getters and setters */
 
     public String getTaskTypeFullName() {
@@ -106,5 +111,14 @@ public class CaseTaskDto extends CaseModelDto {
 
     public void setTaskProperties(String taskProperties) {
         this.taskProperties = taskProperties;
+    }
+
+
+    public String getTaskAssocs() {
+        return taskAssocs;
+    }
+
+    public void setTaskAssocs(String taskAssocs) {
+        this.taskAssocs = taskAssocs;
     }
 }
