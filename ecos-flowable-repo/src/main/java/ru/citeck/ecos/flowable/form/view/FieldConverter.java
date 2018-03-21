@@ -1,5 +1,7 @@
 package ru.citeck.ecos.flowable.form.view;
 
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.namespace.QName;
 import org.flowable.form.model.FormField;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ public abstract class FieldConverter<T extends FormField> {
 
     @Autowired
     protected EcosNsPrefixResolver prefixResolver;
+    @Autowired
+    protected DictionaryService dictionaryService;
 
     public NodeField convertField(T field) {
 
@@ -33,9 +37,13 @@ public abstract class FieldConverter<T extends FormField> {
 
         QName fieldName = QName.createQName(FlowableNodeViewProvider.FLOWABLE_DEFAULT_NS_URI, field.getId());
 
+        QName datatype = getDataType();
+        DataTypeDefinition typeDefinition = dictionaryService.getDataType(datatype);
+
         fieldBuilder.property(fieldName);
         fieldBuilder.template("row");
-        fieldBuilder.datatype(getDataType());
+        fieldBuilder.datatype(datatype);
+        fieldBuilder.javaclass(typeDefinition.getJavaClassName());
         fieldBuilder.invariants(getInvariants(field, fieldName));
         fieldBuilder.regions(regions);
 

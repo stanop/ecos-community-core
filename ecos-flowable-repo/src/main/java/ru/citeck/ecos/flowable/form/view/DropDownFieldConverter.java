@@ -35,6 +35,7 @@ public class DropDownFieldConverter extends FieldConverter<OptionFormField> {
 
         for (Option option : field.getOptions()) {
             String id = option.getId() != null ? option.getId() : option.getName();
+            options.add(id);
             optionsTitle.put(id, option.getName());
         }
 

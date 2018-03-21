@@ -46,11 +46,22 @@ function getAttributeSet(args, view) {
 
     view.elements.forEach(function(element) {
         if (element.type == "field") {
-            attributeSet.attributes.push({ name: element.attribute, template: element.template });
+            var attribute = {
+                template: element.template,
+                name: element.attribute,
+                info: {
+                    name: element.attribute,
+                    type: element.fieldType,
+                    nodetype: element.nodetype,
+                    datatype: element.datatype,
+                    javaclass: element.javaclass
+                }
+            };
+            attributeSet.attributes.push(attribute);
         } else if (element.type == "view") {
             attributeSet.sets.push(getAttributeSet(args, element));
         }
-    })
+    });
 
     attributeSet.id = view.params.setId = view.id || makeId(34);
 

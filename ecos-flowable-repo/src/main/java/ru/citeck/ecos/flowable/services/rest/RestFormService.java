@@ -34,7 +34,6 @@ public class RestFormService {
     @PostConstruct
     public void init() {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        //converter.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         converters.add(converter);

@@ -1682,10 +1682,27 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     return attributes;
                 }
 
+                var findAttrInfo = function (name) {
+                    var attributeSet = node.impl().attributeSet();
+                    if (attributeSet) {
+                        var attributesData = attributeSet._attributes();
+                        var attData = _.find(attributesData, function (att) {
+                            return att.name == name;
+                        });
+                        return attData ? attData.info : null;
+                    }
+                    return null;
+                };
+
                 _.each(validAttributeNames, function(name) {
                     if(!createdNames[name]) {
                         createdNames[name] = true;
-                        attributes.push(new Attribute(node, name));
+                        var attribute = new Attribute(node, name);
+                        var info = findAttrInfo(name);
+                        if (info) {
+                            attribute.setModel({info: info});
+                        }
+                        attributes.push(attribute);
                     }
                 });
 

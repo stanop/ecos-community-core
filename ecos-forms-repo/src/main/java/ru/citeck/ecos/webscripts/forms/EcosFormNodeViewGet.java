@@ -17,7 +17,6 @@ import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewElement;
 import ru.citeck.ecos.invariants.view.NodeViewRegion;
 import ru.citeck.ecos.search.SearchCriteria;
-import ru.citeck.ecos.service.namespace.EcosNsPrefixProvider;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixResolver;
 
 import java.io.IOException;
@@ -63,6 +62,7 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
         response.formType = formType;
         response.formKey = formKey;
 
+        res.setContentEncoding("utf-8");
         objectMapper.writeValue(res.getWriter(), response);
     }
 
@@ -183,6 +183,8 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
         public String nodetype;
         public List<Region> regions;
         public List<Invariant> invariants;
+        public String fieldType;
+        public String javaclass;
 
         public Field(NodeField field) {
             super("field", field);
@@ -191,6 +193,8 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
             nodetype = formatQName(field.getNodetypeName());
             regions = field.getRegions().stream().map(Region::new).collect(Collectors.toList());
             invariants = field.getInvariants().stream().map(Invariant::new).collect(Collectors.toList());
+            fieldType = field.isAssociation() ? "association" : "property";
+            javaclass = field.getJavaclass();
         }
     }
 
