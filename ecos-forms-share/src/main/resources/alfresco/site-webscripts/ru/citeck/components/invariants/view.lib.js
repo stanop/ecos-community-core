@@ -133,8 +133,11 @@ function _convertNodeViewGetParams(args) {
         } else if (args.type) {
             params.formType = "type";
             params.formKey = args.type;
+        } else if (args.taskId) {
+            params.formType = "taskId";
+            params.formKey = args.taskId;
         } else {
-            throw "Parameters must contain either type or nodeRef";
+            throw "Parameters must contain either type, nodeRef or taskId";
         }
     }
 

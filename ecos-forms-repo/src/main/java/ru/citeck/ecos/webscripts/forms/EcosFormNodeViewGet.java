@@ -2,9 +2,13 @@ package ru.citeck.ecos.webscripts.forms;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.AbstractWebScript;
+import org.springframework.extensions.webscripts.Format;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 import ru.citeck.ecos.forms.EcosFormService;
@@ -39,11 +43,16 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
     private EcosFormService ecosFormService;
     @Autowired
     private EcosNsPrefixResolver prefixResolver;
+    @Autowired
+    private DictionaryService dictionaryService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
+
+        res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
+        res.setContentEncoding("utf-8");
 
         String formType = req.getParameter(PARAM_FORM_TYPE);
         String formModeStr = req.getParameter(PARAM_FORM_MODE);
@@ -61,13 +70,15 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
         response.view = new View(view.nodeView);
         response.formType = formType;
         response.formKey = formKey;
+        if (NodeRef.isNodeRef(formKey)) {
+            response.nodeRef = formKey;
+        }
 
-        res.setContentEncoding("utf-8");
         objectMapper.writeValue(res.getWriter(), response);
     }
 
-    private Map<String, String> getParams(WebScriptRequest req) {
-        Map<String, String> result = new HashMap<>();
+    private Map<String, Object> getParams(WebScriptRequest req) {
+        Map<String, Object> result = new HashMap<>();
         for (String key : req.getParameterNames()) {
             result.put(key, req.getParameter(key));
         }
@@ -88,14 +99,15 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
         return value.toString();
     }
 
-    class Response {
+    private class Response {
         public View view;
         public boolean canBeDraft = false;
         public String formType;
         public String formKey;
+        public String nodeRef;
     }
 
-    class Element {
+    private class Element {
 
         public String type;
         public String id;
@@ -112,7 +124,7 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
         }
     }
 
-    class Region extends Element {
+    private class Region extends Element {
 
         public String name;
 
@@ -122,7 +134,7 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
         }
     }
 
-    class Scope {
+    private class Scope {
 
         @JsonProperty(value = "class")
         public String clazz;
@@ -145,7 +157,7 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
         }
     }
 
-    class Invariant {
+    private class Invariant {
 
         public Scope scope;
         public String feature;
@@ -176,7 +188,7 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
         }
     }
 
-    class Field extends Element {
+    private class Field extends Element {
 
         public String attribute;
         public String datatype;
@@ -193,12 +205,17 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
             nodetype = formatQName(field.getNodetypeName());
             regions = field.getRegions().stream().map(Region::new).collect(Collectors.toList());
             invariants = field.getInvariants().stream().map(Invariant::new).collect(Collectors.toList());
-            fieldType = field.isAssociation() ? "association" : "property";
+            if (field.isAssociation()) {
+                AssociationDefinition assoc = dictionaryService.getAssociation(field.getAttributeName());
+                fieldType = assoc != null && assoc.isChild() ? "child-association" : "association";
+            } else {
+                fieldType = "property";
+            }
             javaclass = field.getJavaclass();
         }
     }
 
-    class View extends Element {
+    private class View extends Element {
 
         @JsonProperty(value = "class")
         public String clazz;

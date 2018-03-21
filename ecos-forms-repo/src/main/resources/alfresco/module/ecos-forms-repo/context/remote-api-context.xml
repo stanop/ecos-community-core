@@ -7,4 +7,9 @@
           parent="webscript">
     </bean>
 
+    <bean id="webscript.ru.citeck.form.ecos-form-view.post"
+          class="ru.citeck.ecos.webscripts.forms.EcosFormNodeViewPost"
+          parent="webscript">
+    </bean>
+
 </beans>

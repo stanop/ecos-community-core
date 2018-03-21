@@ -1,10 +1,13 @@
 package ru.citeck.ecos.flowable.form;
 
+import org.alfresco.service.cmr.workflow.WorkflowService;
+import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flowable.form.model.FormField;
 import org.flowable.form.model.FormModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.flowable.form.view.FieldConverter;
 import ru.citeck.ecos.flowable.services.rest.RestFormService;
@@ -31,10 +34,13 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     @Autowired
     private RestFormService restFormService;
     @Autowired
+    @Qualifier("WorkflowService")
+    private WorkflowService workflowService;
+
     private Map<String, FieldConverter<FormField>> fieldConverters = new HashMap<>();
 
     @Override
-    public NodeViewDefinition getNodeView(String formKey, String formId, FormMode mode, Map<String, String> params) {
+    public NodeViewDefinition getNodeView(String formKey, String formId, FormMode mode, Map<String, Object> params) {
 
         Optional<FormModel> form = restFormService.getFormByKey(formKey);
 
@@ -42,7 +48,6 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
             NodeView.Builder viewBuilder = new NodeView.Builder(prefixResolver);
 
-            //viewBuilder.template("rowset");
             viewBuilder.template("table");
 
             List<NodeField> fields = new ArrayList<>();
@@ -67,10 +72,23 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
             definition.canBeDraft = false;
 
             return definition;
-
         });
 
         return result.orElse(null);
+    }
+
+    @Override
+    public Map<String, Object> saveNodeView(String formKey, String formId, FormMode mode,
+                                            Map<String, Object> params, Map<QName, Object> attributes) {
+
+
+
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public boolean hasNodeView(String formKey, String formId, FormMode mode, Map<String, Object> params) {
+        return restFormService.hasFormWithKey(formKey);
     }
 
     @Override

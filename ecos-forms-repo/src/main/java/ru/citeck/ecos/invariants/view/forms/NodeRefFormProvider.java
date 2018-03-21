@@ -4,9 +4,9 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.ParameterCheck;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.extensions.webscripts.Status;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.forms.FormMode;
@@ -16,6 +16,7 @@ import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewMode;
 import ru.citeck.ecos.invariants.view.NodeViewService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import java.util.Map;
 public class NodeRefFormProvider implements NodeViewProvider {
 
     private static final String PARAM_NODEREF_ATTR = "nodeRefAttr";
+    private static final String MODEL_NODE = "nodeRef";
 
     @Autowired
     private NodeService nodeService;
@@ -39,25 +41,46 @@ public class NodeRefFormProvider implements NodeViewProvider {
     }
 
     @Override
-    public NodeViewDefinition getNodeView(String formKey, String formId, FormMode mode, Map<String, String> params) {
+    public NodeViewDefinition getNodeView(String formKey, String formId, FormMode mode, Map<String, Object> params) {
+
+        NodeViewDefinition view = new NodeViewDefinition();
+
+        NodeRef nodeRef = getNodeRef(formKey, params);
+        NodeView query = getViewQuery(nodeRef, formId, mode);
+
+        if (nodeViewService.hasNodeView(query)) {
+            view.nodeView = nodeViewService.getNodeView(query);
+        }
+        view.canBeDraft = nodeViewService.canBeDraft(nodeRef);
+
+        return view;
+    }
+
+    @Override
+    public Map<String, Object> saveNodeView(String formKey, String formId, FormMode mode,
+                                            Map<String, Object> params, Map<QName, Object> attributes) {
+
+        ParameterCheck.mandatory("attributes", attributes);
+
+        NodeRef nodeRef = new NodeRef(formKey);
+        nodeViewService.saveNodeView(nodeRef, formId, attributes, params);
+
+        Map<String, Object> model = new HashMap<>();
+        model.put(MODEL_NODE, nodeRef.toString());
+        return model;
+    }
+
+    @Override
+    public boolean hasNodeView(String formKey, String formId, FormMode mode, Map<String, Object> params) {
+        NodeRef nodeRef = getNodeRef(formKey, params);
+        NodeView query = getViewQuery(nodeRef, formId, mode);
+        return nodeViewService.hasNodeView(query);
+    }
+
+    private NodeView getViewQuery(NodeRef nodeRef, String formId, FormMode mode) {
 
         NodeView.Builder builder = new NodeView.Builder(namespaceService);
 
-        if (!NodeRef.isNodeRef(formKey)) {
-            throw new IllegalArgumentException("formKey must contain nodeRef. value = " + formKey);
-        }
-        NodeRef nodeRef = new NodeRef(formKey);
-        if (!nodeService.exists(nodeRef)) {
-            throw new IllegalArgumentException("Node " + nodeRef + " does not exist");
-        }
-        String nodeRefAttrParam = params.get(PARAM_NODEREF_ATTR);
-        if (StringUtils.isNotBlank(nodeRefAttrParam)) {
-            nodeRef = getNodeRefByAttribute(nodeRef, nodeRefAttrParam);
-            if (nodeRef == null) {
-                throw new IllegalArgumentException("Attribute " + nodeRefAttrParam +
-                                                   " of node " + formKey + " does not exist");
-            }
-        }
         builder.className(nodeService.getType(nodeRef));
 
         if (formId != null) {
@@ -67,15 +90,28 @@ public class NodeRefFormProvider implements NodeViewProvider {
             builder.mode(NodeViewMode.valueOf(mode.toString()));
         }
 
-        NodeViewDefinition view = new NodeViewDefinition();
+        return builder.build();
+    }
 
-        NodeView query = builder.build();
-        if (nodeViewService.hasNodeView(query)) {
-            view.nodeView = nodeViewService.getNodeView(query);
+    private NodeRef getNodeRef(String formKey, Map<String, Object> params) {
+
+        if (!NodeRef.isNodeRef(formKey)) {
+            throw new IllegalArgumentException("formKey must contain nodeRef. value = " + formKey);
         }
-        view.canBeDraft = nodeViewService.canBeDraft(nodeRef);
+        NodeRef nodeRef = new NodeRef(formKey);
+        if (!nodeService.exists(nodeRef)) {
+            throw new IllegalArgumentException("Node " + nodeRef + " does not exist");
+        }
+        String nodeRefAttrParam = (String) params.get(PARAM_NODEREF_ATTR);
+        if (StringUtils.isNotBlank(nodeRefAttrParam)) {
+            nodeRef = getNodeRefByAttribute(nodeRef, nodeRefAttrParam);
+            if (nodeRef == null) {
+                throw new IllegalArgumentException("Attribute " + nodeRefAttrParam +
+                                                   " of node " + formKey + " does not exist");
+            }
+        }
 
-        return view;
+        return nodeRef;
     }
 
     private NodeRef getNodeRefByAttribute(NodeRef nodeRef, String attribute) {

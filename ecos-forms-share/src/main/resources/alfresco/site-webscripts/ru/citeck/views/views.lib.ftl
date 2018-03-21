@@ -303,7 +303,7 @@
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="node-view"></@script>
 </#macro>
 
-<#macro nodeViewWidget nodeRef="" type="">
+<#macro nodeViewWidget nodeRef="" type="" formType="" formKey="">
 	<@inlineScript group="node-view">
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
 		<#assign virtualParent = (args.param_virtualParent!"false") == "true" />
@@ -338,7 +338,8 @@
 						key: "${nodeKey?trim}",
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						<#if type?has_content>type: "${type}",</#if>
-
+						formType: "${formType}",
+						formKey: "${formKey}",
 						<#if classNames?has_content>classNames: <@views.renderQNames classNames />,</#if>
 						<#if attributeNames?has_content>viewAttributeNames: <@views.renderValue attributeNames />,</#if>
 

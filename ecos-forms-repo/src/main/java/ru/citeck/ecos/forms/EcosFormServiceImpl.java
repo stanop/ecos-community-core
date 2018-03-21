@@ -1,5 +1,6 @@
 package ru.citeck.ecos.forms;
 
+import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +27,32 @@ public class EcosFormServiceImpl implements EcosFormService {
     }
 
     public NodeViewDefinition getNodeView(String formType, String formKey, String formId, FormMode mode,
-                                          Map<String, String> params) {
+                                          Map<String, Object> params) {
+        if (params == null) {
+            params = Collections.emptyMap();
+        }
         NodeViewProvider provider = nodeViewProviders.get(formType);
         return provider.getNodeView(formKey, formId, mode, params);
+    }
+
+    @Override
+    public Map<String, Object> saveNodeView(String formType, String formKey, String formId, FormMode mode,
+                                            Map<String, Object> params, Map<QName, Object> attributes) {
+        if (params == null) {
+            params = Collections.emptyMap();
+        }
+        NodeViewProvider provider = nodeViewProviders.get(formType);
+        return provider.saveNodeView(formKey, formId, mode, params, attributes);
+    }
+
+    @Override
+    public boolean hasNodeView(String formType, String formKey, String formId, FormMode mode,
+                               Map<String, Object> params) {
+        if (params == null) {
+            params = Collections.emptyMap();
+        }
+        NodeViewProvider provider = nodeViewProviders.get(formType);
+        return provider.hasNodeView(formKey, formId, mode, params);
     }
 
     @Autowired

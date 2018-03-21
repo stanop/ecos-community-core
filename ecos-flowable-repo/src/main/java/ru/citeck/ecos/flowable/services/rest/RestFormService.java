@@ -61,6 +61,12 @@ public class RestFormService {
         return Optional.empty();
     }
 
+    public boolean hasFormWithKey(String formKey) {
+        String url = baseUrl + formDefinitionsByKeyUrl;
+        FormDefinitions definitions = restTemplate.getForObject(url, FormDefinitions.class, formKey);
+        return definitions.data != null && definitions.data.size() > 0;
+    }
+
     private static class FormDefinitions {
 
         public Integer total;
