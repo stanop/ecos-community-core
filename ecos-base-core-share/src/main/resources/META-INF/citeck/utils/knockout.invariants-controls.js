@@ -264,6 +264,46 @@ ko.components.register("number", {
 });
 
 // ---------------
+// TASK-BUTTONS
+// ---------------
+
+    ko.components.register("task-buttons", {
+        viewModel: function(params) {
+            var self = this;
+
+            this.buttons = params["buttons"] || [];
+            this.buttons = this.buttons.map(function (button) {
+                button.title = Alfresco.util.message(button.title);
+                return button;
+            });
+            this.node = params["node"];
+
+            this.onClick = function(item) {
+                if (item.actionId) {
+                    var redirect = item.redirect ? item.redirect : "/share/page/journals2/list/tasks";
+                    switch (item.actionId) {
+                        case "submit":
+                            self.value(item.value);
+                            self.node().thisclass.save(self.node(), function() {
+                                window.location = redirect;
+                            });
+                            break;
+                        case "cancel":
+                            window.location = redirect;
+                            break;
+                    }
+                }
+            };
+            this.value = params["value"];
+            this.disabled = params["protected"];
+        },
+        template:
+            '<!-- ko foreach: buttons -->\
+                <button data-bind="text: $data.title, click: $component.onClick, disable: $component.disabled" />\
+            <!-- /ko -->'
+    });
+
+// ---------------
 // FREE-CONTENT
 // ---------------
 
