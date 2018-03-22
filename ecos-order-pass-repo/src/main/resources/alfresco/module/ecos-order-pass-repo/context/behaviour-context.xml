@@ -71,14 +71,4 @@
         </property>
     </bean>
 
-    <bean id="order-pass.orderPassStatucComplete" parent="ecos.caseStatusCompleteBehaviour">
-        <property name="documentClass" value="{http://www.citeck.ru/model/content/order-pass/1.0}orderPass"/>
-        <property name="statusNames">
-            <list>
-                <value>order-pass-denied</value>
-                <value>order-pass-ordered</value>
-            </list>
-        </property>
-    </bean>
-
 </beans>

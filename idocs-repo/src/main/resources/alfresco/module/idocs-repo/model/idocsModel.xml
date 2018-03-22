@@ -631,6 +631,21 @@
             <parent>idocs:entity</parent>
         </type>
 
+        <type name="idocs:documentFinalStatus">
+            <title>Document final status</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:documentType">
+                    <title></title>
+                    <type>d:qname</type>
+                </property>
+                <property name="idocs:finalStatuses">
+                    <type>d:text</type>
+                    <multiple>true</multiple>
+                </property>
+            </properties>
+        </type>
+
     </types>
 
     <aspects>
