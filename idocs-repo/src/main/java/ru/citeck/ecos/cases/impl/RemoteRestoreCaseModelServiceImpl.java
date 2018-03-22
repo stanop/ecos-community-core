@@ -173,6 +173,10 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         for (EventDto eventDto : caseModelDto.getResetEvents()) {
             restoreEvent(eventDto, caseModelRef, ICaseEventModel.ASSOC_ACTIVITY_RESET_EVENTS, restoreMap);
         }
+        /** Restore child cases */
+        for (CaseModelDto childCaseModel : caseModelDto.getChildCases()) {
+            restoreCaseEventsNodeRefs(childCaseModel, restoreMap);
+        }
     }
 
     /**
@@ -524,6 +528,12 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
      */
     private void fillAdditionalStageInfo(StageDto caseModelDto, NodeRef caseModelRef) {
         nodeService.setProperty(caseModelRef, StagesModel.PROP_DOCUMENT_STATUS, caseModelDto.getDocumentStatus());
+        if (caseModelDto.getCaseStatus() != null) {
+            NodeRef statusNodeRef = new NodeRef(WORKSPACE_PREFIX + caseModelDto.getCaseStatus().getNodeUUID());
+            if (nodeService.exists(statusNodeRef)) {
+                nodeService.createAssociation(caseModelRef, statusNodeRef, StagesModel.ASSOC_CASE_STATUS);
+            }
+        }
     }
 
     /**

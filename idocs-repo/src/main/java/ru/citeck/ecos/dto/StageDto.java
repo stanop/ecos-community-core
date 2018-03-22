@@ -15,6 +15,11 @@ public class StageDto extends CaseModelDto {
      */
     private String documentStatus;
 
+    /**
+     * Case status
+     */
+    private CaseStatusDto caseStatus;
+
     /** Getters and setters */
 
     public String getDocumentStatus() {
@@ -23,6 +28,16 @@ public class StageDto extends CaseModelDto {
 
     public void setDocumentStatus(String documentStatus) {
         this.documentStatus = documentStatus;
+    }
+
+    /** Getters and setters */
+
+    public CaseStatusDto getCaseStatus() {
+        return caseStatus;
+    }
+
+    public void setCaseStatus(CaseStatusDto caseStatus) {
+        this.caseStatus = caseStatus;
     }
 
 }

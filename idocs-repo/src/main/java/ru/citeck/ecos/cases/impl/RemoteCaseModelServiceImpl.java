@@ -580,6 +580,16 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
      */
     private void fillAdditionalStageInfo(NodeRef caseModelRef, ObjectNode objectNode) {
         objectNode.put("documentStatus", (String) nodeService.getProperty(caseModelRef, StagesModel.PROP_DOCUMENT_STATUS));
+        List<AssociationRef> assocs = nodeService.getTargetAssocs(caseModelRef, StagesModel.ASSOC_CASE_STATUS);
+        if (!CollectionUtils.isEmpty(assocs)) {
+            NodeRef statusRef = assocs.get(0).getTargetRef();
+            if (statusRef != null) {
+                ObjectNode statusObjectNode = objectMapper.createObjectNode();
+                fillBaseNodeInfo(statusRef, statusObjectNode);
+                /** Set status */
+                objectNode.set("caseStatus", statusObjectNode);
+            }
+        }
     }
 
     /**
