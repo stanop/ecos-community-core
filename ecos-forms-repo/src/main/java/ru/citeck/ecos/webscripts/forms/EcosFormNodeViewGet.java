@@ -7,10 +7,7 @@ import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.extensions.webscripts.AbstractWebScript;
-import org.springframework.extensions.webscripts.Format;
-import org.springframework.extensions.webscripts.WebScriptRequest;
-import org.springframework.extensions.webscripts.WebScriptResponse;
+import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.forms.EcosFormService;
 import ru.citeck.ecos.forms.FormMode;
 import ru.citeck.ecos.forms.NodeViewDefinition;
@@ -67,13 +64,16 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
 
         Response response = new Response();
         response.canBeDraft = view.canBeDraft;
-        response.view = new View(view.nodeView);
+        response.view = view.nodeView != null ? new View(view.nodeView) : null;
         response.formType = formType;
         response.formKey = formKey;
         if (NodeRef.isNodeRef(formKey)) {
             response.nodeRef = formKey;
         }
 
+        if (response.view == null) {
+            res.setStatus(Status.STATUS_NOT_FOUND);
+        }
         objectMapper.writeValue(res.getWriter(), response);
     }
 

@@ -3,6 +3,7 @@ package ru.citeck.ecos.forms;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.citeck.ecos.invariants.view.NodeView;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +32,7 @@ public class EcosFormServiceImpl implements EcosFormService {
         if (params == null) {
             params = Collections.emptyMap();
         }
-        NodeViewProvider provider = nodeViewProviders.get(formType);
+        NodeViewProvider provider = getMandatoryProvider(formType);
         return provider.getNodeView(formKey, formId, mode, params);
     }
 
@@ -41,7 +42,7 @@ public class EcosFormServiceImpl implements EcosFormService {
         if (params == null) {
             params = Collections.emptyMap();
         }
-        NodeViewProvider provider = nodeViewProviders.get(formType);
+        NodeViewProvider provider = getMandatoryProvider(formType);
         return provider.saveNodeView(formKey, formId, mode, params, attributes);
     }
 
@@ -52,7 +53,7 @@ public class EcosFormServiceImpl implements EcosFormService {
             params = Collections.emptyMap();
         }
         NodeViewProvider provider = nodeViewProviders.get(formType);
-        return provider.hasNodeView(formKey, formId, mode, params);
+        return provider != null && provider.hasNodeView(formKey, formId, mode, params);
     }
 
     @Autowired
@@ -60,5 +61,13 @@ public class EcosFormServiceImpl implements EcosFormService {
         for (NodeViewProvider provider : providers) {
             nodeViewProviders.put(provider.getType(), provider);
         }
+    }
+
+    private NodeViewProvider getMandatoryProvider(String key) {
+        NodeViewProvider provider = nodeViewProviders.get(key);
+        if (provider == null) {
+            throw new IllegalArgumentException("Provider type '" + key + "' is not registered");
+        }
+        return provider;
     }
 }

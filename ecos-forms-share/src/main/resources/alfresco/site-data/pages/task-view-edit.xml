@@ -4,7 +4,7 @@
     <title-id>page.taskEdit.title</title-id>
     <description>Page for editing task details</description>
     <description-id>page.taskEdit.description</description-id>
-    <template-instance>workflow-details-with-preview</template-instance>
+    <template-instance>task-view-edit</template-instance>
     <authentication>user</authentication>
     <components>
 
@@ -18,10 +18,10 @@
             <region-id>node-view</region-id>
             <url>/citeck/components/node-view</url>
             <properties>
-                <nodeRef>{taskId}</nodeRef>
+                <taskId>{taskId}</taskId>
                 <viewId>{viewId}</viewId>
                 <mode>edit</mode>
-                <runtimeKey>node-edit</runtimeKey>
+                <runtimeKey>task-view-edit</runtimeKey>
             </properties>
         </component>
 

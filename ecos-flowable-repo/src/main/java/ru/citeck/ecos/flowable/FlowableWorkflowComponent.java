@@ -43,8 +43,8 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
     /**
      * Constants
      */
-    private static final String FLOWABLE_ENGINE_NAME = "flowable";
-    private static final String ENGINE_PREFIX = "flowable$";
+    public static final String FLOWABLE_ENGINE_NAME = "flowable";
+    public static final String ENGINE_PREFIX = "flowable$";
     private static final QName INITIATOR_QNAME = QName.createQName("initiator");
     private static final QName INITIATOR_USERNAME_QNAME = QName.createQName("initiator_username");
 

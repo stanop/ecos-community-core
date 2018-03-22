@@ -128,6 +128,11 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
         splitPropsAndAssocs(all, props, assocs);
 
         QName taskType = QName.createQName(task.getName(), namespaceService);
+        TypeDefinition typeDef = dictionaryService.getType(taskType);
+        if (typeDef == null) {
+            taskType = WorkflowModel.TYPE_WORKFLOW_TASK;
+        }
+
         nodeInfo.setType(taskType);
         nodeInfo.setProperties(props);
         nodeInfo.setTargetAssocs(assocs);

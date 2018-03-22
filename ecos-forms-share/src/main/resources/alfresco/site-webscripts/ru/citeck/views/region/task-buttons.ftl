@@ -7,6 +7,6 @@
         protected: protected,
         value: value,
         node: node,
-        buttons: ${buttons}
+        buttons: ${buttons?replace("\"", "'")}
     }}">
 </div>
