@@ -6,11 +6,18 @@ import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.ResultSet;
+import org.alfresco.service.cmr.search.SearchParameters;
+import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.icase.CaseStatusPolicies;
 import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.model.IdocsFinalStatusModel;
 import ru.citeck.ecos.model.IdocsModel;
-import java.util.Collections;
+
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,14 +26,9 @@ import java.util.List;
 public class CaseStatusCompleteBehaviour implements CaseStatusPolicies.OnCaseStatusChangedPolicy {
 
     /**
-     * Document class
+     * Store reference
      */
-    private QName documentClass;
-
-    /**
-     * Complete status name
-     */
-    private List<String> statusNames;
+    private StoreRef storeRef;
 
     /**
      * Policy component
@@ -39,12 +41,15 @@ public class CaseStatusCompleteBehaviour implements CaseStatusPolicies.OnCaseSta
     private NodeService nodeService;
 
     /**
+     * Search service
+     */
+    private SearchService searchService;
+
+    /**
      * Init method
      */
     public void init() {
-        if (statusNames == null) {
-            statusNames = Collections.emptyList();
-        }
+        storeRef = StoreRef.STORE_REF_WORKSPACE_SPACESSTORE;
         policyComponent.bindClassBehaviour(
                 CaseStatusPolicies.OnCaseStatusChangedPolicy.QNAME, ICaseModel.TYPE_CASE_STATUS,
                 new OrderedBehaviour(this, "onCaseStatusChanged", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, 80)
@@ -74,22 +79,37 @@ public class CaseStatusCompleteBehaviour implements CaseStatusPolicies.OnCaseSta
         if (documentRef == null || statusRef == null) {
             return false;
         }
-        if (!documentClass.equals(nodeService.getType(documentRef))) {
-            return false;
+        List<NodeRef> finalStatusesRefs = getFinalStatuses(nodeService.getType(documentRef));
+        for (NodeRef finalStatusRef : finalStatusesRefs) {
+            Serializable finalStatuses = nodeService.getProperty(finalStatusRef, IdocsFinalStatusModel.PROP_FINAL_STATUSES);
+            if (finalStatuses != null && finalStatuses instanceof Collection) {
+                Collection<String> finalStatusesCollection = (Collection<String>) finalStatuses;
+                String statusName = (String) nodeService.getProperty(statusRef, ContentModel.PROP_NAME);
+                if (finalStatusesCollection.contains(statusName)) {
+                    return true;
+                }
+            }
         }
-        String statusName = (String) nodeService.getProperty(statusRef, ContentModel.PROP_NAME);
-        return statusNames.contains(statusName);
+        return false;
+    }
+
+    /**
+     * Get final statuses
+     * @param documentType Document type
+     * @return List of final statuses
+     */
+    private List<NodeRef> getFinalStatuses(QName documentType) {
+        SearchParameters parameters = new SearchParameters();
+        parameters.addStore(storeRef);
+        parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
+        parameters.setQuery("TYPE:\"idocs:documentFinalStatus\" AND " +
+                "@idocs\\:documentType:\"" + documentType + "\"");
+        parameters.addSort("@cm:created", true);
+        ResultSet result = searchService.query(parameters);
+        return result.getNodeRefs();
     }
 
     /** Setters */
-
-    public void setDocumentClass(QName documentClass) {
-        this.documentClass = documentClass;
-    }
-
-    public void setStatusNames(List<String> statusNames) {
-        this.statusNames = statusNames;
-    }
 
     public void setPolicyComponent(PolicyComponent policyComponent) {
         this.policyComponent = policyComponent;
@@ -97,5 +117,9 @@ public class CaseStatusCompleteBehaviour implements CaseStatusPolicies.OnCaseSta
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
+    }
+
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
     }
 }
