@@ -1,5 +1,7 @@
 package ru.citeck.ecos.flowable.services.rest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.flowable.form.model.FormModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -16,11 +18,15 @@ import java.util.Optional;
 @Service
 public class RestFormService {
 
+    private static final String FLOWABLE_REST_API_KEY = "${flowable.rest-api.url}";
+
+    private final static Log logger = LogFactory.getLog(RestFormService.class);
+
     @Value("${flowable.rest-api.username}")
     private String username;
     @Value("${flowable.rest-api.password}")
     private String password;
-    @Value("${flowable.rest-api.url}")
+    @Value(FLOWABLE_REST_API_KEY)
     private String restApiUrl;
 
     @Value("${flowable.rest-api.form.form-definitions-by-key}")
@@ -31,8 +37,16 @@ public class RestFormService {
     private String baseUrl;
     private RestTemplate restTemplate;
 
+    private boolean initialized = false;
+
     @PostConstruct
     public void init() {
+
+        if (FLOWABLE_REST_API_KEY.equals(restApiUrl)) {
+            logger.error("Flowable rest api url is not defined!");
+            return;
+        }
+
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
@@ -43,9 +57,16 @@ public class RestFormService {
 
         baseUrl = restApiUrl.endsWith("/") ? restApiUrl : restApiUrl + "/";
         baseUrl += "form-api/form-repository/";
+
+        initialized = true;
     }
 
     public Optional<FormModel> getFormByKey(String formKey) {
+
+        if (!initialized) {
+            logger.warn("Flowable rest form service is not initialized! FormKey: " + formKey);
+            return Optional.empty();
+        }
 
         String url = baseUrl + formDefinitionsByKeyUrl;
         FormDefinitions definitions = restTemplate.getForObject(url, FormDefinitions.class, formKey);
@@ -62,9 +83,12 @@ public class RestFormService {
     }
 
     public boolean hasFormWithKey(String formKey) {
-        String url = baseUrl + formDefinitionsByKeyUrl;
-        FormDefinitions definitions = restTemplate.getForObject(url, FormDefinitions.class, formKey);
-        return definitions.data != null && definitions.data.size() > 0;
+        if (initialized) {
+            String url = baseUrl + formDefinitionsByKeyUrl;
+            FormDefinitions definitions = restTemplate.getForObject(url, FormDefinitions.class, formKey);
+            return definitions.data != null && definitions.data.size() > 0;
+        }
+        return false;
     }
 
     private static class FormDefinitions {

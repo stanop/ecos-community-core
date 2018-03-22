@@ -2161,7 +2161,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return data;
             },
             toResult: function(response) {
-                return new Node(response.result);
+                if (response && response.result && (response.result.key || response.result.nodeRef)) {
+                    return new Node(response.result);
+                } else {
+                    return response;
+                }
             },
             toFailureMessage: function(response) {
                 return response.message;
