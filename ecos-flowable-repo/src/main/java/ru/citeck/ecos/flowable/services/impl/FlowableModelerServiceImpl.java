@@ -175,7 +175,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
     }
 
     public boolean integrationIsInitialized() {
-        return managementService != null;
+        return this.managementService != null && modelTableIsExist();
     }
 
     public void setManagementService(ManagementService managementService) {
@@ -184,5 +184,19 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
     public void setLocations(List<String> locations) {
         this.locations = locations;
+    }
+
+    private boolean modelTableIsExist() {
+        CustomSqlExecution<ModelMapper, String> sqlExecution =
+                new AbstractCustomSqlExecution<ModelMapper, String>(ModelMapper.class) {
+                    @Override
+                    public String execute(ModelMapper modelMapper) {
+                        return modelMapper.getTableSchema();
+                    }
+                };
+
+        String tableSchema = managementService.executeCustomSql(sqlExecution);
+
+        return StringUtils.isNotBlank(tableSchema);
     }
 }

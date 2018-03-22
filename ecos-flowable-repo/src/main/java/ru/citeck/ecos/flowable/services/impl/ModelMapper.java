@@ -1,6 +1,7 @@
 package ru.citeck.ecos.flowable.services.impl;
 
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Select;
 import org.flowable.app.domain.editor.Model;
 
 /**
@@ -35,4 +36,7 @@ public interface ModelMapper {
                 "#{modelType, jdbcType=INTEGER}",
             ")"})
     void insertModel(Model model);
+
+    @Select("SELECT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ACT_DE_MODEL'")
+    String getTableSchema();
 }
