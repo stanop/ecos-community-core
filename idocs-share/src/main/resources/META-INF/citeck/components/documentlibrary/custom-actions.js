@@ -589,24 +589,27 @@ YAHOO.Bubbling.fire("registerAction", {
 });
 
 YAHOO.Bubbling.fire("registerAction", {
-	actionName: "onShowViewForm",
-	fn: function(record) {
-		var jsNode = record.jsNode,
-			nodeRef = jsNode.nodeRef;
+    actionName: "onShowTaskForm",
+    fn: function(record, owner) {
+        var jsNode = record.jsNode,
+            params = this.getAction(record, owner).params,
+            formMode = params.formMode || "view";
 
 		Alfresco.util.Ajax.jsonGet({
-			url: Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?nodeRef=" + nodeRef.nodeRef,
-			successCallback: {
-				scope: this,
-				fn: function(response) {
-                    var redirection = '/share/page';
-                    if(response.serverResponse.status != 401 && response.serverResponse.status != 200) {
-                        throw "Can not check view existence: " + response.json.message;
-                    } else if(response.serverResponse.status == 200) {
-                        redirection = '/share/page/task-view-edit?taskId=' + jsNode.properties['cm:name'];
+            url: Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?taskId=" + jsNode.properties["cm:name"],
+            successCallback: {
+                scope: this,
+                fn: function(response) {
+                    var redirection = "/share/page/";
+
+                    if(response.serverResponse.status == 200) {
+                        var formId = response.json.exists ? "task-view-edit" : (formMode == "edit" ? "task-edit" : "task-details"),
+                            requestParams = "?taskId=" + jsNode.properties["cm:name"] + "&formMode=" + formMode;
+
+                        redirection += formId + requestParams;
                     }
-					window.location = redirection;
-				}
+                    window.location = redirection;
+                }
 			}
 		});
 	}
