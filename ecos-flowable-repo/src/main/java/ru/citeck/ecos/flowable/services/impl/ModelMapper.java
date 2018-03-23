@@ -37,6 +37,6 @@ public interface ModelMapper {
             ")"})
     void insertModel(Model model);
 
-    @Select("SELECT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ACT_DE_MODEL'")
+    @Select("SELECT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE UPPER(TABLE_NAME) = 'ACT_DE_MODEL'")
     String getTableSchema();
 }
