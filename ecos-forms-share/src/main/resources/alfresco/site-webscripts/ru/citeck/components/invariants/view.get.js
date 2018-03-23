@@ -1,12 +1,11 @@
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/invariants/view.lib.js">
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/citeck.lib.js">
 
-
 (function() {
     model.isMobile = isMobileDevice(context.headers["user-agent"]);
 
     var viewData = getViewData(args);
-    if(!viewData) return;
+    if (!viewData) return;
 
     var view = viewData.view,
         attributeSet = getAttributeSet(args, view),
@@ -65,6 +64,8 @@
     model.viewNodeRef = viewNodeRef ? viewNodeRef : null;
     model.view = view;
     model.defaultModel = defaultModel;
+    model.formKey = viewData.formKey;
+    model.formType = viewData.formType;
 
     model.attributeSet = attributeSet;
     model.attributeNames = attributeNames;

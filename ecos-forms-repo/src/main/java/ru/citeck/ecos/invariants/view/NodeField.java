@@ -27,6 +27,7 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 
@@ -63,6 +64,7 @@ public final class NodeField extends NodeViewElement {
     private AttributeType attributeType;
     private QName datatype;
     private QName nodetype;
+    private String javaclass;
     
     private List<InvariantDefinition> invariants;
     
@@ -78,6 +80,14 @@ public final class NodeField extends NodeViewElement {
 
     public boolean isAssociation() {
         return attributeType == AttributeType.ASSOCIATION;
+    }
+
+    public AttributeType getAttributeType() {
+        return attributeType;
+    }
+
+    public String getJavaclass() {
+        return javaclass;
     }
 
     public QName getDatatypeName() {
@@ -168,6 +178,7 @@ public final class NodeField extends NodeViewElement {
         private AttributeType attributeType;
         private QName datatype;
         private QName nodetype;
+        private String javaclass;
         private List<InvariantDefinition> invariants;
         
         public Builder(NamespacePrefixResolver prefixResolver) {
@@ -185,7 +196,18 @@ public final class NodeField extends NodeViewElement {
             this.attributeType = AttributeType.ASSOCIATION;
             return this;
         }
-        
+
+        public Builder javaclass(String javaclass) {
+            this.javaclass = javaclass;
+            return this;
+        }
+
+        public Builder datatype(DataTypeDefinition definition) {
+            this.datatype = definition.getName();
+            this.javaclass = definition.getJavaClassName();
+            return this;
+        }
+
         public Builder datatype(QName name) {
             this.datatype = name;
             return this;
@@ -231,7 +253,7 @@ public final class NodeField extends NodeViewElement {
         
         public Builder invariants(List<InvariantDefinition> invariants) {
             this.invariants = invariants != null 
-                    ? new ArrayList<InvariantDefinition>(invariants) 
+                    ? new ArrayList<>(invariants)
                     : null;
             return this;
         }
@@ -329,6 +351,7 @@ public final class NodeField extends NodeViewElement {
             
             result.datatype = datatype;
             result.nodetype = nodetype;
+            result.javaclass = javaclass;
             
             if(attribute != null && !attribute.equals(ANY_QNAME)) {
                 
@@ -342,7 +365,8 @@ public final class NodeField extends NodeViewElement {
                         PropertyDefinition propDef = dictionaryService.getProperty(attribute);
                         if(propDef == null)
                             throw new IllegalStateException("Unknown property: " + attribute);
-                            
+
+                        result.javaclass = propDef.getDataType().getJavaClassName();
                         result.datatype = propDef.getDataType().getName();
                         result.nodetype = result.datatype.equals(DataTypeDefinition.CATEGORY)
                                 ? ContentModel.TYPE_CATEGORY
@@ -354,6 +378,7 @@ public final class NodeField extends NodeViewElement {
                             throw new IllegalStateException("Unknown association: " + attribute);
                         result.datatype = DataTypeDefinition.NODE_REF;
                         result.nodetype = assocDef.getTargetClass().getName();
+                        result.javaclass = NodeRef.class.getName();
                     }
                 }
             }

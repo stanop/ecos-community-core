@@ -229,16 +229,10 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         }
     }
 
-
     private NodeRef createTaskMirror(String taskId, QName taskType) {
-        if (dictionaryService.getType(taskType) != null) {
-            QName assocQName = QName.createQName(taskMirrorAssoc.getNamespaceURI(), taskId);
-            ChildAssociationRef mirrorRef = nodeService.createNode(taskMirrorRoot, taskMirrorAssoc, assocQName, taskType);
-            return mirrorRef.getChildRef();
-        } else {
-            logger.warn(String.format("Task type '%s' doesn't registered in alfresco. Mirror will not be created", taskType));
-        }
-        return null;
+        QName assocQName = QName.createQName(taskMirrorAssoc.getNamespaceURI(), taskId);
+        ChildAssociationRef mirrorRef = nodeService.createNode(taskMirrorRoot, taskMirrorAssoc, assocQName, taskType);
+        return mirrorRef.getChildRef();
     }
 
     private LinkedList<NodeRef> getActors(WorkflowTask task) {

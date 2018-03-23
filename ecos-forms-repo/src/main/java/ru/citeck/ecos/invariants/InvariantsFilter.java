@@ -23,7 +23,7 @@ import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -47,7 +47,7 @@ class InvariantsFilter {
     private DictionaryService dictionaryService;
     private NodeAttributeService nodeAttributeService;
     private AttributesPermissionService attributesPermissionService;
-    private NamespaceService namespaceService;
+    private NamespacePrefixResolver prefixResolver;
 
     private Map<QName, InvariantAttributeType> attributeTypes;
 
@@ -220,7 +220,7 @@ class InvariantsFilter {
                 // Check current user permissions for attribute
                 if (attributesPermissionService != null) {
                     if (!fieldParams.isFieldEditable(attributeName)) {
-                        InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
+                        InvariantDefinition.Builder builder = new InvariantDefinition.Builder(prefixResolver);
                         if (attributeTypeName.equals(AttributeModel.TYPE_PROPERTY)) {
                             invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY)
                                     .feature(Feature.PROTECTED).explicit(true).buildFinal());
@@ -236,7 +236,7 @@ class InvariantsFilter {
                         }
                     }
                     if (!fieldParams.isFieldVisible(attributeName)) {
-                        InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
+                        InvariantDefinition.Builder builder = new InvariantDefinition.Builder(prefixResolver);
                         invariants.add(builder.pushScope(attributeName, AttributeScopeKind.PROPERTY)
                                 .feature(Feature.RELEVANT).explicit(false).buildFinal());
                     }
@@ -386,8 +386,8 @@ class InvariantsFilter {
         this.attributeTypes = attributeTypes;
     }
 
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
+    public void setPrefixResolver(NamespacePrefixResolver prefixResolver) {
+        this.prefixResolver = prefixResolver;
     }
 
     public void setAttributesPermissionService(AttributesPermissionService attributesPermissionService) {

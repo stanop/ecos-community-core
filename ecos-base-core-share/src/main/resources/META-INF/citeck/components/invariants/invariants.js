@@ -1558,6 +1558,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .key('key', s)
         .property('nodeRef', s)
+        .property('formKey', s)
+        .property('formType', s)
         .property('isDraft', b)
         .property('node', Node)
         .property('type', s)
@@ -1682,10 +1684,27 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     return attributes;
                 }
 
+                var findAttrInfo = function (name) {
+                    var attributeSet = node.impl().attributeSet();
+                    if (attributeSet) {
+                        var attributesData = attributeSet._attributes();
+                        var attData = _.find(attributesData, function (att) {
+                            return att.name == name;
+                        });
+                        return attData ? attData.info : null;
+                    }
+                    return null;
+                };
+
                 _.each(validAttributeNames, function(name) {
                     if(!createdNames[name]) {
                         createdNames[name] = true;
-                        attributes.push(new Attribute(node, name));
+                        var attribute = new Attribute(node, name);
+                        var info = findAttrInfo(name);
+                        if (info) {
+                            attribute.setModel({info: info});
+                        }
+                        attributes.push(attribute);
                     }
                 });
 
@@ -2111,11 +2130,21 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
         .save(koutils.simpleSave({
             url: function(node) {
-                var baseUrl = Alfresco.constants.PROXY_URI + "citeck/invariants/view?";
-                if($isNodeRef(node.nodeRef)) {
-                    return baseUrl + "nodeRef=" + node.nodeRef;
+
+                var baseUrl,
+                    formType = node.impl().formType(),
+                    formKey = node.impl().formKey();
+
+                if (formType && formKey) {
+                    baseUrl = Alfresco.constants.PROXY_URI + "citeck/ecos/forms/node-view?";
+                    return baseUrl + "formType=" + formType + "&formKey=" + formKey;
                 } else {
-                    return baseUrl + "type=" + node.typeShort;
+                    baseUrl = Alfresco.constants.PROXY_URI + "citeck/invariants/view?";
+                    if($isNodeRef(node.nodeRef)) {
+                        return baseUrl + "nodeRef=" + node.nodeRef;
+                    } else {
+                        return baseUrl + "type=" + node.typeShort;
+                    }
                 }
             },
             toRequest: function(node) {
@@ -2132,7 +2161,11 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 return data;
             },
             toResult: function(response) {
-                return new Node(response.result);
+                if (response && response.result && (response.result.key || response.result.nodeRef)) {
+                    return new Node(response.result);
+                } else {
+                    return response;
+                }
             },
             toFailureMessage: function(response) {
                 return response.message;

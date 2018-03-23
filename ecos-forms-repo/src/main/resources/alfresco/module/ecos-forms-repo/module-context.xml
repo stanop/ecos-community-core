@@ -4,5 +4,6 @@
 
     <import resource="classpath:alfresco/module/ecos-forms-repo/context/invariant-services-context.xml" />
     <import resource="classpath:alfresco/module/ecos-forms-repo/context/bootstrap-context.xml" />
+    <import resource="classpath:alfresco/module/ecos-forms-repo/context/remote-api-context.xml" />
 
 </beans>

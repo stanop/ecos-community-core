@@ -54,8 +54,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-class NodeInfoFactoryImpl implements NodeInfoFactory 
-{
+class NodeInfoFactoryImpl implements NodeInfoFactory {
     private static Log logger = LogFactory.getLog(NodeInfoFactoryImpl.class);
 
     private static final String CONTENT_URL = "url";
@@ -94,7 +93,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
      */
     @Override
     public NodeInfo createNodeInfo(NodeRef nodeRef) {
-        if(!nodeService.exists(nodeRef)) {
+        if (!nodeService.exists(nodeRef)) {
             return null;
         }
 
@@ -121,18 +120,23 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
     @Override
     public NodeInfo createNodeInfo(WorkflowTask task) {
         NodeInfo nodeInfo = new NodeInfo();
-        
+
         Map<QName, Serializable> all = task.getProperties();
         removeNotExistingNodeRefs(all);
         Map<QName, Serializable> props = new HashMap<QName, Serializable>(all.size());
-        Map<QName, List<NodeRef>> assocs = new HashMap<QName, List<NodeRef>>(all.size()/2);
+        Map<QName, List<NodeRef>> assocs = new HashMap<QName, List<NodeRef>>(all.size() / 2);
         splitPropsAndAssocs(all, props, assocs);
 
         QName taskType = QName.createQName(task.getName(), namespaceService);
+        TypeDefinition typeDef = dictionaryService.getType(taskType);
+        if (typeDef == null) {
+            taskType = WorkflowModel.TYPE_WORKFLOW_TASK;
+        }
+
         nodeInfo.setType(taskType);
         nodeInfo.setProperties(props);
         nodeInfo.setTargetAssocs(assocs);
-        
+
         return nodeInfo;
     }
 
@@ -173,12 +177,12 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
     public void persist(NodeRef nodeRef, NodeInfo nodeInfo) {
         persist(nodeRef, nodeInfo, false);
     }
-    
+
     private QName getRequiredType(NodeRef nodeRef, QName originalType, QName requiredType) {
-        if(requiredType == null) return originalType;
-        if(requiredType.equals(originalType)) return originalType;
-        if(dictionaryService.isSubClass(originalType, requiredType)) return originalType;
-        if(dictionaryService.isSubClass(requiredType, originalType)) return requiredType;
+        if (requiredType == null) return originalType;
+        if (requiredType.equals(originalType)) return originalType;
+        if (dictionaryService.isSubClass(originalType, requiredType)) return originalType;
+        if (dictionaryService.isSubClass(requiredType, originalType)) return requiredType;
         throw new RuntimeException("Can not change type of " + nodeRef + " from " + originalType + " to " + requiredType + ", as it is not child type");
     }
 
@@ -189,87 +193,86 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
     public void persist(NodeRef nodeRef, NodeInfo nodeInfo, boolean full) {
 
         // firstly get classes requirements:
-        QName originalType = nodeService.getType(nodeRef), 
-              requiredType = getRequiredType(nodeRef, originalType, nodeInfo.getType());
+        QName originalType = nodeService.getType(nodeRef),
+                requiredType = getRequiredType(nodeRef, originalType, nodeInfo.getType());
         Set<QName> originalAspects = nodeService.getAspects(nodeRef),
-                   requiredAspects = nodeInfo.getAspects() != null ? new HashSet<QName>(nodeInfo.getAspects()) : new HashSet<QName>();
-        
+                requiredAspects = nodeInfo.getAspects() != null ? new HashSet<QName>(nodeInfo.getAspects()) : new HashSet<QName>();
+
         Map<QName, Serializable> properties = nodeInfo.getProperties();
         Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
         Map<QName, List<NodeRef>> sourceAssocs = nodeInfo.getSourceAssocs();
         Map<QName, List<NodeRef>> childAssocs = nodeInfo.getChildAssocs();
-        
+
         Set<ClassDefinition> classes = new HashSet<>();
-        
-        if(properties != null) {
-            for(QName propertyName : properties.keySet()) {
+
+        if (properties != null) {
+            for (QName propertyName : properties.keySet()) {
                 PropertyDefinition property = dictionaryService.getProperty(propertyName);
-                if(property != null) classes.add(property.getContainerClass());
+                if (property != null) classes.add(property.getContainerClass());
             }
         }
-        
-        if(targetAssocs != null) {
-            for(QName assocName : targetAssocs.keySet()) {
+
+        if (targetAssocs != null) {
+            for (QName assocName : targetAssocs.keySet()) {
                 AssociationDefinition association = dictionaryService.getAssociation(assocName);
-                if(association != null) classes.add(association.getSourceClass());
+                if (association != null) classes.add(association.getSourceClass());
             }
         }
-        
-        if(sourceAssocs != null) {
-            for(QName assocName : sourceAssocs.keySet()) {
+
+        if (sourceAssocs != null) {
+            for (QName assocName : sourceAssocs.keySet()) {
                 AssociationDefinition association = dictionaryService.getAssociation(assocName);
-                if(association != null) classes.add(association.getTargetClass());
+                if (association != null) classes.add(association.getTargetClass());
             }
         }
-        
-        if(childAssocs != null) {
-            for(QName assocName : childAssocs.keySet()) {
+
+        if (childAssocs != null) {
+            for (QName assocName : childAssocs.keySet()) {
                 AssociationDefinition association = dictionaryService.getAssociation(assocName);
-                if(association != null) classes.add(association.getSourceClass());
+                if (association != null) classes.add(association.getSourceClass());
             }
         }
-        
-        for(ClassDefinition classDef : classes) {
-            if(classDef.isAspect()) {
+
+        for (ClassDefinition classDef : classes) {
+            if (classDef.isAspect()) {
                 requiredAspects.add(classDef.getName());
             } else {
                 requiredType = getRequiredType(nodeRef, requiredType, classDef.getName());
             }
         }
-        
-        if(!originalType.equals(requiredType)) {
+
+        if (!originalType.equals(requiredType)) {
             nodeService.setType(nodeRef, requiredType);
         }
-        
+
         requiredAspects.removeAll(originalAspects);
-        for(QName aspect : requiredAspects) {
+        for (QName aspect : requiredAspects) {
             nodeService.addAspect(nodeRef, aspect, null);
         }
 
-        if(properties != null) {
+        if (properties != null) {
             persistProperties(nodeRef, properties, full);
         }
 
-        if(targetAssocs != null) {
+        if (targetAssocs != null) {
             RepoUtils.setAssocs(nodeRef, targetAssocs, true, full, nodeService, associationIndexing);
         }
 
-        if(sourceAssocs != null) {
+        if (sourceAssocs != null) {
             RepoUtils.setAssocs(nodeRef, sourceAssocs, false, full, nodeService, associationIndexing);
         }
 
-        if(childAssocs != null) {
+        if (childAssocs != null) {
             boolean primary = true;
             RepoUtils.setChildAssocs(nodeRef, childAssocs, primary, full, nodeService);
         }
 
         NodeRef parent = nodeInfo.getParent();
         QName parentAssoc = nodeInfo.getParentAssoc();
-        if(parent != null && parentAssoc != null) {
+        if (parent != null && parentAssoc != null) {
             ChildAssociationRef primaryParent = nodeService.getPrimaryParent(nodeRef);
-            if(!primaryParent.getParentRef().equals(parent)
-            || !primaryParent.getTypeQName().equals(parentAssoc))
-            {
+            if (!primaryParent.getParentRef().equals(parent)
+                    || !primaryParent.getTypeQName().equals(parentAssoc)) {
                 nodeService.moveNode(nodeRef, parent, parentAssoc, primaryParent.getQName());
             }
         }
@@ -284,9 +287,9 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 
         QName nodeType = nodeInfo.getType();
 
-        if(nodeRef != null) {
+        if (nodeRef != null) {
             if (ContentModel.TYPE_PERSON.equals(nodeService.getType(nodeRef))) {
-                Map<QName,Serializable> properties = nodeInfo.getProperties();
+                Map<QName, Serializable> properties = nodeInfo.getProperties();
                 String userName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_USERNAME);
                 String oldPass = (String) properties.get(EcosModel.PROP_OLD_PASS);
                 String newPass = (String) properties.get(EcosModel.PROP_PASS);
@@ -325,7 +328,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
             parent = nodeInfo.getParent();
             parentAssoc = nodeInfo.getParentAssoc();
 
-            if(parent == null || parentAssoc == null || nodeType == null) {
+            if (parent == null || parentAssoc == null || nodeType == null) {
                 throw new IllegalArgumentException("Either nodeRef, or parent/parentAssoc/type should be specified");
             }
 
@@ -339,19 +342,19 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
         if (nodeType.equals(ContentModel.TYPE_PERSON)) {
             parent = nodeInfo.getParent();
             String userName = (String) nodeInfo.getProperty(ContentModel.PROP_USERNAME);
-            Map<QName,Serializable> properties = nodeInfo.getProperties();
+            Map<QName, Serializable> properties = nodeInfo.getProperties();
 
             nodeInfo.setParent(null);
             nodeInfo.setParentAssoc(null);
 
-            Map<QName,Serializable> personProperties = new HashMap<>();
+            Map<QName, Serializable> personProperties = new HashMap<>();
             personProperties.put(ContentModel.PROP_FIRSTNAME, properties.get(ContentModel.PROP_FIRSTNAME));
             personProperties.put(ContentModel.PROP_LASTNAME, properties.get(ContentModel.PROP_LASTNAME));
             personProperties.put(ContentModel.PROP_USERNAME, properties.get(ContentModel.PROP_USERNAME));
             personProperties.put(ContentModel.PROP_EMAIL, properties.get(ContentModel.PROP_EMAIL));
             nodeRef = personService.createPerson(personProperties);
 
-            authenticationService.createAuthentication((String)properties.get(ContentModel.PROP_USERNAME),
+            authenticationService.createAuthentication((String) properties.get(ContentModel.PROP_USERNAME),
                     ((String) properties.get(EcosModel.PROP_PASS)).toCharArray());
             properties.remove(EcosModel.PROP_PASS);
             properties.remove(EcosModel.PROP_PASS_VERIFY);
@@ -379,12 +382,12 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
     //                       PRIVATE STUFF                         //
     /////////////////////////////////////////////////////////////////
 
-    private Map<QName,List<NodeRef>> getAssocMap(List<AssociationRef> assocs, boolean sourceAssocs) {
-        Map<QName,List<NodeRef>> assocMap = new HashMap<QName,List<NodeRef>>();
-        for(AssociationRef assoc : assocs) {
+    private Map<QName, List<NodeRef>> getAssocMap(List<AssociationRef> assocs, boolean sourceAssocs) {
+        Map<QName, List<NodeRef>> assocMap = new HashMap<QName, List<NodeRef>>();
+        for (AssociationRef assoc : assocs) {
             QName qname = assoc.getTypeQName();
             List<NodeRef> nodes = assocMap.get(qname);
-            if(nodes == null) {
+            if (nodes == null) {
                 nodes = new ArrayList<NodeRef>();
                 assocMap.put(qname, nodes);
             }
@@ -393,12 +396,12 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
         return assocMap;
     }
 
-    private Map<QName,List<NodeRef>> getChildMap(List<ChildAssociationRef> assocs, boolean parentAssocs) {
-        Map<QName,List<NodeRef>> assocMap = new HashMap<QName,List<NodeRef>>();
-        for(ChildAssociationRef assoc : assocs) {
+    private Map<QName, List<NodeRef>> getChildMap(List<ChildAssociationRef> assocs, boolean parentAssocs) {
+        Map<QName, List<NodeRef>> assocMap = new HashMap<QName, List<NodeRef>>();
+        for (ChildAssociationRef assoc : assocs) {
             QName qname = assoc.getTypeQName();
             List<NodeRef> nodes = assocMap.get(qname);
-            if(nodes == null) {
+            if (nodes == null) {
                 nodes = new ArrayList<NodeRef>();
                 assocMap.put(qname, nodes);
             }
@@ -412,17 +415,17 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
         // split content properties from other properties
         Map<QName, Serializable> notContentProperties = new HashMap<QName, Serializable>(properties.size());
         Map<QName, Serializable> contentProperties = new HashMap<QName, Serializable>();
-        for(Map.Entry<QName, Serializable> entry : properties.entrySet()) {
+        for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
             Serializable value = entry.getValue();
             QName propertyName = entry.getKey();
             PropertyDefinition propDef = dictionaryService.getProperty(propertyName);
             QName propType = propDef != null ? propDef.getDataType().getName() : null;
 
-            if(DataTypeDefinition.CONTENT.equals(propType)) {
+            if (DataTypeDefinition.CONTENT.equals(propType)) {
                 contentProperties.put(propertyName, value);
             } else {
-                if(DataTypeDefinition.DATE.equals(propType)) {
-                    if(value instanceof String) {
+                if (DataTypeDefinition.DATE.equals(propType)) {
+                    if (value instanceof String) {
                         value = ISO8601DateFormat.parseDayOnly((String) value, TimeZone.getDefault());
                     }
                 }
@@ -431,65 +434,65 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
             }
         }
 
-        if(full) {
+        if (full) {
             nodeService.setProperties(nodeRef, notContentProperties);
         } else {
             nodeService.addProperties(nodeRef, notContentProperties);
         }
 
-        for(Map.Entry<QName, Serializable> entry : contentProperties.entrySet()) {
+        for (Map.Entry<QName, Serializable> entry : contentProperties.entrySet()) {
             setContentProperty(nodeRef, entry.getKey(), entry.getValue());
         }
     }
 
     private void setContentProperty(NodeRef nodeRef, QName propertyName, Serializable value) {
-        if(value == null) {
+        if (value == null) {
             nodeService.removeProperty(nodeRef, propertyName);
             return;
         }
-        
+
         ContentWriter writer = contentService.getWriter(nodeRef, propertyName, true);
-        if(value instanceof File) {
+        if (value instanceof File) {
             File file = (File) value;
             writer.setMimetype(mimetypeService.guessMimetype(file.getName()));
             writer.putContent(file);
-        } else if(value instanceof Map) {
-            Map<?,?> contentModel = (Map<?,?>) value;
+        } else if (value instanceof Map) {
+            Map<?, ?> contentModel = (Map<?, ?>) value;
             String contentUrl = (String) contentModel.get(CONTENT_URL);
             String content = (String) contentModel.get(CONTENT_CONTENT);
             String mimetype = (String) contentModel.get(CONTENT_MIMETYPE);
             String encoding = (String) contentModel.get(CONTENT_ENCODING);
-            
-            if(mimetype != null) writer.setMimetype(mimetype);
-            if(encoding != null) writer.setEncoding(encoding);
-            
-            if(contentUrl != null) {
-                if(NodeRef.isNodeRef(contentUrl)) {
+
+            if (mimetype != null) writer.setMimetype(mimetype);
+            if (encoding != null) writer.setEncoding(encoding);
+
+            if (contentUrl != null) {
+                if (NodeRef.isNodeRef(contentUrl)) {
                     NodeRef contentNodeRef = new NodeRef(contentUrl);
-                    if(!nodeRef.equals(contentNodeRef)) {
+                    if (!nodeRef.equals(contentNodeRef)) {
                         ContentReader reader = contentService.getReader(contentNodeRef, ContentModel.PROP_CONTENT);
-                        if(mimetype == null) writer.setMimetype(reader.getMimetype());
-                        if(encoding == null) writer.setEncoding(reader.getEncoding());
+                        if (mimetype == null) writer.setMimetype(reader.getMimetype());
+                        if (encoding == null) writer.setEncoding(reader.getEncoding());
                         writer.putContent(reader);
                     }
                 } else {
                     throw new IllegalArgumentException("Currently only nodeRef is supported as url");
                 }
-            } else if(content != null) {
+            } else if (content != null) {
                 writer.putContent(content);
             }
-            
-        } else if(value instanceof ContentReader) {
+
+        } else if (value instanceof ContentReader) {
             ContentReader reader = (ContentReader) value;
             writer.setMimetype(reader.getMimetype());
             writer.setEncoding(reader.getEncoding());
             writer.putContent(reader);
-        } else if(value instanceof InputStream) {
+        } else if (value instanceof InputStream) {
             writer.putContent((InputStream) value);
-        } else if(value instanceof String) {
+        } else if (value instanceof String) {
             writer.setMimetype(MimetypeMap.MIMETYPE_TEXT_PLAIN);
             writer.putContent((String) value);
-        } else if(value instanceof ContentData) {
+        } else if (value instanceof ContentData) {
             nodeService.setProperty(nodeRef, propertyName, value);
         } else {
             throw new IllegalArgumentException("Value class is not supported for setting content: " + value.getClass());
@@ -497,32 +500,32 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
     }
 
     private void splitPropsAndAssocs(Map<QName, Serializable> all, Map<QName, Serializable> props, Map<QName, List<NodeRef>> assocs) {
-        for(Map.Entry<QName, Serializable> entry : all.entrySet()) {
+        for (Map.Entry<QName, Serializable> entry : all.entrySet()) {
             QName name = entry.getKey();
             Serializable value = entry.getValue();
 
             PropertyDefinition propDef = dictionaryService.getProperty(name);
-            if(propDef != null) {
+            if (propDef != null) {
                 props.put(name, value);
                 continue;
             }
 
             AssociationDefinition assocDef = dictionaryService.getAssociation(name);
-            if(assocDef != null) {
-                if(!(value instanceof Collection)) {
+            if (assocDef != null) {
+                if (!(value instanceof Collection)) {
                     value = (Serializable) Collections.singletonList(value);
                 }
 
-                if(value instanceof Collection) {
+                if (value instanceof Collection) {
                     @SuppressWarnings("rawtypes")
                     Collection<?> objects = (Collection) value;
                     List<NodeRef> targets = new ArrayList<NodeRef>(objects.size());
-                    for(Object object : objects) {
-                        if(object == null) {
+                    for (Object object : objects) {
+                        if (object == null) {
                             continue;
-                        } else if(object instanceof NodeRef) {
+                        } else if (object instanceof NodeRef) {
                             targets.add((NodeRef) object);
-                        } else if(object instanceof String) {
+                        } else if (object instanceof String) {
                             targets.add(new NodeRef((String) object));
                         } else {
                             logger.warn("Unsupported class for converting to nodeRef: " + object.getClass());
@@ -553,8 +556,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
 
                     taskProps.replace(name, (Serializable) newCollection);
                 }
-            }
-            else {
+            } else {
                 if (predicate.test(value)) {
                     taskProps.replace(name, null);
                 }
@@ -603,17 +605,17 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
     }
 
     public void init() {
-        if(this.nodeService == null)
+        if (this.nodeService == null)
             this.nodeService = serviceRegistry.getNodeService();
-        if(this.dictionaryService == null)
+        if (this.dictionaryService == null)
             this.dictionaryService = serviceRegistry.getDictionaryService();
-        if(this.namespaceService == null)
+        if (this.namespaceService == null)
             this.namespaceService = serviceRegistry.getNamespaceService();
-        if(this.contentService == null)
+        if (this.contentService == null)
             this.contentService = serviceRegistry.getContentService();
-        if(this.mimetypeService == null)
+        if (this.mimetypeService == null)
             this.mimetypeService = serviceRegistry.getMimetypeService();
-        if(this.nodeAttributeService == null)
+        if (this.nodeAttributeService == null)
             this.nodeAttributeService = (NodeAttributeService) serviceRegistry.getService(CiteckServices.NODE_ATTRIBUTE_SERVICE);
     }
 

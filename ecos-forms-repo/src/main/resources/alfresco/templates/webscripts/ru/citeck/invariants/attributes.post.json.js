@@ -2,7 +2,8 @@ function getAttribute(name) {
     var model = {
         name: name
     };
-    var longQName = Packages.org.alfresco.service.namespace.QName.createQName(utils.longQName(name));
+
+    var longQName = citeckUtils.createQName(name);
     
     var dictionaryService = services.get("DictionaryService");
     var propDef = dictionaryService.getProperty(longQName);

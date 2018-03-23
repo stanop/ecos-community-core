@@ -264,6 +264,57 @@ ko.components.register("number", {
 });
 
 // ---------------
+// TASK-BUTTONS
+// ---------------
+
+    ko.components.register("task-buttons", {
+        viewModel: function(params) {
+            var self = this;
+
+            require(['citeck/utils/knockout.utils'], function(koutils) {
+
+                self.buttons = params["buttons"] || [];
+                self.buttons = self.buttons.map(function (button) {
+                    button.title = Alfresco.util.message(button.title);
+                    return button;
+                });
+                self.attribute = params["attribute"];
+                self.node = self.attribute.node();
+
+                self.onClick = function (item) {
+                    if (item.actionId) {
+                        var redirect = item.redirect ? item.redirect : "/share/page/journals2/list/tasks";
+                        switch (item.actionId) {
+                            case "submit":
+                                if (self.attribute.value() != item.value) {
+                                    self.attribute.value(item.value);
+                                    koutils.subscribeOnce(self.attribute.jsonValue, function () {
+                                        self.node.thisclass.save(self.node, function () {
+                                            window.location = redirect;
+                                        });
+                                    });
+                                } else {
+                                    self.node.thisclass.save(self.node, function () {
+                                        window.location = redirect;
+                                    });
+                                }
+                                break;
+                            case "cancel":
+                                window.location = redirect;
+                                break;
+                        }
+                    }
+                };
+                self.disabled = self.attribute.protected;
+            });
+        },
+        template:
+            '<!-- ko foreach: buttons -->\
+                <button data-bind="text: $data.title, click: $component.onClick, disable: $component.disabled" />\
+            <!-- /ko -->'
+    });
+
+// ---------------
 // FREE-CONTENT
 // ---------------
 
