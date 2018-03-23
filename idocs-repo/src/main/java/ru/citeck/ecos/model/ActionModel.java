@@ -17,7 +17,6 @@ public final class ActionModel {
 
 	public static final QName TYPE_ACTION = QName.createQName(NAMESPACE, "action");
 
-
     public static class SetPropertyValue {
         public static final QName TYPE = QName.createQName(NAMESPACE, SetPropertyValueActionExecuter.NAME);
         public static final QName PROP_PROPERTY = QName.createQName(TYPE + PROP_DELIM + SetPropertyValueActionExecuter.PARAM_PROPERTY);
