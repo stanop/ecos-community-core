@@ -384,11 +384,9 @@
     </bean>
 
     <bean id="webscript.ru.citeck.currency.last-currency-rate.get"
-          class="ru.citeck.ecos.webscripts.currency.LastCurrencyRate"
+          class="ru.citeck.ecos.webscripts.currency.LastCurrencyRateGet"
           parent="webscript">
-        <property name="searchService" ref="searchService"/>
         <property name="currencyService" ref="currencyService"/>
-        <property name="nodeService" ref="nodeService"/>
     </bean>
 
 </beans>

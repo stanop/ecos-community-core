@@ -72,6 +72,14 @@ public class CurrencyDAO {
         this.searchService = searchService;
     }
 
+    public NodeService getNodeService() {
+        return nodeService;
+    }
+
+    public SearchService getSearchService() {
+        return searchService;
+    }
+
     public Map<String, Currency> getCurrencyStorage() {
         if(currencyStorage == null) {
             return readAllCurrencies();
