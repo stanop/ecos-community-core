@@ -1004,6 +1004,12 @@ p#clear {
     min-height: 13px;
 }
 
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .hd.topscrollbar,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .ft.bottomscrollbar {
+    padding: 0;
+    background-color: #758faa;
+}
+
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd {
     margin: 0;
 }
