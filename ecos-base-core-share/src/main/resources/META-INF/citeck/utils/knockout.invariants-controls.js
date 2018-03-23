@@ -305,7 +305,7 @@ ko.components.register("number", {
                         }
                     }
                 };
-                self.disabled = self.attribute.protected;
+                self.disabled = self.attribute['protected'];
             });
         },
         template:
