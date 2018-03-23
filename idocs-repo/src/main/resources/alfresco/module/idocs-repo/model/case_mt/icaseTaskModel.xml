@@ -22,7 +22,6 @@
 
     <types>
 
-
         <type name="icaseTask:task">
             <parent>activ:activity</parent>
             <properties>

@@ -15,7 +15,6 @@
         <namespace uri="http://www.citeck.ru/model/stages/1.0" prefix="stages"/>
     </namespaces>
 
-
     <types>
 
         <type name="stages:stage">

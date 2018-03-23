@@ -33,7 +33,6 @@
 
 	<types>
 
-
 		<type name="cond:condition">
 			<parent>cm:cmobject</parent>
 			<mandatory-aspects>

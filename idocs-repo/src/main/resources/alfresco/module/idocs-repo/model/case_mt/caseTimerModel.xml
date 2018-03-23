@@ -41,7 +41,6 @@
     <types>
 
         <type name="caseTimer:timer">
-
             <parent>activ:activity</parent>
             <properties>
                 <!-- user properties -->
