@@ -9,10 +9,10 @@
     <components>
 
         <!-- Data Header -->
-        <component>
+        <!--<component>
             <region-id>data-header</region-id>
             <url>/components/workflow/task-edit-header</url>
-        </component>
+        </component>-->
 
         <component>
             <region-id>node-view</region-id>
@@ -20,6 +20,7 @@
             <properties>
                 <taskId>{taskId}</taskId>
                 <viewId>{viewId}</viewId>
+                <formMode>{formMode}</formMode>
                 <mode>edit</mode>
                 <runtimeKey>task-view-edit</runtimeKey>
             </properties>

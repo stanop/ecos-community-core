@@ -35,7 +35,7 @@ public abstract class FieldConverter<T extends FormField> {
         createInputRegion(field).ifPresent(regions::add);
         createSelectRegion(field).ifPresent(regions::add);
 
-        QName fieldName = QName.createQName(FlowableNodeViewProvider.FLOWABLE_DEFAULT_NS_URI, field.getId());
+        QName fieldName = QName.createQName(FlowableNodeViewProvider.NS_URI_DEFAULT, field.getId());
 
         QName datatype = getDataType();
         DataTypeDefinition typeDefinition = dictionaryService.getDataType(datatype);

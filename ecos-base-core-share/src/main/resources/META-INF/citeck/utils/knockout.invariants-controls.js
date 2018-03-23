@@ -271,31 +271,42 @@ ko.components.register("number", {
         viewModel: function(params) {
             var self = this;
 
-            this.buttons = params["buttons"] || [];
-            this.buttons = this.buttons.map(function (button) {
-                button.title = Alfresco.util.message(button.title);
-                return button;
-            });
-            this.node = params["node"];
+            require(['citeck/utils/knockout.utils'], function(koutils) {
 
-            this.onClick = function(item) {
-                if (item.actionId) {
-                    var redirect = item.redirect ? item.redirect : "/share/page/journals2/list/tasks";
-                    switch (item.actionId) {
-                        case "submit":
-                            self.value(item.value);
-                            self.node().thisclass.save(self.node(), function() {
+                self.buttons = params["buttons"] || [];
+                self.buttons = self.buttons.map(function (button) {
+                    button.title = Alfresco.util.message(button.title);
+                    return button;
+                });
+                self.attribute = params["attribute"];
+                self.node = self.attribute.node();
+
+                self.onClick = function (item) {
+                    if (item.actionId) {
+                        var redirect = item.redirect ? item.redirect : "/share/page/journals2/list/tasks";
+                        switch (item.actionId) {
+                            case "submit":
+                                if (self.attribute.value() != item.value) {
+                                    self.attribute.value(item.value);
+                                    koutils.subscribeOnce(self.attribute.jsonValue, function () {
+                                        self.node.thisclass.save(self.node, function () {
+                                            window.location = redirect;
+                                        });
+                                    });
+                                } else {
+                                    self.node.thisclass.save(self.node, function () {
+                                        window.location = redirect;
+                                    });
+                                }
+                                break;
+                            case "cancel":
                                 window.location = redirect;
-                            });
-                            break;
-                        case "cancel":
-                            window.location = redirect;
-                            break;
+                                break;
+                        }
                     }
-                }
-            };
-            this.value = params["value"];
-            this.disabled = params["protected"];
+                };
+                self.disabled = self.attribute.protected;
+            });
         },
         template:
             '<!-- ko foreach: buttons -->\

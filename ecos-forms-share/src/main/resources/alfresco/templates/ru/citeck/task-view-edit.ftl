@@ -21,7 +21,7 @@
    <@markup id="bd">
        <div id="bd">
             <div class="share-form">
-                <@region id="data-header" scope="page" />
+                <#--<@region id="data-header" scope="page" />-->
                 <@region id="node-view" scope="page" />
             </div>
        </div>

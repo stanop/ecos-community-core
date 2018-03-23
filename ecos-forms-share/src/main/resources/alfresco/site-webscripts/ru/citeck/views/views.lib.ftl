@@ -162,7 +162,7 @@
 			</div>
 		<!-- /ko -->
 
-		<#if view.mode != 'view'>
+		<#if (view.mode != 'view') && ((view.params.showSubmitButtons!"true") == "true")>
 			<div class="form-buttons" data-bind="with: node().impl">
 
 			<#assign submitButtonTitle = view.params.submitButtonTitle!"button.send" />
@@ -184,7 +184,7 @@
 
 			<input id="${id}-form-reset"  type="button" value="${msg(resetButtonTitle)}" data-bind="enable: changed, click: reset" />
 			<input id="${id}-form-cancel" type="button" value="${msg(cancelButtonTitle)}" data-bind="enable: true, click: $root.cancel.bind($root)" />
-		</div>
+			</div>
 		</#if>
 
 	</div>

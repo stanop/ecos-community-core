@@ -4,9 +4,7 @@
 <div id="${fieldId}-buttons-control" class="buttons-control"
     data-bind="component: { name: 'task-buttons', params: {
         fieldId: $element.id,
-        protected: protected,
-        value: value,
-        node: node,
+        attribute: $data,
         buttons: ${buttons?replace("\"", "'")}
     }}">
 </div>

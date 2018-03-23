@@ -13,6 +13,7 @@ import org.flowable.form.model.FormOutcome;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
 import ru.citeck.ecos.flowable.form.view.FieldConverter;
@@ -34,8 +35,12 @@ import java.util.*;
 @Component
 public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixProvider {
 
-    public static final String FLOWABLE_DEFAULT_NS_URI = "http://www.flowable.org";
-    public static final String FLOWABLE_DEFAULT_NS_PREFIX = "flb";
+    public static final String NS_URI_DEFAULT = "http://www.flowable.org";
+    public static final String NS_PREFIX_DEFAULT = "flb";
+
+    private static final String OUTCOME_LABEL_KEY_DEFAULT = "flowable.task.button.default-complete.label";
+    private static final String OUTCOME_ID_KEY_DEFAULT = "flowable.task.button.default-complete.id";
+    private static final String OUTCOME_ACTION_SUBMIT = "submit";
 
     private static final Log logger = LogFactory.getLog(FlowableNodeViewProvider.class);
 
@@ -59,24 +64,29 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         NodeViewDefinition definition = new NodeViewDefinition();
         definition.canBeDraft = false;
         definition.nodeView = getFormKey(taskId).flatMap(restFormService::getFormByKey)
-                                                .map(model -> {
-
-            String modeStr = "create";
-            if (mode != null) {
-                modeStr = mode.toString().toLowerCase();
-            }
-
-            NodeView.Builder viewBuilder = new NodeView.Builder(prefixResolver);
-            viewBuilder.template("table");
-            viewBuilder.elements(getFields(model));
-            viewBuilder.mode(modeStr);
-            viewBuilder.templateParams(Collections.singletonMap("preloadInvariants", "true"));
-
-            return viewBuilder.build();
-
-        }).orElse(null);
-
+                                                .map(model -> getNodeView(model, mode))
+                                                .orElse(null);
         return definition;
+    }
+
+    private NodeView getNodeView(FormModel model, FormMode mode) {
+
+        String modeStr = "create";
+        if (mode != null) {
+            modeStr = mode.toString().toLowerCase();
+        }
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("preloadInvariants", "true");
+        params.put("showSubmitButtons", "false");
+
+        NodeView.Builder viewBuilder = new NodeView.Builder(prefixResolver);
+        viewBuilder.template("table");
+        viewBuilder.elements(getFields(model, mode));
+        viewBuilder.mode(modeStr);
+        viewBuilder.templateParams(params);
+
+        return viewBuilder.build();
     }
 
     private Optional<String> getFormKey(String taskId) {
@@ -105,7 +115,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
                                                 .orElseThrow(() ->
                                                         new IllegalArgumentException(taskId + " form not found"));
 
-        List<NodeField> fields = getFields(formModel);
+        List<NodeField> fields = getFields(formModel, mode);
 
         Map<QName, Serializable> taskAttributes = new HashMap<>();
         for (NodeField field : fields) {
@@ -127,7 +137,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         return Collections.emptyMap();
     }
 
-    private List<NodeField> getFields(FormModel model) {
+    private List<NodeField> getFields(FormModel model, FormMode mode) {
 
         List<NodeField> fields = new ArrayList<>();
 
@@ -141,7 +151,10 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
             }
         }
 
-        fields.add(getOutcomeField(model));
+        if (mode == null || mode.equals(FormMode.EDIT)
+                         || mode.equals(FormMode.CREATE)) {
+            fields.add(getOutcomeField(model));
+        }
 
         return fields;
     }
@@ -151,7 +164,13 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         List<Outcome> outcomes = new ArrayList<>();
         for (FormOutcome formOutcome : formModel.getOutcomes()) {
             String id = formOutcome.getId() != null ? formOutcome.getId() : formOutcome.getName();
-            outcomes.add(new Outcome(id, formOutcome.getName(), "submit"));
+            outcomes.add(new Outcome(id, formOutcome.getName(), OUTCOME_ACTION_SUBMIT));
+        }
+
+        if (outcomes.isEmpty()) {
+            String label = getMessage(OUTCOME_LABEL_KEY_DEFAULT);
+            String id = getMessage(OUTCOME_ID_KEY_DEFAULT);
+            outcomes.add(new Outcome(id, label, OUTCOME_ACTION_SUBMIT));
         }
 
         String buttonsConfig = "[]";
@@ -176,12 +195,17 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         return fieldBuilder.build();
     }
 
+    private String getMessage(String key) {
+        String result = I18NUtil.getMessage(OUTCOME_LABEL_KEY_DEFAULT);
+        return result != null ? result : key;
+    }
+
     private QName getOutcomeFieldName(FormModel formModel) {
         String outcomeFieldName = formModel.getOutcomeVariableName();
         if (outcomeFieldName == null) {
             outcomeFieldName = "outcome";
         }
-        return QName.createQName(FLOWABLE_DEFAULT_NS_URI, outcomeFieldName);
+        return QName.createQName(NS_URI_DEFAULT, outcomeFieldName);
     }
 
     @Override
@@ -208,7 +232,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
     @Override
     public Map<String, String> getPrefixesByNsURI() {
-        return Collections.singletonMap(FLOWABLE_DEFAULT_NS_URI, FLOWABLE_DEFAULT_NS_PREFIX);
+        return Collections.singletonMap(NS_URI_DEFAULT, NS_PREFIX_DEFAULT);
     }
 
     private static class Outcome {
