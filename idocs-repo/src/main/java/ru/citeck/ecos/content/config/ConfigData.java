@@ -72,6 +72,10 @@ public class ConfigData<T> {
 
         ContentReader reader = registry.getContentService().getReader(nodeRef, registry.getContentFieldName());
 
+        if (reader == null) {
+            return false;
+        }
+
         long contentLastModified = reader.getLastModified();
 
         if (lastModified < contentLastModified) {

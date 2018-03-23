@@ -34,6 +34,7 @@
       },
    </#if>
       "path": "${(item.location.path)!""}",
+      "repoPath": "${(item.location.path)!""}",
       "file": "${(item.location.file)!""}",
       "parent":
       {

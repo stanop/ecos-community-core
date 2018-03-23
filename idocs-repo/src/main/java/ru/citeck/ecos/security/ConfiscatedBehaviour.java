@@ -33,6 +33,7 @@ import org.alfresco.service.namespace.QName;
  * When copying file, resets "inheritsPermissions" flag of new object.
  * 
  * @author Sergey Tiunov
+ * //TODO: Remove?
  */
 public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements CopyServicePolicies.OnCopyCompletePolicy
 {

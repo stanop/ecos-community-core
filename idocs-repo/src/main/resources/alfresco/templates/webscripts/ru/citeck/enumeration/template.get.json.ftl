@@ -1,2 +1,2 @@
-<#include "/ru/citeck/search/search-macros.ftl">
-<@printNode template />
+<#import "/ru/citeck/search/search-macros.ftl" as search>
+<@search.printNode template />

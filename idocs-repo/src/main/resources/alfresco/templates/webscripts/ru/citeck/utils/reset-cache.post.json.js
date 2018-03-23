@@ -12,6 +12,8 @@
     var additionalActions = {
         'journals': function () {
             services.get('journalService').clearCache();
+            services.get('webscript.ru.citeck.journals2.records.records.post').clearCache();
+            services.get('webscript.ru.citeck.journals2.create-variants.get').clearCache();
         }
     };
 

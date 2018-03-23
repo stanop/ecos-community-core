@@ -40,7 +40,7 @@ public class VariablePush implements TaskListener
         
         Object value = task.getVariable(taskVariable != null ? taskVariable : variable);
         if(!ifNotNull || value != null) {
-            task.getExecution().setVariableLocal(executionVariable != null ? executionVariable : variable, value);
+            task.getExecution().setVariable(executionVariable != null ? executionVariable : variable, value);
         }
         
     }

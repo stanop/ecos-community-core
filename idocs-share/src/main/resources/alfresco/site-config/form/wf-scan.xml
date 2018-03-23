@@ -8,6 +8,14 @@
 		</forms>
 	</config>
 
+	<config evaluator="string-compare" condition="flowable$flowable-scan">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/scan/submit-scan-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
 	<config evaluator="task-type" condition="wfscan:submitScanTask">
 		<forms>
 			<form>

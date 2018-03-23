@@ -1,4 +1,4 @@
-<#include "search-macros.ftl">
+<#import "search-macros.ftl" as search>
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
     "query": {
@@ -14,7 +14,7 @@
         "hasMore": ${hasMore?string("true", "false")}
     },
     "results": [
-        <@printNodes nodes/>
+        <@search.printNodes nodes/>
     ]
 }
 </#escape>

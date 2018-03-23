@@ -383,6 +383,14 @@
         <property name="mimetypeService" ref="mimetypeService"/>
     </bean>
 
+    <bean id="webscript.ru.citeck.currency.last-currency-rate.get"
+          class="ru.citeck.ecos.webscripts.currency.LastCurrencyRate"
+          parent="webscript">
+        <property name="searchService" ref="searchService"/>
+        <property name="currencyService" ref="currencyService"/>
+        <property name="nodeService" ref="nodeService"/>
+    </bean>
+
     <bean id="webscript.ru.citeck.cases.case-activity.get" class="ru.citeck.ecos.webscripts.cases.CaseActivityGet" parent="webscript">
         <property name="remoteCaseModelService" ref="remoteCaseModelService"/>
         <property name="nodeService" ref="nodeService"/>

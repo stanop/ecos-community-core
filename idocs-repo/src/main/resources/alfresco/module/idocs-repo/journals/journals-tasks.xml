@@ -22,9 +22,6 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <!--<header key="wfm:taskType" default="true">-->
-                <!--<option name="formatter">typeName('shortQName')</option>-->
-            <!--</header>-->
             <header key="bpm:description" default="true">
                 <option name="customLabel">journal.task.bpm_description.title</option>
             </header>
@@ -64,9 +61,6 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <!--<header key="wfm:taskType" default="true">-->
-                <!--<option name="formatter">typeName('shortQName')</option>-->
-            <!--</header>-->
             <header key="bpm:description" default="true">
                 <option name="customLabel">journal.task.bpm_description.title</option>
             </header>
@@ -106,9 +100,6 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <!--<header key="wfm:taskType" default="true">-->
-                <!--<option name="formatter">typeName('shortQName')</option>-->
-            <!--</header>-->
             <header key="bpm:description" default="true">
                 <option name="customLabel">journal.task.bpm_description.title</option>
             </header>
@@ -141,9 +132,6 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <!--<header key="wfm:taskType" default="true">-->
-                <!--<option name="formatter">typeName('shortQName')</option>-->
-            <!--</header>-->
             <header key="bpm:description" default="true">
                 <option name="customLabel">journal.task.bpm_description.title</option>
             </header>
@@ -186,9 +174,6 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <!--<header key="wfm:taskType" default="true">-->
-                <!--<option name="formatter">typeName('shortQName')</option>-->
-            <!--</header>-->
             <header key="bpm:description" default="true">
                 <option name="customLabel">journal.task.bpm_description.title</option>
             </header>

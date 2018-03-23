@@ -81,6 +81,7 @@
         <!--  Workflow Package Folder Type  -->
         <!--                                 -->
 
+
       <type name="bpm:package">
          <title>Package Folder</title>
          <parent>cm:systemfolder</parent>

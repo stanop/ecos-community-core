@@ -13,6 +13,17 @@
 
 /* ---------------- UI ---------------- */
 
+
+/* calendar */
+
+#Share #bd {
+  margin: 0;
+}
+
+#Share #bd div.fullCalendar .fc-content {
+  left: 0;
+}
+
 .wait-indicator-envelope {
   position: absolute;
   width: 100%;
@@ -378,4 +389,12 @@
 
 #HEADER_CREATE_CASE .alfresco-menus-AlfMenuBarPopup__arrow {
   display: none;
+}
+
+.mm-page .alfresco-footer-AlfStickyFooter > div.wrapper {
+  background-color: white;
+}
+
+#alfresco-console .application .row {
+  height: 3.5em;
 }

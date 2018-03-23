@@ -391,12 +391,16 @@ public class HistoryService {
         UserTransaction trx = transactionService.getNonPropagatingUserTransaction(false);
         /** Do processing in transaction */
         try {
+            trx.setTransactionTimeout(1000);
             trx.begin();
             for (NodeRef eventRef : getEventsByDocumentRef(documentRef)) {
                 historyRemoteService.sendHistoryEventToRemoteService(eventRef);
             }
             historyRemoteService.updateDocumentHistoryStatus(documentRef, true);
             trx.commit();
+        } catch (RuntimeException e) {
+            logger.error("Document " + documentRef.getId() + " hadn't been processed correctly");
+            logger.error(e.getMessage(), e);
         } catch (Exception e) {
             logger.error("Document " + documentRef.getId() + " hadn't been processed correctly");
             logger.error(e.getMessage(), e);

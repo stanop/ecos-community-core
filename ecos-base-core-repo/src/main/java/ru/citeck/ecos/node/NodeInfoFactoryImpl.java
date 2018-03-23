@@ -311,11 +311,6 @@ class NodeInfoFactoryImpl implements NodeInfoFactory
                 properties.remove(EcosModel.PROP_OLD_PASS);
                 properties.remove(EcosModel.PROP_PASS);
                 properties.remove(EcosModel.PROP_PASS_VERIFY);
-                Serializable isPersonDisabled = properties.get(EcosModel.PROP_IS_PERSON_DISABLED);
-                if (isPersonDisabled != null && authenticationService.isAuthenticationMutable(userName)) {
-                    authenticationService.setAuthenticationEnabled(userName,
-                            Boolean.FALSE.equals(isPersonDisabled));
-                }
             }
             persist(nodeRef, nodeInfo, full);
             return nodeInfo.getNodeRef();

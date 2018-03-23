@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.citeck.ru/model/workflow/case-perform/1.0">
+    <process id="flowable-case-perform" name="case-perform (flowable)" isExecutable="true">
+        <extensionElements>
+            <flowable:executionListener event="start" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptExecutionListener">
+                <flowable:field name="script">
+                    <flowable:string><![CDATA[services.get("flowable-ecos.workflow.case-perform-events-handler").onWorkflowStart(execution);]]></flowable:string>
+                </flowable:field>
+            </flowable:executionListener>
+            <flowable:executionListener event="end" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptExecutionListener">
+                <flowable:field name="script">
+                    <flowable:string><![CDATA[services.get("flowable-ecos.workflow.case-perform-events-handler").onWorkflowEnd(execution);]]></flowable:string>
+                </flowable:field>
+            </flowable:executionListener>
+        </extensionElements>
+        <startEvent id="startevent1" name="Submit Perform Task" flowable:formKey="wfcf:submitConfirmTask"></startEvent>
+        <subProcess id="perform-sub-process" name=" ">
+            <multiInstanceLoopCharacteristics isSequential="false" flowable:collection="${taskConfigs}" flowable:elementVariable="taskConfig">
+                <completionCondition>${abortPerforming}</completionCondition>
+            </multiInstanceLoopCharacteristics>
+            <userTask id="confirm" name="Perform Task" flowable:assignee="${taskConfig.assignee}" flowable:candidateUsers="${taskConfig.candidateUsers}" flowable:candidateGroups="${taskConfig.candidateGroups}" flowable:dueDate="${taskConfig.dueDate}" flowable:category="${taskConfig.category}" flowable:formKey="${taskConfig.formKey}" flowable:priority="${taskConfig.priority}">
+                <extensionElements>
+                    <flowable:taskListener event="create" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptTaskListener">
+                        <flowable:field name="script">
+                            <flowable:string><![CDATA[services.get("flowable-ecos.workflow.case-perform-events-handler").onPerformTaskCreated(execution, task);]]></flowable:string>
+                        </flowable:field>
+                    </flowable:taskListener>
+                    <flowable:taskListener event="complete" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptTaskListener">
+                        <flowable:field name="script">
+                            <flowable:string><![CDATA[services.get("flowable-ecos.workflow.case-perform-events-handler").onPerformTaskCompleted(execution, task);]]></flowable:string>
+                        </flowable:field>
+                    </flowable:taskListener>
+                    <flowable:taskListener event="assignment" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptTaskListener">
+                        <flowable:field name="script">
+                            <flowable:string><![CDATA[services.get("flowable-ecos.workflow.case-perform-events-handler").onPerformTaskAssigned(execution, task);]]></flowable:string>
+                        </flowable:field>
+                    </flowable:taskListener>
+                    <modeler:initiator-can-complete xmlns:modeler="http://flowable.org/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+                </extensionElements>
+            </userTask>
+            <startEvent id="startevent3" name="Start"></startEvent>
+            <endEvent id="endevent3" name="End"></endEvent>
+            <sequenceFlow id="flow4" sourceRef="startevent3" targetRef="confirm">
+                <extensionElements>
+                    <flowable:executionListener event="take"></flowable:executionListener>
+                    <flowable:executionListener event="take" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptExecutionListener">
+                        <flowable:field name="script">
+                            <flowable:string><![CDATA[services.get("flowable-ecos.workflow.case-perform-events-handler").onBeforePerformTaskCreated(execution);]]></flowable:string>
+                        </flowable:field>
+                    </flowable:executionListener>
+                </extensionElements>
+            </sequenceFlow>
+            <sequenceFlow id="flow26" sourceRef="confirm" targetRef="endevent3"></sequenceFlow>
+        </subProcess>
+        <endEvent id="endevent4" name="completed"></endEvent>
+        <sequenceFlow id="flowAfterPerforming" sourceRef="perform-sub-process" targetRef="exclusivegateway2">
+            <extensionElements>
+                <flowable:executionListener event="take" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptExecutionListener">
+                    <flowable:field name="script">
+                        <flowable:string><![CDATA[services.get("flowable-ecos.workflow.case-perform-events-handler").onAfterPerformingFlowTake(execution);]]></flowable:string>
+                    </flowable:field>
+                </flowable:executionListener>
+            </extensionElements>
+        </sequenceFlow>
+        <sequenceFlow id="flowBeforePerforming" sourceRef="startevent1" targetRef="exclusivegateway1">
+            <extensionElements>
+                <flowable:executionListener event="take" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptExecutionListener">
+                    <flowable:field name="script">
+                        <flowable:string><![CDATA[services.get("flowable-ecos.workflow.case-perform-events-handler").onBeforePerformingFlowTake(execution);]]></flowable:string>
+                    </flowable:field>
+                </flowable:executionListener>
+            </extensionElements>
+        </sequenceFlow>
+        <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway">
+            <extensionElements>
+                <flowable:executionListener event="start" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptExecutionListener">
+                    <flowable:field name="script">
+                        <flowable:string><![CDATA[services.get("flowable-ecos.workflow.case-perform-events-handler").onSkipPerformingGatewayStarted(execution);]]></flowable:string>
+                    </flowable:field>
+                </flowable:executionListener>
+            </extensionElements>
+        </exclusiveGateway>
+        <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+        <sequenceFlow id="flow27" sourceRef="exclusivegateway1" targetRef="perform-sub-process">
+            <extensionElements>
+                <flowable:executionListener event="take" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptExecutionListener">
+                    <flowable:field name="script">
+                        <flowable:string><![CDATA[services.get("flowable-ecos.workflow.case-perform-events-handler").onPerformingFlowTake(execution);]]></flowable:string>
+                    </flowable:field>
+                </flowable:executionListener>
+            </extensionElements>
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!skipPerforming}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow28" sourceRef="exclusivegateway2" targetRef="endevent4"></sequenceFlow>
+        <sequenceFlow id="flow29" sourceRef="exclusivegateway1" targetRef="exclusivegateway2">
+            <extensionElements>
+                <flowable:executionListener event="take" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptExecutionListener">
+                    <flowable:field name="script">
+                        <flowable:string><![CDATA[services.get("flowable-ecos.workflow.case-perform-events-handler").onSkipPerformingFlowTake(execution);]]></flowable:string>
+                    </flowable:field>
+                </flowable:executionListener>
+            </extensionElements>
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${skipPerforming}]]></conditionExpression>
+        </sequenceFlow>
+    </process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_flowable-case-perform">
+        <bpmndi:BPMNPlane bpmnElement="flowable-case-perform" id="BPMNPlane_flowable-case-perform">
+            <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+                <omgdc:Bounds height="30.0" width="30.0" x="40.0" y="129.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="perform-sub-process" id="BPMNShape_perform-sub-process">
+                <omgdc:Bounds height="101.0" width="275.0" x="207.0" y="96.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="confirm" id="BPMNShape_confirm">
+                <omgdc:Bounds height="55.0" width="105.0" x="291.0" y="116.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="startevent3" id="BPMNShape_startevent3">
+                <omgdc:Bounds height="30.0" width="30.0" x="231.0" y="126.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+                <omgdc:Bounds height="28.0" width="28.0" x="421.0" y="126.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="endevent4" id="BPMNShape_endevent4">
+                <omgdc:Bounds height="28.0" width="28.0" x="630.0" y="132.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+                <omgdc:Bounds height="40.0" width="40.0" x="120.0" y="126.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+                <omgdc:Bounds height="40.0" width="40.0" x="540.0" y="129.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge bpmnElement="flow28" id="BPMNEdge_flow28">
+                <omgdi:waypoint x="579.3103448275862" y="148.31034482758622"></omgdi:waypoint>
+                <omgdi:waypoint x="630.0089200391343" y="146.49968142717378"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow29" id="BPMNEdge_flow29">
+                <omgdi:waypoint x="140.0" y="166.0"></omgdi:waypoint>
+                <omgdi:waypoint x="140.0" y="235.0"></omgdi:waypoint>
+                <omgdi:waypoint x="559.0" y="235.0"></omgdi:waypoint>
+                <omgdi:waypoint x="559.7701149425287" y="168.77011494252875"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flowAfterPerforming" id="BPMNEdge_flowAfterPerforming">
+                <omgdi:waypoint x="482.0" y="148.0951276102088"></omgdi:waypoint>
+                <omgdi:waypoint x="540.2293577981651" y="148.77064220183487"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flowBeforePerforming" id="BPMNEdge_flowBeforePerforming">
+                <omgdi:waypoint x="69.99584947418728" y="144.3528435170397"></omgdi:waypoint>
+                <omgdi:waypoint x="120.45977011494253" y="145.54022988505747"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+                <omgdi:waypoint x="260.9950714636422" y="141.38448901188826"></omgdi:waypoint>
+                <omgdi:waypoint x="291.0" y="142.15384615384616"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+                <omgdi:waypoint x="396.0" y="141.4918032786885"></omgdi:waypoint>
+                <omgdi:waypoint x="421.0102309432544" y="140.5351277781269"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
+                <omgdi:waypoint x="159.9512195121951" y="146.0487804878049"></omgdi:waypoint>
+                <omgdi:waypoint x="207.0" y="146.16381418092908"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</definitions>

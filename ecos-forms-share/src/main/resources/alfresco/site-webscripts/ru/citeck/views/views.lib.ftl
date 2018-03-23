@@ -15,22 +15,23 @@
 	<#assign oldScope = viewScope!{} />
 	<#global viewScope = oldScope + { element.type : element } />
 
-	<#if (viewScope.view.template == "wide" || viewScope.view.template == "blockset") && element.type == "field">
-		<#assign wideBlockWidth>
-			<#-- field level -->
-			<#if element.params.width?has_content>
-				${element.params.width}
+    <#if (viewScope.view.template == "wide" || viewScope.view.template == "blockset") && element.type == "field">
+        <#assign wideBlockWidth>
+            <#-- field level -->
+            <#if element.params.width?has_content>
+                ${element.params.width}
+            <#elseif (view.params.disableWideWidth!"false") != "true">
+                <#-- view level -->
+                <#if viewScope.view.params.width?has_content>
+                    ${viewScope.view.params.width}
 
-			<#-- view level -->
-			<#elseif viewScope.view.params.width?has_content>
-				${viewScope.view.params.width}
-
-			<#-- root view level -->
-			<#elseif view.params.width?has_content>
-				${view.params.width}
-			</#if>
-		</#assign>
-	</#if>
+                <#-- root view level -->
+                <#elseif view.params.width?has_content>
+                    ${view.params.width}
+                </#if>
+            </#if>
+        </#assign>
+    </#if>
 
 	<#-- virtual elements for field -->
 	<#if element.attribute??>

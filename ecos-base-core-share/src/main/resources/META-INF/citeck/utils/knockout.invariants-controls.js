@@ -712,8 +712,12 @@ ko.bindingHandlers.dateControl = {
                     // selected date
                     calendar.selectEvent.subscribe(function() {
                         if (calendar.getSelectedDates().length > 0) {
-                            var selectedDate = calendar.getSelectedDates()[0];
-                            value(selectedDate.toString("yyyy-MM-dd"));
+                            var selectedDate = calendar.getSelectedDates()[0],
+                                nowDate = new Date;
+
+                            selectedDate.setHours(-nowDate.getTimezoneOffset()/60);
+
+                            value(selectedDate);
                         }
                         calendarDialog.hide();
                     });
@@ -2921,7 +2925,7 @@ ko.bindingHandlers.orgstructControl = {
 
                     buildTreeNode: function(p_oItem, p_oParent, p_expanded) {
                         var textNode = new YAHOO.widget.TextNode({
-                                label: $html(p_oItem[tree.fn.getNodeLabelKey(p_oItem)] || p_oItem.displayName || p_oItem.shortName),
+                                label: $html(p_oItem[tree.fn.getNodeLabelKey(p_oItem)]) || p_oItem.displayName || p_oItem.shortName,
                                 nodeRef: p_oItem.nodeRef,
                                 shortName: p_oItem.shortName,
                                 displayName: p_oItem.displayName,

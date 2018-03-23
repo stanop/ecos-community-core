@@ -1,4 +1,4 @@
-<#include "/ru/citeck/search/search-macros.ftl">
+<#import "/ru/citeck/search/search-macros.ftl" as search>
 <#if args.dateFormat??>
 	<#assign dateFormat=args.dateFormat/>
 <#else>
@@ -30,7 +30,7 @@
 					<#else>
 						<#assign prop2=prop>
 					</#if>
-			, "${prop2}": <#if node.properties[prop]??><@printValue node.properties[prop] dateFormat/><#else>null</#if>
+			, "${prop2}": <#if node.properties[prop]??><@search.printValue node.properties[prop] dateFormat/><#else>null</#if>
 				</#list>
 			</#if>
 		}<#if node_has_next>,</#if>

@@ -281,6 +281,7 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                     successCallback: {
                         scope: this,
                         fn: function(response) {
+                            YAHOO.Bubbling.fire("metadataRefresh");
                             var results = response.json;
                             var downloadReportUrl = results && results[0] && results[0].url;
 
@@ -338,9 +339,8 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                                     if (record) {
                                         var id = record.attributes()["cm:name"];
 
-                                        if (record.isDocument()) {
-                                            var doc = record.attributes()["wfm:document"];
-                                            id = doc.displayName;
+                                        if (record.isDocument() && record.attributes()["wfm:document"]) {
+                                            id = record.attributes()["wfm:document"].displayName;
                                         }
 
                                         rtbody.append(

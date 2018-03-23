@@ -4494,7 +4494,7 @@ div#HEADER_USER_STATUS {
   border-color: #ccc;
 }
 
-#alfresco-console .application .row {
+.yui-skin-citeckTheme #alfresco-console .application .row {
   height: auto;
   overflow: auto;
   padding: 5px 15px;
@@ -4917,7 +4917,7 @@ div#HEADER_USER_STATUS {
 }
 
 /*case status*/
-.yui-skin-citeckTheme .cardlet div[id*="case-status"] span.panel-body {
+.yui-skin-citeckTheme .cardlet div[id*="case-status"] div.panel-body {
     color: #008c03;
 }
 
@@ -4945,7 +4945,7 @@ body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .node-header,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .header-tabs,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet .previewer.PdfJs,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet .previewer .flat-button,
-body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc:not(.flat-button),
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet,
 body:not(.mobile).yui-skin-citeckTheme #bd .user-profile.node-view.static,
 body:not(.mobile).yui-skin-citeckTheme #bd .profile,
@@ -4962,7 +4962,8 @@ body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper,
 body:not(.mobile).yui-skin-citeckTheme #HEADER_TITLE_BAR,
 body:not(.mobile).yui-skin-citeckTheme #bd > div[id*="site-finder"],
 body:not(.mobile).yui-skin-citeckTheme #bd .orgstruct-console .orgstruct-tree-resizer,
-body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header-Warning__warnings {
+body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header-Warning__warnings,
+body:not(.mobile).yui-skin-citeckTheme .alfresco-footer-AlfStickyFooter > div.wrapper {
     box-shadow: inset 15px -1px 10px -15px grey;
 }
 
@@ -4978,4 +4979,9 @@ body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="case-documents"] 
 
 body:not(.mobile).yui-skin-citeckTheme .sticky-footer .footer {
     box-shadow: inset 15px -1px 10px -15px grey, 0px 10px 15px -10px grey inset;
+}
+
+.yui-skin-citeckTheme .user-calendar .yui-dt tr.yui-dt-even,
+.yui-skin-citeckTheme .user-calendar .yui-dt tr.yui-dt-odd {
+    background-color: transparent;
 }

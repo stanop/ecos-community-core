@@ -20,6 +20,7 @@
     </namespaces>
 
     <types>
+
         <type name="iEvent:event">
             <parent>cm:cmobject</parent>
             <properties>
