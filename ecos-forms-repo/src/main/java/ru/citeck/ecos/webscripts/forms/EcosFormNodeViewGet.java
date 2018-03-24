@@ -19,12 +19,10 @@ import ru.citeck.ecos.invariants.view.NodeViewElement;
 import ru.citeck.ecos.invariants.view.NodeViewRegion;
 import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixResolver;
+import ru.citeck.ecos.webscripts.utils.WebScriptUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class EcosFormNodeViewGet extends AbstractWebScript {
@@ -35,6 +33,7 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
     private static final String PARAM_FORM_KEY = "formKey";
     private static final String PARAM_FORM_ID = "formId";
     /*=======/PARAMS========*/
+    private static final String TEMPLATE_PARAM_PREFIX = "param_";
 
     @Autowired
     private EcosFormService ecosFormService;
@@ -60,29 +59,33 @@ public class EcosFormNodeViewGet extends AbstractWebScript {
         if (formModeStr != null) {
             mode = Enum.valueOf(FormMode.class, formModeStr.toUpperCase());
         }
-        NodeViewDefinition view = ecosFormService.getNodeView(formType, formKey, formId, mode, getParams(req));
+        NodeViewDefinition view = ecosFormService.getNodeView(formType, formKey, formId, mode, getTemplateParams(req));
 
         Response response = new Response();
         response.canBeDraft = view.canBeDraft;
         response.view = view.nodeView != null ? new View(view.nodeView) : null;
         response.formType = formType;
         response.formKey = formKey;
+
         if (NodeRef.isNodeRef(formKey)) {
             response.nodeRef = formKey;
         }
-
         if (response.view == null) {
             res.setStatus(Status.STATUS_NOT_FOUND);
         }
+
         objectMapper.writeValue(res.getWriter(), response);
     }
 
-    private Map<String, Object> getParams(WebScriptRequest req) {
-        Map<String, Object> result = new HashMap<>();
-        for (String key : req.getParameterNames()) {
-            result.put(key, req.getParameter(key));
+    private Map<String, Object> getTemplateParams(WebScriptRequest req) {
+        Map<String, String> requestParams = WebScriptUtils.getParameterMap(req);
+        Map<String, Object> templateParams = new HashMap<>(requestParams.size());
+        for (String key : requestParams.keySet()) {
+            if (key.startsWith(TEMPLATE_PARAM_PREFIX)) {
+                templateParams.put(key.replaceFirst(TEMPLATE_PARAM_PREFIX, ""), requestParams.get(key));
+            }
         }
-        return result;
+        return templateParams;
     }
 
     private String formatQName(QName qname) {

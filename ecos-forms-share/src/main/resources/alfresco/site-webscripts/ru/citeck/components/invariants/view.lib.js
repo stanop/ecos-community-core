@@ -118,12 +118,16 @@ function getWritePermission(nodeRef) {
 function _convertNodeViewGetParams(args) {
 
     var params = {};
-    var paramsList = ["formKey", "formMode", "formType"];
-    for (var idx in paramsList) {
-        var key = paramsList[idx];
-        if (args[key]) {
-            params[key] = args[key];
+    var viewParams = ["formKey", "formMode", "formType"];
+
+    for (var paramName in args) {
+        var paramValue = args[paramName];
+        if (viewParams.indexOf(paramName) >= 0 || paramName.match(/^param_/)) {
+            params[paramName] = paramValue;
         }
+    }
+    if (args["nodeRefAttr"]) {
+        params['param_nodeRefAttr'] = args['nodeRefAttr'];
     }
 
     if (!params.formType) {

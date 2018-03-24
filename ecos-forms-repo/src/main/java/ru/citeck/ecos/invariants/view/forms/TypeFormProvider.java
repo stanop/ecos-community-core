@@ -29,7 +29,7 @@ public class TypeFormProvider implements NodeViewProvider {
     public NodeViewDefinition getNodeView(String formKey, String formId, FormMode mode, Map<String, Object> params) {
 
         QName type = QName.resolveToQName(namespaceService, formKey);
-        NodeView query = getViewQuery(type, formId, mode);
+        NodeView query = getViewQuery(type, formId, mode, params);
 
         NodeViewDefinition view = new NodeViewDefinition();
         if (nodeViewService.hasNodeView(query)) {
@@ -55,15 +55,16 @@ public class TypeFormProvider implements NodeViewProvider {
     @Override
     public boolean hasNodeView(String formKey, String formId, FormMode mode, Map<String, Object> params) {
         QName type = QName.resolveToQName(namespaceService, formKey);
-        NodeView query = getViewQuery(type, formId, mode);
+        NodeView query = getViewQuery(type, formId, mode, params);
         return nodeViewService.hasNodeView(query);
     }
 
-    private NodeView getViewQuery(QName type, String formId, FormMode mode) {
+    private NodeView getViewQuery(QName type, String formId, FormMode mode, Map<String, Object> params) {
 
         NodeView.Builder builder = new NodeView.Builder(namespaceService);
 
         builder.className(type);
+        builder.templateParams(params);
 
         if (formId != null) {
             builder.id(formId);

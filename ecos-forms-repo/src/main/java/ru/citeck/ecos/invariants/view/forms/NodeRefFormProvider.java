@@ -46,7 +46,7 @@ public class NodeRefFormProvider implements NodeViewProvider {
         NodeViewDefinition view = new NodeViewDefinition();
 
         NodeRef nodeRef = getNodeRef(formKey, params);
-        NodeView query = getViewQuery(nodeRef, formId, mode);
+        NodeView query = getViewQuery(nodeRef, formId, mode, params);
 
         if (nodeViewService.hasNodeView(query)) {
             view.nodeView = nodeViewService.getNodeView(query);
@@ -73,15 +73,16 @@ public class NodeRefFormProvider implements NodeViewProvider {
     @Override
     public boolean hasNodeView(String formKey, String formId, FormMode mode, Map<String, Object> params) {
         NodeRef nodeRef = getNodeRef(formKey, params);
-        NodeView query = getViewQuery(nodeRef, formId, mode);
+        NodeView query = getViewQuery(nodeRef, formId, mode, params);
         return nodeViewService.hasNodeView(query);
     }
 
-    private NodeView getViewQuery(NodeRef nodeRef, String formId, FormMode mode) {
+    private NodeView getViewQuery(NodeRef nodeRef, String formId, FormMode mode, Map<String, Object> params) {
 
         NodeView.Builder builder = new NodeView.Builder(namespaceService);
 
         builder.className(nodeService.getType(nodeRef));
+        builder.templateParams(params);
 
         if (formId != null) {
             builder.id(formId);
