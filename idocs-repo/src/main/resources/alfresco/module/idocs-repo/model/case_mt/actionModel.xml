@@ -68,7 +68,7 @@
 				</property>
 			</properties>
 		</type>
-		
+
 		<type name="action:execute-script">
 			<parent>action:action</parent>
 			<properties>

@@ -17,6 +17,7 @@ public class EventModel {
     public static final QName TYPE_USER_ACTION = QName.createQName(NAMESPACE, "userAction");
     public static final QName TYPE_ADDITIONAL_DATA = QName.createQName(NAMESPACE, "additionalData");
     public static final QName TYPE_ADDITIONAL_CONFIRMER = QName.createQName(NAMESPACE, "additionalConfirmer");
+    public static final QName TYPE_ADDITIONAL_PERFORMERS = QName.createQName(NAMESPACE, "additionalPerformers");
 
     // properties
     public static final QName PROP_TYPE = QName.createQName(NAMESPACE, "type");
@@ -30,5 +31,6 @@ public class EventModel {
     public static final QName ASSOC_AUTHORIZED_ROLES = QName.createQName(NAMESPACE, "authorizedRoles");
     public static final QName ASSOC_ADDITIONAL_DATA_ITEMS = QName.createQName(NAMESPACE, "additionalDataItems");
     public static final QName ASSOC_CONFIRMER = QName.createQName(NAMESPACE, "confirmer");
+    public static final QName ASSOC_PERFORMERS = QName.createQName(NAMESPACE, "performers");
 
 }

@@ -582,4 +582,26 @@
 	<bean id="ru.citeck.ecos.caseTimerEvaluator.cron" parent="ru.citeck.ecos.caseTimerEvaluator"
 		  class="ru.citeck.ecos.icase.timer.evaluator.CronEvaluator" />
 
+	<bean id="remoteCaseModelService" class="ru.citeck.ecos.cases.impl.RemoteCaseModelServiceImpl">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="dictionaryService" ref="dictionaryService"/>
+		<property name="restTemplate" ref="caseRestTemplate"/>
+		<property name="transactionService" ref="transactionService"/>
+	</bean>
+
+	<bean id="remoteRestoreCaseModelService" class="ru.citeck.ecos.cases.impl.RemoteRestoreCaseModelServiceImpl">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="remoteCaseModelService" ref="remoteCaseModelService"/>
+	</bean>
+
+	<bean id="caseRestTemplate" class="org.springframework.web.client.RestTemplate">
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+					<constructor-arg value="#{ T(java.nio.charset.StandardCharsets).UTF_8}"/>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
 </beans>

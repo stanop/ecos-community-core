@@ -149,6 +149,14 @@
         <type name="idocs:doc">
             <parent>dms:doc</parent>
             <properties>
+                <property name="idocs:caseCompleted">
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+                <property name="idocs:caseModelsSent">
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
                 <property name="history:useNewHistory">
                     <type>d:boolean</type>
                 </property>
@@ -621,6 +629,21 @@
         <type name="idocs:abstractContractor">
             <title>Entity</title>
             <parent>idocs:entity</parent>
+        </type>
+
+        <type name="idocs:documentFinalStatus">
+            <title>Document final status</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:documentType">
+                    <title></title>
+                    <type>d:qname</type>
+                </property>
+                <property name="idocs:finalStatuses">
+                    <type>d:text</type>
+                    <multiple>true</multiple>
+                </property>
+            </properties>
         </type>
 
     </types>
