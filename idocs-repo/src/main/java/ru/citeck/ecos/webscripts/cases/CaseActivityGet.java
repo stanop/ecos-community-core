@@ -100,7 +100,7 @@ public class CaseActivityGet extends DeclarativeWebScript {
         } else {
             CaseModelDto dto = remoteCaseModelService.getCaseModelByNodeUUID(nodeRef.getId(), false);
             Map<String, Object> resultMap = new HashMap<>();
-            if (dto != null) {
+            if (dto == null) {
                 resultMap.put("executionResult", "{}");
                 return resultMap;
             } else {
@@ -109,7 +109,6 @@ public class CaseActivityGet extends DeclarativeWebScript {
                 return resultMap;
             }
         }
-
     }
 
     /**
@@ -130,20 +129,23 @@ public class CaseActivityGet extends DeclarativeWebScript {
 
         /** Dates */
         if (nodeService.getProperty(nodeRef, ActivityModel.PROP_PLANNED_START_DATE) != null) {
-            objectNode.put("plannedStartDate", dateFormat.format((Date) nodeService.getProperty(nodeRef, ActivityModel.PROP_PLANNED_START_DATE)));
+            Date date = (Date) nodeService.getProperty(nodeRef, ActivityModel.PROP_PLANNED_START_DATE);
+            objectNode.put("plannedStartDate", formatDate(date));
         }
         if (nodeService.getProperty(nodeRef, ActivityModel.PROP_PLANNED_END_DATE) != null) {
-            objectNode.put("plannedEndDate", dateFormat.format((Date) nodeService.getProperty(nodeRef, ActivityModel.PROP_PLANNED_END_DATE)));
+            Date date = (Date) nodeService.getProperty(nodeRef, ActivityModel.PROP_PLANNED_END_DATE);
+            objectNode.put("plannedEndDate", formatDate(date));
         }
         Date actualStartDate = (Date) nodeService.getProperty(nodeRef, ActivityModel.PROP_ACTUAL_START_DATE);
         if (actualStartDate != null) {
-            objectNode.put("actualStartDate", dateFormat.format(actualStartDate));
+            objectNode.put("actualStartDate", formatDate(actualStartDate));
         }
         Date actualEndDate = (Date) nodeService.getProperty(nodeRef, ActivityModel.PROP_ACTUAL_END_DATE);
         if (actualEndDate != null) {
-            objectNode.put("actualEndDate", dateFormat.format(actualEndDate));
+            objectNode.put("actualEndDate", formatDate(actualEndDate));
         }
-        objectNode.put("expectedPerformTime", (Integer) nodeService.getProperty(nodeRef, ActivityModel.PROP_EXPECTED_PERFORM_TIME));
+        Integer performTime = (Integer) nodeService.getProperty(nodeRef, ActivityModel.PROP_EXPECTED_PERFORM_TIME);
+        objectNode.put("expectedPerformTime", performTime);
 
         /** Flags */
         Boolean manualStarted = nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STARTED) != null ?
@@ -157,10 +159,10 @@ public class CaseActivityGet extends DeclarativeWebScript {
         objectNode.put("stoppable", manualStopped && actualStartDate != null && actualEndDate == null);
 
         AccessStatus writePermission = permissionService.hasPermission(nodeRef, "Write");
-        objectNode.put("editable", writePermission != null ? (writePermission == AccessStatus.ALLOWED) : false);
+        objectNode.put("editable", writePermission != null && (writePermission == AccessStatus.ALLOWED));
 
         AccessStatus deletePermission = permissionService.hasPermission(nodeRef, "Delete");
-        objectNode.put("removable", deletePermission != null ? (deletePermission == AccessStatus.ALLOWED) : false);
+        objectNode.put("removable", deletePermission != null && (deletePermission == AccessStatus.ALLOWED));
         objectNode.put("composite", nodeService.hasAspect(nodeRef, ActivityModel.ASPECT_HAS_ACTIVITIES));
         return objectNode;
     }
@@ -179,10 +181,10 @@ public class CaseActivityGet extends DeclarativeWebScript {
         objectNode.put("title", caseModelDto.getTitle());
         objectNode.put("typeTitle", templateNodeService.getClassTitle(type.toString()));
         objectNode.put("description", caseModelDto.getDescription());
-        objectNode.put("plannedStartDate", caseModelDto.getPlannedStartDate() != null ? dateFormat.format(caseModelDto.getPlannedStartDate()) : null);
-        objectNode.put("plannedEndDate", caseModelDto.getPlannedEndDate() != null ? dateFormat.format(caseModelDto.getPlannedEndDate()) : null);
-        objectNode.put("actualStartDate", caseModelDto.getActualStartDate() != null ? dateFormat.format(caseModelDto.getActualStartDate()) : null);
-        objectNode.put("actualEndDate", caseModelDto.getActualEndDate() != null ? dateFormat.format(caseModelDto.getActualEndDate()) : null);
+        objectNode.put("plannedStartDate", formatDate(caseModelDto.getPlannedStartDate()));
+        objectNode.put("plannedEndDate", formatDate(caseModelDto.getPlannedEndDate()));
+        objectNode.put("actualStartDate", formatDate(caseModelDto.getActualStartDate()));
+        objectNode.put("actualEndDate", formatDate(caseModelDto.getActualEndDate()));
         objectNode.put("expectedPerformTime", caseModelDto.getExpectedPerformTime());
 
         /** Flags */
@@ -192,6 +194,10 @@ public class CaseActivityGet extends DeclarativeWebScript {
         objectNode.put("removable", false);
         objectNode.put("composite", caseModelDto.getHasChildCases());
         return objectNode;
+    }
+
+    private String formatDate(Date date) {
+        return date != null ? dateFormat.format(date) : null;
     }
 
     /**
