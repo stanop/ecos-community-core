@@ -1,4 +1,4 @@
-<#include "/ru/citeck/search/search-macros.ftl">
+<#import "/ru/citeck/search/search-macros.ftl" as search>
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
 	<#if (props?size > 0 || args.includeNodeRef??) >
@@ -9,7 +9,7 @@
 			<#if args.replaceColon??>
 				<#assign prop2=line.key?replace(":", args.replaceColon)>
 			<#else> <#assign prop2=line.key> </#if>
-			"${prop2}": <#if line.value??><@printValue line.value null/><#else>null</#if><#if line_has_next>,</#if>
+			"${prop2}": <#if line.value??><@search.printValue line.value null/><#else>null</#if><#if line_has_next>,</#if>
 		</#list>
 	}
 	</#if>

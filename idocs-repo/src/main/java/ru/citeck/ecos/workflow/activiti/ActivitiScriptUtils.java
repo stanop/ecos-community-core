@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2018 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -24,28 +24,28 @@ import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 
-public class ActivitiScriptUtils extends BaseScopableProcessorExtension
-{
-	private ServiceRegistry serviceRegistry;
+public class ActivitiScriptUtils extends BaseScopableProcessorExtension {
 
-	public Object getSerializable(Object someObject) {
-		if(someObject instanceof ActivitiScriptNode) {
-			return someObject;
-		}
-		if(someObject instanceof ScriptNode) {
-			ScriptNode node = (ScriptNode) someObject;
-			return new ActivitiScriptNode(node.getNodeRef(), serviceRegistry);
-		}
-		if(someObject instanceof NodeRef) {
-			NodeRef node = (NodeRef) someObject;
-			return new ActivitiScriptNode(node, serviceRegistry);
-		}
-		
-		return someObject;
-	}
+    private ServiceRegistry serviceRegistry;
 
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
-	}
-	
+    public Object getSerializable(Object someObject) {
+        if (someObject instanceof ActivitiScriptNode) {
+            return someObject;
+        }
+        if (someObject instanceof ScriptNode) {
+            ScriptNode node = (ScriptNode) someObject;
+            return new ActivitiScriptNode(node.getNodeRef(), serviceRegistry);
+        }
+        if (someObject instanceof NodeRef) {
+            NodeRef node = (NodeRef) someObject;
+            return new ActivitiScriptNode(node, serviceRegistry);
+        }
+
+        return someObject;
+    }
+
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+    }
+
 }

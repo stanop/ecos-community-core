@@ -180,7 +180,26 @@
 			</map>
 		</property>
 	</bean>
-	
+
+    <bean id="idocs.workflow.jsonObjectMapper" class="ru.citeck.ecos.workflow.variable.json.JsonObjectMapper" init-method="init">
+        <property name="mixIns">
+            <map>
+                <entry key="org.alfresco.service.cmr.repository.NodeRef" value="ru.citeck.ecos.workflow.variable.json.mixin.NodeRefMixIn" />
+                <entry key="org.alfresco.service.namespace.QName" value="ru.citeck.ecos.workflow.variable.json.mixin.QNameMixIn" />
+            </map>
+        </property>
+    </bean>
+
+    <bean id="idocs.workflows.ActivitiCustomTypes" class="ru.citeck.ecos.workflow.activiti.ActivitiCustomTypesProcessor">
+        <property name="customPreVariableTypes">
+            <list>
+                <bean class="ru.citeck.ecos.workflow.variable.handler.EcosPojoTypeHandler">
+                    <property name="objectMapper" ref="idocs.workflow.jsonObjectMapper" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
 	<!-- listener lists -->
 	<bean id="activiti-listeners" class="java.util.LinkedList" abstract="true" />
 	<bean parent="activiti-listeners" id="activiti-listeners.task.assignment" />

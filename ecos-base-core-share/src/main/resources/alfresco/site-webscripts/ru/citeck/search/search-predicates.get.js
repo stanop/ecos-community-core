@@ -4,6 +4,8 @@ function main() {
         datatype: args.datatype,
         predicates: getPredicates(args.datatype)
     };
+
+    cache.maxAge = 3600;
 }
 
 function getPredicates(datatype) {

@@ -104,5 +104,9 @@ public class JournalTypeJS {
     public JournalCriterion getCriterion(String attributeKey) {
         return impl.getCriterion(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
     }
+
+    public String getFieldsSchema() {
+        return impl.getFieldsSchema();
+    }
     
 }

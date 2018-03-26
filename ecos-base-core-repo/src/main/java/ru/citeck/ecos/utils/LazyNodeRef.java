@@ -20,6 +20,7 @@ package ru.citeck.ecos.utils;
 
 import java.util.List;
 
+import lombok.Getter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -38,49 +39,40 @@ import org.springframework.context.ApplicationContext;
  */
 public class LazyNodeRef {
 
-	private NodeRef nodeRef;
-	private String path;
-	private ApplicationContext applicationContext;
-	private NodeService nodeService;
-	private SearchService searchService;
-	private NamespaceService namespaceService;
-	private String nodeServiceName;
-	private String searchServiceName;
-	private String namespaceServiceName;
+    @Getter(lazy = true)
+    private final NodeRef nodeRef = findNodeRef();
 
-	/**
-	 * Constructor
-	 * @param searchService
-	 * @param path - xpath to node
-	 */
-	public LazyNodeRef(ApplicationContext applicationContext, String path) {
-		this.applicationContext = applicationContext;
-		this.path = path;
-	}
-	
-	/** 
-	 * Get NodeRef value.
-	 * @return
-	 */
-	public synchronized NodeRef getNodeRef() {
-		if(nodeRef == null || getNodeService().exists(nodeRef)) {
-		    NodeRef root = getNodeService().getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-		    List<NodeRef> results = getSearchService().selectNodes(root, path, null, getNamespaceService(), false);
-			if(results.size() > 0) {
-				nodeRef = results.get(0);
-			} else {
-				nodeRef = null;
-			}
-		}
-		return nodeRef;
-	}
+    private String path;
+    private ApplicationContext applicationContext;
+    private NodeService nodeService;
+    private SearchService searchService;
+    private NamespaceService namespaceService;
+    private String nodeServiceName;
+    private String searchServiceName;
+    private String namespaceServiceName;
 
-	private NodeService getNodeService() {
-		if(nodeService == null) {
-			nodeService = applicationContext.getBean(nodeServiceName, NodeService.class);
-		}
-		return nodeService;
-	}
+    /**
+     * Constructor
+     * @param path - xpath to node
+     */
+    public LazyNodeRef(ApplicationContext applicationContext, String path) {
+        this.applicationContext = applicationContext;
+        this.path = path;
+    }
+
+    private NodeRef findNodeRef() {
+        NodeRef root = getNodeService().getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        NamespaceService nss = getNamespaceService();
+        List<NodeRef> results = getSearchService().selectNodes(root, path, null, nss, false);
+        return results.size() > 0 ? results.get(0) : null;
+    }
+
+    private NodeService getNodeService() {
+        if(nodeService == null) {
+            nodeService = applicationContext.getBean(nodeServiceName, NodeService.class);
+        }
+        return nodeService;
+    }
 
     private SearchService getSearchService() {
         if(searchService == null) {
@@ -96,9 +88,9 @@ public class LazyNodeRef {
         return namespaceService;
     }
 
-	public void setNodeServiceName(String nodeServiceName) {
-		this.nodeServiceName = nodeServiceName;
-	}
+    public void setNodeServiceName(String nodeServiceName) {
+        this.nodeServiceName = nodeServiceName;
+    }
 
     public void setSearchServiceName(String searchServiceName) {
         this.searchServiceName = searchServiceName;

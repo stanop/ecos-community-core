@@ -137,4 +137,9 @@ public interface OperandExpected {
      * Get copy of query
      */
     OperandExpected copy();
+
+    /**
+     * Set bulk fetch
+     */
+    OperandExpected bulkFetch(boolean value);
 }

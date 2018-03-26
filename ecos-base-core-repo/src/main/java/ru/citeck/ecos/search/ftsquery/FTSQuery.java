@@ -44,6 +44,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         searchParameters = new SearchParameters();
         searchParameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
         searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        searchParameters.setBulkFetchEnabled(false);
     }
 
     private FTSQuery(FTSQuery other) {
@@ -201,6 +202,11 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
     public FTSQuery consistency(QueryConsistency consistency) {
         searchParameters.setQueryConsistency(consistency);
+        return this;
+    }
+
+    public FTSQuery bulkFetch(boolean value) {
+        searchParameters.setBulkFetchEnabled(value);
         return this;
     }
 

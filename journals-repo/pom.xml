@@ -33,6 +33,12 @@
             <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-graphql-repo</artifactId>
+            <classifier>${ecos.project.classifier}</classifier>
+        </dependency>
+
     </dependencies>
 
     <build>

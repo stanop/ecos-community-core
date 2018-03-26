@@ -534,7 +534,7 @@ Journal
 	.property('type', JournalType)
 	.property('criteria', [ Criterion ])
 	.property('createVariants', [ CreateVariant ])
-	
+
 	.computed('availableCreateVariants', function() {
 		return _.filter(this.createVariants(), function(variant) {
 			return variant.canCreate();
@@ -851,7 +851,7 @@ JournalsWidget
 	.shortcut('settingsList', 'journal.type.settings', [])
 	.shortcut('currentFilter', 'filter', 'journal.type.defaultFilter', null)
 	.shortcut('currentSettings', 'settings', 'journal.type.defaultSettings', null)
-	
+
 	.computed('journalsListId', {
 		read: function() {
 			return this.resolve('journalsList.id', '');
@@ -1054,7 +1054,7 @@ JournalsWidget
 				}));
 			}
 		}
-		
+
 		// init selected column
 		columns.unshift(new ActionsColumn({
 			id: 'selected',
@@ -1178,7 +1178,7 @@ JournalsWidget
 		var filteredActions = _.filter(actions, function(action) {
 			// sync mode check:
 			if (action.syncMode() != null) return false;
-			
+
 			// doclib mode check:
 			if (!doclibMode && action.isDoclib()) return false;
 
@@ -1592,8 +1592,8 @@ AttributeInfo
 	.load('*', koutils.bulkLoad(new BulkLoader({
 		url: Alfresco.constants.PROXY_URI + "components/journals/journals-metadata",
 		method: "GET",
-		emptyFn: function() { 
-			return { attributes: [] }; 
+		emptyFn: function() {
+			return { attributes: [] };
 		},
 		addFn: function(query, id) {
 			if(id) {
@@ -1603,8 +1603,8 @@ AttributeInfo
 				return false;
 			}
 		},
-		getFn: function(response) { 
-			return response.json.attributes; 
+		getFn: function(response) {
+			return response.json.attributes;
 		}
 	}), 'name'))
 	;
@@ -1664,10 +1664,12 @@ JournalsWidget
 			query.skipCount = this.skipCount() || 0;
 			query.maxItems = this.maxItems() || this.defaultMaxItems() || 10;
 
-			logger.info("Loading records with query: " + JSON.stringify(query));
+            var queryString = JSON.stringify(query);
+
+            logger.info("Loading records with query: " + queryString);
 
             Alfresco.util.Ajax.jsonPost({
-                url: Alfresco.constants.PROXY_URI + "search/criteria-search",
+                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journal.type().id(),
                 dataObj: query,
                 successCallback: {
                     scope: this,

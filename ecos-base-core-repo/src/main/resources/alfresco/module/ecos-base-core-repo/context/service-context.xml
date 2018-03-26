@@ -390,4 +390,13 @@
         </property>
     </bean>
 
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="ru.citeck.ecos.utils.RepoUtils.setNodeUtils"/>
+        <property name="arguments">
+            <list>
+                <ref bean="nodeUtils"/>
+            </list>
+        </property>
+    </bean>
+
 </beans>

@@ -179,7 +179,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.16</version>
+            <version>1.16.20</version>
             <scope>provided</scope>
         </dependency>
 
@@ -400,6 +400,14 @@
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-graphql-repo</artifactId>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -523,6 +531,10 @@
                                 <skip>${yuicompressor.compress.skip}</skip>
                                 <excludes>
                                     <exclude>alfresco/**</exclude>
+                                    <exclude>**/*.min.js</exclude>
+                                    <exclude>**/*-min.js</exclude>
+                                    <exclude>**/*.min.css</exclude>
+                                    <exclude>**/*-min.css</exclude>
                                 </excludes>
                             </configuration>
                         </execution>
@@ -574,7 +586,7 @@
             <plugin>
                 <groupId>ru.citeck.maven.plugin</groupId>
                 <artifactId>ecos-maven-plugin</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.2</version>
 
                 <configuration>
 
@@ -588,6 +600,19 @@
                     <enableShare>true</enableShare>
                     <!-- Enable the REST API Explorer -->
                     <enableApiExplorer>true</enableApiExplorer>
+
+                    <tomcatCustomConfigs>
+                        <tomcatUsers>${project.build.testOutputDirectory}/tomcat/tomcat-users.xml</tomcatUsers>
+                        <contextFile>${project.build.testOutputDirectory}/tomcat/tomcat-context.xml</contextFile>
+                    </tomcatCustomConfigs>
+
+                    <tomcatCustomWebapps>
+                        <webapp>
+                            <groupId>ru.citeck.maven.tomcat</groupId>
+                            <artifactId>manager</artifactId>
+                            <version>1.0</version>
+                        </webapp>
+                    </tomcatCustomWebapps>
 
                     <!--
                         JARs and AMPs that should be overlayed/applied to the Platform/Repository WAR
@@ -699,6 +724,14 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-graphql-repo</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                         <!-- Bring in the integration tests -->
                         <!--<moduleDependency>
                             <groupId>${project.groupId}</groupId>
@@ -793,6 +826,14 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-graphql-share</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                     </shareModules>
                 </configuration>
             </plugin>
@@ -863,6 +904,8 @@
     </build>
 
     <modules>
+        <module>ecos-graphql-repo</module>
+        <module>ecos-graphql-share</module>
         <module>1st-override-repo</module>
         <module>1st-override-share</module>
         <module>ecos-base-core-repo</module>
