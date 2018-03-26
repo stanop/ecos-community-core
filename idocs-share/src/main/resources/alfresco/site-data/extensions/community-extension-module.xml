@@ -76,22 +76,5 @@
                 </config>
             </configurations>
         </module>
-        <module>
-            <id>React dojo packages</id>
-            <version>1.0</version>
-            <auto-deploy>true</auto-deploy>
-            <configurations>
-                <config evaluator="string-compare" condition="WebFramework" replace="false">
-                    <web-framework>
-                        <dojo-pages>
-                            <packages>
-                                <package name='react' location='/share/res/js/citeck/lib' main="react.min" />
-                                <package name='react-dom' location='/share/res/js/citeck/lib' main="react-dom.min" />
-                            </packages>
-                        </dojo-pages>
-                    </web-framework>
-                </config>
-            </configurations>
-        </module>
     </modules>
 </extension>
