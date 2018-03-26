@@ -203,7 +203,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     private QName getOutcomeFieldName(FormModel formModel) {
         String outcomeFieldName = formModel.getOutcomeVariableName();
         if (outcomeFieldName == null) {
-            outcomeFieldName = "outcome";
+            outcomeFieldName = "form_" + formModel.getKey() + "_outcome";
         }
         return QName.createQName(NS_URI_DEFAULT, outcomeFieldName);
     }
