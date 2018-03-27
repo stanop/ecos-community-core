@@ -1,6 +1,7 @@
 package ru.citeck.ecos.history.impl;
 
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport.TxnReadState;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -30,6 +31,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static org.alfresco.repo.transaction.AlfrescoTransactionSupport.getTransactionReadState;
 
 /**
  * History remote service
@@ -315,18 +318,18 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     @Override
     public void updateDocumentHistoryStatus(NodeRef documentNodeRef, boolean newStatus) {
         RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
+
         txnHelper.setForceWritable(true);
-        boolean requiresNew = false;
-        if (AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
-            requiresNew = true;
-        }
+
+        boolean requiresNew = getTransactionReadState() != TxnReadState.TXN_READ_WRITE;
+
         try {
-            txnHelper.doInTransaction(() -> {
+            AuthenticationUtil.runAsSystem(() -> txnHelper.doInTransaction(() -> {
                 if (documentNodeRef != null && nodeService.exists(documentNodeRef)) {
                     nodeService.setProperty(documentNodeRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY, newStatus);
                 }
                 return null;
-            }, false, requiresNew);
+            }, false, requiresNew));
         } catch (Exception e) {
             logger.error("Unexpected error", e);
         }

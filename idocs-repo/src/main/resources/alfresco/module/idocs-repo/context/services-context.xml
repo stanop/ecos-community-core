@@ -444,7 +444,7 @@
 		<property name="restTemplate" ref="restTemplate"/>
 		<property name="nodeService" ref="NodeService"/>
 		<property name="personService" ref="PersonService"/>
-		<property name="transactionService" ref="TransactionService"/>
+		<property name="retryingTransactionHelper" ref="retryingTransactionHelper"/>
 	</bean>
 
 	<bean id="historyGetService" class="ru.citeck.ecos.history.impl.HistoryGetServiceImpl">
