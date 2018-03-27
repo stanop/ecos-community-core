@@ -100,6 +100,13 @@
             <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>flowable-share</artifactId>
+            <version>${project.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
+            <type>amp</type>
+        </dependency>
 
         <!-- Uncomment if you are using RM (Records Management) module -->
         <!-- Make sure to set the correct version for 5.1 with alfresco.rm.version property in parent POM
@@ -226,6 +233,12 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>orders-share</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>flowable-share</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
