@@ -9,6 +9,7 @@
 		<import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
 		<import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
 		<import uri="http://www.citeck.ru/model/case/requirement/1.0" prefix="req"/>
+		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
 	</imports>
 
 	<journal id="cardlets">
@@ -121,6 +122,18 @@
 			<header key="cm:name" default="true" />
 			<header key="cm:title" default="true" />
 			<header key="cm:description" />
+		</headers>
+	</journal>
+
+	<journal id="documents-final-statuses">
+		<option name="type">idocs:documentFinalStatus</option>
+		<option name="doubleClickId">nodeRef</option>
+		<option name="doubleClickLink">card-details?nodeRef={id}</option>
+		<headers>
+			<header key="idocs:documentType" default="true"/>
+			<header key="idocs:finalStatuses" default="true">
+				<option name="searchCriteria">[{ attribute: "cm:title", predicate: "string-contains" }]</option>
+			</header>
 		</headers>
 	</journal>
 
