@@ -331,7 +331,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
                 return null;
             }, false, requiresNew));
         } catch (Exception e) {
-            logger.error("Unexpected error", e);
+            logger.error("Unexpected error with args documentNodeRef = " + documentNodeRef + ", newStatus = " + newStatus, e);
         }
     }
 
