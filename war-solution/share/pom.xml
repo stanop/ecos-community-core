@@ -102,7 +102,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>flowable-share</artifactId>
+            <artifactId>ecos-flowable-share</artifactId>
             <version>${project.version}</version>
             <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
@@ -238,7 +238,7 @@
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>flowable-share</artifactId>
+                            <artifactId>ecos-flowable-share</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
