@@ -4,8 +4,6 @@ import org.flowable.engine.delegate.DelegateTask;
 import ru.citeck.ecos.flowable.listeners.global.GlobalAssignmentTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
-import ru.citeck.ecos.utils.TransactionUtils;
-import ru.citeck.ecos.workflow.mirror.MirrorTaskWork;
 import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
 
 /**
@@ -29,7 +27,7 @@ public class MirrorListener implements GlobalCreateTaskListener, GlobalAssignmen
      */
     @Override
     public void notify(DelegateTask delegateTask) {
-        TransactionUtils.doAfterBehaviours(new MirrorTaskWork(workflowMirrorService, ENGINE_PREFIX + delegateTask.getId()));
+        workflowMirrorService.mirrorTask(ENGINE_PREFIX + delegateTask.getId());
     }
 
     /**

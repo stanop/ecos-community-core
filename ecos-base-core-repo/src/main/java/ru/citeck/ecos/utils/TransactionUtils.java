@@ -77,6 +77,20 @@ public class TransactionUtils {
         elements.add(element);
     }
 
+    public static <T> void processAfterBehaviours(String transactionKey, T element, Consumer<T> consumer) {
+        final Set<T> elements = TransactionalResourceHelper.getSet(transactionKey);
+        if (elements.isEmpty()) {
+            TransactionUtils.doAfterBehaviours(() -> {
+                AuthenticationUtil.runAsSystem(() -> {
+                    elements.forEach(consumer);
+                    return null;
+                });
+                elements.clear();
+            });
+        }
+        elements.add(element);
+    }
+
     private static Thread prepareAfterCommitJobsThread(List<Job> jobs, final String currentUser, final Locale locale) {
 
         return new Thread(() -> {

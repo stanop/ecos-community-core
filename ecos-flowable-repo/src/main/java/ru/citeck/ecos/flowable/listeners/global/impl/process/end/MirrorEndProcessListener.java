@@ -7,8 +7,6 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
 import ru.citeck.ecos.flowable.listeners.global.GlobalEndExecutionListener;
-import ru.citeck.ecos.utils.TransactionUtils;
-import ru.citeck.ecos.workflow.mirror.MirrorTaskWork;
 import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
 
 import java.util.List;
@@ -59,13 +57,13 @@ public class MirrorEndProcessListener implements GlobalEndExecutionListener {
                     }
                 }, AuthenticationUtil.getSystemUserName());
             }
-        } else
-            if(entity.getProcessInstance().isEnded()) {
+        } else {
+            if (entity.getProcessInstance().isEnded()) {
                 String workflowId = FLOWABLE_ENGINE_PREFIX + entity.getProcessInstanceId();
                 List<NodeRef> mirrors = workflowMirrorService.getTaskMirrorsByWorkflowId(workflowId);
-                for(NodeRef mirror : mirrors) {
-                    String taskId = (String) nodeService.getProperty(mirror, ContentModel.PROP_NAME);
-                    TransactionUtils.doAfterBehaviours(new MirrorTaskWork(workflowMirrorService, taskId));
+                for (NodeRef mirror : mirrors) {
+                    workflowMirrorService.mirrorTask((String) nodeService.getProperty(mirror, ContentModel.PROP_NAME));
+                }
             }
         }
     }
