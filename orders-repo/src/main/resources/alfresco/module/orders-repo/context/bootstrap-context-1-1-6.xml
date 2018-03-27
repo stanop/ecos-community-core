@@ -75,4 +75,11 @@
         </property>
     </bean>
 
+    <bean id="orders.script.case-statuses" parent="orders.import-scripts">
+        <property name="executeOnceOnly" value="false" />
+        <property name="name" value="add-contracts-case-statuses" />
+        <property name="description" value="Create or update case statuses" />
+        <property name="bootstrapScript" value="alfresco/module/orders-repo/bootstrap/scripts/case-statuses.js"/>
+    </bean>
+
 </beans>
