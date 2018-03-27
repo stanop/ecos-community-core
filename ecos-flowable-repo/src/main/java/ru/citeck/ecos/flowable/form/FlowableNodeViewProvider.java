@@ -7,6 +7,7 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.flowable.engine.TaskService;
 import org.flowable.form.model.FormField;
 import org.flowable.form.model.FormModel;
 import org.flowable.form.model.FormOutcome;
@@ -49,7 +50,9 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     @Autowired
     private RestFormService restFormService;
     @Autowired
-    private FlowableTaskServiceImpl taskService;
+    private FlowableTaskServiceImpl flowableTaskService;
+    @Autowired
+    private TaskService taskService;
     @Autowired
     @Qualifier("WorkflowService")
     private WorkflowService workflowService;
@@ -96,7 +99,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         if (taskId.startsWith(FlowableWorkflowComponent.ENGINE_PREFIX)) {
 
             String id = taskId.substring(taskId.indexOf("$") + 1);
-            Task task = taskService.getTaskById(id);
+            Task task = flowableTaskService.getTaskById(id);
 
             if (task != null) {
                 formKey = task.getFormKey();
@@ -117,7 +120,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
         List<NodeField> fields = getFields(formModel, mode);
 
-        Map<QName, Serializable> taskAttributes = new HashMap<>();
+        Map<String, Object> taskAttributes = new HashMap<>();
         for (NodeField field : fields) {
             Object value = attributes.get(field.getAttributeName());
             Serializable taskValue = null;
@@ -126,13 +129,11 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
             } catch (ClassNotFoundException | ClassCastException e) {
                 e.printStackTrace();
             }
-            taskAttributes.put(QName.createQName("", field.getAttributeName().getLocalName()), taskValue);
+            taskAttributes.put(field.getAttributeName().getLocalName(), taskValue);
         }
-
-        String outcomeValue = (String) attributes.get(getOutcomeFieldName(formModel));
-
-        workflowService.updateTask(taskId, taskAttributes, null, null);
-        workflowService.endTask(taskId, outcomeValue);
+        //TODO: rework with formService
+        String id = taskId.substring(taskId.indexOf("$") + 1);
+        taskService.complete(id, taskAttributes, Collections.emptyMap());
 
         return Collections.emptyMap();
     }
