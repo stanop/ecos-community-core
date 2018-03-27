@@ -118,7 +118,7 @@ function getWritePermission(nodeRef) {
 function _convertNodeViewGetParams(args) {
 
     var params = {};
-    var viewParams = ["formKey", "formMode", "formType"];
+    var viewParams = ["formKey", "formMode", "formType", "formId"];
 
     for (var paramName in args) {
         var paramValue = args[paramName];
@@ -143,6 +143,10 @@ function _convertNodeViewGetParams(args) {
         } else {
             throw "Parameters must contain either type, nodeRef or taskId";
         }
+    }
+
+    if (!params.formId && args.viewId) {
+        params.formId = args.viewId;
     }
 
     if (!params.formMode && args.mode) {
