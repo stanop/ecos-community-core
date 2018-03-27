@@ -54,4 +54,25 @@
         </property>
     </bean>
 
+    <bean id="orders.module-components.internal-confirm-routes" parent="orders.import-scripts">
+        <property name="name" value="orders-confirm-routes" />
+        <property name="description" value="Base Orders Case Confirmation Route" />
+        <property name="bootstrapScript" value="alfresco/module/orders-repo/bootstrap/scripts/orders-routes.js"/>
+    </bean>
+
+    <bean id="orders.patch.move-orders-ent-to-community" parent="ru.citeck.ecos.patch.MoveComponentsPatch">
+        <property name="id" value="orders.patch.move-orders-ent-to-community" />
+        <property name="description" value="orders.patch.move-orders-ent-to-community.description" />
+        <property name="fromModuleId" value="orders-ent-repo" />
+        <property name="toModuleId" value="orders-repo" />
+        <property name="transitions">
+            <list>
+                <props>
+                    <prop key="from">orders-ent.module-components.internal-confirm-routes</prop>
+                    <prop key="to">orders.module-components.internal-confirm-routes</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>
