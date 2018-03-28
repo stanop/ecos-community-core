@@ -40,7 +40,7 @@ public class FlowableModelerImportProcessModuleComponent extends AbstractModuleC
     }
 
     private boolean importRequired() {
-        if (flowableModelerService == null || !flowableModelerService.integrationIsInitialized()) {
+        if (flowableModelerService == null || !flowableModelerService.importIsPossible()) {
             logger.info("Cannot import process model, because flowable integration is not initialized.");
             return false;
         }
