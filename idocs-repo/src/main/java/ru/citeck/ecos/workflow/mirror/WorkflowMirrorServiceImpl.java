@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.workflow.mirror;
 
-import net.sf.cglib.core.Local;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.dictionary.M2Label;
@@ -51,6 +50,7 @@ import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
 import ru.citeck.ecos.utils.NodeUtils;
+import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -59,7 +59,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     private static final String QUERY_TASK_BY_ID = "TYPE:\"bpm:task\" AND =cm\\:name:\"%s\"";
     private static final String QUERY_TASKS_BY_WORKFLOW_ID = "TYPE:\"bpm:task\" AND =wfm\\:workflowId:\"%s\"";
-    public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
+    private static final String KEY_TASKS_TO_MIRROR = WorkflowMirrorServiceImpl.class.getName() + ".tasks_to_mirror";
 
     private static Log logger = LogFactory.getLog(WorkflowMirrorServiceImpl.class);
 
@@ -82,12 +82,12 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     @Override
     public void mirrorTask(String taskId) {
-        mirrorTask(getTask(taskId), getTaskMirror(taskId));
+        mirrorTaskBeforeCommit(taskId);
     }
 
     @Override
     public void mirrorTask(WorkflowTask task) {
-        mirrorTask(task, getTaskMirror(task.getId()));
+        mirrorTaskBeforeCommit(task.getId());
     }
 
     @Override
@@ -95,8 +95,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         if (!nodeService.exists(taskMirror)) {
             return;
         }
-        String taskId = (String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME);
-        mirrorTask(getTask(taskId), taskMirror);
+        mirrorTaskBeforeCommit((String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME));
     }
 
     @Override
@@ -164,7 +163,13 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         return workflowService.getTaskById(taskId);
     }
 
-    private void mirrorTask(WorkflowTask task, NodeRef taskMirror) {
+    private void mirrorTaskBeforeCommit(String taskId) {
+        TransactionUtils.processAfterBehaviours(KEY_TASKS_TO_MIRROR, taskId, id ->
+            mirrorTaskImpl(getTask(id), getTaskMirror(id))
+        );
+    }
+
+    private void mirrorTaskImpl(WorkflowTask task, NodeRef taskMirror) {
 
         NodeInfo nodeInfo = null;
         if (task != null) {
@@ -325,7 +330,6 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     }
 
     private String getWorkflowName(WorkflowTask task, NodeInfo nodeInfo) {
-        List<NodeRef> packageContents = workflowService.getPackageContents(task.getId());
         Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
         NodeRef packageNode = getPackage(targetAssocs);
         if (packageNode != null && nodeService.exists(packageNode)) {
@@ -335,7 +339,6 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     }
 
     private NodeRef getWorkflowInitiator(WorkflowTask task, NodeInfo nodeInfo) {
-        List<NodeRef> packageContents = workflowService.getPackageContents(task.getId());
         Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
         NodeRef packageNode = getPackage(targetAssocs);
         if (packageNode != null && nodeService.exists(packageNode)) {
@@ -344,7 +347,6 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
                 return personService.getPerson(initiatorName);
             }
         }
-
         return null;
     }
 
