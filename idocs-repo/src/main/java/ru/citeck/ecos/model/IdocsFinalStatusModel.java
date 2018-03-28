@@ -18,5 +18,7 @@ public class IdocsFinalStatusModel {
 
     // properties
     public static final QName PROP_DOC_TYPE = QName.createQName(IDOCS_NAMESPACE, "documentType");
-    public static final QName PROP_FINAL_STATUSES = QName.createQName(IDOCS_NAMESPACE, "finalStatuses");
+
+    //assocs
+    public static final QName ASSOC_FINAL_STATUSES = QName.createQName(IDOCS_NAMESPACE, "finalStatuses");
 }
