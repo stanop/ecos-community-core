@@ -456,12 +456,6 @@
 					<prop key="encoding">UTF-8</prop>
 				</props>
 				<props>
-					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:authority</prop>
-					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
-					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/authority</prop>
-					<prop key="encoding">UTF-8</prop>
-				</props>
-				<props>
 					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
 					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
 					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/authority</prop>
