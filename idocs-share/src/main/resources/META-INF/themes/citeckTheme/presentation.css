@@ -2223,7 +2223,8 @@ table td.thumbnail img
 .fa.HEADER_SYSTEM:before,
 .fa.HEADER_TEMPLATES:before,
 .fa.HEADER_MORE:before,
-.fa.HEADER_LIFECYCLE_EDITOR:before {
+.fa.HEADER_LIFECYCLE_EDITOR:before,
+.fa.HEADER_FLOWABLE_MODELER:before {
     color: inherit;
 }
 
@@ -2319,7 +2320,7 @@ table td.thumbnail img
 .yui-skin-citeckTheme .fa.HEADER_REPOSITORY:before {
     content: "\f0ae";
 }
-
+.yui-skin-citeckTheme .fa.HEADER_FLOWABLE_MODELER:before,
 .yui-skin-citeckTheme .fa.HEADER_APPLICATION_MENU:before {
     content: "\f108";
 }
@@ -4960,6 +4961,7 @@ body:not(.mobile).yui-skin-citeckTheme .items-list li.selected,
 body:not(.mobile).yui-skin-citeckTheme #alf-filters,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper,
 body:not(.mobile).yui-skin-citeckTheme #HEADER_TITLE_BAR,
+body:not(.mobile).yui-skin-citeckTheme #flowable-modeler,
 body:not(.mobile).yui-skin-citeckTheme #bd > div[id*="site-finder"],
 body:not(.mobile).yui-skin-citeckTheme #bd .orgstruct-console .orgstruct-tree-resizer,
 body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header-Warning__warnings,

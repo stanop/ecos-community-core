@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<template-instance>
+    <template-type>ru/citeck/flowable-modeler</template-type>
+    <components>
+
+        <!-- Title -->
+        <component>
+            <region-id>title</region-id>
+        </component>
+
+    </components>
+</template-instance>

@@ -40,6 +40,7 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
     adminTools = [
         { id: "repository", url: "repository", iconImage: "/share/res/components/images/header/repository.png" },
         { id: "application-menu", url: "console/admin-console/application", iconImage: "/share/res/components/images/header/application.png", label: "header.application.label" },
+        { id: "flowable-modeler", url: "flowable-modeler", iconImage: "/share/res/components/images/header/application.png", label: "page.flowable-modeler.title" },
         { id: "groups", url: "console/admin-console/groups", iconImage: "/share/res/components/images/header/groups.png" },
         { id: "users", url: "console/admin-console/users", iconImage: "/share/res/components/images/header/users.png" },
         { id: "categories", url: "console/admin-console/type-manager", iconImage: "/share/res/components/images/header/category-manager.png" },
