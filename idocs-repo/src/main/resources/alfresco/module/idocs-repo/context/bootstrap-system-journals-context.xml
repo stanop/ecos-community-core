@@ -7,7 +7,6 @@
 		<property name="description" value="System Journals List" />
 		<property name="sinceVersion" value="0.0.1" />
 		<property name="appliesFromVersion" value="0.0.1" />
-		<!-- property name="executeOnceOnly" value="false" / -->
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
@@ -53,7 +52,6 @@
 		<property name="description" value="Cardlets Journal" />
 		<property name="sinceVersion" value="0.0.1" />
 		<property name="appliesFromVersion" value="0.0.1" />
-		<!-- property name="executeOnceOnly" value="false" / -->
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
@@ -101,7 +99,6 @@
 		<property name="description" value="Card Modes Journal" />
 		<property name="sinceVersion" value="0.0.1" />
 		<property name="appliesFromVersion" value="0.0.1" />
-		<!-- property name="executeOnceOnly" value="false" / -->
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
@@ -150,7 +147,6 @@
 		<property name="description" value="Journal of case element configs" />
 		<property name="sinceVersion" value="2.3" />
 		<property name="appliesFromVersion" value="2.3" />
-		<!-- property name="executeOnceOnly" value="false" / -->
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
@@ -244,7 +240,6 @@
 		<property name="description" value="Journal for business calendar" />
 		<property name="sinceVersion" value="2.12" />
 		<property name="appliesFromVersion" value="2.12" />
-		<!-- property name="executeOnceOnly" value="false" / -->
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
@@ -334,7 +329,6 @@
 		<property name="description" value="Case status" />
 		<property name="sinceVersion" value="3.0.1.0" />
 		<property name="appliesFromVersion" value="3.0.1.0" />
-		<!-- property name="executeOnceOnly" value="false" / -->
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
@@ -382,7 +376,6 @@
 		<property name="description" value="Case roles" />
 		<property name="sinceVersion" value="3.0.1.0" />
 		<property name="appliesFromVersion" value="3.0.1.0" />
-		<!-- property name="executeOnceOnly" value="false" / -->
 		<property name="dependsOn">
 			<list>
 				<ref bean="idocs.module-component.journals-meta-root" />
@@ -425,6 +418,53 @@
 					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
 					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
 					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/case-roles</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="idocs.module-component.journals-authority" parent="idocs.import-spaces.3-0-0">
+		<property name="name" value="Authority" />
+		<property name="description" value="Authority" />
+		<property name="sinceVersion" value="3.2.0.2" />
+		<property name="appliesFromVersion" value="3.2.0.2" />
+		<property name="dependsOn">
+			<list>
+				<ref bean="idocs.module-component.journals-meta-root" />
+				<ref bean="idocs.module-component.system-journals-list" />
+			</list>
+		</property>
+		<property name="bootstrapViews">
+			<list>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/authority</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/authority</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:authority</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/authority</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:authority</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/authority</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+					<prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/authority</prop>
 					<prop key="encoding">UTF-8</prop>
 				</props>
 			</list>
