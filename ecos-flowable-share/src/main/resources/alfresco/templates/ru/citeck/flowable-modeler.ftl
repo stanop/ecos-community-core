@@ -14,7 +14,7 @@
 		<div id="flowable-modeler">
             <script type="text/javascript">//<![CDATA[
 
-                var searchUrl = Alfresco.constants.PROXY_URI + '/citeck/global-properties?name=flowable.rest-api.url';
+                var searchUrl = Alfresco.constants.PROXY_URI + '/citeck/global-properties?name=flowable.modeler.url';
                 Alfresco.util.Ajax.request({
                     url: searchUrl,
                     successCallback: {
@@ -23,13 +23,13 @@
                             var serverResponse = response.serverResponse ? response.serverResponse : {};
                             if (serverResponse.status === 200 && serverResponse.responseText) {
                                 var responseData = eval('(' + serverResponse.responseText + ')');
-                                if (responseData.data && responseData.data['flowable.rest-api.url']) {
+                                if (responseData.data && responseData.data['flowable.modeler.url']) {
                                     var modeler = document.createElement('iframe');
-                                    modeler.setAttribute('src', responseData.data['flowable.rest-api.url']);
+                                    modeler.setAttribute('src', responseData.data['flowable.modeler.url']);
                                     $('#flowable-modeler').append(modeler);
                                 } else {
                                     Alfresco.util.PopupManager.displayPrompt({
-                                        text: "Missing 'flowable.rest-api.url' in global properties"
+                                        text: "Missing 'flowable.modeler.url' in global properties"
                                     });
                                 }
                             }
