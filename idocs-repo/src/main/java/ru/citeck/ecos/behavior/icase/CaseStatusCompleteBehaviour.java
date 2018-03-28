@@ -1,6 +1,5 @@
 package ru.citeck.ecos.behavior.icase;
 
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
@@ -15,9 +14,8 @@ import ru.citeck.ecos.icase.CaseStatusPolicies;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.IdocsFinalStatusModel;
 import ru.citeck.ecos.model.IdocsModel;
+import ru.citeck.ecos.utils.RepoUtils;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -79,17 +77,18 @@ public class CaseStatusCompleteBehaviour implements CaseStatusPolicies.OnCaseSta
         if (documentRef == null || statusRef == null) {
             return false;
         }
+
         List<NodeRef> finalStatusesRefs = getFinalStatuses(nodeService.getType(documentRef));
+
         for (NodeRef finalStatusRef : finalStatusesRefs) {
-            Serializable finalStatuses = nodeService.getProperty(finalStatusRef, IdocsFinalStatusModel.PROP_FINAL_STATUSES);
-            if (finalStatuses != null && finalStatuses instanceof Collection) {
-                Collection<String> finalStatusesCollection = (Collection<String>) finalStatuses;
-                String statusName = (String) nodeService.getProperty(statusRef, ContentModel.PROP_NAME);
-                if (finalStatusesCollection.contains(statusName)) {
-                    return true;
-                }
+            List<NodeRef> caseStatuses = RepoUtils.getTargetAssoc(finalStatusRef,
+                    IdocsFinalStatusModel.ASSOC_FINAL_STATUSES, nodeService);
+
+            if (caseStatuses != null && caseStatuses.contains(statusRef)) {
+                return true;
             }
         }
+
         return false;
     }
 
