@@ -4,12 +4,18 @@
 
     <bean id="orders.InternalNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="orders:internal" />
-        <property name="nameTemplate">
-            <value><![CDATA[<#if node.properties['idocs:documentStatus']?? >
-                <#if node.properties['idocs:documentStatus'] == 'registered'>Документ № #{'$'}{node.properties['idocs:registrationNumber']!}
-                <#else>Проект документа № #{'$'}{node.properties['orders:projectNumber']!}</#if>
-            <#else>Проект документа № #{'$'}{node.properties['orders:projectNumber']!}
-            </#if>]]></value>
+        <property name="nameTemplateJS">
+            <value>
+                (function(){
+                    var csService = services.get("CaseStatusService");
+                    var caseStatus = csService.getStatus(node.nodeRef);
+                    if (caseStatus == "active") {
+                        return "Документ №" + node.properties['idocs:registrationNumber'];
+                    } else {
+                        return "Документ №" + node.properties['orders:projectNumber'];
+                    }
+                })();
+            </value>
         </property>
     </bean>
 
@@ -18,7 +24,7 @@
         <property name="nameTemplate" value="#{'$'}{node.properties['idocs:fileIndex']!} (#{'$'}{node.properties['idocs:fileName']!})" />
     </bean>
     
-    <bean id="orders.internal.projectNumber.EnumerationBiehaviour" parent="EnumerationBehaviour" depends-on="orders.dictionaryBootstrap">
+    <bean id="orders.internal.projectNumber.EnumerationBehaviour" parent="EnumerationBehaviour" depends-on="orders.dictionaryBootstrap">
         <property name="className" value="orders:internal" />
         <property name="numberField" value="orders:projectNumber" />
         <property name="templateName" value="projectNumber-template" />
@@ -30,8 +36,6 @@
         <property name="childAssocType" value="dms:supplementaryFiles" />
     </bean>
 
-
-    
     <bean id="orders.internal.projectNumber" parent="fillUtilityNumberField">
         <property name="className" value="orders:internal" />
         <property name="stringField" value="orders:projectNumber" />

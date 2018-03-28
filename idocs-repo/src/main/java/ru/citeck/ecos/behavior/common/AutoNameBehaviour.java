@@ -18,6 +18,7 @@
  */
 package ru.citeck.ecos.behavior.common;
 
+import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
@@ -32,6 +33,7 @@ import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.IdocsTemplateModel;
@@ -65,18 +67,23 @@ public class AutoNameBehaviour implements
 	private DictionaryService dictionaryService;
 	private MimetypeService mimetypeService;
 	private TemplateService templateService;
+	private ScriptService scriptService;
 
 	// distinct properties
 	private QName className;
 	private String nodeVariable;
 	private String templateEngine;
 	private String nameTemplate;
+	private String nameTemplateJS;
 	private Map<String,String> restrictedPatterns;
 	private boolean ignoreRenameFailure = false;
 	private Boolean appendExtension = null;
 	private int order = 100;
 
 	public void init() {
+		if (nameTemplate != null && nameTemplateJS != null) {
+			throw new AlfrescoRuntimeException("Only one of 'nameTemplate' and 'nameTemplateJS' props must be set, not both" );
+		}
         OrderedBehaviour updateBehaviour = new OrderedBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT, order);
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, className, updateBehaviour);
         OrderedBehaviour moveBehaviour = new OrderedBehaviour(this, "onMoveNode", NotificationFrequency.TRANSACTION_COMMIT, order);
@@ -120,7 +127,7 @@ public class AutoNameBehaviour implements
 				return;
 			}
 
-			if (nameTemplate == null || "".equals(nameTemplate)) {
+			if (StringUtils.isEmpty(nameTemplate) && StringUtils.isEmpty(nameTemplateJS)) {
 				return;
 			}
 
@@ -130,14 +137,28 @@ public class AutoNameBehaviour implements
 				nodeService.setProperty(nodeRef, ContentModel.PROP_NAME, oldName.substring(0, pos));
 			}
 			String oldExtension = pos >= 0 ? oldName.substring(pos) : EMPTY_EXTENSION;
-			String newName = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
-				@Override
-				public String doWork() throws Exception {
-					HashMap<String,Object> model = new HashMap<String,Object>(1);
-					model.put(nodeVariable, nodeRef);
-					return templateService.processTemplateString(templateEngine, nameTemplate, model);
-				}
-			});
+
+			String newName;
+
+			if (nameTemplateJS != null) {
+				newName = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
+					@Override
+					public String doWork() throws Exception {
+						HashMap<String,Object> model = new HashMap<String,Object>(1);
+						model.put(nodeVariable, nodeRef);
+						return scriptService.executeScriptString(nameTemplateJS, model).toString();
+					}
+				});
+			} else {
+				newName = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
+					@Override
+					public String doWork() throws Exception {
+						HashMap<String,Object> model = new HashMap<String,Object>(1);
+						model.put(nodeVariable, nodeRef);
+						return templateService.processTemplateString(templateEngine, nameTemplate, model);
+					}
+				});
+			}
 
 			// automatically replace all restricted patterns in name:
 			boolean matches;
@@ -257,6 +278,10 @@ public class AutoNameBehaviour implements
 		this.templateService = templateService;
 	}
 
+	public void setScriptService(ScriptService scriptService) {
+		this.scriptService = scriptService;
+	}
+
 	public void setClassName(QName className) {
 		this.className = className;
 	}
@@ -267,6 +292,10 @@ public class AutoNameBehaviour implements
 
 	public void setNameTemplate(String nameTemplate) {
 		this.nameTemplate = nameTemplate;
+	}
+
+	public void setNameTemplateJS(String nameTemplateJS) {
+		this.nameTemplateJS = nameTemplateJS;
 	}
 
 	public void setNodeVariable(String nodeVariable) {
