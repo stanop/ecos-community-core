@@ -158,7 +158,7 @@
                     <type>d:boolean</type>
                     <default>false</default>
                 </property>
-                <property name="history:useNewHistory">
+                <property name="idocs:useNewHistory">
                     <type>d:boolean</type>
                 </property>
             </properties>
