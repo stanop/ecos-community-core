@@ -10,6 +10,36 @@ public class AmountInWordConverterJS extends BaseScopableProcessorExtension {
 
     /**
      * Convert an amount to words.
+     *
+     * Using language from current locale by default
+     * or En if current locale is not supported by converter.
+     *
+     * @param amount       - amount to convert
+     * @return amount in words
+     */
+    public String convert(int amount) {
+        AmountInWordConverter aiwConverter = new AmountInWordConverterFactory().getConverter(I18NUtil.getLocale()
+                .getLanguage());
+        return aiwConverter.convert(amount);
+    }
+
+    /**
+     * Convert an amount to words.
+     *
+     * @param amount       - amount to convert
+     * @param language     - language param "en", "ru", "uk".
+     *                     ISO 639 alpha-2 code for supported languages
+     *                     (English, Russian, Ukrainian)
+     * @return amount in words
+     */
+    public String convert(int amount, String language) {
+        AmountInWordConverter aiwConverter = new AmountInWordConverterFactory().getConverter(language);
+        return aiwConverter.convert(amount);
+    }
+
+    /**
+     * Convert an amount to words.
+     *
      * Using language from current locale by default
      * or En if current locale is not supported by converter.
      *
@@ -40,6 +70,4 @@ public class AmountInWordConverterJS extends BaseScopableProcessorExtension {
         AmountInWordConverter aiwConverter = new AmountInWordConverterFactory().getConverter(language);
         return aiwConverter.convert(amount, currencyCode);
     }
-
-
 }
