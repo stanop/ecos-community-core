@@ -133,12 +133,6 @@
         </property>
     </bean>
 
-    <!-- life cycles -->
-    <bean id="orders.orders-lifecycle" parent="idocs.import-lifecycle.csv">
-        <property name="location" value="alfresco/module/orders-repo/lifecycle/orders-lifecycle.csv" />
-        <property name="entityType" value="orders:internal" />
-    </bean>
-
     <bean id="orders.module-component.default-orders-content-template" parent="orders.import-spaces">
         <property name="name" value="default-orders-content-template" />
         <property name="description" value="default-orders-content-template" />

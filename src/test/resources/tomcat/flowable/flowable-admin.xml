@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<Context antiJARLocking="true">
+    <Environment name="datasource.driver" value="org.h2.Driver" type="java.lang.String"/>
+    <Environment name="datasource.url"
+                 value="jdbc:h2:${alfresco.data.location}/h2_data/bpm_service;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=10000;MVCC=FALSE;LOCK_MODE=0;"
+                 type="java.lang.String"/>
+    <Environment name="datasource.username" value="bpm_service" type="java.lang.String"/>
+    <Environment name="datasource.password" value="123123" type="java.lang.String"/>
+
+    <Environment name="rest.process.app.user" value="admin" type="java.lang.String"/>
+    <Environment name="rest.process.app.password" value="test" type="java.lang.String"/>
+    <Environment name="rest.process.app.host" value="http://localhost" type="java.lang.String"/>
+    <Environment name="rest.process.app.port" value="8080" type="java.lang.String"/>
+
+    <Environment name="rest.dmn.app.user" value="admin" type="java.lang.String"/>
+    <Environment name="rest.dmn.app.password" value="test" type="java.lang.String"/>
+    <Environment name="rest.dmn.app.host" value="http://localhost" type="java.lang.String"/>
+    <Environment name="rest.dmn.app.port" value="8080" type="java.lang.String"/>
+
+    <Environment name="rest.form.app.user" value="admin" type="java.lang.String"/>
+    <Environment name="rest.form.app.password" value="test" type="java.lang.String"/>
+    <Environment name="rest.form.app.host" value="http://localhost" type="java.lang.String"/>
+    <Environment name="rest.form.app.port" value="8080" type="java.lang.String"/>
+
+    <Environment name="rest.content.app.user" value="admin" type="java.lang.String"/>
+    <Environment name="rest.content.app.password" value="test" type="java.lang.String"/>
+    <Environment name="rest.content.app.host" value="http://localhost" type="java.lang.String"/>
+    <Environment name="rest.content.app.port" value="8080" type="java.lang.String"/>
+
+    <Environment name="idm.admin.user" value="admin" type="java.lang.String"/>
+    <Environment name="idm.admin.password" value="test" type="java.lang.String"/>
+    <Environment name="idm.app.url" value="http://localhost:8080/flowable-idm" type="java.lang.String"/>
+</Context>
