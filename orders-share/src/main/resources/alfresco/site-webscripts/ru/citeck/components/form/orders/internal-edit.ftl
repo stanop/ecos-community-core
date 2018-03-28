@@ -121,9 +121,6 @@ YAHOO.Bubbling.on("renderCurrentValue", function(layer, args) {
 
 <@formLib.renderFormContainer formId=formId>
 
-    <#if form.mode == "view">
-        <@forms.renderField field="prop_idocs_documentStatus" />
-    </#if>
     <@forms.renderField field="prop_tk_kind" extension = {
         "endpointType": "d:category",
         "control" : {
