@@ -72,9 +72,8 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
         } else if(entity.getProcessInstance().isEnded()) {
             String workflowId = "activiti$" + entity.getProcessInstanceId();
             List<NodeRef> mirrors = service.getTaskMirrorsByWorkflowId(workflowId);
-            for(NodeRef mirror : mirrors) {
-                String taskId = (String) nodeService.getProperty(mirror, ContentModel.PROP_NAME);
-                TransactionUtils.doAfterBehaviours(new MirrorTaskWork(service, taskId));
+            for (NodeRef mirror : mirrors) {
+                service.mirrorTask((String) nodeService.getProperty(mirror, ContentModel.PROP_NAME));
             }
         }
     }

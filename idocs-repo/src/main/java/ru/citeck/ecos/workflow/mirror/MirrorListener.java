@@ -20,7 +20,6 @@ package ru.citeck.ecos.workflow.mirror;
 
 import org.activiti.engine.delegate.DelegateTask;
 import ru.citeck.ecos.service.CiteckServices;
-import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.workflow.listeners.AbstractTaskListener;
 
 public class MirrorListener extends AbstractTaskListener {
@@ -29,7 +28,7 @@ public class MirrorListener extends AbstractTaskListener {
 
     @Override
     protected void notifyImpl(DelegateTask task) {
-        TransactionUtils.doAfterBehaviours(new MirrorTaskWork(service, "activiti$" + task.getId()));
+        service.mirrorTask("activiti$" + task.getId());
     }
 
     public void initImpl() {
