@@ -708,7 +708,9 @@ ko.bindingHandlers.dateControl = {
             params = allBindings();
 
         var localization = params.localization,
-            mode = params.mode;
+            mode = params.mode,
+            min = params.min,
+            max = params.max;
 
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
@@ -781,11 +783,20 @@ ko.bindingHandlers.dateControl = {
         } else {
             // set max and min attributes
             var date = new Date(),
-                year = date.getFullYear()
+                year = date.getFullYear();
 
             if (input) {
+                if (max) {
+                    input.setAttribute("max", max);
+                } else {
                 input.setAttribute("max", (year + 50) + "-12-31");
+                }
+
+                if (min) {
+                    input.setAttribute("min", min);
+                } else {
                 input.setAttribute("min", (year - 25) + "-12-31");
+                }
 
                 Dom.setStyle(input, "color", value() ? "" : "lightgray");
                 value.subscribe(function(value) {
@@ -2664,8 +2675,23 @@ ko.bindingHandlers.fileUploadControl = {
             value = settings.value,
             multiple = settings.multiple,
             type = settings.type,
+            alowedFileTypes = (settings.alowedFileTypes || '').toLowerCase().split(' ').join('').split(','),
+            maxSize = settings.maxSize || '',
+            maxCount = settings.maxCount || '',
             properties = settings.properties,
             importUrl = settings.importUrl;
+
+        if (_.isNumber(maxSize)) {
+            maxSize = +maxSize;
+        } else {
+            maxSize = 0;
+        }
+
+        if (_.isNumber(maxCount)) {
+            maxCount = +maxCount;
+        } else {
+            maxCount = 0;
+        }
 
         // Invariants global object
         var Node = koutils.koclass('invariants.Node');
@@ -2685,6 +2711,38 @@ ko.bindingHandlers.fileUploadControl = {
             $(input).click();
         });
 
+        function checkFile(file) {
+            if (!file) return false;
+
+            var result = true,
+                ext = '',
+                arr = [];
+
+            // check file type
+            arr = file.name.split('.');
+            ext = (arr.length > 1 ? arr[arr.length-1] : "").toLowerCase();
+
+            result = alowedFileTypes[0] == '' || !!~alowedFileTypes.indexOf(ext);
+            if (!result) {
+                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('incorrect-file-type')});
+                return false;
+            }
+
+            // check file size
+            if (file.size && file.size > 0 && maxSize > 0) {
+                result = file.size <= maxSize;
+            } else {
+                result = true;
+            }
+
+            if (!result) {
+                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('file-too-big') });
+                return false;
+            }
+
+            return true;
+        }
+
         // get files from input[file]
         Event.on(input, 'change', function(event) {
             var files = event.target.files,
@@ -2692,6 +2750,17 @@ ko.bindingHandlers.fileUploadControl = {
 
             if (files.length === 0) {
                 return;
+            }
+
+            if (maxCount > 0 && files.length > maxCount) {
+                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('file-count-restrict') + ': ' + maxCount });
+            }
+
+            for (var i = 0, count = files.length; i < count; i++) {
+                    if (!checkFile(files[i])) {
+                        event.target.value = '';
+                        return;
+                    }
             }
 
             loadedFiles.subscribe(function(newValue) {

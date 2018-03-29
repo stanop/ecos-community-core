@@ -544,7 +544,8 @@
         }
 
         params = params || {};
-        var msg = Alfresco.util.message,
+        var self = this,
+            msg = Alfresco.util.message,
             containerId = Alfresco.util.generateDomId(),
             header = params.title || msg("actions.document.dialog-form"),
             destination = params.destination || "",
@@ -593,10 +594,15 @@
                         // add server response (user form) into the container
                         container.innerHTML = response.serverResponse.responseText;
 
+                        YAHOO.Bubbling.fire("showViewInplacedDone");
+
                         // define submit handler
                         var onSubmit = function(layer, args) {
                             var runtime = args[1].runtime;
-                            if (mode != 'create' && runtime.key() != containerId) return;
+                            if (runtime.key() != self.containerId) {
+                                return;
+                            };
+                            self.containerId = null;
 
                             var node = args[1].node;
 
@@ -626,7 +632,10 @@
                         // define cancel handler
                         var onCancel = function(layer, args) {
                             var runtime = args[1].runtime;
-                            if (runtime.key() != containerId) return;
+                            if (runtime.key() != self.containerId) {
+                                return;
+                            };
+                            self.containerId = null;
                             runtime.terminate();
 
                             // get saved form params
@@ -644,8 +653,8 @@
                             }
                         };
 
-                        YAHOO.Bubbling.on("node-view-submit", onSubmit);
-                        YAHOO.Bubbling.on("node-view-cancel", onCancel);
+                        YAHOO.Bubbling.on("node-view-submit", onSubmit.bind(self));
+                        YAHOO.Bubbling.on("node-view-cancel", onCancel.bind(self));
                         // ------------------------------------------------------------------------------
 
                         // append the container into the right section
@@ -681,7 +690,7 @@
             newDialog();
         };
 
-        this.containerId = containerId;
+        self.containerId = containerId;
     };
 
 
