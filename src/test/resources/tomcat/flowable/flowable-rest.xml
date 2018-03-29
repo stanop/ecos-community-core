@@ -8,7 +8,7 @@
     <Environment name="datasource.username" value="bpm_service" type="java.lang.String"/>
     <Environment name="datasource.password" value="123123" type="java.lang.String"/>
 
-    <Environment name="create.demo.users" value="true" type="java.lang.Boolean"/>
-    <Environment name="create.demo.definitions" value="true" type="java.lang.Boolean"/>
-    <Environment name="create.demo.models" value="true" type="java.lang.Boolean"/>
+    <Environment name="create.demo.users" value="false" type="java.lang.Boolean"/>
+    <Environment name="create.demo.definitions" value="false" type="java.lang.Boolean"/>
+    <Environment name="create.demo.models" value="false" type="java.lang.Boolean"/>
 </Context>
