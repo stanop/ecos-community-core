@@ -1,4 +1,4 @@
-package ru.citeck.ecos.content.config;
+package ru.citeck.ecos.content;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
@@ -28,27 +28,28 @@ import java.util.stream.Collectors;
  *
  * @author Pavel Simonov
  */
-public class ContentConfigRegistry<T> {
+public class RepoContentDAO<T> {
 
-    private static final Log logger = LogFactory.getLog(ContentConfigRegistry.class);
+    private static final Log logger = LogFactory.getLog(RepoContentDAO.class);
     private static final int MEMORY_LEAK_THRESHOLD = 100000;
 
     private LazyNodeRef rootRef;
 
     private QName configNodeType;
     private QName contentFieldName = ContentModel.PROP_CONTENT;
+    private QName childAssocType = ContentModel.ASSOC_CONTAINS;
 
     private Date lastRootChangedDate = new Date(0);
 
-    private Map<NodeRef, ConfigData<T>> configDataByNode = new ConcurrentHashMap<>();
-    private Map<Map<QName, Serializable>, List<ConfigData<T>>> configDataByKeys = new ConcurrentHashMap<>();
+    private Map<NodeRef, ContentData<T>> configDataByNode = new ConcurrentHashMap<>();
+    private Map<Map<QName, Serializable>, List<ContentData<T>>> configDataByKeys = new ConcurrentHashMap<>();
 
     protected NodeService nodeService;
     protected ContentService contentService;
     protected SearchService searchService;
     protected DictionaryService dictionaryService;
 
-    private ContentDAO<T> configDAO;
+    private ContentDAO<T> contentDAO;
 
     /**
      * Get config data by node with content.
@@ -56,8 +57,8 @@ public class ContentConfigRegistry<T> {
      * @param nodeRef node with content which can be parsed by ConfigDAO
      * @return ConfigData with nodeRef passed by argument and parsing result
      */
-    public Optional<ConfigData<T>> getConfig(NodeRef nodeRef) {
-        ConfigData<T> config = getConfigImpl(nodeRef);
+    public Optional<ContentData<T>> getFirstContentData(NodeRef nodeRef) {
+        ContentData<T> config = getContentDataImpl(nodeRef);
         if (config.updateData()) {
             return Optional.of(config);
         } else {
@@ -69,23 +70,23 @@ public class ContentConfigRegistry<T> {
     /**
      * Get config data by properties values
      */
-    public Optional<ConfigData<T>> getConfig(Map<QName, Serializable> keys) {
-        List<ConfigData<T>> configs = getConfigs(keys);
+    public Optional<ContentData<T>> getFirstContentData(Map<QName, Serializable> keys) {
+        List<ContentData<T>> configs = getContentData(keys);
         return Optional.ofNullable(configs.size() > 0 ? configs.get(0) : null);
     }
 
     /**
      * Get configs data by properties values
      */
-    public List<ConfigData<T>> getConfigs(Map<QName, Serializable> keys) {
+    public List<ContentData<T>> getContentData(Map<QName, Serializable> keys) {
 
         checkChangeDate();
 
         Map<QName, Serializable> localKeys = new HashMap<>(keys);
 
-        List<ConfigData<T>> persisted = configDataByKeys.computeIfAbsent(localKeys, this::searchConfigs);
-        List<ConfigData<T>> result = persisted.stream()
-                                              .filter(ConfigData::updateData)
+        List<ContentData<T>> persisted = configDataByKeys.computeIfAbsent(localKeys, this::searchData);
+        List<ContentData<T>> result = persisted.stream()
+                                              .filter(ContentData::updateData)
                                               .collect(Collectors.toList());
 
         if (configDataByKeys.size() > MEMORY_LEAK_THRESHOLD) {
@@ -99,6 +100,19 @@ public class ContentConfigRegistry<T> {
         return result;
     }
 
+    public NodeRef createNode(Map<QName, Serializable> properties) {
+        String name = (String) properties.get(ContentModel.PROP_NAME);
+        if (name == null) {
+            name = "contentData";
+        }
+        QName assocName = QName.createQName(childAssocType.getNamespaceURI(), name);
+        return nodeService.createNode(rootRef.getNodeRef(),
+                                      childAssocType,
+                                      assocName,
+                                      configNodeType,
+                                      properties).getChildRef();
+    }
+
     /**
      * Clear cache
      */
@@ -107,7 +121,7 @@ public class ContentConfigRegistry<T> {
         configDataByKeys.clear();
     }
 
-    private List<ConfigData<T>> searchConfigs(Map<QName, Serializable> keys) {
+    private List<ContentData<T>> searchData(Map<QName, Serializable> keys) {
 
         Map<QName, Serializable> notNullProps = new HashMap<>();
         Set<QName> nullProps = new HashSet<>();
@@ -137,12 +151,12 @@ public class ContentConfigRegistry<T> {
                            }
                            return true;
                        })
-                       .map(this::getConfigImpl)
+                       .map(this::getContentDataImpl)
                        .collect(Collectors.toList());
     }
 
-    private ConfigData<T> getConfigImpl(NodeRef nodeRef) {
-        return configDataByNode.computeIfAbsent(nodeRef, r -> new ConfigData<>(r, this));
+    private ContentData<T> getContentDataImpl(NodeRef nodeRef) {
+        return configDataByNode.computeIfAbsent(nodeRef, r -> new ContentData<>(r, this));
     }
 
     private void checkChangeDate() {
@@ -165,12 +179,12 @@ public class ContentConfigRegistry<T> {
         return configNodeType;
     }
 
-    public void setConfigDAO(ContentDAO<T> configDAO) {
-        this.configDAO = configDAO;
+    public void setContentDAO(ContentDAO<T> contentDAO) {
+        this.contentDAO = contentDAO;
     }
 
-    public ContentDAO<T> getConfigDAO() {
-        return configDAO;
+    public ContentDAO<T> getContentDAO() {
+        return contentDAO;
     }
 
     public void setContentFieldName(QName contentFieldName) {
@@ -187,6 +201,10 @@ public class ContentConfigRegistry<T> {
 
     public ContentService getContentService() {
         return contentService;
+    }
+
+    public void setChildAssocType(QName childAssocType) {
+        this.childAssocType = childAssocType;
     }
 
     @Autowired

@@ -1,4 +1,4 @@
-package ru.citeck.ecos.content.config;
+package ru.citeck.ecos.content;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.service.cmr.repository.ContentReader;
@@ -16,13 +16,13 @@ import java.util.function.Consumer;
  *
  * @author Pavel Simonov
  */
-public class ConfigData<T> {
+public class ContentData<T> {
 
     private NodeRef nodeRef;
     private T data;
 
     private long lastModified;
-    private ContentConfigRegistry<T> registry;
+    private RepoContentDAO<T> registry;
 
     public NodeRef getNodeRef() {
         return nodeRef;
@@ -57,7 +57,7 @@ public class ConfigData<T> {
                 QName field = registry.getContentFieldName();
                 ContentWriter writer = registry.getContentService().getWriter(nodeRef, field, true);
 
-                registry.getConfigDAO().write(data, writer);
+                registry.getContentDAO().write(data, writer);
 
                 updateData();
             }
@@ -86,7 +86,7 @@ public class ConfigData<T> {
 
                     try (InputStream in = reader.getContentInputStream()) {
 
-                        data = registry.getConfigDAO().read(in);
+                        data = registry.getContentDAO().read(in);
                         lastModified = contentLastModified;
 
                     } catch (Exception e) {
@@ -103,7 +103,7 @@ public class ConfigData<T> {
         return true;
     }
 
-    ConfigData(NodeRef nodeRef, ContentConfigRegistry<T> owner) {
+    ContentData(NodeRef nodeRef, RepoContentDAO<T> owner) {
         this.nodeRef = nodeRef;
         this.lastModified = 0;
         this.data = null;

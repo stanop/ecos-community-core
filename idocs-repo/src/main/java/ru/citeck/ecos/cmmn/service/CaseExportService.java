@@ -52,7 +52,7 @@ public class CaseExportService {
     @Autowired
     private CMMNUtils utils;
     @Autowired
-    @Qualifier("caseTemplateConfigDAO")
+    @Qualifier("caseTemplateContentDAO")
     private XmlContentDAO<Definitions> configDAO;
 
     public void init() {
