@@ -35,13 +35,17 @@ public abstract class AbstractDeployerBean extends AbstractLifecycleBean impleme
 
     private Log logger;
     private boolean enabled = true;
-    private final String artifactType;
+    private String artifactType;
     private List<String> locations;
     private String beanName;
     
-    protected AbstractDeployerBean(String artifactType) {
-        this.artifactType = artifactType;
+    protected AbstractDeployerBean() {
         this.logger = LogFactory.getLog(this.getClass());
+    }
+
+    protected AbstractDeployerBean(String artifactType) {
+        this();
+        this.artifactType = artifactType;
     }
     
     public void setEnabled(boolean enabled) {
@@ -106,4 +110,11 @@ public abstract class AbstractDeployerBean extends AbstractLifecycleBean impleme
         this.beanName = beanName;
     }
 
+    public String getArtifactType() {
+        return artifactType;
+    }
+
+    public void setArtifactType(String artifactType) {
+        this.artifactType = artifactType;
+    }
 }

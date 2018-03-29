@@ -1,4 +1,4 @@
-package ru.citeck.ecos.content.config.converter;
+package ru.citeck.ecos.content.converter;
 
 import org.alfresco.service.namespace.QName;
 

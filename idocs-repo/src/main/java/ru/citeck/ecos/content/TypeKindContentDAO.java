@@ -1,4 +1,4 @@
-package ru.citeck.ecos.content.config;
+package ru.citeck.ecos.content;
 
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -14,7 +14,7 @@ import java.util.*;
  *
  * @author Pavel Simonov
  */
-public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
+public class TypeKindContentDAO<T> extends RepoContentDAO<T> {
 
     private QName typeField = ClassificationModel.PROP_DOCUMENT_APPLIES_TO_TYPE;
     private QName kindField = ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND;
@@ -26,9 +26,9 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
      * 1) EcoS type and EcoS kind
      * 2) EcoS type and EcoS kind is empty
      */
-    public List<ConfigData<T>> getConfigsByTypeKind(NodeRef type, NodeRef kind) {
+    public List<ContentData<T>> getContentDataByTypeKind(NodeRef type, NodeRef kind) {
 
-        List<ConfigData<T>> configs = Collections.emptyList();
+        List<ContentData<T>> configs = Collections.emptyList();
 
         if (type != null) {
 
@@ -36,9 +36,9 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
             keys.put(typeField, type);
             keys.put(kindField, kind);
 
-            configs = getConfigs(keys);
+            configs = getContentData(keys);
             if (configs.isEmpty() && kind != null) {
-                return getConfigsByTypeKind(type, null);
+                return getContentDataByTypeKind(type, null);
             }
         }
 
@@ -53,26 +53,26 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
      *  3) Alfresco type
      *  4) Alfresco aspect
      * */
-    public List<ConfigData<T>> getConfigsByNodeTKC(NodeRef nodeRef) {
+    public List<ContentData<T>> getContentDataByNodeTKC(NodeRef nodeRef) {
 
-        List<ConfigData<T>> configs = Collections.emptyList();
+        List<ContentData<T>> configs = Collections.emptyList();
 
         NodeRef type = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE);
         //case type/kind
         if (type != null) {
             NodeRef kind = (NodeRef) nodeService.getProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_KIND);
-            configs = getConfigsByTypeKind(type, kind);
+            configs = getContentDataByTypeKind(type, kind);
         }
         //alfresco type
         if (configs.isEmpty()) {
             QName nodeType = nodeService.getType(nodeRef);
-            configs = getConfigsByClassName(nodeType, true);
+            configs = getContentDataByClassName(nodeType, true);
         }
         //aspects
         if (configs.isEmpty()) {
             Set<QName> aspects = nodeService.getAspects(nodeRef);
             for (QName aspect : aspects) {
-                configs = getConfigsByClassName(aspect, false);
+                configs = getContentDataByClassName(aspect, false);
                 if (!configs.isEmpty()) break;
             }
         }
@@ -83,7 +83,7 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
      * Get config by alfresco class
      * @param className alfresco type or aspect name
      */
-    public List<ConfigData<T>> getConfigsByClassName(QName className, boolean includeParents) {
+    public List<ContentData<T>> getContentDataByClassName(QName className, boolean includeParents) {
 
         if (classField == null) {
             return Collections.emptyList();
@@ -91,7 +91,7 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
 
         Map<QName, Serializable> keys = new HashMap<>(1);
         keys.put(classField, className);
-        List<ConfigData<T>> configs = getConfigs(keys);
+        List<ContentData<T>> configs = getContentData(keys);
 
         if (configs.isEmpty() && includeParents) {
             ClassDefinition classDef = dictionaryService.getClass(className);
@@ -99,7 +99,7 @@ public class TypeKindConfigRegistry<T> extends ContentConfigRegistry<T> {
                 classDef = classDef.getParentClassDefinition();
                 if (classDef != null) {
                     keys.put(classField, classDef.getName());
-                    configs = getConfigs(keys);
+                    configs = getContentData(keys);
                 }
             }
         }
