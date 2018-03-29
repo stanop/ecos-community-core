@@ -80,7 +80,7 @@ public class ContentDeployer<T> extends AbstractDeployerBean {
             return;
         }
 
-        Optional<? extends ContentData<?>> data = repoContentDAO.getFirstContentData(keys);
+        Optional<? extends ContentData<?>> data = repoContentDAO.getFirstContentData(keys, false);
         NodeRef contentNode = data.map(ContentData::getNodeRef)
                                   .orElseGet(() -> repoContentDAO.createNode(metadata));
 

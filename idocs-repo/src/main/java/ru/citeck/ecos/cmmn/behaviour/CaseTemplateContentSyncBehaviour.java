@@ -67,7 +67,7 @@ public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
 
         if (changedProps.size() > 0) {
 
-            Optional<ContentData<Definitions>> configData = registry.getFirstContentData(nodeRef);
+            Optional<ContentData<Definitions>> configData = registry.getContentData(nodeRef);
 
             configData.ifPresent(d -> d.changeData(data -> {
 
@@ -94,7 +94,7 @@ public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
 
         TransactionalResourceHelper.getSet(TXN_TEMPLATE_DATA_KEY).add(nodeRef);
 
-        Optional<ContentData<Definitions>> configData = registry.getFirstContentData(nodeRef);
+        Optional<ContentData<Definitions>> configData = registry.getContentData(nodeRef);
         configData.flatMap(ContentData::getData).ifPresent(d -> {
 
             Map<javax.xml.namespace.QName, String> attr = d.getCase().get(0).getOtherAttributes();
