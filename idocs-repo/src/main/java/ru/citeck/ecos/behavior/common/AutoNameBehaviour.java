@@ -36,6 +36,7 @@ import org.alfresco.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.model.ConfigModel;
 import ru.citeck.ecos.model.IdocsTemplateModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -48,7 +49,7 @@ public class AutoNameBehaviour implements
     NodeServicePolicies.OnUpdatePropertiesPolicy,
     NodeServicePolicies.OnMoveNodePolicy,
     VersionServicePolicies.OnCreateVersionPolicy
-	
+
 {
     private static Log logger = LogFactory.getLog(AutoNameBehaviour.class);
     
@@ -58,52 +59,51 @@ public class AutoNameBehaviour implements
         nameCache = new ConcurrentHashMap<Object,Boolean>(100);
     }
     
-	// constants
-	private static final String EMPTY_EXTENSION = "";
+    // constants
+    private static final String EMPTY_EXTENSION = "";
 
-	// common properties
-	private PolicyComponent policyComponent;
-	private NodeService nodeService;
-	private DictionaryService dictionaryService;
-	private MimetypeService mimetypeService;
-	private TemplateService templateService;
-	private ScriptService scriptService;
+    // common properties
+    private PolicyComponent policyComponent;
+    private NodeService nodeService;
+    private DictionaryService dictionaryService;
+    private MimetypeService mimetypeService;
+    private TemplateService templateService;
+    private ScriptService scriptService;
 
-	// distinct properties
-	private QName className;
-	private String nodeVariable;
-	private String templateEngine;
-	private String nameTemplate;
-	private String nameTemplateJS;
-	private Map<String,String> restrictedPatterns;
-	private boolean ignoreRenameFailure = false;
-	private Boolean appendExtension = null;
-	private int order = 100;
+    // distinct properties
+    private QName className;
+    private String nodeVariable;
+    private String nameTemplate;
+    private String nameTemplateJS;
+    private Map<String,String> restrictedPatterns;
+    private boolean ignoreRenameFailure = false;
+    private Boolean appendExtension = null;
+    private int order = 100;
 
-	public void init() {
-		if (nameTemplate != null && nameTemplateJS != null) {
-			throw new AlfrescoRuntimeException("Only one of 'nameTemplate' and 'nameTemplateJS' props must be set, not both" );
-		}
+    public void init() {
+        if (nameTemplate != null && nameTemplateJS != null) {
+            throw new AlfrescoRuntimeException("Only one of 'nameTemplate' and 'nameTemplateJS' props must be set, not both" );
+        }
         OrderedBehaviour updateBehaviour = new OrderedBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT, order);
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, className, updateBehaviour);
         OrderedBehaviour moveBehaviour = new OrderedBehaviour(this, "onMoveNode", NotificationFrequency.TRANSACTION_COMMIT, order);
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnMoveNodePolicy.QNAME, className, moveBehaviour);
-		OrderedBehaviour createBehaviour = new OrderedBehaviour(this, "onCreateVersion", NotificationFrequency.TRANSACTION_COMMIT, order);
-		policyComponent.bindClassBehaviour(VersionServicePolicies.OnCreateVersionPolicy.QNAME, className, createBehaviour);
-		if(appendExtension == null) {
-			if(dictionaryService.isSubClass(className, ContentModel.TYPE_CONTENT)) {
-				appendExtension = true;
-			} else {
-				appendExtension = false;
-			}
-		}
-	}
+        OrderedBehaviour createBehaviour = new OrderedBehaviour(this, "onCreateVersion", NotificationFrequency.TRANSACTION_COMMIT, order);
+        policyComponent.bindClassBehaviour(VersionServicePolicies.OnCreateVersionPolicy.QNAME, className, createBehaviour);
+        if(appendExtension == null) {
+            if(dictionaryService.isSubClass(className, ContentModel.TYPE_CONTENT)) {
+                appendExtension = true;
+            } else {
+                appendExtension = false;
+            }
+        }
+    }
 
-	@Override
-	public void onUpdateProperties(NodeRef nodeRef,
-			Map<QName, Serializable> before, Map<QName, Serializable> after) {
-		updateName(nodeRef, false);
-	}
+    @Override
+    public void onUpdateProperties(NodeRef nodeRef,
+            Map<QName, Serializable> before, Map<QName, Serializable> after) {
+        updateName(nodeRef, false);
+    }
 
     @Override
     public void onMoveNode(ChildAssociationRef oldChildAssocRef,
@@ -111,91 +111,79 @@ public class AutoNameBehaviour implements
         updateName(newChildAssocRef.getChildRef(), true);
     }
 
-	@Override
-	public void onCreateVersion(QName classRef, NodeRef nodeRef,
-			Map<String, Serializable> versionProperties, PolicyScope nodeDetails) {
-		updateName(nodeRef, false);
-	}
-	
-	private void updateName(final NodeRef nodeRef, boolean forceRename) {
-		try {
-			if (!nodeService.exists(nodeRef)) {
-				return;
-			}
-			// do not auto-name working copies
-			if (nodeService.hasAspect(nodeRef, ContentModel.ASPECT_WORKING_COPY)) {
-				return;
-			}
+    @Override
+    public void onCreateVersion(QName classRef, NodeRef nodeRef,
+            Map<String, Serializable> versionProperties, PolicyScope nodeDetails) {
+        updateName(nodeRef, false);
+    }
 
-			if (StringUtils.isEmpty(nameTemplate) && StringUtils.isEmpty(nameTemplateJS)) {
-				return;
-			}
+    private void updateName(final NodeRef nodeRef, boolean forceRename) {
+        try {
+            if (!nodeService.exists(nodeRef)) {
+                return;
+            }
+            // do not auto-name working copies
+            if (nodeService.hasAspect(nodeRef, ContentModel.ASPECT_WORKING_COPY)) {
+                return;
+            }
 
-			String oldName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
-			int pos = oldName.lastIndexOf('.');
-			if (!appendExtension && pos >= 0) {
-				nodeService.setProperty(nodeRef, ContentModel.PROP_NAME, oldName.substring(0, pos));
-			}
-			String oldExtension = pos >= 0 ? oldName.substring(pos) : EMPTY_EXTENSION;
+            if (StringUtils.isEmpty(nameTemplate) && StringUtils.isEmpty(nameTemplateJS)) {
+                return;
+            }
 
-			String newName;
+            String oldName = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
+            int pos = oldName.lastIndexOf('.');
+            if (!appendExtension && pos >= 0) {
+                nodeService.setProperty(nodeRef, ContentModel.PROP_NAME, oldName.substring(0, pos));
+            }
+            String oldExtension = pos >= 0 ? oldName.substring(pos) : EMPTY_EXTENSION;
 
-			if (nameTemplateJS != null) {
-				newName = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
-					@Override
-					public String doWork() throws Exception {
-						HashMap<String,Object> model = new HashMap<String,Object>(1);
-						model.put(nodeVariable, nodeRef);
-						return scriptService.executeScriptString(nameTemplateJS, model).toString();
-					}
-				});
-			} else {
-				newName = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
-					@Override
-					public String doWork() throws Exception {
-						HashMap<String,Object> model = new HashMap<String,Object>(1);
-						model.put(nodeVariable, nodeRef);
-						return templateService.processTemplateString(templateEngine, nameTemplate, model);
-					}
-				});
-			}
-
-			// automatically replace all restricted patterns in name:
-			boolean matches;
-			do {
-				matches = false;
-				for(String restrictedPattern : restrictedPatterns.keySet()) {
-					if(newName.matches(".*" + restrictedPattern + ".*")) {
-						newName = newName.replaceAll(restrictedPattern, restrictedPatterns.get(restrictedPattern));
-						matches = true;
-					}
+            String newName = AuthenticationUtil.runAsSystem(() -> {
+				HashMap<String,Object> model = new HashMap<String,Object>(1);
+				model.put(nodeVariable, nodeRef);
+				if (nameTemplateJS != null) {
+					return scriptService.executeScriptString(nameTemplateJS, model).toString();
+				} else {
+					return templateService.processTemplateString("freemarker", nameTemplate, model);
 				}
-			} while(matches);
+			});
 
-			// if empty name returned
-			// do not perform rename
-			if (newName.isEmpty()) {
-				return;
-			}
+            // automatically replace all restricted patterns in name:
+            boolean matches;
+            do {
+                matches = false;
+                for(String restrictedPattern : restrictedPatterns.keySet()) {
+                    if(newName.matches(".*" + restrictedPattern + ".*")) {
+                        newName = newName.replaceAll(restrictedPattern, restrictedPatterns.get(restrictedPattern));
+                        matches = true;
+                    }
+                }
+            } while(matches);
 
-			// get extension
-			String extension = EMPTY_EXTENSION;
-			if (appendExtension) {
-				extension = RepoUtils.getExtension(nodeRef, EMPTY_EXTENSION, nodeService, mimetypeService);
-			}
-			String oldGeneratedName = (String)nodeService.getProperty(nodeRef, IdocsTemplateModel.PROP_GENERATED_NAME);
-			boolean equal = newName.equals(oldGeneratedName) && extension.equals(oldExtension);
+            // if empty name returned
+            // do not perform rename
+            if (newName.isEmpty()) {
+                return;
+            }
 
-			// change name if new name differs from old name
-			if (!equal || forceRename) {
-			    
-			    final String finalBaseName = newName;
-			    final String finalExtension = extension;
-				
-				AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-					@Override
-					public Void doWork() throws Exception {
-		                nodeService.setProperty(nodeRef, IdocsTemplateModel.PROP_GENERATED_NAME, finalBaseName);
+            // get extension
+            String extension = EMPTY_EXTENSION;
+            if (appendExtension) {
+                extension = RepoUtils.getExtension(nodeRef, EMPTY_EXTENSION, nodeService, mimetypeService);
+            }
+            String oldGeneratedName = (String)nodeService.getProperty(nodeRef, IdocsTemplateModel.PROP_GENERATED_NAME);
+            boolean equal = newName.equals(oldGeneratedName) && extension.equals(oldExtension);
+
+            // change name if new name differs from old name
+            if (!equal || forceRename) {
+
+                final String finalBaseName = newName;
+                final String finalExtension = extension;
+
+                AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+                    @Override
+                    public Void doWork() throws Exception {
+                        nodeService.setProperty(nodeRef, IdocsTemplateModel.PROP_GENERATED_NAME, finalBaseName);
                         ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(nodeRef);
                         NodeRef parentRef = parentAssoc.getParentRef();
                         int index = 0;
@@ -205,7 +193,7 @@ public class AutoNameBehaviour implements
                         while (true) {
                             NodeRef existingNode = nodeService.getChildByName(parentRef, parentAssoc.getTypeQName(), newName);
                             if(nodeRef.equals(existingNode)) break;
-							if(existingNode == null) {
+                            if(existingNode == null) {
                                 
                                 // check name cache
                                 final Object key = new Pair<NodeRef,String>(parentRef, newName);
@@ -244,78 +232,74 @@ public class AutoNameBehaviour implements
                             newName = finalBaseName + " (" + index + ")" + finalExtension;
                         }
                         return null;
-					}
-				});
-			}
-		} catch (RuntimeException e) {
-			if(!ignoreRenameFailure) {
-				throw e;
-			}
-		}
-	}
+                    }
+                });
+            }
+        } catch (RuntimeException e) {
+            if(!ignoreRenameFailure) {
+                throw e;
+            }
+        }
+    }
 
-	public void setPolicyComponent(PolicyComponent policyComponent) {
-		this.policyComponent = policyComponent;
-	}
+    public void setPolicyComponent(PolicyComponent policyComponent) {
+        this.policyComponent = policyComponent;
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-	public void setDictionaryService(DictionaryService dictionaryService) {
-		this.dictionaryService = dictionaryService;
-	}
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
+    }
 
-	public MimetypeService getMimetypeService() {
-		return mimetypeService;
-	}
+    public MimetypeService getMimetypeService() {
+        return mimetypeService;
+    }
 
-	public void setMimetypeService(MimetypeService mimetypeService) {
-		this.mimetypeService = mimetypeService;
-	}
+    public void setMimetypeService(MimetypeService mimetypeService) {
+        this.mimetypeService = mimetypeService;
+    }
 
-	public void setTemplateService(TemplateService templateService) {
-		this.templateService = templateService;
-	}
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
+    }
 
-	public void setScriptService(ScriptService scriptService) {
-		this.scriptService = scriptService;
-	}
+    public void setScriptService(ScriptService scriptService) {
+        this.scriptService = scriptService;
+    }
 
-	public void setClassName(QName className) {
-		this.className = className;
-	}
+    public void setClassName(QName className) {
+        this.className = className;
+    }
 
-	public void setTemplateEngine(String templateEngine) {
-		this.templateEngine = templateEngine;
-	}
+    public void setNameTemplate(String nameTemplate) {
+        this.nameTemplate = nameTemplate;
+    }
 
-	public void setNameTemplate(String nameTemplate) {
-		this.nameTemplate = nameTemplate;
-	}
+    public void setNameTemplateJS(String nameTemplateJS) {
+        this.nameTemplateJS = nameTemplateJS;
+    }
 
-	public void setNameTemplateJS(String nameTemplateJS) {
-		this.nameTemplateJS = nameTemplateJS;
-	}
+    public void setNodeVariable(String nodeVariable) {
+        this.nodeVariable = nodeVariable;
+    }
 
-	public void setNodeVariable(String nodeVariable) {
-		this.nodeVariable = nodeVariable;
-	}
+    public void setRestrictedPatterns(Map<String,String> restrictedPatterns) {
+        this.restrictedPatterns = restrictedPatterns;
+    }
 
-	public void setRestrictedPatterns(Map<String,String> restrictedPatterns) {
-		this.restrictedPatterns = restrictedPatterns;
-	}
-	
-	public void setIgnoreRenameFailure(boolean ignore) {
-		this.ignoreRenameFailure = ignore;
-	}
+    public void setIgnoreRenameFailure(boolean ignore) {
+        this.ignoreRenameFailure = ignore;
+    }
 
-	public void setAppendExtension(Boolean appendExtension) {
-		this.appendExtension = appendExtension;
-	}
+    public void setAppendExtension(Boolean appendExtension) {
+        this.appendExtension = appendExtension;
+    }
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
 }

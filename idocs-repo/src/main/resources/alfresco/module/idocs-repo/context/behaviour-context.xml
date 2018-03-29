@@ -89,7 +89,6 @@
         <property name="mimetypeService" ref="mimetypeService"/>
         <property name="templateService" ref="templateService"/>
         <property name="scriptService" ref="scriptService"/>
-        <property name="templateEngine" value="freemarker"/>
         <property name="nodeVariable" value="node"/>
         <property name="restrictedPatterns">
             <!-- cm:filename constraint -->

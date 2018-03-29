@@ -7,8 +7,7 @@
         <property name="nameTemplateJS">
             <value>
                 (function(){
-                    var csService = services.get("CaseStatusService");
-                    var caseStatus = csService.getStatus(node.nodeRef);
+                    var caseStatus = caseStatusService.getStatus(node.nodeRef);
                     if (caseStatus == "active") {
                         return "Документ №" + node.properties['idocs:registrationNumber'];
                     } else {
