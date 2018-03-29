@@ -23,6 +23,7 @@ import ru.citeck.ecos.utils.DictionaryUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies.*;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -70,11 +71,14 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     @Override
     public void startActivity(NodeRef activityRef) {
 
-        if (!setState(activityRef, STATE_STARTED)) {
+        if (!canSetState(activityRef, STATE_STARTED)) {
             return;
         }
 
-        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_START_DATE, new Date());
+        Map<QName, Serializable> props = new HashMap<>();
+        props.put(LifeCycleModel.PROP_STATE, STATE_STARTED);
+        props.put(ActivityModel.PROP_ACTUAL_START_DATE, new Date());
+        nodeService.addProperties(activityRef, props);
 
         HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
 
@@ -85,11 +89,14 @@ public class CaseActivityServiceImpl implements CaseActivityService {
     @Override
     public void stopActivity(NodeRef activityRef) {
 
-        if (!setState(activityRef, STATE_COMPLETED)) {
+        if (!canSetState(activityRef, STATE_COMPLETED)) {
             return;
         }
 
-        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_END_DATE, new Date());
+        Map<QName, Serializable> props = new HashMap<>();
+        props.put(LifeCycleModel.PROP_STATE, STATE_COMPLETED);
+        props.put(ActivityModel.PROP_ACTUAL_END_DATE, new Date());
+        nodeService.addProperties(activityRef, props);
 
         HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
 
@@ -104,8 +111,11 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
             if (!isActive(parentActivityRef)) {
 
-                nodeService.setProperty(parentActivityRef, ActivityModel.PROP_ACTUAL_END_DATE, null);
-                nodeService.setProperty(parentActivityRef, LifeCycleModel.PROP_STATE, STATE_STARTED);
+                Map<QName, Serializable> props = new HashMap<>();
+                props.put(ActivityModel.PROP_ACTUAL_END_DATE, null);
+                props.put(LifeCycleModel.PROP_STATE, STATE_STARTED);
+                nodeService.addProperties(parentActivityRef, props);
+
                 resetActivitiesInChildren(childActivityRef);
                 startActivity(childActivityRef);
             }
@@ -319,9 +329,11 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
     private void resetActivity(NodeRef activityRef) {
 
-        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_START_DATE, null);
-        nodeService.setProperty(activityRef, ActivityModel.PROP_ACTUAL_END_DATE, null);
-        nodeService.setProperty(activityRef, LifeCycleModel.PROP_STATE, STATE_NOT_STARTED);
+        Map<QName, Serializable> props = new HashMap<>();
+        props.put(ActivityModel.PROP_ACTUAL_START_DATE, null);
+        props.put(ActivityModel.PROP_ACTUAL_END_DATE, null);
+        props.put(LifeCycleModel.PROP_STATE, STATE_NOT_STARTED);
+        nodeService.addProperties(activityRef, props);
 
         HashSet<QName> classes = new HashSet<>(DictionaryUtils.getNodeClassNames(activityRef, nodeService));
         onResetDelegate.get(classes).onCaseActivityReset(activityRef);
@@ -336,7 +348,7 @@ public class CaseActivityServiceImpl implements CaseActivityService {
         }
     }
 
-    private boolean setState(NodeRef activityRef, String state) {
+    private boolean canSetState(NodeRef activityRef, String state) {
 
         if (!nodeService.exists(activityRef)) {
             return false;
@@ -353,7 +365,6 @@ public class CaseActivityServiceImpl implements CaseActivityService {
 
             List<String> transitions = allowedTransitions.get(currentState);
             if (transitions != null && transitions.contains(state)) {
-                nodeService.setProperty(activityRef, LifeCycleModel.PROP_STATE, state);
                 return true;
             }
         }

@@ -125,6 +125,16 @@
         </headers>
     </journal>
 
+    <journal id="authority">
+        <option name="title">Authority</option>
+        <option name="type">cm:authorityContainer</option>
+        <option name="actionGroupId">none</option>
+        <headers>
+            <header key="cm:authorityName" default="true"/>
+            <header key="cm:authorityDisplayName" default="true"/>
+        </headers>
+    </journal>
+
     <journal id="documents-final-statuses">
         <option name="type">idocs:documentFinalStatus</option>
         <option name="doubleClickId">nodeRef</option>

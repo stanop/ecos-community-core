@@ -45,7 +45,7 @@ public class CaseImportService {
     @Autowired
     private CMMNUtils utils;
     @Autowired
-    @Qualifier("caseTemplateConfigDAO")
+    @Qualifier("caseTemplateContentDAO")
     protected XmlContentDAO<Definitions> configDAO;
 
     private Set<QName> templatesCompareProperties = new HashSet<>();

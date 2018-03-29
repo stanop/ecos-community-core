@@ -39,6 +39,7 @@
         <property name="caseImportService" ref="cmmnImportService"/>
     </bean>
 
+    <!--
     <bean id="caseAutoDeployer" class="ru.citeck.ecos.icase.CaseTemplateDeployer">
         <property name="caseImportService" ref="cmmnImportService"/>
         <property name="retryingTransactionHelper" ref="retryingTransactionHelper"/>
@@ -55,8 +56,37 @@
             </bean>
         </property>
     </bean>
+    -->
 
-    <bean id="caseTemplateConfigDAO" class="ru.citeck.ecos.content.dao.xml.XmlContentDAO">
+    <bean id="caseAutoDeployer" class="ru.citeck.ecos.content.deploy.ContentDeployer">
+        <property name="artifactType" value="caseTemplateDeployer" />
+        <property name="repoContentDAO" ref="caseTemplateRegistry" />
+        <property name="metadataExtractor">
+            <bean class="ru.citeck.ecos.content.metadata.CaseTemplateMetadataExtractor">
+                <property name="converter" ref="CMMNUtils" />
+            </bean>
+        </property>
+        <property name="metadataKeys">
+            <set>
+                <value>{http://www.citeck.ru/model/icase/1.0}caseType</value>
+                <value>{http://www.citeck.ru/model/icase/1.0}caseEcosKind</value>
+                <value>{http://www.citeck.ru/model/icase/1.0}caseEcosType</value>
+            </set>
+        </property>
+        <property name="locations">
+            <bean factory-bean="resourceResolver" factory-method="getResources">
+                <constructor-arg>
+                    <list>
+                        <value>classpath*:alfresco/case/templates/**/*.xml</value>
+                        <value>classpath*:alfresco/module/*/case/templates/**/*.xml</value>
+                        <value>classpath*:alfresco/extension/case/templates/**/*.xml</value>
+                    </list>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="caseTemplateContentDAO" class="ru.citeck.ecos.content.dao.xml.XmlContentDAO">
         <property name="rootNodeQName" value="{http://www.omg.org/spec/CMMN/20151109/MODEL}definitions" />
         <property name="rootPackage" value="ru.citeck.ecos.cmmn.model" />
         <property name="schemaFiles">
@@ -76,7 +106,7 @@
         <property name="typeField" value="{http://www.citeck.ru/model/icase/1.0}caseEcosType" />
         <property name="kindField" value="{http://www.citeck.ru/model/icase/1.0}caseEcosKind" />
         <property name="rootNode" value="/app:company_home/app:dictionary/cm:case-templates" />
-        <property name="configDAO" ref="caseTemplateConfigDAO" />
+        <property name="contentDAO" ref="caseTemplateContentDAO" />
     </bean>
 
 </beans>
