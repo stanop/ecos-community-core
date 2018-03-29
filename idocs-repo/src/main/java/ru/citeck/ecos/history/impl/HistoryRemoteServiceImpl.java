@@ -1,5 +1,6 @@
 package ru.citeck.ecos.history.impl;
 
+import org.alfresco.repo.policy.BehaviourFilter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport.TxnReadState;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
@@ -104,6 +105,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private NodeService nodeService;
 
     private PersonService personService;
+
+    private BehaviourFilter behaviourFilter;
 
     @Autowired(required = false)
     private RabbitTemplate rabbitTemplate;
@@ -317,21 +320,11 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      */
     @Override
     public void updateDocumentHistoryStatus(NodeRef documentNodeRef, boolean newStatus) {
-        RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
-
-        txnHelper.setForceWritable(true);
-
-        boolean requiresNew = getTransactionReadState() != TxnReadState.TXN_READ_WRITE;
-
         try {
-            AuthenticationUtil.runAsSystem(() -> txnHelper.doInTransaction(() -> {
-                if (documentNodeRef != null && nodeService.exists(documentNodeRef)) {
-                    nodeService.setProperty(documentNodeRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY, newStatus);
-                }
-                return null;
-            }, false, requiresNew));
+            setUseNewHistoryStatus(documentNodeRef, newStatus);
         } catch (Exception e) {
-            logger.error("Unexpected error with args documentNodeRef = " + documentNodeRef + ", newStatus = " + newStatus, e);
+            logger.error("Unexpected error with args documentNodeRef = " + documentNodeRef +
+                    ", newStatus = "+ newStatus, e);
         }
     }
 
@@ -366,6 +359,28 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         }
     }
 
+    private void setUseNewHistoryStatus(NodeRef documentNodeRef, boolean newStatus) {
+        RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
+
+        txnHelper.setForceWritable(true);
+
+        boolean requiresNew = getTransactionReadState() != TxnReadState.TXN_READ_WRITE;
+
+        AuthenticationUtil.runAsSystem(() -> txnHelper.doInTransaction(() -> {
+            try {
+                behaviourFilter.disableBehaviour(documentNodeRef);
+
+                if (documentNodeRef != null && nodeService.exists(documentNodeRef)) {
+                    nodeService.setProperty(documentNodeRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY, newStatus);
+                }
+
+                return null;
+            } finally {
+                behaviourFilter.enableBehaviour(documentNodeRef);
+            }
+        }, false, requiresNew));
+    }
+
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -380,5 +395,9 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     public void setPersonService(PersonService personService) {
         this.personService = personService;
+    }
+
+    public void setBehaviourFilter(BehaviourFilter behaviourFilter) {
+        this.behaviourFilter = behaviourFilter;
     }
 }

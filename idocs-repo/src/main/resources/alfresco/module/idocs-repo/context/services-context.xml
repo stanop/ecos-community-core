@@ -444,6 +444,7 @@
 		<property name="restTemplate" ref="restTemplate"/>
 		<property name="nodeService" ref="NodeService"/>
 		<property name="personService" ref="PersonService"/>
+		<property name="behaviourFilter" ref="policyBehaviourFilter" />
 		<property name="transactionService" ref="TransactionService"/>
 	</bean>
 
