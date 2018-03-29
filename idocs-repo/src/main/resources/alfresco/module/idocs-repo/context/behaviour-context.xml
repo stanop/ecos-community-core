@@ -88,7 +88,7 @@
         <property name="dictionaryService" ref="dictionaryService"/>
         <property name="mimetypeService" ref="mimetypeService"/>
         <property name="templateService" ref="templateService"/>
-        <property name="templateEngine" value="freemarker"/>
+        <property name="scriptService" ref="scriptService"/>
         <property name="nodeVariable" value="node"/>
         <property name="restrictedPatterns">
             <!-- cm:filename constraint -->
