@@ -27,7 +27,11 @@
     model.userRef = currentUser.nodeRef;
     model.writeMode = (permissionResult == true || permissionResult == "true");
     model.mode = (args.mode && model.writeMode) ? args.mode : "view";
-    model.inlineEdit = args.inlineEdit ? (args.inlineEdit == "true") : true;
+    model.inlineEdit = args.inlineEdit ? (args.inlineEdit == "true") : model.writeMode;
+
+    /*if (!(user.isAdmin || page.url.templateArgs.userid == user.id)) {
+        model.inlineEdit = false;
+    }*/
 
     var viewArgs = {
         nodeRef: currentUser.nodeRef,

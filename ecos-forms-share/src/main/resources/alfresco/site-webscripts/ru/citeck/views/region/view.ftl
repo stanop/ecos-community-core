@@ -13,6 +13,7 @@
 </#assign>
 <#assign postprocessing = params.postprocessing!"">
 <#assign asis><#if params.asis?? && params.asis == "true">white-space: pre-wrap;<#else></#if></#assign>
+<#assign showNoneIfEmty = (viewScope.view.params.showNoneIfEmty!"true") == "true"/>
 
 
 <#macro valueText isLinked="false">
@@ -93,9 +94,11 @@
     </span>
 <!-- /ko -->
 
+<#if showNoneIfEmty>
 <!-- ko if: empty -->
     <span>${msg(params.emptyLabel!"label.none")}</span>
 <!-- /ko -->
+</#if>
 
 <#if isViewMode && inlineEdit!false>
     </div>

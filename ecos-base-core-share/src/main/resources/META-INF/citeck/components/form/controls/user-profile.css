@@ -74,12 +74,18 @@
 }
 
 .ecos-form .form-fields .user-profile-custom-container .form-field .form-region {
-    font-family: "Open Sans", Arial, sans-serif;
+    font-family: "open sans", arial, sans-serif;
     font-size: 11.5px;
     font-weight: normal;
     float: none;
     color: #212121;
     margin-left: 0;
+}
+
+.ecos-form .form-fields .user-profile-custom-container .form-field .form-region.template-view,
+.ecos-form .form-fields .user-profile-custom-container .form-field .form-region.template-text {
+    width: auto;
+    word-wrap: break-word;
 }
 
 .ecos-form .form-fields .user-profile-custom-container .form-field.invalid .form-region.template-message {
@@ -193,7 +199,7 @@
     height: 90px;
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: 50% 0;
+    background-position: 50%;
 }
 
 .user-profile .ecos-form:not(.edit-form) .form-fields {
@@ -230,6 +236,17 @@
     width: auto;
 }
 
+.ecos-form.invariants-form .form-fields .user-profile-custom-container .form-region.template-select-file-upload,
+.ecos-form.invariants-form .form-fields .user-profile-custom-container .form-region.template-file-upload {
+    margin-left: 50%;
+    transform: translatex(-50%);
+}
+
+.user-profile.node-view.static,
+.ecos-form.create-form.invariants-form {
+    padding: 20px 40px;
+}
+
 /* --------------------------- user profile mobile view ----------------------------------- */
 @media (max-width: 585px) {
     .userprofile .members-bar-links:after {
@@ -264,7 +281,7 @@
 
     .ecos-form.invariants-form .form-view.user-profile-custom-container .user-profile-header__column--photo {
         margin-left: 50%;
-        transform: translateX(-50%);
+        transform: translatex(-50%);
     }
 
     .ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region.template-img-background .img-cover {
@@ -329,10 +346,23 @@
         float: none;
         display: inline-block;
         vertical-align: top;
-}
+    }
 
     .mobile .ecos-form .form-fields .template-table .form-field:after {
          border-bottom: 0;
          margin-bottom: 0;
+    }
+
+    .ecos-form.invariants-form .form-fields .user-profile-custom-container {
+        margin-left: initial;
+        margin-right: initial;
+    }
+
+    .yui-skin-citeckTheme .invariants-form .template-table .template-half-width .template-label {
+        min-height: initial;
+    }
+
+    .mobile .ecos-form .form-fields .template-table .form-field .form-region.template-label {
+        margin-bottom: initial;
     }
 }
