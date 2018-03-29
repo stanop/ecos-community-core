@@ -1,5 +1,6 @@
 package ru.citeck.ecos.history.impl;
 
+import org.alfresco.repo.policy.BehaviourFilter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport.TxnReadState;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
@@ -104,6 +105,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private NodeService nodeService;
 
     private PersonService personService;
+
+    private BehaviourFilter behaviourFilter;
 
     @Autowired(required = false)
     private RabbitTemplate rabbitTemplate;
@@ -324,6 +327,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         boolean requiresNew = getTransactionReadState() != TxnReadState.TXN_READ_WRITE;
 
         try {
+            behaviourFilter.disableBehaviour(documentNodeRef);
+
             AuthenticationUtil.runAsSystem(() -> txnHelper.doInTransaction(() -> {
                 if (documentNodeRef != null && nodeService.exists(documentNodeRef)) {
                     nodeService.setProperty(documentNodeRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY, newStatus);
@@ -332,6 +337,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             }, false, requiresNew));
         } catch (Exception e) {
             logger.error("Unexpected error with args documentNodeRef = " + documentNodeRef + ", newStatus = " + newStatus, e);
+        } finally {
+            behaviourFilter.enableBehaviour(documentNodeRef);
         }
     }
 
@@ -380,5 +387,9 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     public void setPersonService(PersonService personService) {
         this.personService = personService;
+    }
+
+    public void setBehaviourFilter(BehaviourFilter behaviourFilter) {
+        this.behaviourFilter = behaviourFilter;
     }
 }
