@@ -320,25 +320,11 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      */
     @Override
     public void updateDocumentHistoryStatus(NodeRef documentNodeRef, boolean newStatus) {
-        RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
-
-        txnHelper.setForceWritable(true);
-
-        boolean requiresNew = getTransactionReadState() != TxnReadState.TXN_READ_WRITE;
-
         try {
-            behaviourFilter.disableBehaviour(documentNodeRef);
-
-            AuthenticationUtil.runAsSystem(() -> txnHelper.doInTransaction(() -> {
-                if (documentNodeRef != null && nodeService.exists(documentNodeRef)) {
-                    nodeService.setProperty(documentNodeRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY, newStatus);
-                }
-                return null;
-            }, false, requiresNew));
+            setUseNewHistoryStatus(documentNodeRef, newStatus);
         } catch (Exception e) {
-            logger.error("Unexpected error with args documentNodeRef = " + documentNodeRef + ", newStatus = " + newStatus, e);
-        } finally {
-            behaviourFilter.enableBehaviour(documentNodeRef);
+            logger.error("Unexpected error with args documentNodeRef = " + documentNodeRef +
+                    ", newStatus = "+ newStatus, e);
         }
     }
 
@@ -371,6 +357,28 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         } else {
             return Boolean.valueOf(propertyValue);
         }
+    }
+
+    private void setUseNewHistoryStatus(NodeRef documentNodeRef, boolean newStatus) {
+        RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
+
+        txnHelper.setForceWritable(true);
+
+        boolean requiresNew = getTransactionReadState() != TxnReadState.TXN_READ_WRITE;
+
+        AuthenticationUtil.runAsSystem(() -> txnHelper.doInTransaction(() -> {
+            try {
+                behaviourFilter.disableBehaviour(documentNodeRef);
+
+                if (documentNodeRef != null && nodeService.exists(documentNodeRef)) {
+                    nodeService.setProperty(documentNodeRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY, newStatus);
+                }
+
+                return null;
+            } finally {
+                behaviourFilter.enableBehaviour(documentNodeRef);
+            }
+        }, false, requiresNew));
     }
 
     public void setRestTemplate(RestTemplate restTemplate) {
