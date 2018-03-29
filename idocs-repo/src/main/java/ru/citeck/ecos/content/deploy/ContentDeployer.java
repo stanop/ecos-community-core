@@ -74,7 +74,16 @@ public class ContentDeployer<T> extends AbstractDeployerBean {
         }
 
         Map<QName, Serializable> keys = new HashMap<>();
-        metadataKeys.forEach(keyName -> keys.put(keyName, metadata.get(keyName)));
+        metadataKeys.forEach(keyName -> {
+            Serializable value = metadata.get(keyName);
+            if (value instanceof NodeRef) {
+                if (nodeService.exists((NodeRef) value)) {
+                    keys.put(keyName, value);
+                }
+            } else {
+                keys.put(keyName, value);
+            }
+        });
         if (keys.isEmpty() || keys.values().stream().allMatch(Objects::isNull)) {
             logger.warn("Content keys is empty. Ignore it. File: " + location);
             return;

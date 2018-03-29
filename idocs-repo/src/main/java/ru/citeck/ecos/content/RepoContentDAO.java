@@ -8,6 +8,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.GUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -119,6 +120,12 @@ public class RepoContentDAO<T> {
         if (name == null) {
             name = "contentData";
         }
+
+        NodeRef node = nodeService.getChildByName(rootRef.getNodeRef(), childAssocType, name);
+        if (node != null) {
+            properties.putIfAbsent(ContentModel.PROP_NAME, GUID.generate());
+        }
+
         QName assocName = QName.createQName(childAssocType.getNamespaceURI(), name);
         return nodeService.createNode(rootRef.getNodeRef(),
                                       childAssocType,
