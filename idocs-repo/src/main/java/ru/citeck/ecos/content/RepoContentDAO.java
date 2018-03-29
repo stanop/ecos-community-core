@@ -8,6 +8,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.GUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,7 +58,7 @@ public class RepoContentDAO<T> {
      * @param nodeRef node with content which can be parsed by ConfigDAO
      * @return ConfigData with nodeRef passed by argument and parsing result
      */
-    public Optional<ContentData<T>> getFirstContentData(NodeRef nodeRef) {
+    public Optional<ContentData<T>> getContentData(NodeRef nodeRef) {
         ContentData<T> config = getContentDataImpl(nodeRef);
         if (config.updateData()) {
             return Optional.of(config);
@@ -71,7 +72,14 @@ public class RepoContentDAO<T> {
      * Get config data by properties values
      */
     public Optional<ContentData<T>> getFirstContentData(Map<QName, Serializable> keys) {
-        List<ContentData<T>> configs = getContentData(keys);
+        return getFirstContentData(keys, true);
+    }
+
+    /**
+     * Get config data by properties values
+     */
+    public Optional<ContentData<T>> getFirstContentData(Map<QName, Serializable> keys, boolean ignoreWithoutData) {
+        List<ContentData<T>> configs = getContentData(keys, ignoreWithoutData);
         return Optional.ofNullable(configs.size() > 0 ? configs.get(0) : null);
     }
 
@@ -79,25 +87,32 @@ public class RepoContentDAO<T> {
      * Get configs data by properties values
      */
     public List<ContentData<T>> getContentData(Map<QName, Serializable> keys) {
+        return getContentData(keys, true);
+    }
+
+    /**
+     * Get configs data by properties values
+     */
+    public List<ContentData<T>> getContentData(Map<QName, Serializable> keys, boolean ignoreWithoutData) {
 
         checkChangeDate();
 
         Map<QName, Serializable> localKeys = new HashMap<>(keys);
 
-        List<ContentData<T>> persisted = configDataByKeys.computeIfAbsent(localKeys, this::searchData);
-        List<ContentData<T>> result = persisted.stream()
-                                              .filter(ContentData::updateData)
-                                              .collect(Collectors.toList());
+        List<ContentData<T>> result = configDataByKeys.computeIfAbsent(localKeys, this::searchData);
+        result.forEach(ContentData::updateData);
 
         if (configDataByKeys.size() > MEMORY_LEAK_THRESHOLD) {
             logger.warn("Cache size increased to " + MEMORY_LEAK_THRESHOLD + " elements. Seems it is memory leak");
         }
 
-        if (persisted.size() != result.size()) {
-            configDataByKeys.put(localKeys, result);
+        if (ignoreWithoutData) {
+            return result.stream()
+                         .filter(d -> d.getData().isPresent())
+                         .collect(Collectors.toList());
+        } else {
+            return result;
         }
-
-        return result;
     }
 
     public NodeRef createNode(Map<QName, Serializable> properties) {
@@ -105,6 +120,12 @@ public class RepoContentDAO<T> {
         if (name == null) {
             name = "contentData";
         }
+
+        NodeRef node = nodeService.getChildByName(rootRef.getNodeRef(), childAssocType, name);
+        if (node != null) {
+            properties.putIfAbsent(ContentModel.PROP_NAME, GUID.generate());
+        }
+
         QName assocName = QName.createQName(childAssocType.getNamespaceURI(), name);
         return nodeService.createNode(rootRef.getNodeRef(),
                                       childAssocType,
