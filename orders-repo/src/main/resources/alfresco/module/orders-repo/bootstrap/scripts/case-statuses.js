@@ -1,4 +1,5 @@
 var statuses = [
+    {name: 'reworking',            title: {'en': 'Reworking',              'ru': '\u0414\u043E\u0440\u0430\u0431\u043E\u0442\u043A\u0430'}},
     {name: 'draft',                title: {'en': 'Draft',                  'ru': '\u0427\u0435\u0440\u043D\u043E\u0432\u0438\u043A'}},
     {name: 'approval',             title: {'en': 'Approve',                'ru': '\u0421\u043E\u0433\u043B\u0430\u0441\u043E\u0432\u0430\u043D\u0438\u0435'}},
     {name: 'prepared',             title: {'en': 'Prepared',               'ru': '\u041F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u043B\u0435\u043D\u0430'}},
