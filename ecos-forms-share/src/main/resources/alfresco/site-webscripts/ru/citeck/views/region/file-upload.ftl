@@ -12,9 +12,9 @@
 	<#if params.properties??>properties: ${params.properties},</#if>
 	multiple: multiple,
 	value: multipleValues,
-	maxCount: ${params.maxCount!'\'0\''},
-	maxSize: ${params.maxSize!'\'0\''},
-	alowedFileTypes: '${params.alowedFileTypes!'\'\''}'
+	maxCount: ${params.maxCount!'0'},
+	maxSize: ${params.maxSize!'0'},
+	alowedFileTypes: '${params.alowedFileTypes!""}'
 }">
     <input id="${controlId}-fileInput" type="file" class="hidden" data-bind="attr: { multiple: multiple }" ${accept}>
     <button id="${controlId}-openFileUploadDialogButton"
