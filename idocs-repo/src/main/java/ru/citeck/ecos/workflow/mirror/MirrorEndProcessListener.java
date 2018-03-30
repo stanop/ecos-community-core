@@ -25,6 +25,9 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.workflow.WorkflowService;
+import org.alfresco.service.cmr.workflow.WorkflowTask;
+import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.service.CiteckServices;
@@ -42,6 +45,9 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
     private static final Log logger = LogFactory.getLog(MirrorEndProcessListener.class);
     private NodeService nodeService;
     private WorkflowMirrorService service;
+    private WorkflowService workflowService;
+
+    private boolean useOldSearch = false;
 
     @Override
     protected void notifyImpl(final DelegateExecution delegateExecution) {
@@ -71,16 +77,31 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
             }
         } else if(entity.getProcessInstance().isEnded()) {
             String workflowId = "activiti$" + entity.getProcessInstanceId();
-            List<NodeRef> mirrors = service.getTaskMirrorsByWorkflowId(workflowId);
-            for (NodeRef mirror : mirrors) {
-                service.mirrorTask((String) nodeService.getProperty(mirror, ContentModel.PROP_NAME));
+
+            if (useOldSearch) {
+                List<NodeRef> mirrors = service.getTaskMirrorsByWorkflowId(workflowId);
+                for (NodeRef mirror : mirrors) {
+                    service.mirrorTask((String) nodeService.getProperty(mirror, ContentModel.PROP_NAME));
+                }
+            } else {
+                WorkflowTaskQuery query = new WorkflowTaskQuery();
+                query.setProcessId(workflowId);
+                List<WorkflowTask> tasks = workflowService.queryTasks(query, false);
+                for (WorkflowTask task : tasks) {
+                    service.mirrorTask(task);
+                }
             }
         }
+    }
+
+    public void setOldSearch(boolean value) {
+        useOldSearch = value;
     }
 
     @Override
     protected void initImpl() {
         this.nodeService = serviceRegistry.getNodeService();
+        this.workflowService = serviceRegistry.getWorkflowService();
         this.service = (WorkflowMirrorService) serviceRegistry.getService(CiteckServices.WORKFLOW_MIRROR_SERVICE);
     }
 }

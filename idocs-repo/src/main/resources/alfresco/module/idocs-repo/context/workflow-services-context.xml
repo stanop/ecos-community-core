@@ -236,7 +236,7 @@
 				<ref bean="onAssignPoolTaskListener" />
 				<ref bean="workflowMirrorListener" />
 				<ref bean="taskAssignDateListener" />
-				<ref bean="grantWorkflowPackage" />
+				<!--<ref bean="grantWorkflowPackage" />-->
 				<ref bean="taskHistoryListener" />
 				<ref bean="sendUnavailableOnAssignTaskListener" />
 			</list>
@@ -251,7 +251,7 @@
 				<ref bean="taskPriorityPull" />
 				<ref bean="taskOriginalOwner"/>
 				<ref bean="workflowMirrorListener" />
-				<ref bean="grantWorkflowPackage" />
+				<!--<ref bean="grantWorkflowPackage" />-->
 				<ref bean="taskHistoryListener" />
 				<ref bean="assignTaskToSingleCandidate" />
 				<ref bean="sendTaskNotificationListener" />
@@ -265,7 +265,7 @@
 				<ref bean="citeckTaskSenderPush" />
 				<ref bean="lastCommentPush" />
 				<ref bean="taskOutcomePush" />
-				<ref bean="revokeWorkflowPackage" />
+				<!--<ref bean="revokeWorkflowPackage" />-->
 				<ref bean="completeDelegateTaskListener" />
 				<ref bean="sendUnavailableOnCompleteTaskListener" />
 				<ref bean="workflowMirrorListener" />
@@ -290,7 +290,7 @@
 	<bean parent="activiti-listener.process.end">
 		<property name="values">
 			<list>
-				<ref bean="revokeFinalWorkflowPackage" />
+				<!--<ref bean="revokeFinalWorkflowPackage" />-->
 				<ref bean="cancelWorkflowListener" />
 				<ref bean="completeWorkflowListener" />
 				<ref bean="lifeCycleEndProcessListener" />

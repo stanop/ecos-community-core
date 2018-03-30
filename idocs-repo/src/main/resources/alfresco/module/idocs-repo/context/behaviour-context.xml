@@ -24,12 +24,12 @@
         <property name="policyComponent" ref="policyComponent"/>
     </bean>
 
-    <bean id="GrantedAspectBehaviour" class="ru.citeck.ecos.security.GrantedBehaviour" init-method="init">
+    <!--<bean id="GrantedAspectBehaviour" class="ru.citeck.ecos.security.GrantedBehaviour" init-method="init">
         <property name="walker" ref="GrantPermissionServiceWalker"/>
         <property name="grantPermissionService" ref="GrantPermissionService"/>
         <property name="policyComponent" ref="policyComponent"/>
         <property name="className" value="{http://www.citeck.ru/model/grant-permission/1.0}granted"/>
-    </bean>
+    </bean>-->
 
     <!-- The undeletable aspect override -->
     <!-- it allows to delete working copies -->
