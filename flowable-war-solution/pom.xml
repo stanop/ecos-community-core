@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ru.citeck.ecos.flowable</groupId>
+    <artifactId>flowable-war-solution</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Ecos Flowable WAR solution</name>
+    <description>Ecos Flowable WAR solution</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>create-default-locale-properties</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <modules>
+        <module>flowable-ui-admin-app</module>
+        <module>flowable-ui-idm-app</module>
+        <module>flowable-ui-modeler-app</module>
+        <module>flowable-app-rest</module>
+        <module>flowable-ui-task-app</module>
+    </modules>
+
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <url>${releases.repo.url}</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>${snapshots.repo.url}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+</project>

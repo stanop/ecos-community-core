@@ -66,6 +66,7 @@
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
         <flowable.version>6.2.1</flowable.version>
+        <ecos.flowable.version>1.0.0-SNAPSHOT</ecos.flowable.version>
     </properties>
 
     <profiles>
@@ -107,37 +108,37 @@
                                     <version>1.0</version>
                                 </webapp>
                                 <webapp>
-                                    <groupId>org.flowable</groupId>
+                                    <groupId>ru.citeck.ecos.flowable</groupId>
                                     <artifactId>flowable-ui-idm-app</artifactId>
-                                    <version>${flowable.version}</version>
+                                    <version>${ecos.flowable.version}</version>
                                     <contextPath>flowable-idm</contextPath>
                                     <contextFile>${project.build.testOutputDirectory}/tomcat/flowable/flowable-idm.xml</contextFile>
                                 </webapp>
                                 <webapp>
-                                    <groupId>org.flowable</groupId>
+                                    <groupId>ru.citeck.ecos.flowable</groupId>
                                     <artifactId>flowable-ui-modeler-app</artifactId>
-                                    <version>${flowable.version}</version>
+                                    <version>${ecos.flowable.version}</version>
                                     <contextPath>flowable-modeler</contextPath>
                                     <contextFile>${project.build.testOutputDirectory}/tomcat/flowable/flowable-modeler.xml</contextFile>
                                 </webapp>
                                 <webapp>
-                                    <groupId>org.flowable</groupId>
+                                    <groupId>ru.citeck.ecos.flowable</groupId>
                                     <artifactId>flowable-ui-admin-app</artifactId>
-                                    <version>${flowable.version}</version>
+                                    <version>${ecos.flowable.version}</version>
                                     <contextPath>flowable-admin</contextPath>
                                     <contextFile>${project.build.testOutputDirectory}/tomcat/flowable/flowable-admin.xml</contextFile>
                                 </webapp>
                                 <webapp>
-                                    <groupId>org.flowable</groupId>
+                                    <groupId>ru.citeck.ecos.flowable</groupId>
                                     <artifactId>flowable-app-rest</artifactId>
-                                    <version>${flowable.version}</version>
+                                    <version>${ecos.flowable.version}</version>
                                     <contextPath>flowable-rest</contextPath>
                                     <contextFile>${project.build.testOutputDirectory}/tomcat/flowable/flowable-rest.xml</contextFile>
                                 </webapp>
                                 <webapp>
-                                    <groupId>org.flowable</groupId>
+                                    <groupId>ru.citeck.ecos.flowable</groupId>
                                     <artifactId>flowable-ui-task-app</artifactId>
-                                    <version>${flowable.version}</version>
+                                    <version>${ecos.flowable.version}</version>
                                     <contextPath>flowable-task</contextPath>
                                     <contextFile>${project.build.testOutputDirectory}/tomcat/flowable/flowable-task.xml</contextFile>
                                 </webapp>
