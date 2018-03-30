@@ -149,7 +149,6 @@
                 <aspect>orders:internalType</aspect>
                 <aspect>idocs:hasPerformer</aspect>
                 <aspect>idocs:hasSignatory</aspect>
-                <aspect>idocs:hasRestrictedDocumentStatus</aspect>
                 <aspect>idocs:hasRegistrator</aspect>
                 <aspect>idocs:hasInitiator</aspect>
                 <aspect>dms:templateable</aspect>
