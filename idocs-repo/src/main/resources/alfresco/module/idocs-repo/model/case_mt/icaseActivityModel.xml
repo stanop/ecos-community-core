@@ -75,7 +75,8 @@
             <mandatory-aspects>
                 <aspect>cm:titled</aspect>
                 <aspect>activ:hasState</aspect>
-                <aspect>ind:doNotIndexTypeCompletely</aspect>
+                <!-- remove from index by solr patch -->
+                <!--<aspect>ind:doNotIndexTypeCompletely</aspect>-->
             </mandatory-aspects>
         </type>
     </types>
