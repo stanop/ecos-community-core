@@ -203,14 +203,6 @@
         </field>
     </view>
 
-    <!-- <view class="contracts:agreement" mode="create">
-        <view class="contracts:agreement" id="create-edit" kind="3-column" />
-    </view>
-    <view class="contracts:agreement" mode="edit">
-        <view class="contracts:agreement" id="create-edit" kind="3-column" />
-    </view> -->
-
-
     <view class="contracts:subject">
         <field prop="contracts:subjectCode">
             <region name="label" template="label">
@@ -258,10 +250,6 @@
             <field assoc="payments:basis">
                 <region name="select" template="select-journal">
                     <param name="journalType">contract-agreements</param>
-                    <!--<param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
-                    <param name="defaultCriteria">[{ attribute: 'type', predicate: 'type-not-equals', value: 'payments:payment' }]</param>
-                    <param name="defaultVisibleAttributes">cm:title, tk:type</param>
-                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>-->
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">

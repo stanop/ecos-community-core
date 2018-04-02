@@ -165,7 +165,6 @@
             <mandatory-aspects>
                 <aspect>idocs:hasLegalEntity</aspect>
                 <aspect>idocs:registrationInfo</aspect>
-                <!--<aspect>idocs:hasDocumentType</aspect>-->
                 <aspect>idocs:pagesInfo</aspect>
                 <aspect>idocs:hasSummary</aspect>
                 <aspect>idocs:hasController</aspect>
@@ -291,7 +290,6 @@
                 </association-->
             </associations>
             <mandatory-aspects>
-                <!--<aspect>dms:INN_KPP_withConstraint</aspect>-->
                 <aspect>idocs:organizationInfo</aspect>
                 <aspect>idocs:publicRegInfo</aspect>
                 <aspect>idocs:entityInfo</aspect>
@@ -933,12 +931,6 @@
         </aspect>
 
         <aspect name="idocs:hasRegistrator">
-            <!--<properties>-->
-                <!--<property name="idocs:registrator">-->
-                    <!--<title>Registrator</title>-->
-                    <!--<type>d:text</type>-->
-                <!--</property>-->
-            <!--</properties>-->
             <associations>
                 <association name="idocs:registrator">
                     <title>Регистратор</title>

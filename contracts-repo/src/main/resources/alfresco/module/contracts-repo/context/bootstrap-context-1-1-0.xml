@@ -402,7 +402,6 @@
 	<bean id="contracts.module-component.original-location" parent="contracts.import-spaces.1-0-0">
 		<property name="name" value="original-location" />
 		<property name="description" value="Original Location Journal" />
-		<!-- property name="executeOnceOnly" value="false" / -->
 		<property name="dependsOn">
 			<list>
 				<ref bean="contracts.module-component.contracts-site" />
