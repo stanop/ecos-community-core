@@ -43,9 +43,10 @@
                     </target>
                 </association>
             </associations>
-            <mandatory-aspects>
-                <aspect>ind:doNotIndexTypeCompletely</aspect>
-            </mandatory-aspects>
+            <!--<mandatory-aspects>-->
+                <!-- remove from index by solr patch -->
+                <!--<aspect>ind:doNotIndexTypeCompletely</aspect>-->
+            <!--</mandatory-aspects>-->
         </type>
     </types>
     
