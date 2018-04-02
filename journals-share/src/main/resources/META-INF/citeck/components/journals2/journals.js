@@ -1669,17 +1669,33 @@ JournalsWidget
             logger.info("Loading records with query: " + queryString);
 
             Alfresco.util.Ajax.jsonPost({
-                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journal.type().id(),
+                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journal.type().id() + "&rawGql=true",
                 dataObj: query,
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        var data = response.json, self = this;
+                        var data = response.json.data ? response.json.data.criteriaSearch : {}, self = this,
+                            recordProperties = ['nodeRef', 'permissions', 'isDocument', 'isContainer', 'doclib'],
+                            records = data.results;
+                        if (records && records.length) {
+                            records = _.map(records, function(node) {
+                                var record = {attributes: {}};
+                                for (var key in node) {
+                                    var item = node[key];
+                                    if (recordProperties.indexOf(key) != -1) {
+                                        record[key] = item;
+                                    } else {
+                                        record.attributes[key.replace("_", ":")] = item.name ? (item.value || item.nodes) : item;
+                                    }
+                                }
+                                return record;
+                            });
+                        }
 
                         customRecordLoader(new Citeck.utils.DoclibRecordLoader(self.actionGroupId()));
 
                         this.model({
-                            records: data.results,
+                            records: records,
                             skipCount: data.paging.skipCount,
                             maxItems: data.paging.maxItems,
                             totalItems: data.paging.totalItems,
