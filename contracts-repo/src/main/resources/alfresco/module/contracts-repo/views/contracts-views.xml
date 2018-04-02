@@ -203,13 +203,6 @@
         </field>
     </view>
 
-    <!-- <view class="contracts:agreement" mode="create">
-        <view class="contracts:agreement" id="create-edit" kind="3-column" />
-    </view>
-    <view class="contracts:agreement" mode="edit">
-        <view class="contracts:agreement" id="create-edit" kind="3-column" />
-    </view> -->
-
 
     <view class="contracts:subject">
         <field prop="contracts:subjectCode">
