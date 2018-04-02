@@ -41,6 +41,7 @@ public class JournalRecordsPost extends AbstractWebScript {
 
     //========PARAMS========
     private static final String PARAM_JOURNAL_ID = "journalId";
+    private static final String PARAM_RAW_GQL = "rawGql";
     //=======/PARAMS========
 
     private static final String SEARCH_LANGUAGE = SearchService.LANGUAGE_FTS_ALFRESCO;
@@ -86,6 +87,8 @@ public class JournalRecordsPost extends AbstractWebScript {
 
         String journalId = req.getParameter(PARAM_JOURNAL_ID);
 
+
+
         if (StringUtils.isBlank(journalId)) {
             throw new RuntimeException("journalId is mandatory parameter");
         }
@@ -107,6 +110,8 @@ public class JournalRecordsPost extends AbstractWebScript {
 
         if (datasource.equals(DATASOURCE_GRAPHQL)) {
 
+            boolean rawGql = "true".equals(req.getParameter(PARAM_RAW_GQL));
+
             JournalRecordsQuery query =
                     gqlQueryByJournalId.computeIfAbsent(journalId, id -> generateGqlQuery(journalType));
 
@@ -118,52 +123,57 @@ public class JournalRecordsPost extends AbstractWebScript {
             Map<String, Map<String, Object>> data = executeResult.getData();
             Map<String, Object> resultData = data.get(KEY_CRITERIA_SEARCH);
 
-            Map<String, Object> result = new HashMap<>();
+            if (rawGql) {
+                mapper.writeValue(res.getOutputStream(), executeResult.toSpecification());
+            } else {
 
-            //map results to meet criteria-search format
-            resultData.forEach((queryResultKey, queryResultValue) -> {
+                Map<String, Object> result = new HashMap<>();
 
-                if (queryResultKey.equals(KEY_RESULTS)) {
+                //map results to meet criteria-search format
+                resultData.forEach((queryResultKey, queryResultValue) -> {
 
-                    @SuppressWarnings("unchecked")
-                    List<Map<String, Object>> resultsList = (List<Map<String, Object>>) queryResultValue;
-                    List<Map<String, Object>> newResultsList = new ArrayList<>();
+                    if (queryResultKey.equals(KEY_RESULTS)) {
 
-                    for (Map<String, Object> record : resultsList) {
+                        @SuppressWarnings("unchecked")
+                        List<Map<String, Object>> resultsList = (List<Map<String, Object>>) queryResultValue;
+                        List<Map<String, Object>> newResultsList = new ArrayList<>();
 
-                        Map<String, Object> newRecord = new HashMap<>();
-                        Map<String, Object> attributes = new HashMap<>();
+                        for (Map<String, Object> record : resultsList) {
 
-                        record.forEach((recordKey, recordValue) -> {
+                            Map<String, Object> newRecord = new HashMap<>();
+                            Map<String, Object> attributes = new HashMap<>();
 
-                            Pair<String, String> mapping = query.attributesMapping.get(recordKey);
-                            if (mapping != null) {
-                                attributes.put(mapping.getFirst(), ((Map) recordValue).get(mapping.getSecond()));
-                            } else if (recordKey.equals("attr_aspects")) {
-                                attributes.put("attr:aspects", recordValue);
-                            } else {
-                                newRecord.put(recordKey, recordValue);
-                            }
-                        });
+                            record.forEach((recordKey, recordValue) -> {
 
-                        NodeRef recordRef = new NodeRef((String) record.get("nodeRef"));
-                        query.virtualAttributes.forEach(a -> {
-                            String attName = a.toPrefixString(namespaceService);
-                            Object value = virtualScriptAttributes.getAttribute(recordRef, a);
-                            attributes.put(attName, value);
-                        });
+                                Pair<String, String> mapping = query.attributesMapping.get(recordKey);
+                                if (mapping != null) {
+                                    attributes.put(mapping.getFirst(), ((Map) recordValue).get(mapping.getSecond()));
+                                } else if (recordKey.equals("attr_aspects")) {
+                                    attributes.put("attr:aspects", recordValue);
+                                } else {
+                                    newRecord.put(recordKey, recordValue);
+                                }
+                            });
 
-                        newRecord.put(KEY_ATTRIBUTES, attributes);
-                        newResultsList.add(newRecord);
+                            NodeRef recordRef = new NodeRef((String) record.get("nodeRef"));
+                            query.virtualAttributes.forEach(a -> {
+                                String attName = a.toPrefixString(namespaceService);
+                                Object value = virtualScriptAttributes.getAttribute(recordRef, a);
+                                attributes.put(attName, value);
+                            });
+
+                            newRecord.put(KEY_ATTRIBUTES, attributes);
+                            newResultsList.add(newRecord);
+                        }
+                        result.put(KEY_RESULTS, newResultsList);
+
+                    } else {
+                        result.put(queryResultKey, queryResultValue);
                     }
-                    result.put(KEY_RESULTS, newResultsList);
+                });
 
-                } else {
-                    result.put(queryResultKey, queryResultValue);
-                }
-            });
-
-            mapper.writeValue(res.getOutputStream(), result);
+                mapper.writeValue(res.getOutputStream(), result);
+            }
 
         } else { //old behaviour from criteria-search.post
 
@@ -241,7 +251,10 @@ public class JournalRecordsPost extends AbstractWebScript {
             }
 
             String attrSchema = getAttributeSchema(attributeOptions, isMultiple, attWithNodes, attWithQName);
-            String attributeDataKey = StringUtils.substringBefore(attrSchema, "{").trim();
+            String attributeDataKey = StringUtils.substringBefore(attrSchema, "{")
+                                                 .replaceAll("name", "")
+                                                 .replaceAll(",", "").trim();
+
             attributesMapping.put(underscoredKey, new Pair<>(prefixedKey, attributeDataKey));
             schemaBuilder.append(attrSchema);
 
@@ -282,7 +295,7 @@ public class JournalRecordsPost extends AbstractWebScript {
                         attr = attr.trim();
                         if (!childrenAttributes.containsKey(attr)) {
                             String key = attr.replaceAll(":", "_");
-                            childrenAttributes.put(key, "attribute(name:\"" + attr + "\"){value}");
+                            childrenAttributes.put(key, "attribute(name:\"" + attr + "\"){name value}");
                         }
                     }
                 } while (attrMatcher.find());
@@ -298,7 +311,7 @@ public class JournalRecordsPost extends AbstractWebScript {
             }
         }
 
-        StringBuilder schemaBuilder = new StringBuilder();
+        StringBuilder schemaBuilder = new StringBuilder("name,");
         if (value == null) {
             schemaBuilder.append(isMultiple ? "values" : "value");
         } else {
