@@ -12,7 +12,7 @@ import java.util.*;
 public class BooleanFieldConverter extends FieldConverter<FormField> {
 
     @Override
-    protected Optional<NodeViewRegion> createInputRegion(FormField field) {
+    protected Optional<NodeViewRegion> createInputRegion(FormField field, Map<String, Object> variables) {
         return Optional.of(new NodeViewRegion.Builder(prefixResolver)
                                              .name("input")
                                              .template("checkbox")
