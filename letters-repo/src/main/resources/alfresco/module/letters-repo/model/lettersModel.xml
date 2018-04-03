@@ -58,7 +58,6 @@
 					<title>Note of removal from control</title>
 					<type>d:text</type>
 				</property>
-
 				<property name="letters:originalLocation">
 					<title>Местонахождение оригинала</title>
 					<type>d:text</type>
@@ -71,7 +70,6 @@
 					<title>Количество экземпляров</title>
 					<type>d:text</type>
 				</property>
-
 				<property name="letters:deliveryType">
 					<title>Вид доставки</title>
 					<type>d:text</type>
