@@ -9,11 +9,15 @@
 			<list>
 				<value>alfresco/module/contracts-repo/model/paymentsModel.xml</value>
 				<value>alfresco/module/contracts-repo/model/contractsModel.xml</value>
+				<value>alfresco/module/contracts-repo/model/contracts-workflow-model.xml</value>
+				<value>alfresco/module/contracts-repo/model/contracts-event-model.xml</value>
 			</list>
 		</property>
 		<property name="labels">
 			<list>
 				<value>alfresco/module/contracts-repo/messages/contracts</value>
+				<value>alfresco/module/contracts-repo/messages/contracts-workflow</value>
+				<value>alfresco/module/contracts-repo/messages/contracts-event</value>
 			</list>
 		</property>
 	</bean>

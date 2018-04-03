@@ -224,4 +224,102 @@
 		<property name="targetCurrencyAssoc" value="pas:currency"/>
 	</bean>
 
+	<bean id="contracts.selectSignerBehaviour" class="ru.citeck.ecos.behavior.SelectSignerBehaviour" init-method="init">
+		<property name="nodeService" ref="nodeService" />
+		<property name="policyComponent" ref="policyComponent" />
+		<property name="workflowService" ref="WorkflowService" />
+	</bean>
+
+	<bean id="contracts.createRejectionEventBehaviour"
+		  class="ru.citeck.ecos.behavior.ContractsCreateEventsByRejectionBehaviour"
+		  init-method="init">
+		<property name="historyService" ref="historyService"/>
+		<property name="nodeService" ref="nodeService"/>
+		<property name="policyComponent" ref="policyComponent"/>
+		<property name="order" value="120"/>
+	</bean>
+
+	<bean id="contracts.createDeliveryFailedEventBehaviour"
+		  class="ru.citeck.ecos.behavior.ContractsCreateEventsByFailBehaviour"
+		  init-method="init">
+		<property name="historyService" ref="historyService"/>
+		<property name="nodeService" ref="nodeService"/>
+		<property name="policyComponent" ref="policyComponent"/>
+		<property name="order" value="120"/>
+	</bean>
+
+	<bean id="contracts.setAspectForAttachments"
+		  class="ru.citeck.ecos.behavior.ContractsSetAspectForAttachments"
+		  init-method="init">
+		<property name="policyComponent" ref="policyComponent"/>
+		<property name="nodeService" ref="nodeService"/>
+	</bean>
+
+	<bean id="contracts.createEventsForAttachments"
+		  class="ru.citeck.ecos.behavior.ContractsCreateEventsForAttachments"
+		  init-method="init">
+		<property name="policyComponent" ref="policyComponent"/>
+		<property name="nodeService" ref="nodeService"/>
+		<property name="historyService" ref="historyService"/>
+	</bean>
+
+	<bean id="contracts.diadocAttachmentsStatusBehaviour" init-method="init" abstract="true"
+		  class="ru.citeck.ecos.behavior.DiadocAttachmentsStatusBehaviour">
+		<property name="nodeService" ref="nodeService" />
+		<property name="scriptService" ref="scriptService" />
+		<property name="policyComponent" ref="policyComponent" />
+		<property name="parentAssocName" value="icase:documents" />
+		<property name="attachmentClassName" value="contracts:agreement" />
+	</bean>
+
+	<bean id="contracts.packageAttachments.diadocAttachmentsStatusBehaviour" init-method="init" abstract="true"
+		  class="ru.citeck.ecos.behavior.DiadocAttachmentsStatusBehaviour">
+		<property name="nodeService" ref="nodeService" />
+		<property name="scriptService" ref="scriptService" />
+		<property name="policyComponent" ref="policyComponent" />
+		<property name="assocName" value="sam:packageAttachments" />
+		<property name="attachmentClassName" value="idocs:doc" />
+	</bean>
+
+	<bean id="contracts.packageAttachments.diadocAttachmentsStateBehaviour"
+		  parent="contracts.packageAttachments.diadocAttachmentsStatusBehaviour"
+		  class="ru.citeck.ecos.behavior.DiadocAttachmentsStateBehaviour">
+	</bean>
+
+	<bean id="contracts.diadocAttachmentsStateBehaviour"
+		  parent="contracts.diadocAttachmentsStatusBehaviour"
+		  class="ru.citeck.ecos.behavior.DiadocAttachmentsStateBehaviour">
+	</bean>
+
+	<bean id="contracts.DiadocContractNotificationToSignatoryBehaviour"
+		  parent="contracts.diadocAttachmentsStatusBehaviour"
+		  class="ru.citeck.ecos.behavior.DiadocContractNotificationBehaviour">
+		<property name="enabled" value="true" />
+		<property name="recipients" value="signer" />
+		<property name="caseRoleService" ref="caseRoleService" />
+		<property name="dictionaryService" ref="dictionaryService" />
+		<property name="notificationService" ref="notificationService" />
+		<property name="transactionService" ref="transactionService" />
+		<property name="template" value="workspace://SpacesStore/contract-att-notification-template" />
+		<property name="transitions">
+			<map>
+				<!-- SIGN REQUEST -->
+				<entry>
+					<key>
+						<bean class="ru.citeck.ecos.behavior.DiadocAttachmentsStatusBehaviour.Transition">
+							<constructor-arg value="SENT" />
+							<constructor-arg value="DELIVERY_FAILED" />
+						</bean>
+					</key>
+					<bean class="ru.citeck.ecos.behavior.DiadocAttachmentsNotificationBehaviour.EventData">
+						<property name="subjectScript" value="'Не удалось отправить подписанный документ ' + (attachment.properties['cm:title'] || attachment.name)" />
+						<property name="emailType" value="SIGNING_DELIVERY_FAILED" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="contracts.updateInactivityPeriodBehavior" class="ru.citeck.ecos.behavior.UpdateInactivityPeriodBehavior"/>
+
 </beans>

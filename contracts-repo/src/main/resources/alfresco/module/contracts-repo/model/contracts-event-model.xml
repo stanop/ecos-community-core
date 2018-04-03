@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="ctrEvent:contractsEventModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Contracts Event model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.citeck.ru/model/iEvent/1.0" prefix="iEvent"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/contracts/event/1.0" prefix="ctrEvent"/>
+    </namespaces>
+
+    <types>
+        <type name="ctrEvent:changeSigner">
+            <parent>iEvent:additionalData</parent>
+            <associations>
+                <association name="ctrEvent:signer">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+
+        <type name="ctrEvent:cancelApproval">
+            <parent>iEvent:additionalData</parent>
+            <mandatory-aspects>
+                <aspect>iEvent:hasComment</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+</model>
