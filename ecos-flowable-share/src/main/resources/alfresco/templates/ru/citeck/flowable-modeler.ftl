@@ -26,7 +26,14 @@
                                 if (responseData.data && responseData.data['flowable.modeler.url']) {
                                     var modeler = document.createElement('iframe');
                                     modeler.setAttribute('src', responseData.data['flowable.modeler.url']);
+                                    modeler.setAttribute('id', 'flowable-modeler-iframe');
                                     $('#flowable-modeler').append(modeler);
+
+                                    $('#flowable-modeler-iframe').load(function() {
+                                        var stl = '<style type="text/css">.ng-scope .navbar {position: inherit; margin-bottom: 0;} .ng-scope .navbar-nav > li > a {padding: 10px 20px;} .ng-scope .wrapper.full {padding: 0;} .ng-scope .navbar-header .landing-logo{width: 0;}</style>';
+                                        $(this).contents().find('head').append(stl);
+                                    });
+
                                 } else {
                                     Alfresco.util.PopupManager.displayPrompt({
                                         text: "Missing 'flowable.modeler.url' in global properties"
