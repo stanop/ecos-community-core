@@ -55,9 +55,7 @@
 		<constraint name="payments:constraint:paymentFor" type="LIST">
 			<parameter name="allowedValues">
 				<list>
-					<!-- заказчик -->
 					<value>client</value>
-					<!-- исполнитель -->
 					<value>performer</value>
 				</list>
 			</parameter>
@@ -282,18 +280,6 @@
 						<many>false</many>
 					</target>
 				</association>
-                <!--<association name="payments:billScan">-->
-                    <!--<title>Скан-копия счета</title>-->
-                    <!--<source>-->
-                        <!--<mandatory>false</mandatory>-->
-                        <!--<many>true</many>-->
-                    <!--</source>-->
-                    <!--<target>-->
-                        <!--<class>cm:content</class>-->
-                        <!--<mandatory>false</mandatory>-->
-                        <!--<many>false</many>-->
-                    <!--</target>-->
-                <!--</association>-->
 			</associations>
 			<mandatory-aspects>
 				<aspect>payments:paymentCommon</aspect>
@@ -384,7 +370,6 @@
 				<property name="payments:paymentFor">
 					<title>Payment for</title>
 					<type>d:text</type>
-					<!--default>client</default-->
 					<constraints>
 						<constraint ref="payments:constraint:paymentFor" />
 					</constraints>

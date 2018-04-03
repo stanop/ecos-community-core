@@ -35,10 +35,6 @@
             <header key="idocs:signatory" sortable="false"/>
             <header key="idocs:performer" sortable="false"/>
             <header key="idocs:note" />
-            <!--header key="idocs:documentNomination" /-->
-            <!--header key="contracts:currency" default="true" /-->
-            <!--header key="idocs:duration" default="true" /-->
-            <!--header key="idocs:legalEntity" default="true" /-->
         </headers>
     </journal>
     <journal id="contract-subjects">
@@ -123,7 +119,6 @@
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
         <option name="type">contracts:closingDocument</option>
-        <!--option name="formId">filters</option-->
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
             <header key="cm:created" default="true" />
@@ -171,10 +166,6 @@
             <header key="idocs:signatory" sortable="false"/>
             <header key="idocs:performer" sortable="false"/>
             <header key="idocs:note" />
-            <!--header key="idocs:documentNomination" /> -->
-            <!--header key="contracts:currency" default="true" /-->
-            <!--header key="idocs:duration" default="true" /-->
-            <!--header key="idocs:legalEntity" default="true" /-->
         </headers>
     </journal>
 
