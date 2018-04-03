@@ -19,12 +19,12 @@
             <header key="idocs:documentStatus" default="true" />
             <header key="idocs:registrationDate" default="true" />
             <header key="idocs:registrationNumber" default="true" />
-            <header key="letters:nomenclature" default="true" />
+            <header key="letters:nomenclature" default="true" sortable="false"/>
             <header key="tk:kind" default="true" />
             <header key="letters:deliveryMethod" />
-            <header key="letters:reporterOrganization" default="true" />
+            <header key="letters:reporterOrganization" default="true" sortable="false"/>
             <header key="letters:letterWriter" default="true" />
-            <header key="letters:subdivision" default="true" />
+            <header key="letters:subdivision" default="true" sortable="false"/>
             <header key="letters:receiver" default="true" />
             <header key="idocs:summary" />
             <header key="idocs:note" />
@@ -43,12 +43,12 @@
             <header key="idocs:documentStatus" default="true" />
             <header key="idocs:registrationNumber" default="true" />
             <header key="idocs:registrationDate" default="true" />
-            <header key="letters:outcomeNomenclature" default="true" />
+            <header key="letters:outcomeNomenclature" default="true" sortable="false"/>
             <header key="tk:kind" default="true" />
             <header key="letters:deliveryMethod" />
-            <header key="letters:addressee" default="true" />
-            <header key="idocs:performer" default="true" />
-            <header key="idocs:signatory" default="true" />
+            <header key="letters:addressee" default="true" sortable="false"/>
+            <header key="idocs:performer" default="true" sortable="false"/>
+            <header key="idocs:signatory" default="true" sortable="false"/>
             <header key="idocs:summary" />
             <header key="idocs:note" />
             <header key="idocs:pagesNumber" />
