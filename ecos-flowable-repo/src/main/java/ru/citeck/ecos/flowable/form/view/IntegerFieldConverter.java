@@ -14,7 +14,7 @@ import java.util.Optional;
 public class IntegerFieldConverter extends FieldConverter<FormField> {
 
     @Override
-    protected Optional<NodeViewRegion> createInputRegion(FormField field) {
+    protected Optional<NodeViewRegion> createInputRegion(FormField field, Map<String, Object> variables) {
 
         Map<String, Object> templateParams = new HashMap<>();
         templateParams.put("step", "1");

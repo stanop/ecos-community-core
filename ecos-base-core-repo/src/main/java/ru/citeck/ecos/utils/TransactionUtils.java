@@ -63,10 +63,42 @@ public class TransactionUtils {
         jobs.add(new Job(job, errorHandler));
     }
 
+    public static <T> void processBatchAfterCommit(String transactionKey,
+                                                   T element,
+                                                   Consumer<Set<T>> consumer,
+                                                   Consumer<Exception> errorHandler) {
+
+        final Set<T> elements = TransactionalResourceHelper.getSet(transactionKey);
+        if (elements.isEmpty()) {
+            TransactionUtils.doAfterCommit(() -> {
+                AuthenticationUtil.runAsSystem(() -> {
+                    consumer.accept(elements);
+                    return null;
+                });
+                elements.clear();
+            }, errorHandler);
+        }
+        elements.add(element);
+    }
+
     public static <T> void processBeforeCommit(String transactionKey, T element, Consumer<T> consumer) {
         final Set<T> elements = TransactionalResourceHelper.getSet(transactionKey);
         if (elements.isEmpty()) {
             TransactionUtils.doBeforeCommit(() -> {
+                AuthenticationUtil.runAsSystem(() -> {
+                    elements.forEach(consumer);
+                    return null;
+                });
+                elements.clear();
+            });
+        }
+        elements.add(element);
+    }
+
+    public static <T> void processAfterBehaviours(String transactionKey, T element, Consumer<T> consumer) {
+        final Set<T> elements = TransactionalResourceHelper.getSet(transactionKey);
+        if (elements.isEmpty()) {
+            TransactionUtils.doAfterBehaviours(() -> {
                 AuthenticationUtil.runAsSystem(() -> {
                     elements.forEach(consumer);
                     return null;

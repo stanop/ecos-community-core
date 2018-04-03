@@ -91,4 +91,14 @@
         </association>
     </type>
 
+    <type name="idocs:documentFinalStatus">
+        <property name="idocs:documentType">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="options" language="javascript">dictionary.getAllTypes()</invariant>
+        </property>
+        <property name="idocs:finalStatuses">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
 </invariants>

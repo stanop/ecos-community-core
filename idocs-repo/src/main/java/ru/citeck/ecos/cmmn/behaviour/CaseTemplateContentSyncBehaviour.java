@@ -14,8 +14,8 @@ import ru.citeck.ecos.behavior.base.PolicyMethod;
 import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.model.Definitions;
 import ru.citeck.ecos.cmmn.service.CaseTemplateRegistry;
-import ru.citeck.ecos.content.config.ConfigData;
-import ru.citeck.ecos.content.config.converter.ContentValueConverter;
+import ru.citeck.ecos.content.ContentData;
+import ru.citeck.ecos.content.converter.ContentValueConverter;
 import ru.citeck.ecos.model.ICaseModel;
 
 import java.io.Serializable;
@@ -67,7 +67,7 @@ public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
 
         if (changedProps.size() > 0) {
 
-            Optional<ConfigData<Definitions>> configData = registry.getConfig(nodeRef);
+            Optional<ContentData<Definitions>> configData = registry.getContentData(nodeRef);
 
             configData.ifPresent(d -> d.changeData(data -> {
 
@@ -94,8 +94,8 @@ public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
 
         TransactionalResourceHelper.getSet(TXN_TEMPLATE_DATA_KEY).add(nodeRef);
 
-        Optional<ConfigData<Definitions>> configData = registry.getConfig(nodeRef);
-        configData.flatMap(ConfigData::getData).ifPresent(d -> {
+        Optional<ContentData<Definitions>> configData = registry.getContentData(nodeRef);
+        configData.flatMap(ContentData::getData).ifPresent(d -> {
 
             Map<javax.xml.namespace.QName, String> attr = d.getCase().get(0).getOtherAttributes();
 

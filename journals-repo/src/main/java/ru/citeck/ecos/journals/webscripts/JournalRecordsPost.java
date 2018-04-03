@@ -212,7 +212,8 @@ public class JournalRecordsPost extends AbstractWebScript {
 
             Map<String, String> attributeOptions = journalType.getAttributeOptions(attribute);
             String prefixedKey = attribute.toPrefixString(namespaceService);
-            String underscoredKey = prefixedKey.replaceAll(":", "_");
+            String underscoredKey = prefixedKey.replaceAll(":", "_").
+                                                replaceAll("[а-яА-Я]+", "");
 
             schemaBuilder.append(underscoredKey);
             schemaBuilder.append(": attribute(name:\"").append(prefixedKey).append("\"){");

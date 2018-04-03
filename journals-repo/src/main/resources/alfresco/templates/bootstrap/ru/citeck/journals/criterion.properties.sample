@@ -9,4 +9,4 @@ criterion.field=type
 criterion.predicate=type-equals
 
 # criterion value (for qnames use full qname)
-criterion.value={http://www.alfresco.com/model/content/1.0}content
+criterion.value={http://www.alfresco.org/model/content/1.0}content

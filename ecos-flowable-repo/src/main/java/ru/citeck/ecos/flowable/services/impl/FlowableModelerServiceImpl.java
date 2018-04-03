@@ -1,6 +1,13 @@
 package ru.citeck.ecos.flowable.services.impl;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseConnection;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.DatabaseException;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
@@ -25,9 +32,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.CollectionUtils;
 import ru.citeck.ecos.config.EcosConfigService;
-import ru.citeck.ecos.flowable.FlowableIntegrationNotInitializedException;
+import ru.citeck.ecos.flowable.FlowableIntegrationException;
 import ru.citeck.ecos.flowable.services.FlowableModelerService;
 
+import javax.sql.DataSource;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -43,6 +51,9 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
     private static final Logger logger = LoggerFactory.getLogger(FlowableModelerServiceImpl.class);
 
+    private static final String CHANGELOG_PREFIX = "ACT_DE_";
+    private static final String MODELER_APP_DB_CHANCHELOG = "META-INF/liquibase/flowable-modeler-app-db-changelog.xml";
+    private static final String ENGINE_NAME = "flowable";
     private static final String IMPORT_CONFIG_KEY = "flowable-process-import-to-modeler-already-executed";
     private static final String FLOWABLE_ADMIN = "admin";
     private static final int DEFAULT_VERSION = 1;
@@ -56,6 +67,10 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
     private EcosConfigService ecosConfigService;
 
     @Autowired
+    @Qualifier("flowableDataSource")
+    private DataSource dataSource;
+
+    @Autowired
     private ContentService contentService;
     private ManagementService managementService;
 
@@ -63,8 +78,9 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
     @Override
     public void importProcessModel(NodeRef nodeRef) {
-        if (!integrationIsInitialized()) {
-            throw new FlowableIntegrationNotInitializedException("Integration is not initialized");
+        if (!importIsPossible()) {
+            throw new FlowableIntegrationException("Cannot import process to modeler, because integration is " +
+                    "not initialised or model table is not exist");
         }
 
         if (nodeRef == null || !nodeService.exists(nodeRef)) {
@@ -84,8 +100,9 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
     @Override
     public void importProcessModel(InputStream inputStream) {
-        if (!integrationIsInitialized()) {
-            throw new FlowableIntegrationNotInitializedException("Integration is not initialized");
+        if (!importIsPossible()) {
+            throw new FlowableIntegrationException("Cannot import process to modeler, because integration is " +
+                    "not initialised or model table is not exist");
         }
 
         BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
@@ -148,8 +165,9 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
     @Override
     public void importProcessModel() {
-        if (!integrationIsInitialized()) {
-            throw new FlowableIntegrationNotInitializedException("Integration is not initialized");
+        if (!importIsPossible()) {
+            throw new FlowableIntegrationException("Cannot import process to modeler, because integration is " +
+                    "not initialised or model table is not exist");
         }
 
         logger.info("Start import process to Flowable Modeler from locations");
@@ -174,16 +192,16 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
         });
     }
 
-    public boolean integrationIsInitialized() {
-        return this.managementService != null && modelTableIsExist();
+    public boolean importIsPossible() {
+        return this.managementService != null && checkInitModelTable();
     }
 
-    public void setManagementService(ManagementService managementService) {
-        this.managementService = managementService;
-    }
-
-    public void setLocations(List<String> locations) {
-        this.locations = locations;
+    private boolean checkInitModelTable() {
+        if (modelTableIsExist()) {
+            return true;
+        }
+        initModelerChangeLog();
+        return modelTableIsExist();
     }
 
     private boolean modelTableIsExist() {
@@ -198,5 +216,38 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
         String tableSchema = managementService.executeCustomSql(sqlExecution);
 
         return StringUtils.isNotBlank(tableSchema);
+    }
+
+    private void initModelerChangeLog() {
+        DatabaseConnection connection = null;
+        try {
+            connection = new JdbcConnection(dataSource.getConnection());
+            Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
+            database.setDatabaseChangeLogTableName(CHANGELOG_PREFIX + database.getDatabaseChangeLogTableName());
+            database.setDatabaseChangeLogLockTableName(CHANGELOG_PREFIX + database.getDatabaseChangeLogLockTableName());
+
+            Liquibase liquibase = new Liquibase(MODELER_APP_DB_CHANCHELOG,
+                    new ClassLoaderResourceAccessor(),
+                    database);
+            liquibase.update(ENGINE_NAME);
+        } catch (Exception e) {
+            throw new IllegalStateException("Error creating flowable modeler change log", e);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (DatabaseException e) {
+                    logger.error("Failed close connection", e);
+                }
+            }
+        }
+    }
+
+    public void setManagementService(ManagementService managementService) {
+        this.managementService = managementService;
+    }
+
+    public void setLocations(List<String> locations) {
+        this.locations = locations;
     }
 }

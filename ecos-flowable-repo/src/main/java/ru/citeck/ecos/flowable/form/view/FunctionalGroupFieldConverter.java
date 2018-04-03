@@ -14,7 +14,7 @@ import java.util.Optional;
 public class FunctionalGroupFieldConverter extends FieldConverter<FormField> {
 
     @Override
-    protected Optional<NodeViewRegion> createInputRegion(FormField field) {
+    protected Optional<NodeViewRegion> createInputRegion(FormField field, Map<String, Object> variables) {
         return Optional.of(new NodeViewRegion.Builder(prefixResolver)
                                              .template("view")
                                              .name("input")
@@ -22,7 +22,7 @@ public class FunctionalGroupFieldConverter extends FieldConverter<FormField> {
     }
 
     @Override
-    protected Optional<NodeViewRegion> createSelectRegion(FormField field) {
+    protected Optional<NodeViewRegion> createSelectRegion(FormField field, Map<String, Object> variables) {
         Map<String, Object> params = Collections.singletonMap("allowedAuthorityType", "GROUP");
         return Optional.of(new NodeViewRegion.Builder(prefixResolver)
                                              .template("select-orgstruct")

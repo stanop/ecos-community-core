@@ -14,5 +14,5 @@ public interface FlowableModelerService {
 
     public void importProcessModel();
 
-    public boolean integrationIsInitialized();
+    public boolean importIsPossible();
 }

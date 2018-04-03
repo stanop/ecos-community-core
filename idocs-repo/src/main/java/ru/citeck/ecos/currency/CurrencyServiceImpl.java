@@ -125,7 +125,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         Currency baseCurrency = getCurrencyByNodeRef(base);
         Currency targetCurrency = getCurrencyByNodeRef(target);
         BigDecimal result = transferFromOneCurrencyToOther(baseCurrency, targetCurrency, new BigDecimal(1));
-        return new BigDecimal(1).divide(result, BigDecimal.ROUND_HALF_UP);
+        return new BigDecimal(1).divide(result, MathContext.DECIMAL64);
     }
 
 }

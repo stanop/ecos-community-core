@@ -293,9 +293,18 @@
             var showArea = $('#' + this.widgets.list.id);
 
             // terminate runtime
-            if (killRuntime && showArea[0].querySelector('.ecos-form')) {
-                var ecosFormId = showArea[0].querySelector('.ecos-form').id;
-                try { Alfresco.util.ComponentManager.get(ecosFormId).runtime.terminate(); } catch (e) { }
+            var ecosForm = showArea[0].querySelector('.ecos-form'),
+                ecosFormId = ecosForm ? ecosForm.id : this.widgets.viewItem ? this.widgets.viewItem.containerId ? this.widgets.viewItem.containerId + '-form' : '' : '';
+            if (killRuntime && ecosFormId) {
+                try {
+                    Alfresco.util.ComponentManager.get(ecosFormId).runtime.terminate();
+                    if (this.widgets.viewItem) {
+                        delete this.widgets.viewItem;
+                        this.widgets.viewItem = null;
+                    }
+                } catch (e) {
+                    console.log('consoleOrgstruct._clearViewJunk :: ERROR on runtime.terminate() :', e.message);
+                }
             }
 
             // remove previously created junk
@@ -463,6 +472,8 @@
 
             itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
             this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id/*, mode: 'edit'*/});
+            this.widgets.viewItem.containerId && this._saveJunkId(this.widgets.viewItem.containerId);
+            YAHOO.Bubbling.on("showViewInplacedDone", this.markKillRuntime.bind(this));
         },
 
         onCreateUser: function (args) {
@@ -482,7 +493,13 @@
             this._clearViewJunk();
 
             var destItemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
-            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, destination: destItemId, mode: 'create'} );
+            var self = this,
+                parentId = args.item,
+                parent = this.model.getItem(parentId);
+            this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () { self.onItemCreated(parent); },
+                {listId: this.widgets.list.id, destination: destItemId, mode: 'create'});
+            this.widgets.viewItem.containerId && this._saveJunkId(this.widgets.viewItem.containerId);
+            YAHOO.Bubbling.on("showViewInplacedDone", this.markKillRuntime.bind(this));
         },
 
         /**
@@ -504,11 +521,11 @@
 
             // clear junc created by onViewItem
             this._clearViewJunk();
-            this.markKillRuntime();
 
             itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
             this.widgets.viewItem = new Citeck.forms.showViewInplaced(itemId, formId, function () {}, {listId: this.widgets.list.id, mode: mode}); // mode == edit
             this.widgets.viewItem.containerId && this._saveJunkId(this.widgets.viewItem.containerId);
+            YAHOO.Bubbling.on("showViewInplacedDone", this.markKillRuntime.bind(this));
         },
 
         markKillRuntime: function () {

@@ -13,6 +13,7 @@
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
         <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
         <import uri="http://www.citeck.ru/model/history/1.0" prefix="history" />
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
     </imports>
 
     <namespaces>
@@ -157,7 +158,7 @@
                     <type>d:boolean</type>
                     <default>false</default>
                 </property>
-                <property name="history:useNewHistory">
+                <property name="idocs:useNewHistory">
                     <type>d:boolean</type>
                 </property>
             </properties>
@@ -636,14 +637,24 @@
             <parent>dl:dataListItem</parent>
             <properties>
                 <property name="idocs:documentType">
-                    <title></title>
+                    <title>Document type</title>
                     <type>d:qname</type>
                 </property>
-                <property name="idocs:finalStatuses">
-                    <type>d:text</type>
-                    <multiple>true</multiple>
-                </property>
             </properties>
+            <associations>
+                <association name="idocs:finalStatuses">
+                    <title>Final statuses</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icase:caseStatus</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
         </type>
 
     </types>
@@ -1101,7 +1112,7 @@
             <title>Declension</title>
             <properties>
                 <property name="idocs:nameInGenitiveCase">
-                    <title>Name in genetive case</title>
+                    <title>Name in genitive case</title>
                     <type>d:text</type>
                     <mandatory>false</mandatory>
                 </property>

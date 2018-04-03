@@ -18,7 +18,7 @@ public class DropDownFieldConverter extends FieldConverter<OptionFormField> {
     private ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    protected Optional<NodeViewRegion> createInputRegion(OptionFormField field) {
+    protected Optional<NodeViewRegion> createInputRegion(OptionFormField field, Map<String, Object> variables) {
         return Optional.of(new NodeViewRegion.Builder(prefixResolver)
                                              .name("input")
                                              .template("select")
@@ -26,9 +26,15 @@ public class DropDownFieldConverter extends FieldConverter<OptionFormField> {
     }
 
     @Override
-    protected List<InvariantDefinition> getInvariants(OptionFormField field, QName fieldName) {
+    protected List<InvariantDefinition> getInvariants(OptionFormField field,
+                                                      QName fieldName,
+                                                      Object defaultValue,
+                                                      Map<String, Object> variables) {
 
-        List<InvariantDefinition> invariants = super.getInvariants(field, fieldName);
+        List<InvariantDefinition> invariants = super.getInvariants(field,
+                                                                   fieldName,
+                                                                   defaultValue,
+                                                                   variables);
 
         List<String> options = new ArrayList<>();
         Map<String, String> optionsTitle = new HashMap<>();

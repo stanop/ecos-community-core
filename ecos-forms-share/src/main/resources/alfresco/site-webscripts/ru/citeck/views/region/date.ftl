@@ -1,5 +1,7 @@
 <#assign params = viewScope.region.params!{} />
 <#assign mode   = params.mode!"browser" />
+<#assign min    = params.min!"" />
+<#assign max    = params.max!"" />
 
 <#assign labels     = { "month" :  msg("date-unit.single.month"), "year" : msg("date-unit.single.year"), "header": msg("date.select") }>
 <#assign buttons    = { "submit" :  msg("button.ok"), "cancel" : msg("button.cancel") }>
@@ -15,6 +17,8 @@
 
 <div id="${fieldId}-dateControl" data-bind='dateControl: value,
     mode: "${mode}",
+    min: "${min}",
+    max: "${max}",
     localization: {
         labels: { month: "${labels.month}", year: "${labels.year}", header: "${labels.header}" },
         buttons: { submit: "${buttons.submit}", cancel: "${buttons.cancel}" },

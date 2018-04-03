@@ -12,12 +12,6 @@
                 <param name="function">onActionDocumentEditInternal</param>
                 <evaluator>evaluator.doclib.orders.internal</evaluator>
             </action>
-
-            <action id="document-start-familiarization" type="link" icon="document-assign-workflow" label="actions.document-start-familiarization">
-                <param name="href">/share/page/start-specified-workflow?packageItems={node.nodeRef}&amp;workflowId=activiti$familiarization</param>
-                <evaluator>evaluator.doclib.orders.internal</evaluator>
-            </action>
-
         </actions>
     </config>
 
@@ -38,7 +32,6 @@
                 <action index="110" id="document-upload-new-version" />
                 <action index="120" id="document-edit-internal" />
                 <action index="260" id="document-delete" />
-                <action index="276" id="document-start-familiarization" />
                 <action index="370" id="custom-manage-permissions" />
             </actionGroup>
 

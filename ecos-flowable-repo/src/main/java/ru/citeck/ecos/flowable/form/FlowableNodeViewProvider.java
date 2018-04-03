@@ -3,7 +3,6 @@ package ru.citeck.ecos.flowable.form;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
-import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,7 +12,6 @@ import org.flowable.form.model.FormModel;
 import org.flowable.form.model.FormOutcome;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
@@ -53,9 +51,6 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     private FlowableTaskServiceImpl flowableTaskService;
     @Autowired
     private TaskService taskService;
-    @Autowired
-    @Qualifier("WorkflowService")
-    private WorkflowService workflowService;
 
     private Map<String, FieldConverter<FormField>> fieldConverters = new HashMap<>();
 
@@ -66,13 +61,18 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
         NodeViewDefinition definition = new NodeViewDefinition();
         definition.canBeDraft = false;
-        definition.nodeView = getFormKey(taskId).flatMap(restFormService::getFormByKey)
-                                                .map(model -> getNodeView(model, mode))
-                                                .orElse(null);
+
+        Optional<FormModel> formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey);
+        if (formModel.isPresent()) {
+            String id = taskId.substring(taskId.indexOf("$") + 1);
+            Map<String, Object> variables = taskService.getVariables(id);
+            definition.nodeView = getNodeView(formModel.get(), mode, variables);
+        }
+
         return definition;
     }
 
-    private NodeView getNodeView(FormModel model, FormMode mode) {
+    private NodeView getNodeView(FormModel model, FormMode mode, Map<String, Object> variables) {
 
         String modeStr = "create";
         if (mode != null) {
@@ -85,7 +85,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
         NodeView.Builder viewBuilder = new NodeView.Builder(prefixResolver);
         viewBuilder.template("table");
-        viewBuilder.elements(getFields(model, mode));
+        viewBuilder.elements(getFields(model, mode, variables));
         viewBuilder.mode(modeStr);
         viewBuilder.templateParams(params);
 
@@ -118,7 +118,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
                                                 .orElseThrow(() ->
                                                         new IllegalArgumentException(taskId + " form not found"));
 
-        List<NodeField> fields = getFields(formModel, mode);
+        List<NodeField> fields = getFields(formModel, mode, Collections.emptyMap());
 
         Map<String, Object> taskAttributes = new HashMap<>();
         for (NodeField field : fields) {
@@ -138,7 +138,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         return Collections.emptyMap();
     }
 
-    private List<NodeField> getFields(FormModel model, FormMode mode) {
+    private List<NodeField> getFields(FormModel model, FormMode mode, Map<String, Object> values) {
 
         List<NodeField> fields = new ArrayList<>();
 
@@ -146,7 +146,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
             FieldConverter<FormField> converter = fieldConverters.get(field.getType());
             if (converter != null) {
-                fields.add(converter.convertField(field));
+                fields.add(converter.convertField(field, values));
             } else {
                 logger.error("Unregistered datatype " + field.getType());
             }

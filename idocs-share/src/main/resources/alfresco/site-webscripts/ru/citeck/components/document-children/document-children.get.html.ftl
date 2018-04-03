@@ -68,7 +68,9 @@
 			, childrenFormat: "${childrenFormat?js_string}"
 			</#if>
 		}).setMessages(${messages});
-		Alfresco.util.createTwister("${dcid}-heading", "${args.twisterKey!'dc'}");
+        <#if (args.hideTwister!'false') == 'false'>
+            Alfresco.util.createTwister("${dcid}-heading", "${args.twisterKey!'dc'}");
+        </#if>
 	//]]></script>
 </div>
 </#if>
