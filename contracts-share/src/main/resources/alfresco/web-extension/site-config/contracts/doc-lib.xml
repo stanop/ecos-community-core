@@ -3,7 +3,6 @@
 	<config evaluator="string-compare" condition="DocLibCustom">
 		<dependencies>
 			<js src="/components/documentlibrary/contracts/custom-actions.js" />
-			<!--js src="/citeck/modules/workflow-owner/workflow-owner.js" /-->
 		</dependencies>
 	</config>
 
@@ -65,7 +64,7 @@
 			<evaluator>evaluator.doclib.contracts.isOnSigningOrActive</evaluator>
 		</action>
 
-			<!-- Show Signed Version -->
+		<!-- Show Signed Version -->
 		<action id="show-signed-version" type="javascript" icon="document-approve" label="actions.show-signed-version">
 			<param name="function">onShowSignedVersion</param>
 			<evaluator>evaluator.doclib.contracts.documentHasSignedVersion</evaluator>
@@ -147,7 +146,6 @@
 	<config evaluator="string-compare" condition="DocLibActions" replace="false">
 		<actionGroups>
 			<actionGroup id="document-details">
-
 				<action index="111" id="document-download-payment-pdf"/>
 				<action index="112" id="document-download-payment-docx" />
 				<action index="113" id="document-download-closing-document-docx"/>
@@ -160,10 +158,8 @@
 				<action index="491" id="document-add-sup-agreement" />
 				<action index="492" id="document-add-closing-doc-for-invoice" />
 				<action index="515" id="document-generate-barcode"/>
-
 			</actionGroup>
-			<actionGroup id="folder-details">
-			</actionGroup>
+			<actionGroup id="folder-details"/>
         </actionGroups>
 	</config>
 

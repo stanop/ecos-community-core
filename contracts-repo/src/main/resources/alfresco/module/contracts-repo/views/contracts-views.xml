@@ -9,6 +9,9 @@
         <import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
         <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
+        <import uri="http://www.citeck.ru/model/contracts/event/1.0" prefix="ctrEvent"/>
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
+        <import uri="http://www.citeck.ru/model/iEvent/1.0" prefix="iEvent"/>
     </imports>
 
     <views any="true">
@@ -200,6 +203,17 @@
         </field>
         <field prop="contracts:barcode" template="none">
             <invariant on="value" language="explicit">-</invariant>
+        </field>
+        <field assoc="icase:documents">
+            <region name="input" template="view">
+                <param name="completeDelete">true</param>
+            </region>
+            <region name="select" template="file-upload">
+                <param name="properties">{
+                    'tk:type': 'workspace://SpacesStore/category-document-type',
+                    'tk:kind': 'workspace://SpacesStore/cat-document-other'
+                    }</param>
+            </region>
         </field>
     </view>
 
@@ -702,6 +716,21 @@
 
     <view class="contracts:originalLocation">
         <field prop="cm:name" />
+    </view>
+
+    <view class="ctrEvent:changeSigner">
+        <field assoc="ctrEvent:signer">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+    </view>
+
+    <view class="ctrEvent:cancelApproval">
+        <field prop="iEvent:comment">
+            <region name="input" template="textarea">
+                <param name="height">70px</param>
+            </region>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
     </view>
 
 </views>

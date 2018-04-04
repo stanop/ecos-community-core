@@ -1,0 +1,82 @@
+<alfresco-config>
+
+    <config evaluator="task-type" condition="ctrwf:selectSignerTask">
+        <forms>
+            <form id="inline">
+                <field-visibility>
+                    <show id="bpm:description" />
+                </field-visibility>
+                <appearance>
+                    <field id="bpm:description">
+                        <control template="/org/alfresco/components/form/controls/info.ftl" />
+                    </field>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="task-type" condition="ctrwf:archiveTask">
+        <forms>
+            <form id="inline">
+                <edit-form template="/ru/citeck/components/form/workflow/case-perform/perform-task-inline.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="task-type" condition="ctrwf:scanTask">
+        <forms>
+            <form id="inline">
+                <edit-form template="/ru/citeck/components/form/workflow/case-perform/perform-task-inline.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="task-type" condition="ctrwf:signTask">
+        <forms>
+            <form id="inline">
+                <edit-form template="/ru/citeck/components/form/workflow/case-perform/perform-task-inline.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="task-type" condition="ctrwf:signWithReworkTask">
+        <forms>
+            <form id="inline">
+                <edit-form template="/ru/citeck/components/form/workflow/case-perform/perform-task-inline.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="task-type" condition="ctrwf:esignTask">
+        <forms>
+            <form id="inline">
+                <edit-form template="/ru/citeck/components/form/workflow/case-perform/perform-with-esign-task-inline.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="task-type" condition="ctrwf:confirmCancellationTask">
+        <forms>
+            <form id="inline">
+                <edit-form template="/ru/citeck/components/form/workflow/case-perform/perform-task-inline.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="task-type" condition="ctrwf:reworkTask">
+        <forms>
+            <form id="inline">
+                <edit-form template="/ru/citeck/components/form/workflow/case-perform/perform-task-inline.ftl" />
+            </form>
+        </forms>
+    </config>
+
+    <config evaluator="task-type" condition="ctrwf:confirmTask">
+        <forms>
+            <form id="inline">
+                <edit-form template="/ru/citeck/components/form/workflow/case-perform/perform-task-inline.ftl" />
+            </form>
+        </forms>
+    </config>
+
+</alfresco-config>

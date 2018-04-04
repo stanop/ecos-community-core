@@ -8,8 +8,6 @@
 					<show id="contracts:agreementLegalEntity" />
 					<show id="contracts:agreementSubject" />
 					<show id="idocs:documentStatus"  />
-					<!--show id="idocs:registrationDate" for-mode="view"/>
-					<show id="idocs:registrationNumber" for-mode="view" /-->
 					<show id="contracts:contractor" />
 					<show id="contracts:agreementNumber" />
 					<show id="contracts:agreementCurrency" />
@@ -23,15 +21,12 @@
 					<show id="idocs:appendixPagesNumber" />
 					<show id="idocs:performer" />
 					<show id="idocs:summary" />
-					<!--show id="contracts:documentNomination" /-->
 					<show id="idocs:note" />
 					<show id="tk:kind"/>
 					<show id="payments:payments" for-mode="edit"/>
 					<show id="idocs:signedVersion" for-mode="view"/>
 					<show id="idocs:dateConfirmDueDate" force="true"/>
 					<show id="idocs:hasContractorApproval" force="true"/>
-					<!--show id="idocs:confirmers" force="true"/-->
-					<!--show id="idocs:priorityConfirm" force="true"/-->
 				</field-visibility>
 				<appearance>
 					<set id="" template="/ru/citeck/components/form/2-column-set.ftl" />
@@ -158,10 +153,7 @@
 					<show id="contracts:contractWith" />
 					<show id="contracts:contractor" />
 					<show id="contracts:agreementNumber" />
-					<!--show id="contracts:documentNomination" /-->
 					<show id="idocs:documentStatus" />
-					<!--show id="idocs:registrationDate" for-mode="view"/>
-					<show id="idocs:registrationNumber" for-mode="view" /-->
 					<show id="contracts:agreementCurrency" />
 					<show id="contracts:agreementDate" />
 					<show id="contracts:agreementAmount" />
@@ -257,11 +249,6 @@
 								<control-param name="style">width: 95%</control-param>
 							</control>
 						</field>
-						<!--field id="contracts:agreementNumber" >
-                            <control
-                                    template="/ru/citeck/components/form/controls/auto-manual.ftl">
-                            </control>
-                        </field-->
 						<field id="payments:payments" set="payments">
                             <control template="/ru/citeck/components/form/controls/table-children.ftl">
                                 <control-param name="columns">[
@@ -290,7 +277,6 @@
                         </field>
 					</appearance>
 				</form>
-
 			<form id="search">
 				<field-visibility>
 					<show id="contracts:agreementNumber" />
@@ -467,7 +453,6 @@
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
 							<control-param name="titleField">title</control-param>
-							<!--control-param name="selectedItem">workspace://SpacesStore/currency-rur</control-param-->
 							<control-param name="style">width:210px</control-param>
 						</control>
 					</field>
@@ -904,7 +889,6 @@
 							<control-param name="resultsList">nodes</control-param>
 							<control-param name="valueField">nodeRef</control-param>
 							<control-param name="titleField">title</control-param>
-							<!--control-param name="selectedItem">workspace://SpacesStore/currency-rur</control-param-->
 							<control-param name="style">width:103px</control-param>
 						</control>
 					</field>
@@ -957,7 +941,6 @@
 					<set id="" template="/ru/citeck/components/form/2-column-set.ftl"/>
 					<field id="sys:node-uuid">
 						<control template="/ru/citeck/components/form/controls/assoc-type.ftl">
-							<!--control-param name="assocType">sys:children</control-param-->
 							<control-param name="assocType">payments:payments</control-param>
 						</control>
 			   		</field>
@@ -991,21 +974,11 @@
 					<show id="idocs:fax"/>
 					<show id="idocs:email"/>
 					<show id="idocs:CEOname"/>
-					<!--<show id="idocs:contacts"/>-->
 					<show id="idocs:nameInGenitiveCase" force="true"/>
 				</field-visibility>
 				<appearance>
 					<set id=""
 						 template="/ru/citeck/components/form/2-column-set.ftl"/>
-					<!--<field id="idocs:contacts">
-						<control
-								template="/ru/citeck/components/form/controls/association_search.ftl">
-							<control-param name="flatButtonMode">true
-							</control-param>
-							<control-param name="searchWholeRepo">true
-							</control-param>
-						</control>
-					</field>-->
 					<field id="idocs:nameInGenitiveCase" help="Например, Ивановой Марии Петровны" />
 					<field id="idocs:fullOrganizationName">
 						<constraint-handlers>
@@ -1037,15 +1010,6 @@
 				<appearance>
 					<set id=""
 						 template="/ru/citeck/components/form/2-column-set.ftl"/>
-					<!--<field id="idocs:contacts">
-						<control
-								template="/ru/citeck/components/form/controls/association_search.ftl">
-							<control-param name="flatButtonMode">true
-							</control-param>
-							<control-param name="searchWholeRepo">true
-							</control-param>
-						</control>
-					</field>-->
 					<field id="idocs:nameInGenitiveCase" help="Например, Ивановой Марии Петровны" />
 					<field id="idocs:fullOrganizationName">
 						<constraint-handlers>
@@ -1109,15 +1073,6 @@
 						<control
 								template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
 					</field>
-					<!--<field id="idocs:contacts">
-						<control
-								template="/ru/citeck/components/form/controls/association_search.ftl">
-							<control-param name="flatButtonMode">true
-							</control-param>
-							<control-param name="searchWholeRepo">true
-							</control-param>
-						</control>
-					</field>-->
 				</appearance>
 			</form>
 		</forms>
@@ -1442,7 +1397,6 @@
 					<show id="idocs:summary" />
 					<show id="idocs:registrationDate" />
 					<show id="idocs:registrationNumber" for-mode="view" />
-					<!--show id="contracts:documentNomination" /-->
 					<show id="idocs:note" />
 					<show id="dms:updateContent" />
 					<show id="cm:content" />
@@ -1478,7 +1432,6 @@
 					<show id="idocs:summary" />
 					<show id="idocs:registrationDate" />
 					<show id="idocs:registrationNumber" for-mode="view" />
-					<!--show id="contracts:documentNomination" /-->
 					<show id="idocs:note" />
 					<show id="dms:updateContent" />
 					<show id="cm:content" />
@@ -1575,20 +1528,12 @@
 					<show id="idocs:pagesNumber" />
 					<show id="cm:created" />
 					<show id="idocs:registrationDate" />
-					<!--show id="cm:modifier" /-->
 					<show id="cm:modified" />"
 				</field-visibility>
 				<appearance>
-					<!--field id="idocs:legalEntity">
-						<control template="/ru/citeck/components/form/controls/association_search.ftl">
-							<control-param name="searchWholeRepo">true</control-param>
-							<control-param name="showTargetLink">true</control-param>
-						</control>
-					</field-->
 					<field id="cm:created">
-					<control template="/org/alfresco/components/form/controls/daterange.ftl" >
-					</control>
-				</field>
+						<control template="/org/alfresco/components/form/controls/daterange.ftl" />
+					</field>
 					<field id="cm:name">
 						<control template="/ru/citeck/components/form/controls/text-richsearch.ftl"/>
 					</field>
@@ -1600,9 +1545,6 @@
 					<field id="idocs:registrationDate">
 					<control template="/org/alfresco/components/form/controls/daterange.ftl" />
 				</field>
-					<!--field id="cm:modifier">
-						<control template="/ru/citeck/components/form/controls/text-richsearch.ftl" />
-					</field-->
 					<field id="cm:modified">
 						<control template="/org/alfresco/components/form/controls/daterange.ftl" />
 					</field>
@@ -1657,8 +1599,7 @@
 					<show id="idocs:phoneNumber"/>
 				</field-visibility>
 				<appearance>
-					<set id=""
-						 template="/ru/citeck/components/form/2-column-set.ftl"/>
+					<set id="" template="/ru/citeck/components/form/2-column-set.ftl"/>
 					<field id="idocs:fullOrganizationName">
 						<constraint-handlers>
 							<constraint type="ru.citeck.alfresco.acm.constraints.dms.UniqueConstraint" validation-handler="Alfresco.forms.validation.checkunique" event="keyup" message-id="forms.message.uniqueName"/>
@@ -1686,8 +1627,7 @@
 					<show id="idocs:phoneNumber"/>
 				</field-visibility>
 				<appearance>
-					<set id=""
-						 template="/ru/citeck/components/form/2-column-set.ftl"/>
+					<set id="" template="/ru/citeck/components/form/2-column-set.ftl"/>
 					<field id="idocs:fullOrganizationName">
 						<constraint-handlers>
 							<constraint type="ru.citeck.alfresco.acm.constraints.dms.UniqueConstraint" validation-handler="Alfresco.forms.validation.checkunique" event="keyup" message-id="forms.message.uniqueName" />

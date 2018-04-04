@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="contracts.import-spaces.3-2-1" parent="contracts.import-spaces" abstract="true">
+        <property name="sinceVersion" value="3.2.1" />
+        <property name="appliesFromVersion" value="3.2.1" />
+    </bean>
+
+    <bean id="contracts.import-scripts.3-2-1" parent="contracts.import-scripts" abstract="true">
+        <property name="sinceVersion" value="3.2.1" />
+        <property name="appliesFromVersion" value="3.2.1" />
+    </bean>
+
+    <bean id="contracts.patch.move-contracts-ent-to-community" parent="ru.citeck.ecos.patch.MoveComponentsPatch">
+        <property name="id" value="contracts.patch.move-contracts-ent-to-community" />
+        <property name="description" value="contracts.patch.move-contracts-ent-to-community.description" />
+        <property name="fromModuleId" value="contracts-ent-repo" />
+        <property name="toModuleId" value="contracts-repo" />
+        <property name="transitions">
+            <list>
+                <props>
+                    <prop key="from">contracts-ent.script.hidden-cardlets</prop>
+                    <prop key="to">contracts.script.hidden-cardlets</prop>
+                </props>
+                <props>
+                    <prop key="from">contracts-ent.script.fill-case-roless</prop>
+                    <prop key="to">contracts.script.fill-case-roles</prop>
+                </props>
+                <props>
+                    <prop key="from">contracts-ent.module-components.contracts-confirm-routes</prop>
+                    <prop key="to">contracts.module-components.contracts-confirm-routes</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.script.case-statuses" parent="contracts.import-scripts.3-2-1">
+        <property name="executeOnceOnly" value="false" />
+        <property name="name" value="add-contracts-case-statuses" />
+        <property name="description" value="Create or update case statuses" />
+        <property name="bootstrapScript" value="alfresco/module/contracts-repo/bootstrap/scripts/case-statuses.js"/>
+    </bean>
+
+    <bean id="contracts.script.hidden-cardlets" parent="contracts.import-scripts.3-2-1">
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.templates-journals.template"/>
+            </list>
+        </property>
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="hidden-cardlets.js" />
+        <property name="description" value="Hide cardlets for all users except admins" />
+        <property name="bootstrapScript" value="alfresco/module/contracts-repo/bootstrap/scripts/hidden-cardlets.js"/>
+    </bean>
+
+    <bean id="contracts.script.fill-case-roles" parent="contracts.import-scripts">
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-case-roles"/>
+            </list>
+        </property>
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="fill-case-roles.js" />
+        <property name="description" value="Fill case roles" />
+        <property name="bootstrapScript" value="alfresco/module/contracts-repo/bootstrap/scripts/fill-case-roles.js"/>
+    </bean>
+
+    <bean id="contracts.module-components.contracts-confirm-routes" parent="contracts.import-scripts">
+        <property name="name" value="contracts-confirm-routes" />
+        <property name="description" value="Base Contract Case Confirmation Route" />
+        <property name="bootstrapScript" value="alfresco/module/contracts-repo/bootstrap/scripts/contracts-routes.js"/>
+    </bean>
+
+    <bean id="contracts.notification-templates" parent="contracts.import-spaces.3-2-1" depends-on="contracts.modelBootstrap">
+        <property name="name" value="notification-template" />
+        <property name="description" value="Contracts email templates" />
+        <property name="executeOnceOnly" value="false" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/${spaces.templates.email.childname}/${spaces.templates.email.notify.childname}</prop>
+                    <prop key="location">alfresco/module/contracts-repo/bootstrap/explicit/contract-diadoc-att-notification-template.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>
