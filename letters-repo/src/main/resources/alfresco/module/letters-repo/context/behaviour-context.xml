@@ -40,4 +40,112 @@
 		</property>
 	</bean>
 
+	<bean id="letters.income.historyBehaviour" parent="history.historicalPropertiesBehaviour">
+		<property name="className" value="letters:income"/>
+		<property name="allowedProperties">
+			<list>
+				<value>idocs:initiator</value>
+				<value>dms:agreement_to_files</value>
+				<value>idocs:caseCompleted</value>
+				<value>idocs:caseModelsSent</value>
+				<value>idocs:legalEntity</value>
+				<value>idocs:registrationNumber</value>
+				<value>idocs:registrationDate</value>
+				<value>idocs:pagesNumber</value>
+				<value>idocs:appendixPagesNumber</value>
+				<value>idocs:summary</value>
+				<value>idocs:controller</value>
+				<value>idocs:note</value>
+				<value>letters:outcomeDate</value>
+				<value>letters:letterWriter</value>
+				<value>letters:receiver</value>
+				<value>letters:outcomeNumber</value>
+				<value>letters:removalControl</value>
+				<value>letters:originalLocation</value>
+				<value>letters:listCount</value>
+				<value>letters:copiesCount</value>
+				<value>letters:deliveryType</value>
+				<value>letters:comment</value>
+				<value>letters:submittedForResolution</value>
+				<value>letters:reporterOrganization</value>
+				<value>letters:subdivision</value>
+				<value>letters:nomenclature</value>
+				<value>letters:activityDirection</value>
+				<value>letters:outcome</value>
+				<value>tk:type</value>
+				<value>letters:deliveryMethod</value>
+				<value>idocs:documentStatus</value>
+			</list>
+		</property>
+		<property name="enableHistoryOnUpdateProps" value="true"/>
+		<property name="enableHistoryOnAddAssocs" value="true"/>
+		<property name="enableHistoryOnDeleteAssocs" value="true"/>
+		<property name="enableHistoryOnAddChildAssocs" value="true"/>
+		<property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+	</bean>
+
+	<bean id="letters.income.caseStatusHistory" parent="ecos.caseStatusHistoryBehaviour">
+		<property name="transitions">
+			<list>
+				<bean class="ru.citeck.ecos.behavior.history.CaseStatusHistoryBehaviour.MultipleTargetsTransition">
+					<property name="className" value="{http://www.citeck.ru/model/letters/1.0}income"/>
+					<property name="fromStatus" value="ANY"/>
+					<property name="toStatuses">
+						<list>
+							<value>ANY</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="letters.outcome.historyBehaviour" parent="history.historicalPropertiesBehaviour">
+		<property name="className" value="letters:outcome"/>
+		<property name="allowedProperties">
+			<list>
+				<value>idocs:initiator</value>
+				<value>dms:agreement_to_files</value>
+				<value>idocs:caseCompleted</value>
+				<value>idocs:caseModelsSent</value>
+				<value>idocs:legalEntity</value>
+				<value>idocs:registrationNumber</value>
+				<value>idocs:registrationDate</value>
+				<value>idocs:pagesNumber</value>
+				<value>idocs:appendixPagesNumber</value>
+				<value>idocs:summary</value>
+				<value>idocs:controller</value>
+				<value>idocs:note</value>
+				<value>letters:addressee</value>
+				<value>letters:income</value>
+				<value>letters:outcomeNomenclature</value>
+				<value>tk:type</value>
+				<value>idocs:performer</value>
+				<value>letters:deliveryMethod</value>
+				<value>idocs:signatory</value>
+			</list>
+		</property>
+		<property name="enableHistoryOnUpdateProps" value="true"/>
+		<property name="enableHistoryOnAddAssocs" value="true"/>
+		<property name="enableHistoryOnDeleteAssocs" value="true"/>
+		<property name="enableHistoryOnAddChildAssocs" value="true"/>
+		<property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+	</bean>
+
+	<bean id="letters.outcome.caseStatusHistory" parent="ecos.caseStatusHistoryBehaviour">
+		<property name="transitions">
+			<list>
+				<bean class="ru.citeck.ecos.behavior.history.CaseStatusHistoryBehaviour.MultipleTargetsTransition">
+					<property name="className" value="{http://www.citeck.ru/model/letters/1.0}outcome"/>
+					<property name="fromStatus" value="ANY"/>
+					<property name="toStatuses">
+						<list>
+							<value>ANY</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
 </beans>

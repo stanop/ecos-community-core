@@ -319,6 +319,83 @@
 			</map>
 		</property>
 	</bean>
+	
+	<bean id="agreement.historyBehaviour" parent="history.historicalPropertiesBehaviour">
+		<property name="className" value="contracts:agreement"/>
+		<property name="allowedProperties">
+			<list>
+				<value>icase:documents</value>
+				<value>idocs:initiator</value>
+				<value>dms:agreement_to_files</value>
+				<value>idocs:caseCompleted</value>
+				<value>idocs:caseModelsSent</value>
+				<value>idocs:legalEntity</value>
+				<value>idocs:registrationNumber</value>
+				<value>idocs:registrationDate</value>
+				<value>idocs:pagesNumber</value>
+				<value>idocs:appendixPagesNumber</value>
+				<value>idocs:summary</value>
+				<value>idocs:controller</value>
+				<value>idocs:note</value>
+				<value>contracts:documentNomination</value>
+				<value>contracts:agreementNumber</value>
+				<value>contracts:agreementDate</value>
+				<value>contracts:agreementAmount</value>
+				<value>contracts:currency</value>
+				<value>contracts:accountNumber</value>
+				<value>contracts:contractorRegistrationNumber</value>
+				<value>contracts:registrationDate</value>
+				<value>contracts:agreementStartDate</value>
+				<value>contracts:agreementEndDate</value>
+				<value>contracts:agreementWithProlongation</value>
+				<value>contracts:agreementProlongationEndDate</value>
+				<value>contracts:agreementCancellationDate</value>
+				<value>contracts:agreementWithScanCopy</value>
+				<value>contracts:agreementOnContractorForm</value>
+				<value>contracts:subject</value>
+				<value>contracts:VAT</value>
+				<value>contracts:digiSign</value>
+				<value>contracts:agreementSubject</value>
+				<value>contracts:mainAgreement</value>
+				<value>contracts:agreementCurrency</value>
+				<value>contracts:agreementLegalEntity</value>
+				<value>contracts:duration</value>
+				<value>idocs:performer</value>
+				<value>idocs:signatory</value>
+				<value>idocs:supervisor</value>
+				<value>idocs:documentStatus</value>
+				<value>dms:updateContent</value>
+				<value>dms:templateAssociation</value>
+				<value>payments:payments</value>
+				<value>tk:type</value>
+				<value>contracts:contractWith</value>
+				<value>idocs:signedVersion</value>
+				<value>contracts:contractor</value>
+			</list>
+		</property>
+		<property name="enableHistoryOnUpdateProps" value="true"/>
+		<property name="enableHistoryOnAddAssocs" value="true"/>
+		<property name="enableHistoryOnDeleteAssocs" value="true"/>
+		<property name="enableHistoryOnAddChildAssocs" value="true"/>
+		<property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+	</bean>
+
+	<bean id="agreement.caseStatusHistory" parent="ecos.caseStatusHistoryBehaviour">
+		<property name="transitions">
+			<list>
+				<bean class="ru.citeck.ecos.behavior.history.CaseStatusHistoryBehaviour.MultipleTargetsTransition">
+					<property name="className" value="{http://www.citeck.ru/model/contracts/1.0}contracts"/>
+					<property name="fromStatus" value="ANY"/>
+					<property name="toStatuses">
+						<list>
+							<value>ANY</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
 
 	<bean id="contracts.updateInactivityPeriodBehavior" class="ru.citeck.ecos.behavior.UpdateInactivityPeriodBehavior"/>
 

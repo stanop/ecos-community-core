@@ -71,6 +71,33 @@
             <invariant on="relevant" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
             <invariant on="mandatory" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
         </property>
+        <property name="contracts:digiSign">
+            <invariant on="protected" language="javascript"><![CDATA[
+                (function() {
+                    var attInfo = node.impl() && node.impl().getAttribute("contracts:digiSign") ? node.impl().getAttribute("contracts:digiSign").info() : {};
+                    var deps = attInfo._dependencies();
+                    if (!deps) {
+                        attInfo._dependencies({isEntInstalled: ko.observable(true)});
+                        deps = attInfo._dependencies();
+                    } else if (deps.isEntInstalled() == null) {
+                        deps.isEntInstalled = ko.observable(true);
+                    }
+                    Alfresco.util.Ajax.jsonGet({
+                        url: Alfresco.constants.PROXY_URI + "citeck/info/is-ent-installed",
+                        successCallback: {
+                            fn: function(response) {
+                                if (response && response.json) {
+                                    if (response.json.isEntInstalled == "false") {
+                                        deps.isEntInstalled = ko.observable(false);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    return !deps.isEntInstalled();
+                })()
+                ]]></invariant>
+        </property>
         <property name="dms:updateContent">
             <invariant on="relevant" language="javascript">view.mode == "create"</invariant>
         </property>
