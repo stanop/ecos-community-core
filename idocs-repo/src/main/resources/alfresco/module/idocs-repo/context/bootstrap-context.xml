@@ -58,7 +58,6 @@
                 <value>alfresco/module/idocs-repo/model/case_mt/caseTimerModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/telegramModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/ecosContentModel.xml</value>
-                <value>alfresco/module/idocs-repo/model/securityModel.xml</value>
             </list>
         </property>
         <property name="labels">
@@ -98,7 +97,6 @@
                 <value>alfresco/module/idocs-repo/messages/case-mt/stages</value>
                 <value>alfresco/module/idocs-repo/messages/case-mt/caseTimer</value>
                 <value>alfresco/module/idocs-repo/messages/patch</value>
-                <value>alfresco/module/idocs-repo/messages/security</value>
             </list>
         </property>
     </bean>
@@ -130,7 +128,6 @@
         <value>alfresco/module/idocs-repo/workflow/simple-payment/simple-payment-model.xml</value>
         <value>alfresco/module/idocs-repo/workflow/review-workflow/review-workflow-model.xml</value>
         <value>alfresco/module/idocs-repo/workflow/case-perform/case-perform-model.xml</value>
-        <value>alfresco/module/idocs-repo/workflow/security/security-workflow-model.xml</value>
     </util:list>
 
     <util:list id="idocs.workflowLabelsList">
@@ -153,7 +150,6 @@
         <value>alfresco/module/idocs-repo/workflow/simple-payment/simple-payment</value>
         <value>alfresco/module/idocs-repo/workflow/review-workflow/review-workflow</value>
         <value>alfresco/module/idocs-repo/workflow/case-perform/case-perform</value>
-        <value>alfresco/module/idocs-repo/workflow/security/security-workflow</value>
     </util:list>
 
     <bean id="idocs.workflowModelsBootstrap" parent="dictionaryModelBootstrap"
