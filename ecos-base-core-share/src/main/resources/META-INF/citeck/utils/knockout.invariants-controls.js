@@ -789,18 +789,18 @@ ko.bindingHandlers.dateControl = {
                 if (max) {
                     input.setAttribute("max", max);
                 } else {
-                input.setAttribute("max", (year + 50) + "-12-31");
+                    input.setAttribute("max", (year + 50) + "-12-31");
                 }
 
                 if (min) {
                     input.setAttribute("min", min);
                 } else {
-                input.setAttribute("min", (year - 25) + "-12-31");
+                    input.setAttribute("min", (year - 25) + "-12-31");
                 }
 
                 Dom.setStyle(input, "color", value() ? "" : "lightgray");
                 value.subscribe(function(value) {
-                  Dom.setStyle(input, "color", value ? "" : "lightgray");
+                    Dom.setStyle(input, "color", value ? "" : "lightgray");
                 });
             }
         }
@@ -2712,6 +2712,16 @@ ko.bindingHandlers.fileUploadControl = {
         });
 
         function checkFile(file) {
+            function b2mb(val) {
+                if (!val) return '';
+                var res = Math.round((val / 1024 / 1024) * 1000) / 1000;
+                if (res < 1) {
+                    res = Math.round((val / 1024) * 1000) / 1000;
+                    return res + ' Kb'
+                };
+                return res + ' Mb'
+            };
+
             if (!file) return false;
 
             var result = true,
@@ -2736,7 +2746,7 @@ ko.bindingHandlers.fileUploadControl = {
             }
 
             if (!result) {
-                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('file-too-big') });
+                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('file-larger-than-allowed') + ' ' + b2mb(maxSize) });
                 return false;
             }
 
