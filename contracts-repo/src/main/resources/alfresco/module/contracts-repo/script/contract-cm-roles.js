@@ -1,4 +1,4 @@
-<import resource="classpath:alfresco/module/contracts-ent-repo/script/utils.js">
+<import resource="classpath:alfresco/module/contracts-repo/script/utils.js">
 
 const ROLE_CONFIRMERS = "confirmers";
 const ROLE_INITIATOR = "initiator";

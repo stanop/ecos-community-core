@@ -1,4 +1,4 @@
-<import resource="classpath:alfresco/module/contracts-ent-repo/script/contract-cm-confirm-utils.js">
+<import resource="classpath:alfresco/module/contracts-repo/script/contract-cm-confirm-utils.js">
 
 function onCaseCreate() {
 

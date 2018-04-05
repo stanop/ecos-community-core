@@ -1,6 +1,6 @@
-<import resource="classpath:alfresco/module/contracts-ent-repo/script/contract-cm-roles.js">
-<import resource="classpath:alfresco/module/contracts-ent-repo/script/contract-cm-email.js">
-<import resource="classpath:alfresco/module/contracts-ent-repo/script/contract-cm-status.js">
+<import resource="classpath:alfresco/module/contracts-repo/script/contract-cm-roles.js">
+<import resource="classpath:alfresco/module/contracts-repo/script/contract-cm-email.js">
+<import resource="classpath:alfresco/module/contracts-repo/script/contract-cm-status.js">
 
 const TASK_CONFIRM = "ctrwf:confirmTask";
 const OPTIONAL_PERFORMERS = "optionalPerformers";
