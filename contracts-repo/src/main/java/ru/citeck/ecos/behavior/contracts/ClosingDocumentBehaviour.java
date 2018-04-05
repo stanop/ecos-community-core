@@ -114,7 +114,7 @@ public class ClosingDocumentBehaviour implements NodeServicePolicies.OnCreateNod
 
         if (nodeService.getProperty(nodeRef, ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT) != null) {
             amount = (Double) nodeService.getProperty(nodeRef, ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT);
-            AmountInWordConverter wordConverter = new AmountInWordConverterFactory().getConverter();
+            AmountInWordConverter wordConverter = new AmountInWordConverterFactory().getConverter("ru");
             String amountInWords = wordConverter.convert(amount, currencyCode);
             nodeService.setProperty(nodeRef, ContractsModel.PROP_CLOSING_DOCUMENT_AMOUNT_IN_WORDS, amountInWords);
         }
