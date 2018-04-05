@@ -118,6 +118,11 @@
     min-width: initial;
     width: initial;
 }
+.ecos-form.invariants-form .form-fields .user-profile-custom-container .user-profile-header .form-field {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
 
 .ecos-form.invariants-form .form-fields .user-profile-custom-container > div:not(.user-profile-header) .form-field.template-block {
     width: calc(30% - 15px);
@@ -149,6 +154,10 @@
     font-size: 26px;
     font-weight: bold;
 }
+.ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region.template-text,
+.ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region .value-item {
+    padding-right: 15px;
+}
 
 .ecos-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field .form-region input {
     font-size: 59%;
@@ -162,6 +171,9 @@
 
 .ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--fio {
     margin-top: 62px;
+    max-width: 100%;
+    padding-left: 15px;
+    box-sizing: border-box;
 }
 
 
@@ -239,7 +251,7 @@
 .ecos-form.invariants-form .form-fields .user-profile-custom-container .form-region.template-select-file-upload,
 .ecos-form.invariants-form .form-fields .user-profile-custom-container .form-region.template-file-upload {
     margin-left: 50%;
-    transform: translatex(-50%);
+    transform: translateX(-50%);
 }
 
 .user-profile.node-view.static,
@@ -281,7 +293,7 @@
 
     .ecos-form.invariants-form .form-view.user-profile-custom-container .user-profile-header__column--photo {
         margin-left: 50%;
-        transform: translatex(-50%);
+        transform: translateX(-50%);
     }
 
     .ecos-form.invariants-form .user-profile-custom-container .user-profile-header__column--photo .form-region.template-img-background .img-cover {
