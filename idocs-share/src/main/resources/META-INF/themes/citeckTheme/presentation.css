@@ -2189,13 +2189,12 @@ table td.thumbnail img
     background-image: none !important;
 }
 
-.fa.HEADER_ACTIVE_TASKS_JOURNAL:before,
-.fa.HEADER_COMPLETED_TASKS_JOURNAL:before,
-.fa.HEADER_COMPLETED_TASKS_JOURNAL:before,
-.fa.HEADER_CONTROLLED_JOURNAL:before,
-.fa.HEADER_SUBORDINATE_TASKS_JOURNAL:before,
-.fa.HEADER_INITIATOR_TASKS_JOURNAL:before,
-.fa.HEADER_INCOME_PACKAGE_TASKS_JOURNAL:before,
+.fa.HEADER_TASKS_ACTIVE_TASKS_JOURNAL:before,
+.fa.HEADER_TASKS_COMPLETED_TASKS_JOURNAL:before,
+.fa.HEADER_TASKS_CONTROLLED_JOURNAL:before,
+.fa.HEADER_TASKS_SUBORDINATE_TASKS_JOURNAL:before,
+.fa.HEADER_TASKS_INITIATOR_TASKS_JOURNAL:before,
+.fa.HEADER_TASKS_INCOME_PACKAGE_TASKS_JOURNAL:before,
 .fa.HEADER_SITES_SEARCH:before,
 .fa.HEADER_SITES_CREATE:before,
 .fa.HEADER_CONTRACTS:before,
@@ -2228,27 +2227,27 @@ table td.thumbnail img
     color: inherit;
 }
 
-.yui-skin-citeckTheme .fa.HEADER_ACTIVE_TASKS_JOURNAL:before {
+.yui-skin-citeckTheme .fa.HEADER_TASKS_ACTIVE_TASKS_JOURNAL:before {
     content: "\f03a";
 }
 
-.yui-skin-citeckTheme .fa.HEADER_COMPLETED_TASKS_JOURNAL:before {
+.yui-skin-citeckTheme .fa.HEADER_TASKS_COMPLETED_TASKS_JOURNAL:before {
     content: "\f187";
 }
 
-.yui-skin-citeckTheme .fa.HEADER_CONTROLLED_JOURNAL:before {
+.yui-skin-citeckTheme .fa.HEADER_TASKS_CONTROLLED_JOURNAL:before {
     content: "\f06e";
 }
 
-.yui-skin-citeckTheme .fa.HEADER_SUBORDINATE_TASKS_JOURNAL:before {
+.yui-skin-citeckTheme .fa.HEADER_TASKS_SUBORDINATE_TASKS_JOURNAL:before {
     content: "\f037";
 }
 
-.yui-skin-citeckTheme .fa.HEADER_INITIATOR_TASKS_JOURNAL:before {
+.yui-skin-citeckTheme .fa.HEADER_TASKS_INITIATOR_TASKS_JOURNAL:before {
     content: "\f0fe";
 }
 
-.yui-skin-citeckTheme .fa.HEADER_INCOME_PACKAGE_TASKS_JOURNAL:before {
+.yui-skin-citeckTheme .fa.HEADER_TASKS_INCOME_PACKAGE_TASKS_JOURNAL:before {
     content: "\f265";
 }
 
@@ -4992,4 +4991,9 @@ body:not(.mobile).yui-skin-citeckTheme .sticky-footer .footer {
 .yui-skin-citeckTheme .user-calendar .yui-dt tr.yui-dt-even,
 .yui-skin-citeckTheme .user-calendar .yui-dt tr.yui-dt-odd {
     background-color: transparent;
+}
+
+.mm-wrapper_opening .yui-skin-citeckTheme .mm-menu .mm-listitem_selected > a:not(.mm-btn_next),
+.mm-wrapper_opening .yui-skin-citeckTheme .mm-menu .mm-listitem_selected > span {
+    background-color: #c6d3de;
 }
