@@ -2296,7 +2296,10 @@ table td.thumbnail img
     content: "\f0e8";
 }
 
-.yui-skin-citeckTheme .fa.HEADER_COMPLETED_WORKFLOWS:before,
+.yui-skin-citeckTheme .fa.HEADER_COMPLETED_WORKFLOWS:before {
+    content: "\f14a";
+}
+
 .yui-skin-citeckTheme .fa.HEADER_MY_WORKFLOWS:before {
     content: "\f247";
 }
@@ -2320,7 +2323,10 @@ table td.thumbnail img
 .yui-skin-citeckTheme .fa.HEADER_REPOSITORY:before {
     content: "\f0ae";
 }
-.yui-skin-citeckTheme .fa.HEADER_FLOWABLE_MODELER:before,
+.yui-skin-citeckTheme .fa.HEADER_FLOWABLE_MODELER:before {
+    content: "\f079";
+}
+
 .yui-skin-citeckTheme .fa.HEADER_APPLICATION_MENU:before {
     content: "\f108";
 }
