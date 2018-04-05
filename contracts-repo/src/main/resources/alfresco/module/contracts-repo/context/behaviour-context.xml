@@ -189,13 +189,6 @@
 		<property name="order" value="80"/>
 	</bean>
 
-	<bean id="amountInWords.payments" class="ru.citeck.ecos.behavior.common.AmountInWordBehaviour" init-method="init">
-		<property name="docType" value="payments:payment"/>
-		<property name="amountProperty" value="payments:paymentAmount"/>
-		<property name="amountInWordProperty" value="payments:paymentAmountInWords"/>
-		<property name="currencyAssoc" value="payments:currency"/>
-	</bean>
-
 	<bean id="contracts.closingDocumentBehaviour" class="ru.citeck.ecos.behavior.contracts.ClosingDocumentBehaviour"
 		  init-method="init">
 		<property name="nodeService" ref="nodeService" />
@@ -204,6 +197,22 @@
 		<property name="namespace" value="http://www.citeck.ru/model/contracts/1.0"/>
 		<property name="type" value="closingDocument"/>
 		<property name="order" value="80"/>
+	</bean>
+
+	<bean id="amountInWords.payments" class="ru.citeck.ecos.behavior.common.AmountInWordBehaviour" init-method="init">
+		<property name="docType" value="payments:payment"/>
+		<property name="amountProperty" value="payments:paymentAmount"/>
+		<property name="amountInWordProperty" value="payments:paymentAmountInWords"/>
+		<property name="currencyAssoc" value="payments:currency"/>
+		<property name="language" value="ru"/>
+	</bean>
+
+	<bean id="amountInWords.closingDocs" class="ru.citeck.ecos.behavior.common.AmountInWordBehaviour" init-method="init">
+		<property name="docType" value="contracts:closingDocument"/>
+		<property name="amountProperty" value="contracts:closingDocumentAmount"/>
+		<property name="amountInWordProperty" value="contracts:closingDocumentAmountInWords"/>
+		<property name="currencyAssoc" value="contracts:closingDocumentCurrency"/>
+		<property name="language" value="ru"/>
 	</bean>
 
 	<bean id="payment.relay-currency.pas"
@@ -236,7 +245,7 @@
 		<property name="policyComponent" ref="policyComponent"/>
 		<property name="nodeService" ref="nodeService"/>
 	</bean>
-	
+
 	<bean id="agreement.historyBehaviour" parent="history.historicalPropertiesBehaviour">
 		<property name="className" value="contracts:agreement"/>
 		<property name="allowedProperties">
