@@ -110,6 +110,9 @@
                 })()
             ]]></invariant>
         </association>
+        <association name="idocs:signatory">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
     </type>
 
     <type name="payments:payment">

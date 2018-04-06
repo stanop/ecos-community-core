@@ -423,7 +423,6 @@
 				<aspect>idocs:hasPerformer</aspect>
 				<aspect>idocs:hasSignatory</aspect>
 				<aspect>idocs:hasSupervisor</aspect>
-				<aspect>contracts:hasDocumentStatus</aspect>
 				<aspect>dms:templateable</aspect>
 				<aspect>payments:payable</aspect>
 				<aspect>contracts:contractType</aspect>
