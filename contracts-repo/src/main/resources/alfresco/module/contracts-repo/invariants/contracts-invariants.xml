@@ -80,7 +80,7 @@
                         attInfo._dependencies({isEntInstalled: ko.observable(true)});
                         deps = attInfo._dependencies();
                     } else if (deps.isEntInstalled() == null) {
-                        deps.isEntInstalled = ko.observable(true);
+                        deps.isEntInstalled(true);
                     }
                     Alfresco.util.Ajax.jsonGet({
                         url: Alfresco.constants.PROXY_URI + "citeck/info/is-ent-installed",
@@ -88,7 +88,7 @@
                             fn: function(response) {
                                 if (response && response.json) {
                                     if (response.json.isEntInstalled == "false") {
-                                        deps.isEntInstalled = ko.observable(false);
+                                        deps.isEntInstalled(false);
                                     }
                                 }
                             }
@@ -109,6 +109,9 @@
                     return null;
                 })()
             ]]></invariant>
+        </association>
+        <association name="idocs:signatory">
+            <invariant on="mandatory" language="explicit">true</invariant>
         </association>
     </type>
 
