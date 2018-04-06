@@ -2594,7 +2594,7 @@ ko.components.register("select2", {
                 var node = event.target, body = document.getElementById("Share");
 
                 while (node && node != body) {
-                    if (node == self.element) return;
+                    if (node == self.element || node.className == "select2-more") return;
                     node = node.parentNode;
                 }
 
