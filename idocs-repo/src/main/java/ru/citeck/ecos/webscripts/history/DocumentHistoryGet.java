@@ -1,5 +1,7 @@
 package ru.citeck.ecos.webscripts.history;
 
+import net.sf.cglib.core.Local;
+import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -22,6 +24,7 @@ import ru.citeck.ecos.model.IdocsModel;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -100,12 +103,13 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         /** Check history event status */
         NodeRef documentRef = new NodeRef(nodeRefUuid);
         Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY);
-        if ((useNewHistory == null || !useNewHistory) && isEnabledRemoteHistoryService()) {
+        boolean docIsInitialized = initialized(documentRef);
+        if ((useNewHistory == null || !useNewHistory) && isEnabledRemoteHistoryService() && docIsInitialized) {
             historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
         }
         /** Load data */
         List historyRecordMaps;
-        if (isEnabledRemoteHistoryService()) {
+        if (isEnabledRemoteHistoryService() && docIsInitialized) {
             historyRecordMaps = historyRemoteService.getHistoryRecords(documentRef.getId());
         } else {
             historyRecordMaps = historyGetService.getHistoryEventsByDocumentRef(documentRef);
@@ -113,6 +117,19 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         Map<String, Object> result = new HashMap<>();
         result.put("jsonResult", createJsonResponse(historyRecordMaps, includeEvents));
         return result;
+    }
+
+    private boolean initialized(NodeRef document) {
+        Date createdSource = (Date) nodeService.getProperty(document, ContentModel.PROP_CREATED);
+
+        if (createdSource == null) {
+            return false;
+        }
+
+        LocalDate currentDate = LocalDate.now();
+        LocalDate createdDate = new java.sql.Date(new java.util.Date().getTime()).toLocalDate();
+
+        return !currentDate.isEqual(createdDate);
     }
 
     /**
