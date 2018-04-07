@@ -362,7 +362,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
         AuthenticationUtil.runAsSystem(() -> txnHelper.doInTransaction(() -> {
 //            try {
-                behaviourFilter.disableBehaviour(documentNodeRef);
+//                behaviourFilter.disableBehaviour(documentNodeRef);
 
                 if (documentNodeRef != null && nodeService.exists(documentNodeRef)) {
                     nodeService.setProperty(documentNodeRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY, newStatus);
