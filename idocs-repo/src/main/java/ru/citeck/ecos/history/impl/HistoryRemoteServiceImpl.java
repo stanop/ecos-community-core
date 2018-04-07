@@ -361,7 +361,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         boolean requiresNew = getTransactionReadState() != TxnReadState.TXN_READ_WRITE;
 
         AuthenticationUtil.runAsSystem(() -> txnHelper.doInTransaction(() -> {
-            try {
+//            try {
                 behaviourFilter.disableBehaviour(documentNodeRef);
 
                 if (documentNodeRef != null && nodeService.exists(documentNodeRef)) {
@@ -369,9 +369,9 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
                 }
 
                 return null;
-            } finally {
-                behaviourFilter.enableBehaviour(documentNodeRef);
-            }
+//            } finally {
+//                behaviourFilter.enableBehaviour(documentNodeRef);
+//            }
         }, false, requiresNew));
     }
 
