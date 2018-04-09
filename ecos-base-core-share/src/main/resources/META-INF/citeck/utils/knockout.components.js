@@ -439,7 +439,18 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
 
             this.valueVisibility = function(predicate) {
                 return predicate && predicate.indexOf("empty") == -1;
-            }
+            };
+
+            for (var i in this.selectedFilterCriteria()) {
+                var predicateValue = self.selectedFilterCriteria()[i].predicateValue();
+                this.selectedFilterCriteria()[i].selectDefault =  (function (predicateValue) {
+                    return function (option, item) {
+                        if (predicateValue) {
+                            ko.applyBindingsToNode(option.parentElement, {value: predicateValue}, item);
+                        };
+                    };
+                })(predicateValue);
+            };
         },
         template: 
            '<table class="filter-criteria-table">\
@@ -453,7 +464,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                     <select data-bind="options: predicates,\
                                                        optionsText: \'label\',\
                                                        optionsValue: \'id\',\
-                                                       value: $parent.predicateValue"></select>\
+                                                       value: $parent.predicateValue,\
+                                                       optionsAfterRender: $parent.selectDefault"></select>\
                                 </td>\
                                 <td class="criterion-value-selector">\
                                     <!-- ko if: $component.valueVisibility($data.predicateValue()) -->\
