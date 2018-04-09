@@ -433,6 +433,7 @@
 				<aspect>icase:hasDocuments</aspect>
 			</mandatory-aspects>
 		</aspect>
+
 		<aspect name="contracts:contractWith">
 			<title>Contract with</title>
 			<properties>
