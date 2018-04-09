@@ -54,7 +54,7 @@
         <property name="bootstrapScript" value="alfresco/module/contracts-repo/bootstrap/scripts/hidden-cardlets.js"/>
     </bean>
 
-    <bean id="contracts.script.fill-case-roles" parent="contracts.import-scripts">
+    <bean id="contracts.script.fill-case-roles" parent="contracts.import-scripts.3-2-1">
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.journals-case-roles"/>
@@ -66,7 +66,7 @@
         <property name="bootstrapScript" value="alfresco/module/contracts-repo/bootstrap/scripts/fill-case-roles.js"/>
     </bean>
 
-    <bean id="contracts.module-components.contracts-confirm-routes" parent="contracts.import-scripts">
+    <bean id="contracts.module-components.contracts-confirm-routes" parent="contracts.import-scripts.3-2-1">
         <property name="name" value="contracts-confirm-routes" />
         <property name="description" value="Base Contract Case Confirmation Route" />
         <property name="bootstrapScript" value="alfresco/module/contracts-repo/bootstrap/scripts/contracts-routes.js"/>
@@ -82,6 +82,33 @@
                     <prop key="uuidBinding">UPDATE_EXISTING</prop>
                     <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/${spaces.templates.email.childname}/${spaces.templates.email.notify.childname}</prop>
                     <prop key="location">alfresco/module/contracts-repo/bootstrap/explicit/contract-diadoc-att-notification-template.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.integrationSettings" parent="contracts.import-spaces.3-2-1">
+        <property name="name" value="integrationSettings"/>
+        <property name="description" value="integration unilever types settings"/>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/configs/counterparty-association</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/configs/counterparty-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/configs/diadoc-box-id-property</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
             </list>

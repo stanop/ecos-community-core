@@ -36,10 +36,6 @@
         <fields kind="mode-view" template="none" />
     </views>
 
-    <view class="contracts:agreement" mode="view">
-        <field assoc="idocs:signedVersion" />
-    </view>
-
     <view class="contracts:agreement">
         <views mode="create" kind="3-column" />
         <views mode="edit" kind="3-column" />
@@ -213,6 +209,9 @@
                     'tk:type': 'workspace://SpacesStore/category-document-type',
                     'tk:kind': 'workspace://SpacesStore/cat-document-other'
                     }</param>
+            </region>
+            <region name="label" template="label">
+                <param name="key">icase_icaseModel.association.icase_documents.title</param>
             </region>
         </field>
     </view>
@@ -550,14 +549,6 @@
             </region>
         </field>
         <field prop="cm:content" />
-    </view>
-
-    <view class="contracts:supplementaryAgreement" mode="view">
-        <field assoc="idocs:signedVersion">
-            <region name="label" template="label">
-                <param name="key">idocs_idocsModel.association.idocs_signedVersion.title</param>
-            </region>
-        </field>
     </view>
 
     <view class="contracts:supplementaryAgreement">
