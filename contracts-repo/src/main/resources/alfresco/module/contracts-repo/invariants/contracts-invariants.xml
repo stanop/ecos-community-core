@@ -301,6 +301,9 @@
     </type>
 
     <type name="contracts:supplementaryAgreement">
+        <association name="idocs:signatory">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
         <association name="contracts:mainAgreement">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="value" language="javascript">view.params.contract</invariant>
