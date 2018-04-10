@@ -364,6 +364,22 @@
 		</property>
 	</bean>
 
+	<bean id="agreement.caseStatusHistory" parent="ecos.caseStatusHistoryBehaviour">
+		<property name="transitions">
+			<list>
+				<bean class="ru.citeck.ecos.behavior.history.CaseStatusHistoryBehaviour.MultipleTargetsTransition">
+					<property name="className" value="{http://www.citeck.ru/model/contracts/1.0}supplementaryAgreement"/>
+					<property name="fromStatus" value="ANY"/>
+					<property name="toStatuses">
+						<list>
+							<value>ANY</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="payment.historyBehaviour" parent="history.historicalPropertiesBehaviour">
 		<property name="className" value="payments:payment"/>
 		<property name="allowedProperties">
