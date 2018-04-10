@@ -211,7 +211,7 @@
                     }</param>
             </region>
             <region name="label" template="label">
-                <param name="key">icase_icaseModel.association.icase_documents.title</param>
+                <param name="key">icase_icase.association.icase_documents.title</param>
             </region>
         </field>
     </view>
