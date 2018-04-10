@@ -364,7 +364,7 @@
 		</property>
 	</bean>
 
-	<bean id="agreement.caseStatusHistory" parent="ecos.caseStatusHistoryBehaviour">
+	<bean id="suppAgreement.caseStatusHistory" parent="ecos.caseStatusHistoryBehaviour">
 		<property name="transitions">
 			<list>
 				<bean class="ru.citeck.ecos.behavior.history.CaseStatusHistoryBehaviour.MultipleTargetsTransition">
