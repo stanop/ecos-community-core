@@ -33,6 +33,7 @@ public interface CounterModel {
 	public static final QName PROP_INITIAL_VALUE_TEMPLATE = QName.createQName(NAMESPACE, "initialValueTemplate");
 	public static final QName PROP_NUMBER_TEMPLATE = QName.createQName(NAMESPACE, "numberTemplate");
 	public static final QName PROP_ERROR_MESSAGE_CONFIG = QName.createQName(NAMESPACE, "errorMessageConfig");
+	public static final QName PROP_CHILDREN_COUNT_VALUE = QName.createQName(NAMESPACE, "childrenCountValue");
 
 	
 }
