@@ -74,7 +74,8 @@ public abstract class AmountInWordConverter {
 
     private String processConvert(int amount) {
         BigDecimal bigDecimalAmount = new BigDecimal(amount);
-        return processConvert(bigDecimalAmount);
+        String result = processConvert(bigDecimalAmount);
+        return result.trim().substring(0, result.length() - 4);
     }
 
     private String processConvert(double amount) {
