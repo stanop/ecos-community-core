@@ -1,4 +1,4 @@
-package ru.citeck.ecos.behavior.contracts;
+package ru.citeck.ecos.behavior.idocs;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.AssociationRef;
@@ -7,11 +7,13 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.ProductsAndServicesModel;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ProductsAndServicesUtils {
 
@@ -63,4 +65,37 @@ public class ProductsAndServicesUtils {
                     ProductsAndServicesModel.ASSOC_CONTAINS_ORIG_PRODUCTS_AND_SERVICES);
         }
     }
+
+    public static void recalculateOrdersIfRequired(NodeRef document, QName assocToPas, NodeService nodeService) {
+        if (orderRecalculationIsRequired(document, assocToPas, nodeService)) {
+            List<NodeRef> productAndServices = RepoUtils.getChildrenByAssoc(document, assocToPas, nodeService);
+            for (int i = 0; i < productAndServices.size(); i++) {
+                NodeRef pas = productAndServices.get(i);
+                nodeService.setProperty(pas, ProductsAndServicesModel.PROP_ORDER, i + 1);
+            }
+        }
+    }
+
+    private static boolean orderRecalculationIsRequired(NodeRef document, QName assocToPas, NodeService nodeService) {
+        List<NodeRef> productAndServices = RepoUtils.getChildrenByAssoc(document, assocToPas, nodeService);
+
+        for (int i = 0; i < productAndServices.size(); i++) {
+            NodeRef pas = productAndServices.get(i);
+            Integer currentOrder = RepoUtils.getProperty(pas, ProductsAndServicesModel.PROP_ORDER, Integer.class,
+                    nodeService);
+
+            if (currentOrder == null) {
+                return false;
+            }
+
+            Integer requiredOrder = i + 1;
+
+            if (!Objects.equals(currentOrder, requiredOrder)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

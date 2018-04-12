@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.behavior.idocs.ProductsAndServicesUtils;
 import ru.citeck.ecos.model.ContractsModel;
 import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.model.ProductsAndServicesModel;

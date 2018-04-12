@@ -142,9 +142,8 @@ public class ProductsAndServicesTotalAmountInDocumentBehaviour implements NodeSe
 
         for (NodeRef pasEntity : productsAndServices) {
             if (!nodeService.hasAspect(pasEntity, ContentModel.ASPECT_PENDING_DELETE)) {
-                BigDecimal amount = new BigDecimal((double) nodeService.getProperty(pasEntity,
-                        ProductsAndServicesModel.PROP_TOTAL),
-                        MathContext.DECIMAL64);
+                BigDecimal amount = MathUtils.createBigDecimalFromPropOrZero(pasEntity,
+                        ProductsAndServicesModel.PROP_TOTAL, nodeService);
                 totalAmount = totalAmount.add(amount);
             }
         }

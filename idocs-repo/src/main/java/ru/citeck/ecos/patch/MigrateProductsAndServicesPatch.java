@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
+import ru.citeck.ecos.behavior.idocs.ProductsAndServicesUtils;
 import ru.citeck.ecos.model.ProductsAndServicesModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -74,12 +75,16 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
 
         documentToPas.forEach((document, currentPas) -> {
             msg.append("Document: ").append(document).append("\n");
+
             currentPas.forEach(pas -> {
                 NodeRef newPas = copyService.copy(pas, document,
                         ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES,
                         QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate()));
                 msg.append("     ").append(pas).append(" ----->").append(" ").append(newPas).append("\n");
             });
+
+            ProductsAndServicesUtils.recalculateOrdersIfRequired(document,
+                    ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
         });
 
         msg.append("=====================================");

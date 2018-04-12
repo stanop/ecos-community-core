@@ -48,39 +48,7 @@ public class FillProductAndServicesOrderBehaviour implements NodeServicePolicies
             return;
         }
 
-        if (recalculateIsNeeded(document)) {
-            recalculateOrders(document);
-        }
-    }
-
-    private boolean recalculateIsNeeded(NodeRef document) {
-        List<NodeRef> productAndServices = RepoUtils.getChildrenByAssoc(document, assocToPas, nodeService);
-
-        for (int i = 0; i < productAndServices.size(); i++) {
-            NodeRef pas = productAndServices.get(i);
-            Integer currentOrder = RepoUtils.getProperty(pas, ProductsAndServicesModel.PROP_ORDER, Integer.class,
-                    nodeService);
-
-            if (currentOrder == null) {
-                return false;
-            }
-
-            Integer requiredOrder = i + 1;
-
-            if (!Objects.equals(currentOrder, requiredOrder)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void recalculateOrders(NodeRef document) {
-        List<NodeRef> productAndServices = RepoUtils.getChildrenByAssoc(document, assocToPas, nodeService);
-        for (int i = 0; i < productAndServices.size(); i++) {
-            NodeRef pas = productAndServices.get(i);
-            nodeService.setProperty(pas, ProductsAndServicesModel.PROP_ORDER, i + 1);
-        }
+        ProductsAndServicesUtils.recalculateOrdersIfRequired(document, assocToPas, nodeService);
     }
 
     public void setDocumentType(QName documentType) {
