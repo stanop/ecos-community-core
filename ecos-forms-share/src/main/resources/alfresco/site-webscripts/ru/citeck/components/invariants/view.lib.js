@@ -186,9 +186,6 @@ function getViewData(args) {
         if(args.mode) formUrl += '&mode=' + encodeURIComponent(args.mode);
         if(args.param_destination) formUrl += '&destination=' + encodeURIComponent(args.param_destination);
 
-        logger.warn ("view.lib.js: page.url.args.param_contract: " + page.url.args.param_contract);
-        logger.warn ("view.lib.js: page.url.args.contract: " + page.url.args.contract);
-
         status.code = 303;
         status.location = formUrl;
         status.redirect = true;
