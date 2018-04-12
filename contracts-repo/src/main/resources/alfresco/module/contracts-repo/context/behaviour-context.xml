@@ -181,12 +181,10 @@
 		</property>
 	</bean>
 
-	<bean id="paymentsBehaviour" class="ru.citeck.ecos.behavior.contracts.PaymentsBehaviour" init-method="init">
-		<property name="nodeService" ref="nodeService"/>
-		<property name="searchService" ref="searchService"/>
-		<property name="policyComponent" ref="policyComponent"/>
-		<property name="type" value="payments:payment"/>
-		<property name="order" value="80"/>
+	<bean id="payments.FillProductAndServicesOrderBehaviour"
+		  class="ru.citeck.ecos.behavior.idocs.FillProductAndServicesOrderBehaviour" init-method="init">
+		<property name="documentType" value="payments:payment"/>
+		<property name="assocToPas" value="pas:containsProductsAndServices"/>
 	</bean>
 
 	<bean id="amountInWords.payments" class="ru.citeck.ecos.behavior.common.AmountInWordBehaviour" init-method="init">
@@ -199,7 +197,6 @@
 	<bean id="contracts.closingDocumentBehaviour" class="ru.citeck.ecos.behavior.contracts.ClosingDocumentBehaviour"
 		  init-method="init">
 		<property name="nodeService" ref="nodeService" />
-		<property name="searchService" ref="searchService"/>
 		<property name="policyComponent" ref="policyComponent" />
 		<property name="namespace" value="http://www.citeck.ru/model/contracts/1.0"/>
 		<property name="type" value="closingDocument"/>
@@ -210,7 +207,7 @@
 		  class="ru.citeck.ecos.behavior.common.RelayCurrencyToAssocsBehaviour"
 		  init-method="init">
 		<property name="docType" value="payments:payment"/>
-		<property name="targetAssoc" value="pas:containsProductsAndServices"/>
+		<property name="childrenAssoc" value="pas:containsProductsAndServices"/>
 		<property name="sourceCurrencyAssoc" value="payments:currency"/>
 		<property name="targetCurrencyAssoc" value="pas:currency"/>
 	</bean>
@@ -219,7 +216,7 @@
 		  class="ru.citeck.ecos.behavior.common.RelayCurrencyToAssocsBehaviour"
 		  init-method="init">
 		<property name="docType" value="contracts:closingDocument"/>
-		<property name="targetAssoc" value="pas:containsProductsAndServices"/>
+		<property name="childrenAssoc" value="pas:containsProductsAndServices"/>
 		<property name="sourceCurrencyAssoc" value="contracts:closingDocumentCurrency"/>
 		<property name="targetCurrencyAssoc" value="pas:currency"/>
 	</bean>

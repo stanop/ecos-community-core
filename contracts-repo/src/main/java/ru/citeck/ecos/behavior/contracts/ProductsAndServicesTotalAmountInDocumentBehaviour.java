@@ -24,7 +24,7 @@ import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
-import org.alfresco.service.cmr.repository.AssociationRef;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
@@ -46,8 +46,8 @@ import java.util.Objects;
  *
  * @author Roman Makarskiy
  */
-public class ProductsAndServicesTotalAmountInDocumentBehaviour implements NodeServicePolicies.OnCreateAssociationPolicy,
-        NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.BeforeDeleteAssociationPolicy {
+public class ProductsAndServicesTotalAmountInDocumentBehaviour implements NodeServicePolicies.OnCreateNodePolicy,
+        NodeServicePolicies.OnUpdatePropertiesPolicy, NodeServicePolicies.BeforeDeleteNodePolicy {
 
     @Autowired
     @Qualifier("NodeService")
@@ -65,26 +65,24 @@ public class ProductsAndServicesTotalAmountInDocumentBehaviour implements NodeSe
                         Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
         );
 
-        allowedTypes.forEach((documentType, totalAmountProperty) -> this.policyComponent.bindAssociationBehaviour(
-                NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
-                documentType,
-                ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES,
-                new JavaBehaviour(this, "onCreateAssociation",
+        this.policyComponent.bindAssociationBehaviour(
+                NodeServicePolicies.OnCreateNodePolicy.QNAME,
+                ProductsAndServicesModel.TYPE_ENTITY_COPIED,
+                new JavaBehaviour(this, "onCreateNode",
                         Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
-        ));
+        );
 
-        allowedTypes.forEach((documentType, totalAmountProperty) -> this.policyComponent.bindAssociationBehaviour(
-                NodeServicePolicies.BeforeDeleteAssociationPolicy.QNAME,
-                documentType,
-                ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES,
-                new JavaBehaviour(this, "beforeDeleteAssociation",
+        this.policyComponent.bindClassBehaviour(
+                NodeServicePolicies.BeforeDeleteNodePolicy.QNAME,
+                ProductsAndServicesModel.TYPE_ENTITY_COPIED,
+                new JavaBehaviour(this, "beforeDeleteNode",
                         Behaviour.NotificationFrequency.FIRST_EVENT)
-        ));
+        );
     }
 
     @Override
-    public void onCreateAssociation(AssociationRef nodeAssocRef) {
-        NodeRef pasEntityRef = nodeAssocRef.getTargetRef();
+    public void onCreateNode(ChildAssociationRef childAssocRef) {
+        NodeRef pasEntityRef = childAssocRef.getChildRef();
         if (!nodeService.exists(pasEntityRef)) {
             return;
         }
@@ -92,12 +90,11 @@ public class ProductsAndServicesTotalAmountInDocumentBehaviour implements NodeSe
     }
 
     @Override
-    public void beforeDeleteAssociation(AssociationRef nodeAssocRef) {
-        NodeRef pasEntityRef = nodeAssocRef.getTargetRef();
-        if (!nodeService.exists(pasEntityRef)) {
+    public void beforeDeleteNode(NodeRef nodeRef) {
+        if (!nodeService.exists(nodeRef)) {
             return;
         }
-        updateTotalAmount(pasEntityRef);
+        updateTotalAmount(nodeRef);
     }
 
     @Override
@@ -120,9 +117,8 @@ public class ProductsAndServicesTotalAmountInDocumentBehaviour implements NodeSe
     }
 
     private void processPasEntry(NodeRef pasEntityRef, QName requiredDocumentType, QName totalAmountProperty) {
-        List<NodeRef> documents = RepoUtils.getSourceNodeRefs(pasEntityRef,
-                ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
-        documents.forEach(document -> updateTotalAmountInDocument(document, requiredDocumentType, totalAmountProperty));
+        NodeRef document = RepoUtils.getPrimaryParentRef(pasEntityRef, nodeService);
+        updateTotalAmountInDocument(document, requiredDocumentType, totalAmountProperty);
     }
 
     private void updateTotalAmountInDocument(NodeRef document, QName requiredDocumentType, QName totalAmountProperty) {
@@ -140,7 +136,7 @@ public class ProductsAndServicesTotalAmountInDocumentBehaviour implements NodeSe
 
     private BigDecimal getTotalAmount(NodeRef nodeRef) {
         BigDecimal totalAmount = BigDecimal.ZERO;
-        List<NodeRef> productsAndServices = RepoUtils.getTargetAssoc(nodeRef,
+        List<NodeRef> productsAndServices = RepoUtils.getChildrenByAssoc(nodeRef,
                 ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES,
                 nodeService);
 
