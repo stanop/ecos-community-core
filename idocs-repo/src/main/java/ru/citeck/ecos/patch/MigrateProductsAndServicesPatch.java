@@ -2,10 +2,15 @@ package ru.citeck.ecos.patch;
 
 import org.alfresco.repo.admin.patch.AbstractPatch;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.repository.CopyService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
+import org.alfresco.util.GUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.model.ProductsAndServicesModel;
 import ru.citeck.ecos.utils.RepoUtils;
@@ -20,8 +25,13 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
     private static final String MSG_NOT_REQUIRED = PATCH_ID + ".notRequired";
     private static final String pasFolderXPath = "/app:company_home/st:sites/cm:contracts/cm:dataLists/cm:products-and-services";
 
-    private Map<NodeRef, Set<NodeRef>> documentToPas = new HashMap<>();
+    @Autowired
     private ServiceRegistry serviceRegistry;
+    @Autowired
+    private CopyService copyService;
+
+    private int countOfDocument = 0;
+    private int countOfPas = 0;
 
     @Override
     protected String applyInternal() {
@@ -36,15 +46,8 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
             return I18NUtil.getMessage(MSG_NOT_REQUIRED);
         }
 
-        StringBuilder msg = new StringBuilder();
-        msg.append("\n").append("=====================================").append("\n");
-        documentToPas.forEach((k, v) -> msg.append("Document: ").append(k).append(" ----> ").append(v.toString())
-                .append("\n"));
-        msg.append("=====================================");
-        logger.info(msg);
-
         logger.info("Finished executing of patch: " + I18NUtil.getMessage(PATCH_ID));
-        return I18NUtil.getMessage(MSG_SUCCESS, documentToPas.size());
+        return I18NUtil.getMessage(MSG_SUCCESS, countOfDocument, countOfPas);
     }
 
     private boolean containerNotEmpty(NodeRef pasFolderRef) {
@@ -54,11 +57,33 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
     }
 
     private void migrateProductAndServices(NodeRef pasFolderRef) {
-        List<NodeRef> productAndServices = RepoUtils.getChildrenByType(pasFolderRef,
+        List<NodeRef> productsAndServices = RepoUtils.getChildrenByType(pasFolderRef,
                 ProductsAndServicesModel.TYPE_ENTITY_COPIED,
                 nodeService);
 
-        documentToPas = getDocumentToPasRelation(productAndServices);
+        Map<NodeRef, Set<NodeRef>> documentToPas = getDocumentToPasRelation(productsAndServices);
+        countOfDocument = documentToPas.size();
+        countOfPas = productsAndServices.size();
+
+        if (documentToPas.isEmpty()) {
+            return;
+        }
+
+        StringBuilder msg = new StringBuilder();
+        msg.append("\n").append("=====================================").append("\n");
+
+        documentToPas.forEach((document, currentPas) -> {
+            msg.append("Document: ").append(document).append("\n");
+            currentPas.forEach(pas -> {
+                NodeRef newPas = copyService.copy(pas, document,
+                        ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES,
+                        QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate()));
+                msg.append("     ").append(pas).append(" ----->").append(" ").append(newPas).append("\n");
+            });
+        });
+
+        msg.append("=====================================");
+        logger.info(msg);
     }
 
     private Map<NodeRef, Set<NodeRef>> getDocumentToPasRelation(List<NodeRef> productAndServices) {
@@ -91,9 +116,5 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
         } else {
             return refs.get(0);
         }
-    }
-
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
     }
 }

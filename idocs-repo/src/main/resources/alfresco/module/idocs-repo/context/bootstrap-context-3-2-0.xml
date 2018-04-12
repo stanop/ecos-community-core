@@ -340,7 +340,6 @@
         <property name="fixesFromSchema" value="0"/>
         <property name="fixesToSchema" value="${version.schema}"/>
         <property name="targetSchema" value="100000"/>
-        <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
 
 </beans>
