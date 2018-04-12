@@ -15,7 +15,7 @@
         <property name="appliesFromVersion" value="3.2.1" />
     </bean>
 
-    <bean id="journals.remove-permissions-for-attachment-root-node" parent="journals.import-scripts.3-2-1">
+    <!--<bean id="journals.remove-permissions-for-attachment-root-node" parent="journals.import-scripts.3-2-1">
         <property name="name" value="remove-permissions-for-attachment-root-node"/>
         <property name="description" value="remove-permissions-for-attachment-root-node"/>
         <property name="dependsOn">
@@ -24,6 +24,6 @@
             </list>
         </property>
         <property name="bootstrapScript" value="alfresco/module/journals-repo/bootstrap/scripts/remove-permissions-for-attachments-root-node.js"/>
-    </bean>
+    </bean>-->
 
 </beans>
