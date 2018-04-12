@@ -83,8 +83,8 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
                 msg.append("     ").append(pas).append(" ----->").append(" ").append(newPas).append("\n");
             });
 
-            ProductsAndServicesUtils.recalculateOrdersIfRequired(document,
-                    ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
+           /* ProductsAndServicesUtils.recalculateOrdersIfRequired(document,
+                    ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);*/
         });
 
         msg.append("=====================================");
