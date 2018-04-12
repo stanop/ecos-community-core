@@ -14,11 +14,11 @@ fieldNames = [
 <@forms.setMandatoryFields fieldNames = [ "prop_cm_content" ] condition="prop_dms_updateContent == 'false'" />
 
 <#if form.mode == "create">
-	<@forms.formConfirmSupport formId=formId message="Все несохраненные данные будут потеряны" />
+	<@forms.formConfirmSupport createBy=createBy message="Все несохраненные данные будут потеряны" />
 </#if>
 
 <#if formUI == "true">
-	<@formLib.renderFormsRuntime formId=formId />
+	<@formLib.renderFormsRuntime createBy=createBy />
 </#if>
 
 <#if form.mode == "view">
@@ -29,7 +29,7 @@ fieldNames = [
 	<#assign threeColumnClass = "yui-gb" />
 </#if>
 
-<@formLib.renderFormContainer formId=formId>
+<@formLib.renderFormContainer createBy=createBy>
 
 	<@agreementCommon.renderAgreementCommon type = 'agreement'/>
 

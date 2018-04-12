@@ -1,7 +1,7 @@
 <#import "/ru/citeck/components/form/ftl-forms.lib.ftl" as forms />
 
 <#if form.mode == "create">
-	<@forms.formConfirmSupport formId=formId message="Все несохраненные данные будут потеряны" />
+	<@forms.formConfirmSupport createBy=createBy message="Все несохраненные данные будут потеряны" />
 </#if>
 
 <@forms.setMandatoryFields
@@ -22,7 +22,7 @@ fieldNames = [
 "by-agreement": "workspace://SpacesStore/contracts-cat-doctype-contract"
 } />
 
-<#if form.mode == "create" && (form.arguments.formId!) == "by-agreement"
+<#if form.mode == "create" && (form.arguments.createBy!) == "by-agreement"
 || (form.data.prop_tk_kind!) == kindRefs["by-agreement"]>
 	<#assign mode = "by-agreement" />
 </#if>
@@ -71,7 +71,7 @@ YAHOO.Bubbling.on("renderCurrentValue", function (layer, args) {
 
 
 <#if formUI == "true">
-	<@formLib.renderFormsRuntime formId=formId />
+	<@formLib.renderFormsRuntime createBy=createBy />
 </#if>
 
 <#if form.mode == "view">
@@ -84,7 +84,7 @@ YAHOO.Bubbling.on("renderCurrentValue", function (layer, args) {
 
 
 
-<@formLib.renderFormContainer formId=formId>
+<@formLib.renderFormContainer createBy=createBy>
 
 	<@forms.renderField field="prop_cm_name" extension = {
 	"label": msg("closing-document.form.prop_cm_name.title"),
