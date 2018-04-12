@@ -120,7 +120,7 @@ function _convertNodeViewGetParams(args) {
     var params = {};
     var viewParams = ["formKey", "formMode", "formType", "formId"];
 
-    if (!!page && !!page.url && !!page.url.args) {
+    try {
         var urlArgs = page.url.args;
 
         for (var paramName in urlArgs) {
@@ -129,7 +129,7 @@ function _convertNodeViewGetParams(args) {
                 params[paramName] = paramValue;
             }
         }
-    }
+    } catch(e) {}
 
     for (var paramName in args) {
         var paramValue = args[paramName];
