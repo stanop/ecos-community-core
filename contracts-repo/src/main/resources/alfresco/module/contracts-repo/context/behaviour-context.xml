@@ -185,6 +185,7 @@
 		  class="ru.citeck.ecos.behavior.idocs.FillProductAndServicesOrderBehaviour" init-method="init">
 		<property name="documentType" value="payments:payment"/>
 		<property name="assocToPas" value="pas:containsProductsAndServices"/>
+		<property name="order" value="300"/>
 	</bean>
 
 	<bean id="amountInWords.payments" class="ru.citeck.ecos.behavior.common.AmountInWordBehaviour" init-method="init">

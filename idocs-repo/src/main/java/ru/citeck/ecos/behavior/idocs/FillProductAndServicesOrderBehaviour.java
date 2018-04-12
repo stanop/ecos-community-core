@@ -3,6 +3,7 @@ package ru.citeck.ecos.behavior.idocs;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.JavaBehaviour;
+import org.alfresco.repo.policy.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -30,13 +31,14 @@ public class FillProductAndServicesOrderBehaviour implements NodeServicePolicies
 
     private QName documentType;
     private QName assocToPas;
+    private int order;
 
     public void init() {
         this.policyComponent.bindClassBehaviour(
                 NodeServicePolicies.OnCreateNodePolicy.QNAME,
                 documentType,
-                new JavaBehaviour(this, "onCreateNode",
-                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT) {
+                new OrderedBehaviour(this, "onCreateNode",
+                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order) {
                 }
         );
     }
@@ -57,5 +59,9 @@ public class FillProductAndServicesOrderBehaviour implements NodeServicePolicies
 
     public void setAssocToPas(QName assocToPas) {
         this.assocToPas = assocToPas;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 }
