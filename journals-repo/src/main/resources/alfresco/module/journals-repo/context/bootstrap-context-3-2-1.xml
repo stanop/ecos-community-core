@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="journals.import-spaces.3-2-1" abstract="true" parent="journals.import-spaces">
+        <property name="sinceVersion" value="3.2.1" />
+        <property name="appliesFromVersion" value="3.2.1" />
+    </bean>
+
+    <bean id="journals.import-scripts.3-2-1" abstract="true" parent="journals.import-scripts">
+        <property name="sinceVersion" value="3.2.1" />
+        <property name="appliesFromVersion" value="3.2.1" />
+    </bean>
+
+    <bean id="journals.remove-permissions-for-attachment-root-node" parent="journals.import-scripts.3-2-1">
+        <property name="name" value="remove-permissions-for-attachment-root-node"/>
+        <property name="description" value="remove-permissions-for-attachment-root-node"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-attachments-root"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/journals-repo/bootstrap/scripts/remove-permissions-for-attachments-root-node.js"/>
+    </bean>
+
+</beans>
