@@ -83,11 +83,6 @@ public class ProductsAndServicesUtils {
             NodeRef pas = productAndServices.get(i);
             Integer currentOrder = RepoUtils.getProperty(pas, ProductsAndServicesModel.PROP_ORDER, Integer.class,
                     nodeService);
-
-            if (currentOrder == null) {
-                return false;
-            }
-
             Integer requiredOrder = i + 1;
 
             if (!Objects.equals(currentOrder, requiredOrder)) {
