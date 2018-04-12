@@ -120,6 +120,17 @@ function _convertNodeViewGetParams(args) {
     var params = {};
     var viewParams = ["formKey", "formMode", "formType", "formId"];
 
+    if (!!page && !!page.url && !!page.url.args) {
+        var urlArgs = page.url.args;
+
+        for (var paramName in urlArgs) {
+            var paramValue = urlArgs[paramName];
+            if (paramName.match(/^param_/)) {
+                params[paramName] = paramValue;
+            }
+        }
+    }
+
     for (var paramName in args) {
         var paramValue = args[paramName];
         if (viewParams.indexOf(paramName) >= 0 || paramName.match(/^param_/)) {
@@ -174,6 +185,9 @@ function getViewData(args) {
         if(args.viewId) formUrl += '&formId=' + encodeURIComponent(args.viewId);
         if(args.mode) formUrl += '&mode=' + encodeURIComponent(args.mode);
         if(args.param_destination) formUrl += '&destination=' + encodeURIComponent(args.param_destination);
+
+        logger.warn ("view.lib.js: page.url.args.param_contract: " + page.url.args.param_contract);
+        logger.warn ("view.lib.js: page.url.args.contract: " + page.url.args.contract);
 
         status.code = 303;
         status.location = formUrl;
