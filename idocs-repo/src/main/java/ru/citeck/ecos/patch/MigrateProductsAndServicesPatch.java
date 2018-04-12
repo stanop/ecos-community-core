@@ -36,8 +36,14 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
             return I18NUtil.getMessage(MSG_NOT_REQUIRED);
         }
 
+        StringBuilder msg = new StringBuilder();
+        msg.append("\n").append("=====================================").append("\n");
+        documentToPas.forEach((k, v) -> msg.append("Document: ").append(k).append(" ----> ").append(v.toString())
+                .append("\n"));
+        msg.append("=====================================");
+        logger.info(msg);
+
         logger.info("Finished executing of patch: " + I18NUtil.getMessage(PATCH_ID));
-        documentToPas.forEach((k, v) -> logger.info("Document: " + k + " ----> " + v.toString()));
         return I18NUtil.getMessage(MSG_SUCCESS, documentToPas.size());
     }
 
