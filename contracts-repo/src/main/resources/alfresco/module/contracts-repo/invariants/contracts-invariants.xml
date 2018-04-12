@@ -192,7 +192,7 @@
                     var sum = 0;
                     var arr = node.childAssocs["pas:containsProductsAndServices"];
                     arr.forEach(function(item) {
-                      sum += item.properties["pas:pricePerUnit"];
+                      sum += item.properties["pas:total"];
                     });
                     return sum;
                 })()

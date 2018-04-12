@@ -80,11 +80,9 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
                 NodeRef newPas = copyService.copy(pas, document,
                         ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES,
                         QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate()));
+                nodeService.removeProperty(newPas, ProductsAndServicesModel.PROP_ORDER);
                 msg.append("     ").append(pas).append(" ----->").append(" ").append(newPas).append("\n");
             });
-
-           /* ProductsAndServicesUtils.recalculateOrdersIfRequired(document,
-                    ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);*/
         });
 
         msg.append("=====================================");
