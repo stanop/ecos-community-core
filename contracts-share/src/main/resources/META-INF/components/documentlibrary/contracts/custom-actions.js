@@ -79,18 +79,11 @@
                     if(destNodeRef) {
                         var redirection = '/share/page/node-create?type=' + pageOfCreate.type + '&destination=' + destNodeRef;
 
-                        switch(pageOfCreate.from) {
-                            case "contract":
-                                var formId = jsNode.properties && jsNode.properties["tk:type"] == "workspace://SpacesStore/contracts-cat-doctype-contract" ? "by-agreement" : "";
-                                redirection += '&formId=' + formId;
-                                break;
-
-                            case "invoice":
-                                var contracts = jsNode.properties["payments:basis_added"];
-                                if (contracts != null && contracts.length > 0) {
-                                    redirection += '&param_contract=' + contracts[0];
-                                }
-                                break;
+                        if (pageOfCreate.from == "invoice") {
+                            var contracts = jsNode.properties["payments:basis_added"];
+                            if (contracts != null && contracts.length > 0) {
+                                redirection += '&param_contract=' + contracts[0];
+                            }
                         }
 
                         if (jsNode.nodeRef) {
