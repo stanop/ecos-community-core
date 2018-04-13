@@ -1,14 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
 
 <Context antiJARLocking="true">
-    <Environment name="datasource.driver" value="org.h2.Driver" type="java.lang.String"/>
-    <Environment name="datasource.url"
-                 value="jdbc:h2:${alfresco.data.location}/h2_data/bpm_service;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=10000;MVCC=FALSE;LOCK_MODE=0;"
-                 type="java.lang.String"/>
-    <Environment name="datasource.username" value="bpm_service" type="java.lang.String"/>
-    <Environment name="datasource.password" value="123123" type="java.lang.String"/>
+    <Environment name="datasource.driver" value="${flowable.webapps.db.driver.class.name}" type="java.lang.String"/>
+    <Environment name="datasource.url" value="${flowable.webapps.db.url}" type="java.lang.String"/>
+    <Environment name="datasource.username" value="${flowable.webapps.db.username}" type="java.lang.String"/>
+    <Environment name="datasource.password" value="${flowable.webapps.db.password}" type="java.lang.String"/>
 
-    <Environment name="create.demo.users" value="false" type="java.lang.Boolean"/>
-    <Environment name="create.demo.definitions" value="false" type="java.lang.Boolean"/>
-    <Environment name="create.demo.models" value="false" type="java.lang.Boolean"/>
+    <Environment name="create.demo.users" value="${flowable.webapps.rest.create.demo.users}" type="java.lang.Boolean"/>
+    <Environment name="create.demo.definitions" value="${flowable.webapps.rest.create.demo.definitions}" type="java.lang.Boolean"/>
+    <Environment name="create.demo.models" value="${flowable.webapps.rest.create.demo.models}" type="java.lang.Boolean"/>
 </Context>
