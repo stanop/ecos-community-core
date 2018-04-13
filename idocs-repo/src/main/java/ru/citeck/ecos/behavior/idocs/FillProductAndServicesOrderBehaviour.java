@@ -20,7 +20,6 @@ import java.util.Objects;
 /**
  * @author Roman Makarskiy
  */
-
 public class FillProductAndServicesOrderBehaviour implements NodeServicePolicies.OnCreateNodePolicy {
 
     @Autowired

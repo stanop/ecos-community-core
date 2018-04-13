@@ -18,6 +18,9 @@ import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.*;
 
+/**
+ * @author Roman Makarskiy
+ */
 public class MigrateProductsAndServicesPatch extends AbstractPatch {
 
     private static final Log logger = LogFactory.getLog(MigrateProductsAndServicesPatch.class);
