@@ -22,26 +22,37 @@
             <invariant on="default" language="javascript">
                 <![CDATA[
                     (function() {
-                        var destinationNode = (view.params && view.params.destination) ? new Node(view.params.destination) : null;
-                        if (destinationNode) {
-                            var destinationCurrency = (destinationNode.assocs["idocs:currencyDocument"] != null
-                            && destinationNode.assocs["idocs:currencyDocument"].length > 0) ? destinationNode.assocs["idocs:currencyDocument"][0] : null;
+                        var sourceNode = getSourceNode();
 
-                            if (destinationCurrency) {
-                                return destinationCurrency;
+                        if (sourceNode) {
+                            var currencyAssocType = getCurrencyAssocType(sourceNode);
+
+                            var sourceCurrency = (sourceNode.assocs[currencyAssocType] != null
+                                && sourceNode.assocs[currencyAssocType].length > 0) ? sourceNode.assocs[currencyAssocType][0] : null;;
+
+                            if (sourceCurrency) {
+                                return sourceCurrency;
                             }
                         }
 
+                        return new Node('workspace://SpacesStore/currency-rur');
 
-                        var parentCurrency = (node.parent && node.parent.assocs["idocs:currencyDocument"] != null
-                            && node.parent.assocs["idocs:currencyDocument"].length > 0) ? node.parent.assocs["idocs:currencyDocument"][0] : null;
-
-                        if (parentCurrency) {
-                            return parentCurrency;
+                        function getSourceNode() {
+                            var destinationNode = (view.params && view.params.destination) ? new Node(view.params.destination) : null;
+                            return destinationNode || node.parent;
                         }
 
-                        return new Node('workspace://SpacesStore/currency-rur');
-                    })()
+                        function getCurrencyAssocType(sourceNode) {
+                            switch (sourceNode.typeShort) {
+                                case "contracts:closingDocument":
+                                    return "contracts:closingDocumentCurrency";
+                                case "payments:payment":
+                                    return "payments:currency";
+                                default:
+                                    return "idocs:currencyDocument";
+                            }
+                        }
+                    })();
                 ]]>
             </invariant>
             <invariant on="protected" language="explicit">true</invariant>

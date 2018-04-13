@@ -137,8 +137,8 @@
     </tr>
     <#assign count = 0/>
     <#assign totalAmount = 0/>
-    <#if document.associations?? && document.associations["pas:containsProductsAndServices"]?? && document.associations["pas:containsProductsAndServices"]?size != 0>
-        <#list document.associations["pas:containsProductsAndServices"] as containsProductsAndService>
+    <#if document.childAssocs?? && document.childAssocs["pas:containsProductsAndServices"]?? && document.childAssocs["pas:containsProductsAndServices"]?size != 0>
+        <#list document.childAssocs["pas:containsProductsAndServices"] as containsProductsAndService>
             <#assign count = count + 1/>
             <tr>
                 <td><p align="center">${count?string["0"]}</p></td>
