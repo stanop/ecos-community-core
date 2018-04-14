@@ -88,6 +88,7 @@
 				<aspect>contracts:contractType</aspect>
 			</mandatory-aspects>
 		</type>
+
 		<type name="contracts:supplementaryAgreement">
 			<parent>idocs:doc</parent>
 			<properties></properties>
@@ -433,6 +434,7 @@
 				<aspect>icase:hasDocuments</aspect>
 			</mandatory-aspects>
 		</aspect>
+
 		<aspect name="contracts:contractWith">
 			<title>Contract with</title>
 			<properties>

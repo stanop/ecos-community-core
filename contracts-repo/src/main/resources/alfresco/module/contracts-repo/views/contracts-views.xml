@@ -211,7 +211,7 @@
                     }</param>
             </region>
             <region name="label" template="label">
-                <param name="key">icase_icaseModel.association.icase_documents.title</param>
+                <param name="key">icase_icase.association.icase_documents.title</param>
             </region>
         </field>
     </view>
@@ -358,15 +358,13 @@
                 </region>
             </field>
         </view>
-        <field assoc="pas:containsOriginalProductsAndServices" kind="mode-view">
-            <region name="select" template="select-journal">
-                <param name="journalType">products-and-services</param>
+        <field assoc="pas:containsProductsAndServices">
+            <region name="select" template="create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
             </region>
             <region name="input" template="view-table">
-                <param name="journalType">products-and-services</param>
-            </region>
-            <region name="label" template="label">
-                <param name="key">payments_paymentsModel.association.products_and_services.title</param>
+                <param name="columns">cm:title, pas:pricePerUnit, pas:quantity, pas:entityUnit, pas:type, pas:currency</param>
             </region>
         </field>
         <view>

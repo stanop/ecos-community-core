@@ -114,18 +114,6 @@
 
         <aspect name="pas:hasProductsAndServices">
             <associations>
-                <association name="pas:containsProductsAndServices">
-                    <title>Product/Service</title>
-                    <source>
-                        <mandatory>false</mandatory>
-                        <many>true</many>
-                    </source>
-                    <target>
-                        <class>pas:pasEntityCopied</class>
-                        <mandatory>false</mandatory>
-                        <many>true</many>
-                    </target>
-                </association>
                 <association name="pas:containsOriginalProductsAndServices">
                     <title>Product/Service</title>
                     <source>
@@ -138,6 +126,18 @@
                         <many>true</many>
                     </target>
                 </association>
+                <child-association name="pas:containsProductsAndServices">
+                    <title>Product/Service</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>pas:pasEntityCopied</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </child-association>
             </associations>
         </aspect>
         

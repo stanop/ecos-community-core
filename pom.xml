@@ -65,7 +65,7 @@
         <ecos.project.classifier>${alfresco.platform.version}-com</ecos.project.classifier>
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
-        <flowable.version>6.2.1</flowable.version>
+        <flowable.version>6.3.0</flowable.version>
         <ecos.flowable.version>1.0.0-SNAPSHOT</ecos.flowable.version>
     </properties>
 
