@@ -2,7 +2,7 @@ package ru.citeck.ecos.flowable.services.rest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.flowable.form.model.SimpleFormModel;
+import org.flowable.form.model.FormModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -61,7 +61,7 @@ public class RestFormService {
         initialized = true;
     }
 
-    public Optional<SimpleFormModel> getFormByKey(String formKey) {
+    public Optional<FormModel> getFormByKey(String formKey) {
 
         if (!initialized) {
             logger.warn("Flowable rest form service is not initialized! FormKey: " + formKey);
@@ -76,7 +76,7 @@ public class RestFormService {
             String formDefinitionId = definitions.data.get(0).id;
             url = baseUrl + formModelUrl;
 
-            return Optional.ofNullable(restTemplate.getForObject(url, SimpleFormModel.class, formDefinitionId));
+            return Optional.ofNullable(restTemplate.getForObject(url, FormModel.class, formDefinitionId));
         }
 
         return Optional.empty();
