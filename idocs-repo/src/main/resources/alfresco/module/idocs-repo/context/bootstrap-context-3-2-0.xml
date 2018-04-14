@@ -334,7 +334,8 @@
         </property>
     </bean>
 
-    <bean id="unilever.patch.updateEanCategory" class="ru.citeck.ecos.patch.MigrateProductsAndServicesPatch" parent="basePatch">
+    <bean id="idocs.patch.MigrateProductsAndServicesPatch" class="ru.citeck.ecos.patch.MigrateProductsAndServicesPatch"
+          parent="basePatch">
         <property name="id" value="ru.citeck.ecos.patch.MigrateProductsAndServicesPatch"/>
         <property name="description" value="ru.citeck.ecos.patch.MigrateProductsAndServicesPatch.description"/>
         <property name="fixesFromSchema" value="0"/>
