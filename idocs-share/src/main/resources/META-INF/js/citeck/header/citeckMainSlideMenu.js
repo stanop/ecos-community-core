@@ -152,15 +152,14 @@ define(['dojo/_base/declare',
                 var self = this;
                 $(document).ready(
                     function() {
-                        var subs = $('#menu a.mm-btn_next');
-
-                        $(subs).each(function () {
+                        $('#menu li a').each(function () {
                             $(this).click(function () {
 
-                                for(var i = 0, c = subs.length; i < c; i++) {
-                                    if (subs[i] != this) {
-                                        var parent = $(subs[i]).parent();
-                                        $(parent).removeClass('mm-listitem_opened');
+                                var openedItems = $(".mm-listitem_opened");
+
+                                for(var i = 0, c = openedItems.length; i < c; i++) {
+                                    if ($(openedItems[i]).find(this).length == 0) {
+                                        $(openedItems[i]).removeClass('mm-listitem_opened');
                                     }
                                 }
                             });
