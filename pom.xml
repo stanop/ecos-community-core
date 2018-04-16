@@ -65,8 +65,8 @@
         <ecos.project.classifier>${alfresco.platform.version}-com</ecos.project.classifier>
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
-        <flowable.version>6.2.1</flowable.version>
-        <ecos.flowable.version>1.0.0-SNAPSHOT</ecos.flowable.version>
+        <flowable.version>6.3.0</flowable.version>
+        <ecos.flowable.version>1.0.1-SNAPSHOT</ecos.flowable.version>
     </properties>
 
     <profiles>
@@ -96,11 +96,53 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>${project.build.testOutputDirectory}/tomcat/flowable/flowable-webapps.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
                         <groupId>ru.citeck.maven.plugin</groupId>
                         <artifactId>ecos-maven-plugin</artifactId>
                         <version>1.2</version>
 
                         <configuration>
+                            <tomcatSystemProperties>
+                                <flowable.webapps.db.url>${flowable.webapps.db.url}</flowable.webapps.db.url>
+                                <flowable.webapps.db.driver.class.name>${flowable.webapps.db.driver.class.name}</flowable.webapps.db.driver.class.name>
+                                <flowable.webapps.db.username>${flowable.webapps.db.username}</flowable.webapps.db.username>
+                                <flowable.webapps.db.password>${flowable.webapps.db.password}</flowable.webapps.db.password>
+
+                                <flowable.webapps.admin.userid>${flowable.webapps.admin.userid}</flowable.webapps.admin.userid>
+                                <flowable.webapps.admin.password>${flowable.webapps.admin.password}</flowable.webapps.admin.password>
+
+                                <flowable.webapps.idm.app.url>${flowable.webapps.idm.app.url}</flowable.webapps.idm.app.url>
+                                <flowable.webapps.deployment.api.url>${flowable.webapps.deployment.api.url}</flowable.webapps.deployment.api.url>
+
+                                <flowable.webapps.rest.create.demo.users>${flowable.webapps.rest.create.demo.users}</flowable.webapps.rest.create.demo.users>
+                                <flowable.webapps.rest.create.demo.definitions>${flowable.webapps.rest.create.demo.definitions}</flowable.webapps.rest.create.demo.definitions>
+                                <flowable.webapps.rest.create.demo.models>${flowable.webapps.rest.create.demo.models}</flowable.webapps.rest.create.demo.models>
+
+                                <flowable.webapps.admin.rest.app.host>${flowable.webapps.admin.rest.app.host}</flowable.webapps.admin.rest.app.host>
+                                <flowable.webapps.admin.rest.app.port>${flowable.webapps.admin.rest.app.port}</flowable.webapps.admin.rest.app.port>
+                                <flowable.webapps.admin.rest.app.user>${flowable.webapps.admin.rest.app.user}</flowable.webapps.admin.rest.app.user>
+                                <flowable.webapps.admin.rest.app.password>${flowable.webapps.admin.rest.app.password}</flowable.webapps.admin.rest.app.password>
+                            </tomcatSystemProperties>
+
                             <tomcatCustomWebapps>
                                 <webapp>
                                     <groupId>ru.citeck.maven.tomcat</groupId>

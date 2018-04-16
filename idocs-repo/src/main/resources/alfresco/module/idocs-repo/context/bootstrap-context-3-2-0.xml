@@ -334,4 +334,13 @@
         </property>
     </bean>
 
+    <bean id="idocs.patch.MigrateProductsAndServicesPatch" class="ru.citeck.ecos.patch.MigrateProductsAndServicesPatch"
+          parent="basePatch">
+        <property name="id" value="ru.citeck.ecos.patch.MigrateProductsAndServicesPatch"/>
+        <property name="description" value="ru.citeck.ecos.patch.MigrateProductsAndServicesPatch.description"/>
+        <property name="fixesFromSchema" value="0"/>
+        <property name="fixesToSchema" value="${version.schema}"/>
+        <property name="targetSchema" value="100000"/>
+    </bean>
+
 </beans>
