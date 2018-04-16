@@ -12,7 +12,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
-import ru.citeck.ecos.behavior.idocs.ProductsAndServicesUtils;
 import ru.citeck.ecos.model.ProductsAndServicesModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -34,9 +33,6 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
     @Autowired
     private CopyService copyService;
 
-    private int countOfDocument = 0;
-    private int countOfPas = 0;
-
     @Override
     protected String applyInternal() {
         logger.info("Starting execution of patch: " + I18NUtil.getMessage(PATCH_ID));
@@ -51,7 +47,7 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
         }
 
         logger.info("Finished executing of patch: " + I18NUtil.getMessage(PATCH_ID));
-        return I18NUtil.getMessage(MSG_SUCCESS, countOfDocument, countOfPas);
+        return I18NUtil.getMessage(MSG_SUCCESS);
     }
 
     private boolean containerNotEmpty(NodeRef pasFolderRef) {
@@ -66,8 +62,6 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
                 nodeService);
 
         Map<NodeRef, Set<NodeRef>> documentToPas = getDocumentToPasRelation(productsAndServices);
-        countOfDocument = documentToPas.size();
-        countOfPas = productsAndServices.size();
 
         if (documentToPas.isEmpty()) {
             return;
