@@ -6,7 +6,7 @@
     <parent>
         <groupId>ru.citeck.ecos.flowable</groupId>
         <artifactId>flowable-war-solution</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-RC2-SNAPSHOT</version>
     </parent>
 
     <artifactId>flowable-ui-modeler-app</artifactId>
