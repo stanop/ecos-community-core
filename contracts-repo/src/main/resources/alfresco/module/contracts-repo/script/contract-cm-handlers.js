@@ -120,7 +120,6 @@ function changeSigner() {
 function sendToContractorForESigning() {
     var docPackage = (document.sourceAssocs["sam:packageDocumentLink"] || [])[0];
     if(!docPackage) {
-        throw ("Не удалось получить ссылку на пакет");
         throw (MSG_TRANSLATOR.getMessage("actions.messages.cant-find-link-to-sam-package"));
     }
 
