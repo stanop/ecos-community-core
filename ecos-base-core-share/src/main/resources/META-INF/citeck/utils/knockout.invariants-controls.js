@@ -2651,11 +2651,9 @@ ko.components.register("select2", {
                             <span class="select2-message empty-message" data-bind="text: localization.empty"></span>\
                         <!-- /ko -->\
                     <!-- /ko -->\
-                    <!-- ko if: hasMore -->\
-                        <div class="select2-more">\
-                            <a data-bind="click: more, attr: { title: localization.more }">...</a>\
-                        </div>\
-                    <!-- /ko -->\
+                    <div class="select2-more" data-bind="style: hasMore() ? \'\' : {display: \'none\'}">\
+                        <a data-bind="click: more, attr: { title: localization.more }">...</a>\
+                    </div>\
                 </div>\
             <!-- /ko -->\
         <!-- /ko -->\
