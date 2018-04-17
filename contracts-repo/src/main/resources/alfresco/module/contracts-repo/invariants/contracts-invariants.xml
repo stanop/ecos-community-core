@@ -80,7 +80,7 @@
                         attInfo._dependencies({isEntInstalled: ko.observable(true)});
                         deps = attInfo._dependencies();
                     } else if (deps.isEntInstalled() == null) {
-                        deps.isEntInstalled = ko.observable(true);
+                        deps.isEntInstalled(true);
                     }
                     Alfresco.util.Ajax.jsonGet({
                         url: Alfresco.constants.PROXY_URI + "citeck/info/is-ent-installed",
@@ -88,7 +88,7 @@
                             fn: function(response) {
                                 if (response && response.json) {
                                     if (response.json.isEntInstalled == "false") {
-                                        deps.isEntInstalled = ko.observable(false);
+                                        deps.isEntInstalled(false);
                                     }
                                 }
                             }
@@ -109,6 +109,9 @@
                     return null;
                 })()
             ]]></invariant>
+        </association>
+        <association name="idocs:signatory">
+            <invariant on="mandatory" language="explicit">true</invariant>
         </association>
     </type>
 
@@ -161,10 +164,10 @@
         <property name="payments:paymentAccount">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
-        <association name="pas:containsOriginalProductsAndServices">
+        <child-association name="pas:containsProductsAndServices">
             <invariant on="relevant" language="javascript">view.mode=="create" &amp;&amp; node.properties["dms:updateContent"];</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"]</invariant>
-        </association>
+        </child-association>
         <association name="payments:currency">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="value" language="javascript">
@@ -187,9 +190,9 @@
             <invariant on="default" language="javascript"><![CDATA[
                 (function() {
                     var sum = 0;
-                    var arr = node.assocs["pas:containsOriginalProductsAndServices"];
+                    var arr = node.childAssocs["pas:containsProductsAndServices"];
                     arr.forEach(function(item) {
-                      sum += item.properties["pas:pricePerUnit"];
+                      sum += item.properties["pas:total"];
                     });
                     return sum;
                 })()
@@ -298,6 +301,9 @@
     </type>
 
     <type name="contracts:supplementaryAgreement">
+        <association name="idocs:signatory">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
         <association name="contracts:mainAgreement">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="value" language="javascript">view.params.contract</invariant>

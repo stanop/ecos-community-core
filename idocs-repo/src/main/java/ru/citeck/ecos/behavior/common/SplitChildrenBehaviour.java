@@ -120,7 +120,7 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
     private String getUniqueName(NodeRef destination, NodeRef child) {
         String originalName = RepoUtils.getOriginalName(child, nodeService, mimetypeService);
         String extension = RepoUtils.getExtension(child, "", nodeService, mimetypeService);
-        return RepoUtils.getUniqueName(destination, childAssocType, child,  originalName, extension, nodeService);
+        return RepoUtils.getUniqueName(destination, childAssocType, child, originalName, extension, nodeService);
     }
 
     private NodeRef getContainer(NodeRef parent, List<String> path, boolean createIfNotExist) {
@@ -237,53 +237,6 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
         List<String> getPath(NodeRef parent, NodeRef node);
         void onSuccess(NodeRef parent, NodeRef node);
     }
-
-    /*
-    public class SimpleSplit implements SplitBehaviour {
-
-        private int childrenPerParent = 500;
-        private int depth = 2;
-
-        @Override
-        public List<String> getPath(NodeRef parent, NodeRef node) {
-
-            int counter = getCounterValue(parent);
-            int base = counter / childrenPerParent;
-
-            List<String> path = new LinkedList<>();
-
-            for (int i = 0; i < depth; i++) {
-                path.add(0, String.valueOf(base % childrenPerParent));
-                base /= childrenPerParent;
-            }
-
-            return path;
-        }
-
-        @Override
-        public void onSuccess(NodeRef parent, NodeRef node) {
-            //TODO: increase counter
-        }
-
-        private int getCounterValue(NodeRef parent) {
-            //TODO: get counter from parent property or evaluate if not exists
-            return 0;
-        }
-
-        public void setChildrenPerParent(int childrenPerParent) {
-            if (childrenPerParent <= 0) {
-                throw new IllegalArgumentException("Children count must be greater than zero");
-            }
-            this.childrenPerParent = childrenPerParent;
-        }
-
-        public void setDepth(int depth) {
-            if (depth <= 0) {
-                throw new IllegalArgumentException("Depth must be greater than zero");
-            }
-            this.depth = depth;
-        }
-    }*/
 
     /*public class ScriptSplit implements SplitBehaviour {
 

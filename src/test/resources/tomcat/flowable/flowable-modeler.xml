@@ -1,16 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 
 <Context antiJARLocking="true">
-    <Environment name="datasource.driver" value="org.h2.Driver" type="java.lang.String"/>
-    <Environment name="datasource.url"
-                 value="jdbc:h2:${alfresco.data.location}/h2_data/bpm_service;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=10000;MVCC=FALSE;LOCK_MODE=0;"
-                 type="java.lang.String"/>
-    <Environment name="datasource.username" value="bpm_service" type="java.lang.String"/>
-    <Environment name="datasource.password" value="123123" type="java.lang.String"/>
+    <Environment name="datasource.driver" value="${flowable.webapps.db.driver.class.name}" type="java.lang.String"/>
+    <Environment name="datasource.url" value="${flowable.webapps.db.url}" type="java.lang.String"/>
+    <Environment name="datasource.username" value="${flowable.webapps.db.username}" type="java.lang.String"/>
+    <Environment name="datasource.password" value="${flowable.webapps.db.password}" type="java.lang.String"/>
 
-    <Environment name="idm.admin.user" value="admin" type="java.lang.String"/>
-    <Environment name="idm.admin.password" value="test" type="java.lang.String"/>
-    <Environment name="idm.app.url" value="http://localhost:8080/flowable-idm" type="java.lang.String"/>
-    <Environment name="deployment.api.url" value="http://localhost:8080/flowable-task/process-api"
-                 type="java.lang.String"/>
+    <Environment name="idm.admin.user" value="${flowable.webapps.admin.userid}" type="java.lang.String"/>
+    <Environment name="idm.admin.password" value="${flowable.webapps.admin.password}" type="java.lang.String"/>
+    <Environment name="idm.app.url" value="${flowable.webapps.idm.app.url}" type="java.lang.String"/>
+    <Environment name="deployment.api.url" value="${flowable.webapps.deployment.api.url}" type="java.lang.String"/>
 </Context>

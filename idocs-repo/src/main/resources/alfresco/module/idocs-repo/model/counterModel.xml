@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model name="count:counterModel" xmlns="http://www.alfresco.org/model/dictionary/1.0"
-	xmlns:xi="http://www.w3.org/2001/XInclude">
+>
 	<description>Counters model</description>
 	<version>1.0</version>
 	<imports>
@@ -58,6 +58,17 @@
 				</property>
 			</properties>
 		</aspect>
+
+        <aspect name="count:folderCounterAspect">
+            <properties>
+                <property name="count:childrenCountValue">
+                    <type>d:int</type>
+                </property>
+            </properties>
+        </aspect>
+
 	</aspects>
+
+
 
 </model>

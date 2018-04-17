@@ -11,6 +11,7 @@ import java.util.Locale;
  *
  * @author Roman.Makarskiy on 10.07.2016.
  * @author Oleg.Onischuk on 11.11.2017. Ukrainian language realization, possibility to set specific language.
+ * @author Andrey.Platunov on 21.03.2018. Added possibility to convert integer amount only (with no currency).
  */
 public abstract class AmountInWordConverter {
 
@@ -19,6 +20,17 @@ public abstract class AmountInWordConverter {
     private final ConverterResources resources = new ConverterResources();
 
     Locale locale;
+
+    /**
+     * Convert an integer amount to words using language from current locale
+     *
+     * @param amount       - amount to convert
+     * @return amount in words
+     */
+    public String convert(int amount) {
+        resources.initializationResources(locale);
+        return processConvert(amount);
+    }
 
     /**
      * Convert an amount to words using language from current locale
@@ -60,15 +72,24 @@ public abstract class AmountInWordConverter {
         return form5;
     }
 
-    private String processConvert(double amount) {
+    private String processConvert(int amount) {
+        BigDecimal bigDecimalAmount = new BigDecimal(amount);
+        String result = processConvert(bigDecimalAmount);
+        return result.trim().substring(0, result.length() - 4);
+    }
 
-        BigDecimal BigDecimalAmount = new BigDecimal(amount);
-        BigDecimalAmount = BigDecimalAmount.setScale(2, BigDecimal.ROUND_HALF_DOWN);
+    private String processConvert(double amount) {
+        BigDecimal bigDecimalAmount = new BigDecimal(amount);
+        return processConvert(bigDecimalAmount);
+    }
+    
+    private String processConvert(BigDecimal bigDecimalAmount) {
+        bigDecimalAmount = bigDecimalAmount.setScale(2, BigDecimal.ROUND_HALF_DOWN);
 
         ArrayList<Long> segments = new ArrayList<>();
 
-        long total = BigDecimalAmount.longValue();
-        String[] divided = BigDecimalAmount.toString().split("\\.");
+        long total = bigDecimalAmount.longValue();
+        String[] divided = bigDecimalAmount.toString().split("\\.");
         divided[1] = divided[1].substring(0, 2);
         long fraction = Long.valueOf(divided[1]);
         if (!divided[1].substring(0, 1).equals("0")) {
@@ -100,7 +121,7 @@ public abstract class AmountInWordConverter {
         int amt = segments.size();
 
         if (amt > MAX_SEGMENTS_COUNT) {
-            throw new IllegalArgumentException("Amount (" + amount + ") to convert is too large. " +
+            throw new IllegalArgumentException("Amount (" + bigDecimalAmount + ") to convert is too large. " +
                     "The maximum degree of the number - is trillions.");
         }
 
@@ -141,7 +162,7 @@ public abstract class AmountInWordConverter {
         result = new StringBuilder(result.substring(0, 1).toUpperCase() + result.substring(1));
 
         return result.toString();
-    }
+    } 
 
     @Override
     public String toString() {

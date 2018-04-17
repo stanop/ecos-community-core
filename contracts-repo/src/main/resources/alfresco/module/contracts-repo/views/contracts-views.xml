@@ -36,10 +36,6 @@
         <fields kind="mode-view" template="none" />
     </views>
 
-    <view class="contracts:agreement" mode="view">
-        <field assoc="idocs:signedVersion" />
-    </view>
-
     <view class="contracts:agreement">
         <views mode="create" kind="3-column" />
         <views mode="edit" kind="3-column" />
@@ -214,6 +210,9 @@
                     'tk:kind': 'workspace://SpacesStore/cat-document-other'
                     }</param>
             </region>
+            <region name="label" template="label">
+                <param name="key">icase_icase.association.icase_documents.title</param>
+            </region>
         </field>
     </view>
 
@@ -359,15 +358,13 @@
                 </region>
             </field>
         </view>
-        <field assoc="pas:containsOriginalProductsAndServices" kind="mode-view">
-            <region name="select" template="select-journal">
-                <param name="journalType">products-and-services</param>
+        <field assoc="pas:containsProductsAndServices">
+            <region name="select" template="create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
             </region>
             <region name="input" template="view-table">
-                <param name="journalType">products-and-services</param>
-            </region>
-            <region name="label" template="label">
-                <param name="key">payments_paymentsModel.association.products_and_services.title</param>
+                <param name="columns">cm:title, pas:pricePerUnit, pas:quantity, pas:entityUnit, pas:type, pas:currency</param>
             </region>
         </field>
         <view>
@@ -550,14 +547,6 @@
             </region>
         </field>
         <field prop="cm:content" />
-    </view>
-
-    <view class="contracts:supplementaryAgreement" mode="view">
-        <field assoc="idocs:signedVersion">
-            <region name="label" template="label">
-                <param name="key">idocs_idocsModel.association.idocs_signedVersion.title</param>
-            </region>
-        </field>
     </view>
 
     <view class="contracts:supplementaryAgreement">
