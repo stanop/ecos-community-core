@@ -1,6 +1,6 @@
 <import resource="classpath:alfresco/module/contracts-repo/script/contract-cm-confirm-utils.js">
 
-const MSG_TRANSLATOR = Packages.org.springframework.extensions.surf.util.I18NUtil.getMessage;
+const MSG_TRANSLATOR = Packages.org.springframework.extensions.surf.util.I18NUtil;
 
 function onCaseCreate() {
 
