@@ -1,5 +1,7 @@
 <import resource="classpath:alfresco/module/contracts-repo/script/contract-cm-confirm-utils.js">
 
+const MSG_TRANSLATOR = Packages.org.springframework.extensions.surf.util.I18NUtil.getMessage;
+
 function onCaseCreate() {
 
     if (document.properties['contracts:agreementNumber'] == null) {
@@ -119,19 +121,19 @@ function sendToContractorForESigning() {
     var docPackage = (document.sourceAssocs["sam:packageDocumentLink"] || [])[0];
     if(!docPackage) {
         throw ("Не удалось получить ссылку на пакет");
-        throw (Packages.org.springframework.extensions.surf.util.I18NUtil.getMessage("actions.messages.cant-find-link-to-sam-package"));
+        throw (MSG_TRANSLATOR.getMessage("actions.messages.cant-find-link-to-sam-package"));
     }
 
     var contractor = (document.assocs["contracts:contractor"] || [])[0];
     if (!contractor) {
-        throw (Packages.org.springframework.extensions.surf.util.I18NUtil.getMessage("actions.messages.field-contractor-is-not-completed"));
+        throw (MSG_TRANSLATOR.getMessage("actions.messages.field-contractor-is-not-completed"));
     } else if (!contractor.properties["idocs:diadocBoxId"]) {
-        throw (Packages.org.springframework.extensions.surf.util.I18NUtil.getMessage("actions.messages.contractors-field-diadocBoxId-is-not-completed"));
+        throw (MSG_TRANSLATOR.getMessage("actions.messages.contractors-field-diadocBoxId-is-not-completed"));
     } else {
         var inn = contractor.properties["idocs:inn"];
         var boxId = contractor.properties["idocs:diadocBoxId"];
         if (!inn || !boxId || !diadocService.isCounterpartyExists(inn, boxId)) {
-            throw (Packages.org.springframework.extensions.surf.util.I18NUtil.getMessage("actions.messages.contractor-not-found-at-diadoc"));
+            throw (MSG_TRANSLATOR.getMessage("actions.messages.contractor-not-found-at-diadoc"));
         }
     }
 
