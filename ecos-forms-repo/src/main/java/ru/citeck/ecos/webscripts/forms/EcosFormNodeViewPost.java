@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.service.namespace.QName;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.forms.EcosFormService;
@@ -19,15 +18,11 @@ import java.util.Map;
 
 public class EcosFormNodeViewPost extends AbstractWebScript {
 
-    protected static final Logger logger = Logger.getLogger(EcosFormNodeViewPost.class);
-
     /*========PARAMS========*/
     private static final String PARAM_FORM_TYPE = "formType";
     private static final String PARAM_FORM_MODE = "formMode";
     private static final String PARAM_FORM_KEY = "formKey";
     private static final String PARAM_FORM_ID = "formId";
-    private static final String REQ_VIEW = "view";
-    private static final String REQ_VIEW_PARAMS = "params";
     /*=======/PARAMS========*/
 
     private static final String RESULT_KEY = "result";
