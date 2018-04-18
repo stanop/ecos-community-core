@@ -145,14 +145,26 @@ define(['dojo/_base/declare',
                 }, {
                     "searchfield": {
                         "clear": true
-                    },
-                    "selectedClass": "active"
+                    }
                 });
             },
             postCreate: function header_citeckMainSlideMenu__postCreate() {
                 var self = this;
                 $(document).ready(
                     function() {
+                        $('#menu li a').each(function () {
+                            $(this).click(function () {
+
+                                var openedItems = $(".mm-listitem_opened");
+
+                                for(var i = 0, c = openedItems.length; i < c; i++) {
+                                    if ($(openedItems[i]).find(this).length == 0) {
+                                        $(openedItems[i]).removeClass('mm-listitem_opened');
+                                    }
+                                }
+                            });
+                        });
+
                         if (this.documentURI.indexOf("faceted-search") == -1){
                             $('.mm-page.mm-slideout').contents().appendTo($('body'));
                             $('body>.sticky-wrapper').appendTo($('.mm-page.mm-slideout'));
