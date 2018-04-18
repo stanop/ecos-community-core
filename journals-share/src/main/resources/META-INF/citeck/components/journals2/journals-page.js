@@ -443,7 +443,8 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
 
                     var body = '<table class="batch-edit-results">';
                     for (ref in editStatus) {
-                        body += '<tr><td>' + editStatus[ref].title + '</td><td>' + Alfresco.util.message("batch-edit.message."+editStatus[ref].status) + '</td></tr>';
+                        var title = editStatus[ref].title ? '<td>' + editStatus[ref].title + '</td>' : '';
+                        body += '<tr>' + title + '<td>' + Alfresco.util.message("batch-edit.message."+editStatus[ref].status) + '</td></tr>';
                     }
                     body += '</table>';
                     body += '<div class="form-buttons batch-edit-results-form-buttons"><input id="' + id + '-close-results-btn" type="button" class="batch-edit-results-button" value="' + msg("button.ok") + '" /></div>';
