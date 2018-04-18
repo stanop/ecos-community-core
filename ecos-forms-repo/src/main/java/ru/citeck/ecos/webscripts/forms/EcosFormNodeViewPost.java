@@ -4,11 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.service.namespace.QName;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.extensions.webscripts.AbstractWebScript;
-import org.springframework.extensions.webscripts.Format;
-import org.springframework.extensions.webscripts.WebScriptRequest;
-import org.springframework.extensions.webscripts.WebScriptResponse;
+import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.forms.EcosFormService;
 import ru.citeck.ecos.forms.FormMode;
 import ru.citeck.ecos.model.InvariantsModel;
@@ -21,11 +19,15 @@ import java.util.Map;
 
 public class EcosFormNodeViewPost extends AbstractWebScript {
 
+    protected static final Logger logger = Logger.getLogger(EcosFormNodeViewPost.class);
+
     /*========PARAMS========*/
     private static final String PARAM_FORM_TYPE = "formType";
     private static final String PARAM_FORM_MODE = "formMode";
     private static final String PARAM_FORM_KEY = "formKey";
     private static final String PARAM_FORM_ID = "formId";
+    private static final String REQ_VIEW = "view";
+    private static final String REQ_VIEW_PARAMS = "params";
     /*=======/PARAMS========*/
 
     private static final String RESULT_KEY = "result";
@@ -66,7 +68,7 @@ public class EcosFormNodeViewPost extends AbstractWebScript {
         }
 
         Map<String, Object> resp = ecosFormService.saveNodeView(formType, formKey, formId,
-                                                                mode, getParams(req), attributes);
+                                                                mode, getParams(req, postContent), attributes);
 
         Map<String, Object> result = new HashMap<>(1);
         result.put(RESULT_KEY, resp);
@@ -79,8 +81,15 @@ public class EcosFormNodeViewPost extends AbstractWebScript {
         return result;
     }
 
-    private Map<String, Object> getParams(WebScriptRequest req) {
+    private Map<String, Object> getParams(WebScriptRequest req, PostContent postContent) {
         Map<String, Object> result = new HashMap<>();
+
+        NodeView viewModel = postContent.view;
+        Map<String, Object> viewParams = viewModel != null ? viewModel.params : null;
+        if (viewParams != null) {
+            result.putAll(viewParams);
+        }
+
         for (String key : req.getParameterNames()) {
             result.put(key, req.getParameter(key));
         }
