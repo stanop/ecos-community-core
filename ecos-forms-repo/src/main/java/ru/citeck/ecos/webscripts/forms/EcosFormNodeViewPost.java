@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.extensions.webscripts.AbstractWebScript;
-import org.springframework.extensions.webscripts.Format;
-import org.springframework.extensions.webscripts.WebScriptRequest;
-import org.springframework.extensions.webscripts.WebScriptResponse;
+import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.forms.EcosFormService;
 import ru.citeck.ecos.forms.FormMode;
 import ru.citeck.ecos.model.InvariantsModel;
@@ -66,7 +63,7 @@ public class EcosFormNodeViewPost extends AbstractWebScript {
         }
 
         Map<String, Object> resp = ecosFormService.saveNodeView(formType, formKey, formId,
-                                                                mode, getParams(req), attributes);
+                                                                mode, getParams(req, postContent), attributes);
 
         Map<String, Object> result = new HashMap<>(1);
         result.put(RESULT_KEY, resp);
@@ -79,8 +76,15 @@ public class EcosFormNodeViewPost extends AbstractWebScript {
         return result;
     }
 
-    private Map<String, Object> getParams(WebScriptRequest req) {
+    private Map<String, Object> getParams(WebScriptRequest req, PostContent postContent) {
         Map<String, Object> result = new HashMap<>();
+
+        NodeView viewModel = postContent.view;
+        Map<String, Object> viewParams = viewModel != null ? viewModel.params : null;
+        if (viewParams != null) {
+            result.putAll(viewParams);
+        }
+
         for (String key : req.getParameterNames()) {
             result.put(key, req.getParameter(key));
         }
