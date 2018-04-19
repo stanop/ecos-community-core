@@ -1,6 +1,5 @@
 <webscript>
     <shortname>node-view</shortname>
     <description>Node view form</description>
-    <url>/site/{siteid}/citeck/components/node-details/node-view</url>
     <url>/citeck/components/node-details/node-view</url>
 </webscript>
