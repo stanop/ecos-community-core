@@ -133,7 +133,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-flowable-repo</artifactId>
             <classifier>${ecos.project.classifier}</classifier>
-            <version>${version}</version>
+            <version>${project.version}</version>
             <type>amp</type>
         </dependency>
 
