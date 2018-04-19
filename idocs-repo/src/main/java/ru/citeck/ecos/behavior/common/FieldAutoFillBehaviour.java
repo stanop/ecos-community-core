@@ -30,7 +30,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-//import org.alfresco.repo.policy.OrderedBehaviour;
+//import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 
 import java.io.Serializable;

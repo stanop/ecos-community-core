@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.alfresco.repo.node.NodeServicePolicies;
-//import org.alfresco.repo.policy.OrderedBehaviour;
+//import ru.citeck.ecos.behavior.OrderedBehaviour;
 import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
