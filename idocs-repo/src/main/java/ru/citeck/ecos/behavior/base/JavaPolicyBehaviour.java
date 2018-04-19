@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.extensions.surf.util.ParameterCheck;
+import ru.citeck.ecos.utils.performance.MethodPerformance;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -198,6 +199,8 @@ public class JavaPolicyBehaviour extends BaseBehaviour implements TransactionBeh
          */
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
+            MethodPerformance perf = new MethodPerformance(behaviour.instance, delegateMethod, args);
+
             // Handle Object level methods
             switch (method.getName()) {
                 case "toString":
@@ -228,6 +231,7 @@ public class JavaPolicyBehaviour extends BaseBehaviour implements TransactionBeh
                     if (disabled) {
                         behaviour.enable();
                     }
+                    perf.stop();
                 }
             }
             return null;

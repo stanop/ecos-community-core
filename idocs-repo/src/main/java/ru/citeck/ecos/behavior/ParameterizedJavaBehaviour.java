@@ -30,6 +30,7 @@ import org.alfresco.repo.policy.PolicyException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.extensions.surf.util.ParameterCheck;
+import ru.citeck.ecos.utils.performance.MethodPerformance;
 
 /**
  * Parameterized Java based Behaviour.
@@ -157,6 +158,8 @@ public class ParameterizedJavaBehaviour<P> extends BaseBehaviour
          */
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
         {
+            MethodPerformance perf = new MethodPerformance(behaviour.instance, delegateMethod, args);
+
             // Handle Object level methods
             if (method.getName().equals("toString"))
             {
@@ -192,6 +195,7 @@ public class ParameterizedJavaBehaviour<P> extends BaseBehaviour
                 finally
                 {
                     behaviour.enable();
+                    perf.stop();
                 }
             }
             return null;
