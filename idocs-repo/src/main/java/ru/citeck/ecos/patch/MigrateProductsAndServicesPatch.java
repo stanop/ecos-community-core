@@ -1,6 +1,7 @@
 package ru.citeck.ecos.patch;
 
 import org.alfresco.repo.admin.patch.AbstractPatch;
+import org.alfresco.repo.policy.BehaviourFilter;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.CopyService;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -33,6 +34,8 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
     @Autowired
     private CopyService copyService;
 
+    private BehaviourFilter behaviourFilter;
+
     @Override
     protected String applyInternal() {
         logger.info("Starting execution of patch: " + I18NUtil.getMessage(PATCH_ID));
@@ -41,7 +44,12 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
         NodeRef pasFolderRef = getPasFolder(rootRef);
 
         if (pasFolderRef != null && nodeService.exists(pasFolderRef) && containerNotEmpty(pasFolderRef)) {
-            migrateProductAndServices(pasFolderRef);
+            try {
+                behaviourFilter.disableBehaviour();
+                migrateProductAndServices(pasFolderRef);
+            } finally {
+                behaviourFilter.enableBehaviour();
+            }
         } else {
             return I18NUtil.getMessage(MSG_NOT_REQUIRED);
         }
@@ -77,7 +85,6 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
                 NodeRef newPas = copyService.copy(pas, document,
                         ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES,
                         QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate()));
-                nodeService.removeProperty(newPas, ProductsAndServicesModel.PROP_ORDER);
                 msg.append("     ").append(pas).append(" ----->").append(" ").append(newPas).append("\n");
             });
         });
@@ -116,5 +123,9 @@ public class MigrateProductsAndServicesPatch extends AbstractPatch {
         } else {
             return refs.get(0);
         }
+    }
+
+    public void setBehaviourFilter(BehaviourFilter behaviourFilter) {
+        this.behaviourFilter = behaviourFilter;
     }
 }

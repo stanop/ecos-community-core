@@ -341,6 +341,7 @@
         <property name="fixesFromSchema" value="0"/>
         <property name="fixesToSchema" value="${version.schema}"/>
         <property name="targetSchema" value="100000"/>
+        <property name="behaviourFilter" ref="policyBehaviourFilter"/>
     </bean>
 
 </beans>
