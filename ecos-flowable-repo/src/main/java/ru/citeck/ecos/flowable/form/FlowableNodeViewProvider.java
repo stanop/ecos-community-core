@@ -115,8 +115,8 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
                                             Map<String, Object> params, Map<QName, Object> attributes) {
 
         SimpleFormModel formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey)
-                                                .orElseThrow(() ->
-                                                        new IllegalArgumentException(taskId + " form not found"));
+                .orElseThrow(() ->
+                        new IllegalArgumentException(taskId + " form not found"));
 
         List<NodeField> fields = getFields(formModel, mode, Collections.emptyMap());
 
@@ -153,7 +153,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         }
 
         if (mode == null || mode.equals(FormMode.EDIT)
-                         || mode.equals(FormMode.CREATE)) {
+                || mode.equals(FormMode.CREATE)) {
             fields.add(getOutcomeField(model));
         }
 

@@ -636,11 +636,10 @@
                 downloadImage = Alfresco.constants.URL_RESCONTEXT + "/components/documentlibrary/actions/document-download-16.png",
                 title = Alfresco.util.message("actions.document.download");
             return function (elCell, oRecord) {
-                var nodeRefToDownload = oRecord.getData(keyToNodeRef);
-                downloadUrl = downloadUrl + nodeRefToDownload;
-                console.log(downloadUrl);
+                var nodeRefToDownload = oRecord.getData(keyToNodeRef),
+                    downloadUrlResult = downloadUrl + nodeRefToDownload;
                 elCell.innerHTML = '<div class="document-download">' + '<a class="simple-link" onclick="event.stopPropagation()" '
-                    + 'href="' + downloadUrl + '" style="background-image: url(' + downloadImage + ')" ' +
+                    + 'href="' + downloadUrlResult + '" style="background-image: url(' + downloadImage + ')" ' +
                     'title="' + title +'"/>' + '</div>';
             }
         },
