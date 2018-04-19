@@ -3,7 +3,7 @@ package ru.citeck.ecos.behavior.idocs;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import ru.citeck.ecos.behavior.JavaBehaviour;
-import org.alfresco.repo.policy.OrderedBehaviour;
+import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;

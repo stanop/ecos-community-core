@@ -50,7 +50,7 @@ import org.alfresco.service.cmr.model.FileExistsException;
 import org.alfresco.service.cmr.model.FileNotFoundException;
 import org.alfresco.service.cmr.repository.CyclicChildRelationshipException;
 import org.alfresco.service.cmr.repository.DuplicateChildNodeNameException;
-//import org.alfresco.repo.policy.OrderedBehaviour;
+//import ru.citeck.ecos.behavior.OrderedBehaviour;
 
 public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnCreateChildAssociationPolicy, NodeServicePolicies.OnUpdatePropertiesPolicy {
 	// common properties

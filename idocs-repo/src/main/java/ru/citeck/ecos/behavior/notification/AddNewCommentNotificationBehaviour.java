@@ -4,7 +4,7 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.model.ForumModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
-import org.alfresco.repo.policy.OrderedBehaviour;
+import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
