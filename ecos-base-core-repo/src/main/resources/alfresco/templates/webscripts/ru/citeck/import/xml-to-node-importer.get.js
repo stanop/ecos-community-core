@@ -3,7 +3,19 @@
 * @author Roman Makarskiy
 */
 (function () {
-    var xniData = search.luceneSearch('TYPE\:"xni:data"');
+    var sort = {
+        column: "@{http://www.alfresco.org/model/content/1.0}created",
+        ascending: false
+    };
+
+    var def = {
+        query: "TYPE:'xni:data'",
+        store: "workspace://SpacesStore",
+        language: "fts-alfresco",
+        sort: [sort]
+    };
+
+    var xniData = search.query(def);
     var statusNode = search.findNode(GLOBAL_STATUS_NODEREF);
 
     if (!statusNode) {
