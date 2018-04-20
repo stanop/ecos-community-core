@@ -163,7 +163,7 @@ public class SiteDocumentTypesBehaviour implements
             
             Map<QName, Serializable> createVariantProps = new HashMap<>();
             createVariantProps.put(ContentModel.PROP_TITLE, typeTitle);
-            createVariantProps.put(JournalsModel.PROP_TYPE, alfrescoType);
+            createVariantProps.put(JournalsModel.PROP_TYPE, alfrescoType.getPrefixedQName(namespaceService));
             createVariantProps.put(JournalsModel.PROP_FORM_ID, "");
             createVariantProps.put(JournalsModel.PROP_IS_DEFAULT, true);
             
