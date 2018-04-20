@@ -1096,6 +1096,11 @@
                 this._createResizer();
                 this._populateSelectedItems();
                 this.widgets.dialog.show();
+
+                //temporary solution, sometimes the function "show" works incorrectly in Chrome and doesnt show dialog window
+                if (this.widgets.dialog.element.style.display == "none") {
+                    this.widgets.dialog.element.style.display = "initial";
+                }
                 this.options.objectRenderer.onPickerShow();
 
                 if (!withoutRefresh) {
