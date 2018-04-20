@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:act="http://www.alfresco.org/model/action/1.0">
+    <view:reference view:pathref=".">
+        <view:properties>
+            <act:parameterValue>
+                <view:value view:datatype="d:noderef">${action.scriptPath}</view:value>
+            </act:parameterValue>
+        </view:properties>
+    </view:reference>
+</view:view>
