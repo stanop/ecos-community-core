@@ -1,5 +1,7 @@
 package ru.citeck.ecos.flowable.services.rest;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flowable.form.model.SimpleFormModel;
@@ -48,6 +50,9 @@ public class RestFormService {
         }
 
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        converter.setObjectMapper(mapper);
 
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         converters.add(converter);
