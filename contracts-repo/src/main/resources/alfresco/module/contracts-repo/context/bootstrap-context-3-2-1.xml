@@ -115,4 +115,54 @@
         </property>
     </bean>
 
+    <bean id="contracts.module-component.contracts-folder-permission-config" parent="contracts.import-spaces.3-2-1">
+        <property name="name" value="contracts-folder-permission-config" />
+        <property name="description" value="Contracts folder permission config" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/configs/contracts-folder-permission-config</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.script.move-contracts-to-creator-directory" parent="contracts.import-spaces.3-2-1">
+        <property name="name" value="move-contracts-to-creator-directory.js" />
+        <property name="description" value="move-contracts-to-creator-directory.js" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/app:scripts</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/content.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/scripts/move-contracts-to-creator-directory</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contracts.module-component.changeRuleForContractsFolder" parent="contracts.import-spaces.3-2-1">
+        <property name="name" value="contracts.module-component.changeRuleForContractsFolder"/>
+        <property name="description" value="contracts.module-component.changeRuleForContractsFolder"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="contracts.module-component.contracts-folder-rules" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:contracts/cm:documentLibrary/cm:contracts/rule:ruleFolder/rule:rules-move-to-creator-directory/rule:action/act:actions/act:parameters</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/rules/update-rule-action-parameter.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/scripts/move-contracts-to-creator-directory</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>
