@@ -15,7 +15,7 @@
         <property name="appliesFromVersion" value="3.1.4" />
     </bean>
 
-    <bean id="idocs.module-component.case-process-cardlets" parent="idocs.import-spaces.3-1-0">
+    <bean id="idocs.module-component.case-process-cardlets" parent="idocs.import-spaces.3-1-4">
         <property name="name" value="case-process-cardlets" />
         <property name="description" value="Case Process Cardlets" />
         <property name="dependsOn">

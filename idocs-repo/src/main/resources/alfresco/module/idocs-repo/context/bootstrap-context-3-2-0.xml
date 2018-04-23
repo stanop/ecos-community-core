@@ -344,4 +344,11 @@
         <property name="behaviourFilter" ref="policyBehaviourFilter"/>
     </bean>
 
+    <bean id="idocs.module-component.update-gen-case-create-variant" parent="idocs.import-scripts.3-2-0">
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="update-gen-case-create-variant" />
+        <property name="description" value="update-gen-case-create-variant" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/update-gen-case-create-variant.js"/>
+    </bean>
+
 </beans>
