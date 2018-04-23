@@ -69,7 +69,6 @@
         <property name="description" value="Internals Journals" />
         <property name="sinceVersion" value="0.1" />
         <property name="appliesFromVersion" value="0.1" />
-        <!--<property name="executeOnceOnly" value="false" />-->
         <property name="dependsOn">
             <list>
                 <ref bean="orders.documentFolders" />

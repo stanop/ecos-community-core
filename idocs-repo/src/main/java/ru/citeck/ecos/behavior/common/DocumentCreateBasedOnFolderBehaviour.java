@@ -27,7 +27,7 @@ import java.io.Serializable;
 import org.alfresco.model.ContentModel;
 import ru.citeck.ecos.model.DmsModel;
 import org.alfresco.repo.node.NodeServicePolicies;
-import org.alfresco.repo.policy.JavaBehaviour;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -50,7 +50,7 @@ import org.alfresco.service.cmr.model.FileExistsException;
 import org.alfresco.service.cmr.model.FileNotFoundException;
 import org.alfresco.service.cmr.repository.CyclicChildRelationshipException;
 import org.alfresco.service.cmr.repository.DuplicateChildNodeNameException;
-//import org.alfresco.repo.policy.OrderedBehaviour;
+//import ru.citeck.ecos.behavior.OrderedBehaviour;
 
 public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies.OnCreateNodePolicy, NodeServicePolicies.OnCreateChildAssociationPolicy, NodeServicePolicies.OnUpdatePropertiesPolicy {
 	// common properties

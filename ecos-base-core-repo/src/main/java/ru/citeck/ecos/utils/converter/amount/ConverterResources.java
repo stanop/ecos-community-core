@@ -82,8 +82,22 @@ class ConverterResources {
     private static final String TRILLION_DECLENSION_3 = "amount-in-word-converter.trillion.3";
 
     void initializationResources(Currency currency, Locale locale) {
+        initializationLocale(locale);
+        initializeDeclinations(currency, locale);
+        initializeNumbers(locale);
+    }
 
+    void initializationResources(Locale locale) {
+        initializationLocale(locale);
+        initializeDeclinationsWithNoCurrency(locale);
+        initializeNumbers(locale);
+    }
+
+    private void initializationLocale(Locale locale) {
         this.locale = locale;
+    }
+
+    private void initializeDeclinations(Currency currency, Locale locale) {
 
         DECLINATION = new String[][]{
                 {currency.getFractional1(), currency.getFractional2(), currency.getFractional3(), "1"},
@@ -109,6 +123,37 @@ class ConverterResources {
                         getMessage(TRILLION_DECLENSION_3), "0"
                 },
         };
+    }
+
+    private void initializeDeclinationsWithNoCurrency(Locale locale) {
+
+        DECLINATION = new String[][]{
+                {"", "", "", "1"},
+                {"", "", "", "0"},
+                {
+                        getMessage(THOUSAND_DECLENSION_1),
+                        getMessage(THOUSAND_DECLENSION_2),
+                        getMessage(THOUSAND_DECLENSION_3), "1"
+                },
+                {
+                        getMessage(MILLION_DECLENSION_1),
+                        getMessage(MILLION_DECLENSION_2),
+                        getMessage(MILLION_DECLENSION_3), "0"
+                },
+                {
+                        getMessage(BILLION_DECLENSION_1),
+                        getMessage(BILLION_DECLENSION_2),
+                        getMessage(BILLION_DECLENSION_3), "0"
+                },
+                {
+                        getMessage(TRILLION_DECLENSION_1),
+                        getMessage(TRILLION_DECLENSION_2),
+                        getMessage(TRILLION_DECLENSION_3), "0"
+                },
+        };
+    }
+
+    private void initializeNumbers(Locale locale) {
 
         ONE = new String[][]{
                 {"", getMessage(NUMERAL_ONE),

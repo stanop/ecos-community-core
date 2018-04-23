@@ -191,9 +191,6 @@
     <bean id="meetings.module-component.meeting-cardlets" parent="meetings.import-spaces">
         <property name="name" value="meeting-cardlets" />
         <property name="description" value="meeting-cardlets" />
-
-        <!-- <property name="executeOnceOnly" value="false" /> -->
-
         <property name="bootstrapViews">
             <list>
                 <props>

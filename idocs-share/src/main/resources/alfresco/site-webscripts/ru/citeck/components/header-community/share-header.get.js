@@ -835,11 +835,11 @@ function buildSitesForUser(sites, anotherItems) {
                 };
 
                 site.widgets.push({
-                        id: "HEADER_DOCUMENTLIBRARY",
+                        id: "HEADER_" + (sites[sd].shortName.replace(/\-/g, "_")).toUpperCase() + "_DOCUMENTLIBRARY",
                         label: "header.documentlibrary.label",
                         url: "/share/page/" + buildSiteUrl(sites[sd].shortName) + "documentlibrary"
                     }, {
-                        id: "HEADER_SITE_CALENDAR",
+                        id: "HEADER_" + (sites[sd].shortName.replace(/\-/g, "_")).toUpperCase() + "_SITE_CALENDAR",
                         label: "header.calendar.label",
                         url: "/share/page/" + buildSiteUrl(sites[sd].shortName) + "calendar"
                     }
@@ -910,7 +910,7 @@ function buildCreateVariantsForSite(sitename, forSlideMenu) {
             for (var cv = 0; cv < createVariants.length; cv++) {
                 createVariantsPresets.push({
                     label: createVariants[cv].title,
-                    id: "HEADER_" + (createVariants[cv].type.replace(/\-/g, "_")).toUpperCase(),
+                    id: "HEADER_" + ((sitename + "_" + createVariants[cv].type).replace(/\-/g, "_")).toUpperCase(),
                     url: "node-create?type=" + createVariants[cv].type + "&viewId=" + createVariants[cv].formId + "&destination=" + createVariants[cv].destination
                 });
             }
@@ -933,7 +933,7 @@ function buildJournalsListForSite(sitename, journalUrl, request) {
                 var url = (journalUrl ? journalUrl : "/share/page/site/" + sitename + "/journals2/list/main#journal=") + journals[j].nodeRef;
                 journalsResult.push({
                     label: journals[j].title,
-                    id: "HEADER_" + (journals[j].type.replace(/\-/g, "_")).toUpperCase() + "_JOURNAL",
+                    id: "HEADER_" + ((sitename + "_" + journals[j].type).replace(/\-/g, "_")).toUpperCase() + "_JOURNAL",
                     url: url + "&filter=",
                     widgets: buildFiltersForJournal(journals[j].type, url)
                 });
@@ -957,7 +957,7 @@ function buildFiltersForJournal(journalType, filterUrl) {
                 filtersResult.push({
                     label: filters[f].title,
                     id: filters[f].type + "-filter",
-                    id: "HEADER_" + (filters[f].title.replace(/\-/g, "_")).toUpperCase() + "_FILTER",
+                    id: "HEADER_" + ((journalType + "_" + filters[f].title).replace(/\-/g, "_")).toUpperCase() + "_FILTER",
                     url: filterUrl + "&filter=" + filters[f].nodeRef
                 });
             }

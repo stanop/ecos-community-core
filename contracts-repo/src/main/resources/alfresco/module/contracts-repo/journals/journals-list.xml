@@ -7,6 +7,7 @@
         <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
         <import uri="http://www.citeck.ru/model/contracts/1.0" prefix="contracts" />
         <import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
     </imports>
 
     <journal id="contract-agreements">
@@ -21,24 +22,22 @@
             <header key="cm:name" default="false" />
             <header key="cm:title" default="true" />
             <header key="contracts:agreementNumber" />
-            <header key="idocs:documentStatus" default="true" />
-            <header key="contracts:agreementLegalEntity" default="true" />
-            <header key="contracts:contractor" default="true"/>
-            <header key="contracts:agreementSubject" default="true" />
+            <header key="icase:caseStatusAssoc" default="true">
+                <option name="searchCriteria">[{ attribute: "cm:title", predicate: "string-contains" }]</option>
+            </header>
+            <header key="contracts:agreementLegalEntity" default="true" sortable="false"/>
+            <header key="contracts:contractor" default="true" sortable="false"/>
+            <header key="contracts:agreementSubject" default="true" sortable="false"/>
             <header key="contracts:agreementAmount" default="true" />
-            <header key="contracts:agreementCurrency" default="true" />
+            <header key="contracts:agreementCurrency" default="true" sortable="false" />
             <header key="idocs:summary" />
             <header key="contracts:agreementDate" default="true" />
             <header key="idocs:pagesNumber" />
             <header key="idocs:appendixPagesNumber" />
             <header key="contracts:duration" default="true" />
-            <header key="idocs:signatory" />
-            <header key="idocs:performer" />
+            <header key="idocs:signatory" sortable="false"/>
+            <header key="idocs:performer" sortable="false"/>
             <header key="idocs:note" />
-            <!--header key="idocs:documentNomination" /-->
-            <!--header key="contracts:currency" default="true" /-->
-            <!--header key="idocs:duration" default="true" /-->
-            <!--header key="idocs:legalEntity" default="true" /-->
         </headers>
     </journal>
     <journal id="contract-subjects">
@@ -81,23 +80,23 @@
             <header key="cm:name" default="false" />
             <header key="cm:title" default="true"/>
             <header key="idocs:documentStatus" default="true" />
-            <header key="payments:basis" default="true" />
-            <header key="payments:budgetItem" default="true" />
+            <header key="payments:basis" default="true" sortable="false"/>
+            <header key="payments:budgetItem" default="true" sortable="false"/>
             <header key="payments:paymentFor" default="true" />
 
-            <header key="payments:payer" default="true" />
+            <header key="payments:payer" default="true" sortable="false"/>
 
-            <header key="payments:beneficiary" default="true" />
+            <header key="payments:beneficiary" default="true" sortable="false"/>
             <header key="payments:beneficiaryType" />
-            <header key="payments:beneficiaryAccount" />
+            <header key="payments:beneficiaryAccount" sortable="false"/>
 
             <header key="payments:paymentDate" default="true" />
             <header key="payments:plannedPaymentDate" default="true" />
             <header key="payments:paymentPurpose" />
 
             <header key="payments:paymentArrangement" />
-            <header key="payments:period" default="true" />
-            <header key="payments:currency" default="true" />
+            <header key="payments:period" default="true" sortable="false"/>
+            <header key="payments:currency" default="true" sortable="false"/>
             <header key="payments:paymentAmount" default="true" />
             <header key="payments:paymentVAT" default="true" />
 
@@ -123,7 +122,6 @@
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
         <option name="type">contracts:closingDocument</option>
-        <!--option name="formId">filters</option-->
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
             <header key="cm:created" default="true" />
@@ -132,14 +130,14 @@
             <header key="idocs:documentStatus" default="true"/>
             <header key="contracts:closingDocumentNumber" default="true"/>
             <header key="tk:kind" default="true"/>
-            <header key="idocs:legalEntity" default="true"/>
-            <header key="contracts:closingDocumentPayment" default="true"/>
+            <header key="idocs:legalEntity" default="true" sortable="false"/>
+            <header key="contracts:closingDocumentPayment" default="true" sortable="false"/>
             <header key="contracts:closingDocumentDate"/>
-            <header key="contracts:closingDocumentSigner"/>
+            <header key="contracts:closingDocumentSigner" sortable="false"/>
             <header key="contracts:closingDocumentSentToAccountDep"/>
             <header key="contracts:closingDocumentReceiveAccountDepDate"/>
-            <header key="contracts:closingDocumentAgreement"/>
-            <header key="idocs:contractor" default="true"/>
+            <header key="contracts:closingDocumentAgreement" sortable="false"/>
+            <header key="idocs:contractor" default="true" sortable="false"/>
         </headers>
     </journal>
 
@@ -153,28 +151,25 @@
             <header key="cm:created" default="true" />
             <header key="cm:name" default="false" />
             <header key="cm:title" default="true"/>
-            <header key="contracts:mainAgreement" default="true" /> <!-- default="true" -->
-            <header key="idocs:registrationNumber" /> <!-- default="true" -->
-            <header key="idocs:registrationDate" /> <!-- default="true" -->
-            <header key="contracts:agreementNumber" default="true" />
-            <header key="idocs:documentStatus" default="true" />
-            <header key="contracts:agreementLegalEntity" default="true" />
-            <header key="contracts:contractor" default="true"/>
-            <header key="contracts:agreementSubject" default="true" />
+            <header key="contracts:mainAgreement" default="true" sortable="false"/>
+            <header key="idocs:registrationNumber" />
+            <header key="idocs:registrationDate" />
+            <header key="contracts:agreementNumber" default="true" /><header key="icase:caseStatusAssoc" default="true">
+                <option name="searchCriteria">[{ attribute: "cm:title", predicate: "string-contains" }]</option>
+            </header>
+            <header key="contracts:agreementLegalEntity" default="true" sortable="false"/>
+            <header key="contracts:contractor" default="true" sortable="false"/>
+            <header key="contracts:agreementSubject" default="true" sortable="false"/>
             <header key="contracts:agreementAmount" default="true" />
-            <header key="contracts:agreementCurrency" default="true" />
+            <header key="contracts:agreementCurrency" default="true" sortable="false"/>
             <header key="idocs:summary" />
             <header key="contracts:agreementDate" default="true" />
             <header key="idocs:pagesNumber" />
             <header key="idocs:appendixPagesNumber" />
             <header key="contracts:duration" default="true" />
-            <header key="idocs:signatory" />
-            <header key="idocs:performer" />
+            <header key="idocs:signatory" sortable="false"/>
+            <header key="idocs:performer" sortable="false"/>
             <header key="idocs:note" />
-            <!--header key="idocs:documentNomination" /> -->
-            <!--header key="contracts:currency" default="true" /-->
-            <!--header key="idocs:duration" default="true" /-->
-            <!--header key="idocs:legalEntity" default="true" /-->
         </headers>
     </journal>
 

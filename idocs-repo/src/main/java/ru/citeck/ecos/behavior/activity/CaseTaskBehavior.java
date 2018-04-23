@@ -33,6 +33,7 @@ import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.config.EcosConfigService;
+import ru.citeck.ecos.utils.performance.ActionPerformance;
 import ru.citeck.ecos.workflow.variable.type.NodeRefsList;
 import ru.citeck.ecos.workflow.variable.type.StringsList;
 
@@ -103,18 +104,32 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
         Map<QName, Serializable> workflowProperties = getWorkflowProperties(taskRef, workflowDefinitionName);
 
+        ActionPerformance performance = new ActionPerformance(this, "createPackage");
         NodeRef wfPackage = workflowService.createPackage(null);
+        performance.stop();
+
+        performance.restart("createOrReplaceAssoc");
         createOrReplaceAssociation(taskRef, wfPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
+        performance.stop();
+
         workflowProperties.put(WorkflowModel.ASSOC_PACKAGE, wfPackage);
 
+        performance.restart("getDocument");
         NodeRef parent = caseActivityService.getDocument(taskRef);
+        performance.stop();
 
+        performance.restart("workflowPackage addChild");
         this.nodeService.addChild(wfPackage, parent, WorkflowModel.ASSOC_PACKAGE_CONTAINS,
                 QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
                         QName.createValidLocalName((String) this.nodeService.getProperty(parent, ContentModel.PROP_NAME))));
+        performance.stop();
 
         WorkflowDefinition wfDefinition = workflowService.getDefinitionByName(workflowDefinitionName);
+
+        performance.restart("startWorkflow");
         WorkflowPath wfPath = workflowService.startWorkflow(wfDefinition.getId(), workflowProperties);
+        performance.stop();
+
         nodeService.setProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID, wfPath.getInstance().getId());
     }
 

@@ -8,8 +8,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flowable.engine.TaskService;
 import org.flowable.form.model.FormField;
-import org.flowable.form.model.FormModel;
 import org.flowable.form.model.FormOutcome;
+import org.flowable.form.model.SimpleFormModel;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
@@ -62,7 +62,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         NodeViewDefinition definition = new NodeViewDefinition();
         definition.canBeDraft = false;
 
-        Optional<FormModel> formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey);
+        Optional<SimpleFormModel> formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey);
         if (formModel.isPresent()) {
             String id = taskId.substring(taskId.indexOf("$") + 1);
             Map<String, Object> variables = taskService.getVariables(id);
@@ -72,7 +72,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         return definition;
     }
 
-    private NodeView getNodeView(FormModel model, FormMode mode, Map<String, Object> variables) {
+    private NodeView getNodeView(SimpleFormModel model, FormMode mode, Map<String, Object> variables) {
 
         String modeStr = "create";
         if (mode != null) {
@@ -114,9 +114,9 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     public Map<String, Object> saveNodeView(String taskId, String formId, FormMode mode,
                                             Map<String, Object> params, Map<QName, Object> attributes) {
 
-        FormModel formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey)
-                                                .orElseThrow(() ->
-                                                        new IllegalArgumentException(taskId + " form not found"));
+        SimpleFormModel formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(taskId + " form not found"));
 
         List<NodeField> fields = getFields(formModel, mode, Collections.emptyMap());
 
@@ -138,7 +138,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         return Collections.emptyMap();
     }
 
-    private List<NodeField> getFields(FormModel model, FormMode mode, Map<String, Object> values) {
+    private List<NodeField> getFields(SimpleFormModel model, FormMode mode, Map<String, Object> values) {
 
         List<NodeField> fields = new ArrayList<>();
 
@@ -153,14 +153,14 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         }
 
         if (mode == null || mode.equals(FormMode.EDIT)
-                         || mode.equals(FormMode.CREATE)) {
+                || mode.equals(FormMode.CREATE)) {
             fields.add(getOutcomeField(model));
         }
 
         return fields;
     }
 
-    private NodeField getOutcomeField(FormModel formModel) {
+    private NodeField getOutcomeField(SimpleFormModel formModel) {
 
         List<Outcome> outcomes = new ArrayList<>();
         for (FormOutcome formOutcome : formModel.getOutcomes()) {
@@ -201,7 +201,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         return result != null ? result : key;
     }
 
-    private QName getOutcomeFieldName(FormModel formModel) {
+    private QName getOutcomeFieldName(SimpleFormModel formModel) {
         String outcomeFieldName = formModel.getOutcomeVariableName();
         if (outcomeFieldName == null) {
             outcomeFieldName = "form_" + formModel.getKey() + "_outcome";

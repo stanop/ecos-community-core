@@ -11,14 +11,19 @@ define(['dojo/_base/declare',
         return declare([_WidgetBase, _TemplatedMixin, AlfCore], {
             templateString: "<div/>",
             postMixInProperties: function  header_citeckMainSlideMenu__postMixInProperties() {
-                var menu = '', self = this;
+                var menu = '',
+                    self = this,
+                    closeMenu = "$('#menu').data('mmenu').close();",
+                    closeMenuItem = "event.stopPropagation();" + closeMenu,
+                    onClickMenuItem = "sessionStorage.selectedMenuItemId = this.name; " + closeMenu;
+
                 if (this.isMobile) {
                     $('#HEADER_APP_MENU_BAR>div').append(
                         '<span class="hamburger-mobile-menu">'+
                             '<a href="#menu" id="hamburger" class="mm-slideout">'+
                                 '<span class="hamburger hamburger--collapse">'+
                                     '<span class="hamburger-box">'+
-                                         '<span class="hamburger-inner"/>'+
+                                        '<span class="hamburger-inner"/>'+
                                     '</span>'+
                                 '</span>'+
                             '</a>'+
@@ -29,19 +34,30 @@ define(['dojo/_base/declare',
                     menu = '<ul>' + add_new_ul(this.widgets) + '</ul>';
                 }
 
+                function isSelectedMenuItem (id) {
+                    return sessionStorage.selectedMenuItemId == id ? "mm-listitem_selected" : "";
+                }
+
                 function add_new_ul(widgets) {
                     var ul = "";
                     widgets.forEach(function (item) {
                         if (item.sectionTitle) {
-                            ul += '<li class="mm-listitem_divider" id="' + item.id + '"><i class="fa fa-menu-section-icon"/><span class="menu-section-title">' + self.message(item.sectionTitle) + '</span></li>';
+                            ul += '<li class="mm-listitem_divider" id="' + item.id + '">' +
+                                      '<i class="fa fa-menu-section-icon"/>' +
+                                      '<span class="menu-section-title">' + self.message(item.sectionTitle) + '</span>' +
+                                  '</li>';
                         } else {
-                            ul += '<li id="' + item.id + '">';
-                            var label = '<i class="fa fa-menu-default-icon ' + item.id
-                                                + (item.iconImage ? '"style="background-image:url(' + item.iconImage + ')"' : "") + ' "></i>' + self.message(item.label || "header." + item.id + ".label");
+                            ul += '<li class="' + isSelectedMenuItem(item.id) + '" id="' + item.id + '">';
+
+                            var label = '<i class="fa fa-menu-default-icon ' + item.id + (item.iconImage ? '"style="background-image:url(' + item.iconImage + ')"' : "") + ' "></i>'
+                                + self.message(item.label || "header." + item.id + ".label");
+
                             if (item.url) {
-                                ul += '<a href="' + item.url + '" onclick="' + "$('#menu').data('mmenu').close()" + '">' + label + '</a>';
+                                ul += '<a name="' + item.id + '" href="' + item.url + '" onclick="' + onClickMenuItem + '">' + label + '</a>';
+
                             } else if (item.clickEvent) {
-                                ul += '<a href="#" onclick="' + "$('#menu').data('mmenu').close();\n" + item.clickEvent + '">' + label + '</a>';
+                                ul += '<a name="' + item.id + '" href="#" onclick="' + closeMenuItem + "\n" + item.clickEvent + '">' + label + '</a>';
+
                             } else {
                                 ul += '<span>' + label + '</span>';
                             }
@@ -57,9 +73,8 @@ define(['dojo/_base/declare',
 
                 $('body').append('<nav id = "menu">' + menu + '</nav>');
 
-                var menuOnclick = "$('#menu').data('mmenu').close()";
                 var header =
-                    '<a class="mm-btn_menu" style="display: inline;" href="#" onclick="' + menuOnclick + '" id="hamburger" class="mm-slideout">' +
+                    '<a class="mm-btn_menu" style="display: inline;" href="#" onclick="' + closeMenu + '" id="hamburger" class="mm-slideout">' +
                     '    <span class="hamburger hamburger--collapse">' +
                     '        <span class="hamburger-box">' +
                     '            <span class="hamburger-inner"></span>' +
@@ -74,7 +89,7 @@ define(['dojo/_base/declare',
 
                 if (this.logoSrc) {
                     header +=
-                        '<a href="/share/page"' + ' onclick="' + "$('#menu').data('mmenu').close()" + '">' +
+                        '<a href="/share/page"' + ' onclick="' + closeMenu + '">' +
                         '    <img src='+ this.logoSrc + '></img>' +
                         '</a>';
                 }
@@ -130,14 +145,26 @@ define(['dojo/_base/declare',
                 }, {
                     "searchfield": {
                         "clear": true
-                    },
-                    "selectedClass": "active"
+                    }
                 });
             },
             postCreate: function header_citeckMainSlideMenu__postCreate() {
                 var self = this;
                 $(document).ready(
                     function() {
+                        $('#menu li a').each(function () {
+                            $(this).click(function () {
+
+                                var openedItems = $(".mm-listitem_opened");
+
+                                for(var i = 0, c = openedItems.length; i < c; i++) {
+                                    if ($(openedItems[i]).find(this).length == 0) {
+                                        $(openedItems[i]).removeClass('mm-listitem_opened');
+                                    }
+                                }
+                            });
+                        });
+
                         if (this.documentURI.indexOf("faceted-search") == -1){
                             $('.mm-page.mm-slideout').contents().appendTo($('body'));
                             $('body>.sticky-wrapper').appendTo($('.mm-page.mm-slideout'));

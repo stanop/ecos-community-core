@@ -3,6 +3,7 @@ package ru.citeck.ecos.behavior;
 import org.alfresco.repo.policy.BaseBehaviour;
 import org.alfresco.repo.policy.PolicyException;
 import org.springframework.extensions.surf.util.ParameterCheck;
+import ru.citeck.ecos.utils.performance.MethodPerformance;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -109,6 +110,9 @@ public class ChainingJavaBehaviour extends BaseBehaviour {
          * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])
          */
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+            MethodPerformance perf = new MethodPerformance(behaviour.instance, delegateMethod, args);
+
             // Handle Object level methods
             if (method.getName().equals("toString")) {
                 return toString();
@@ -126,6 +130,8 @@ public class ChainingJavaBehaviour extends BaseBehaviour {
                 return delegateMethod.invoke(behaviour.instance, args);
             } catch (InvocationTargetException e) {
                 throw e.getTargetException();
+            } finally {
+                perf.stop();
             }
         }
 

@@ -4,7 +4,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.ServiceImpl;
 import org.activiti.engine.impl.interceptor.CommandExecutor;
 import org.alfresco.repo.policy.Behaviour;
-import org.alfresco.repo.policy.JavaBehaviour;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;

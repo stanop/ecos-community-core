@@ -42,7 +42,7 @@
                         <region name="select" template="file-upload">
                             <param name="accept">image/*</param>
                             <param name="maxCount">1</param>
-                            <param name="maxSize">10000000</param>
+                            <param name="maxSize">10485760</param>
                             <param name="alowedFileTypes">jpg,jpeg,gif,bmp,png,tiff,webp,jfif</param>
                         </region>
                         <region name="input" template="img-background">
@@ -60,7 +60,6 @@
                     <field prop="cm:lastName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <invariant on="mandatory" language="explicit">false</invariant>
                     </field>
                     <field prop="cm:firstName" template="block">
                         <param name="hideInlineEditButton">true</param>
@@ -99,7 +98,12 @@
                         <region name="input">
                             <param name="maxlength">256</param>
                         </region>
-                        <invariant on="mandatory" language="explicit">false</invariant>
+                        <invariant on="valid" language="javascript" description="attribute_should_not_start_with_space"><![CDATA[
+                            (function() {
+                                var val = value;
+                                return !!val.match(/^\S.*/);
+                            })();
+                        ]]></invariant>
                     </field>
                     <field prop="cm:firstName" template="block">
                         <region name="input">
@@ -216,6 +220,12 @@
                 <region name="input">
                     <param name="maxlength">256</param>
                 </region>
+                <invariant on="valid" language="javascript" description="attribute_should_not_start_with_space"><![CDATA[
+                    (function() {
+                        var val = value;
+                        return !!val.match(/^\S.*/);
+                    })();
+                ]]></invariant>
             </field>
             <view class="deputy:availability">
                 <field prop="deputy:available" template="row">
@@ -355,6 +365,7 @@
     </view>
 
     <view class="cm:person" mode="view">
+        <param name="preloadInvariants">true</param>
         <param name="customClass">user-profile-custom-container</param>
         <param name="invariantsRuntimeCache">false</param>
         <view id="pesron-add--user-profile-css--file" template="profile-styles" />
@@ -371,7 +382,7 @@
                         <region name="select" template="file-upload">
                             <param name="accept">image/*</param>
                             <param name="maxCount">1</param>
-                            <param name="maxSize">10000000</param>
+                            <param name="maxSize">10485760</param>
                             <param name="alowedFileTypes">jpg,jpeg,gif,bmp,png, tiff, webp, jfif</param>
                         </region>
                         <region name="input" template="img-background">
@@ -389,7 +400,6 @@
                     <field prop="cm:lastName" template="block">
                         <param name="hideInlineEditButton">true</param>
                         <region name="label" template="none"/>
-                        <invariant on="mandatory" language="explicit">false</invariant>
                     </field>
                     <field prop="cm:firstName" template="block">
                         <param name="hideInlineEditButton">true</param>
@@ -424,7 +434,12 @@
                         <region name="input">
                             <param name="maxlength">256</param>
                         </region>
-                        <invariant on="mandatory" language="explicit">false</invariant>
+                        <invariant on="valid" language="javascript" description="attribute_should_not_start_with_space"><![CDATA[
+                            (function() {
+                                var val = value;
+                                return !!val.match(/^\S.*/);
+                            })();
+                        ]]></invariant>
                     </field>
                     <field prop="cm:firstName" template="block">
                         <region name="input">
@@ -541,6 +556,12 @@
                 <region name="input">
                     <param name="maxlength">256</param>
                 </region>
+                <invariant on="valid" language="javascript" description="attribute_should_not_start_with_space"><![CDATA[
+                    (function() {
+                        var val = value;
+                        return !!val.match(/^\S.*/);
+                    })();
+                ]]></invariant>
             </field>
             <view class="deputy:availability">
                 <param name="showNoneIfEmty">false</param>

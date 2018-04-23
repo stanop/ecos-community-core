@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<extension>
+    <modules>
+        <module>
+            <id>Custom Share Contracts</id>
+            <auto-deploy>true</auto-deploy>
+            <evaluator type="site.module.evaluator">
+                <params>
+                   <sites>contracts</sites>
+                   <sitePresets>.*</sitePresets>
+                </params>
+            </evaluator>
+            <configurations>
+                <config evaluator="string-compare" condition="DocLibActions">
+                    <actions>
+                        <action id="document-sign" label="actions.document.sign" type="javascript">
+                            <param name="function">onActionDocumentSign</param>
+                            <evaluator>evaluator.doclib.action.disableAction</evaluator>
+                        </action>
+                        <action id="upload-signed-version" label="actions.upload-signed-version" type="javascript">
+                            <param name="function">onActionUploadSignedVersion</param>
+                            <evaluator>evaluator.doclib.action.disableAction</evaluator>
+                        </action>
+                        <action id="show-signed-version" label="actions.show-signed-version" type="javascript">
+                            <param name="function">onShowSignedVersion</param>
+                            <evaluator>evaluator.doclib.action.disableAction</evaluator>
+                        </action>
+                    </actions>
+                </config>
+            </configurations>
+        </module>
+    </modules>
+</extension>

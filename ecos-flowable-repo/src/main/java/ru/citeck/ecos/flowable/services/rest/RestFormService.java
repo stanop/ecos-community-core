@@ -1,8 +1,10 @@
 package ru.citeck.ecos.flowable.services.rest;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.flowable.form.model.FormModel;
+import org.flowable.form.model.SimpleFormModel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -48,6 +50,9 @@ public class RestFormService {
         }
 
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        converter.setObjectMapper(mapper);
 
         List<HttpMessageConverter<?>> converters = new ArrayList<>();
         converters.add(converter);
@@ -61,7 +66,7 @@ public class RestFormService {
         initialized = true;
     }
 
-    public Optional<FormModel> getFormByKey(String formKey) {
+    public Optional<SimpleFormModel> getFormByKey(String formKey) {
 
         if (!initialized) {
             logger.warn("Flowable rest form service is not initialized! FormKey: " + formKey);
@@ -76,7 +81,7 @@ public class RestFormService {
             String formDefinitionId = definitions.data.get(0).id;
             url = baseUrl + formModelUrl;
 
-            return Optional.ofNullable(restTemplate.getForObject(url, FormModel.class, formDefinitionId));
+            return Optional.ofNullable(restTemplate.getForObject(url, SimpleFormModel.class, formDefinitionId));
         }
 
         return Optional.empty();

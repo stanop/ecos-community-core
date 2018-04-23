@@ -789,18 +789,18 @@ ko.bindingHandlers.dateControl = {
                 if (max) {
                     input.setAttribute("max", max);
                 } else {
-                input.setAttribute("max", (year + 50) + "-12-31");
+                    input.setAttribute("max", (year + 50) + "-12-31");
                 }
 
                 if (min) {
                     input.setAttribute("min", min);
                 } else {
-                input.setAttribute("min", (year - 25) + "-12-31");
+                    input.setAttribute("min", (year - 25) + "-12-31");
                 }
 
                 Dom.setStyle(input, "color", value() ? "" : "lightgray");
                 value.subscribe(function(value) {
-                  Dom.setStyle(input, "color", value ? "" : "lightgray");
+                    Dom.setStyle(input, "color", value ? "" : "lightgray");
                 });
             }
         }
@@ -2651,11 +2651,9 @@ ko.components.register("select2", {
                             <span class="select2-message empty-message" data-bind="text: localization.empty"></span>\
                         <!-- /ko -->\
                     <!-- /ko -->\
-                    <!-- ko if: hasMore -->\
-                        <div class="select2-more">\
-                            <a data-bind="click: more, attr: { title: localization.more }">...</a>\
-                        </div>\
-                    <!-- /ko -->\
+                    <div class="select2-more" data-bind="style: hasMore() ? \'\' : {display: \'none\'}">\
+                        <a data-bind="click: more, attr: { title: localization.more }">...</a>\
+                    </div>\
                 </div>\
             <!-- /ko -->\
         <!-- /ko -->\
@@ -2712,6 +2710,16 @@ ko.bindingHandlers.fileUploadControl = {
         });
 
         function checkFile(file) {
+            function b2mb(val) {
+                if (!val) return '';
+                var res = Math.round((val / 1024 / 1024) * 1000) / 1000;
+                if (res < 1) {
+                    res = Math.round((val / 1024) * 1000) / 1000;
+                    return res + ' Kb'
+                };
+                return res + ' Mb'
+            };
+
             if (!file) return false;
 
             var result = true,
@@ -2736,7 +2744,7 @@ ko.bindingHandlers.fileUploadControl = {
             }
 
             if (!result) {
-                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('file-too-big') });
+                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('file-larger-than-allowed') + ' ' + b2mb(maxSize) });
                 return false;
             }
 

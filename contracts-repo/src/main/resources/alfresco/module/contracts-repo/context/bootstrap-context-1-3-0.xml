@@ -10,6 +10,7 @@
 	<bean id="idocs.module-component.default-payment-content-template" parent="contracts.import-spaces.1-3-0">
 		<property name="name" value="default-payment-content-template" />
 		<property name="description" value="default-payment-content-template" />
+        <property name="executeOnceOnly" value="false"/>
 		<property name="dependsOn">
 			<list>
 				<ref bean="contracts.module-component.doctype-categories1" />
@@ -30,6 +31,7 @@
 	<bean id="idocs.module-component.default-closing-document-act-content-template" parent="contracts.import-spaces.1-3-0">
 		<property name="name" value="default-closing-document-act-content-template" />
 		<property name="description" value="default-closing-document-act-content-template" />
+        <property name="executeOnceOnly" value="false"/>
 		<property name="dependsOn">
 			<list>
 				<ref bean="contracts.module-component.doctype-categories1" />
