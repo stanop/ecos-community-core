@@ -53,12 +53,12 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.html = ko.observable("");
             this._value = ko.observable(null);
 
-            this.nodetype = this.attribute().nodetype ? this.attribute().nodetype() : null;
-            this.journalType = this.attribute().journalType ? this.attribute().journalType() : null;
-            this.settings = this.attribute().settings ? this.attribute().settings() : null;
-            this.labels = this.labels ? this.labels : (this.attribute().labels && !_.isEmpty(this.attribute().labels()) ? this.attribute().labels() : null);
+            this.nodetype = this.attribute() && this.attribute().nodetype ? this.attribute().nodetype() : null;
+            this.journalType = this.attribute() && this.attribute().journalType ? this.attribute().journalType() : null;
+            this.settings = this.attribute() && this.attribute().settings ? this.attribute().settings() : null;
+            this.labels = this.labels ? this.labels : (this.attribute() && this.attribute().labels && !_.isEmpty(this.attribute().labels()) ? this.attribute().labels() : null);
 
-            if (this.journalType && this.journalType.id && !this.journalType.id() && this.settings && this.settings.journalTypeId) {
+            if (this.settings && this.settings.journalTypeId) {
                 this.journalType.id(this.settings.journalTypeId);
             }
 
