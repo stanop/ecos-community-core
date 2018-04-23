@@ -93,7 +93,7 @@
         </property>
     </bean>
 
-    <bean id="evaluator.doclib.agreement.isActive" class="org.alfresco.web.evaluator.ChainedMatchOneEvaluator">
+    <bean id="evaluator.doclib.contracts.agreement.isActive" class="org.alfresco.web.evaluator.ChainedMatchOneEvaluator">
         <property name="evaluators">
             <list>
                 <ref bean="evaluator.doclib.contracts.agreement.isActiveCaseStatus" />
