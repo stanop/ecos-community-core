@@ -5,7 +5,7 @@
 
     <groupId>ru.citeck.ecos.flowable</groupId>
     <artifactId>flowable-war-solution</artifactId>
-    <version>1.0.0-RC2-SNAPSHOT</version>
+    <version>1.0.0-RC2</version>
     <packaging>pom</packaging>
 
     <name>Ecos Flowable WAR solution</name>
