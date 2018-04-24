@@ -536,6 +536,7 @@
         <property name="description" value="Document folders" />
         <property name="sinceVersion" value="2.3" />
         <property name="appliesFromVersion" value="2.3" />
+        <property name="executeOnceOnly" value="false" />
         <property name="bootstrapView">
             <props>
                 <prop key="uuidBinding">UPDATE_EXISTING</prop>
