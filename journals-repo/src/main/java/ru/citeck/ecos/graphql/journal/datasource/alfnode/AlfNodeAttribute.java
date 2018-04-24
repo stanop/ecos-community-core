@@ -1,8 +1,8 @@
 package ru.citeck.ecos.graphql.journal.datasource.alfnode;
 
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.journal.JournalAttributeGql;
-import ru.citeck.ecos.graphql.journal.JournalRecordGql;
+import ru.citeck.ecos.graphql.journal.record.JournalAttributeGql;
+import ru.citeck.ecos.graphql.journal.record.JournalRecordGql;
 import ru.citeck.ecos.graphql.node.Attribute;
 
 import java.util.List;

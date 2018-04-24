@@ -80,14 +80,12 @@ public class JournalRecordsPost extends AbstractWebScript {
     private String gqlBaseQuery;
     private Map<String, JournalRecordsQuery> gqlQueryByJournalId = new ConcurrentHashMap<>();
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
         String journalId = req.getParameter(PARAM_JOURNAL_ID);
-
-
 
         if (StringUtils.isBlank(journalId)) {
             throw new RuntimeException("journalId is mandatory parameter");
@@ -124,7 +122,7 @@ public class JournalRecordsPost extends AbstractWebScript {
             Map<String, Object> resultData = data.get(KEY_CRITERIA_SEARCH);
 
             if (rawGql) {
-                mapper.writeValue(res.getOutputStream(), executeResult.toSpecification());
+                objectMapper.writeValue(res.getOutputStream(), executeResult.toSpecification());
             } else {
 
                 Map<String, Object> result = new HashMap<>();
@@ -172,7 +170,7 @@ public class JournalRecordsPost extends AbstractWebScript {
                     }
                 });
 
-                mapper.writeValue(res.getOutputStream(), result);
+                objectMapper.writeValue(res.getOutputStream(), result);
             }
 
         } else { //old behaviour from criteria-search.post

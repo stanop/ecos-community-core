@@ -1,4 +1,4 @@
-package ru.citeck.ecos.graphql.journal;
+package ru.citeck.ecos.graphql.journal.record;
 
 import graphql.annotations.annotationTypes.GraphQLField;
 
