@@ -4,7 +4,7 @@
 
     <groupId>ru.citeck.ecos.community</groupId>
     <artifactId>ecos-community</artifactId>
-    <version>3.2.1.0-RC3</version>
+    <version>3.2.1.0-RC3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>ecos-community</name>
@@ -979,7 +979,7 @@
                         </goals>
                         <configuration>
                             <source>
-                                project.properties.versionWithOutPrefix = project.version.replace('-RC3', '')
+                                project.properties.versionWithOutPrefix = project.version.replace('-RC3-SNAPSHOT', '')
                             </source>
                         </configuration>
                     </execution>
