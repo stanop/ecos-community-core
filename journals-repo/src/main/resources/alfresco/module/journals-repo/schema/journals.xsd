@@ -42,11 +42,12 @@
 
     <xs:complexType name="journal">
         <xs:sequence>
+            <xs:element name="datasource" type="xs:string" minOccurs="0" />
             <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element name="group-actions" minOccurs="0" maxOccurs="1">
+            <xs:element name="group-actions" minOccurs="0">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="action" type="j:groupAction" minOccurs="1" maxOccurs="unbounded" />
+                        <xs:element name="action" type="j:groupAction" maxOccurs="unbounded" />
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>

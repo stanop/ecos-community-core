@@ -1,9 +1,7 @@
 package ru.citeck.ecos.graphql.node;
 
-import graphql.annotations.annotationTypes.GraphQLDefaultValue;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
-import graphql.schema.DataFetchingEnvironment;
 import lombok.Getter;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
@@ -18,8 +16,6 @@ import ru.citeck.ecos.graphql.GqlContext;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class GqlAlfNode {
@@ -147,32 +143,49 @@ public class GqlAlfNode {
     }
 
     @GraphQLField
-    public List<Attribute> attributes(DataFetchingEnvironment env,
-                                      @GraphQLName("types")
-                                      @GraphQLDefaultValue(DefaultAttributesTypes.class)
-                                      List<Attribute.Type> types) {
-
-        BiConsumer<Map<QName, ?>, Attribute.Type> addAttributes = (input, attType) -> input.forEach((key, value) -> {
-            if (!attributes.containsKey(key)) {
-                QName name = key.getPrefixedQName(context.getNamespaceService());
-                Attribute attr = new Attribute(name, value, attType, this, env.getContext());
-                attributes.put(name, attr);
+    public List<Attribute> attributes(@GraphQLName("types")
+                                      List<Attribute.Type> types,
+                                      @GraphQLName("names")
+                                      List<String> names) {
+        if (names != null) {
+            List<Attribute> result = new ArrayList<>();
+            names.forEach(name -> result.add(attribute(name)));
+            return result;
+        } else {
+            if (types == null) {
+                types = Collections.singletonList(Attribute.Type.PROP);
             }
-        });
+            return getAttributesByTypes(types);
+        }
+    }
+
+    private List<Attribute> getAttributesByTypes(List<Attribute.Type> types) {
 
         if (types.contains(Attribute.Type.PROP)) {
-            addAttributes.accept(getProperties(), Attribute.Type.PROP);
+            addAttributes(getProperties(), Attribute.Type.PROP);
         }
 
         if (types.contains(Attribute.Type.ASSOC)) {
-            addAttributes.accept(getTargetAssocs(), Attribute.Type.ASSOC);
+            addAttributes(getTargetAssocs(), Attribute.Type.ASSOC);
         }
 
         if (types.contains(Attribute.Type.CHILD_ASSOC)) {
-            addAttributes.accept(getChildAssocs(), Attribute.Type.CHILD_ASSOC);
+            addAttributes(getChildAssocs(), Attribute.Type.CHILD_ASSOC);
         }
 
         return new ArrayList<>(attributes.values());
+    }
+
+    private void addAttributes(Map<QName, ?> toAdd, Attribute.Type attrType) {
+        toAdd.forEach((key, value) -> addAttribute(key, value, attrType));
+    }
+
+    private void addAttribute(QName name, Object value, Attribute.Type attrType) {
+        if (!attributes.containsKey(name)) {
+            QName prefixedQName = name.getPrefixedQName(context.getNamespaceService());
+            Attribute attr = new Attribute(prefixedQName, value, attrType, this, context);
+            attributes.put(prefixedQName, attr);
+        }
     }
 
     public Object getAttributeValue(QName name, Attribute.Type type) {
@@ -267,13 +280,6 @@ public class GqlAlfNode {
             result = Attribute.Type.PROP;
         }
         return result;
-    }
-
-    public static class DefaultAttributesTypes implements Supplier<Object> {
-        @Override
-        public Object get() {
-            return Collections.singletonList(Attribute.Type.PROP);
-        }
     }
 
     @Override

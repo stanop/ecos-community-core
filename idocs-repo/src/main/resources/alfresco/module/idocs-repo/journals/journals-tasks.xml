@@ -48,6 +48,7 @@
     </journal>
 
     <journal id="subordinate-tasks">
+        <datasource>ru.citeck.ecos.nodesDataSource</datasource>
         <option name="type">bpm:workflowTask</option>
         <option name="formId">search</option>
         <option name="actionGroupId">task</option>

@@ -24,7 +24,9 @@ import java.util.Map;
 import org.alfresco.service.namespace.QName;
 
 public interface JournalType {
-    
+
+    String getDataSource();
+
     String getId();
     
     Map<String, String> getOptions();
