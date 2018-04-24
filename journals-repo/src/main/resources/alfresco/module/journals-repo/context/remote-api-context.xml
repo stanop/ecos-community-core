@@ -6,8 +6,9 @@
           class="ru.citeck.ecos.journals.webscripts.JournalRecordsPost">
         <property name="gqlBaseQuery">
             <value>
-                query getJournalRecords($query: String, $language: String) {
-                    criteriaSearch(q: $query, lang: $language) {
+                query getJournalRecords($journalId: String, $query: String, $lang: String, $after: String, $first: String) {
+                    journal(id: $journalId) {
+
                         paging{hasMore, maxItems, skipCount, totalCount, totalItems}
                         query {language, value}
                         results {...journalFields}

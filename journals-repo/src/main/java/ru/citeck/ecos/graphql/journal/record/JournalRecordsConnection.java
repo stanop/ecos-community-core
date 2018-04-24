@@ -9,7 +9,7 @@ public class JournalRecordsConnection {
 
     private List<JournalRecordGql> records;
     private JournalGqlPageInfo pageInfo;
-    private int totalCount;
+    private long totalCount;
 
     @GraphQLField
     public List<JournalRecordGql> records() {
@@ -21,11 +21,11 @@ public class JournalRecordsConnection {
     }
 
     @GraphQLField
-    public int totalCount() {
+    public long totalCount() {
         return totalCount == 0 ? (records != null ? records.size() : 0) : totalCount;
     }
 
-    public void setTotalCount(int totalCount) {
+    public void setTotalCount(long totalCount) {
         this.totalCount = totalCount;
     }
 

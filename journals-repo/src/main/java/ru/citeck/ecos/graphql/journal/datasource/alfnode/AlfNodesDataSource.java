@@ -1,8 +1,10 @@
 package ru.citeck.ecos.graphql.journal.datasource.alfnode;
 
+import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.graphql.GqlContext;
@@ -56,10 +58,10 @@ public class AlfNodesDataSource implements JournalDataSource {
 
         JournalRecordsConnection result = new JournalRecordsConnection();
 
+        result.setTotalCount(criteriaResults.getTotalCount());
         result.setRecords(records);
 
         JournalGqlPageInfo paging = new JournalGqlPageInfo();
-
         byte[] endCursorBytes = Base64.encodeInteger(BigInteger.valueOf(skipCount + first));
         paging.setEndCursor(Base64.encodeBase64String(endCursorBytes));
         paging.setHasNextPage(criteriaResults.hasMore());
@@ -70,11 +72,8 @@ public class AlfNodesDataSource implements JournalDataSource {
 
     @Override
     public JournalAttributeInfo getAttributeInfo(String attributeName) {
-
-        
-
-        dictionaryService.getAssociation(attributeName)
-
-        return null;
+        QName qName = QName.resolveToQName(namespaceService, attributeName);
+        AssociationDefinition assocDef = dictionaryService.getAssociation(qName);
+        return () -> assocDef != null;
     }
 }
