@@ -5,7 +5,7 @@ function onCaseCreate() {
     var skipRegValue = ecosConfigService.getParamValue("ordersSkipRegistrationConfig") == "true";
     document.properties["orders:skipRegistration"] = skipRegValue;
     document.save();
-    if (!skipRegValue && !document.properties["idocs:registrationNumber"]) {
+    if (skipRegValue && !document.properties["idocs:registrationNumber"]) {
         var template = search.findNode("workspace://SpacesStore/orders-internal-number-template");
         var registrationNumber = enumeration.getNumber(template, document);
         document.properties['idocs:registrationNumber'] = registrationNumber;
