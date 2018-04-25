@@ -149,7 +149,7 @@
                         <many>true</many>
                     </source>
                     <target>
-                        <class>cm:person</class>
+                        <class>cm:authority</class>
                         <mandatory>false</mandatory>
                         <many>false</many>
                     </target>
