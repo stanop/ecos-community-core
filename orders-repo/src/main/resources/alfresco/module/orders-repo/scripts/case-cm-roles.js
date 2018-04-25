@@ -6,6 +6,7 @@ const ROLE_SIGNER = "signer";
 const ROLE_OWNER = "owner";
 const ROLE_PERFORMERS = "performers";
 const ROLE_ADDITIONAL_CONFIRMERS = "additional-confirmers";
+const ROLE_TECHNOLOGIST = "technologist";
 
 var roles = {
     rolesData: {},
@@ -134,6 +135,13 @@ var roles = {
             logger.warn('Fill supervisor role');
             var owner = (document.assocs['idocs:supervisor'] || [])[0];
             return owner ? [owner] : [];
+        }
+    };
+    roles.rolesData[ROLE_TECHNOLOGIST] = {
+        fn: function () {
+            var technologist = [];
+            technologist.push(people.getGroup("GROUP_orders-technologist"));
+            return technologist;
         }
     }
 })();

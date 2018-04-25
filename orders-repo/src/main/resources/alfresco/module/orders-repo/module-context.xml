@@ -5,5 +5,6 @@
     <import resource="classpath:alfresco/module/orders-repo/context/bootstrap-context.xml" />
     <import resource="classpath:alfresco/module/orders-repo/context/bootstrap-context-1-1-6.xml" />
     <import resource="classpath:alfresco/module/orders-repo/context/behaviour-context.xml" />
+    <import resource="classpath:alfresco/module/orders-repo/context/bootstrap-context-3-2-1.xml" />
 
 </beans>
