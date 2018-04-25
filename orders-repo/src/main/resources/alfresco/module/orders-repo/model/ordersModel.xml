@@ -14,7 +14,6 @@
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
 		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
         <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
-        <import uri="http://www.citeck.ru/model/route/1.0" prefix="route" />
     </imports>
 
     <namespaces>
@@ -124,17 +123,6 @@
                         <many>false</many>
                     </target>
                 </association>
-                <association name="orders:confirmers">
-                    <source>
-                        <mandatory>false</mandatory>
-                        <many>true</many>
-                    </source>
-                    <target>
-                        <class>cm:authority</class>
-                        <mandatory>false</mandatory>
-                        <many>true</many>
-                    </target>
-                </association>
             </associations>
             <overrides>
                 <property name="idocs:summary">
@@ -176,11 +164,9 @@
                 </property>
             </properties>
         </type>
-
     </types>
 
 	<aspects>
-	
 		<aspect name="orders:internalType">
 			<parent>tk:documentTypeKind</parent>
 			<overrides>
@@ -189,7 +175,26 @@
 				</property>
 			</overrides>
 		</aspect>
-		
+
+        <aspect name="orders:hasCurrentConfirmationStatus">
+            <properties>
+                <property name="orders:currentConfirmationStatus">
+                    <title>Текущий статус согласования</title>
+                    <type>d:text</type>
+                    <default>not-started</default>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="orders:hasLastConfirmOutcome">
+            <properties>
+                <property name="orders:lastConfirmOutcome">
+                    <title>Последнее решение по согласованию</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+
+        </aspect>
 	</aspects>
 
 </model>

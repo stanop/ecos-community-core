@@ -81,10 +81,20 @@ function resetCase() {
     }
 
     //remove all workflows
-    var workflows = services.get('WorkflowService').getWorkflowsForContent(document.nodeRef, false);
-    for (var i = 0; i < workflows.size(); i++) {
-        services.get('WorkflowService').deleteWorkflow(workflows.get(i).getId());
+    var inactiveWorkflows = services.get('WorkflowService').getWorkflowsForContent(document.nodeRef, false);
+    for (var i = 0; i < inactiveWorkflows.size(); i++) {
+        services.get('WorkflowService').deleteWorkflow(inactiveWorkflows.get(i).getId());
     }
+
+    var activeWorkflows = services.get('WorkflowService').getWorkflowsForContent(document.nodeRef, false);
+    for (var i = 0; i < activeWorkflows.size(); i++) {
+        services.get('WorkflowService').deleteWorkflow(activeWorkflows.get(i).getId());
+    }
+
+    //reset util properties
+    document.properties["orders:currentConfirmationStatus"] = "not-started";
+    document.properties["orders:lastConfirmOutcome"] = "";
+    document.save();
 }
 
 function restartCase() {

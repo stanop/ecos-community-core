@@ -32,14 +32,6 @@
         </view>
 
         <view>
-            <field assoc="orders:confirmers">
-                <region name="select" template="select-orgstruct"/>
-                <region name="input" template="view"/>
-            </field>
-
-        </view>
-
-        <view>
             <field assoc="orders:fileCode"/>
         </view>
 
