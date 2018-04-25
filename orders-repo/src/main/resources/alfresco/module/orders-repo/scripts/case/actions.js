@@ -1,7 +1,6 @@
 <import resource="classpath:alfresco/module/idocs-repo/scripts/case-mt/case-cm-confirm-utils.js">
 
 function onCaseCreate() {
-    var ecosConfigService = services.get("ecosConfigService");
     var skipRegValue = ecosConfigService.getParamValue("ordersSkipRegistrationConfig") == "true";
     document.properties["orders:skipRegistration"] = skipRegValue;
     document.save();
