@@ -10,8 +10,5 @@ public interface JournalAttributeGql {
     String name();
 
     @GraphQLField
-    List<String> values();
-
-    @GraphQLField
-    List<JournalRecordGql> records();
+    List<JournalAttributeValueGql> val();
 }

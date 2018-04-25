@@ -32,6 +32,10 @@ public class GqlQName {
         this.qname = QName.resolveToQName(context.getNamespaceService(), name);
     }
 
+    public QName getQName() {
+        return qname;
+    }
+
     @GraphQLField
     public String prefix() {
         return getPrefix();

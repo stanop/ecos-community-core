@@ -2,7 +2,7 @@ package ru.citeck.ecos.graphql.journal.datasource.alfnode;
 
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeGql;
-import ru.citeck.ecos.graphql.journal.record.JournalRecordGql;
+import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
 import ru.citeck.ecos.graphql.node.Attribute;
 
 import java.util.List;
@@ -24,15 +24,10 @@ public class AlfNodeAttribute implements JournalAttributeGql {
     }
 
     @Override
-    public List<String> values() {
-        return attribute.values();
-    }
-
-    @Override
-    public List<JournalRecordGql> records() {
-        return attribute.nodes()
+    public List<JournalAttributeValueGql> val() {
+        return attribute.getValues()
                         .stream()
-                        .map(n -> new AlfNodeRecord(n, context))
+                        .map(v -> new AlfNodeAttributeValue(v, context))
                         .collect(Collectors.toList());
     }
 }

@@ -1660,6 +1660,10 @@ JournalsWidget
                 return _.extend(query, criterion.query());
             }, {});
 
+            var urlArgs = {
+                journalId: journal.type().id()
+            };
+
             query.sortBy = this.sortByQuery();
             query.skipCount = this.skipCount() || 0;
             query.maxItems = this.maxItems() || this.defaultMaxItems() || 10;
@@ -1669,37 +1673,36 @@ JournalsWidget
             logger.info("Loading records with query: " + queryString);
 
             Alfresco.util.Ajax.jsonPost({
-                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journal.type().id() + "&rawGql=true",
+                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journal.type().id(),
                 dataObj: query,
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        var data = response.json.data ? response.json.data.criteriaSearch : {}, self = this,
-                            recordProperties = ['nodeRef', 'permissions', 'isDocument', 'isContainer', 'doclib'],
-                            records = data.results;
-                        if (records && records.length) {
-                            records = _.map(records, function(node) {
-                                var record = {attributes: {}};
-                                for (var key in node) {
-                                    var item = node[key];
-                                    if (recordProperties.indexOf(key) != -1) {
-                                        record[key] = item;
-                                    } else {
-                                        record.attributes[key.replace("_", ":")] = item.name ? (item.value || item.nodes) : item;
-                                    }
+                        var data = response.json.data.journal.recordsConnection, self = this,
+                            records = data.records,
+                            recordProperties = ['id', 'permissions', 'isDocument', 'isContainer', 'doclib'];
+
+                        records = _.map(records, function(node) {
+                            var record = {attributes: {}};
+                            for (var key in node) {
+                                var item = node[key];
+                                if (recordProperties.indexOf(key) != -1) {
+                                    record[key] = item;
+                                } else {
+                                    record.attributes[item.name] = item && item.val && item.val.length && item.val[0].disp ? item.val[0].disp : null;
                                 }
-                                return record;
-                            });
-                        }
+                            }
+                            return record;
+                        });
 
                         customRecordLoader(new Citeck.utils.DoclibRecordLoader(self.actionGroupId()));
 
                         this.model({
                             records: records,
-                            skipCount: data.paging.skipCount,
-                            maxItems: data.paging.maxItems,
-                            totalItems: data.paging.totalItems,
-                            hasMore: data.paging.hasMore
+                            skipCount: 0,//data.paging.skipCount,
+                            maxItems: 0,//data.paging.maxItems,
+                            totalItems: 0,//data.paging.totalItems,
+                            hasMore: false//data.paging.hasMore
                         });
                     }
                 }

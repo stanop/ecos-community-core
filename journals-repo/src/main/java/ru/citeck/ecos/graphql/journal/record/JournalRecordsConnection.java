@@ -7,16 +7,16 @@ import java.util.List;
 
 public class JournalRecordsConnection {
 
-    private List<JournalRecordGql> records;
+    private List<JournalAttributeValueGql> records;
     private JournalGqlPageInfo pageInfo;
     private long totalCount;
 
     @GraphQLField
-    public List<JournalRecordGql> records() {
+    public List<JournalAttributeValueGql> records() {
         return records;
     }
 
-    public void setRecords(List<JournalRecordGql> records) {
+    public void setRecords(List<JournalAttributeValueGql> records) {
         this.records = records;
     }
 

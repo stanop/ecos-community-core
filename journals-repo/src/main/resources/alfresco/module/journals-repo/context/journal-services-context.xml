@@ -43,5 +43,6 @@
 
     <bean name="ecos.journals.datasource.AlfNodes" class="ru.citeck.ecos.graphql.journal.datasource.alfnode.AlfNodesDataSource">
     </bean>
-
+    <bean name="ecos.journals.datasource.TestSource" class="ru.citeck.ecos.graphql.journal.datasource.TestJournalRecordsSource">
+    </bean>
 </beans>

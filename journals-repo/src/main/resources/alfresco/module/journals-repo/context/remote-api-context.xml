@@ -6,17 +6,20 @@
           class="ru.citeck.ecos.journals.webscripts.JournalRecordsPost">
         <property name="gqlBaseQuery">
             <value>
-                query getJournalRecords($journalId: String, $query: String, $lang: String, $after: String, $first: String) {
+                query getJournalRecords($journalId: String!, $query: String, $lang: String, $after: String, $first: Int) {
                     journal(id: $journalId) {
-
-                        paging{hasMore, maxItems, skipCount, totalCount, totalItems}
-                        query {language, value}
-                        results {...journalFields}
+                        recordsConnection(after: $after, first: $first, q: $query, lang: $lang) {
+                            records {...recordsFields}
+                            totalCount
+                            pageInfo {
+                                endCursor
+                                hasNextPage
+                            }
+                        }
                     }
                 }
             </value>
         </property>
-        <property name="newApiByDefault" value="true" />
     </bean>
 
     <bean id="webscript.ru.citeck.journals2.create-variants.get" parent="webscript"

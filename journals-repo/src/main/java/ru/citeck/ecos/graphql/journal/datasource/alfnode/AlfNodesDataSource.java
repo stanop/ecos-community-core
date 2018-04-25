@@ -1,16 +1,17 @@
 package ru.citeck.ecos.graphql.journal.datasource.alfnode;
 
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JournalGqlPageInfo;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeInfo;
-import ru.citeck.ecos.graphql.journal.record.JournalRecordGql;
+import ru.citeck.ecos.graphql.journal.record.JournalAttributeInfoGql;
+import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.record.JournalRecordsConnection;
 import ru.citeck.ecos.search.CriteriaSearchResults;
@@ -21,6 +22,7 @@ import ru.citeck.ecos.search.SearchCriteriaParser;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class AlfNodesDataSource implements JournalDataSource {
 
@@ -28,16 +30,23 @@ public class AlfNodesDataSource implements JournalDataSource {
     private CriteriaSearchService criteriaSearchService;
     @Autowired
     private SearchCriteriaParser criteriaParser;
-
     @Autowired
     private DictionaryService dictionaryService;
     @Autowired
     private NamespaceService namespaceService;
 
+    private GqlContext context;
+
     @Override
     public JournalRecordsConnection getRecords(GqlContext context,
                                                String query, String language,
                                                String after, Integer first) {
+        this.context = context;
+
+        if (language == null) {
+            language = SearchService.LANGUAGE_FTS_ALFRESCO;
+        }
+
         int skipCount = 0;
         if (after != null) {
             skipCount = Base64.decodeInteger(Base64.decodeBase64(after)).intValue();
@@ -49,7 +58,7 @@ public class AlfNodesDataSource implements JournalDataSource {
 
         CriteriaSearchResults criteriaResults = criteriaSearchService.query(criteria, language);
 
-        List<JournalRecordGql> records = new ArrayList<>();
+        List<JournalAttributeValueGql> records = new ArrayList<>();
 
         for (NodeRef nodeRef : criteriaResults.getResults()) {
             context.getNode(nodeRef)
@@ -71,9 +80,8 @@ public class AlfNodesDataSource implements JournalDataSource {
     }
 
     @Override
-    public JournalAttributeInfo getAttributeInfo(String attributeName) {
+    public Optional<JournalAttributeInfoGql> getAttributeInfo(String attributeName) {
         QName qName = QName.resolveToQName(namespaceService, attributeName);
-        AssociationDefinition assocDef = dictionaryService.getAssociation(qName);
-        return () -> assocDef != null;
+        return Optional.of(new AlfNodeAttributeInfo(qName, dictionaryService));
     }
 }

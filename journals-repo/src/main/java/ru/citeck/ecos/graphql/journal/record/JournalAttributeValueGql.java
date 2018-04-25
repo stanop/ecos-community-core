@@ -3,15 +3,16 @@ package ru.citeck.ecos.graphql.journal.record;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
 
-import java.util.List;
+import java.util.Optional;
 
-public interface JournalRecordGql {
+public interface JournalAttributeValueGql {
 
     @GraphQLField
     String id();
 
     @GraphQLField
-    List<JournalAttributeGql> attributes(@GraphQLName("names") List<String> names);
+    String disp();
 
-    JournalAttributeGql attribute(@GraphQLName("name") String name);
+    @GraphQLField
+    Optional<JournalAttributeGql> attr(@GraphQLName("name") String name);
 }
