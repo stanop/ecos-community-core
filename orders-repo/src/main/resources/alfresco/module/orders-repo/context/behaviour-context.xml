@@ -20,7 +20,7 @@
         <property name="className" value="orders:subject" />
         <property name="nameTemplate" value="#{'$'}{node.properties['idocs:fileIndex']!} (#{'$'}{node.properties['idocs:fileName']!})" />
     </bean>
-    
+
     <bean id="orders.internal.projectNumber.EnumerationBehaviour" parent="EnumerationBehaviour" depends-on="orders.dictionaryBootstrap">
         <property name="className" value="orders:internal" />
         <property name="numberField" value="orders:projectNumber" />

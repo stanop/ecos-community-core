@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+        <import uri="http://www.citeck.ru/model/orders/common/1.0" prefix="orders" />
+    </imports>
+
+    <type name="orders:internal">
+
+        <property name="tk:kind">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+
+        <property name="orders:creationDate">
+            <invariant on="default" language="javascript">new Date().setSeconds(0, 0)</invariant>
+        </property>
+
+        <association name="idocs:signatory">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+
+        <association name="idocs:initiator">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="default" language="javascript">person</invariant>
+        </association>
+
+        <property name="orders:header">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+
+        <property name="idocs:summary">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+
+        <property name="dms:updateContent">
+            <invariant on="relevant" language="javascript">view.mode == "create"</invariant>
+        </property>
+
+        <property name="cm:content">
+            <invariant on="relevant" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+            <invariant on="mandatory" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+        </property>
+
+    </type>
+
+</invariants>

@@ -31,7 +31,7 @@ fieldNames = [
             }
         }
     }/>
-    
+
     <@forms.renderField field="assoc_idocs_signatory" extension = {
         "control": {
             "template": "/ru/citeck/components/form/controls/orgstruct-select.ftl",
@@ -151,7 +151,7 @@ fieldNames = [
     }/>
 
     <@forms.renderField field="assoc_orders_fileCode" />
-    
+
     <@forms.renderField field="prop_dms_updateContent" extension = {
         "force" : true,
         "visible" : "create",

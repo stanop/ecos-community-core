@@ -15,7 +15,7 @@ var roles = {
             var result = [];
             for (var i = 0; i < routings.length; i++) {
                 var condition = routings[i].properties['route:scriptCondition'];
-                if (condition != null) {
+                if (condition != null && condition != "") {
                     var conditionResult;
                     try {
                         conditionResult = eval(condition);
@@ -59,7 +59,9 @@ var roles = {
             var precedence = routings[i].properties["route:precedence"];
             var routeData = Packages.ru.citeck.ecos.workflow.confirm.PrecedenceToJsonListener.convertPrecedence(precedence);
             try {
-                confirmers.addAll(routeData.stages.get(0).confirmers);
+                for (var i; i < routeData.stages.size(); i++) {
+                    confirmers.addAll(routeData.stages.get(i).confirmers);
+                }
             } catch (e) {}
         }
 
@@ -90,8 +92,15 @@ var roles = {
             logger.warn('Fill confirmers role');
             var type = document.properties['tk:type'];
             var kind = document.properties['tk:kind'];
-
-            var confirmersRefs = roles.getConfirmersRefsFromRouting(type, kind);
+            var confirmersRefs = {};
+            var confirmersAssocs = document.assocs["orders:confirmers"];
+            if (confirmersAssocs && confirmersAssocs.length > 0) {
+                for (var i in confirmersAssocs) {
+                    confirmersRefs[confirmersAssocs[i].nodeRef] = true;
+;                }
+            } else {
+                confirmersRefs = roles.getConfirmersRefsFromRouting(type, kind);
+            }
 
             var result = [];
             for (var ref in confirmersRefs) {
