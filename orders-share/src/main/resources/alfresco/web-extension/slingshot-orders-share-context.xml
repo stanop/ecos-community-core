@@ -19,7 +19,7 @@
         </property>
     </bean>
 
-    <bean id="evaluator.doclib.orders.isDraftCaseStatus" class="ru.citeck.ecos.evaluator.CaseStatusEvaluator">
+    <bean id="evaluator.doclib.orders.isDraftCaseStatus" class="ru.citeck.ecos.evaluator.OrdersCaseStatusEvaluator">
         <property name="statuses">
             <list>
                 <value>draft</value>

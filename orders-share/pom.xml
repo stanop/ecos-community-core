@@ -25,6 +25,12 @@
     <dependencies>
 
         <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>share</artifactId>
+            <classifier>classes</classifier>
+        </dependency>
+
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>idocs-share</artifactId>
             <classifier>${ecos.project.classifier}</classifier>
