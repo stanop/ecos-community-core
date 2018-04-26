@@ -303,6 +303,7 @@
         <field assoc="idocs:crrTargetCurrency"/>
         <field prop="idocs:crrValue"/>
         <field prop="idocs:crrDate"/>
+        <field prop="idocs:crrSyncDate" template="none"/>
     </view>
 
     <view class="idocs:documentFinalStatus">
