@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.graphql.GraphQLService;
+import ru.citeck.ecos.graphql.journal.JournalGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeInfoGql;
 import ru.citeck.ecos.journals.JournalService;
@@ -33,6 +34,7 @@ public class JournalRecordsPost extends AbstractWebScript {
     //=======/PARAMS========
 
     private static final String GQL_PARAM_QUERY = "query";
+    private static final String GQL_PARAM_PAGE_INFO = "pageInfo";
 
     private static final Pattern FORMATTER_ATTRIBUTES_PATTERN = Pattern.compile("['\"]\\s*?(\\S+?:\\S+?\\s*?" +
                                                                                 "(,\\s*?\\S+?:\\S+?\\s*?)*?)['\"]");
@@ -81,7 +83,7 @@ public class JournalRecordsPost extends AbstractWebScript {
 
             schemaBuilder.append("a")
                          .append(attrCounter++)
-                         .append(": attr(name:\"")
+                         .append(":attr(name:\"")
                          .append(prefixedKey)
                          .append("\"){");
 
@@ -106,15 +108,16 @@ public class JournalRecordsPost extends AbstractWebScript {
         String formatter = attributeOptions.get("formatter");
         formatter = formatter != null ? formatter : "";
 
-        List<String> childrenFields = new ArrayList<>();
+        List<String> innerFields = new ArrayList<>();
+        innerFields.add("disp");
 
         if (formatter.contains("Link") || formatter.contains("nodeRef")) {
-            childrenFields.add("id");
+            innerFields.add("id");
         }
 
         Set<String> attributesToLoad = new HashSet<>();
         if (info != null) {
-            attributesToLoad.addAll(info.getDefaultChildAttributes());
+            attributesToLoad.addAll(info.getDefaultInnerAttributes());
         }
 
         Matcher attrMatcher = FORMATTER_ATTRIBUTES_PATTERN.matcher(formatter);
@@ -131,13 +134,9 @@ public class JournalRecordsPost extends AbstractWebScript {
             attributesToLoad.add("classTitle");
         }
 
-        if (childrenFields.isEmpty() && attributesToLoad.isEmpty()) {
-            childrenFields.add("disp");
-        }
-
         StringBuilder schemaBuilder = new StringBuilder("name,val{");
 
-        for (String field : childrenFields) {
+        for (String field : innerFields) {
             schemaBuilder.append(field).append(",");
         }
 
@@ -156,19 +155,18 @@ public class JournalRecordsPost extends AbstractWebScript {
         return schemaBuilder.toString();
     }
 
-    private Map<String, Object> getParameters(WebScriptRequest request) {
+    private Map<String, Object> getParameters(WebScriptRequest webRequest) {
 
         Map<String, Object> parameters = new HashMap<>();
 
-        for (String name : request.getParameterNames()) {
-            parameters.putIfAbsent(name, request.getParameter(name));
+        for (String name : webRequest.getParameterNames()) {
+            parameters.putIfAbsent(name, webRequest.getParameter(name));
         }
 
         try {
-            String content = request.getContent().getContent();
-            if (StringUtils.isNotBlank(content)) {
-                parameters.put(GQL_PARAM_QUERY, content);
-            }
+            Request request = objectMapper.readValue(webRequest.getContent().getContent(), Request.class);
+            parameters.put(GQL_PARAM_QUERY, request.query);
+            parameters.put(GQL_PARAM_PAGE_INFO, request.pageInfo);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -202,5 +200,10 @@ public class JournalRecordsPost extends AbstractWebScript {
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         namespaceService = serviceRegistry.getNamespaceService();
         this.serviceRegistry = serviceRegistry;
+    }
+
+    private static class Request {
+        public String query;
+        public Map<String, Object> pageInfo;
     }
 }

@@ -23,7 +23,7 @@ public class AlfNodeAttributeInfo implements JournalAttributeInfoGql {
     }
 
     @Override
-    public List<String> getDefaultChildAttributes() {
+    public List<String> getDefaultInnerAttributes() {
         return defaultAttributes;
     }
 }

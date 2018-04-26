@@ -43,6 +43,16 @@
 
     <bean name="ecos.journals.datasource.AlfNodes" class="ru.citeck.ecos.graphql.journal.datasource.alfnode.AlfNodesDataSource">
     </bean>
-    <bean name="ecos.journals.datasource.TestSource" class="ru.citeck.ecos.graphql.journal.datasource.TestJournalRecordsSource">
+    <bean name="ecos.journals.datasource.TestSource" class="ru.citeck.ecos.graphql.journal.datasource.DbJournalDataSource">
+        <property name="dataSource" ref="ecos.journals.datasource.TestDbConn" />
+        <property name="sqlQuery" value="SELECT * FROM house LIMIT :maxItems OFFSET :skipCount" />
     </bean>
+
+    <bean id="ecos.journals.datasource.TestDbConn" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="org.postgresql.Driver" />
+        <property name="url" value="jdbc:postgresql://uni-release.citeck.ru:5432/fiasdb" />
+        <property name="username" value="alfresco" />
+        <property name="password" value="Enterpr15e1" />
+    </bean>
+
 </beans>

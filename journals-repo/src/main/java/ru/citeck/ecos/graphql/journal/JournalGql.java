@@ -9,8 +9,6 @@ import ru.citeck.ecos.journals.JournalType;
 
 public class JournalGql {
 
-    private static final Integer DEFAULT_PAGE_SIZE = 10;
-
     private JournalRecordsConnection recordsConnection;
 
     private GqlContext context;
@@ -30,15 +28,11 @@ public class JournalGql {
     }
 
     @GraphQLField
-    public JournalRecordsConnection recordsConnection(@GraphQLName("after") String after,
-                                                      @GraphQLName("first") Integer first,
+    public JournalRecordsConnection recordsConnection(@GraphQLName("pageInfo") JournalGqlPageInfoInput pageInfo,
                                                       @GraphQLName("q") String query,
                                                       @GraphQLName("lang") String language) {
         if (recordsConnection == null) {
-            if (first == null) {
-                first = DEFAULT_PAGE_SIZE;
-            }
-            recordsConnection = dataSource.getRecords(context, query, language, after, first);
+            recordsConnection = dataSource.getRecords(context, query, language, pageInfo);
         }
 
         return recordsConnection;

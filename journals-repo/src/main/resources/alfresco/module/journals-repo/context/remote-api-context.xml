@@ -6,14 +6,15 @@
           class="ru.citeck.ecos.journals.webscripts.JournalRecordsPost">
         <property name="gqlBaseQuery">
             <value>
-                query getJournalRecords($journalId: String!, $query: String, $lang: String, $after: String, $first: Int) {
+                query getJournalRecords($journalId: String!, $query: String, $lang: String, $pageInfo: InputJournalGqlPageInfoInput) {
                     journal(id: $journalId) {
-                        recordsConnection(after: $after, first: $first, q: $query, lang: $lang) {
+                        recordsConnection(q: $query, lang: $lang, pageInfo: $pageInfo) {
                             records {...recordsFields}
                             totalCount
                             pageInfo {
-                                endCursor
                                 hasNextPage
+                                skipCount
+                                maxItems
                             }
                         }
                     }

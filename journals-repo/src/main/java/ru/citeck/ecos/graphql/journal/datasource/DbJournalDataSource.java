@@ -1,42 +1,51 @@
 package ru.citeck.ecos.graphql.journal.datasource;
 
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JournalGqlPageInfo;
+import ru.citeck.ecos.graphql.journal.JournalGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeGql;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeInfoGql;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
 import ru.citeck.ecos.graphql.journal.record.JournalRecordsConnection;
 
+import javax.sql.DataSource;
+import java.sql.ResultSetMetaData;
 import java.util.*;
 
-public class TestJournalRecordsSource implements JournalDataSource {
+public class DbJournalDataSource implements JournalDataSource {
+
+    private NamedParameterJdbcTemplate template;
+
+    private String sqlQuery;
 
     @Override
-    public JournalRecordsConnection getRecords(GqlContext context, String query, String language, String after, Integer first) {
+    public JournalRecordsConnection getRecords(GqlContext context, String query, String language, JournalGqlPageInfoInput pageInfo) {
+
+        MapSqlParameterSource namedParameters = new MapSqlParameterSource();
+        namedParameters.addValue("skipCount", pageInfo.getSkipCount());
+        namedParameters.addValue("maxItems", pageInfo.getMaxItems());
+
+        List<JournalAttributeValueGql> records = template.query(sqlQuery, namedParameters, (resultSet, i) -> {
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            Map<String, String> attributes = new HashMap<>();
+            for (int columnIdx = 1; columnIdx < metaData.getColumnCount(); columnIdx++) {
+                attributes.put("cm:" + metaData.getColumnName(columnIdx), resultSet.getString(columnIdx));
+            }
+            return new RecordValue(i, attributes);
+        });
 
         JournalRecordsConnection connection = new JournalRecordsConnection();
 
-        List<JournalAttributeValueGql> records = new ArrayList<>();
-
-        for (int i = 0; i < 10; i++) {
-            Map<String, String> attributes = new HashMap<>();
-
-            attributes.put("cm:name", "Name Test " + i);
-            attributes.put("cm:title", "Title Test 2 some data " + i);
-
-            RecordValue value = new RecordValue(i, attributes);
-
-            records.add(value);
-        }
+        JournalGqlPageInfo outPageInfo = new JournalGqlPageInfo();
+        outPageInfo.setHasNextPage(true);
+        outPageInfo.setMaxItems(pageInfo.getMaxItems());
+        outPageInfo.setSkipCount(pageInfo.getSkipCount());
 
         connection.setRecords(records);
-
-        JournalGqlPageInfo pageInfo = new JournalGqlPageInfo();
-        pageInfo.setEndCursor("0");
-        pageInfo.setHasNextPage(false);
-        connection.setPageInfo(pageInfo);
-
-        connection.setTotalCount(10);
+        connection.setPageInfo(outPageInfo);
+        connection.setTotalCount(pageInfo.getMaxItems());
 
         return connection;
     }
@@ -44,6 +53,14 @@ public class TestJournalRecordsSource implements JournalDataSource {
     @Override
     public Optional<JournalAttributeInfoGql> getAttributeInfo(String attributeName) {
         return Optional.empty();
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        template = new NamedParameterJdbcTemplate(dataSource);
+    }
+
+    public void setSqlQuery(String sqlQuery) {
+        this.sqlQuery = sqlQuery;
     }
 
     private class RecordValue implements JournalAttributeValueGql {
@@ -116,6 +133,4 @@ public class TestJournalRecordsSource implements JournalDataSource {
             return Optional.empty();
         }
     }
-
-
 }

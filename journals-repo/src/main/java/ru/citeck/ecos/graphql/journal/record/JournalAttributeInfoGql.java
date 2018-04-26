@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface JournalAttributeInfoGql {
 
-    default List<String> getDefaultChildAttributes() {
+    default List<String> getDefaultInnerAttributes() {
         return Collections.singletonList("disp");
     }
 }

@@ -755,7 +755,7 @@ Record
     .property('attributes', o)
     .property('permissions', o)
     .computed('aspects', function() {
-        var resAspectList = this.attributes()['attr:aspects'];
+        var resAspectList = this.attributes()['attr:aspects'] || [];
         var aspectList = [];
         for (var i = 0; i < resAspectList.length; i++) {
             aspectList.push(resAspectList[i].shortQName);
@@ -1026,6 +1026,8 @@ JournalsWidget
                 formatter = formatters.multiple(formatter);
             } else if (labelByCode) {
                 formatter = formatters.transformUseLabel(labelByCode, formatter);
+            } else {
+                formatter = formatters.dispFormatter();
             }
 
             return {
@@ -1493,7 +1495,7 @@ JournalsWidget
         },
 
         removeRecord: function(record) {
-            if(!record.nodeRef()) return;
+            if(!record.id()) return;
             this._removeRecord(record);
         },
 
@@ -1640,7 +1642,7 @@ JournalsWidget
             }
 
             var filter = this.currentFilter();
-            if(!filter) {
+            if (!filter) {
                 logger.debug("Filter is not loaded, deferring search");
                 koutils.subscribeOnce(this.currentFilter, load, this);
                 return;
@@ -1660,36 +1662,32 @@ JournalsWidget
                 return _.extend(query, criterion.query());
             }, {});
 
-            var urlArgs = {
-                journalId: journal.type().id()
+            var queryData = {
+                query: JSON.stringify(query),
+                pageInfo: {
+                    sortBy: this.sortByQuery(),
+                    skipCount: this.skipCount() || 0,
+                    maxItems: this.maxItems() || this.defaultMaxItems() || 10
+                }
             };
-
-            query.sortBy = this.sortByQuery();
-            query.skipCount = this.skipCount() || 0;
-            query.maxItems = this.maxItems() || this.defaultMaxItems() || 10;
-
-            var queryString = JSON.stringify(query);
-
-            logger.info("Loading records with query: " + queryString);
 
             Alfresco.util.Ajax.jsonPost({
                 url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journal.type().id(),
-                dataObj: query,
+                dataObj: queryData,
                 successCallback: {
                     scope: this,
                     fn: function(response) {
                         var data = response.json.data.journal.recordsConnection, self = this,
-                            records = data.records,
-                            recordProperties = ['id', 'permissions', 'isDocument', 'isContainer', 'doclib'];
+                            records = data.records;
 
                         records = _.map(records, function(node) {
                             var record = {attributes: {}};
                             for (var key in node) {
                                 var item = node[key];
-                                if (recordProperties.indexOf(key) != -1) {
-                                    record[key] = item;
+                                if (key === "id") {
+                                    record['nodeRef'] = item;
                                 } else {
-                                    record.attributes[item.name] = item && item.val && item.val.length && item.val[0].disp ? item.val[0].disp : null;
+                                    record.attributes[item.name] = item ? item.val : [];
                                 }
                             }
                             return record;
@@ -1699,10 +1697,10 @@ JournalsWidget
 
                         this.model({
                             records: records,
-                            skipCount: 0,//data.paging.skipCount,
-                            maxItems: 0,//data.paging.maxItems,
-                            totalItems: 0,//data.paging.totalItems,
-                            hasMore: false//data.paging.hasMore
+                            skipCount: data.pageInfo.skipCount,
+                            maxItems: data.pageInfo.maxItems,
+                            totalItems: data.totalItems,
+                            hasMore: data.pageInfo.hasNextPage
                         });
                     }
                 }
