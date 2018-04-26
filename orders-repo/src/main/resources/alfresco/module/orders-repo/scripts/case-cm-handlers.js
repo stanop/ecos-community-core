@@ -86,7 +86,7 @@ function resetCase() {
         services.get('WorkflowService').deleteWorkflow(inactiveWorkflows.get(i).getId());
     }
 
-    var activeWorkflows = services.get('WorkflowService').getWorkflowsForContent(document.nodeRef, false);
+    var activeWorkflows = services.get('WorkflowService').getWorkflowsForContent(document.nodeRef, true);
     for (var i = 0; i < activeWorkflows.size(); i++) {
         services.get('WorkflowService').deleteWorkflow(activeWorkflows.get(i).getId());
     }
