@@ -385,7 +385,8 @@
 
         labelByCode: function(labels) {
             return function(el, oRecord, oColumn, sData) {
-                return labels[sData] || sData || "";
+                var value = sData && sData.hasOwnProperty('disp') ? sData.disp : sData;
+                return labels[value] || value || "";
             }
         },
         _code: function(labelByCode, tdClassPrefix, trClassPrefix) {

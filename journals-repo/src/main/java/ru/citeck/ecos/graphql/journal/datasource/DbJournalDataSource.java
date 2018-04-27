@@ -21,7 +21,10 @@ public class DbJournalDataSource implements JournalDataSource {
     private String sqlQuery;
 
     @Override
-    public JournalRecordsConnection getRecords(GqlContext context, String query, String language, JournalGqlPageInfoInput pageInfo) {
+    public JournalRecordsConnection getRecords(GqlContext context,
+                                               String query,
+                                               String language,
+                                               JournalGqlPageInfoInput pageInfo) {
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource();
         namedParameters.addValue("skipCount", pageInfo.getSkipCount());

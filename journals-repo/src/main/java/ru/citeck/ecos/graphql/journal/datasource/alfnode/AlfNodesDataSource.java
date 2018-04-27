@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JournalGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JournalGqlPageInfoInput;
+import ru.citeck.ecos.graphql.journal.JournalGqlSortBy;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeInfoGql;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
@@ -45,6 +46,10 @@ public class AlfNodesDataSource implements JournalDataSource {
         SearchCriteria criteria = criteriaParser.parse(query);
         criteria.setSkip(pageInfo.getSkipCount());
         criteria.setLimit(pageInfo.getMaxItems());
+
+        for (JournalGqlSortBy sortBy : pageInfo.getSortBy()) {
+            criteria.addSort(sortBy.getAttribute(), sortBy.getOrder());
+        }
 
         CriteriaSearchResults criteriaResults = criteriaSearchService.query(criteria, language);
 

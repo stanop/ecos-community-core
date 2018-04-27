@@ -1,27 +1,26 @@
 package ru.citeck.ecos.graphql.journal;
 
 import graphql.annotations.annotationTypes.GraphQLField;
+import graphql.annotations.annotationTypes.GraphQLName;
 
 public class JournalGqlSortBy {
 
     @GraphQLField
-    private String attribute;
+    private final String attribute;
     @GraphQLField
-    private String order;
+    private final String order;
+
+    public JournalGqlSortBy(@GraphQLName("attribute") String attribute,
+                            @GraphQLName("order") String order) {
+        this.attribute = attribute;
+        this.order = order;
+    }
 
     public String getAttribute() {
         return attribute;
     }
 
-    public void setAttribute(String attribute) {
-        this.attribute = attribute;
-    }
-
     public String getOrder() {
         return order;
-    }
-
-    public void setOrder(String order) {
-        this.order = order;
     }
 }
