@@ -285,12 +285,12 @@ ko.components.register("number", {
                     if (item.actionId) {
                         var redirect = item.redirect ? item.redirect : (window.location.pathname.indexOf("card-details") == -1 ? "/share/page/journals2/list/tasks" : null),
                             onRedirect = function () {
-                            if (redirect) {
-                                window.location = redirect;
-                            } else {
-                                YAHOO.Bubbling.fire("metadataRefresh");
-                            }
-                        };
+                                if (redirect) {
+                                    window.location = redirect;
+                                } else {
+                                    YAHOO.Bubbling.fire("metadataRefresh");
+                                }
+                            };
                         if (item.actionId == "submit") {
                             if (self.attribute.value() != item.value) {
                                 self.attribute.value(item.value);
