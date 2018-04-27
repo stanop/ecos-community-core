@@ -5936,3 +5936,17 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
   visibility: visible;
 }
 */
+
+/* Flowable tasks*/
+
+div[id*="document-tasks"] .invariants-form:not(.view-form) .template-table .template-row {
+    margin-left: 0;
+}
+
+div[id*="document-tasks"] .ecos-form:not(.view-form) .form-fields {
+    padding: 15px 0 15px 0;
+}
+
+div[id*="document-tasks"] .invariants-form .template-table .template-row:last-child {
+    border-bottom: none;
+}
