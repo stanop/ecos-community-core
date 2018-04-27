@@ -43,15 +43,20 @@
                             <!-- /ko -->
                         <!-- /ko -->
                     <#elseif columns??>
-                        <!-- ko foreach: "${columns}".split(",") -->
-                            <!-- ko if: $parent.attribute($data) -->
-                                <th data-bind="text: $parent.attribute($data).title"></th>
+                        <#list columns?split(",") as column>
+                            <!-- ko with: attribute("${column}") -->
+                                <#if has_column_title_formatter(column) >
+                                    <th data-bind="html: ko.computed(function() {
+                                        <@column_title_formatter column 1 />
+                                    })"></th>
+                                <#else>
+                                    <th data-bind="text: ko.computed(function() {
+                                        return $parent.attribute('${column}').title() ?
+                                            $parent.attribute('${column}').title() : Alfresco.util.message('no-title');
+                                    })"></th>
+                                </#if>
                             <!-- /ko -->
-
-                            <!-- ko ifnot: $parent.attribute($data) -->
-                                <th>${msg('no-title')}</th>
-                            <!-- /ko -->
-                        <!-- /ko -->
+                        </#list>
                     <#else>
                         <!-- ko foreach: attributes -->
                             <th data-bind="text: title, attr: { id: name }"></th>
@@ -152,6 +157,11 @@
     <#if formatter?has_content>return (function(value) { ${formatter} })($parents[${step}]);</#if>
 </#macro>
 
+<#macro column_title_formatter columnName step>
+    <#assign title_formatter = params['title_formatter_' + columnName?replace(':', '_')]!''>
+    <#if title_formatter?has_content>return (function(value) { ${title_formatter} })($parents[${step}]);</#if>
+</#macro>
+
 <#macro actionsHeader>
     <!-- ko with: $parent -->
         <!-- ko ifnot: protected() || resolve("node.impl.inViewMode") -->
@@ -201,4 +211,9 @@
 <#function has_column_formatter columnName>
     <#assign formatter = params['formatter_' + columnName?replace(':', '_')]!''>
     <#return formatter?has_content />
+</#function>
+
+<#function has_column_title_formatter columnName>
+    <#assign title_formatter = params['title_formatter_' + columnName?replace(':', '_')]!''>
+    <#return title_formatter?has_content />
 </#function>
