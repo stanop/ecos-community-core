@@ -52,7 +52,7 @@
                                 <#else>
                                     <th data-bind="text: ko.computed(function() {
                                         return $parent.attribute('${column}').title() ?
-                                            $parent.attribute('${column}').title() : 'no-title';
+                                            $parent.attribute('${column}').title() : Alfresco.util.message('no-title');
                                     })"></th>
                                 </#if>
                             <!-- /ko -->
