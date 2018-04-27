@@ -407,7 +407,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         return query;
     }
 
-    function evalCriteria(criteria, model, pagination) {
+    function evalCriteria(criteria, model, pagination, journalId) {
         var cache = model.cache;
         if(_.isUndefined(cache.result)) {
             cache.result = ko.observable(null);
@@ -433,18 +433,69 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             searchScriptUrl = selectedSearchScript ? searchScripts[selectedSearchScript] : searchScripts["criteria-search"];
 
         cache.query = query;
-        Alfresco.util.Ajax.jsonPost({
-            url: Alfresco.constants.PROXY_URI + searchScriptUrl,
-            dataObj: query,
-            successCallback: {
-                fn: function(response) {
-                    var result = response.json.results;
-                    result.pagination = response.json.paging;
-                    result.query = response.json.query;
-                    cache.result(result);
+
+        if (journalId) {
+
+            var queryData = {
+                query: JSON.stringify(query),
+                pageInfo: {
+                    sortBy: query.sortBy || [],
+                    skipCount: query.skipCount || 0,
+                    maxItems: query.maxItems || 10
                 }
-            }
-        });
+            };
+
+            Alfresco.util.Ajax.jsonPost({
+                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journalId,
+                dataObj: queryData,
+                successCallback: {
+                    scope: this,
+                    fn: function(response) {
+                        var data = response.json.data.journal.recordsConnection, self = this,
+                            records = data.records;
+
+                        var results = _.map(records, function(node) {
+                            var record = {attributes: {}};
+                            for (var key in node) {
+                                var item = node[key];
+                                if (key === "id") {
+                                    record['nodeRef'] = item;
+                                } else {
+                                    record.attributes[item.name] = item && item.val ? item.val.map(function (v) {
+                                        return v.data;
+                                    }) : [];
+                                }
+                            }
+                            return record;
+                        });
+
+                        results.pagination = {
+                            hasMore: data.pageInfo.hasNextPage,
+                            maxItems: data.pageInfo.maxItems,
+                            skipCount: data.pageInfo.skipCount,
+                            totalCount: data.totalCount,
+                            totalItems: data.totalCount
+                        };
+
+                        cache.result(results);
+                    }
+                }
+            });
+
+        } else {
+            Alfresco.util.Ajax.jsonPost({
+                url: Alfresco.constants.PROXY_URI + searchScriptUrl,
+                dataObj: query,
+                successCallback: {
+                    fn: function(response) {
+                        var result = response.json.results;
+                        result.pagination = response.json.paging;
+                        result.query = response.json.query;
+                        cache.result(result);
+                    }
+                }
+            });
+        }
 
         return undefined;
     }
@@ -1485,7 +1536,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             read: function() { return this.convertValue(this.invariantOptions(), true); },
             pure: true
         })
-        .method('filterOptions', function(criteria, pagination) {
+        .method('filterOptions', function(criteria, pagination, journalId) {
             if (this.irrelevant()) return [];
 
             // find invariant with correct query
@@ -1500,7 +1551,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if(optionsInvariant == null) return [];
             if(optionsInvariant.language() != "criteria") return this.options();
 
-            var options = evalCriteria(_.union(optionsInvariant.expression(), criteria), model, pagination);
+            var options = evalCriteria(_.union(optionsInvariant.expression(), criteria), model, pagination, journalId);
             if (options != null) {
                 var optionsWithConvertedValues = this.convertValue(options, true);
                 if (options.pagination) optionsWithConvertedValues.pagination = options.pagination;

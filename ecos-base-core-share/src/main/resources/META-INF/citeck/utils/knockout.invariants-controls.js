@@ -963,7 +963,7 @@ ko.bindingHandlers.journalControl = {
                             skipCount: skipCount(),
                             searchScript: searchScript,
                             sortBy: sortBy
-                        });
+                        }, params.journalType);
                         var config = nudeOptions.pagination, result;
 
                         var tempAdditionalOptions = additionalOptions();
