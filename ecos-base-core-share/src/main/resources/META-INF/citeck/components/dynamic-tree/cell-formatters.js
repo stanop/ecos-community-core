@@ -810,9 +810,12 @@
                     return parent.nodeName == parentNodeName ? parent : getParentElement(item.parent(), parentNodeName);
                 };
 
+                var htmlid = _.uniqueId("inline-form-"),
+                    taskId = oRecord._oData.taskId;
+
                 var checkMirror = function () {
                     Alfresco.util.Ajax.jsonGet({
-                        url: Alfresco.constants.PROXY_URI + "citeck/mirror-task/status?taskId=" + oRecord._oData.taskId,
+                        url: Alfresco.constants.PROXY_URI + "citeck/mirror-task/status?taskId=" + taskId,
                         successCallback: {
                             fn: function (response) {
                                 if (response.json.status == "Completed" && response.json.completionDate) {
@@ -844,39 +847,60 @@
                 };
                 this.subscribe('renderEvent', move, this, true);
 
-                var htmlid = _.uniqueId("inline-form-");
-                Alfresco.util.Ajax.request({
-                    url: Alfresco.constants.URL_SERVICECONTEXT + "citeck/form/inline?itemKind=task&itemId=" +
-                        oRecord._oData.taskId + "&formId=inline&submitType=json&htmlid=" + htmlid + "&showSubmitButton=false",
-                    execScripts: true,
+                Alfresco.util.Ajax.jsonGet({
+                    url: Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?taskId=" + taskId,
                     successCallback: {
-                        fn: function (response) {
-                            elCell.innerHTML = response.serverResponse.responseText;
-                            YAHOO.Bubbling.on("beforeFormRuntimeInit", function(layer, args) {
-                                if (Alfresco.util.hasEventInterest(htmlid + "-form", args))
-                                {
-                                    args[1].runtime.setAJAXSubmit(true, {
-                                        successCallback: {
-                                            scope: this,
-                                            fn: function(response) {
-                                                //setTimeout(function () { checkMirror() }, 1000);
-                                                YAHOO.Bubbling.fire("metadataRefresh");
-                                            }
-                                        },
-                                        failureCallback: {
-                                            scope: this,
-                                            fn: formatterScope.onFailure
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    },
-                    failureCallback: {
                         scope: this,
-                        fn: formatterScope.onFailure
+                        fn: function(response) {
+                            if(response.serverResponse.status == 200 && response.json.exists) { // form for flowable task
+                                Alfresco.util.Ajax.request({
+                                    method: "GET",
+                                    url: Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/node-view?formType=taskId&formKey=" + taskId + "&htmlid=" + htmlid,
+                                    execScripts: true,
+                                    successCallback: {
+                                        fn: function(response) {
+                                            elCell.innerHTML = response.serverResponse.responseText;
+                                        }
+                                    }
+                                });
+                            } else {
+                                Alfresco.util.Ajax.request({
+                                    url: Alfresco.constants.URL_SERVICECONTEXT + "citeck/form/inline?itemKind=task&itemId=" +
+                                    taskId + "&formId=inline&submitType=json&htmlid=" + htmlid + "&showSubmitButton=false",
+                                    execScripts: true,
+                                    successCallback: {
+                                        fn: function (response) {
+                                            elCell.innerHTML = response.serverResponse.responseText;
+                                            YAHOO.Bubbling.on("beforeFormRuntimeInit", function(layer, args) {
+                                                if (Alfresco.util.hasEventInterest(htmlid + "-form", args))
+                                                {
+                                                    args[1].runtime.setAJAXSubmit(true, {
+                                                        successCallback: {
+                                                            scope: this,
+                                                            fn: function(response) {
+                                                                //setTimeout(function () { checkMirror() }, 1000);
+                                                                YAHOO.Bubbling.fire("metadataRefresh");
+                                                            }
+                                                        },
+                                                        failureCallback: {
+                                                            scope: this,
+                                                            fn: formatterScope.onFailure
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    },
+                                    failureCallback: {
+                                        scope: this,
+                                        fn: formatterScope.onFailure
+                                    }
+                                });
+                            }
+                        }
                     }
                 });
+
             }
         },
         

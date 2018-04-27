@@ -283,25 +283,25 @@ ko.components.register("number", {
 
                 self.onClick = function (item) {
                     if (item.actionId) {
-                        var redirect = item.redirect ? item.redirect : "/share/page/journals2/list/tasks";
-                        switch (item.actionId) {
-                            case "submit":
-                                if (self.attribute.value() != item.value) {
-                                    self.attribute.value(item.value);
-                                    koutils.subscribeOnce(self.attribute.jsonValue, function () {
-                                        self.node.thisclass.save(self.node, function () {
-                                            window.location = redirect;
-                                        });
-                                    });
-                                } else {
-                                    self.node.thisclass.save(self.node, function () {
-                                        window.location = redirect;
-                                    });
-                                }
-                                break;
-                            case "cancel":
+                        var redirect = item.redirect ? item.redirect : (window.location.pathname.indexOf("card-details") == -1 ? "/share/page/journals2/list/tasks" : null),
+                            onRedirect = function () {
+                            if (redirect) {
                                 window.location = redirect;
-                                break;
+                            } else {
+                                YAHOO.Bubbling.fire("metadataRefresh");
+                            }
+                        };
+                        if (item.actionId == "submit") {
+                            if (self.attribute.value() != item.value) {
+                                self.attribute.value(item.value);
+                                koutils.subscribeOnce(self.attribute.jsonValue, function () {
+                                    self.node.thisclass.save(self.node, onRedirect);
+                                });
+                            } else {
+                                self.node.thisclass.save(self.node, onRedirect);
+                            }
+                        } else {
+                            onRedirect();
                         }
                     }
                 };
