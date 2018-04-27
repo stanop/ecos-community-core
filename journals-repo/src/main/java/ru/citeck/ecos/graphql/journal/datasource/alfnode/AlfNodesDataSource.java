@@ -1,5 +1,6 @@
 package ru.citeck.ecos.graphql.journal.datasource.alfnode;
 
+import com.google.common.collect.Lists;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
@@ -76,7 +77,13 @@ public class AlfNodesDataSource implements JournalDataSource {
 
     @Override
     public Optional<JournalAttributeInfoGql> getAttributeInfo(String attributeName) {
-        QName qName = QName.resolveToQName(namespaceService, attributeName);
-        return Optional.of(new AlfNodeAttributeInfo(qName, dictionaryService));
+        return Optional.of(new AlfNodeAttributeInfo(attributeName, namespaceService, dictionaryService));
+    }
+
+    @Override
+    public List<String> getDefaultAttributes() {
+        return Lists.newArrayList(AlfNodeRecord.ATTR_ASPECTS,
+                                  AlfNodeRecord.ATTR_IS_DOCUMENT,
+                                  AlfNodeRecord.ATTR_IS_CONTAINER);
     }
 }

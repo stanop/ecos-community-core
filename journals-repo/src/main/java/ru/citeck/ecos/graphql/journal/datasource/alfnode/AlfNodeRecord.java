@@ -5,9 +5,14 @@ import ru.citeck.ecos.graphql.journal.record.JournalAttributeGql;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 
+import java.util.Collections;
 import java.util.Optional;
 
 public class AlfNodeRecord implements JournalAttributeValueGql {
+
+    public static final String ATTR_ASPECTS = "attr:aspects";
+    public static final String ATTR_IS_DOCUMENT = "attr:isDocument";
+    public static final String ATTR_IS_CONTAINER = "attr:isContainer";
 
     private GqlAlfNode node;
     private GqlContext context;
@@ -23,13 +28,23 @@ public class AlfNodeRecord implements JournalAttributeValueGql {
     }
 
     @Override
-    public String disp() {
+    public String data() {
         return node.displayName();
     }
 
     @Override
     public Optional<JournalAttributeGql> attr(String name) {
-        return Optional.of(new AlfNodeAttribute(node.attribute(name), context));
+        AlfNodeAttribute attribute;
+        if (ATTR_ASPECTS.equals(name)) {
+            attribute = new AlfNodeAttribute(name, node.aspects(), context);
+        } else if (ATTR_IS_CONTAINER.equals(name)) {
+            attribute = new AlfNodeAttribute(name, Collections.singletonList(node.isContainer()), context);
+        } else if (ATTR_IS_DOCUMENT.equals(name)) {
+            attribute = new AlfNodeAttribute(name, Collections.singletonList(node.isDocument()), context);
+        } else {
+            attribute = new AlfNodeAttribute(node.attribute(name), context);
+        }
+        return Optional.of(attribute);
     }
 }
 

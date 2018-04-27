@@ -27,6 +27,8 @@ public class AlfNodeAttributeValue implements JournalAttributeValueGql {
             alfNode = context.getNode(value).orElse(null);
         } else if (value instanceof QName) {
             qName = context.getQName(value).orElse(null);
+        } else if (value instanceof GqlQName) {
+            qName = (GqlQName) value;
         }
         this.rawValue = value;
         this.context = context;
@@ -38,7 +40,7 @@ public class AlfNodeAttributeValue implements JournalAttributeValueGql {
     }
 
     @Override
-    public String disp() {
+    public String data() {
         if (alfNode != null) {
             return alfNode.displayName();
         } else if (qName != null) {

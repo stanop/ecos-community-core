@@ -758,13 +758,18 @@ Record
         var resAspectList = this.attributes()['attr:aspects'] || [];
         var aspectList = [];
         for (var i = 0; i < resAspectList.length; i++) {
-            aspectList.push(resAspectList[i].shortQName);
+            for (var attr in resAspectList[i]) {
+                aspectList.push(resAspectList[i][attr].val[0].data);
+            }
         }
         return aspectList;
     })
-    .property('isDocument', b)
-    .property('isContainer', b)
-
+    .computed('isDocument', function() {
+        return ((this.attributes()['attr:isDocument'] || [])[0] || {data: 'false'}).data == 'true';
+    })
+    .computed('isContainer', function() {
+        return ((this.attributes()['attr:isContainer'] || [])[0] || {data: 'false'}).data == 'true';
+    })
     .property('selected', b)
     .load('selected', function() { this.selected(false) })
 
@@ -775,7 +780,7 @@ Record
         if(this.isDocument() === false && this.isContainer() === false) {
             return false;
         }
-        return null;
+        return false;
     })
     .property('doclib', o) // document library record data
     .method('hasAspect', function(aspect) {
@@ -1027,7 +1032,7 @@ JournalsWidget
             } else if (labelByCode) {
                 formatter = formatters.transformUseLabel(labelByCode, formatter);
             } else {
-                formatter = formatters.dispFormatter();
+                formatter = formatters.dataFormatter();
             }
 
             return {
@@ -1699,7 +1704,7 @@ JournalsWidget
                             records: records,
                             skipCount: data.pageInfo.skipCount,
                             maxItems: data.pageInfo.maxItems,
-                            totalItems: data.totalItems,
+                            totalItems: data.totalCount,
                             hasMore: data.pageInfo.hasNextPage
                         });
                     }

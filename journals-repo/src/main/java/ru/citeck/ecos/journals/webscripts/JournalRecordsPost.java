@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.graphql.GraphQLService;
-import ru.citeck.ecos.graphql.journal.JournalGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeInfoGql;
 import ru.citeck.ecos.journals.JournalService;
@@ -64,10 +63,6 @@ public class JournalRecordsPost extends AbstractWebScript {
 
     private String generateGqlQuery(String journalId) {
 
-        JournalType journalType = journalService.getJournalType(journalId);
-        QName dataSourceKey = QName.createQName(null, journalType.getDataSource());
-        JournalDataSource dataSource = (JournalDataSource) serviceRegistry.getService(dataSourceKey);
-
         StringBuilder schemaBuilder = new StringBuilder();
         schemaBuilder.append(gqlBaseQuery).append(" ");
 
@@ -76,7 +71,16 @@ public class JournalRecordsPost extends AbstractWebScript {
 
         int attrCounter = 0;
 
-        for (QName attribute : journalType.getAttributes()) {
+        JournalType journalType = journalService.getJournalType(journalId);
+        QName dataSourceKey = QName.createQName(null, journalType.getDataSource());
+        JournalDataSource dataSource = (JournalDataSource) serviceRegistry.getService(dataSourceKey);
+
+        List<QName> attributes = new ArrayList<>(journalType.getAttributes());
+        for (String defaultAttr : dataSource.getDefaultAttributes()) {
+            attributes.add(QName.resolveToQName(namespaceService, defaultAttr));
+        }
+
+        for (QName attribute : attributes) {
 
             Map<String, String> attributeOptions = journalType.getAttributeOptions(attribute);
             String prefixedKey = attribute.toPrefixString(namespaceService);
@@ -108,12 +112,9 @@ public class JournalRecordsPost extends AbstractWebScript {
         String formatter = attributeOptions.get("formatter");
         formatter = formatter != null ? formatter : "";
 
-        List<String> innerFields = new ArrayList<>();
-        innerFields.add("disp");
+        StringBuilder schemaBuilder = new StringBuilder("name,val{");
 
-        if (formatter.contains("Link") || formatter.contains("nodeRef")) {
-            innerFields.add("id");
-        }
+        // attributes
 
         Set<String> attributesToLoad = new HashSet<>();
         if (info != null) {
@@ -134,20 +135,28 @@ public class JournalRecordsPost extends AbstractWebScript {
             attributesToLoad.add("classTitle");
         }
 
-        StringBuilder schemaBuilder = new StringBuilder("name,val{");
-
-        for (String field : innerFields) {
-            schemaBuilder.append(field).append(",");
-        }
-
         int attrCounter = 0;
         for (String attrName : attributesToLoad) {
             schemaBuilder.append("a")
-                         .append(attrCounter++)
-                         .append(":attr(name:\"")
-                         .append(attrName).append("\")")
-                         .append("{name val}")
-                         .append(",");
+                    .append(attrCounter++)
+                    .append(":attr(name:\"")
+                    .append(attrName).append("\")")
+                    .append("{name val{data}}")
+                    .append(",");
+        }
+
+        // inner fields
+        List<String> innerFields = new ArrayList<>();
+
+        if (formatter.contains("Link") || formatter.contains("nodeRef")) {
+            innerFields.add("id");
+            innerFields.add("data");
+        } else if (attributesToLoad.isEmpty()){
+            innerFields.add("data");
+        }
+
+        for (String field : innerFields) {
+            schemaBuilder.append(field).append(",");
         }
 
         schemaBuilder.append("}");

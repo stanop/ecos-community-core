@@ -49,11 +49,11 @@
             }
         },
 
-        dispFormatter: function() {
+        dataFormatter: function() {
             return this.multiple(function (elCell, oRecord, oColumn, oData) {
                 var value = null;
                 if (oData) {
-                    value = oData.hasOwnProperty('disp') ? oData.disp : oData;
+                    value = oData.hasOwnProperty('data') ? oData.data : oData;
                 }
                 elCell.innerHTML = value || "";
             });
@@ -136,7 +136,7 @@
             }
 
             return function(elCell, oRecord, oColumn, sData) {
-                var text = sData && sData.hasOwnProperty('disp') ? sData.disp : sData;
+                var text = sData && sData.hasOwnProperty('data') ? sData.data : sData;
                 if (!text) {
                     elCell.innerHTML = '';
                     return;
@@ -252,7 +252,7 @@
                     elCell.innerHTML = sData["cm:authorityDisplayName"] || sData["cm:authorityName"] || sData.displayName || "";
                     return;
                 }
-                elCell.innerHTML = (sData.hasOwnProperty("disp") ? sData.disp : sData) ||
+                elCell.innerHTML = (sData.hasOwnProperty('data') ? sData.data : sData) ||
                                    (sData.displayName ? sData.displayName.value || sData.displayName : "");
             };
         },
@@ -385,20 +385,21 @@
 
         labelByCode: function(labels) {
             return function(el, oRecord, oColumn, sData) {
-                var value = sData && sData.hasOwnProperty('disp') ? sData.disp : sData;
+                var value = sData && sData.hasOwnProperty('data') ? sData.data : sData;
                 return labels[value] || value || "";
             }
         },
         _code: function(labelByCode, tdClassPrefix, trClassPrefix) {
             return function(el, oRecord, oColumn, sData) {
                 var td = el.parentElement,
-                    tr = td.parentElement;
+                    tr = td.parentElement,
+                    data = sData && sData.hasOwnProperty('data') ? sData.data : sData;
                 el.innerHTML = labelByCode(el, oRecord, oColumn, sData);
                 if(tdClassPrefix) {
-                    Dom.addClass(td, tdClassPrefix + sData);
+                    Dom.addClass(td, tdClassPrefix + data);
                 }
                 if(trClassPrefix) {
-                    Dom.addClass(tr, trClassPrefix + sData);
+                    Dom.addClass(tr, trClassPrefix + data);
                 }
             }
         },
@@ -469,7 +470,8 @@
                         "2": "medium",
                         "3": "low"
                     },
-                    priority = codes[sData] || null;
+                    value = sData && sData.hasOwnProperty('data') ? sData.data : sData;
+                    priority = codes[value] || null;
                 if(priority) {
                     elCell.innerHTML = '<span class="priority-' + priority + '" title="' + Alfresco.util.message('priority.' + priority) + '"></span>';
                 } else {
@@ -638,14 +640,14 @@
                         sData = {
                             data: sData,
                             nodeRef: oRecord._oData.nodeRef,
-                            displayName: sData.disp
+                            displayName: sData.data
                         };
                     } else {
                         if (!sData.hasOwnProperty('nodeRef')) {
                             sData['nodeRef'] = sData['id'];
                         }
                         if (!sData.hasOwnProperty('displayName')) {
-                            sData['displayName'] = sData['disp'];
+                            sData['displayName'] = sData['data'];
                         }
                     }
                     var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, sData));
@@ -676,10 +678,11 @@
             return function (elCell, oRecord, oColumn, sData) {
                 var label;
                 if (formatter) {
-                    label = formatter.apply(this, arguments);
+                    formatter.apply(this, arguments);
+                    label = elCell.innerHTML;
                 }
                 if (!label && sData) {
-                    label = sData.hasOwnProperty("disp") ? sData.disp : sData;
+                    label = sData.hasOwnProperty('data') ? sData.data : sData;
                 }
                 if (!label) {
                     label = Alfresco.util.message("label.none");

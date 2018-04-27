@@ -10,24 +10,35 @@ import java.util.stream.Collectors;
 
 public class AlfNodeAttribute implements JournalAttributeGql {
 
+    private String name;
     private Attribute attribute;
     private GqlContext context;
+    private List<?> values;
 
     public AlfNodeAttribute(Attribute attribute, GqlContext context) {
         this.attribute = attribute;
+        this.context = context;
+        this.name = attribute.name();
+    }
+
+    public AlfNodeAttribute(String name, List<?> values, GqlContext context) {
+        this.name = name;
+        this.values = values;
         this.context = context;
     }
 
     @Override
     public String name() {
-        return attribute.name();
+        return name;
     }
 
     @Override
     public List<JournalAttributeValueGql> val() {
-        return attribute.getValues()
-                        .stream()
-                        .map(v -> new AlfNodeAttributeValue(v, context))
-                        .collect(Collectors.toList());
+        if (values == null) {
+            values = attribute.getValues();
+        }
+        return values.stream()
+                     .map(v -> new AlfNodeAttributeValue(v, context))
+                     .collect(Collectors.toList());
     }
 }

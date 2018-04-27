@@ -11,7 +11,7 @@ public interface JournalAttributeValueGql {
     String id();
 
     @GraphQLField
-    String disp();
+    String data();
 
     @GraphQLField
     Optional<JournalAttributeGql> attr(@GraphQLName("name") String name);
