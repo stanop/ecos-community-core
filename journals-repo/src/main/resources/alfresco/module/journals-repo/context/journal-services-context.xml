@@ -41,9 +41,9 @@
         </property>
     </bean>
 
-    <bean name="ecos.journals.datasource.AlfNodes" class="ru.citeck.ecos.graphql.journal.datasource.alfnode.AlfNodesDataSource">
-    </bean>
-    <bean name="ecos.journals.datasource.TestSource" class="ru.citeck.ecos.graphql.journal.datasource.DbJournalDataSource">
+    <bean name="ecos.journals.datasource.AlfNodes" class="ru.citeck.ecos.graphql.journal.datasource.alfnode.AlfNodesDataSource" />
+
+    <!--<bean name="ecos.journals.datasource.TestSource" class="ru.citeck.ecos.graphql.journal.datasource.DbJournalDataSource">
         <property name="dataSource" ref="ecos.journals.datasource.TestDbConn" />
         <property name="sqlQuery" value="SELECT * FROM house LIMIT :maxItems OFFSET :skipCount" />
     </bean>
@@ -53,6 +53,6 @@
         <property name="url" value="jdbc:postgresql://uni-release.citeck.ru:5432/fiasdb" />
         <property name="username" value="alfresco" />
         <property name="password" value="Enterpr15e1" />
-    </bean>
+    </bean>-->
 
 </beans>
