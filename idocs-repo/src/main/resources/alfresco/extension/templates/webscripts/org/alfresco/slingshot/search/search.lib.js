@@ -1313,7 +1313,7 @@ function getSearchResults(params)
       }
 
       fqs.push('-TYPE:"cm:thumbnail" AND -TYPE:"cm:failedThumbnail" AND -TYPE:"cm:rating" AND -TYPE:"st:site"' +
-               ' AND -ASPECT:"st:siteContainer" AND -ASPECT:"sys:hidden" AND -cm:creator:system AND -QNAME:comment\\-*');
+               ' AND -ASPECT:"st:siteContainer" AND -ASPECT:"sys:hidden" AND -QNAME:comment\\-*');
 
 
       // sort field - expecting field to in one of the following formats:
