@@ -43,6 +43,7 @@
         <property name="className" value="orders:internal"/>
         <property name="allowedProperties">
             <list>
+                <value>cm:content</value>
                 <value>idocs:initiator</value>
                 <value>idocs:appendixPagesNumber</value>
                 <value>idocs:pagesNumber</value>
@@ -53,7 +54,6 @@
                 <value>idocs:performer</value>
                 <value>idocs:signatory</value>
                 <value>idocs:registrator</value>
-
                 <value>orders:creationDate</value>
                 <value>orders:header</value>
                 <value>orders:fingerboard</value>
@@ -62,11 +62,8 @@
                 <value>orders:branch</value>
                 <value>orders:expirationDate</value>
                 <value>orders:fileCode</value>
-
                 <value>tk:kind</value>
-
                 <value>dms:updateContent</value>
-
                 <value>icase:documents</value>
             </list>
         </property>
