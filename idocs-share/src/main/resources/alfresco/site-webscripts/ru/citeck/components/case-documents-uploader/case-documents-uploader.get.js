@@ -17,7 +17,7 @@
   if (args.intermediateDialogFormId) model.intermediateDialogFormId = args.intermediateDialogFormId;
 
   var icase_documents_permissions = getPermission(args.nodeRef, "icase:documents");
-  model.documentUploadPermission = icase_documents_permissions ? icase_documents_permissions.editable : false;
+  model.documentUploadPermission = icase_documents_permissions ? icase_documents_permissions.editable : true;
 
 })();
 
