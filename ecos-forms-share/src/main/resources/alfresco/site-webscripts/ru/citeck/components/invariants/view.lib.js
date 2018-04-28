@@ -48,14 +48,7 @@ function getAttributeSet(args, view) {
         if (element.type == "field") {
             var attribute = {
                 template: element.template,
-                name: element.attribute,
-                info: {
-                    name: element.attribute,
-                    type: element.fieldType,
-                    nodetype: element.nodetype,
-                    datatype: element.datatype,
-                    javaclass: element.javaclass
-                }
+                name: element.attribute
             };
             attributeSet.attributes.push(attribute);
         } else if (element.type == "view") {

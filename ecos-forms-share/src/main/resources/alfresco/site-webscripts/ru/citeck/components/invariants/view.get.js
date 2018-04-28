@@ -11,6 +11,16 @@
         attributeSet = getAttributeSet(args, view),
         attributes = getAttributes(view), 
         attributeNames = map(attributes, function(attr) { return attr.attribute; }),
+        attributesInfo = map(attributes, function (attr) {
+            var params = attr.params || {};
+            return {
+                name: attr.attribute,
+                type: attr.fieldType,
+                nodetype: attr.nodetype,
+                datatype: attr.datatype,
+                javaclass: params.javaclass || attr.javaclass
+            };
+        }),
         viewNodeRef = viewData.nodeRef;
 
     var writePermission = false,
@@ -69,6 +79,7 @@
 
     model.attributeSet = attributeSet;
     model.attributeNames = attributeNames;
+    model.attributesInfo = attributesInfo;
 
     model.canBeDraft = viewData.canBeDraft;
 

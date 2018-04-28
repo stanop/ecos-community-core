@@ -342,6 +342,7 @@
 						formKey: "${formKey}",
 						<#if classNames?has_content>classNames: <@views.renderQNames classNames />,</#if>
 						<#if attributeNames?has_content>viewAttributeNames: <@views.renderValue attributeNames />,</#if>
+						<#if attributesInfo?has_content>viewAttributesInfo: <@views.renderValue attributesInfo />,</#if>
 
 						_set: <@views.renderValue attributeSet />,
 						_invariants: <@views.renderInvariants invariants />,

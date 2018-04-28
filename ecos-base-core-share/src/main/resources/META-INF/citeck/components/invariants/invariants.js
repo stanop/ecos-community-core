@@ -27,6 +27,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         b = Boolean,
         d = Date,
         o = Object,
+        JsonObject = koclass('invariants.JsonObject'),
+        JsonObjectImpl = koclass('invariants.JsonObjectImpl'),
+        JsonObjectAttr = koclass('invariants.JsonObjectAttr'),
         InvariantScope = koclass('invariants.InvariantScope'),
         Invariant = koclass('invariants.Invariant'),
         InvariantSet = koclass('invariants.InvariantSet'),
@@ -161,6 +164,35 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             load.call(this);
         })
     ;
+
+    JsonObjectImpl
+        .property('data', JsonObject)
+        .computed('attribute', function (name) {
+            var attrs = this.data.attributes();
+            for (var i = 0; i < attrs.length; i++) {
+                if (attrs[i].name == name) {
+                    return attrs[i];
+                }
+                return null;
+            }
+        });
+
+    JsonObjectAttr
+        .property('name', s)
+        .constant('multiple', true)
+        .property('val', [o])
+        .computed('value', function() {
+            return this.val().map(function (v) { return v.disp; });
+        });
+
+    JsonObject
+        .key('id', s)
+        .property('attributes', [JsonObjectAttr])
+        .computed('impl', function() {
+            var obj = new JsonObjectImpl();
+            obj.data(this);
+            return obj;
+        });
 
     DDClass
         .key('name', s)
@@ -853,7 +885,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         'org.alfresco.service.namespace.QName': QName,
         'org.alfresco.service.cmr.repository.ContentData': Content,
         'org.alfresco.util.VersionNumber': s,
-        'org.alfresco.service.cmr.repository.Period': s
+        'org.alfresco.service.cmr.repository.Period': s,
+        'com.fasterxml.jackson.databind.node.ObjectNode': JsonObject
     };
 
     var datatypeClassMapping = {
@@ -1329,13 +1362,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if(_.isArray(value)) return _.map(value, this.getValueText, this);
 
             var valueClass = this.valueClass();
-            if(valueClass == null) return "" + value;
-            if(valueClass == o) return value.toString();
-            if(valueClass == s) return "" + value;
-            if(valueClass == b) return value ? "true" : "false";
-            if(valueClass == Node) return value.nodeRef;
-            if(valueClass == QName) return value.shortQName();
-            if(valueClass == Content) return value.content;
+            if (valueClass == null) return "" + value;
+            if (valueClass == o) return value.toString();
+            if (valueClass == s) return "" + value;
+            if (valueClass == b) return value ? "true" : "false";
+            if (valueClass == Node) return value.nodeRef;
+            if (valueClass == QName) return value.shortQName();
+            if (valueClass == Content) return value.content;
+            if (valueClass == JsonObject) return JSON.stringify(value);
 
             var datatype = this.datatype();
             if(valueClass == n) {
@@ -1390,14 +1424,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if(_.isArray(value)) return _.map(value, this.getValueJSON, this);
 
             var valueClass = this.valueClass();
-            if(valueClass == null) return null;
-            if(valueClass == o) return value.toString();
-            if(valueClass == s) return "" + value;
-            if(valueClass == n) return value.toString();
-            if(valueClass == b) return value ? true : false;
-            if(valueClass == Node) return value.nodeRef;
-            if(valueClass == QName) return value.shortQName();
-            if(valueClass == Content) return value.impl().jsonValue();
+            if (valueClass == null) return null;
+            if (valueClass == o) return value.toString();
+            if (valueClass == s) return "" + value;
+            if (valueClass == n) return value.toString();
+            if (valueClass == b) return value ? true : false;
+            if (valueClass == Node) return value.nodeRef;
+            if (valueClass == QName) return value.shortQName();
+            if (valueClass == Content) return value.impl().jsonValue();
+            if (valueClass == JsonObject) return value;
 
             var datatype = this.datatype();
             if(valueClass == n) {
@@ -1618,6 +1653,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('permissions', o)
         .property('inSubmitProcess', b)
         .property('viewAttributeNames', [ s ])
+        .property('viewAttributesInfo', [ AttributeInfo ])
         .property('unviewAttributeNames', [ s ])
         .property('defaultAttributeNames', [ s ])
         .property('defaultModel', DefaultModel)
@@ -1735,27 +1771,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     return attributes;
                 }
 
-                var findAttrInfo = function (name) {
-                    var attributeSet = node.impl().attributeSet();
-                    if (attributeSet) {
-                        var attributesData = attributeSet._attributes();
-                        var attData = _.find(attributesData, function (att) {
-                            return att.name == name;
-                        });
-                        return attData ? attData.info : null;
-                    }
-                    return null;
-                };
-
                 _.each(validAttributeNames, function(name) {
                     if(!createdNames[name]) {
                         createdNames[name] = true;
-                        var attribute = new Attribute(node, name);
-                        var info = findAttrInfo(name);
-                        if (info) {
-                            attribute.setModel({info: info});
-                        }
-                        attributes.push(attribute);
+                        attributes.push(new Attribute(node, name));
                     }
                 });
 
