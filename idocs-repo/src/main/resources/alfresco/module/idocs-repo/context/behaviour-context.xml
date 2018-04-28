@@ -795,5 +795,12 @@
         <property name="authenticationService" ref="AuthenticationService" />
     </bean>
 
+    <bean id="idocs.productsAndServices.nameBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="pas:pasEntityCopied"/>
+        <property name="nameTemplate"
+                  value="#{'$'}{node.properties['cm:title']}"/>
+        <property name="order" value="40"/>
+    </bean>
+
 </beans>
 
