@@ -228,6 +228,7 @@
 				<aspect>contracts:closingDocumentExtend</aspect>
 				<aspect>contracts:hasContractor</aspect>
 				<aspect>invariants:draftAspect</aspect>
+				<aspect>idocs:lifeCycle</aspect>
 			</mandatory-aspects>
 		</type>
 

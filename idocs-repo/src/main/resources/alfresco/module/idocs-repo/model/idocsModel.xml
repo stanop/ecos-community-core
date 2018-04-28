@@ -169,7 +169,6 @@
                 <aspect>idocs:hasSummary</aspect>
                 <aspect>idocs:hasController</aspect>
                 <aspect>idocs:hasNote</aspect>
-                <aspect>idocs:lifeCycle</aspect>
                 <aspect>tk:documentTypeKind</aspect>
                 <aspect>history:historical</aspect>
             </mandatory-aspects>
