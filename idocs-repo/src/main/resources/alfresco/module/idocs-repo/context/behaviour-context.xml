@@ -797,8 +797,9 @@
 
     <bean id="idocs.productsAndServices.nameBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="pas:pasEntityCopied"/>
-        <property name="nameTemplate"
-                  value="#{'$'}{node.properties['cm:title']}"/>
+        <property name="nameTemplate">
+            <value><![CDATA[#{'$'}{node.properties['cm:title']!'no-name'}]]></value>
+        </property>
         <property name="order" value="40"/>
     </bean>
 
