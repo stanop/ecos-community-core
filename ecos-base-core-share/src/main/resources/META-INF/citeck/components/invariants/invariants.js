@@ -167,26 +167,40 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
 
     JsonObjectImpl
         .property('data', JsonObject)
-        .computed('attribute', function (name) {
-            var attrs = this.data.attributes();
+        .method('attribute', function(name) {
+            var attrs = this.data().attributes();
             for (var i = 0; i < attrs.length; i++) {
-                if (attrs[i].name == name) {
+                if (attrs[i].name() == name) {
                     return attrs[i];
                 }
-                return null;
             }
+            return null;
         });
 
     JsonObjectAttr
         .property('name', s)
-        .constant('multiple', true)
-        .property('val', [o])
-        .computed('value', function() {
-            return this.val().map(function (v) { return v.disp; });
-        });
+        .property('value', [o])
+        .constant('multiple', true);
 
     JsonObject
-        .key('id', s)
+        .key('nodeRef', s)
+        .constructor([ String ], function (modelStr) {
+            this.setModel(JSON.parse(modelStr));
+        }, true)
+        .constructor([ Object ], function (model) {
+            var attributes = [];
+            for (var key in model.attributes) {
+                if (model.attributes.hasOwnProperty(key)) {
+                    attributes.push({
+                        name: key,
+                        value: model.attributes[key]
+                    });
+                }
+            }
+            model.attributes = attributes;
+            this.setModel(model);
+        }, true)
+        .shortcut('id', 'nodeRef')
         .property('attributes', [JsonObjectAttr])
         .computed('impl', function() {
             var obj = new JsonObjectImpl();
@@ -489,13 +503,36 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                         var results = _.map(records, function(node) {
                             var record = {attributes: {}};
                             for (var key in node) {
+                                if (!node.hasOwnProperty(key)) {
+                                    continue;
+                                }
                                 var item = node[key];
                                 if (key === "id") {
                                     record['nodeRef'] = item;
                                 } else {
-                                    record.attributes[item.name] = item && item.val ? item.val.map(function (v) {
-                                        return v.data;
-                                    }) : [];
+                                    record.attributes[item.name] = (item.val || []).map(function (it) {
+                                        if (it.data) {
+                                            return it.data;
+                                        } else {
+                                            var result = [];
+                                            for (var itKey in it) {
+                                                if (!it.hasOwnProperty(itKey)) {
+                                                    continue;
+                                                }
+                                                var itValue = it[itKey];
+                                                if (itValue && itValue.name) {
+                                                    var objValue = {};
+                                                    if (itValue.val && itValue.val.length) {
+                                                        objValue[itValue.name] = itValue.val[0].data;
+                                                    } else {
+                                                        objValue[itValue.name] = [];
+                                                    }
+                                                    result.push(objValue);
+                                                }
+                                            }
+                                            return result;
+                                        }
+                                    });
                                 }
                             }
                             return record;
@@ -1369,7 +1406,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (valueClass == Node) return value.nodeRef;
             if (valueClass == QName) return value.shortQName();
             if (valueClass == Content) return value.content;
-            if (valueClass == JsonObject) return JSON.stringify(value);
+            if (valueClass == JsonObject) return JSON.stringify(value.getModel());
 
             var datatype = this.datatype();
             if(valueClass == n) {
@@ -1432,7 +1469,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if (valueClass == Node) return value.nodeRef;
             if (valueClass == QName) return value.shortQName();
             if (valueClass == Content) return value.impl().jsonValue();
-            if (valueClass == JsonObject) return value;
+            if (valueClass == JsonObject) return JSON.stringify(value.getModel());
 
             var datatype = this.datatype();
             if(valueClass == n) {
@@ -1583,10 +1620,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     } else { return true }
                 });
 
-            if(optionsInvariant == null) return [];
-            if(optionsInvariant.language() != "criteria") return this.options();
+            if (optionsInvariant && optionsInvariant.language != "criteria") {
+                return this.options();
+            }
 
-            var options = evalCriteria(_.union(optionsInvariant.expression(), criteria), model, pagination, journalId);
+            var expression = optionsInvariant && optionsInvariant.expression ? optionsInvariant.expression() : [];
+
+            var options = evalCriteria(_.union(expression, criteria), model, pagination, journalId);
             if (options != null) {
                 var optionsWithConvertedValues = this.convertValue(options, true);
                 if (options.pagination) optionsWithConvertedValues.pagination = options.pagination;

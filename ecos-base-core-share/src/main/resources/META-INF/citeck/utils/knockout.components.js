@@ -667,7 +667,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                         break;
                                     }
                                 }
-                                if (attr && attr.labels && attr.labels()) assemblyValues.push(attr.labels()[value]);
+                                if (attr && attr.labels && attr.labels()) {
+                                    var labelValue = attr.labels()[value];
+                                    assemblyValues.push(labelValue || value);
+                                }
                             } else {
                                 assemblyValues.push(value);
                             }
