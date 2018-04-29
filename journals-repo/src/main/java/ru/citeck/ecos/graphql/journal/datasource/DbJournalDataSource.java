@@ -36,7 +36,7 @@ public class DbJournalDataSource implements JournalDataSource {
             for (int columnIdx = 1; columnIdx < metaData.getColumnCount(); columnIdx++) {
                 attributes.put("cm:" + metaData.getColumnName(columnIdx), resultSet.getString(columnIdx));
             }
-            return new RecordValue(i, attributes);
+            return new RecordValue("" + hashCode() + pageInfo.getSkipCount() + i, attributes);
         });
 
         JournalRecordsConnection connection = new JournalRecordsConnection();
@@ -68,10 +68,10 @@ public class DbJournalDataSource implements JournalDataSource {
 
     private class RecordValue implements JournalAttributeValueGql {
 
-        private int id;
+        private String id;
         private Map<String, String> attributes;
 
-        public RecordValue(int id, Map<String, String> attributes) {
+        public RecordValue(String id, Map<String, String> attributes) {
             this.id = id;
             this.attributes = attributes;
         }
