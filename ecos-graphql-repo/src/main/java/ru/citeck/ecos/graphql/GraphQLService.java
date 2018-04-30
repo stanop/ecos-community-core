@@ -56,14 +56,17 @@ public class GraphQLService {
     }
 
     public ExecutionResult execute(String query) {
-        return execute(query, Collections.emptyMap());
+        return execute(query, null);
     }
 
     public ExecutionResult execute(String query, Map<String, Object> variables) {
+
+        Map<String, Object> notNullVars = variables != null ? variables : Collections.emptyMap();
+
         ExecutionInput input = ExecutionInput.newExecutionInput()
                                              .context(new GqlContext(serviceRegistry))
                                              .query(query)
-                                             .variables(variables)
+                                             .variables(notNullVars)
                                              .build();
         return graphQL.execute(input);
     }

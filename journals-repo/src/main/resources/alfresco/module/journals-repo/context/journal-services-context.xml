@@ -41,4 +41,18 @@
         </property>
     </bean>
 
+    <bean name="ecos.journals.datasource.AlfNodes" class="ru.citeck.ecos.graphql.journal.datasource.alfnode.AlfNodesDataSource" />
+
+    <!--<bean name="ecos.journals.datasource.TestSource" class="ru.citeck.ecos.graphql.journal.datasource.DbJournalDataSource">
+        <property name="dataSource" ref="ecos.journals.datasource.TestDbConn" />
+        <property name="sqlQuery" value="SELECT * FROM addrob LIMIT :maxItems OFFSET :skipCount" />
+    </bean>
+
+    <bean id="ecos.journals.datasource.TestDbConn" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${journals.test.db.driver}" />
+        <property name="url" value="${journals.test.db.url}" />
+        <property name="username" value="${journals.test.db.username}" />
+        <property name="password" value="${journals.test.db.password}" />
+    </bean>-->
+
 </beans>

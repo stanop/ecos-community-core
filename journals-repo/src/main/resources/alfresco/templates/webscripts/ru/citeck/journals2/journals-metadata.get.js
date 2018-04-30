@@ -14,7 +14,8 @@ for(var i = 0; i < atrList.length; i++) {
         dataType = "",
         name = "",
         displayLabels = {},
-        atrQName = Packages.org.alfresco.service.namespace.QName.createQName(utils.longQName(atrList[i])),
+        attrName = atrList[i],
+        atrQName = Packages.org.alfresco.service.namespace.QName.createQName(utils.longQName(attrName)),
         nodetype = "",
         journalTypeId = "",
         propDef = dictionaryService.getProperty(atrQName),
@@ -64,6 +65,10 @@ for(var i = 0; i < atrList.length; i++) {
             var attrDef = scriptAttributes.getAttributeDefinition(atrQName);
             type = "property";
             name = attrDef.getTitle();
+            dataType = "text";
+        } else {
+            type = "property";
+            name = attrName;
             dataType = "text";
         }
     }

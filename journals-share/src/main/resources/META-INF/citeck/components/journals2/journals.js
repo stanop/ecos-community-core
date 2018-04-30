@@ -755,16 +755,21 @@ Record
     .property('attributes', o)
     .property('permissions', o)
     .computed('aspects', function() {
-        var resAspectList = this.attributes()['attr:aspects'];
+        var resAspectList = this.attributes()['attr:aspects'] || [];
         var aspectList = [];
         for (var i = 0; i < resAspectList.length; i++) {
-            aspectList.push(resAspectList[i].shortQName);
+            for (var attr in resAspectList[i]) {
+                aspectList.push(resAspectList[i][attr].val[0].data);
+            }
         }
         return aspectList;
     })
-    .property('isDocument', b)
-    .property('isContainer', b)
-
+    .computed('isDocument', function() {
+        return ((this.attributes()['attr:isDocument'] || [])[0] || {data: 'false'}).data == 'true';
+    })
+    .computed('isContainer', function() {
+        return ((this.attributes()['attr:isContainer'] || [])[0] || {data: 'false'}).data == 'true';
+    })
     .property('selected', b)
     .load('selected', function() { this.selected(false) })
 
@@ -775,7 +780,7 @@ Record
         if(this.isDocument() === false && this.isContainer() === false) {
             return false;
         }
-        return null;
+        return false;
     })
     .property('doclib', o) // document library record data
     .method('hasAspect', function(aspect) {
@@ -1026,6 +1031,8 @@ JournalsWidget
                 formatter = formatters.multiple(formatter);
             } else if (labelByCode) {
                 formatter = formatters.transformUseLabel(labelByCode, formatter);
+            } else {
+                formatter = formatters.dataFormatter();
             }
 
             return {
@@ -1493,7 +1500,7 @@ JournalsWidget
         },
 
         removeRecord: function(record) {
-            if(!record.nodeRef()) return;
+            if(!record.id()) return;
             this._removeRecord(record);
         },
 
@@ -1640,7 +1647,7 @@ JournalsWidget
             }
 
             var filter = this.currentFilter();
-            if(!filter) {
+            if (!filter) {
                 logger.debug("Filter is not loaded, deferring search");
                 koutils.subscribeOnce(this.currentFilter, load, this);
                 return;
@@ -1660,30 +1667,45 @@ JournalsWidget
                 return _.extend(query, criterion.query());
             }, {});
 
-            query.sortBy = this.sortByQuery();
-            query.skipCount = this.skipCount() || 0;
-            query.maxItems = this.maxItems() || this.defaultMaxItems() || 10;
-
-            var queryString = JSON.stringify(query);
-
-            logger.info("Loading records with query: " + queryString);
+            var queryData = {
+                query: JSON.stringify(query),
+                pageInfo: {
+                    sortBy: this.sortByQuery(),
+                    skipCount: this.skipCount() || 0,
+                    maxItems: this.maxItems() || this.defaultMaxItems() || 10
+                }
+            };
 
             Alfresco.util.Ajax.jsonPost({
                 url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journal.type().id(),
-                dataObj: query,
+                dataObj: queryData,
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        var data = response.json, self = this;
+                        var data = response.json.data.journal.recordsConnection, self = this,
+                            records = data.records;
+
+                        records = _.map(records, function(node) {
+                            var record = {attributes: {}};
+                            for (var key in node) {
+                                var item = node[key];
+                                if (key === "id") {
+                                    record['nodeRef'] = item;
+                                } else {
+                                    record.attributes[item.name] = item ? item.val : [];
+                                }
+                            }
+                            return record;
+                        });
 
                         customRecordLoader(new Citeck.utils.DoclibRecordLoader(self.actionGroupId()));
 
                         this.model({
-                            records: data.results,
-                            skipCount: data.paging.skipCount,
-                            maxItems: data.paging.maxItems,
-                            totalItems: data.paging.totalItems,
-                            hasMore: data.paging.hasMore
+                            records: records,
+                            skipCount: data.pageInfo.skipCount,
+                            maxItems: data.pageInfo.maxItems,
+                            totalItems: data.totalCount,
+                            hasMore: data.pageInfo.hasNextPage
                         });
                     }
                 }

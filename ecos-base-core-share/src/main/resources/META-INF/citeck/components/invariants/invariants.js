@@ -27,6 +27,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         b = Boolean,
         d = Date,
         o = Object,
+        JsonObject = koclass('invariants.JsonObject'),
+        JsonObjectImpl = koclass('invariants.JsonObjectImpl'),
+        JsonObjectAttr = koclass('invariants.JsonObjectAttr'),
         InvariantScope = koclass('invariants.InvariantScope'),
         Invariant = koclass('invariants.Invariant'),
         InvariantSet = koclass('invariants.InvariantSet'),
@@ -161,6 +164,49 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             load.call(this);
         })
     ;
+
+    JsonObjectImpl
+        .property('data', JsonObject)
+        .method('attribute', function(name) {
+            var attrs = this.data().attributes();
+            for (var i = 0; i < attrs.length; i++) {
+                if (attrs[i].name() == name) {
+                    return attrs[i];
+                }
+            }
+            return null;
+        });
+
+    JsonObjectAttr
+        .property('name', s)
+        .property('value', [o])
+        .constant('multiple', true);
+
+    JsonObject
+        .key('nodeRef', s)
+        .constructor([ String ], function (modelStr) {
+            this.setModel(JSON.parse(modelStr));
+        }, true)
+        .constructor([ Object ], function (model) {
+            var attributes = [];
+            for (var key in model.attributes) {
+                if (model.attributes.hasOwnProperty(key)) {
+                    attributes.push({
+                        name: key,
+                        value: model.attributes[key]
+                    });
+                }
+            }
+            model.attributes = attributes;
+            this.setModel(model);
+        }, true)
+        .shortcut('id', 'nodeRef')
+        .property('attributes', [JsonObjectAttr])
+        .computed('impl', function() {
+            var obj = new JsonObjectImpl();
+            obj.data(this);
+            return obj;
+        });
 
     DDClass
         .key('name', s)
@@ -407,7 +453,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         return query;
     }
 
-    function evalCriteria(criteria, model, pagination) {
+    function evalCriteria(criteria, model, pagination, journalId) {
         var cache = model.cache;
         if(_.isUndefined(cache.result)) {
             cache.result = ko.observable(null);
@@ -433,18 +479,92 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             searchScriptUrl = selectedSearchScript ? searchScripts[selectedSearchScript] : searchScripts["criteria-search"];
 
         cache.query = query;
-        Alfresco.util.Ajax.jsonPost({
-            url: Alfresco.constants.PROXY_URI + searchScriptUrl,
-            dataObj: query,
-            successCallback: {
-                fn: function(response) {
-                    var result = response.json.results;
-                    result.pagination = response.json.paging;
-                    result.query = response.json.query;
-                    cache.result(result);
+
+        if (journalId) {
+
+            var queryData = {
+                query: JSON.stringify(query),
+                pageInfo: {
+                    sortBy: query.sortBy || [],
+                    skipCount: query.skipCount || 0,
+                    maxItems: query.maxItems || 10
                 }
-            }
-        });
+            };
+
+            Alfresco.util.Ajax.jsonPost({
+                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journalId,
+                dataObj: queryData,
+                successCallback: {
+                    scope: this,
+                    fn: function(response) {
+                        var data = response.json.data.journal.recordsConnection, self = this,
+                            records = data.records;
+
+                        var results = _.map(records, function(node) {
+                            var record = {attributes: {}};
+                            for (var key in node) {
+                                if (!node.hasOwnProperty(key)) {
+                                    continue;
+                                }
+                                var item = node[key];
+                                if (key === "id") {
+                                    record['nodeRef'] = item;
+                                } else {
+                                    record.attributes[item.name] = (item.val || []).map(function (it) {
+                                        if (it.data) {
+                                            return it.data;
+                                        } else {
+                                            var result = [];
+                                            for (var itKey in it) {
+                                                if (!it.hasOwnProperty(itKey)) {
+                                                    continue;
+                                                }
+                                                var itValue = it[itKey];
+                                                if (itValue && itValue.name) {
+                                                    var objValue = {};
+                                                    if (itValue.val && itValue.val.length) {
+                                                        objValue[itValue.name] = itValue.val[0].data;
+                                                    } else {
+                                                        objValue[itValue.name] = [];
+                                                    }
+                                                    result.push(objValue);
+                                                }
+                                            }
+                                            return result;
+                                        }
+                                    });
+                                }
+                            }
+                            return record;
+                        });
+
+                        results.pagination = {
+                            hasMore: data.pageInfo.hasNextPage,
+                            maxItems: data.pageInfo.maxItems,
+                            skipCount: data.pageInfo.skipCount,
+                            totalCount: data.totalCount,
+                            totalItems: data.totalCount
+                        };
+
+                        cache.result(results);
+                    }
+                }
+            });
+
+        } else {
+            Alfresco.util.Ajax.jsonPost({
+                url: Alfresco.constants.PROXY_URI + searchScriptUrl,
+                dataObj: query,
+                successCallback: {
+                    fn: function(response) {
+                        var result = response.json.results;
+                        result.pagination = response.json.paging;
+                        result.query = response.json.query;
+                        cache.result(result);
+                    }
+                }
+            });
+        }
 
         return undefined;
     }
@@ -802,7 +922,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         'org.alfresco.service.namespace.QName': QName,
         'org.alfresco.service.cmr.repository.ContentData': Content,
         'org.alfresco.util.VersionNumber': s,
-        'org.alfresco.service.cmr.repository.Period': s
+        'org.alfresco.service.cmr.repository.Period': s,
+        'com.fasterxml.jackson.databind.node.ObjectNode': JsonObject
     };
 
     var datatypeClassMapping = {
@@ -1278,13 +1399,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if(_.isArray(value)) return _.map(value, this.getValueText, this);
 
             var valueClass = this.valueClass();
-            if(valueClass == null) return "" + value;
-            if(valueClass == o) return value.toString();
-            if(valueClass == s) return "" + value;
-            if(valueClass == b) return value ? "true" : "false";
-            if(valueClass == Node) return value.nodeRef;
-            if(valueClass == QName) return value.shortQName();
-            if(valueClass == Content) return value.content;
+            if (valueClass == null) return "" + value;
+            if (valueClass == o) return value.toString();
+            if (valueClass == s) return "" + value;
+            if (valueClass == b) return value ? "true" : "false";
+            if (valueClass == Node) return value.nodeRef;
+            if (valueClass == QName) return value.shortQName();
+            if (valueClass == Content) return value.content;
+            if (valueClass == JsonObject) return JSON.stringify(value.getModel());
 
             var datatype = this.datatype();
             if(valueClass == n) {
@@ -1339,14 +1461,15 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             if(_.isArray(value)) return _.map(value, this.getValueJSON, this);
 
             var valueClass = this.valueClass();
-            if(valueClass == null) return null;
-            if(valueClass == o) return value.toString();
-            if(valueClass == s) return "" + value;
-            if(valueClass == n) return value.toString();
-            if(valueClass == b) return value ? true : false;
-            if(valueClass == Node) return value.nodeRef;
-            if(valueClass == QName) return value.shortQName();
-            if(valueClass == Content) return value.impl().jsonValue();
+            if (valueClass == null) return null;
+            if (valueClass == o) return value.toString();
+            if (valueClass == s) return "" + value;
+            if (valueClass == n) return value.toString();
+            if (valueClass == b) return value ? true : false;
+            if (valueClass == Node) return value.nodeRef;
+            if (valueClass == QName) return value.shortQName();
+            if (valueClass == Content) return value.impl().jsonValue();
+            if (valueClass == JsonObject) return JSON.stringify(value.getModel());
 
             var datatype = this.datatype();
             if(valueClass == n) {
@@ -1485,7 +1608,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             read: function() { return this.convertValue(this.invariantOptions(), true); },
             pure: true
         })
-        .method('filterOptions', function(criteria, pagination) {
+        .method('filterOptions', function(criteria, pagination, journalId) {
             if (this.irrelevant()) return [];
 
             // find invariant with correct query
@@ -1497,10 +1620,13 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     } else { return true }
                 });
 
-            if(optionsInvariant == null) return [];
-            if(optionsInvariant.language() != "criteria") return this.options();
+            if (optionsInvariant && optionsInvariant.language != "criteria") {
+                return this.options();
+            }
 
-            var options = evalCriteria(_.union(optionsInvariant.expression(), criteria), model, pagination);
+            var expression = optionsInvariant && optionsInvariant.expression ? optionsInvariant.expression() : [];
+
+            var options = evalCriteria(_.union(expression, criteria), model, pagination, journalId);
             if (options != null) {
                 var optionsWithConvertedValues = this.convertValue(options, true);
                 if (options.pagination) optionsWithConvertedValues.pagination = options.pagination;
@@ -1567,6 +1693,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         .property('permissions', o)
         .property('inSubmitProcess', b)
         .property('viewAttributeNames', [ s ])
+        .property('viewAttributesInfo', [ AttributeInfo ])
         .property('unviewAttributeNames', [ s ])
         .property('defaultAttributeNames', [ s ])
         .property('defaultModel', DefaultModel)
@@ -1684,27 +1811,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     return attributes;
                 }
 
-                var findAttrInfo = function (name) {
-                    var attributeSet = node.impl().attributeSet();
-                    if (attributeSet) {
-                        var attributesData = attributeSet._attributes();
-                        var attData = _.find(attributesData, function (att) {
-                            return att.name == name;
-                        });
-                        return attData ? attData.info : null;
-                    }
-                    return null;
-                };
-
                 _.each(validAttributeNames, function(name) {
                     if(!createdNames[name]) {
                         createdNames[name] = true;
-                        var attribute = new Attribute(node, name);
-                        var info = findAttrInfo(name);
-                        if (info) {
-                            attribute.setModel({info: info});
-                        }
-                        attributes.push(attribute);
+                        attributes.push(new Attribute(node, name));
                     }
                 });
 

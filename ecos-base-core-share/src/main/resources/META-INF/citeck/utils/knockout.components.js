@@ -459,7 +459,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                         <tr class="criterion">\
                             <td class="criterion-actions"><a class="remove-criterion" data-bind="click: $component.remove">X</a></td>\
                             <!-- ko if: $component.journalType -->\
-                                <td class="criterion-field"><span class="selected-criterion-name" data-bind="text: displayName"></span></td>\
+                                <td class="criterion-field"><span class="selected-criterion-name" data-bind="text: customDisplayName()"></span></td>\
                                 <td class="criterion-predicate" data-bind="with: datatype">\
                                     <select data-bind="options: predicates,\
                                                        optionsText: \'label\',\
@@ -667,7 +667,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                                         break;
                                     }
                                 }
-                                if (attr && attr.labels && attr.labels()) assemblyValues.push(attr.labels()[value]);
+                                if (attr && attr.labels && attr.labels()) {
+                                    var labelValue = attr.labels()[value];
+                                    assemblyValues.push(labelValue || value);
+                                }
                             } else {
                                 assemblyValues.push(value);
                             }
@@ -780,14 +783,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                         <!-- /ko -->\
                         <tr data-bind="if: $component.journalType && !columns">\
                             <!-- ko foreach:  $component.journalType.defaultAttributes -->\
-                                <th data-bind="text: displayName"></th>\
+                                <th data-bind="text: customDisplayName()"></th>\
                             <!-- /ko -->\
                         </tr>\
                         <!-- ko if: $component.journalType && columns -->\
                             <tr data-bind="foreach: columns">\
                                 <!-- ko if: $component.journalType.attribute($data) -->\
                                     <!-- ko with: $component.journalType.attribute($data) -->\
-                                        <th data-bind="text: displayName"></th>\
+                                        <th data-bind="text: customDisplayName()"></th>\
                                     <!-- /ko -->\
                                 <!-- /ko -->\
                             </tr>\

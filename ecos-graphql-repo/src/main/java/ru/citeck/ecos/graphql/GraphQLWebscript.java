@@ -1,49 +1,37 @@
 package ru.citeck.ecos.graphql;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.ExecutionResult;
 import org.alfresco.repo.content.MimetypeMap;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 
 public class GraphQLWebscript extends AbstractWebScript {
 
-    private static final String PARAM_QUERY = "query";
-    private static final String PARAM_PARAMETERS = "params";
-
     @Autowired
-    GraphQLService graphQLService;
+    private GraphQLService graphQLService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    public GraphQLWebscript() {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
-        JSONObject json = parseJSON(req);
-
-        String query = (String) json.get(PARAM_QUERY);
-        @SuppressWarnings("unchecked")
-        Map<String, Object> parameters = (Map<String, Object>) json.get(PARAM_PARAMETERS);
-        if (parameters == null) {
-            parameters = Collections.emptyMap();
-        }
-
-        ExecutionResult result = graphQLService.execute(query, parameters);
+        Request request = parseJSON(req);
+        ExecutionResult result = graphQLService.execute(request.query, request.parameters);
 
         objectMapper.writeValue(res.getOutputStream(), result.toSpecification());
         res.setStatus(Status.STATUS_OK);
     }
 
-    private JSONObject parseJSON(WebScriptRequest req) {
-
-        JSONObject json;
+    private Request parseJSON(WebScriptRequest req) {
 
         String contentType = req.getContentType();
         if (contentType != null && contentType.indexOf(';') != -1) {
@@ -51,16 +39,19 @@ public class GraphQLWebscript extends AbstractWebScript {
         }
 
         if (MimetypeMap.MIMETYPE_JSON.equals(contentType)) {
-
-            JSONParser parser = new JSONParser();
             try {
-                json = (JSONObject) parser.parse(req.getContent().getContent());
-            } catch (IOException | ParseException io) {
-                throw new WebScriptException(Status.STATUS_BAD_REQUEST, "Invalid JSON: " + io.getMessage());
+                String content = req.getContent().getContent();
+                return objectMapper.readValue(content, Request.class);
+            } catch (IOException e) {
+                throw new WebScriptException(Status.STATUS_BAD_REQUEST, "Invalid JSON: " + e.getMessage(), e);
             }
         } else {
             throw new WebScriptException(Status.STATUS_BAD_REQUEST, "Content type must be JSON");
         }
-        return json;
+    }
+
+    private static class Request {
+        public String query;
+        public Map<String, Object> parameters;
     }
 }

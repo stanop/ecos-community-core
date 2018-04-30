@@ -31,12 +31,17 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 
+import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.journals.xml.*;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 
 class JournalTypeImpl implements JournalType {
 
+    private static final String DATASOURCE_DEFAULT = "ecos.journals.datasource.AlfNodes";
+
     private final String id;
+    private final String datasource;
+
     private final Map<String, String> options;
     private final List<QName> attributes;
     private final List<JournalGroupAction> groupActions;
@@ -61,6 +66,9 @@ class JournalTypeImpl implements JournalType {
         this.groupActions = Collections.unmodifiableList(getGroupActions(journal, serviceRegistry));
         List<Header> headers = journal.getHeaders().getHeader();
         List<QName> allAttributes = new ArrayList<>(headers.size());
+
+        String datasource = journal.getDatasource();
+        this.datasource = StringUtils.isNotBlank(datasource) ? datasource : DATASOURCE_DEFAULT;
 
         batchEdit = new HashMap<>();
         criterion = new HashMap<>();
@@ -262,4 +270,8 @@ class JournalTypeImpl implements JournalType {
         return result;
     }
 
+    @Override
+    public String getDataSource() {
+        return datasource;
+    }
 }

@@ -115,4 +115,9 @@ public class GqlContext {
     public <T> T getService(QName name) {
         return (T) serviceRegistry.getService(name);
     }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getService(String beanId) {
+        return (T) serviceRegistry.getService(QName.createQName(null, beanId));
+    }
 }

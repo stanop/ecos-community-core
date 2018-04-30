@@ -1,106 +1,116 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <model name="attr:attributeModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
 
-	<description>Special data types and attributes in Citeck EcoS</description>
-	<author>Citeck</author>
-	<version>1.0</version>
+    <description>Special data types and attributes in Citeck EcoS</description>
+    <author>Citeck</author>
+    <version>1.0</version>
 
-	<imports>
-		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
-	</imports>
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+    </imports>
 
-	<namespaces>
-		<namespace uri="http://www.citeck.ru/model/attribute/1.0" prefix="attr" />
-		<namespace uri="http://www.citeck.ru/model/attribute/source-assoc/1.0" prefix="source" />
-		<namespace uri="http://www.citeck.ru/model/datatype/1.0" prefix="data" />
-	</namespaces>
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/attribute/1.0" prefix="attr" />
+        <namespace uri="http://www.citeck.ru/model/attribute/source-assoc/1.0" prefix="source" />
+        <namespace uri="http://www.citeck.ru/model/datatype/1.0" prefix="data" />
+    </namespaces>
 
-	<data-types>
+    <data-types>
 
-		<!-- QName auxilary data-types -->
-		<!-- Can not be yet used, due to dumb implementation of NodePropertyValue -->
+        <!-- QName auxilary data-types -->
+        <!-- Can not be yet used, due to dumb implementation of NodePropertyValue -->
 
-		<data-type name="data:typename">
-			<default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
-			<java-class>org.alfresco.service.namespace.QName</java-class>
-		</data-type>
+        <data-type name="data:typename">
+            <default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
+            <java-class>org.alfresco.service.namespace.QName</java-class>
+        </data-type>
 
-		<data-type name="data:aspectname">
-			<default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
-			<java-class>org.alfresco.service.namespace.QName</java-class>
-		</data-type>
+        <data-type name="data:aspectname">
+            <default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
+            <java-class>org.alfresco.service.namespace.QName</java-class>
+        </data-type>
 
-		<data-type name="data:classname">
-			<default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
-			<java-class>org.alfresco.service.namespace.QName</java-class>
-		</data-type>
+        <data-type name="data:classname">
+            <default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
+            <java-class>org.alfresco.service.namespace.QName</java-class>
+        </data-type>
 
-		<data-type name="data:propname">
-			<default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
-			<java-class>org.alfresco.service.namespace.QName</java-class>
-		</data-type>
+        <data-type name="data:propname">
+            <default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
+            <java-class>org.alfresco.service.namespace.QName</java-class>
+        </data-type>
 
-		<data-type name="data:assocname">
-			<default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
-			<java-class>org.alfresco.service.namespace.QName</java-class>
-		</data-type>
+        <data-type name="data:assocname">
+            <default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
+            <java-class>org.alfresco.service.namespace.QName</java-class>
+        </data-type>
 
-		<data-type name="data:attrname">
-			<default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
-			<java-class>org.alfresco.service.namespace.QName</java-class>
-		</data-type>
+        <data-type name="data:attrname">
+            <default-analyser-class>org.alfresco.repo.search.impl.lucene.analysis.AlfrescoStandardAnalyser</default-analyser-class>
+            <java-class>org.alfresco.service.namespace.QName</java-class>
+        </data-type>
 
-		<!-- TODO - big number types -->
-		
-	</data-types>
+        <!-- TODO - big number types -->
 
-	<aspects>
+    </data-types>
 
-		<!-- virtual attributes -->
-		<aspect name="attr:virtual">
-			<properties>
-			
-				<property name="attr:types">
-					<title>Node types</title>
-					<description>Type names are listed from the most specialized to the most basic (i.e. sys:base)</description>
-					<!-- <type>data:typename</type> -->
-					<type>d:qname</type>
-					<multiple>true</multiple>
-				</property>
-				
-				<property name="attr:aspects">
-					<title>Node aspects</title>
-					<description>All aspect names (order irrelevant)</description>
-					<!-- <type>data:aspectname</type> -->
-					<type>d:qname</type>
-					<multiple>true</multiple>
-				</property>
-				
-				<property name="attr:noderef">
-					<title>NodeRef</title>
-					<description>This attribute contains noderef of the node</description>
-					<type>d:noderef</type>
-					<multiple>false</multiple>
-				</property>
-				
-				<property name="attr:parent">
-					<title>Node parent</title>
-					<description>This attribute contains reference to the primary parent of the node</description>
-					<type>d:noderef</type>
-					<multiple>false</multiple>
-				</property>
-				
-				<property name="attr:parentassoc">
-					<title>Node parent assoc</title>
-					<description>This attribute contains primary parent association type</description>
-					<!-- <type>data:assocname</type> -->
-					<type>d:qname</type>
-					<multiple>false</multiple>
-				</property>
-				
-			</properties>
-		</aspect>
-		
-	</aspects>
+    <aspects>
+
+        <!-- virtual attributes -->
+        <aspect name="attr:virtual">
+            <properties>
+
+                <property name="attr:types">
+                    <title>Node types</title>
+                    <description>Type names are listed from the most specialized to the most basic (i.e. sys:base)</description>
+                    <!-- <type>data:typename</type> -->
+                    <type>d:qname</type>
+                    <multiple>true</multiple>
+                </property>
+
+                <property name="attr:aspects">
+                    <title>Node aspects</title>
+                    <description>All aspect names (order irrelevant)</description>
+                    <!-- <type>data:aspectname</type> -->
+                    <type>d:qname</type>
+                    <multiple>true</multiple>
+                </property>
+
+                <property name="attr:noderef">
+                    <title>NodeRef</title>
+                    <description>This attribute contains noderef of the node</description>
+                    <type>d:noderef</type>
+                    <multiple>false</multiple>
+                </property>
+
+                <property name="attr:parent">
+                    <title>Node parent</title>
+                    <description>This attribute contains reference to the primary parent of the node</description>
+                    <type>d:noderef</type>
+                    <multiple>false</multiple>
+                </property>
+
+                <property name="attr:parentassoc">
+                    <title>Node parent assoc</title>
+                    <description>This attribute contains primary parent association type</description>
+                    <!-- <type>data:assocname</type> -->
+                    <type>d:qname</type>
+                    <multiple>false</multiple>
+                </property>
+
+                <property name="attr:isDocument">
+                    <type>d:boolean</type>
+                    <multiple>false</multiple>
+                </property>
+
+                <property name="attr:isContainer">
+                    <type>d:boolean</type>
+                    <multiple>false</multiple>
+                </property>
+
+            </properties>
+        </aspect>
+
+    </aspects>
 
 </model>
