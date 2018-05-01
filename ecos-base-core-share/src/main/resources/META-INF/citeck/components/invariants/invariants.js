@@ -1620,7 +1620,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     } else { return true }
                 });
 
-            if (optionsInvariant && optionsInvariant.language != "criteria") {
+            if (optionsInvariant && optionsInvariant.language() != "criteria") {
                 return this.options();
             }
 
