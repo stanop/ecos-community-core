@@ -759,16 +759,16 @@ Record
         var aspectList = [];
         for (var i = 0; i < resAspectList.length; i++) {
             for (var attr in resAspectList[i]) {
-                aspectList.push(resAspectList[i][attr].val[0].data);
+                aspectList.push(resAspectList[i][attr].val[0].str);
             }
         }
         return aspectList;
     })
     .computed('isDocument', function() {
-        return ((this.attributes()['attr:isDocument'] || [])[0] || {data: 'false'}).data == 'true';
+        return ((this.attributes()['attr:isDocument'] || [])[0] || {str: 'false'}).str == 'true';
     })
     .computed('isContainer', function() {
-        return ((this.attributes()['attr:isContainer'] || [])[0] || {data: 'false'}).data == 'true';
+        return ((this.attributes()['attr:isContainer'] || [])[0] || {str: 'false'}).str == 'true';
     })
     .property('selected', b)
     .load('selected', function() { this.selected(false) })
@@ -1032,7 +1032,7 @@ JournalsWidget
             } else if (labelByCode) {
                 formatter = formatters.transformUseLabel(labelByCode, formatter);
             } else {
-                formatter = formatters.dataFormatter();
+                formatter = formatters.valueStrFormatter();
             }
 
             return {

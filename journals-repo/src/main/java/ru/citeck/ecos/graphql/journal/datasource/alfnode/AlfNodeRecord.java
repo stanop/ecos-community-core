@@ -28,7 +28,7 @@ public class AlfNodeRecord implements JournalAttributeValueGql {
     }
 
     @Override
-    public String data() {
+    public String str() {
         return node.displayName();
     }
 

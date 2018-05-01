@@ -35,7 +35,7 @@
                 <js src="/citeck/utils/citeck.js"/>
                 <css src="/citeck/utils/citeck.css"/>
                 <css src="/jquery/css/jquery.mmenu.all.css"/>
-                <js src="/citeck/components/dynamic-tree/cell-formatters.js?t=1493171975"/>
+                <js src="/citeck/components/dynamic-tree/cell-formatters.js?t=523453241"/>
             </dependencies>
 				</config>
             </configurations>

@@ -299,7 +299,7 @@
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="node-view"></@script>
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="node-view"></@script>
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/criteria-model.js" group="node-view"></@script>
-	<@script src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js" group="node-view"></@script>
+	<@script src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js?t=523453241" group="node-view"></@script>
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="node-view"></@script>
 </#macro>
 

@@ -29,7 +29,7 @@
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="journals-list" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="journals-list" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/criteria-model.js" group="journals-list" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js" group="journals-list" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js?t=523453241" group="journals-list" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="journals-list" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/action-renderer.js" group="journals-list" />
 
