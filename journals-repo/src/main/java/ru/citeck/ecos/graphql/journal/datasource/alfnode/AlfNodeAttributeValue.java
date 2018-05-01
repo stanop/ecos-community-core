@@ -40,7 +40,7 @@ public class AlfNodeAttributeValue implements JournalAttributeValueGql {
     }
 
     @Override
-    public String data() {
+    public String str() {
         if (alfNode != null) {
             return alfNode.displayName();
         } else if (qName != null) {

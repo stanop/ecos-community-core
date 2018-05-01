@@ -82,7 +82,7 @@ public class DbJournalDataSource implements JournalDataSource {
         }
 
         @Override
-        public String data() {
+        public String str() {
             return id();
         }
 
@@ -127,7 +127,7 @@ public class DbJournalDataSource implements JournalDataSource {
         }
 
         @Override
-        public String data() {
+        public String str() {
             return val;
         }
 

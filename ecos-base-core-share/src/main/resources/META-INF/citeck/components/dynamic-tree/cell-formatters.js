@@ -49,11 +49,11 @@
             }
         },
 
-        dataFormatter: function() {
+        valueStrFormatter: function() {
             return this.multiple(function (elCell, oRecord, oColumn, oData) {
                 var value = null;
                 if (oData) {
-                    value = oData.hasOwnProperty('data') ? oData.data : oData;
+                    value = oData.hasOwnProperty('str') ? oData.str : oData;
                 }
                 elCell.innerHTML = value || "";
             });
@@ -136,7 +136,7 @@
             }
 
             return function(elCell, oRecord, oColumn, sData) {
-                var text = sData && sData.hasOwnProperty('data') ? sData.data : sData;
+                var text = sData && sData.hasOwnProperty('str') ? sData.str : sData;
                 if (!text) {
                     elCell.innerHTML = '';
                     return;
@@ -252,7 +252,7 @@
                     elCell.innerHTML = sData["cm:authorityDisplayName"] || sData["cm:authorityName"] || sData.displayName || "";
                     return;
                 }
-                elCell.innerHTML = (sData.hasOwnProperty('data') ? sData.data : sData) ||
+                elCell.innerHTML = (sData.hasOwnProperty('str') ? sData.str : sData) ||
                                    (sData.displayName ? sData.displayName.value || sData.displayName : "");
             };
         },
@@ -385,7 +385,7 @@
 
         labelByCode: function(labels) {
             return function(el, oRecord, oColumn, sData) {
-                var value = sData && sData.hasOwnProperty('data') ? sData.data : sData;
+                var value = sData && sData.hasOwnProperty('str') ? sData.str : sData;
                 return labels[value] || value || "";
             }
         },
@@ -393,7 +393,7 @@
             return function(el, oRecord, oColumn, sData) {
                 var td = el.parentElement,
                     tr = td.parentElement,
-                    data = sData && sData.hasOwnProperty('data') ? sData.data : sData;
+                    data = sData && sData.hasOwnProperty('str') ? sData.str : sData;
                 el.innerHTML = labelByCode(el, oRecord, oColumn, sData);
                 if(tdClassPrefix) {
                     Dom.addClass(td, tdClassPrefix + data);
@@ -470,7 +470,7 @@
                         "2": "medium",
                         "3": "low"
                     },
-                    value = sData && sData.hasOwnProperty('data') ? sData.data : sData;
+                    value = sData && sData.hasOwnProperty('str') ? sData.str : sData,
                     priority = codes[value] || null;
                 if(priority) {
                     elCell.innerHTML = '<span class="priority-' + priority + '" title="' + Alfresco.util.message('priority.' + priority) + '"></span>';
@@ -640,14 +640,14 @@
                         sData = {
                             data: sData,
                             nodeRef: oRecord._oData.nodeRef,
-                            displayName: sData.data
+                            displayName: sData.str
                         };
                     } else {
                         if (!sData.hasOwnProperty('nodeRef')) {
                             sData['nodeRef'] = sData['id'];
                         }
                         if (!sData.hasOwnProperty('displayName')) {
-                            sData['displayName'] = sData['data'];
+                            sData['displayName'] = sData['str'];
                         }
                     }
                     var url = Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, sData));
@@ -682,7 +682,7 @@
                     label = elCell.innerHTML;
                 }
                 if (!label && sData) {
-                    label = sData.hasOwnProperty('data') ? sData.data : sData;
+                    label = sData.hasOwnProperty('str') ? sData.str : sData;
                 }
                 if (!label) {
                     label = Alfresco.util.message("label.none");

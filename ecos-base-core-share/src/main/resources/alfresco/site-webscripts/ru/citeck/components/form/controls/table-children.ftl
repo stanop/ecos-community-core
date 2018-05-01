@@ -16,7 +16,7 @@
 -->
 
 <@script type="text/javascript" src="${url.context}/res/citeck/components/orgstruct/form-dialogs.js"></@script>
-<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js"></@script>
+<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js?t=523453241"></@script>
 <@script type="text/javascript" src="${url.context}/res/citeck/components/document-children/button-commands.js"></@script>
 <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/dynamic-tree/action-renderer.css" />
 

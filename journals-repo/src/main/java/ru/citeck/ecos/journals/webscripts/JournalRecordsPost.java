@@ -141,7 +141,7 @@ public class JournalRecordsPost extends AbstractWebScript {
                     .append(attrCounter++)
                     .append(":attr(name:\"")
                     .append(attrName).append("\")")
-                    .append("{name val{data}}")
+                    .append("{name val{str}}")
                     .append(",");
         }
 
@@ -150,9 +150,9 @@ public class JournalRecordsPost extends AbstractWebScript {
 
         if (formatter.contains("Link") || formatter.contains("nodeRef")) {
             innerFields.add("id");
-            innerFields.add("data");
+            innerFields.add("str");
         } else if (attributesToLoad.isEmpty()){
-            innerFields.add("data");
+            innerFields.add("str");
         }
 
         for (String field : innerFields) {

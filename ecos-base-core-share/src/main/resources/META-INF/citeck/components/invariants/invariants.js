@@ -511,8 +511,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                                     record['nodeRef'] = item;
                                 } else {
                                     record.attributes[item.name] = (item.val || []).map(function (it) {
-                                        if (it.data) {
-                                            return it.data;
+                                        if (it.str) {
+                                            return it.str;
                                         } else {
                                             var result = [];
                                             for (var itKey in it) {
@@ -523,7 +523,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                                                 if (itValue && itValue.name) {
                                                     var objValue = {};
                                                     if (itValue.val && itValue.val.length) {
-                                                        objValue[itValue.name] = itValue.val[0].data;
+                                                        objValue[itValue.name] = itValue.val[0].str;
                                                     } else {
                                                         objValue[itValue.name] = [];
                                                     }
