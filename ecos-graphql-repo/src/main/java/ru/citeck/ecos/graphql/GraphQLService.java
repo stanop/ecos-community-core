@@ -1,13 +1,13 @@
 package ru.citeck.ecos.graphql;
 
-import graphql.ExecutionInput;
-import graphql.ExecutionResult;
-import graphql.GraphQL;
+import graphql.*;
 import graphql.annotations.processor.GraphQLAnnotations;
 import graphql.language.ObjectTypeDefinition;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import org.alfresco.service.ServiceRegistry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -20,6 +20,8 @@ import java.util.Map;
 
 @Service
 public class GraphQLService {
+
+    private static final Log logger = LogFactory.getLog(GraphQLService.class);
 
     private static final String GRAPHQL_BASE_PACKAGE = "ru.citeck.ecos";
     private static final String QUERY_TYPE = "Query";
@@ -68,7 +70,20 @@ public class GraphQLService {
                                              .query(query)
                                              .variables(notNullVars)
                                              .build();
-        return graphQL.execute(input);
+
+        ExecutionResult result = graphQL.execute(input);
+        result = new GqlExecutionResult(result);
+
+        if (logger.isWarnEnabled()) {
+            for (GraphQLError error : result.getErrors()) {
+                if (error instanceof ExceptionWhileDataFetching) {
+                    ExceptionWhileDataFetching fetchExc = (ExceptionWhileDataFetching) error;
+                    logger.warn("Exception while data fetching", fetchExc.getException());
+                }
+            }
+        }
+
+        return result;
     }
 
     public ServiceRegistry getServiceRegistry() {
