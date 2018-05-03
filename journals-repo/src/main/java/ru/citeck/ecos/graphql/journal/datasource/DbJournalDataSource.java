@@ -18,7 +18,7 @@ public class DbJournalDataSource implements JournalDataSource {
 
     private NamedParameterJdbcTemplate template;
 
-    private String sqlQuery;
+    private String sqlQueryTemplate;
 
     @Override
     public JournalRecordsConnection getRecords(GqlContext context,
@@ -29,6 +29,8 @@ public class DbJournalDataSource implements JournalDataSource {
         MapSqlParameterSource namedParameters = new MapSqlParameterSource();
         namedParameters.addValue("skipCount", pageInfo.getSkipCount());
         namedParameters.addValue("maxItems", pageInfo.getMaxItems());
+
+        String sqlQuery = sqlFromTemplate(sqlQueryTemplate, query, language);
 
         List<JournalAttributeValueGql> records = template.query(sqlQuery, namedParameters, (resultSet, i) -> {
             ResultSetMetaData metaData = resultSet.getMetaData();
@@ -53,6 +55,10 @@ public class DbJournalDataSource implements JournalDataSource {
         return connection;
     }
 
+    protected String sqlFromTemplate(String sqlQueryTemplate, String query, String language) {
+        return sqlQueryTemplate;
+    }
+
     @Override
     public Optional<JournalAttributeInfoGql> getAttributeInfo(String attributeName) {
         return Optional.empty();
@@ -62,8 +68,8 @@ public class DbJournalDataSource implements JournalDataSource {
         template = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public void setSqlQuery(String sqlQuery) {
-        this.sqlQuery = sqlQuery;
+    public void setSqlQueryTemplate(String sqlQueryTemplate) {
+        this.sqlQueryTemplate = sqlQueryTemplate;
     }
 
     private class RecordValue implements JournalAttributeValueGql {

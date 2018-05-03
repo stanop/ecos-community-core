@@ -655,6 +655,26 @@
             </associations>
         </type>
 
+        <!--FIAS models. Mocks for db journals-->
+        <type name="idocs:fiasRegion">
+            <title>FIAS region</title>
+        </type>
+        <type name="idocs:fiasDistrict">
+            <title>FIAS district</title>
+        </type>
+        <type name="idocs:fiasCity">
+            <title>FIAS city</title>
+        </type>
+        <type name="idocs:fiasSettlement">
+            <title>FIAS settlement</title>
+        </type>
+        <type name="idocs:fiasStreet">
+            <title>FIAS street</title>
+        </type>
+        <type name="idocs:fiasBuilding">
+            <title>FIAS building</title>
+        </type>
+
     </types>
 
     <aspects>

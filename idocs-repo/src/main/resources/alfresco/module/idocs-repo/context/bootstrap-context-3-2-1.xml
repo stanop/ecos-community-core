@@ -1,0 +1,227 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-2-1" abstract="true" parent="idocs.import-spaces.3-2-0">
+        <property name="sinceVersion" value="3.2.1" />
+        <property name="appliesFromVersion" value="3.2.1" />
+    </bean>
+
+    <bean id="idocs.import-scripts.3-2-1" abstract="true" parent="idocs.import-scripts.3-2-0">
+        <property name="sinceVersion" value="3.2.1" />
+        <property name="appliesFromVersion" value="3.2.1" />
+    </bean>
+
+    <bean id="idocs.module-component.fias-journals-list" parent="idocs.import-spaces.3-2-1">
+        <property name="name" value="fias-journals-list" />
+        <property name="description" value="FIAS journals list" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root"/>
+            </list>
+        </property>
+        <property name="bootstrapView">
+            <props>
+                <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot</prop>
+                <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-journals-list.xml</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.fiasRegion" parent="idocs.import-spaces.3-2-1">
+        <property name="name" value="fiasRegion"/>
+        <property name="description" value="FIAS region"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.fias-journals-list"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-region</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:fias-region</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-region</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/fias/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-region</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.fiasDistrict" parent="idocs.import-spaces.3-2-1">
+        <property name="name" value="fiasDistrict"/>
+        <property name="description" value="FIAS district"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.fias-journals-list"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-district</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:fias-district</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-district</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/fias/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-district</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.fiasCity" parent="idocs.import-spaces.3-2-1">
+        <property name="name" value="fiasCity"/>
+        <property name="description" value="FIAS city"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.fias-journals-list"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-city</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:fias-city</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-city</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/fias/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-city</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.fiasSettlement" parent="idocs.import-spaces.3-2-1">
+        <property name="name" value="fiasSettlement"/>
+        <property name="description" value="FIAS settlement"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.fias-journals-list"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-settlement</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:fias-settlement</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-settlement</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/fias/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-settlement</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.fiasStreet" parent="idocs.import-spaces.3-2-1">
+        <property name="name" value="fiasStreet"/>
+        <property name="description" value="FIAS street"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.fias-journals-list"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-street</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:fias-street</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-street</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/fias/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-street</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.fiasBuilding" parent="idocs.import-spaces.3-2-1">
+        <property name="name" value="fiasBuilding"/>
+        <property name="description" value="FIAS building"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.fias-journals-list"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-building</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:fias-building</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-building</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/fias/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/fias/fias-building</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<journals xmlns="http://www.citeck.ru/ecos/journals/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/budget/1.0" prefix="budget" />
+        <import uri="http://www.citeck.ru/model/passport/1.0" prefix="pass" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/content/ecos/1.0" prefix="ecos" />
+        <import uri="http://www.citeck.ru/model/archive-service-configuration/1.0" prefix="arch" />
+        <import uri="http://www.citeck.ru/model/route/1.0" prefix="route" />
+        <import uri="http://www.citeck.ru/model/bcalendar/1.0" prefix="bcal" />
+        <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
+        <import uri="http://www.citeck.ru/model/workflow-mirror/1.0" prefix="wfm"/>
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
+        <import uri="http://www.citeck.ru/model/workflow/perform/1.0" prefix="wfperf" />
+        <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf" />
+        <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
+    </imports>
+
+    <journal id="fias-region">
+        <datasource>ecos.journals.datasource.FiasRegion</datasource>
+        <option name="doubleClickId">nodeRef</option>
+        <headers>
+            <header key="cm:ao_guid" default="true">
+                <option name="customLabel">Идентификатор объекта</option>
+            </header>
+            <header key="cm:formal_name" default="true">
+                <option name="customLabel">Формализованное наименование</option>
+            </header>
+            <header key="cm:region_code">
+                <option name="customLabel">Код региона</option>
+            </header>
+            <header key="cm:code">
+                <option name="customLabel">Код адресного объекта</option>
+            </header>
+            <header key="cm:postal_code" default="true">
+                <option name="customLabel">Почтовый индекс</option>
+            </header>
+            <header key="cm:ao_level">
+                <option name="customLabel">Уровень адресного объекта</option>
+            </header>
+            <header key="cm:parent_guid">
+                <option name="customLabel">Идентификатор родительского объекта</option>
+            </header>
+        </headers>
+    </journal>
+
+    <journal id="fias-district">
+        <datasource>ecos.journals.datasource.FiasDistrict</datasource>
+        <option name="doubleClickId">nodeRef</option>
+        <headers>
+            <header key="cm:ao_guid" default="true">
+                <option name="customLabel">Идентификатор объекта</option>
+            </header>
+            <header key="cm:formal_name" default="true">
+                <option name="customLabel">Формализованное наименование</option>
+            </header>
+            <header key="cm:region_code">
+                <option name="customLabel">Код региона</option>
+            </header>
+            <header key="cm:area_code">
+                <option name="customLabel">Код района</option>
+            </header>
+            <header key="cm:code">
+                <option name="customLabel">Код адресного объекта</option>
+            </header>
+            <header key="cm:postal_code" default="true">
+                <option name="customLabel">Почтовый индекс</option>
+            </header>
+            <header key="cm:ao_level">
+                <option name="customLabel">Уровень адресного объекта</option>
+            </header>
+            <header key="cm:parent_guid">
+                <option name="customLabel">Идентификатор родительского объекта</option>
+            </header>
+        </headers>
+    </journal>
+
+    <journal id="fias-city">
+        <datasource>ecos.journals.datasource.FiasCity</datasource>
+        <option name="doubleClickId">nodeRef</option>
+        <headers>
+            <header key="cm:ao_guid" default="true">
+                <option name="customLabel">Идентификатор объекта</option>
+            </header>
+            <header key="cm:formal_name" default="true">
+                <option name="customLabel">Формализованное наименование</option>
+            </header>
+            <header key="cm:region_code">
+                <option name="customLabel">Код региона</option>
+            </header>
+            <header key="cm:area_code">
+                <option name="customLabel">Код района</option>
+            </header>
+            <header key="cm:city_code">
+                <option name="customLabel">Код города</option>
+            </header>
+            <header key="cm:code">
+                <option name="customLabel">Код адресного объекта</option>
+            </header>
+            <header key="cm:postal_code" default="true">
+                <option name="customLabel">Почтовый индекс</option>
+            </header>
+            <header key="cm:ao_level">
+                <option name="customLabel">Уровень адресного объекта</option>
+            </header>
+            <header key="cm:parent_guid">
+                <option name="customLabel">Идентификатор родительского объекта</option>
+            </header>
+        </headers>
+    </journal>
+
+    <journal id="fias-settlement">
+        <datasource>ecos.journals.datasource.FiasSettlement</datasource>
+        <option name="doubleClickId">nodeRef</option>
+        <headers>
+            <header key="cm:ao_guid" default="true">
+                <option name="customLabel">Идентификатор объекта</option>
+            </header>
+            <header key="cm:formal_name" default="true">
+                <option name="customLabel">Формализованное наименование</option>
+            </header>
+            <header key="cm:region_code">
+                <option name="customLabel">Код региона</option>
+            </header>
+            <header key="cm:area_code">
+                <option name="customLabel">Код района</option>
+            </header>
+            <header key="cm:city_code">
+                <option name="customLabel">Код города</option>
+            </header>
+            <header key="cm:place_code">
+                <option name="customLabel">Код населенного пункта</option>
+            </header>
+            <header key="cm:code">
+                <option name="customLabel">Код адресного объекта</option>
+            </header>
+            <header key="cm:postal_code" default="true">
+                <option name="customLabel">Почтовый индекс</option>
+            </header>
+            <header key="cm:ao_level">
+                <option name="customLabel">Уровень адресного объекта</option>
+            </header>
+            <header key="cm:parent_guid">
+                <option name="customLabel">Идентификатор родительского объекта</option>
+            </header>
+        </headers>
+    </journal>
+
+    <journal id="fias-street">
+        <datasource>ecos.journals.datasource.FiasStreet</datasource>
+        <option name="doubleClickId">nodeRef</option>
+        <headers>
+            <header key="cm:ao_guid" default="true">
+                <option name="customLabel">Идентификатор объекта</option>
+            </header>
+            <header key="cm:formal_name" default="true">
+                <option name="customLabel">Формализованное наименование</option>
+            </header>
+            <header key="cm:region_code">
+                <option name="customLabel">Код региона</option>
+            </header>
+            <header key="cm:area_code">
+                <option name="customLabel">Код района</option>
+            </header>
+            <header key="cm:city_code">
+                <option name="customLabel">Код города</option>
+            </header>
+            <header key="cm:place_code">
+                <option name="customLabel">Код населенного пункта</option>
+            </header>
+            <header key="cm:street_code">
+                <option name="customLabel">Код улицы</option>
+            </header>
+            <header key="cm:code">
+                <option name="customLabel">Код адресного объекта</option>
+            </header>
+            <header key="cm:postal_code" default="true">
+                <option name="customLabel">Почтовый индекс</option>
+            </header>
+            <header key="cm:ao_level">
+                <option name="customLabel">Уровень адресного объекта</option>
+            </header>
+            <header key="cm:parent_guid">
+                <option name="customLabel">Идентификатор родительского объекта</option>
+            </header>
+        </headers>
+    </journal>
+
+    <journal id="fias-building">
+        <datasource>ecos.journals.datasource.FiasHouse</datasource>
+        <option name="doubleClickId">nodeRef</option>
+        <headers>
+            <header key="cm:postal_code" default="true">
+                <option name="customLabel">Почтовый индекс</option>
+            </header>
+            <header key="cm:house_num" default="true">
+                <option name="customLabel">Номер дома</option>
+            </header>
+            <header key="cm:house_guid" default="true">
+                <option name="customLabel">Идентификатор дома</option>
+            </header>
+            <header key="cm:ao_guid">
+                <option name="customLabel">Идентификатор адресного объекта</option>
+            </header>
+        </headers>
+    </journal>
+
+</journals>
