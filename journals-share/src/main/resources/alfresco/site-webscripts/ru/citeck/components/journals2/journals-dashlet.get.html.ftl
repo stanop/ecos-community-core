@@ -28,6 +28,19 @@
 <#assign toolbarId = id + "-toolbar" />
 <#assign pagingOptions = args.pagingOptions!"10,30,50,100" />
 
+<#if config.scoped["ShowStartWorkflowButton"]?? &&
+     config.scoped["ShowStartWorkflowButton"].view?? &&
+     config.scoped["ShowStartWorkflowButton"].view.attributes["showButton"]??>
+        <#assign strValue = config.scoped["ShowStartWorkflowButton"].view.attributes["showButton"]>
+        <#if strValue == "false">
+            <#assign showWorkflowButton = false>
+        <#else>
+            <#assign showWorkflowButton = true>
+        </#if>
+<#else>
+    <#assign showWorkflowButton = true>
+</#if>
+
 <script type="text/javascript">//<![CDATA[
 require(['citeck/components/journals2/journals-dashlet', 'citeck/utils/knockout.yui', 'citeck/utils/knockout.components'], function(JournalsDashlet, koyui, kocomponents) {
 //new Alfresco.widget.DashletResizer("${id}", "");
@@ -105,7 +118,7 @@ editEvent.subscribe(dashlet.onEditConfig, dashlet, true);
 		
 		<@journals.renderCreateReportMenu id />
 
-		<#if (journalsListId!"") == "global-tasks">
+		<#if (journalsListId!"") == "global-tasks" && showWorkflowButton!true>
 			<span data-bind="yuiButton: { type: 'push' }">
 				<span class="first-child">
 					<a href="/share/page/start-workflow" target="_blank">${msg("button.start-workflow")}</a>
