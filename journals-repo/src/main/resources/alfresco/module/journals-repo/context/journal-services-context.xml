@@ -43,9 +43,39 @@
 
     <bean name="ecos.journals.datasource.AlfNodes" class="ru.citeck.ecos.graphql.journal.datasource.alfnode.AlfNodesDataSource" />
 
-    <!--<bean name="ecos.journals.datasource.TestSource" class="ru.citeck.ecos.graphql.journal.datasource.DbJournalDataSource">
+    <bean name="ecos.journals.datasource.FiasRegion" class="ru.citeck.ecos.graphql.journal.datasource.FiasAddressDBDataSource">
         <property name="dataSource" ref="ecos.journals.datasource.TestDbConn" />
-        <property name="sqlQuery" value="SELECT * FROM addrob LIMIT :maxItems OFFSET :skipCount" />
+        <property name="sqlQueryTemplate" value="SELECT * FROM addrob where act_status = true and ao_level = 1 and formal_name like '%:formalName%' :additionFilters LIMIT :maxItems OFFSET :skipCount" />
+    </bean>
+
+    <bean name="ecos.journals.datasource.FiasDistrict" class="ru.citeck.ecos.graphql.journal.datasource.FiasAddressDBDataSource">
+        <property name="dataSource" ref="ecos.journals.datasource.TestDbConn" />
+        <property name="sqlQueryTemplate" value="SELECT * FROM addrob where act_status = true and ao_level = 3 and formal_name like '%:formalName%' :additionFilters LIMIT :maxItems OFFSET :skipCount" />
+    </bean>
+
+    <bean name="ecos.journals.datasource.FiasCity" class="ru.citeck.ecos.graphql.journal.datasource.FiasAddressDBDataSource">
+        <property name="dataSource" ref="ecos.journals.datasource.TestDbConn" />
+        <property name="sqlQueryTemplate" value="SELECT * FROM addrob where act_status = true and ao_level = 4 and formal_name like '%:formalName%' :additionFilters LIMIT :maxItems OFFSET :skipCount" />
+    </bean>
+
+    <bean name="ecos.journals.datasource.FiasSettlement" class="ru.citeck.ecos.graphql.journal.datasource.FiasAddressDBDataSource">
+        <property name="dataSource" ref="ecos.journals.datasource.TestDbConn" />
+        <property name="sqlQueryTemplate" value="SELECT * FROM addrob where act_status = true and ao_level = 6 and formal_name like '%:formalName%' :additionFilters LIMIT :maxItems OFFSET :skipCount" />
+    </bean>
+
+    <bean name="ecos.journals.datasource.FiasStreet" class="ru.citeck.ecos.graphql.journal.datasource.FiasAddressDBDataSource">
+        <property name="dataSource" ref="ecos.journals.datasource.TestDbConn" />
+        <property name="sqlQueryTemplate" value="SELECT * FROM addrob where act_status = true and ao_level = 7 and formal_name like '%:formalName%' :additionFilters LIMIT :maxItems OFFSET :skipCount" />
+    </bean>
+
+    <bean name="ecos.journals.datasource.FiasHouse" class="ru.citeck.ecos.graphql.journal.datasource.FiasHouseDBDataSource">
+        <property name="dataSource" ref="ecos.journals.datasource.TestDbConn" />
+        <property name="sqlQueryTemplate" value="SELECT * FROM house where str_status = 0 and build_num = '' and end_date = '2079-06-06 00:00:00.000000' and house_num like '%:houseNum%' and ao_guid = :parentObj LIMIT :maxItems OFFSET :skipCount" />
+    </bean>
+
+    <bean name="ecos.journals.datasource.TestSource" class="ru.citeck.ecos.graphql.journal.datasource.DbJournalDataSource">
+        <property name="dataSource" ref="ecos.journals.datasource.TestDbConn" />
+        <property name="sqlQueryTemplate" value="SELECT * FROM addrob LIMIT :maxItems OFFSET :skipCount" />
     </bean>
 
     <bean id="ecos.journals.datasource.TestDbConn" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -53,6 +83,6 @@
         <property name="url" value="${journals.test.db.url}" />
         <property name="username" value="${journals.test.db.username}" />
         <property name="password" value="${journals.test.db.password}" />
-    </bean>-->
+    </bean>
 
 </beans>
