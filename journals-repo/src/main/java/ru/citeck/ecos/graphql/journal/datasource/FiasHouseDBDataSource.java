@@ -29,7 +29,7 @@ public class FiasHouseDBDataSource extends DbJournalDataSource{
         }
         String houseNum = tripletMap.containsKey("cm:house_num") ? "" + tripletMap.get("cm:house_num").getValue(): "";
         String sqlQuery = sqlQueryTemplate.replace(":houseNum", houseNum);
-        String parentObj = tripletMap.containsKey("cm:ao_guid") ? "" + tripletMap.get("cm:ao_guid").getValue(): "";
+        String parentObj = tripletMap.containsKey("cm:ao_guid") ? "" + tripletMap.get("cm:ao_guid").getValue(): "00000000-0000-0000-0000-000000000000";
         sqlQuery = sqlQuery.replace(":parentObj", parentObj);
 
         return sqlQuery ;
