@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 
 <Context antiJARLocking="true">
-    <Environment name="datasource.driver" value="${flowable.webapps.db.driver.class.name}" type="java.lang.String"/>
-    <Environment name="datasource.url" value="${flowable.webapps.db.url}" type="java.lang.String"/>
-    <Environment name="datasource.username" value="${flowable.webapps.db.username}" type="java.lang.String"/>
-    <Environment name="datasource.password" value="${flowable.webapps.db.password}" type="java.lang.String"/>
+    <Environment name="spring.datasource.driver-class-name" value="${flowable.webapps.db.driver.class.name}" type="java.lang.String"/>
+    <Environment name="spring.datasource.url" value="${flowable.webapps.db.url}" type="java.lang.String"/>
+    <Environment name="spring.datasource.username" value="${flowable.webapps.db.username}" type="java.lang.String"/>
+    <Environment name="spring.datasource.password" value="${flowable.webapps.db.password}" type="java.lang.String"/>
 
-    <Environment name="idm.admin.user" value="${flowable.webapps.admin.userid}" type="java.lang.String"/>
-    <Environment name="idm.admin.password" value="${flowable.webapps.admin.password}" type="java.lang.String"/>
-    <Environment name="idm.app.url" value="${flowable.webapps.idm.app.url}" type="java.lang.String"/>
-    <Environment name="deployment.api.url" value="${flowable.webapps.deployment.api.url}" type="java.lang.String"/>
+    <Environment name="flowable.common.app.idm-admin.user" value="${flowable.webapps.admin.userid}" type="java.lang.String"/>
+    <Environment name="flowable.common.app.idm-admin.password" value="${flowable.webapps.admin.password}" type="java.lang.String"/>
+    <Environment name="flowable.common.app.idm-url" value="${flowable.webapps.idm.app.url}" type="java.lang.String"/>
+    <Environment name="flowable.modeler.app.deployment-api-url" value="${flowable.webapps.deployment.api.url}" type="java.lang.String"/>
 </Context>
