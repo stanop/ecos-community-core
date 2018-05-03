@@ -133,9 +133,7 @@
                                 <flowable.webapps.idm.app.url>${flowable.webapps.idm.app.url}</flowable.webapps.idm.app.url>
                                 <flowable.webapps.deployment.api.url>${flowable.webapps.deployment.api.url}</flowable.webapps.deployment.api.url>
 
-                                <flowable.webapps.rest.create.demo.users>${flowable.webapps.rest.create.demo.users}</flowable.webapps.rest.create.demo.users>
                                 <flowable.webapps.rest.create.demo.definitions>${flowable.webapps.rest.create.demo.definitions}</flowable.webapps.rest.create.demo.definitions>
-                                <flowable.webapps.rest.create.demo.models>${flowable.webapps.rest.create.demo.models}</flowable.webapps.rest.create.demo.models>
 
                                 <flowable.webapps.admin.rest.app.host>${flowable.webapps.admin.rest.app.host}</flowable.webapps.admin.rest.app.host>
                                 <flowable.webapps.admin.rest.app.port>${flowable.webapps.admin.rest.app.port}</flowable.webapps.admin.rest.app.port>
