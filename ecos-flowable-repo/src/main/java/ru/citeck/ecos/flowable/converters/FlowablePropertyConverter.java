@@ -10,6 +10,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowException;
+import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
@@ -26,11 +27,9 @@ import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.api.Task;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
+import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
-import ru.citeck.ecos.flowable.services.FlowableHistoryService;
-import ru.citeck.ecos.flowable.services.FlowableProcessDefinitionService;
-import ru.citeck.ecos.flowable.services.FlowableTaskService;
-import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
+import ru.citeck.ecos.flowable.services.*;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
 
 import java.io.Serializable;
@@ -45,6 +44,7 @@ public class FlowablePropertyConverter {
      * Constants
      */
     private static final String FLOWABLE_ENGINE_NAME = "flowable";
+    private static final String FLOWABLE_INITIATOR = "$INITIATOR";
 
     /**
      * Task service
@@ -102,6 +102,11 @@ public class FlowablePropertyConverter {
     private FlowableProcessDefinitionService flowableProcessDefinitionService;
 
     /**
+     * Flowable workflow component
+     */
+    private FlowableWorkflowComponent flowableWorkflowComponent;
+
+    /**
      * Type manager
      */
     private FlowableTaskTypeManager typeManager;
@@ -147,7 +152,7 @@ public class FlowablePropertyConverter {
         properties.put(WorkflowModel.PROP_COMPLETION_DATE, null);
         properties.put(WorkflowModel.PROP_PRIORITY, task.getPriority());
         properties.put(ContentModel.PROP_CREATED, task.getCreateTime());
-        properties.put(ContentModel.PROP_OWNER, task.getAssignee());
+        properties.put(ContentModel.PROP_OWNER, getOwner(task));
         if (!properties.containsKey(WorkflowModel.PROP_DESCRIPTION)) {
             properties.put(WorkflowModel.PROP_DESCRIPTION, task.getDescription());
         }
@@ -204,7 +209,7 @@ public class FlowablePropertyConverter {
         properties.put(WorkflowModel.PROP_COMPLETION_DATE, null);
         properties.put(WorkflowModel.PROP_PRIORITY, task.getPriority());
         properties.put(ContentModel.PROP_CREATED, task.getCreateTime());
-        properties.put(ContentModel.PROP_OWNER, task.getAssignee());
+        properties.put(ContentModel.PROP_OWNER, getOwner(task));
         if (!properties.containsKey(WorkflowModel.PROP_DUE_DATE)) {
             properties.put(WorkflowModel.PROP_DUE_DATE, task.getDueDate());
         }
@@ -212,6 +217,52 @@ public class FlowablePropertyConverter {
         mapPooledActors(links, properties);
 
         return filterTaskProperties(properties);
+    }
+
+    /**
+     * Get owner from delegate task
+     * @param task Delegate task
+     * @return Owner username
+     */
+    private String getOwner(DelegateTask task) {
+        String taskAssignee = task.getAssignee();
+        if (FLOWABLE_INITIATOR.equals(taskAssignee)) {
+            WorkflowInstance workflowInstance = flowableWorkflowComponent.getWorkflowById(task.getProcessInstanceId());
+            return getInitiatorFromWorkflow(workflowInstance);
+        } else {
+            return taskAssignee;
+        }
+    }
+
+    /**
+     * Get owner from task
+     * @param task Task
+     * @return Owner username
+     */
+    private String getOwner(Task task) {
+        String taskAssignee = task.getAssignee();
+        if (FLOWABLE_INITIATOR.equals(taskAssignee)) {
+            WorkflowInstance workflowInstance = flowableWorkflowComponent.getWorkflowById(task.getProcessInstanceId());
+            return getInitiatorFromWorkflow(workflowInstance);
+        } else {
+            return taskAssignee;
+        }
+    }
+
+    /**
+     * Get initiator from workflow
+     * @param workflowInstance Workflow instance
+     * @return Initiator username
+     */
+    private String getInitiatorFromWorkflow(WorkflowInstance workflowInstance) {
+        if (workflowInstance == null) {
+            return null;
+        }
+        if (workflowInstance.getInitiator() != null) {
+            return personService.getPerson(workflowInstance.getInitiator()).getUserName();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -625,6 +676,14 @@ public class FlowablePropertyConverter {
      */
     public void setFlowableHistoryService(FlowableHistoryService flowableHistoryService) {
         this.flowableHistoryService = flowableHistoryService;
+    }
+
+    /**
+     * Set flowable workflow component
+     * @param flowableWorkflowComponent Flowable workflow component
+     */
+    public void setFlowableWorkflowComponent(FlowableWorkflowComponent flowableWorkflowComponent) {
+        this.flowableWorkflowComponent = flowableWorkflowComponent;
     }
 
     /**
