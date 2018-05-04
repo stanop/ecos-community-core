@@ -1032,7 +1032,7 @@ JournalsWidget
             } else if (labelByCode) {
                 formatter = formatters.transformUseLabel(labelByCode, formatter);
             } else {
-                formatter = formatters.valueStrFormatter(!withoutMultiple);
+                formatter = formatters.valueStrFormatter(!withoutMultiple, formatter);
             }
 
             return {
