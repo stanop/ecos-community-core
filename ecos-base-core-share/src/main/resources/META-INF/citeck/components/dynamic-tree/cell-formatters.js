@@ -1844,19 +1844,21 @@
 
         scannerIcon: function () {
             return function (elCell, oRecord, oColumn, sData) {
-                if(!oRecord.getData("attributes['wfm:document']")) {return;}
-                var nodeRef = oRecord.getData("attributes['wfm:document']").nodeRef;
-                if(!nodeRef) {return;}
-                Alfresco.util.Ajax.request({
-                    url: Alfresco.constants.PROXY_URI + "/api/citeck/has-scan?nodeRef=" + nodeRef,
+                var wfmDocument = (oRecord.getData("attributes['wfm:document']") || [])[0];
+
+                if (wfmDocument == null || wfmDocument.nodeRef == null) {
+                    return;
+                }
+
+                Alfresco.util.Ajax.jsonGet({
+                    url: Alfresco.constants.PROXY_URI + "api/citeck/has-scan?nodeRef=" + wfmDocument.nodeRef,
                     successCallback: {
                         fn: function(response) {
                             if (response.json && response.json.hasScan && response.json.hasScan == "true") {
-                                elCell.innerHTML = '<img src="'+ Alfresco.constants.URL_RESCONTEXT +'citeck/components/dynamic-tree/icons/scanner.png">';
+                                elCell.innerHTML = '<img src="'+ Alfresco.constants.URL_RESCONTEXT + 'citeck/components/dynamic-tree/icons/scanner.png">';
                             }
                         }
-                    },
-                    execScripts: true
+                    }
                 });
             };
         },
