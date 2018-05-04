@@ -13,7 +13,7 @@ import java.util.Map;
 public class GraphQLWebscript extends AbstractWebScript {
 
     @Autowired
-    private GraphQLService graphQLService;
+    private AlfGraphQLServiceImpl graphQLService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 

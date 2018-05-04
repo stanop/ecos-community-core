@@ -1027,12 +1027,12 @@ JournalsWidget
                 linkSupplied = true;
             }
 
-            if(!withoutMultiple && formatter) {
+            if (!withoutMultiple && formatter) {
                 formatter = formatters.multiple(formatter);
             } else if (labelByCode) {
                 formatter = formatters.transformUseLabel(labelByCode, formatter);
             } else {
-                formatter = formatters.valueStrFormatter();
+                formatter = formatters.valueStrFormatter(!withoutMultiple);
             }
 
             return {
@@ -1682,7 +1682,7 @@ JournalsWidget
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        var data = response.json.data.journal.recordsConnection, self = this,
+                        var data = response.json.data.journalRecords, self = this,
                             records = data.records;
 
                         records = _.map(records, function(node) {
