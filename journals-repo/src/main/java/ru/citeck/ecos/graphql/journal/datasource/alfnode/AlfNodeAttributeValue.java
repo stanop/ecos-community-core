@@ -2,6 +2,7 @@ package ru.citeck.ecos.graphql.journal.datasource.alfnode;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeGql;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
@@ -10,7 +11,6 @@ import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
 
-import javax.xml.namespace.QName;
 import java.util.Date;
 import java.util.Optional;
 

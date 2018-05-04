@@ -180,7 +180,22 @@
                     elCell.innerHTML = '';
                     return;
                 }
-                elCell.innerHTML = full ? sData.fullQName : sData.shortQName;
+                var field = full ? 'fullQName' : 'shortQName';
+                if (sData.hasOwnProperty(field)) {
+                    elCell.innerHTML = sData[field];
+                } else {
+                    field = full ? 'fullName' : 'shortName';
+                    for (var attrKey in sData) {
+                        if (!sData.hasOwnProperty(attrKey)) {
+                            continue;
+                        }
+                        var attrObj = sData[attrKey];
+                        if (attrObj.name == field) {
+                            elCell.innerHTML = (attrObj.val || []).map(function(v) { return v.str; }).join(", ");
+                            return;
+                        }
+                    }
+                }
             };
         },
 
