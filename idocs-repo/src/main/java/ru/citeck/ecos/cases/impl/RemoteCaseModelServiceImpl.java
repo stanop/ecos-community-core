@@ -158,6 +158,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             postForObject(SAVE_CASE_MODELS_METHOD, arrayNode.toString(), String.class);
             /** Delete nodes */
             for (NodeRef caseNodeRef : forDelete) {
+                nodeService.addAspect(caseNodeRef, ContentModel.ASPECT_TEMPORARY, Collections.emptyMap());
                 nodeService.deleteNode(caseNodeRef);
             }
             return null;
