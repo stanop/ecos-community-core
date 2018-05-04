@@ -39,6 +39,9 @@
 			mode: "table",
 			filters: ${filters?trim},
 
+			<#if params.searchBarVisibility??>searchBarVisibility: "${params.searchBarVisibility}",</#if>
+			<#if params.defaultFiltersVisibility??>defaultFiltersVisibility: "${params.defaultFiltersVisibility}",</#if>
+
 			<#-- table mode parameters -->
 	        <#if params.journalTypeId??>journalTypeId: "${params.journalTypeId}",</#if>
 	        <#if params.defaultVisibleAttributes??>defaultVisibleAttributes: "${params.defaultVisibleAttributes}",</#if>

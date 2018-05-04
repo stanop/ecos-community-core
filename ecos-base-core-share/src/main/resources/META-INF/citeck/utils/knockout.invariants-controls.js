@@ -861,7 +861,8 @@ ko.bindingHandlers.journalControl = {
         defaultCriteria             = params.defaultCriteria,
         hiddenCriteria              = params.hiddenCriteria || [],
         optionsFilter               = params.optionsFilter ? params.optionsFilter() : null,
-        createVariantsVisibility    = params.createVariantsVisibility;
+        createVariantsVisibility    = params.createVariantsVisibility,
+        filterCriteriaVisibility    = ko.observable(false);
 
     if (defaultVisibleAttributes) {
         defaultVisibleAttributes = _.map(defaultVisibleAttributes.split(","), function(item) { return trim(item) });
@@ -927,7 +928,6 @@ ko.bindingHandlers.journalControl = {
 
                 var selectedElements = ko.observableArray(),
                     selectedFilterCriteria = ko.observableArray(),
-                    filterCriteriaVisibility = ko.observable(false),
                     loading = ko.observable(true),
                     criteriaListShow = ko.observable(false),
                     searchBar = params.searchBar ? params.searchBar == "true" : true,
@@ -1030,7 +1030,9 @@ ko.bindingHandlers.journalControl = {
                     }
 
                     // add default option's filter criteria from view
-                    if (optionsFilter && optionsFilter() && optionsFilter().length) criteria(optionsFilter());
+                    if (optionsFilter) {
+                        criteria(optionsFilter() && optionsFilter().length ? optionsFilter() : []);
+                    }
 
                     if (dc) {
                         for (var i in dc) {
@@ -1217,7 +1219,7 @@ ko.bindingHandlers.journalControl = {
 
                     if (event.target.tagName == "A") {
                         if ($(event.target).hasClass("journal-tab-button")) {
-                            if (event.target.id == filterTabId) filterCriteriaVisibility(true);
+                            if (event.target.id == filterTabId) filterCriteriaVisibility(!filterCriteriaVisibility());
 
                             switch (mode) {
                                 case "full":
@@ -1340,7 +1342,7 @@ ko.bindingHandlers.journalControl = {
                             selectedCriteria = selectedFilterCriteria();
 
                         if (selectedCriteria.length == 0) {
-                            criteria([])
+                            criteria(optionsFilter && optionsFilter() ? optionsFilter() : []);
                         } else {
                             for (var i in selectedCriteria) {
                                 if (selectedCriteria[i].value() && selectedCriteria[i].predicateValue() && selectedCriteria[i].name()) {
@@ -1350,6 +1352,19 @@ ko.bindingHandlers.journalControl = {
                                         value: selectedCriteria[i].value()
                                     })
                                 }
+                            }
+
+                            // add filters, which by default are not in the journal
+                            if (optionsFilter && optionsFilter() && optionsFilter().length) {
+                                optionsFilter().forEach(function(item) {
+                                    var filterCriteria = _.find(selectedCriteria, function(filter) {
+                                        return item.attribute == filter.name();
+                                    });
+                                    if (!filterCriteria) {
+                                        criteriaList.push(item);
+                                    }
+                                });
+
                             }
                             criteria(criteriaList);
                         }
@@ -1449,6 +1464,10 @@ ko.bindingHandlers.journalControl = {
                 });
             }
 
+            var filterTab = Dom.get(filterTabId);
+            if (!filterCriteriaVisibility() && params.defaultFiltersVisibility == "true" && filterTab) {
+                filterTab.click();
+            }
             scope.panel.show();
             scope.panel.center();
 
@@ -1982,6 +2001,7 @@ ko.components.register("select2", {
         this.additionalOptions = ko.observable([]);
         this._criteriaListShow = ko.observable(false);
         this._filterVisibility = ko.observable(false);
+        this.searchBarVisibility = params.searchBarVisibility ? params.searchBarVisibility == "true" : true;
 
 
         // computed
@@ -2165,9 +2185,8 @@ ko.components.register("select2", {
                 }
 
                 // add default option's filter criteria from view
-                var optionsFilter = self.optionsFilter && self.optionsFilter() ? self.optionsFilter() : [];
-                if (optionsFilter && optionsFilter.length) {
-                    self.criteria(optionsFilter);
+                if (self.optionsFilter) {
+                    self.criteria(self.optionsFilter() && self.optionsFilter().length ? self.optionsFilter() : []);
                 }
 
                 if (dc.length) {
@@ -2177,8 +2196,8 @@ ko.components.register("select2", {
                         newCriterion.predicateValue = ko.observable();
 
                         // add value of default option's filter criteria on filter form
-                        if (optionsFilter.length && newCriterion.name) {
-                            var filterCriterion = _.find(optionsFilter, function(item) {
+                        if (self.optionsFilter && self.optionsFilter() && self.optionsFilter().length && newCriterion.name) {
+                            var filterCriterion = _.find(self.optionsFilter, function(item) {
                                 return item.attribute == newCriterion.name();
                             });
                             if (filterCriterion) newCriterion.value(filterCriterion.value);
@@ -2301,25 +2320,26 @@ ko.components.register("select2", {
                 data.panel.setHeader(data.localization.title);
                 data.panel.setBody('\
                     <div class="journal-picker-header collapse" id="' + journalPickerHeaderId + '">\
-                            <!-- ko if: filters -->\
-                                <a id="' + filterTabId + '" class="journal-tab-button" data-bind="text: labels.filterTab, click: filter, clickBubble: false"></a>\
-                            <!-- /ko -->\
-                            <!-- ko if: createVariantsVisibility -->\
-                                <!-- ko component: { name: "createObjectButton", params: {\
-                                    scope: scope,\
-                                    source: createVariantsSource,\
-                                    callback: callback,\
-                                    buttonTitle: labels.createTab,\
-                                    virtualParent: virtualParent,\
-                                    journalType: journalType\
-                                }} --><!-- /ko -->\
-                            <!-- /ko -->\
-                        <div class="journal-search">\
-                            <input type="search" class="journal-search-input" data-bind="\
-                                textInput: searchQuery,\
-                                attr: { placeholder: labels.search }\
-                            " />\
-                        </div>\
+                        <!-- ko if: filters -->\
+                            <a id="' + filterTabId + '" class="journal-tab-button" data-bind="text: labels.filterTab, click: filter, clickBubble: false"></a>\
+                        <!-- /ko -->\
+                        <!-- ko if: createVariantsVisibility -->\
+                            <!-- ko component: { name: "createObjectButton", params: {\
+                                scope: scope,\
+                                source: createVariantsSource,\
+                                callback: callback,\
+                                buttonTitle: labels.createTab,\
+                                virtualParent: virtualParent,\
+                                journalType: journalType\
+                            }} --><!-- /ko -->\
+                        <!-- /ko -->\
+                        ' + (data.searchBarVisibility ? '\
+                            <div class="journal-search">\
+                                <input type="search" class="journal-search-input" data-bind="\
+                                    textInput: searchQuery,\
+                                    attr: { placeholder: labels.search }\
+                                " />\
+                            </div>': '') + '\
                     </div>\
                     <div class="journal-picker-page-container">\
                         <!-- ko if: filters -->\
@@ -2532,7 +2552,7 @@ ko.components.register("select2", {
                             $(elementsPage).removeClass("hidden");
                         }
 
-                        data.filterVisibility(true);
+                        data.filterVisibility(!data.filterVisibility());
 
                         // clear tab selection
                         var buttons = Dom.getElementsBy(function(element) {
@@ -2585,6 +2605,10 @@ ko.components.register("select2", {
                 }, data.panel.footer);
             }
 
+            var filterTab = Dom.get(filterTabId);
+            if (!data._filterVisibility() && params.defaultFiltersVisibility == "true" && filterTab) {
+                filterTab.click();
+            }
             data.panel.show();
         }
 
