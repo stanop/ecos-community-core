@@ -58,6 +58,7 @@
         return {
             <#if params.journalType??>journalType: '${params.journalType}',</#if>
             <#if params.searchBar??>searchBar: '${params.searchBar}',</#if>
+            <#if params.defaultFiltersVisibility??>defaultFiltersVisibility: '${params.defaultFiltersVisibility}',</#if>
             <#if params.defaultVisibleAttributes??>defaultVisibleAttributes: '${params.defaultVisibleAttributes}',</#if>
             <#if params.defaultSearchableAttributes??>defaultSearchableAttributes: '${params.defaultSearchableAttributes}',</#if>
             removeSelection: ${removeSelection?trim},
