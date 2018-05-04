@@ -25,7 +25,7 @@ public class GraphQLWebscript extends AbstractWebScript {
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
         Request request = parseJSON(req);
-        ExecutionResult result = graphQLService.execute(request.query, request.parameters);
+        ExecutionResult result = graphQLService.execute(request.query, request.variables);
 
         objectMapper.writeValue(res.getOutputStream(), result.toSpecification());
         res.setStatus(Status.STATUS_OK);
@@ -52,6 +52,6 @@ public class GraphQLWebscript extends AbstractWebScript {
 
     private static class Request {
         public String query;
-        public Map<String, Object> parameters;
+        public Map<String, Object> variables;
     }
 }
