@@ -49,14 +49,19 @@
             }
         },
 
-        valueStrFormatter: function() {
-            return this.multiple(function (elCell, oRecord, oColumn, oData) {
+        valueStrFormatter: function(multiple) {
+            var single = function (elCell, oRecord, oColumn, oData) {
                 var value = null;
                 if (oData) {
                     value = oData.hasOwnProperty('str') ? oData.str : oData;
                 }
                 elCell.innerHTML = value || "";
-            });
+            };
+            if (multiple) {
+                return this.multiple(single);
+            } else {
+                return single;
+            }
         },
 
         loadedFormatter: function(formatterExpr) {

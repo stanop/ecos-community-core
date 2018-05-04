@@ -497,7 +497,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        var data = response.json.data.journal.recordsConnection, self = this,
+                        var data = response.json.data.journalRecords, self = this,
                             records = data.records;
 
                         var results = _.map(records, function(node) {
