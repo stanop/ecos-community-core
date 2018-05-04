@@ -49,7 +49,7 @@
             }
         },
 
-        valueStrFormatter: function(multiple) {
+        valueStrFormatter: function(multiple, formatter) {
             var single = function (elCell, oRecord, oColumn, oData) {
                 var value = oData;
                 if (_.isArray(value)) {
@@ -58,7 +58,11 @@
                 if (value) {
                     value = value.hasOwnProperty('str') ? value.str : value;
                 }
-                elCell.innerHTML = value || "";
+                if (formatter) {
+                    formatter(elCell, oRecord, oColumn, value);
+                } else {
+                    elCell.innerHTML = value || "";
+                }
             };
             if (multiple) {
                 return this.multiple(single);
