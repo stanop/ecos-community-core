@@ -51,9 +51,12 @@
 
         valueStrFormatter: function(multiple) {
             var single = function (elCell, oRecord, oColumn, oData) {
-                var value = null;
-                if (oData) {
-                    value = oData.hasOwnProperty('str') ? oData.str : oData;
+                var value = oData;
+                if (_.isArray(value)) {
+                    value = value.length ? value[0] : null;
+                }
+                if (value) {
+                    value = value.hasOwnProperty('str') ? value.str : value;
                 }
                 elCell.innerHTML = value || "";
             };
