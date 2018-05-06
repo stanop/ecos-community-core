@@ -1872,14 +1872,13 @@
         scannerIcon: function () {
             return function (elCell, oRecord, oColumn, sData) {
                 var wfmDocument = (oRecord.getData("attributes['wfm:document']") || [])[0];
-                var nodeRef = wfmDocument != null ? wfmDocument.nodeRef : null;
 
-                if (nodeRef == null) {
+                if (wfmDocument == null || wfmDocument.nodeRef == null) {
                     return;
                 }
 
                 Alfresco.util.Ajax.jsonGet({
-                    url: Alfresco.constants.PROXY_URI + "api/citeck/has-scan?nodeRef=" + nodeRef,
+                    url: Alfresco.constants.PROXY_URI + "api/citeck/has-scan?nodeRef=" + wfmDocument.nodeRef,
                     successCallback: {
                         fn: function(response) {
                             if (response.json && response.json.hasScan && response.json.hasScan == "true") {
