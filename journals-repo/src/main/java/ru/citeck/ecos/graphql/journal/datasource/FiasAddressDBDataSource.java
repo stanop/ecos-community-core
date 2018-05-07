@@ -44,6 +44,10 @@ public class FiasAddressDBDataSource extends DbJournalDataSource {
             additionFilters += " and region_code=" + tripletMap.get("cm:region_code").getValue();
         }
 
+        if (tripletMap.containsKey("cm:postal_code")) {
+            additionFilters += " and postal_code like '%" + tripletMap.get("cm:postal_code").getValue() + "%'";
+        }
+
         sqlQuery = sqlQuery.replace(":additionFilters", additionFilters);
 
         return sqlQuery;
