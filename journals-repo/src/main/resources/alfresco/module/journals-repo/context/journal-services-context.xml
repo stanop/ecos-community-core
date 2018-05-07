@@ -70,7 +70,7 @@
 
     <bean name="ecos.journals.datasource.FiasHouse" class="ru.citeck.ecos.graphql.journal.datasource.FiasHouseDBDataSource">
         <property name="dataSource" ref="ecos.journals.datasource.TestDbConn" />
-        <property name="sqlQueryTemplate" value="SELECT * FROM house where str_status = 0 and build_num = '' and end_date = '2079-06-06 00:00:00.000000' and house_num like '%:houseNum%' and ao_guid = :parentObj LIMIT :maxItems OFFSET :skipCount" />
+        <property name="sqlQueryTemplate" value="SELECT * FROM house where str_status = 0 and build_num = '' and end_date = '2079-06-06 00:00:00.000000' and house_num like '%:houseNum%' and ao_guid = ':parentObj' LIMIT :maxItems OFFSET :skipCount" />
     </bean>
 
     <bean name="ecos.journals.datasource.TestSource" class="ru.citeck.ecos.graphql.journal.datasource.DbJournalDataSource">
