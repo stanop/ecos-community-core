@@ -417,10 +417,9 @@
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService" />
         <property name="scriptService" ref="scriptService" />
-
     </bean>
-
-    <bean id="idocs.ResetLifeCyclePropertyBehavoiur" parent="CopyDocumentChangePropertyBehaviour">
+    
+    <!--<bean id="idocs.ResetLifeCyclePropertyBehaviour" parent="CopyDocumentChangePropertyBehaviour">
         <property name="classNames">
             <list>
                 <value>idocs:doc</value>
@@ -435,7 +434,7 @@
                 </bean>
             </list>
         </property>
-    </bean>
+    </bean>-->
 
     <bean id="idocs.AddCurrentUserToObjectBehaviour"
           class="ru.citeck.ecos.behavior.common.AddCurrentUserBehaviour" abstract="true" init-method="init">
