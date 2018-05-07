@@ -31,6 +31,8 @@ public class FiasHouseDBDataSource extends DbJournalDataSource{
         String sqlQuery = sqlQueryTemplate.replace(":houseNum", houseNum);
         String parentObj = tripletMap.containsKey("cm:ao_guid") ? "" + tripletMap.get("cm:ao_guid").getValue(): "00000000-0000-0000-0000-000000000000";
         sqlQuery = sqlQuery.replace(":parentObj", parentObj);
+        String postalCode = tripletMap.containsKey("cm:postal_code") ? "" + tripletMap.get("cm:postal_code").getValue(): "";
+        sqlQuery = sqlQuery.replace(":postalCode", postalCode);
 
         return sqlQuery ;
     }
