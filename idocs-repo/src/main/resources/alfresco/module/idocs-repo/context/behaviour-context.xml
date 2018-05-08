@@ -846,5 +846,8 @@
         <property name="enableHistoryOnDeleteChildAssocs" value="true"/>
     </bean>
 
+    <bean id="idocs.addCreatedPersonToAllGroup" class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
+        <property name="groupFullName" value="GROUP_all"/>
+    </bean>
 </beans>
 

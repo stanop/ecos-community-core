@@ -30,26 +30,59 @@ function getGroupOptions(options) {
 
 // filter groups and users as well
 function filterAuthorities(allAuthorities, options) {
-    var authorities = [];
+    var authorities = [],
+        authoritiesNamesToSkip = getAuthoritiesNamesToSkip(),
+        showInactiveUserOnlyForAdmin = ecosConfigService.getParamValue("orgstruct-show-inactive-user-only-for-admin") + "",
+        currentAuthenticatedUserIsAdmin = people.isAdmin(person);
 
-    for(var i in allAuthorities) {
+    var filterHelper = {
+        skipAuthorityRequired: function (name) {
+            return authoritiesNamesToSkip.indexOf(name) !== -1;
+        },
+        inactiveUserConfigIsNotAvailable: function (configValue) {
+            return configValue == null || configValue == ""
+                || configValue == "undefined" || configValue == "null";
+        }
+    };
+
+    for (var i in allAuthorities) {
         var displayName = "";
         var authority = allAuthorities[i],
             name = authority.shortName;
-        if(authority.authorityType == "USER") {
-            var enabled = people.isAccountEnabled(authority.person.properties.userName);
 
-            var asGroup = groups.getGroupForFullAuthorityName(authority.userName);
-            if(!options.user || options.subTypes && filterAuthorities(asGroup.allParentGroups, getGroupOptions(options)).length == 0) {
+        if (authority.authorityType == "USER") {
+
+            var userName = authority.userName ? authority.userName + "" : "";
+            if (filterHelper.skipAuthorityRequired(userName)) {
                 continue;
             }
 
-            if (!options.showDisabled && !enabled) {
+            var asGroup = groups.getGroupForFullAuthorityName(authority.userName);
+            if (!options.user || options.subTypes && filterAuthorities(asGroup.allParentGroups,
+                getGroupOptions(options)).length == 0) {
                 continue;
-            };
+            }
+
+            var enabled = people.isAccountEnabled(authority.person.properties.userName);
+
+            if (filterHelper.inactiveUserConfigIsNotAvailable(showInactiveUserOnlyForAdmin)) {
+                if (!options.showDisabled && !enabled) {
+                    continue;
+                }
+            } else {
+                if (showInactiveUserOnlyForAdmin === "true" && !currentAuthenticatedUserIsAdmin && !enabled) {
+                    continue;
+                }
+            }
 
             displayName = authority.person.properties.firstName + " " + authority.person.properties.lastName;
-        } else if(authority.authorityType == "GROUP") {
+        } else if (authority.authorityType == "GROUP") {
+
+            var groupFullName = authority.fullName ? authority.fullName + "" : "";
+            if (filterHelper.skipAuthorityRequired(groupFullName)) {
+                continue;
+            }
+
             var type = orgstruct.getGroupType(name),
                 subType = orgstruct.getGroupSubtype(name),
                 include = options[type || "group"];
@@ -68,7 +101,17 @@ function filterAuthorities(allAuthorities, options) {
         }
         authorities.push(authority);
     }
+
     return authorities;
+}
+
+function getAuthoritiesNamesToSkip() {
+    var toSkipStr = ecosConfigService.getParamValue("hide-in-orgstruct");
+    if (!toSkipStr) {
+        return [];
+    }
+    toSkipStr = toSkipStr + "";
+    return toSkipStr.split(",");
 }
 
 function createAuthority(obj, parent) {

@@ -333,6 +333,11 @@
         <property name="namespaceService" ref="namespaceService"/>
     </bean>
 
+    <bean id="ecosConfigServiceJS" class="ru.citeck.ecos.config.EcosConfigServiceJs" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="ecosConfigService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
     <bean id="applicationContextProvider" class="ru.citeck.ecos.providers.ApplicationContextProvider"/>
 
     <bean id="mailWithAttachments" class="ru.citeck.ecos.notification.MailAttachActionExecutor" parent="action-executer">
