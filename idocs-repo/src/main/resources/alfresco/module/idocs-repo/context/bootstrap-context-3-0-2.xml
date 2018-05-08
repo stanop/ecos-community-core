@@ -39,9 +39,8 @@
         <property name="bootstrapView">
             <props>
                 <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot</prop>
-                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/users-absence-events-journal.xml
-                </prop>
-                <prop key="messages">alfresco/module/idocs-repo/messages/journals-absence-events</prop>
+                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/users-absence-events-journal.xml</prop>
+                <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/absence/journals-absence-events</prop>
                 <prop key="encoding">UTF-8</prop>
             </props>
         </property>

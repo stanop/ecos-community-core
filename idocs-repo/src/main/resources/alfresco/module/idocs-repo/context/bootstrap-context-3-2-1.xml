@@ -14,6 +14,40 @@
         <property name="sinceVersion" value="3.2.1" />
         <property name="appliesFromVersion" value="3.2.1" />
     </bean>
+    
+    <bean id="idocs.module-component.users-absence-events-journal-update" parent="idocs.import-spaces.3-2-1"
+          depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="users-absence-events-journal-update"/>
+        <property name="description" value="User Absence Events Journals Update"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root"/>
+                <ref bean="idocs.module-component.users-absence-events-journal"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/journal:users-absence-events</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/update-users-absence-events-journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/absence/journals-absence-events</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/journal:users-absence-events/journal:default</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/update-users-absence-events-create-variant.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/absence/journals-absence-events</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists/cm:global-absence</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/update-users-absence-events-journal-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/absence/journals-absence-events</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
 
     <bean id="idocs.module-component.fias-journals-list" parent="idocs.import-spaces.3-2-1">
         <property name="name" value="fias-journals-list" />

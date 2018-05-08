@@ -290,6 +290,7 @@
 				<aspect>payments:paymentType</aspect>
 				<aspect>dms:templateable</aspect>
 				<aspect>invariants:draftAspect</aspect>
+				<aspect>idocs:lifeCycle</aspect>
 			</mandatory-aspects>
 		</type>
 	</types>

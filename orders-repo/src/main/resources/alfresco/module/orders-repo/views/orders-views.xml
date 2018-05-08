@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+        <import uri="http://www.citeck.ru/model/orders/common/1.0" prefix="orders" />
+    </imports>
+
+    <view class="orders:internal">
+        <views mode="create" kind="3-column" />
+        <views mode="edit" kind="3-column" />
+
+        <view>
+            <field prop="tk:type" template="none"/>
+            <field prop="tk:kind">
+                <region name="input" template="select2"/>
+                <region name="label" template="label">
+                    <param name="key">header.orders-internal.tk-kind</param>
+                </region>
+            </field>
+            <field prop="orders:creationDate"/>
+            <field assoc="idocs:signatory"/>
+        </view>
+
+        <view>
+            <field assoc="idocs:initiator"/>
+            <field assoc="orders:branch"/>
+            <field prop="orders:header"/>
+        </view>
+
+        <view>
+            <field assoc="orders:fileCode"/>
+            <field prop="idocs:registrationNumber"/>
+            <field prop="idocs:registrationDate"/>
+        </view>
+
+        <view>
+            <field prop="idocs:summary"/>
+        </view>
+
+        <view>
+            <field prop="dms:updateContent"/>
+        </view>
+
+        <view>
+            <field prop="cm:content">
+                <region name="label" template="label">
+                    <param name="key">header.orders-internal.cm-content</param>
+                </region>
+            </field>
+        </view>
+
+        <view>
+            <field prop="orders:skipRegistration" template="none"/>
+        </view>
+    </view>
+
+</views>

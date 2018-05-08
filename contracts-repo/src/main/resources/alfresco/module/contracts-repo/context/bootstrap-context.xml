@@ -21,7 +21,18 @@
 			</list>
 		</property>
 	</bean>
-	
+
+	<!-- life cycles -->
+	<bean id="contracts.agreement-lifecycle" parent="idocs.import-lifecycle.csv">
+		<property name="location" value="alfresco/module/contracts-repo/lifecycle/agreement-lifecycle.csv" />
+		<property name="entityType" value="contracts:agreement" />
+	</bean>
+
+	<bean id="contracts.supplementary-agreement-lifecycle" parent="idocs.import-lifecycle.csv">
+		<property name="location" value="alfresco/module/contracts-repo/lifecycle/agreement-lifecycle.csv" />
+		<property name="entityType" value="contracts:supplementaryAgreement" />
+	</bean>
+
 	<bean id="contracts.payment-lifecycle" parent="idocs.import-lifecycle.csv">
 		<property name="location" value="alfresco/module/contracts-repo/lifecycle/payment-lifecycle.csv" />
 		<property name="entityType" value="payments:payment" />

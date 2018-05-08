@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="orders.import-spaces.3-2-1" parent="orders.import-spaces.1-1-6" abstract="true">
+        <property name="sinceVersion" value="3.2.1" />
+        <property name="appliesFromVersion" value="3.2.1" />
+    </bean>
+
+    <bean id="orders.import-scripts.3-2-1" parent="orders.import-scripts.1-1-6" abstract="true">
+        <property name="sinceVersion" value="3.2.1" />
+        <property name="appliesFromVersion" value="3.2.1" />
+    </bean>
+
+    <bean id="orders.module-component.groups" parent="orders.import-spaces.3-2-1">
+        <property name="name" value="orders.groups"/>
+        <property name="description" value="Orders groups"/>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/group.xml</prop>
+                    <prop key="messages">alfresco/module/orders-repo/bootstrap/groups/orders-technologist</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="orders.module-component.add-technologist-group-to-site" parent="orders.import-scripts.3-2-1">
+        <property name="name" value="add-technologist-group-to-site" />
+        <property name="description" value="Add technologist group to site" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="orders.module-component.groups"/>
+                <ref bean="orders.siteBootstrap"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/orders-repo/bootstrap/scripts/add-technologist-group-to-site.js"/>
+    </bean>
+
+</beans>

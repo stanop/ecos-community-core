@@ -124,9 +124,9 @@
 				<aspect>icase:case</aspect>
 				<aspect>meet:participants</aspect>
 				<aspect>meet:plannedReporters</aspect>
-				<aspect>idocs:lifeCycle</aspect>
 				<aspect>history:historical</aspect>
 				<aspect>meet:hasDocumentStatus</aspect>
+				<aspect>idocs:lifeCycle</aspect>
 			</mandatory-aspects>
 		</type>
 

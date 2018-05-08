@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="opwf:orderPassWorkflowModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <author>Citeck</author>
+
+    <imports>
+        <import uri="http://www.citeck.ru/model/workflow/case-perform/1.0" prefix="wfcp"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/content/order-pass/workflow/1.0" prefix="opwf" />
+    </namespaces>
+
+    <types>
+
+        <type name="opwf:passProcessingTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="opwf:passProcessingConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Confirm</value>
+                                    <value>Rejected</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+    </types>
+
+</model>

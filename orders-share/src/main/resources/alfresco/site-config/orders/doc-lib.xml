@@ -12,6 +12,11 @@
                 <param name="function">onActionDocumentEditInternal</param>
                 <evaluator>evaluator.doclib.orders.internal</evaluator>
             </action>
+
+            <action id="document-start-confirmation-internal" label="actions.document-start-confirmation-internal" type="link">
+                <param name="href">/share/page/start-specified-workflow?packageItems={nodeRef}&amp;workflowId=activiti$confirm</param>
+                <evaluator>evaluator.doclib.orders.isActiveInternal</evaluator>
+            </action>
         </actions>
     </config>
 
@@ -33,6 +38,7 @@
                 <action index="120" id="document-edit-internal" />
                 <action index="260" id="document-delete" />
                 <action index="370" id="custom-manage-permissions" />
+                <action index="900" id="document-start-confirmation-internal" />
             </actionGroup>
 
             <!-- special doclib picker action-groups -->

@@ -5,12 +5,14 @@
     <bean id="order-pass.modelBootstrap" parent="dictionaryModelBootstrap" depends-on="idocs.dictionaryBootstrap">
         <property name="models">
             <list>
-                <value>alfresco/module/ecos-order-pass-repo/model/orderPassModel.xml</value>
+                <value>alfresco/module/ecos-order-pass-repo/model/order-pass-model.xml</value>
+                <value>alfresco/module/ecos-order-pass-repo/model/order-pass-workflow-model.xml</value>
             </list>
         </property>
         <property name="labels">
             <list>
-                <value>alfresco/module/ecos-order-pass-repo/messages/order_pass_model</value>
+                <value>alfresco/module/ecos-order-pass-repo/messages/order-pass-model</value>
+                <value>alfresco/module/ecos-order-pass-repo/messages/order-pass-workflow-model</value>
             </list>
         </property>
     </bean>

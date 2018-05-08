@@ -147,6 +147,7 @@
 				<aspect>letters:incomeType</aspect>
 				<aspect>letters:hasDelivery</aspect>
 				<aspect>idocs:hasRestrictedDocumentStatus</aspect>
+				<aspect>idocs:lifeCycle</aspect>
 			</mandatory-aspects>
 		</type>
 		
@@ -190,6 +191,7 @@
 				<aspect>idocs:hasPerformer</aspect>
 				<aspect>letters:hasDelivery</aspect>
 				<aspect>idocs:hasSignatory</aspect>
+				<aspect>idocs:lifeCycle</aspect>
 			</mandatory-aspects>
 		</type>
 		
