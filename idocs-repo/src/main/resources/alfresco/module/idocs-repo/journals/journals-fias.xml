@@ -23,13 +23,13 @@
         <datasource>ecos.journals.datasource.FiasRegion</datasource>
         <option name="doubleClickId">nodeRef</option>
         <headers>
-            <header key="cm:ao_guid" default="true">
+            <header key="cm:ao_guid">
                 <option name="customLabel">Идентификатор объекта</option>
             </header>
             <header key="cm:formal_name" default="true">
                 <option name="customLabel">Формализованное наименование</option>
             </header>
-            <header key="cm:region_code">
+            <header key="cm:region_code" default="true">
                 <option name="customLabel">Код региона</option>
             </header>
             <header key="cm:code">
@@ -51,16 +51,16 @@
         <datasource>ecos.journals.datasource.FiasDistrict</datasource>
         <option name="doubleClickId">nodeRef</option>
         <headers>
-            <header key="cm:ao_guid" default="true">
+            <header key="cm:ao_guid">
                 <option name="customLabel">Идентификатор объекта</option>
             </header>
             <header key="cm:formal_name" default="true">
                 <option name="customLabel">Формализованное наименование</option>
             </header>
-            <header key="cm:region_code">
+            <header key="cm:region_code" default="true">
                 <option name="customLabel">Код региона</option>
             </header>
-            <header key="cm:area_code">
+            <header key="cm:area_code" default="true">
                 <option name="customLabel">Код района</option>
             </header>
             <header key="cm:code">
@@ -82,19 +82,19 @@
         <datasource>ecos.journals.datasource.FiasCity</datasource>
         <option name="doubleClickId">nodeRef</option>
         <headers>
-            <header key="cm:ao_guid" default="true">
+            <header key="cm:ao_guid">
                 <option name="customLabel">Идентификатор объекта</option>
             </header>
             <header key="cm:formal_name" default="true">
                 <option name="customLabel">Формализованное наименование</option>
             </header>
-            <header key="cm:region_code">
+            <header key="cm:region_code" default="true">
                 <option name="customLabel">Код региона</option>
             </header>
-            <header key="cm:area_code">
+            <header key="cm:area_code" default="true">
                 <option name="customLabel">Код района</option>
             </header>
-            <header key="cm:city_code">
+            <header key="cm:city_code" default="true">
                 <option name="customLabel">Код города</option>
             </header>
             <header key="cm:code">
@@ -116,22 +116,22 @@
         <datasource>ecos.journals.datasource.FiasSettlement</datasource>
         <option name="doubleClickId">nodeRef</option>
         <headers>
-            <header key="cm:ao_guid" default="true">
+            <header key="cm:ao_guid">
                 <option name="customLabel">Идентификатор объекта</option>
             </header>
             <header key="cm:formal_name" default="true">
                 <option name="customLabel">Формализованное наименование</option>
             </header>
-            <header key="cm:region_code">
+            <header key="cm:region_code" default="true">
                 <option name="customLabel">Код региона</option>
             </header>
-            <header key="cm:area_code">
+            <header key="cm:area_code" default="true">
                 <option name="customLabel">Код района</option>
             </header>
-            <header key="cm:city_code">
+            <header key="cm:city_code" default="true">
                 <option name="customLabel">Код города</option>
             </header>
-            <header key="cm:place_code">
+            <header key="cm:place_code" default="true">
                 <option name="customLabel">Код населенного пункта</option>
             </header>
             <header key="cm:code">
@@ -153,25 +153,25 @@
         <datasource>ecos.journals.datasource.FiasStreet</datasource>
         <option name="doubleClickId">nodeRef</option>
         <headers>
-            <header key="cm:ao_guid" default="true">
+            <header key="cm:ao_guid">
                 <option name="customLabel">Идентификатор объекта</option>
             </header>
             <header key="cm:formal_name" default="true">
                 <option name="customLabel">Формализованное наименование</option>
             </header>
-            <header key="cm:region_code">
+            <header key="cm:region_code" default="true">
                 <option name="customLabel">Код региона</option>
             </header>
-            <header key="cm:area_code">
+            <header key="cm:area_code" default="true">
                 <option name="customLabel">Код района</option>
             </header>
-            <header key="cm:city_code">
+            <header key="cm:city_code" default="true">
                 <option name="customLabel">Код города</option>
             </header>
-            <header key="cm:place_code">
+            <header key="cm:place_code" default="true">
                 <option name="customLabel">Код населенного пункта</option>
             </header>
-            <header key="cm:street_code">
+            <header key="cm:street_code" default="true">
                 <option name="customLabel">Код улицы</option>
             </header>
             <header key="cm:code">
@@ -199,10 +199,10 @@
             <header key="cm:house_num" default="true">
                 <option name="customLabel">Номер дома</option>
             </header>
-            <header key="cm:house_guid" default="true">
+            <header key="cm:house_guid">
                 <option name="customLabel">Идентификатор дома</option>
             </header>
-            <header key="cm:ao_guid">
+            <header key="cm:ao_guid" default="true">
                 <option name="customLabel">Идентификатор адресного объекта</option>
             </header>
         </headers>
