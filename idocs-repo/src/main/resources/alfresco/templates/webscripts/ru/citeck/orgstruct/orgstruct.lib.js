@@ -33,7 +33,7 @@ function filterAuthorities(allAuthorities, options) {
     var authorities = [],
         authoritiesNamesToSkip = getAuthoritiesNamesToSkip(),
         showInactiveUserOnlyForAdmin = ecosConfigService.getParamValue("orgstruct-show-inactive-user-only-for-admin") + "",
-        userIsAdmin = currentUserIsAdmin();
+        currentAuthenticatedUserIsAdmin = people.isAdmin(person);
 
     var filterHelper = {
         skipAuthorityRequired: function (name) {
@@ -70,7 +70,7 @@ function filterAuthorities(allAuthorities, options) {
                     continue;
                 }
             } else {
-                if (showInactiveUserOnlyForAdmin === "true" && !userIsAdmin && !enabled) {
+                if (showInactiveUserOnlyForAdmin === "true" && !currentAuthenticatedUserIsAdmin && !enabled) {
                     continue;
                 }
             }
@@ -103,12 +103,6 @@ function filterAuthorities(allAuthorities, options) {
     }
 
     return authorities;
-}
-
-function currentUserIsAdmin() {
-    var userName = person.properties["cm:userName"],
-        user = people.getPerson(userName);
-    return people.isAdmin(user);
 }
 
 function getAuthoritiesNamesToSkip() {
