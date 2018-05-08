@@ -746,6 +746,7 @@
         <property name="caseRoleService" ref="caseRoleService" />
         <property name="policyComponent" ref="policyComponent" />
         <property name="nodeService" ref="nodeService" />
+        <property name="mergeRolesUpdating" value="false" />
     </bean>
 
     <bean class="ru.citeck.ecos.behavior.role.UpdateRoleBehaviour" init-method="init">
