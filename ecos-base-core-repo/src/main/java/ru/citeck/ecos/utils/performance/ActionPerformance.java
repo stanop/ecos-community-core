@@ -1,5 +1,7 @@
 package ru.citeck.ecos.utils.performance;
 
+import org.apache.commons.lang.StringUtils;
+
 public class ActionPerformance  extends Performance {
 
     private String actionName;
@@ -16,6 +18,9 @@ public class ActionPerformance  extends Performance {
 
     @Override
     public String toString() {
-        return actionName;
+        if (StringUtils.isNotBlank(actionName)) {
+            return actionName;
+        }
+        return String.format("Thread[%s]", Thread.currentThread().getName());
     }
 }

@@ -31,6 +31,15 @@
         <property name="className" value="{http://www.citeck.ru/model/grant-permission/1.0}granted"/>
     </bean>-->
 
+    <bean id="copyNodeIgnoreAttributesBehaviour.permissions" class="ru.citeck.ecos.behavior.common.EcosCopyBehaviourCallback">
+        <property name="className" value="{http://www.citeck.ru/model/grant-permission/1.0}granted" />
+        <property name="ignoredAttributes">
+            <list>
+                <value>{http://www.citeck.ru/model/grant-permission/1.0}permissions</value>
+            </list>
+        </property>
+    </bean>
+
     <!-- The undeletable aspect override -->
     <!-- it allows to delete working copies -->
     <bean id="undeletableAspect" class="ru.citeck.ecos.security.UndeletableAspect" init-method="init">
@@ -507,6 +516,15 @@
         <property name="nodeService" ref="nodeService"/>
         <property name="historyService" ref="historyService"/>
         <property name="dictionaryService" ref="DictionaryService"/>
+    </bean>
+
+    <bean id="copyNodeIgnoreAttributesBehaviour.history" class="ru.citeck.ecos.behavior.common.EcosCopyBehaviourCallback">
+        <property name="className" value="{http://www.citeck.ru/model/history/1.0}eventContainedAspect" />
+        <property name="ignoredAttributes">
+            <list>
+                <value>{http://www.citeck.ru/model/history/1.0}eventContained</value>
+            </list>
+        </property>
     </bean>
 
 	<bean id="idocs.ContentNodeBehavior" class="ru.citeck.ecos.behavior.content.ContentNodeBehaviorImpl" >
