@@ -18,7 +18,9 @@
                 type: attr.fieldType,
                 nodetype: attr.nodetype,
                 datatype: attr.datatype,
-                javaclass: params.javaclass || attr.javaclass
+                javaclass: params.javaclass || attr.javaclass,
+                _dependencies: null,
+                _options: []
             };
         }),
         viewNodeRef = viewData.nodeRef;
