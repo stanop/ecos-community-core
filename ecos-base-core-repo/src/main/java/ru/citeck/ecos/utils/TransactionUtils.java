@@ -9,6 +9,8 @@ import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.transaction.TransactionListenerAdapter;
 import org.apache.log4j.Logger;
 import org.springframework.extensions.surf.util.I18NUtil;
+import ru.citeck.ecos.utils.performance.ActionPerformance;
+import ru.citeck.ecos.utils.performance.Performance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +27,26 @@ public class TransactionUtils {
     private static TransactionService transactionService;
 
     public static void doBeforeCommit(final Runnable runnable) {
-        new DeferBeforeCommit(runnable).run();
+        doBeforeCommit(null, runnable);
+    }
+
+    public static void doBeforeCommit(String actionKey, final Runnable runnable) {
+        AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
+            @Override
+            public void beforeCommit(boolean readOnly) {
+                Performance perf = new ActionPerformance(runnable, actionKey);
+                runnable.run();
+                perf.stop();
+            }
+        });
+    }
+
+    public static void doAfterBehaviours(String actionKey, final Runnable runnable) {
+        doBeforeCommit("doAfterBehaviours", () -> doBeforeCommit(actionKey, runnable));
     }
 
     public static void doAfterBehaviours(final Runnable runnable) {
-        doBeforeCommit(new DeferBeforeCommit(runnable));
+        doBeforeCommit(() -> doBeforeCommit(runnable));
     }
 
     public static void doAfterCommit(final Runnable job) {
@@ -84,7 +101,7 @@ public class TransactionUtils {
     public static <T> void processBeforeCommit(String transactionKey, T element, Consumer<T> consumer) {
         final Set<T> elements = TransactionalResourceHelper.getSet(transactionKey);
         if (elements.isEmpty()) {
-            TransactionUtils.doBeforeCommit(() -> {
+            TransactionUtils.doBeforeCommit(transactionKey, () -> {
                 AuthenticationUtil.runAsSystem(() -> {
                     elements.forEach(consumer);
                     return null;
@@ -98,7 +115,7 @@ public class TransactionUtils {
     public static <T> void processAfterBehaviours(String transactionKey, T element, Consumer<T> consumer) {
         final Set<T> elements = TransactionalResourceHelper.getSet(transactionKey);
         if (elements.isEmpty()) {
-            TransactionUtils.doAfterBehaviours(() -> {
+            TransactionUtils.doAfterBehaviours(transactionKey, () -> {
                 AuthenticationUtil.runAsSystem(() -> {
                     elements.forEach(consumer);
                     return null;
