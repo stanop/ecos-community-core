@@ -7,9 +7,6 @@ public interface ConfigModel {
 
     QName TYPE_ECOS_CONFIG = QName.createQName(NAMESPACE, "ecosConfig");
 
-
     QName PROP_KEY = QName.createQName(NAMESPACE, "key");
     QName PROP_VALUE = QName.createQName(NAMESPACE, "value");
-
-
 }

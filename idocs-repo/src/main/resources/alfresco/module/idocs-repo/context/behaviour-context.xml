@@ -827,5 +827,8 @@
         <property name="order" value="40"/>
     </bean>
 
+    <bean id="idocs.addCreatedPersonToAllGroup" class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
+        <property name="groupFullName" value="GROUP_all"/>
+    </bean>
 </beans>
 

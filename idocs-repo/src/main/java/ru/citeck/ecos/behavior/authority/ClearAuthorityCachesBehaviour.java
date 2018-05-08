@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2018 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -100,11 +100,7 @@ public class ClearAuthorityCachesBehaviour implements OnCreateChildAssociationPo
                 logger.error("No such method: " + cacheName + "." + methodName, e);
             } catch (SecurityException e) {
                 logger.error("Could not obtain cache clear method: " + cacheName + "." + methodName, e);
-            } catch (IllegalAccessException e) {
-                logger.error("Error while calling clear cache method: " + cacheName + "." + methodName, e);
-            } catch (IllegalArgumentException e) {
-                logger.error("Error while calling clear cache method: " + cacheName + "." + methodName, e);
-            } catch (InvocationTargetException e) {
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 logger.error("Error while calling clear cache method: " + cacheName + "." + methodName, e);
             }
         }
