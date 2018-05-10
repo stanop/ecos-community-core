@@ -15,18 +15,29 @@ import ru.citeck.ecos.flowable.services.FlowableModelerService;
  */
 public class FlowableModelerImportProcessModuleComponent extends AbstractModuleComponent {
 
-    private static final Logger logger = Logger.getLogger(FlowableModelerImportProcessModuleComponent.class);
+    /**
+     * Logger
+     */
+    private static final Logger LOGGER = Logger.getLogger(FlowableModelerImportProcessModuleComponent.class);
 
+    /**
+     * Constants
+     */
     private static final String IMPORT_CONFIG_KEY = "flowable-process-import-to-modeler-already-executed";
     private static final String IMPORT_CONFIG_BEAN = "flowable.module-component.process-import-to-modeler-config";
 
+    /**
+     * Services
+     */
     private RetryingTransactionHelper retryingTransactionHelper;
     private FlowableModelerService flowableModelerService;
     private EcosConfigService ecosConfigService;
-
     @Autowired
     private ApplicationContext applicationContext;
 
+    /**
+     * Execute internal
+     */
     @Override
     protected void executeInternal() {
         AuthenticationUtil.runAs(() -> retryingTransactionHelper.doInTransaction(() -> {
@@ -39,30 +50,37 @@ public class FlowableModelerImportProcessModuleComponent extends AbstractModuleC
         ), AuthenticationUtil.getSystemUserName());
     }
 
+    /**
+     * Check - is import required
+     * @return Check result
+     */
     private boolean importRequired() {
         if (flowableModelerService == null || !flowableModelerService.importIsPossible()) {
-            logger.info("Cannot import process model, because flowable integration is not initialized.");
+            LOGGER.info("Cannot import process model, because flowable integration is not initialized.");
             return false;
         }
-
-        String config = processConfig();
-        Boolean alreadyImported = Boolean.valueOf(config);
-
-        return !alreadyImported;
+        return !initializeModels();
     }
 
-    private String processConfig() {
+    /**
+     * Initialize models (first time)
+     * @return Was initialization called check
+     */
+    private Boolean initializeModels() {
         String config = (String) ecosConfigService.getParamValue(IMPORT_CONFIG_KEY, null);
 
+        /** Call initializing */
         if (config == null) {
-            ImporterModuleComponent bean = applicationContext.getBean(
-                    IMPORT_CONFIG_BEAN, ImporterModuleComponent.class);
+            ImporterModuleComponent bean = applicationContext.getBean(IMPORT_CONFIG_BEAN,
+                    ImporterModuleComponent.class);
             bean.execute();
-            config = (String) ecosConfigService.getParamValue(IMPORT_CONFIG_KEY, null);
+            return true;
+        } else {
+            return false;
         }
-
-        return config;
     }
+
+    /** Setters */
 
     public void setRetryingTransactionHelper(RetryingTransactionHelper retryingTransactionHelper) {
         this.retryingTransactionHelper = retryingTransactionHelper;
