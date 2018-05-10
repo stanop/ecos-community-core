@@ -1367,6 +1367,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
         })
         .method('reset', function(full, depth) {
 
+            if (!this.persisted.loaded()) {
+                return;
+            }
+
             if (_.isFinite(depth)) {
                 depth--;
                 if (depth <= 0) return;
