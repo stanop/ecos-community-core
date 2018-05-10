@@ -119,31 +119,4 @@
         </property>
     </bean>
 
-    <bean id="orders.module-component.skip-registration-config" parent="orders.import-spaces">
-        <property name="name" value="skip-registration-config" />
-        <property name="description" value="Orders skip registration stage config" />
-        <property name="bootstrapViews">
-            <list>
-                <props>
-                    <prop key="path">/app:company_home/app:dictionary</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
-                    <prop key="messages">alfresco/module/orders-repo/bootstrap/configs/orders-skip-registration-config</prop>
-                    <prop key="encoding">UTF-8</prop>
-                </props>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="orders.module-component.enumeration.templates" parent="orders.import-spaces">
-        <property name="bootstrapViews">
-            <list>
-                <props>
-                    <prop key="path">/</prop>
-                    <prop key="location">alfresco/module/orders-repo/bootstrap/templates/orders-internal-enumeration-template.xml</prop>
-                    <prop key="encoding">UTF-8</prop>
-                </props>
-            </list>
-        </property>
-    </bean>
-
 </beans>
