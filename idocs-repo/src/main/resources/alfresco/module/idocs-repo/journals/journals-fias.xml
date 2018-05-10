@@ -29,6 +29,9 @@
             <header key="cm:formal_name" default="true">
                 <option name="customLabel">Формализованное наименование</option>
             </header>
+            <header key="cm:short_name" default="true">
+                <option name="customLabel">Краткое наименование</option>
+            </header>
             <header key="cm:region_code" default="true">
                 <option name="customLabel">Код региона</option>
             </header>
@@ -57,6 +60,9 @@
             <header key="cm:formal_name" default="true">
                 <option name="customLabel">Формализованное наименование</option>
             </header>
+            <header key="cm:short_name" default="true">
+                <option name="customLabel">Краткое наименование</option>
+            </header>
             <header key="cm:region_code" default="true">
                 <option name="customLabel">Код региона</option>
             </header>
@@ -84,6 +90,9 @@
         <headers>
             <header key="cm:ao_guid">
                 <option name="customLabel">Идентификатор объекта</option>
+            </header>
+            <header key="cm:short_name" default="true">
+                <option name="customLabel">Краткое наименование</option>
             </header>
             <header key="cm:formal_name" default="true">
                 <option name="customLabel">Формализованное наименование</option>
@@ -118,6 +127,9 @@
         <headers>
             <header key="cm:ao_guid">
                 <option name="customLabel">Идентификатор объекта</option>
+            </header>
+            <header key="cm:short_name" default="true">
+                <option name="customLabel">Краткое наименование</option>
             </header>
             <header key="cm:formal_name" default="true">
                 <option name="customLabel">Формализованное наименование</option>
@@ -155,6 +167,9 @@
         <headers>
             <header key="cm:ao_guid">
                 <option name="customLabel">Идентификатор объекта</option>
+            </header>
+            <header key="cm:short_name" default="true">
+                <option name="customLabel">Краткое наименование</option>
             </header>
             <header key="cm:formal_name" default="true">
                 <option name="customLabel">Формализованное наименование</option>
