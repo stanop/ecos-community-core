@@ -1,5 +1,5 @@
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
-	"result": ${result}
+	"result": "${result}"
 }
 </#escape>
