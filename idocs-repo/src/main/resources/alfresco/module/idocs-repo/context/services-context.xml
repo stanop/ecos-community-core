@@ -588,6 +588,7 @@
 		<property name="dictionaryService" ref="dictionaryService"/>
 		<property name="restTemplate" ref="caseRestTemplate"/>
 		<property name="transactionService" ref="transactionService"/>
+		<property name="lockService" ref="lockService"/>
 	</bean>
 
 	<bean id="remoteRestoreCaseModelService" class="ru.citeck.ecos.cases.impl.RemoteRestoreCaseModelServiceImpl">
