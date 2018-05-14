@@ -251,16 +251,9 @@ ko.components.register("number", {
             }
             return false;
         };
-
-        this.OnBlurEvent = function(data, event) {
-            // for Google Chrome (incorrect processing of a value with a dot at the end)
-            if (isNaN(document.getElementById(self.id).valueAsNumber)) {
-                document.getElementById(self.id).value = null;
-            }
-        };
     },
     template:
-       '<input type="number" data-bind="value: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation, blur: OnBlurEvent }" />'
+       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
 });
 
 // ---------------
