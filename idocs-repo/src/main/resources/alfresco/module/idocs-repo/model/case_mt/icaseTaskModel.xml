@@ -47,7 +47,7 @@
                 <association name="icaseTask:workflowPackage">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>bpm:package</class>

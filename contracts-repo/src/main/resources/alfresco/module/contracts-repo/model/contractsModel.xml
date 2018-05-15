@@ -498,7 +498,7 @@
 				<association name="contracts:repealedActivity">
 					<source>
 						<mandatory>false</mandatory>
-						<many>false</many>
+						<many>true</many>
 					</source>
 					<target>
 						<class>activ:activity</class>
@@ -509,7 +509,7 @@
 				<association name="contracts:lastActiveActivities">
 					<source>
 						<mandatory>false</mandatory>
-						<many>false</many>
+						<many>true</many>
 					</source>
 					<target>
 						<class>activ:activity</class>

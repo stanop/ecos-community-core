@@ -42,7 +42,7 @@
                 <child-association name="iEvent:conditions">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>cond:condition</class>

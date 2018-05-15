@@ -218,7 +218,7 @@
                 <association name="dms:agreement_to_files">
                     <title>Supplementary Files</title>
                     <source>
-                        <mandatory>true</mandatory>
+                        <mandatory>false</mandatory>
                         <many>true</many>
                     </source>
                     <target>
@@ -650,7 +650,7 @@
 				<child-association name="dms:supplementaryFiles">
 					<source>
 						<mandatory>false</mandatory>
-						<many>false</many>
+						<many>true</many>
 					</source>
 					<target>
 						<class>cm:content</class>
@@ -929,7 +929,7 @@
 					<title>Application Files</title>
 					<source>
 						<mandatory>false</mandatory>
-						<many>false</many>
+						<many>true</many>
 					</source>
 					<target>
 						<class>dms:applicationFile</class>
@@ -942,7 +942,7 @@
 				<child-association name="dms:versionedApplicationFiles">
 					<source>
 						<mandatory>false</mandatory>
-						<many>false</many>
+						<many>true</many>
 					</source>
 					<target>
 						<class>cm:content</class>

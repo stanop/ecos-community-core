@@ -33,7 +33,7 @@
 				<association name="wfgfam:person">
 					<source>
 						<mandatory>false</mandatory>
-						<many>false</many>
+						<many>true</many>
 					</source>
 					<target>
 						<class>cm:person</class>

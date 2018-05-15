@@ -313,7 +313,7 @@
                 <association name="idocs:contacts">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>idocs:contact</class>
@@ -1032,7 +1032,7 @@
                     <title>Факсимиле подписи</title>
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>cm:content</class>
@@ -1192,7 +1192,7 @@
 					<title>Подписанная версия</title>
 					<source>
 						<mandatory>false</mandatory>
-						<many>false</many>
+						<many>true</many>
 					</source>
 					<target>
 						<class>cm:content</class>

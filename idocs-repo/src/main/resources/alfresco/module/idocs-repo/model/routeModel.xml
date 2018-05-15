@@ -43,8 +43,8 @@
 			<associations>
 				<child-association name="route:participants">
 					<source>
-						<mandatory>true</mandatory>
-						<many>false</many>
+						<mandatory>false</mandatory>
+						<many>true</many>
 					</source>
 					<target>
 						<class>route:participant</class>
@@ -65,8 +65,8 @@
 			<associations>
 				<child-association name="route:stages">
 					<source>
-						<mandatory>true</mandatory>
-						<many>false</many>
+						<mandatory>false</mandatory>
+						<many>true</many>
 					</source>
 					<target>
 						<class>route:stage</class>

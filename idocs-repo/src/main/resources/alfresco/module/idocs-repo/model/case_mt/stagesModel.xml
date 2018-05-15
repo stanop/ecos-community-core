@@ -48,7 +48,7 @@
                 <child-association name="stages:childStages">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>stages:stage</class>
@@ -64,6 +64,7 @@
             <associations>
                 <association name="stages:startCompletenessLevelsRestriction">
                     <source>
+                        <mandatory>false</mandatory>
                         <many>true</many>
                     </source>
                     <target>
@@ -78,6 +79,7 @@
             <associations>
                 <association name="stages:stopCompletenessLevelsRestriction">
                     <source>
+                        <mandatory>false</mandatory>
                         <many>true</many>
                     </source>
                     <target>

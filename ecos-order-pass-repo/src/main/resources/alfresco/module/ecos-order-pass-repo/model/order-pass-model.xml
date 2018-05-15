@@ -114,7 +114,7 @@
                 <association name="op:orderPassCaseLink">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>op:orderPass</class>

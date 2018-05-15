@@ -76,7 +76,8 @@
 				<child-association name="pred:antecedent">
 					<title>Condition antecedent</title>
 					<source>
-						<many>false</many>
+						<mandatory>false</mandatory>
+						<many>true</many>
 					</source>
 					<target>
 						<class>pred:predicate</class>
@@ -86,7 +87,8 @@
 				<child-association name="pred:consequent">
 					<title>Condition consequent</title>
 					<source>
-						<many>false</many>
+						<mandatory>false</mandatory>
+						<many>true</many>
 					</source>
 					<target>
 						<class>pred:predicate</class>
@@ -117,6 +119,7 @@
 				<association name="pred:completedLevels">
 					<title>Completed completeness levels</title>
 					<source>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>

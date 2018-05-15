@@ -53,7 +53,8 @@
 				<child-association name="req:levelRequirement">
 					<title>Level requirement</title>
 					<source>
-						<many>false</many>
+						<mandatory>false</mandatory>
+						<many>true</many>
 					</source>
 					<target>
 						<class>req:requirement</class>
@@ -74,6 +75,7 @@
 				<association name="req:requirementScope">
 					<title>Requirement scope</title>
 					<source>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -99,6 +101,7 @@
 				<association name="req:requiredLevels">
 					<title>Required completeness levels</title>
 					<source>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -132,6 +135,7 @@
 				<association name="req:completenessLevels">
 					<title>Available completeness levels</title>
 					<source>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -142,6 +146,7 @@
 				<association name="req:completedLevels">
 					<title>Completed levels</title>
 					<source>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -152,6 +157,7 @@
 				<association name="req:passedRequirements">
 					<title>Completed levels</title>
 					<source>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -162,7 +168,8 @@
 				<child-association name="req:matches">
 					<title>Current matches</title>
 					<source>
-						<many>false</many>
+						<mandatory>false</mandatory>
+						<many>true</many>
 					</source>
 					<target>
 						<class>req:match</class>
