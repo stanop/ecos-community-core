@@ -60,7 +60,7 @@
                                     formats: {
                                         "authority": {
                                             name: "authority-{fullName}",
-                                            keys: [ "{groupType}-manager-{roleIsManager}", "{authorityType}-{groupType}", "{authorityType}", "available-{available}" ]
+                                            keys: [ "{groupType}-manager-{roleIsManager}", "{authorityType}-{groupType}", "{authorityType}", "available-{available}", "isPersonDisabled-{isPersonDisabled}" ]
                                         }
                                     },
                                     item: {

@@ -34,6 +34,7 @@
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.journals-meta-root"/>
+                <ref bean="idocs.module-component.absence-events"/>
             </list>
         </property>
         <property name="bootstrapView">
