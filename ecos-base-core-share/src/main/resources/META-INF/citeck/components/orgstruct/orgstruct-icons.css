@@ -52,6 +52,26 @@
     background-image: url(icons/user-unavailable-16.png);
 }
 
+.ygtvcell.USER.available-true.isPersonDisabled-true
+{
+    background-image: url(icons/user-16.png);
+}
+
+.ygtvcell.USER.available-true.isPersonDisabled-false
+{
+    background-image: url(icons/user-deputy-assistant-16.png);
+}
+
+.ygtvcell.USER.available-false.isPersonDisabled-true
+{
+    background-image: url(icons/user-unavailable-16.png);
+}
+
+.ygtvcell.USER.available-false.isPersonDisabled-false
+{
+    background-image: url(icons/user-deputy-assistant-unavailable-16.png);
+}
+
 .ygtvcell.deputy-true.available-true
 {
     background-image: url(icons/user-deputy-16.png);
@@ -170,5 +190,5 @@ button.convertToRole
 
 button.createUser
 {
-   background-image: url(icons/user-create-16.png);
+   background-image: url(icons/user-deputy-assistant-add-16.png);
 }
