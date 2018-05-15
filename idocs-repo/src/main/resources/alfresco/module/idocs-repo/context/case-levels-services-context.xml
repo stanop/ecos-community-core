@@ -4,14 +4,29 @@
 <beans>
 
 	<!-- case levels services -->
-	<bean name="caseCompletenessService" class="ru.citeck.ecos.icase.CaseCompletenessServiceImpl" init-method="init" depends-on="idocs.dictionaryBootstrap">
+	<bean name="caseCompletenessService" class="ru.citeck.ecos.icase.completeness.CaseCompletenessServiceImpl" init-method="init" depends-on="idocs.dictionaryBootstrap">
 		<property name="nodeService" ref="nodeService" />
 		<property name="predicateService" ref="predicateService" />
 		<property name="caseElementService" ref="caseElementService" />
-		<property name="policyComponent" ref="policyComponent" />
 	</bean>
+
+    <bean id="caseCompletenessService_cache_interceptor" class="ru.citeck.ecos.cache.GlobalCacheInterceptor" />
+
+    <bean id="caseCompletenessServiceCached" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces">
+            <list>
+                <value>ru.citeck.ecos.icase.completeness.CaseCompletenessService</value>
+            </list>
+        </property>
+        <property name="target" ref="caseCompletenessService" />
+        <property name="interceptorNames">
+            <list>
+                <idref bean="caseCompletenessService_cache_interceptor"/>
+            </list>
+        </property>
+    </bean>
 	
-	<bean name="caseCompletenessServiceJS" class="ru.citeck.ecos.icase.CaseCompletenessServiceJS" parent="baseJavaScriptExtension">
+	<bean name="caseCompletenessServiceJS" class="ru.citeck.ecos.icase.completeness.CaseCompletenessServiceJS" parent="baseJavaScriptExtension">
 		<property name="extensionName" value="completeness" />
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 		<property name="impl" ref="caseCompletenessService" />

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.citeck.ecos.icase;
+package ru.citeck.ecos.icase.element;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -35,11 +35,13 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 
+import ru.citeck.ecos.icase.CaseUtils;
+import ru.citeck.ecos.icase.element.config.ElementConfigDto;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
-public abstract class AbstractCaseElementDAO implements CaseElementDAO {
+public abstract class AbstractCaseElementDAO<ConfigType extends ElementConfigDto> implements CaseElementDAO<ConfigType> {
 
 	protected NodeService nodeService;
 	protected DictionaryService dictionaryService;
@@ -96,17 +98,17 @@ public abstract class AbstractCaseElementDAO implements CaseElementDAO {
 	}
 
     @Override
-    public List<NodeRef> getCases(NodeRef element, NodeRef config)
+    public List<NodeRef> getCases(NodeRef element, ConfigType config)
             throws AlfrescoRuntimeException, IllegalArgumentException {
         
         if (!nodeService.exists(element)) {
             throw new IllegalArgumentException("Element node does not exist: " + element);
         }
-        if (!nodeService.exists(config)) {
-            throw new IllegalArgumentException("Config node does not exist: " + config);
+        if (config == null) {
+            throw new IllegalArgumentException("Config node does not exist");
         }
 
-        QName elementType = needElementType(config);
+        QName elementType = config.getElementType();
         if(!RepoUtils.isSubClass(element, elementType, nodeService, dictionaryService)) {
             return Collections.emptyList();
         }
@@ -115,11 +117,11 @@ public abstract class AbstractCaseElementDAO implements CaseElementDAO {
         return filterByClass(parents, ICaseModel.ASPECT_CASE);
     }
     
-    protected abstract List<NodeRef> getCasesImpl(NodeRef element, NodeRef config)
+    protected abstract List<NodeRef> getCasesImpl(NodeRef element, ConfigType config)
             throws AlfrescoRuntimeException, IllegalArgumentException;
     
     @Override
-    public void addAll(Collection<NodeRef> elements, NodeRef caseNode, NodeRef config) {
+    public void addAll(Collection<NodeRef> elements, NodeRef caseNode, ConfigType config) {
         if(elements == null || elements.isEmpty()) return;
         Set<NodeRef> currentElements = new HashSet<>(get(caseNode, config));
         for (NodeRef element : elements) {
@@ -130,13 +132,13 @@ public abstract class AbstractCaseElementDAO implements CaseElementDAO {
     }
 
 	@Override
-	public NodeRef destination(NodeRef caseNode, NodeRef config)
+	public NodeRef destination(NodeRef caseNode, ConfigType config)
 			throws AlfrescoRuntimeException, IllegalArgumentException {
 	
 		if (!nodeService.exists(caseNode)) {
 			throw new IllegalArgumentException("Cannot create the association without caseNode");
 		}
-		if (!nodeService.exists(config)) {
+		if (config == null) {
 			throw new IllegalArgumentException("Cannot create the association without config");
 		}
 		try {
@@ -154,7 +156,7 @@ public abstract class AbstractCaseElementDAO implements CaseElementDAO {
 	}
 	
     @Override
-    public void copyElementsToTemplate(NodeRef caseNodeRef, NodeRef template, NodeRef config) {
+    public void copyElementsToTemplate(NodeRef caseNodeRef, NodeRef template, ConfigType config) {
         List<NodeRef> elements = get(caseNodeRef, config);
         for(NodeRef element : elements) {
             nodeService.createAssociation(template, element, ICaseTemplateModel.ASSOC_EXTERNAL_ELEMENTS);
@@ -162,13 +164,9 @@ public abstract class AbstractCaseElementDAO implements CaseElementDAO {
     }
     
     @Override
-    public void copyElementsFromTemplate(NodeRef template, NodeRef caseNodeRef, NodeRef config) {
+    public void copyElementsFromTemplate(NodeRef template, NodeRef caseNodeRef, ConfigType config) {
         List<NodeRef> elements = RepoUtils.getTargetNodeRefs(template, ICaseTemplateModel.ASSOC_EXTERNAL_ELEMENTS, nodeService);
         addAll(elements, caseNodeRef, config);
-    }
-
-    protected QName needElementType(NodeRef config) {
-        return RepoUtils.getMandatoryProperty(config, ICaseModel.PROP_ELEMENT_TYPE, nodeService);
     }
     
     @Override

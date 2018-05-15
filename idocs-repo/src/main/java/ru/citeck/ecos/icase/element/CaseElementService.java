@@ -16,14 +16,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.citeck.ecos.icase;
+package ru.citeck.ecos.icase.element;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.service.cmr.repository.NodeRef;
-
+import ru.citeck.ecos.icase.element.config.ElementConfigDto;
 
 public interface CaseElementService {
 
@@ -32,7 +33,7 @@ public interface CaseElementService {
      * 
      * @return
      */
-    public List<String> getAllElementTypes();
+    List<String> getAllElementTypes();
 
     /**
      * Get all element types, valid for case.
@@ -40,7 +41,7 @@ public interface CaseElementService {
      * @param caseNodeRef
      * @return
      */
-    public List<String> getAllElementTypes(NodeRef caseNodeRef);
+    List<String> getAllElementTypes(NodeRef caseNodeRef);
     
     /**
      * Get elements of case.
@@ -124,5 +125,10 @@ public interface CaseElementService {
     /**
      * Get elements config by name
      */
-    NodeRef getConfig(String configName);
+    Optional<ElementConfigDto> getConfig(String configName);
+
+    /**
+     * Get element config by config nodeRef
+     */
+    Optional<ElementConfigDto> getConfig(NodeRef nodeRef);
 }

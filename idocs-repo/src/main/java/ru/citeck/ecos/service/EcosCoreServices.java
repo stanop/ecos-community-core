@@ -4,7 +4,7 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.cmmn.service.CaseTemplateRegistry;
 import ru.citeck.ecos.event.EventService;
-import ru.citeck.ecos.icase.CaseElementService;
+import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.icase.timer.CaseTimerService;

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.citeck.ecos.icase;
+package ru.citeck.ecos.icase.element;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +34,7 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
+import ru.citeck.ecos.icase.element.config.ElementConfigDto;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.search.CriteriaSearchResults;
 import ru.citeck.ecos.search.CriteriaSearchService;
@@ -58,23 +59,11 @@ import ru.citeck.ecos.utils.RepoUtils;
  * 
  * @author Sergey Tiunov
  */
-public class CaseElementConfigsDAOImpl extends AbstractCaseElementDAO {
+public class CaseElementConfigsDAOImpl extends AbstractCaseElementDAO<ElementConfigDto> {
     
     private CriteriaSearchService criteriaService;
     private NamespaceService namespaceService;
     private LazyNodeRef caseElementConfigRoot;
-
-    public void setCriteriaSearchService(CriteriaSearchService criteriaService) {
-        this.criteriaService = criteriaService;
-    }
-
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
-    }
-
-    public void setCaseElementConfigRoot(LazyNodeRef caseElementConfigRoot) {
-        this.caseElementConfigRoot = caseElementConfigRoot;
-    }
 
     private List<NodeRef> getAllElementConfigs() {
         NodeRef root = caseElementConfigRoot.getNodeRef();
@@ -89,7 +78,7 @@ public class CaseElementConfigsDAOImpl extends AbstractCaseElementDAO {
     }
 
     @Override
-    public List<NodeRef> get(NodeRef caseNode, NodeRef config) {
+    public List<NodeRef> get(NodeRef caseNode, ElementConfigDto config) {
         if (!nodeService.exists(caseNode)) {
             throw new IllegalArgumentException("Cannot get nodeRefs without case node");
         }
@@ -111,7 +100,7 @@ public class CaseElementConfigsDAOImpl extends AbstractCaseElementDAO {
     }
 
     @Override
-    protected List<NodeRef> getCasesImpl(NodeRef element, NodeRef config)
+    protected List<NodeRef> getCasesImpl(NodeRef element, ElementConfigDto config)
             throws AlfrescoRuntimeException, IllegalArgumentException {
         
         // get class, required by new case element config:
@@ -131,7 +120,7 @@ public class CaseElementConfigsDAOImpl extends AbstractCaseElementDAO {
     }
 
     @Override
-    public void add(NodeRef nodeRef, NodeRef caseNode, NodeRef config) {
+    public void add(NodeRef nodeRef, NodeRef caseNode, ElementConfigDto config) {
         checkForAddRemove(caseNode, nodeRef);
         
         // get class, required by new case element config:
@@ -155,7 +144,7 @@ public class CaseElementConfigsDAOImpl extends AbstractCaseElementDAO {
     }
 
     @Override
-    public void remove(NodeRef nodeRef, NodeRef caseNode, NodeRef config) {
+    public void remove(NodeRef nodeRef, NodeRef caseNode, ElementConfigDto config) {
         checkForAddRemove(caseNode, nodeRef);
         
         // get class, required by new case element config:
@@ -191,15 +180,31 @@ public class CaseElementConfigsDAOImpl extends AbstractCaseElementDAO {
         }
         ClassDefinition requiredClass = dictionaryService.getClass(requiredClassName);
         if(requiredClass == null) {
-            throw new IllegalArgumentException("Class definition is not found, class name: " + requiredClass);
+            throw new IllegalArgumentException("Class definition is not found, class name: " + requiredClassName);
         }
         return requiredClass;
     }
 
     @Override
-    public Set<BehaviourDefinition<?>> intializeBehaviours(NodeRef config) {
+    public Set<BehaviourDefinition<?>> intializeBehaviours(ElementConfigDto config) {
         // TODO implement OnAddAspect, OnRemoveAspect, OnSetNodeType
         return Collections.emptySet();
     }
 
+    @Override
+    public ElementConfigDto createConfig(NodeRef configRef) {
+        return new ElementConfigDto(configRef);
+    }
+
+    public void setCriteriaSearchService(CriteriaSearchService criteriaService) {
+        this.criteriaService = criteriaService;
+    }
+
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
+    }
+
+    public void setCaseElementConfigRoot(LazyNodeRef caseElementConfigRoot) {
+        this.caseElementConfigRoot = caseElementConfigRoot;
+    }
 }
