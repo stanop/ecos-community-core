@@ -11,29 +11,12 @@ import java.nio.charset.Charset;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ZipUtils {
 
     private static final Charset ENCODING_CP866 = Charset.forName("CP866");
-
-    private static final Pattern ILLEGAL_CHARS_PATTERN = Pattern.compile(
-            "# Match a valid Windows filename (unspecified file system).          \n" +
-                    "^                                # Anchor to start of string.        \n" +
-                    "(?!                              # Assert filename is not: CON, PRN, \n" +
-                    "  (?:                            # AUX, NUL, COM1, COM2, COM3, COM4, \n" +
-                    "    CON|PRN|AUX|NUL|             # COM5, COM6, COM7, COM8, COM9,     \n" +
-                    "    COM[1-9]|LPT[1-9]            # LPT1, LPT2, LPT3, LPT4, LPT5,     \n" +
-                    "  )                              # LPT6, LPT7, LPT8, and LPT9...     \n" +
-                    "  (?:\\.[^.]*)?                  # followed by optional extension    \n" +
-                    "  $                              # and end of string                 \n" +
-                    ")                                # End negative lookahead assertion. \n" +
-                    "[^<>:\"/\\\\|?*\\x00-\\x1F]*     # Zero or more valid filename chars.\n" +
-                    "[^<>:\"/\\\\|?*\\x00-\\x1F\\ .]  # Last char is not a space or dot.  \n" +
-                    "$                                # Anchor to end of string.            ",
-            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.COMMENTS);
 
     private static final int FILENAME_MAX_LENGTH = 150;
     private static final int EXTENSION_MAX_LENGTH = 10;
@@ -82,7 +65,7 @@ public class ZipUtils {
 
     private static Path getValidNewPath(Path dir, String name) {
 
-        String validName = ILLEGAL_CHARS_PATTERN.matcher(name).replaceAll("_");
+        String validName = sanitizeFilename(name);
 
         String baseName = FilenameUtils.removeExtension(validName);
         String extension = FilenameUtils.getExtension(validName);
@@ -114,6 +97,17 @@ public class ZipUtils {
             result = dir.resolve(GUID.generate());
         }
         return result;
+    }
+
+    /**
+     * Removes incorrect characters and character sequences from filename
+     * @param input filename with extension
+     * @return
+     */
+    private static String sanitizeFilename (String input){
+        return input.replaceAll("[^a-zA-Zа-яА-Я0-9\\.\\-]", "_")
+                .replaceAll("\\.+", ".")
+                .trim();
     }
 
     @FunctionalInterface
