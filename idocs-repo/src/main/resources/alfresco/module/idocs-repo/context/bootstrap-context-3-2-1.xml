@@ -308,4 +308,54 @@
         </property>
     </bean>
 
+    <bean id="idocs.all-group" parent="idocs.import-spaces.3-2-1">
+        <property name="name" value="idocs-all-group"/>
+        <property name="description" value="All users group"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.orgstructBootstrap" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/orgstruct/orgstruct-branch.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/orgstruct/groups/group-all</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.hide-in-orgstruct-config" parent="idocs.import-spaces.3-2-1">
+        <property name="name" value="hide-in-orgstruct-config" />
+        <property name="description" value="Config of hide elements in orgstructure" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/hide-in-orgstruct</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.orgstruct-inactive-user-config" parent="idocs.import-spaces.3-2-1">
+        <property name="name" value="orgstruct-inactive-user-config" />
+        <property name="description" value="Config of showing inactive user only for admins" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/orgstruct-show-inactive-user-only-for-admin</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>

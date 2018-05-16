@@ -862,5 +862,16 @@
     <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
           class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
 
+    <bean id="idocs.productsAndServices.nameBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="pas:pasEntityCopied"/>
+        <property name="nameTemplate">
+            <value><![CDATA[#{'$'}{node.properties['cm:title']!'no-name'}]]></value>
+        </property>
+        <property name="order" value="40"/>
+    </bean>
+
+    <bean id="idocs.addCreatedPersonToAllGroup" class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
+        <property name="groupFullName" value="GROUP_all"/>
+    </bean>
 </beans>
 
