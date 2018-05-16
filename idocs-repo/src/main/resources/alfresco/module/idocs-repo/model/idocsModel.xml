@@ -158,9 +158,6 @@
                     <type>d:boolean</type>
                     <default>false</default>
                 </property>
-                <property name="idocs:useNewHistory">
-                    <type>d:boolean</type>
-                </property>
             </properties>
             <mandatory-aspects>
                 <aspect>idocs:hasLegalEntity</aspect>
@@ -1436,6 +1433,14 @@
                     <constraints>
                         <constraint ref="idocs:constraint:attachmentStateOptions" />
                     </constraints>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasUseNewHistoryFlag">
+            <properties>
+                <property name="idocs:useNewHistory">
+                    <type>d:boolean</type>
                 </property>
             </properties>
         </aspect>

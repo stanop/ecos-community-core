@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.citeck.ecos.icase;
+package ru.citeck.ecos.icase.element;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 
 import ru.citeck.ecos.behavior.ParameterizedJavaBehaviour;
+import ru.citeck.ecos.icase.element.config.CategoryConfigDto;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.search.CriteriaSearchResults;
 import ru.citeck.ecos.search.CriteriaSearchService;
@@ -43,8 +44,8 @@ import ru.citeck.ecos.search.SearchCriteriaFactory;
 import ru.citeck.ecos.search.SearchPredicate;
 import ru.citeck.ecos.utils.RepoUtils;
 
-public class CategoriesCaseElementDAOImpl extends AbstractCaseElementDAO {
-    
+public class CategoriesCaseElementDAOImpl extends AbstractCaseElementDAO<CategoryConfigDto> {
+
     private CriteriaSearchService searchService;
     private String language;
     private SearchCriteriaFactory criteriaFactory;
@@ -67,14 +68,14 @@ public class CategoriesCaseElementDAOImpl extends AbstractCaseElementDAO {
     }
 
     @Override
-    public List<NodeRef> get(NodeRef caseNode, NodeRef config)
+    public List<NodeRef> get(NodeRef caseNode, CategoryConfigDto config)
             throws AlfrescoRuntimeException, IllegalArgumentException {
         QName categoryProperty = needCategoryProperty(config);
         return getCategories(caseNode, categoryProperty);
     }
 
     @Override
-    protected List<NodeRef> getCasesImpl(NodeRef element, NodeRef config)
+    protected List<NodeRef> getCasesImpl(NodeRef element, CategoryConfigDto config)
             throws AlfrescoRuntimeException, IllegalArgumentException {
         QName categoryProperty = needCategoryProperty(config);
         SearchCriteria criteria = criteriaFactory.createSearchCriteria()
@@ -85,32 +86,38 @@ public class CategoriesCaseElementDAOImpl extends AbstractCaseElementDAO {
     }
 
     @Override
-    public void add(NodeRef nodeRef, NodeRef caseNode, NodeRef config)
+    public void add(NodeRef nodeRef, NodeRef caseNode, CategoryConfigDto config)
             throws AlfrescoRuntimeException, IllegalArgumentException {
-        if(nodeRef == null) return;
-        
-        QName elementType = super.needElementType(config);
-        if(!RepoUtils.isSubType(nodeRef, elementType, nodeService, dictionaryService)) {
-            throw new IllegalArgumentException("Specified element is not of required type. element=" + nodeRef + ", type=" + elementType);
+
+        if (nodeRef == null) {
+            return;
         }
-        
+
+        QName elementType = config.getElementType();
+        if (!RepoUtils.isSubType(nodeRef, elementType, nodeService, dictionaryService)) {
+            throw new IllegalArgumentException("Specified element is not of required type. " +
+                    "element=" + nodeRef + ", type=" + elementType);
+        }
+
         QName categoryProperty = needCategoryProperty(config);
         List<NodeRef> categories = getCategories(caseNode, categoryProperty);
-        if(categories.contains(nodeRef)) return;
-        
+        if (categories.contains(nodeRef)) return;
+
         ArrayList<NodeRef> newCategories = new ArrayList<>(categories.size() + 1);
         newCategories.addAll(categories);
         newCategories.add(nodeRef);
         nodeService.setProperty(caseNode, categoryProperty, newCategories);
     }
-    
+
     @Override
-    public void addAll(Collection<NodeRef> newElements, NodeRef caseNode, NodeRef config) {
+    public void addAll(Collection<NodeRef> newElements, NodeRef caseNode, CategoryConfigDto config) {
         QName categoryProperty = needCategoryProperty(config);
         List<NodeRef> oldElements = getCategories(caseNode, categoryProperty);
         @SuppressWarnings("unchecked")
         Collection<NodeRef> elementsToAdd = CollectionUtils.subtract(newElements, oldElements);
-        if(elementsToAdd.isEmpty()) return;
+        if (elementsToAdd.isEmpty()) {
+            return;
+        }
         ArrayList<NodeRef> newCategories = new ArrayList<>(oldElements.size() + elementsToAdd.size());
         newCategories.addAll(oldElements);
         newCategories.addAll(elementsToAdd);
@@ -118,16 +125,19 @@ public class CategoriesCaseElementDAOImpl extends AbstractCaseElementDAO {
     }
 
     @Override
-    public void remove(NodeRef nodeRef, NodeRef caseNode, NodeRef config)
+    public void remove(NodeRef nodeRef, NodeRef caseNode, CategoryConfigDto config)
             throws AlfrescoRuntimeException, IllegalArgumentException {
-        if(nodeRef == null) return;
+        if (nodeRef == null) {
+            return;
+        }
         QName categoryProperty = needCategoryProperty(config);
         List<NodeRef> categories = getCategories(caseNode, categoryProperty);
-        if(!categories.contains(nodeRef)) return;
-        
+        if (!categories.contains(nodeRef)) {
+            return;
+        }
         ArrayList<NodeRef> newCategories = new ArrayList<>(categories.size() - 1);
-        for(NodeRef category : categories) {
-            if(!nodeRef.equals(category)) {
+        for (NodeRef category : categories) {
+            if (!nodeRef.equals(category)) {
                 newCategories.add(category);
             }
         }
@@ -135,43 +145,52 @@ public class CategoriesCaseElementDAOImpl extends AbstractCaseElementDAO {
     }
 
     @Override
-    public Set<BehaviourDefinition<?>> intializeBehaviours(NodeRef config) {
-        BehaviourDefinition<?> behaviour = policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, ICaseModel.ASPECT_CASE, 
+    public Set<BehaviourDefinition<?>> intializeBehaviours(CategoryConfigDto config) {
+        BehaviourDefinition<?> behaviour = policyComponent.bindClassBehaviour(
+                NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, ICaseModel.ASPECT_CASE,
                 ParameterizedJavaBehaviour.newInstance(this, "onUpdateProperties", config));
-        return Collections.<BehaviourDefinition<?>>singleton(behaviour);
+        return Collections.singleton(behaviour);
     }
-    
-    public void onUpdateProperties(NodeRef caseNode, Map<QName, Serializable> before, Map<QName, Serializable> after, NodeRef config) {
+
+    @Override
+    public CategoryConfigDto createConfig(NodeRef configRef) {
+        CategoryConfigDto config = new CategoryConfigDto(configRef);
+        config.setCategoryProperty(RepoUtils.getProperty(configRef, ICaseModel.PROP_CATEGORY_PROPERTY, nodeService));
+        return config;
+    }
+
+    public void onUpdateProperties(NodeRef caseNode,
+                                   Map<QName, Serializable> before,
+                                   Map<QName, Serializable> after,
+                                   CategoryConfigDto config) {
+
         QName categoryProperty = needCategoryProperty(config);
-        if(!before.containsKey(categoryProperty) || !after.containsKey(categoryProperty)) {
+        if (!before.containsKey(categoryProperty) || !after.containsKey(categoryProperty)) {
             return;
         }
-        
+
         List<NodeRef> oldCategories = RepoUtils.anyToNodeRefs(before.get(categoryProperty));
         List<NodeRef> newCategories = RepoUtils.anyToNodeRefs(after.get(categoryProperty));
-        
+
         @SuppressWarnings("unchecked")
         Collection<NodeRef> addedCategories = CollectionUtils.subtract(newCategories, oldCategories),
-                          removedCategories = CollectionUtils.subtract(oldCategories, newCategories);
-        
-        for(NodeRef element : addedCategories) {
+                removedCategories = CollectionUtils.subtract(oldCategories, newCategories);
+
+        for (NodeRef element : addedCategories) {
             caseElementService.invokeOnCaseElementAdd(caseNode, element, config);
         }
-        
-        for(NodeRef element : removedCategories) {
+
+        for (NodeRef element : removedCategories) {
             caseElementService.invokeOnCaseElementRemove(caseNode, element, config);
         }
     }
 
-    private QName needCategoryProperty(NodeRef config) {
-        QName categoryProperty = getCategoryProperty(config);
-        if(categoryProperty == null) 
+    private QName needCategoryProperty(CategoryConfigDto config) {
+        QName categoryProperty = config.getCategoryProperty();
+        if (categoryProperty == null) {
             throw new IllegalArgumentException("Category property name is not specified in element config: " + config);
+        }
         return categoryProperty;
-    }
-
-    private QName getCategoryProperty(NodeRef config) {
-        return RepoUtils.getProperty(config, ICaseModel.PROP_CATEGORY_PROPERTY, nodeService);
     }
 
     private List<NodeRef> getCategories(NodeRef caseNode, QName categoryProperty) {

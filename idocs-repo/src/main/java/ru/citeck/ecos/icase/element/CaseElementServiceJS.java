@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.citeck.ecos.icase;
+package ru.citeck.ecos.icase.element;
 
 import java.util.List;
 
@@ -26,10 +26,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ru.citeck.ecos.model.ICaseTemplateModel;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
-import ru.citeck.ecos.utils.RepoUtils;
 
 /**
  * This implementation is used in JS side.

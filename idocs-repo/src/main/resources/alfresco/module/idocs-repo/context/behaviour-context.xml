@@ -786,6 +786,8 @@
 
     <bean class="ru.citeck.ecos.behavior.icase.ClearNodeActionsCache" />
 
+    <bean class="ru.citeck.ecos.behavior.icase.UpdateCaseModifiedDate" />
+
     <bean id="ecos.splitChildrenBehaviour" class="ru.citeck.ecos.behavior.common.SplitChildrenBehaviour"
           init-method="init" abstract="true">
         <property name="serviceRegistry" ref="ServiceRegistry"/>
@@ -856,5 +858,9 @@
     <bean id="idocs.addCreatedPersonToAllGroup" class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
         <property name="groupFullName" value="GROUP_all"/>
     </bean>
+
+    <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
+          class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
+
 </beans>
 

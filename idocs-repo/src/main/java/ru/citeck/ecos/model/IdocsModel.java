@@ -122,7 +122,5 @@ public final class IdocsModel {
     public static final String CORRECTED = "CORRECTED";
     public static final String REVISION_CORRECTED = "REVISION_CORRECTED";
 
-
-    public static final QName DOCUMENT_USE_NEW_HISTORY = QName.createQName(IDOCS_NAMESPACE, "useNewHistory");
-
+    public static final QName PROP_USE_NEW_HISTORY = QName.createQName(IDOCS_NAMESPACE, "useNewHistory");
 }
