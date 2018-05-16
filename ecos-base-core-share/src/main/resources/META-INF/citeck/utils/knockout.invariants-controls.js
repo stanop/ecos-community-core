@@ -364,12 +364,15 @@ ko.components.register("multiple-text", {
         koutils.subscribeOnce(this.value, function(newValue) {
             var stringsArray = [];
             if (newValue && newValue.length) {
-                for (var i in newValue) {
-                    stringsArray.push(new String(newValue[i]));
+                if (newValue instanceof Array) {
+                    for (var i in newValue) {
+                        stringsArray.push(new String(newValue[i]));
+                    }
+                } else {
+                    stringsArray.push(new String(newValue));
                 }
                 self.strings(stringsArray);
             }
-
         });
 
         this.removeString = function(data) {
