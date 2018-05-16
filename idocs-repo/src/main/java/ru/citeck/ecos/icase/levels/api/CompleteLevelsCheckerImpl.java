@@ -2,14 +2,14 @@ package ru.citeck.ecos.icase.levels.api;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 
-import ru.citeck.ecos.icase.CaseCompletenessService;
+import ru.citeck.ecos.icase.completeness.CaseCompletenessService;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author Alexander Nemerov
- *         created on 17.03.2015.
+ * created on 17.03.2015.
  */
 public class CompleteLevelsCheckerImpl implements CompleteLevelsChecker {
 
@@ -26,7 +26,7 @@ public class CompleteLevelsCheckerImpl implements CompleteLevelsChecker {
         Set<NodeRef> allLevels = completenessService.getAllLevels(caseNode);
         Set<NodeRef> uncompletedLevels = new HashSet<>(allLevels.size());
         for (NodeRef level : allLevels) {
-            if(!completedLevels.contains(level)) {
+            if (!completedLevels.contains(level)) {
                 uncompletedLevels.add(level);
             }
         }
@@ -35,8 +35,7 @@ public class CompleteLevelsCheckerImpl implements CompleteLevelsChecker {
 
     @Override
     public boolean isCompleteLevel(NodeRef caseNode, NodeRef level) {
-        Set<NodeRef> completedLevels = completenessService.getCompletedLevels(caseNode);
-        return completedLevels.contains(level);
+        return completenessService.isLevelCompleted(caseNode, level);
     }
 
     public void setCaseCompletenessService(CaseCompletenessService completenessService) {

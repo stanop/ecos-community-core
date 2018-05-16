@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.alfresco.repo.policy.Behaviour;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -96,14 +97,16 @@ public class CaseStatusCompleteBehaviour implements CaseStatusPolicies.OnCaseSta
      * @return List of final statuses
      */
     private Set<NodeRef> getFinalStatuses(QName documentType) {
-        return FTSQuery.create()
-                       .type(IdocsFinalStatusModel.TYPE_DOC_FINAL_STATUS).and()
-                       .exact(IdocsFinalStatusModel.PROP_DOC_TYPE, documentType)
-                       .transactional()
-                       .query(searchService)
-                       .stream()
-                       .flatMap(ref -> getFinalStatuses(ref).stream())
-                       .collect(Collectors.toSet());
+        return AuthenticationUtil.runAsSystem(() ->
+                FTSQuery.create()
+                        .type(IdocsFinalStatusModel.TYPE_DOC_FINAL_STATUS).and()
+                        .exact(IdocsFinalStatusModel.PROP_DOC_TYPE, documentType)
+                        .transactional()
+                        .query(searchService)
+                        .stream()
+                        .flatMap(ref -> getFinalStatuses(ref).stream())
+                        .collect(Collectors.toSet())
+        );
     }
 
     private List<NodeRef> getFinalStatuses(NodeRef nodeRef) {

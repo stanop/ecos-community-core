@@ -16,25 +16,26 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-package ru.citeck.ecos.icase;
+package ru.citeck.ecos.icase.element;
 
 import org.alfresco.repo.policy.ClassPolicy;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 
+import ru.citeck.ecos.icase.element.config.ElementConfigDto;
 import ru.citeck.ecos.service.CiteckServices;
 
 public interface CaseElementPolicies {
     
-    public interface OnCaseElementAddPolicy extends ClassPolicy {
-        public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
-        public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseElementAdd");
+    interface OnCaseElementAddPolicy extends ClassPolicy {
+        String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
+        QName QNAME = QName.createQName(NAMESPACE, "onCaseElementAdd");
 
         //without this fields TransactionBehaviourQueue takes invocations
         //with a same first argument as totally equals and processes only one
-        static Arg ARG_0 = Arg.KEY;
-        static Arg ARG_1 = Arg.KEY;
-        static Arg ARG_2 = Arg.KEY;
+        Arg ARG_0 = Arg.KEY;
+        Arg ARG_1 = Arg.KEY;
+        Arg ARG_2 = Arg.KEY;
 
         /**
          * Called after case element was added.
@@ -43,18 +44,18 @@ public interface CaseElementPolicies {
          * @param element element which was added
          * @param config element type configuration
          */
-        public void onCaseElementAdd(NodeRef caseRef, NodeRef element, NodeRef config);
+        void onCaseElementAdd(NodeRef caseRef, NodeRef element, ElementConfigDto config);
     }
 
-    public interface OnCaseElementUpdatePolicy extends ClassPolicy {
-        public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
-        public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseElementUpdate");
+    interface OnCaseElementUpdatePolicy extends ClassPolicy {
+        String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
+        QName QNAME = QName.createQName(NAMESPACE, "onCaseElementUpdate");
 
         //without this fields TransactionBehaviourQueue takes invocations
         //with a same first argument as totally equals and processes only one
-        static Arg ARG_0 = Arg.KEY;
-        static Arg ARG_1 = Arg.KEY;
-        static Arg ARG_2 = Arg.KEY;
+        Arg ARG_0 = Arg.KEY;
+        Arg ARG_1 = Arg.KEY;
+        Arg ARG_2 = Arg.KEY;
 
         /**
          * Called after case element was updated.
@@ -63,19 +64,19 @@ public interface CaseElementPolicies {
          * @param element element which was updated
          * @param config element type configuration
          */
-        public void onCaseElementUpdate(NodeRef caseRef, NodeRef element, NodeRef config);
+        void onCaseElementUpdate(NodeRef caseRef, NodeRef element, ElementConfigDto config);
         
     }
 
-    public interface OnCaseElementRemovePolicy extends ClassPolicy {
-        public static final String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
-        public static final QName QNAME = QName.createQName(NAMESPACE, "onCaseElementRemove");
+    interface OnCaseElementRemovePolicy extends ClassPolicy {
+        String NAMESPACE = CiteckServices.CITECK_NAMESPACE;
+        QName QNAME = QName.createQName(NAMESPACE, "onCaseElementRemove");
 
         //without this fields TransactionBehaviourQueue takes invocations
         //with a same first argument as totally equals and processes only one
-        static Arg ARG_0 = Arg.KEY;
-        static Arg ARG_1 = Arg.KEY;
-        static Arg ARG_2 = Arg.KEY;
+        Arg ARG_0 = Arg.KEY;
+        Arg ARG_1 = Arg.KEY;
+        Arg ARG_2 = Arg.KEY;
 
         /**
          * Called after case element was removed.
@@ -84,9 +85,7 @@ public interface CaseElementPolicies {
          * @param element element which was removed
          * @param config element type configuration
          */
-        public void onCaseElementRemove(NodeRef caseRef, NodeRef element, NodeRef config);
-        
+        void onCaseElementRemove(NodeRef caseRef, NodeRef element, ElementConfigDto config);
+
     }
-    
-    
 }

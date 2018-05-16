@@ -9,11 +9,11 @@ import org.alfresco.service.cmr.repository.NodeRef;
 
 public interface PredicateService {
 
-    public boolean evaluatePredicate(NodeRef predicate, Map<String, Object> model);
+    boolean evaluatePredicate(NodeRef predicate, Map<String, Object> model);
     
-    public Quantifier getQuantifier(NodeRef requirement);
+    Quantifier getQuantifier(NodeRef requirement);
     
-    public boolean evaluateQuantifier(Quantifier quantifier, Collection<?> matchingElements);
+    boolean evaluateQuantifier(Quantifier quantifier, Collection<?> matchingElements);
     
-    public boolean evaluateQuantifier(NodeRef quantifiable, List<?> matchingElements);
+    boolean evaluateQuantifier(NodeRef quantifiable, List<?> matchingElements);
 }

@@ -5,7 +5,7 @@
 	<!-- ....................... -->
 	<!-- Case Element Strategies -->
 	<!-- ....................... -->
-	<bean id="strategy.abstract" class="ru.citeck.ecos.icase.AbstractCaseElementDAO" abstract="true" init-method="register">
+	<bean id="strategy.abstract" class="ru.citeck.ecos.icase.element.AbstractCaseElementDAO" abstract="true" init-method="register">
 		<property name="nodeService" ref="NodeService"/>
 		<property name="copyService" ref="CopyService"/>
 		<property name="dictionaryService" ref="DictionaryService" />
@@ -14,22 +14,22 @@
 		<property name="policyComponent" ref="policyComponent" />
 	</bean>
 
-	<bean id="strategy.caseElementConfigs" class="ru.citeck.ecos.icase.CaseElementConfigsDAOImpl" parent="strategy.abstract">
+	<bean id="strategy.caseElementConfigs" class="ru.citeck.ecos.icase.element.CaseElementConfigsDAOImpl" parent="strategy.abstract">
 		<property name="criteriaSearchService" ref="criteriaSearchService" />
 		<property name="namespaceService" ref="NamespaceService" />
 		<property name="caseElementConfigRoot" value="/app:company_home/app:dictionary/cm:case-element-configs" />
 	</bean>
 
-	<bean id="strategy.associationCaseElement" class="ru.citeck.ecos.icase.AssociationCaseElementDAOImpl" parent="strategy.abstract">
+	<bean id="strategy.associationCaseElement" class="ru.citeck.ecos.icase.element.AssociationCaseElementDAOImpl" parent="strategy.abstract">
 	</bean>
 
-	<bean id="strategy.keyPropertyCaseElement" class="ru.citeck.ecos.icase.KeyPropertyCaseElementDAOImpl" parent="strategy.abstract">
+	<bean id="strategy.keyPropertyCaseElement" class="ru.citeck.ecos.icase.element.KeyPropertyCaseElementDAOImpl" parent="strategy.abstract">
 		<property name="searchService" ref="criteriaSearchService"/>
 		<property name="criteriaFactory" ref="searchCriteriaFactory"/>
 		<property name="language" value="lucene"/>
 	</bean>
 
-	<bean id="strategy.categoriesCaseElement" class="ru.citeck.ecos.icase.CategoriesCaseElementDAOImpl" parent="strategy.abstract">
+	<bean id="strategy.categoriesCaseElement" class="ru.citeck.ecos.icase.element.CategoriesCaseElementDAOImpl" parent="strategy.abstract">
 		<property name="searchService" ref="criteriaSearchService"/>
 		<property name="criteriaFactory" ref="searchCriteriaFactory"/>
 		<property name="language" value="lucene"/>
@@ -53,15 +53,14 @@
 	<!-- ..................... -->
 	<!-- Case Element Services -->
 	<!-- ..................... -->
-	<bean id="caseElementService" name="CaseElementService" class="ru.citeck.ecos.icase.CaseElementServiceImpl" init-method="init" depends-on="idocs.dictionaryBootstrap">
+	<bean id="caseElementService" name="CaseElementService" class="ru.citeck.ecos.icase.element.CaseElementServiceImpl" init-method="init" depends-on="idocs.dictionaryBootstrap">
 		<property name="nodeService" ref="nodeService"/>
 		<property name="dictionaryService" ref="DictionaryService" />
 		<property name="policyComponent" ref="policyComponent" />
-		<property name="behaviourFilter" ref="policyBehaviourFilter" />
 		<property name="caseElementConfigRoot" value="/app:company_home/app:dictionary/cm:case-element-configs" />
 	</bean>
 
-	<bean id="caseElementServiceJS" name="CaseElementServiceJS" class="ru.citeck.ecos.icase.CaseElementServiceJS"
+	<bean id="caseElementServiceJS" name="CaseElementServiceJS" class="ru.citeck.ecos.icase.element.CaseElementServiceJS"
 			parent="baseJavaScriptExtension">
 		<property name="extensionName" value="caseService" />
 		<property name="serviceRegistry" ref="ServiceRegistry" />

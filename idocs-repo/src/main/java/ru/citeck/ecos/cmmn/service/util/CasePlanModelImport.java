@@ -7,17 +7,16 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.cmmn.CMMNUtils;
 import ru.citeck.ecos.cmmn.condition.Condition;
 import ru.citeck.ecos.cmmn.condition.ConditionProperty;
 import ru.citeck.ecos.cmmn.condition.ConditionsList;
 import ru.citeck.ecos.cmmn.model.*;
 import ru.citeck.ecos.icase.CaseConstants;
-import ru.citeck.ecos.icase.CaseElementService;
+import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.icase.CaseStatusService;
+import ru.citeck.ecos.icase.element.config.ElementConfigDto;
 import ru.citeck.ecos.model.*;
-import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.service.EcosCoreServices;
 
 import javax.xml.bind.JAXBContext;
@@ -26,10 +25,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.Serializable;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Maxim Strizhov (maxim.strizhov@citeck.ru)
@@ -108,10 +104,11 @@ public class CasePlanModelImport {
             String[] elements = elementsStr.split(",");
 
             for (String element : elements) {
-                NodeRef elementRef = caseElementService.getConfig(element);
-                if (elementRef != null) {
+                Optional<ElementConfigDto> config = caseElementService.getConfig(element);
+                config.ifPresent(configDto -> {
+                    NodeRef elementRef = configDto.getNodeRef();
                     caseElementService.addElement(elementRef, caseRef, CaseConstants.ELEMENT_TYPES);
-                }
+                });
             }
         }
     }

@@ -786,6 +786,8 @@
 
     <bean class="ru.citeck.ecos.behavior.icase.ClearNodeActionsCache" />
 
+    <bean class="ru.citeck.ecos.behavior.icase.UpdateCaseModifiedDate" />
+
     <bean id="ecos.splitChildrenBehaviour" class="ru.citeck.ecos.behavior.common.SplitChildrenBehaviour"
           init-method="init" abstract="true">
         <property name="serviceRegistry" ref="ServiceRegistry"/>

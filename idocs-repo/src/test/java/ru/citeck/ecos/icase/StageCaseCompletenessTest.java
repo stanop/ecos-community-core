@@ -1,11 +1,8 @@
 package ru.citeck.ecos.icase;
 
 import org.alfresco.error.AlfrescoRuntimeException;
-import org.alfresco.model.ContentModel;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.namespace.QName;
 import org.junit.After;
 import org.junit.Before;
@@ -13,21 +10,17 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+import ru.citeck.ecos.icase.completeness.CaseCompletenessServiceImpl;
+import ru.citeck.ecos.icase.element.CaseElementServiceImpl;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.ICaseModel;
-import ru.citeck.ecos.model.PredicateModel;
-import ru.citeck.ecos.model.RequirementModel;
 import ru.citeck.ecos.model.StagesModel;
-import ru.citeck.ecos.pred.Quantifier;
 //import ru.citeck.ecos.test.ApplicationContextHelper;
 
 import java.io.Serializable;
 import java.util.*;
-
-import ru.citeck.ecos.icase.*;
 
 /**
  * @author Maxim Strizhov
