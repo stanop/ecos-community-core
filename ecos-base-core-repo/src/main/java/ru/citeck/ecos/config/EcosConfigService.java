@@ -1,19 +1,19 @@
 package ru.citeck.ecos.config;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.*;
-import org.alfresco.service.namespace.NamespaceService;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.ConfigModel;
-import ru.citeck.ecos.utils.RepoUtils;
+import ru.citeck.ecos.search.ftsquery.FTSQuery;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Valentin Skeeba
@@ -23,11 +23,17 @@ public class EcosConfigService {
 
     private static final Log logger = LogFactory.getLog(EcosConfigService.class);
 
-    private static final String DEFAULT_ROOT_PATH_TO_CONFIGS = "/app:company_home/app:dictionary";
-
     private SearchService searchService;
     private NodeService nodeService;
-    private NamespaceService namespaceService;
+
+    private LoadingCache<String, Optional<NodeRef>> configRefByKey;
+
+    public EcosConfigService() {
+        configRefByKey = CacheBuilder.newBuilder()
+                                     .expireAfterWrite(300, TimeUnit.SECONDS)
+                                     .maximumSize(200)
+                                     .build(CacheLoader.from(this::findConfigRef));
+    }
 
     /**
      * It returns a config value. Config node is searched by {@code SearchService}.
@@ -37,14 +43,9 @@ public class EcosConfigService {
      */
     public Object getParamValue(final String key) {
         return AuthenticationUtil.runAsSystem(() -> {
-            Object result = null;
-            NodeRef config = getConfigRef(key);
-
-            if (config != null && nodeService.exists(config)) {
-                result = nodeService.getProperty(config, ConfigModel.PROP_VALUE);
-            }
-
-            return result;
+            Optional<NodeRef> config = getConfigRef(key);
+            return config.map(ref -> nodeService.getProperty(ref, ConfigModel.PROP_VALUE))
+                         .orElse(null);
         });
     }
 
@@ -57,21 +58,14 @@ public class EcosConfigService {
      * <p>
      * If {@code rootPath} is null, is used default root path - {@code DEFAULT_ROOT_PATH_TO_CONFIGS}.
      *
+     * @deprecated use getParamValue(String key) instead
+     *
      * @param key      ecos config key
      * @param rootPath root path
      * @return {@code Object} value
      */
     public Object getParamValue(final String key, String rootPath) {
-        return AuthenticationUtil.runAsSystem(() -> {
-            Object result = null;
-            NodeRef config = getConfigRef(key, rootPath);
-
-            if (config != null && nodeService.exists(config)) {
-                result = nodeService.getProperty(config, ConfigModel.PROP_VALUE);
-            }
-
-            return result;
-        });
+        return getParamValue(key);
     }
 
     /**
@@ -82,13 +76,13 @@ public class EcosConfigService {
      */
     public void setValue(final String key, final String value) {
         AuthenticationUtil.runAsSystem(() -> {
-            NodeRef config = getConfigRef(key);
+            Optional<NodeRef> config = getConfigRef(key);
 
-            if (config == null || !nodeService.exists(config)) {
+            if (!config.isPresent()) {
                 throw new NoSuchConfigException("Cannot find config by key: " + key);
             }
 
-            nodeService.setProperty(config, ConfigModel.PROP_VALUE, value);
+            nodeService.setProperty(config.get(), ConfigModel.PROP_VALUE, value);
             return null;
         });
     }
@@ -102,102 +96,41 @@ public class EcosConfigService {
      * <p>
      * If {@code rootPath} is null, is used default root path - {@code DEFAULT_ROOT_PATH_TO_CONFIGS}.
      *
+     * @deprecated Use setValue(String key, String value) instead
+     *
      * @param key      ecos config key
      * @param value    new value
      * @param rootPath root path
      */
     public void setValue(final String key, final String value, String rootPath) {
-        AuthenticationUtil.runAsSystem(() -> {
-            NodeRef config = getConfigRef(key, rootPath);
-
-            if (config == null || !nodeService.exists(config)) {
-                throw new NoSuchConfigException("Cannot find config by key: " + key + " and rootPath: " + rootPath);
-            }
-
-            nodeService.setProperty(config, ConfigModel.PROP_VALUE, value);
-            return null;
-        });
+        setValue(key, value);
     }
 
-    private NodeRef getConfigRef(final String key) {
-        return AuthenticationUtil.runAsSystem(() -> {
-            NodeRef result = null;
-            try {
-                SearchParameters searchParameters = new SearchParameters();
-                searchParameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
-                searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-                searchParameters.setQueryConsistency(QueryConsistency.TRANSACTIONAL);
-                searchParameters.setLimitBy(LimitBy.UNLIMITED);
-                searchParameters.setLimit(0);
-                searchParameters.setMaxPermissionChecks(Integer.MAX_VALUE);
-                searchParameters.setMaxPermissionCheckTimeMillis(Integer.MAX_VALUE);
-                searchParameters.setMaxItems(-1);
-                searchParameters.setQuery("TYPE:\"" + ConfigModel.TYPE_ECOS_CONFIG + "\" AND =@" + ConfigModel.PROP_KEY
-                        + ":" + key);
-
-                ResultSet searchResults = searchService.query(searchParameters);
-                if (searchResults.getNodeRefs() != null && !searchResults.getNodeRefs().isEmpty()) {
-                    result = searchResults.getNodeRef(0);
-                }
-            } catch (Exception e) {
-                logger.error("Error while getting config" + key, e);
-                throw e;
-            }
-            return result;
-        });
-    }
-
-    private NodeRef getConfigRef(final String key, final String rootPath) {
-        return AuthenticationUtil.runAsSystem(() -> {
-            NodeRef root = StringUtils.isBlank(rootPath) ? getRootFolder(DEFAULT_ROOT_PATH_TO_CONFIGS)
-                    : getRootFolder(rootPath);
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("root: " + root);
-            }
-
-            List<NodeRef> ecosConfigs = RepoUtils.getChildrenByType(root, ConfigModel.TYPE_ECOS_CONFIG, nodeService);
-
-            for (NodeRef config : ecosConfigs) {
-                String currentKey = RepoUtils.getProperty(config, ConfigModel.PROP_KEY, String.class, nodeService);
-
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Current key: " + currentKey);
-                }
-
-                if (Objects.equals(key, currentKey)) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Return: " + config);
-                    }
-                    return config;
-                }
-            }
-            if (logger.isDebugEnabled()) {
-                logger.debug("Nothing...return null");
-            }
-            return null;
-        });
-    }
-
-    private NodeRef getRootFolder(String xPath) {
-        NodeRef rootRef = nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-
-        List<NodeRef> refs = searchService.selectNodes(rootRef, xPath, null,
-                namespaceService, false);
-
-        if (refs.size() != 1) {
-            return null;
-        } else {
-            return refs.get(0);
+    private Optional<NodeRef> getConfigRef(String key) {
+        Optional<NodeRef> configRef = configRefByKey.getUnchecked(key);
+        if (!configRef.isPresent() || !nodeService.exists(configRef.get())) {
+            configRefByKey.invalidate(key);
+            configRef = configRefByKey.getUnchecked(key);
         }
+        return configRef;
+    }
+
+    private Optional<NodeRef> findConfigRef(String key) {
+        return AuthenticationUtil.runAsSystem(() ->
+                FTSQuery.create()
+                        .type(ConfigModel.TYPE_ECOS_CONFIG).and()
+                        .exact(ConfigModel.PROP_KEY, key)
+                        .transactional()
+                        .queryOne(searchService)
+        );
+    }
+
+    public void clearCache() {
+        configRefByKey.invalidateAll();
     }
 
     public void setSearchService(SearchService searchService) {
         this.searchService = searchService;
-    }
-
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
     }
 
     public void setNodeService(NodeService nodeService) {
