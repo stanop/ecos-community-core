@@ -67,7 +67,7 @@ public class FlowableModelerImportProcessModuleComponent extends AbstractModuleC
      * @return Was initialization called check
      */
     private Boolean initializeModels() {
-        String config = (String) ecosConfigService.getParamValue(IMPORT_CONFIG_KEY, null);
+        String config = (String) ecosConfigService.getParamValue(IMPORT_CONFIG_KEY);
 
         /** Call initializing */
         if (config == null) {

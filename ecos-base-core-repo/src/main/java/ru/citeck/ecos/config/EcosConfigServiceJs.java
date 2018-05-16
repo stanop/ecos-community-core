@@ -16,14 +16,20 @@ public class EcosConfigServiceJs extends AlfrescoScopableProcessorExtension {
     }
 
     public Object getParamValue(final String key, String rootPath) {
-        return ecosConfigService.getParamValue(key, rootPath);
+        return ecosConfigService.getParamValue(key);
     }
 
+    /**
+     * @deprecated
+     */
     public void setValue(final String key, final String value) {
         ecosConfigService.setValue(key, value);
     }
 
+    /**
+     * @deprecated
+     */
     public void setValue(final String key, final String value, String rootPath) {
-        ecosConfigService.setValue(key, value, rootPath);
+        ecosConfigService.setValue(key, value);
     }
 }
