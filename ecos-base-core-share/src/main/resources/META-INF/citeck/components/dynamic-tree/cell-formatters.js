@@ -1647,7 +1647,6 @@
             if (!props) props = "cm:name";
 
             var propsArr = props.split(",").map(function (p) {return p.trim();});
-            var propsArrKeys = propsArr.map(function (p) {return p.replace(/:/g, "_");});
 
             if (delimeter == null) delimeter = ", ";
 
@@ -1687,12 +1686,25 @@
 
                 if (sData instanceof Object) {
                     var renderRequest = function(object) {
-                        var hasReqData = propsArrKeys.every(function(k) {
-                            return _.has(object, k);
+                        var hasReqData = propsArr.every(function(k) {
+                            return _.values(object).find(function (val) {
+                                return val.name == k;
+                            });
                         });
                         if (hasReqData) {
                             if (elCell.innerHTML) elCell.innerHTML += "<br>";
-                            var values = propsArrKeys.map(function (k) {return object[k].value;});
+                            var values = [];
+                            _.values(object).map(function (item) {
+                                if (item.val && item.val.length) {
+                                    item.val.map(function (val) {
+                                        if (val.str) {
+                                            values.push(val.str);
+                                        }
+                                    });
+                                } else {
+                                    values.push(item);
+                                }
+                            });
                             elCell.innerHTML = values.join(delimeter);
                         } else if (_.has(object, "nodeRef")) {
                             request(object.nodeRef)
