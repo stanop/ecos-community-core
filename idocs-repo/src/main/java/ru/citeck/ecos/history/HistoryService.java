@@ -23,7 +23,6 @@ import org.alfresco.repo.batch.BatchProcessWorkProvider;
 import org.alfresco.repo.batch.BatchProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.ResultSet;
@@ -33,6 +32,7 @@ import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -245,7 +245,7 @@ public class HistoryService {
     }
 
     private void sendHistoryEventToRemoteService(final Map<QName, Serializable> properties, Date creationDate) {
-        Map<String, Object> requestParams = new HashMap();
+        Map<String, Object> requestParams = new HashMap<>();
         /** Document */
         NodeRef document = getDocument(properties);
         if (document == null || isDocumentForDelete(document)) {
@@ -434,17 +434,17 @@ public class HistoryService {
 
     public void sendAndRemoveOldEventsByDocument(NodeRef documentRef) {
         AuthenticationUtil.runAsSystem(() -> {
-            /** Check - is remote service enabled */
+            /* Check - is remote service enabled */
             if (!isEnabledRemoteHistoryService()) {
                 throw new RuntimeException("Remote history service is disabled. Old history event transferring is impossible");
             }
-            /** Check - node existing */
+            /* Check - node existing */
             if (!nodeService.exists(documentRef)) {
                 return null;
             }
-            Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY);
-            /** Send events to remote service or remove old nodes */
-            if (useNewHistory == null || useNewHistory == false) {
+            Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.PROP_USE_NEW_HISTORY);
+            /* Send events to remote service or remove old nodes */
+            if (useNewHistory == null || !useNewHistory) {
                 historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
             } else {
                 List<AssociationRef> associations = nodeService.getSourceAssocs(documentRef, HistoryModel.ASSOC_DOCUMENT);
@@ -472,13 +472,9 @@ public class HistoryService {
      *
      * @return Check result
      */
-    private Boolean isEnabledRemoteHistoryService() {
+    public boolean isEnabledRemoteHistoryService() {
         String propertyValue = properties.getProperty(ENABLED_REMOTE_HISTORY_SERVICE);
-        if (propertyValue == null) {
-            return false;
-        } else {
-            return Boolean.valueOf(propertyValue);
-        }
+        return !StringUtils.isBlank(propertyValue) && Boolean.parseBoolean(propertyValue);
     }
 
     /**

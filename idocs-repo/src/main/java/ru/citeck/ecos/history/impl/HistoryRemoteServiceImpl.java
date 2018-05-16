@@ -26,6 +26,7 @@ import ru.citeck.ecos.history.HistoryRemoteService;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.model.IdocsModel;
+import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,14 +100,11 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      * Services
      */
     private RestTemplate restTemplate;
-
     private TransactionService transactionService;
-
     private NodeService nodeService;
-
     private PersonService personService;
-
     private BehaviourFilter behaviourFilter;
+    private NodeUtils nodeUtils;
 
     @Autowired(required = false)
     private RabbitTemplate rabbitTemplate;
@@ -354,25 +352,26 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     }
 
     private void setUseNewHistoryStatus(NodeRef documentNodeRef, boolean newStatus) {
-        RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
 
-        txnHelper.setForceWritable(true);
+        Boolean currentStatus = nodeUtils.getProperty(documentNodeRef, IdocsModel.PROP_USE_NEW_HISTORY);
 
-        boolean requiresNew = getTransactionReadState() != TxnReadState.TXN_READ_WRITE;
+        if (!Boolean.valueOf(newStatus).equals(currentStatus) && !transactionService.isReadOnly()) {
 
-        AuthenticationUtil.runAsSystem(() -> txnHelper.doInTransaction(() -> {
-            try {
-                behaviourFilter.disableBehaviour(documentNodeRef);
+            boolean requiresNew = getTransactionReadState() != TxnReadState.TXN_READ_WRITE;
+            RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
 
-                if (documentNodeRef != null && nodeService.exists(documentNodeRef)) {
-                    nodeService.setProperty(documentNodeRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY, newStatus);
+            AuthenticationUtil.runAsSystem(() -> txnHelper.doInTransaction(() -> {
+                try {
+                    behaviourFilter.disableBehaviour(documentNodeRef);
+                    if (nodeUtils.isValidNode(documentNodeRef)) {
+                        nodeService.setProperty(documentNodeRef, IdocsModel.PROP_USE_NEW_HISTORY, newStatus);
+                    }
+                    return null;
+                } finally {
+                    behaviourFilter.enableBehaviour(documentNodeRef);
                 }
-
-                return null;
-            } finally {
-                behaviourFilter.enableBehaviour(documentNodeRef);
-            }
-        }, false, requiresNew));
+            }, false, requiresNew));
+        }
     }
 
     public void setRestTemplate(RestTemplate restTemplate) {
@@ -393,5 +392,9 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     public void setBehaviourFilter(BehaviourFilter behaviourFilter) {
         this.behaviourFilter = behaviourFilter;
+    }
+
+    public void setNodeUtils(NodeUtils nodeUtils) {
+        this.nodeUtils = nodeUtils;
     }
 }

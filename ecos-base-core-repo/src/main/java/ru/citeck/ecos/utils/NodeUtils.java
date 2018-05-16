@@ -44,6 +44,15 @@ public class NodeUtils {
     }
 
     /**
+     * Get node property
+     */
+    public <T> T getProperty(NodeRef nodeRef, QName propName) {
+        @SuppressWarnings("unchecked")
+        T result = (T) nodeService.getProperty(nodeRef, propName);
+        return result;
+    }
+
+    /**
      * Create association with specified node
      *
      * @return true if association was created or false if association already exists or arguments are invalid

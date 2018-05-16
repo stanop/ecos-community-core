@@ -446,6 +446,7 @@
 		<property name="personService" ref="PersonService"/>
 		<property name="behaviourFilter" ref="policyBehaviourFilter" />
 		<property name="transactionService" ref="TransactionService"/>
+		<property name="nodeUtils" ref="nodeUtils" />
 	</bean>
 
 	<bean id="historyGetService" class="ru.citeck.ecos.history.impl.HistoryGetServiceImpl">

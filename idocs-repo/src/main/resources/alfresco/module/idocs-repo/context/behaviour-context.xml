@@ -858,5 +858,9 @@
     <bean id="idocs.addCreatedPersonToAllGroup" class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
         <property name="groupFullName" value="GROUP_all"/>
     </bean>
+
+    <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
+          class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
+
 </beans>
 
