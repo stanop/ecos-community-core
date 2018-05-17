@@ -225,6 +225,18 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
+    @Override
+    public FTSQuery maxItems(int value) {
+        searchParameters.setMaxItems(value);
+        return this;
+    }
+
+    @Override
+    public FTSQuery skipCount(int value) {
+        searchParameters.setSkipCount(value);
+        return this;
+    }
+
     public String getQuery() {
         return group.getQuery();
     }

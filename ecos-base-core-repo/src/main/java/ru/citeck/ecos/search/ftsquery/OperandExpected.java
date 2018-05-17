@@ -145,6 +145,16 @@ public interface OperandExpected {
     OperandExpected bulkFetch(boolean value);
 
     /**
+     * Set max items
+     */
+    OperandExpected maxItems(int value);
+
+    /**
+     * Set skip count
+     */
+    OperandExpected skipCount(int value);
+
+    /**
      * Add sorting
      */
     OperandExpected addSort(QName field, boolean ascending);
