@@ -10,17 +10,17 @@
 		searchQuery = (params.searchQuery!childrenQuery)
 		rootUrl = (params.rootUrl!"")
 	/>
-<#assign excludeFields>
+<#assign excludeAuthorities>
     <#if config.scoped["InvariantControlsConfiguration"]?? &&
          config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
-         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]?? && params.excludeFields??>
-             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"] + "," + params.excludeFields}
+         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"]?? && params.excludeAuthorities??>
+             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"] + "," + params.excludeAuthorities}
     <#elseif config.scoped["InvariantControlsConfiguration"]?? &&
          config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
-         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]??>
-             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]}
-    <#elseif params.excludeFields??>
-         ${params.excludeFields}
+         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"]??>
+             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"]}
+    <#elseif params.excludeAuthorities??>
+         ${params.excludeAuthorities}
     <#else></#if>
 </#assign>
 
@@ -63,6 +63,6 @@
 			"GROUP": "{displayName} ({shortName})",
 			"USER": "{firstName} {lastName} ({shortName})",
 		},
-		excludeFields: "${excludeFields?trim}"
+		excludeAuthorities: "${excludeAuthorities?trim}"
 	}
 </#macro>

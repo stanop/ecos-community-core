@@ -12,7 +12,7 @@ function getFilterOptions() {
         group: processOption("group"),
         user: processOption("user"),
         showDisabled: processOption("showdisabled"),
-        excludeFields: args.excludeFields,
+        excludeAuthorities: args.excludeAuthorities,
         subTypes: args.subTypes ? args.subTypes.split(',') : null,
         filter: args.filter ? new RegExp(args.filter.replace(/([*?+])/, ".$1"), "i") : null,
     };
@@ -51,11 +51,11 @@ function filterAuthorities(allAuthorities, options) {
         var authority = allAuthorities[i],
             name = authority.shortName;
 
-        if (options.excludeFields) {
-            var excludeFieldsArr = options.excludeFields.split(','),
+        if (options.excludeAuthorities) {
+            var excludeAuthoritiesArr = options.excludeAuthorities.split(','),
                 isExcludeAuthority = false;
-            for (var e in excludeFieldsArr) {
-                if (excludeFieldsArr[e].trim() == name) {
+            for (var e in excludeAuthoritiesArr) {
+                if (excludeAuthoritiesArr[e].trim() == name) {
                     isExcludeAuthority = true;
                     break;
                 }

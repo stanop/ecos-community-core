@@ -2998,7 +2998,7 @@ ko.bindingHandlers.orgstructControl = {
                 // initialize tree function
                 tree.fn = {
                     loadNodeData: function(node, fnLoadComplete) {
-                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName, null, params.excludeFields), {
+                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName, null, params.excludeAuthorities), {
                             success: function (oResponse) {
                                 var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
                                 if (results) {
@@ -3028,7 +3028,7 @@ ko.bindingHandlers.orgstructControl = {
                     },
 
                     loadRootNodes: function(tree, scope, query) {
-                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(options.rootGroup(), query, params.excludeFields), {
+                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(options.rootGroup(), query, params.excludeAuthorities), {
                             success: function(oResponse) {
                                 var results = YAHOO.lang.JSON.parse(oResponse.responseText),
                                     rootNode = tree.getRoot(), treeNode,
@@ -3093,13 +3093,13 @@ ko.bindingHandlers.orgstructControl = {
                         return textNode;
                     },
 
-                    buildTreeNodeUrl: function (group, query, excludeFields) {
+                    buildTreeNodeUrl: function (group, query, excludeAuthorities) {
                         var uriTemplate ="api/orgstruct/group/" + Alfresco.util.encodeURIPath(group) + "/children?branch=true&role=true&group=true&user=true";
                         if (query) {
                             uriTemplate += "&filter=" + encodeURI(query) + "&recurse=true";
                         }
-                        if (excludeFields) {
-                            uriTemplate += "&excludeFields=" + excludeFields;
+                        if (excludeAuthorities) {
+                            uriTemplate += "&excludeAuthorities=" + excludeAuthorities;
                         }
                         return  Alfresco.constants.PROXY_URI + uriTemplate;
                     },

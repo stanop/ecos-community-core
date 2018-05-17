@@ -33,11 +33,11 @@
 
 <#assign el=args.htmlid?html>
 <#assign rootGroup = "_orgstruct_home_" />
-<#assign excludeFields>
+<#assign excludeAuthorities>
     <#if config.scoped["InvariantControlsConfiguration"]?? &&
          config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
-         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]??>
-             '${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]}'
+         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"]??>
+             '${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"]}'
     <#else>''</#if>
 </#assign>
 <script type="text/javascript">//<![CDATA[
@@ -83,7 +83,7 @@
                                     children: {
                                         "root": {
                                             "format": "authority",
-                                            "get": "${page.url.context}/proxy/alfresco/api/orgstruct/group/${rootGroup}/children/?excludeFields=" + ${excludeFields?trim},
+                                            "get": "${page.url.context}/proxy/alfresco/api/orgstruct/group/${rootGroup}/children/?excludeAuthorities=" + ${excludeAuthorities?trim},
                                             "delete": "${page.url.context}/proxy/alfresco/api/groups/${rootGroup}/children/{item.fullName}",
                                         },
                                         "search": {
@@ -94,7 +94,7 @@
                                         "GROUP": {
                                             "format": "authority",
                                             "get": "${page.url.context}/proxy/alfresco/api/orgstruct/group/{shortName}/children/?showdisabled=" +
-                                                    (Alfresco.constants.Citeck.userIsAdmin ? "true" : "false") + "&excludeFields=" + ${excludeFields?trim},
+                                                    (Alfresco.constants.Citeck.userIsAdmin ? "true" : "false") + "&excludeAuthorities=" + ${excludeAuthorities?trim},
                                             "add": "${page.url.context}/proxy/alfresco/api/groups/{parent.shortName}/children/{item.fullName}",
                                             "delete": "${page.url.context}/proxy/alfresco/api/groups/{parent.shortName}/children/{item.fullName}",
                                         }
