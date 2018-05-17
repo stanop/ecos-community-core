@@ -2908,7 +2908,7 @@ ko.bindingHandlers.orgstructControl = {
         var settings = valueAccessor(),
             value = settings.value,
             multiple = settings.multiple,
-            params = allBindings().params();
+            params = allBindings().params() ? allBindings().params() : {};
 
         var showVariantsButton = Dom.get(element.id + "-showVariantsButton"),
             orgstructPanelId = element.id + "-orgstructPanel", orgstructPanel, resize,
@@ -2998,47 +2998,37 @@ ko.bindingHandlers.orgstructControl = {
                 // initialize tree function
                 tree.fn = {
                     loadNodeData: function(node, fnLoadComplete) {
-                        if (node.data.shortName != "all_users") {
-                            YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName), {
-                                success: function (oResponse) {
-                                    var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
-                                    if (params && params.excludeFields) {
-                                        results = results.filter(function(item) {
-                                            return params.excludeFields.indexOf(item.shortName) == -1;
-                                        });
-                                    }
+                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName, null, params.excludeAuthorities), {
+                            success: function (oResponse) {
+                                var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
+                                if (results) {
+                                    for (var i = 0; i < results.length; i++) {
+                                        item = results[i];
 
-                                    if (results) {
-                                        for (var i = 0; i < results.length; i++) {
-                                            item = results[i];
-
-                                            treeNode = this.buildTreeNode(item, node, false);
-                                            if (item.authorityType == "USER") {
-                                                treeNode.isLeaf = true;
-                                            }
+                                        treeNode = this.buildTreeNode(item, node, false);
+                                        if (item.authorityType == "USER") {
+                                            treeNode.isLeaf = true;
                                         }
                                     }
-
-                                    oResponse.argument.fnLoadComplete();
-                                },
-
-                                failure: function(oResponse) {
-                                    // error
-                                },
-
-                                scope: tree.fn,
-                                argument: {
-                                    "node": node,
-                                    "fnLoadComplete": fnLoadComplete
                                 }
-                            });
-                        } else {
-                            alert("Просьба обратиться к администратору системы, код ошибки 'all_users'");
-                        }
+
+                                oResponse.argument.fnLoadComplete();
+                            },
+
+                            failure: function(oResponse) {
+                                // error
+                            },
+
+                            scope: tree.fn,
+                            argument: {
+                                "node": node,
+                                "fnLoadComplete": fnLoadComplete
+                            }
+                        });
                     },
 
                     loadRootNodes: function(tree, scope, query) {
-                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(options.rootGroup(), query), {
+                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(options.rootGroup(), query, params.excludeAuthorities), {
                             success: function(oResponse) {
                                 var results = YAHOO.lang.JSON.parse(oResponse.responseText),
                                     rootNode = tree.getRoot(), treeNode,
@@ -3103,9 +3093,14 @@ ko.bindingHandlers.orgstructControl = {
                         return textNode;
                     },
 
-                    buildTreeNodeUrl: function (group, query) {
+                    buildTreeNodeUrl: function (group, query, excludeAuthorities) {
                         var uriTemplate ="api/orgstruct/group/" + Alfresco.util.encodeURIPath(group) + "/children?branch=true&role=true&group=true&user=true";
-                        if (query) uriTemplate += "&filter=" + encodeURI(query) + "&recurse=true";
+                        if (query) {
+                            uriTemplate += "&filter=" + encodeURI(query) + "&recurse=true";
+                        }
+                        if (excludeAuthorities) {
+                            uriTemplate += "&excludeAuthorities=" + excludeAuthorities;
+                        }
                         return  Alfresco.constants.PROXY_URI + uriTemplate;
                     },
 

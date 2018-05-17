@@ -15,7 +15,7 @@
     <fields nodetype="cm:person">
         <regions name="input" template="view" />
         <regions name="select" template="select-orgstruct">
-            <param name="excludeFields">all_users</param>
+            <param name="excludeAuthorities">all_users</param>
         </regions>
     </fields>
 
@@ -23,7 +23,7 @@
         <regions name="input" template="view" />
         <regions name="select" template="select-orgstruct">
             <param name="allowedAuthorityType">GROUP</param>
-            <param name="excludeFields">all_users</param>
+            <param name="excludeAuthorities">all_users</param>
         </regions>
     </fields>
 
@@ -31,7 +31,7 @@
         <regions name="input" template="view" />
         <regions name="select" template="select-orgstruct">
             <param name="allowedAuthorityType">USER, GROUP</param>
-            <param name="excludeFields">all_users</param>
+            <param name="excludeAuthorities">all_users</param>
         </regions>
     </fields>
 

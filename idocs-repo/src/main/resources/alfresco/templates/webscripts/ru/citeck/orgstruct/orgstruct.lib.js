@@ -12,6 +12,7 @@ function getFilterOptions() {
         group: processOption("group"),
         user: processOption("user"),
         showDisabled: processOption("showdisabled"),
+        excludeAuthorities: args.excludeAuthorities,
         subTypes: args.subTypes ? args.subTypes.split(',') : null,
         filter: args.filter ? new RegExp(args.filter.replace(/([*?+])/, ".$1"), "i") : null,
     };
@@ -49,6 +50,20 @@ function filterAuthorities(allAuthorities, options) {
         var displayName = "";
         var authority = allAuthorities[i],
             name = authority.shortName;
+
+        if (options.excludeAuthorities) {
+            var excludeAuthoritiesArr = options.excludeAuthorities.split(','),
+                isExcludeAuthority = false;
+            for (var e in excludeAuthoritiesArr) {
+                if (excludeAuthoritiesArr[e].trim() == name) {
+                    isExcludeAuthority = true;
+                    break;
+                }
+            }
+            if (isExcludeAuthority) {
+                continue;
+            }
+        }
 
         if (authority.authorityType == "USER") {
 

@@ -1209,9 +1209,14 @@
             return textNode;
         },
 
-        buildTreeNodeUrl: function (group, query) {
+        buildTreeNodeUrl: function (group, query, excludeAuthorities) {
             var uriTemplate ="api/orgstruct/group/"+ Alfresco.util.encodeURIPath(group) +"/children";
-            if (query) uriTemplate += "?branch=true&role=true&group=true&user=true&filter=" + encodeURI(query) + "&recurse=true";
+            if (query) {
+                uriTemplate += "?branch=true&role=true&group=true&user=true&filter=" + encodeURI(query) + "&recurse=true";
+            }
+            if (excludeAuthorities) {
+                uriTemplate += (query ? "&" : "?") + "excludeAuthorities=" + excludeAuthorities;
+            }
             return  Alfresco.constants.PROXY_URI + uriTemplate;
         },
 
