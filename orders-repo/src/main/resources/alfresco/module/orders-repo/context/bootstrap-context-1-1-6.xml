@@ -2,7 +2,17 @@
 <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
 <beans>
 
-    <bean id="orders.import-scripts.add-case-types-to-site" parent="orders.import-scripts">
+    <bean id="orders.import-spaces.1-1-6" parent="orders.import-spaces" abstract="true">
+        <property name="sinceVersion" value="1.1.6" />
+        <property name="appliesFromVersion" value="1.1.6" />
+    </bean>
+
+    <bean id="orders.import-scripts.1-1-6" parent="orders.import-scripts" abstract="true">
+        <property name="sinceVersion" value="1.1.6" />
+        <property name="appliesFromVersion" value="1.1.6" />
+    </bean>
+
+    <bean id="orders.import-scripts.add-case-types-to-site" parent="orders.import-scripts.1-1-6">
         <property name="name" value="add-case-types-to-site"/>
         <property name="description" value="add-case-types-to-site"/>
         <property name="dependsOn">
@@ -54,7 +64,7 @@
         </property>
     </bean>
 
-    <bean id="orders.module-components.internal-confirm-routes" parent="orders.import-scripts">
+    <bean id="orders.module-components.internal-confirm-routes" parent="orders.import-scripts.1-1-6">
         <property name="name" value="orders-confirm-routes" />
         <property name="description" value="Base Orders Case Confirmation Route" />
         <property name="bootstrapScript" value="alfresco/module/orders-repo/bootstrap/scripts/orders-routes.js"/>
@@ -75,14 +85,14 @@
         </property>
     </bean>
 
-    <bean id="orders.script.case-statuses" parent="orders.import-scripts">
+    <bean id="orders.script.case-statuses" parent="orders.import-scripts.1-1-6">
         <property name="executeOnceOnly" value="false" />
         <property name="name" value="add-contracts-case-statuses" />
         <property name="description" value="Create or update case statuses" />
         <property name="bootstrapScript" value="alfresco/module/orders-repo/bootstrap/scripts/case-statuses.js"/>
     </bean>
 
-    <bean id="orders.module-component.skip-registration-config" parent="orders.import-spaces">
+    <bean id="orders.module-component.skip-registration-config" parent="orders.import-spaces.1-1-6">
         <property name="name" value="skip-registration-config" />
         <property name="description" value="Orders skip registration stage config" />
         <property name="bootstrapViews">
@@ -97,7 +107,7 @@
         </property>
     </bean>
 
-    <bean id="orders.module-component.enumeration.templates" parent="orders.import-spaces">
+    <bean id="orders.module-component.enumeration.templates" parent="orders.import-spaces.1-1-6">
         <property name="bootstrapViews">
             <list>
                 <props>

@@ -80,18 +80,18 @@
         <property name="className" value="meet:meeting"/>
         <property name="allowedProperties">
             <list>
-                <value>meet:meetingNumber</value>
-                <value>meet:subject</value>
+                <value>idocs:documentStatus</value>
+                <value>meet:initiator</value>
                 <value>meet:where</value>
                 <value>meet:when</value>
+                <value>meet:subject</value>
+                <value>meet:meetingNumber</value>
                 <value>meet:confirmDueDate</value>
-                <value>meet:initiator</value>
                 <value>meet:childAnsweredQuestions</value>
                 <value>meet:childAgenda</value>
                 <value>meet:childProtocol</value>
                 <value>meet:participants</value>
                 <value>meet:plannedReporters</value>
-                <value>idocs:documentStatus</value>
             </list>
         </property>
         <property name="enableHistoryOnUpdateProps" value="true"/>

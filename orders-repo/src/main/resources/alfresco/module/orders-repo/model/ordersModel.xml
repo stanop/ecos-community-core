@@ -42,7 +42,6 @@
                 <property name="orders:projectNumber">
                     <title>№ проекта</title>
                     <type>d:text</type>
-                    <mandatory>true</mandatory>
                 </property>
                 <property name="orders:projectNumberSort">
                     <type>d:long</type>
@@ -165,11 +164,9 @@
                 </property>
             </properties>
         </type>
-
     </types>
 
 	<aspects>
-	
 		<aspect name="orders:internalType">
 			<parent>tk:documentTypeKind</parent>
 			<overrides>
@@ -178,7 +175,26 @@
 				</property>
 			</overrides>
 		</aspect>
-		
+
+        <aspect name="orders:hasCurrentConfirmationStatus">
+            <properties>
+                <property name="orders:currentConfirmationStatus">
+                    <title>Текущий статус согласования</title>
+                    <type>d:text</type>
+                    <default>not-started</default>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="orders:hasLastConfirmOutcome">
+            <properties>
+                <property name="orders:lastConfirmOutcome">
+                    <title>Последнее решение по согласованию</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+
+        </aspect>
 	</aspects>
 
 </model>

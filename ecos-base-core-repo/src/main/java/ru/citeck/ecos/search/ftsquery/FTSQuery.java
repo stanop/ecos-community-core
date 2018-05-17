@@ -210,6 +210,21 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
+    public FTSQuery addSort(QName field, boolean ascending) {
+        searchParameters.addSort("@" + field, ascending);
+        return this;
+    }
+
+    public FTSQuery addSort(String field, boolean ascending) {
+        searchParameters.addSort(field, ascending);
+        return this;
+    }
+
+    public FTSQuery addSort(SearchParameters.SortDefinition sortDefinition) {
+        searchParameters.addSort(sortDefinition);
+        return this;
+    }
+
     public String getQuery() {
         return group.getQuery();
     }

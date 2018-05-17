@@ -55,7 +55,7 @@
                 <child-association name="fam:familiarRecords">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>fam:familiarRecord</class>

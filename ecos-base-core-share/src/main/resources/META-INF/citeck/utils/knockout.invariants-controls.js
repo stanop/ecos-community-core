@@ -251,16 +251,9 @@ ko.components.register("number", {
             }
             return false;
         };
-
-        this.OnBlurEvent = function(data, event) {
-            // for Google Chrome (incorrect processing of a value with a dot at the end)
-            if (isNaN(document.getElementById(self.id).valueAsNumber)) {
-                document.getElementById(self.id).value = null;
-            }
-        };
     },
     template:
-       '<input type="number" data-bind="value: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation, blur: OnBlurEvent }" />'
+       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
 });
 
 // ---------------
@@ -371,12 +364,15 @@ ko.components.register("multiple-text", {
         koutils.subscribeOnce(this.value, function(newValue) {
             var stringsArray = [];
             if (newValue && newValue.length) {
-                for (var i in newValue) {
-                    stringsArray.push(new String(newValue[i]));
+                if (newValue instanceof Array) {
+                    for (var i in newValue) {
+                        stringsArray.push(new String(newValue[i]));
+                    }
+                } else {
+                    stringsArray.push(new String(newValue));
                 }
                 self.strings(stringsArray);
             }
-
         });
 
         this.removeString = function(data) {
@@ -2912,7 +2908,7 @@ ko.bindingHandlers.orgstructControl = {
         var settings = valueAccessor(),
             value = settings.value,
             multiple = settings.multiple,
-            params = allBindings().params();
+            params = allBindings().params() ? allBindings().params() : {};
 
         var showVariantsButton = Dom.get(element.id + "-showVariantsButton"),
             orgstructPanelId = element.id + "-orgstructPanel", orgstructPanel, resize,
@@ -3002,47 +2998,37 @@ ko.bindingHandlers.orgstructControl = {
                 // initialize tree function
                 tree.fn = {
                     loadNodeData: function(node, fnLoadComplete) {
-                        if (node.data.shortName != "all_users") {
-                            YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName), {
-                                success: function (oResponse) {
-                                    var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
-                                    if (params && params.excludeFields) {
-                                        results = results.filter(function(item) {
-                                            return params.excludeFields.indexOf(item.shortName) == -1;
-                                        });
-                                    }
+                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName, null, params.excludeAuthorities), {
+                            success: function (oResponse) {
+                                var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
+                                if (results) {
+                                    for (var i = 0; i < results.length; i++) {
+                                        item = results[i];
 
-                                    if (results) {
-                                        for (var i = 0; i < results.length; i++) {
-                                            item = results[i];
-
-                                            treeNode = this.buildTreeNode(item, node, false);
-                                            if (item.authorityType == "USER") {
-                                                treeNode.isLeaf = true;
-                                            }
+                                        treeNode = this.buildTreeNode(item, node, false);
+                                        if (item.authorityType == "USER") {
+                                            treeNode.isLeaf = true;
                                         }
                                     }
-
-                                    oResponse.argument.fnLoadComplete();
-                                },
-
-                                failure: function(oResponse) {
-                                    // error
-                                },
-
-                                scope: tree.fn,
-                                argument: {
-                                    "node": node,
-                                    "fnLoadComplete": fnLoadComplete
                                 }
-                            });
-                        } else {
-                            alert("Просьба обратиться к администратору системы, код ошибки 'all_users'");
-                        }
+
+                                oResponse.argument.fnLoadComplete();
+                            },
+
+                            failure: function(oResponse) {
+                                // error
+                            },
+
+                            scope: tree.fn,
+                            argument: {
+                                "node": node,
+                                "fnLoadComplete": fnLoadComplete
+                            }
+                        });
                     },
 
                     loadRootNodes: function(tree, scope, query) {
-                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(options.rootGroup(), query), {
+                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(options.rootGroup(), query, params.excludeAuthorities), {
                             success: function(oResponse) {
                                 var results = YAHOO.lang.JSON.parse(oResponse.responseText),
                                     rootNode = tree.getRoot(), treeNode,
@@ -3107,9 +3093,14 @@ ko.bindingHandlers.orgstructControl = {
                         return textNode;
                     },
 
-                    buildTreeNodeUrl: function (group, query) {
+                    buildTreeNodeUrl: function (group, query, excludeAuthorities) {
                         var uriTemplate ="api/orgstruct/group/" + Alfresco.util.encodeURIPath(group) + "/children?branch=true&role=true&group=true&user=true";
-                        if (query) uriTemplate += "&filter=" + encodeURI(query) + "&recurse=true";
+                        if (query) {
+                            uriTemplate += "&filter=" + encodeURI(query) + "&recurse=true";
+                        }
+                        if (excludeAuthorities) {
+                            uriTemplate += "&excludeAuthorities=" + excludeAuthorities;
+                        }
                         return  Alfresco.constants.PROXY_URI + uriTemplate;
                     },
 

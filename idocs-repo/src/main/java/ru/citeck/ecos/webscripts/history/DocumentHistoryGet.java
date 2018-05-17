@@ -99,7 +99,7 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
 
         /** Check history event status */
         NodeRef documentRef = new NodeRef(nodeRefUuid);
-        Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY);
+        Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.PROP_USE_NEW_HISTORY);
         if ((useNewHistory == null || !useNewHistory) && isEnabledRemoteHistoryService()) {
             historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
         }

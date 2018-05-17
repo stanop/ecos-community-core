@@ -2,7 +2,9 @@ package ru.citeck.ecos.search.ftsquery;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.QueryConsistency;
+import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
+import org.alfresco.service.namespace.QName;
 
 import java.util.List;
 import java.util.Optional;
@@ -79,4 +81,11 @@ public interface OperatorExpected {
      * Set bulk fetch
      */
     OperatorExpected bulkFetch(boolean value);
+
+    /**
+     * Add sorting
+     */
+    OperatorExpected addSort(QName field, boolean ascending);
+    OperatorExpected addSort(String field, boolean ascending);
+    OperatorExpected addSort(SearchParameters.SortDefinition sortDefinition);
 }

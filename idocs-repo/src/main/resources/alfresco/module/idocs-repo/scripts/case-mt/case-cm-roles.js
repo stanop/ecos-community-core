@@ -93,16 +93,6 @@ var roles = {
 
             var confirmersRefs = roles.getConfirmersRefsFromRouting(type, kind);
 
-            //var additionalConfirmers = caseRoleService.getAssignees(document, ROLE_ADDITIONAL_CONFIRMERS);
-            //for (var i in additionalConfirmers) {
-            //    confirmersRefs[additionalConfirmers[i].nodeRef] = true;
-            //}
-
-            //var owner = (document.assocs['idocs:supervisor'] || [])[0];
-            //if (owner) {
-            //    confirmersRefs[owner.nodeRef] = true;
-            //}
-
             var result = [];
             for (var ref in confirmersRefs) {
                 result.push(search.findNode(ref));

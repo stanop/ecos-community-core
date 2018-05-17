@@ -9,6 +9,7 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.DatabaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.workflow.WorkflowDeployer;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -16,6 +17,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.app.domain.editor.AbstractModel;
 import org.flowable.app.domain.editor.Model;
+import org.flowable.app.domain.editor.ModelHistory;
 import org.flowable.bpmn.BpmnAutoLayout;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
@@ -27,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -40,9 +43,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Roman Makarskiy
@@ -72,6 +73,10 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
     @Autowired
     private ContentService contentService;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
     private ManagementService managementService;
 
     private List<String> locations;
@@ -105,6 +110,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
                     "not initialised or model table is not exist");
         }
 
+        /** Read process definition from input stream */
         BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
         XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
         XMLStreamReader xmlStreamReader;
@@ -115,6 +121,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
             throw new IllegalStateException("Could not create XML streamReader.", e);
         }
 
+        /** Parse process definition */
         BpmnModel bpmnModel = xmlConverter.convertToBpmnModel(xmlStreamReader);
         if (CollectionUtils.isEmpty(bpmnModel.getProcesses())) {
             throw new IllegalArgumentException("No process found in metadata");
@@ -136,6 +143,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
         String description = process.getDocumentation();
         String key = process.getId();
 
+        /** Fill dto */
         Model model = new Model();
         model.setId(UUID.randomUUID().toString());
         model.setName(name);
@@ -149,6 +157,35 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
         model.setModelEditorJson(modelNode.toString());
         model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
 
+        /** Insert or update model in flowable-modeler */
+        if (existProcessModel(key)) {
+            updateProcessModelToNewVersion(model);
+        } else {
+            createProcessModel(model);
+        }
+
+        logger.info("Process imported.");
+    }
+
+    private void updateProcessModelToNewVersion(Model model) {
+        List<Model> oldModels = getProcessModelsByModelKey(model.getKey());
+        /** Create model with new version */
+        Integer lastVersion = getLastProcessModelVersion(model.getKey());
+        model.setVersion(lastVersion + 1);
+        createProcessModel(model);
+        /** Create history models from old models */
+        List<String> oldIds = new ArrayList<>(oldModels.size());
+        for (Model currentModel : oldModels) {
+            oldIds.add(currentModel.getId());
+            createProcessHistoryModel(createHistoryModelFromModel(currentModel, model.getId()));
+        }
+        /** Remove old models */
+        for (String modelId : oldIds) {
+            deleteProcessModelsByIds(modelId);
+        }
+    }
+
+    private void createProcessModel(Model model) {
         CustomSqlExecution<ModelMapper, String> insertModelSqlExecution =
                 new AbstractCustomSqlExecution<ModelMapper, String>(ModelMapper.class) {
                     @Override
@@ -159,8 +196,86 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
                 };
 
         managementService.executeCustomSql(insertModelSqlExecution);
+    }
 
-        logger.info("Process imported.");
+    private void createProcessHistoryModel(ModelHistory model) {
+        CustomSqlExecution<ModelMapper, String> insertModelSqlExecution =
+                new AbstractCustomSqlExecution<ModelMapper, String>(ModelMapper.class) {
+                    @Override
+                    public String execute(ModelMapper modelMapper) {
+                        modelMapper.insertHistoryModel(model);
+                        return null;
+                    }
+                };
+
+        managementService.executeCustomSql(insertModelSqlExecution);
+    }
+
+    private List<Model> getProcessModelsByModelKey(String modelKey) {
+        CustomSqlExecution<ModelMapper, List<Model>> sqlExecution =
+                new AbstractCustomSqlExecution<ModelMapper, List<Model>>(ModelMapper.class) {
+                    @Override
+                    public List<Model> execute(ModelMapper modelMapper) {
+                        return modelMapper.getProcessModelsByModelKey(modelKey);
+                    }
+                };
+        return managementService.executeCustomSql(sqlExecution);
+    }
+
+    private boolean existProcessModel(String modelKey) {
+        /** Load process models by model key */
+        CustomSqlExecution<ModelMapper, Long> countExecution =
+                new AbstractCustomSqlExecution<ModelMapper, Long>(ModelMapper.class) {
+                    @Override
+                    public Long execute(ModelMapper modelMapper) {
+                        return modelMapper.getProcessModelsCountByModelKey(modelKey);
+                    }
+                };
+       Long result = managementService.executeCustomSql(countExecution);
+       return result > 0;
+    }
+
+    private Integer getLastProcessModelVersion(String modelKey) {
+        CustomSqlExecution<ModelMapper, Integer> versionExecution =
+                new AbstractCustomSqlExecution<ModelMapper, Integer>(ModelMapper.class) {
+                    @Override
+                    public Integer execute(ModelMapper modelMapper) {
+                        return modelMapper.getLastProcessModelVersionByModelKey(modelKey);
+                    }
+                };
+        return managementService.executeCustomSql(versionExecution);
+    }
+
+    private void deleteProcessModelsByIds(String modelId) {
+        CustomSqlExecution<ModelMapper, String> deleteModelSqlExecution =
+                new AbstractCustomSqlExecution<ModelMapper, String>(ModelMapper.class) {
+                    @Override
+                    public String execute(ModelMapper modelMapper) {
+                        modelMapper.deleteProcessModelsById(modelId);
+                        return null;
+                    }
+                };
+
+        managementService.executeCustomSql(deleteModelSqlExecution);
+    }
+
+    private ModelHistory createHistoryModelFromModel(Model model, String modelId) {
+        ModelHistory result = new ModelHistory();
+        result.setModelId(modelId);
+
+        result.setId(UUID.randomUUID().toString());
+        result.setName(model.getName());
+        result.setKey(model.getKey());
+        result.setDescription(model.getDescription());
+        result.setCreated(model.getCreated());
+        result.setCreatedBy(model.getCreatedBy());
+        result.setLastUpdated(model.getLastUpdated());
+        result.setLastUpdatedBy(model.getLastUpdatedBy());
+        result.setVersion(model.getVersion());
+        result.setModelEditorJson(model.getModelEditorJson());
+        result.setModelType(model.getModelType());
+
+        return result;
     }
 
     @Override
@@ -172,12 +287,18 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
         logger.info("Start import process to Flowable Modeler from locations");
 
-        if (CollectionUtils.isEmpty(locations)) {
+        /** Get all locations */
+        List<String> bootstrapLocations = getBootstrapDefinitions();
+        Set<String> allLocations = new HashSet<>(bootstrapLocations);
+        allLocations.addAll(locations);
+
+        if (CollectionUtils.isEmpty(allLocations)) {
             logger.info("Nothing import to Flowable Modeler");
             return;
         }
 
-        locations.forEach(location -> {
+        /** Import process definitions */
+        allLocations.forEach(location -> {
             try {
                 Resource resource = location.contains(":") ? new UrlResource(location) : new ClassPathResource(location);
                 String path = resource.getURL().toString();
@@ -190,6 +311,37 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
                 throw new IllegalStateException("Could not import process to Flowable Modeler. Location: " + location, e);
             }
         });
+    }
+
+    private List<String> getBootstrapDefinitions() {
+        List<String> bootstrapLocations = new ArrayList<>();
+        Map<String, WorkflowDeployer> deployerMap = applicationContext.getBeansOfType(WorkflowDeployer.class);
+        for (String key : deployerMap.keySet()) {
+            WorkflowDeployer deployer = deployerMap.get(key);
+            if (deployer != null && !CollectionUtils.isEmpty(deployer.getWorkflowDefinitions())) {
+                for (Properties definitionProperties : deployer.getWorkflowDefinitions()) {
+                    String engineId = definitionProperties.getProperty("engineId");
+                    if (ENGINE_NAME.equals(engineId)) {
+                        String definitionLocation = definitionProperties.getProperty("location");
+                        if (definitionLocation != null) {
+                            boolean partOfLocations = false;
+                            if (!CollectionUtils.isEmpty(locations)) {
+                                for (String tempLocation : locations) {
+                                    if (tempLocation.endsWith(definitionLocation)) {
+                                        partOfLocations = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!partOfLocations) {
+                                bootstrapLocations.add(definitionLocation);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return bootstrapLocations;
     }
 
     public boolean importIsPossible() {

@@ -426,10 +426,9 @@
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService" />
         <property name="scriptService" ref="scriptService" />
-
     </bean>
-
-    <bean id="idocs.ResetLifeCyclePropertyBehavoiur" parent="CopyDocumentChangePropertyBehaviour">
+    
+    <!--<bean id="idocs.ResetLifeCyclePropertyBehaviour" parent="CopyDocumentChangePropertyBehaviour">
         <property name="classNames">
             <list>
                 <value>idocs:doc</value>
@@ -444,7 +443,7 @@
                 </bean>
             </list>
         </property>
-    </bean>
+    </bean>-->
 
     <bean id="idocs.AddCurrentUserToObjectBehaviour"
           class="ru.citeck.ecos.behavior.common.AddCurrentUserBehaviour" abstract="true" init-method="init">
@@ -758,13 +757,21 @@
     <bean id="ecos.caseStatusCompleteBehaviour" class="ru.citeck.ecos.behavior.icase.CaseStatusCompleteBehaviour" init-method="init">
         <property name="policyComponent" ref="policyComponent" />
         <property name="nodeService" ref="nodeService" />
-        <property name="searchService" ref="searchService"/>
+        <property name="searchService" ref="searchService" />
+        <property name="nodeUtils" ref="nodeUtils" />
     </bean>
+
+    <!--<bean id="ecos.caseStatusCompleteBehaviour" class="ru.citeck.ecos.behavior.icase.CaseStatusCompleteBehaviourOld" init-method="init">
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="searchService" ref="searchService"/>
+    </bean>-->
 
     <bean class="ru.citeck.ecos.behavior.role.UpdateRolesBehaviour" init-method="init">
         <property name="caseRoleService" ref="caseRoleService" />
         <property name="policyComponent" ref="policyComponent" />
         <property name="nodeService" ref="nodeService" />
+        <property name="mergeRolesUpdating" value="false" />
     </bean>
 
     <bean class="ru.citeck.ecos.behavior.role.UpdateRoleBehaviour" init-method="init">
@@ -778,6 +785,8 @@
     </bean>
 
     <bean class="ru.citeck.ecos.behavior.icase.ClearNodeActionsCache" />
+
+    <bean class="ru.citeck.ecos.behavior.icase.UpdateCaseModifiedDate" />
 
     <bean id="ecos.splitChildrenBehaviour" class="ru.citeck.ecos.behavior.common.SplitChildrenBehaviour"
           init-method="init" abstract="true">
@@ -820,6 +829,38 @@
         </property>
         <property name="order" value="40"/>
     </bean>
+        
+    <bean id="ecos.document.historyBehaviour" parent="history.historicalPropertiesBehaviour">
+        <property name="className" value="ecos:document"/>
+        <property name="allowedProperties">
+            <list>
+                <value>cm:content</value>
+                <value>cm:name</value>
+                <value>ecos:documentNumber</value>
+                <value>ecos:documentDate</value>
+                <value>ecos:documentAmount</value>
+                <value>idocs:documentStatus</value>
+                <value>idocs:note</value>
+                <value>idocs:legalEntity</value>
+                <value>idocs:contractor</value>
+                <value>idocs:currencyDocument</value>
+                <value>tk:kind</value>
+                <value>dms:updateContent</value>
+            </list>
+        </property>
+        <property name="enableHistoryOnUpdateProps" value="true"/>
+        <property name="enableHistoryOnAddAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteAssocs" value="true"/>
+        <property name="enableHistoryOnAddChildAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+    </bean>
 
+    <bean id="idocs.addCreatedPersonToAllGroup" class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
+        <property name="groupFullName" value="GROUP_all"/>
+    </bean>
+
+    <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
+          class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
+    
 </beans>
 

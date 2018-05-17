@@ -1,7 +1,5 @@
 package ru.citeck.ecos.icase;
 
-import static org.junit.Assert.*;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,29 +7,23 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.alfresco.model.ContentModel;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.namespace.QName;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import ru.citeck.ecos.icase.completeness.CaseCompletenessServiceImpl;
+import ru.citeck.ecos.icase.element.CaseElementServiceImpl;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.ICaseModel;
-import ru.citeck.ecos.model.PredicateModel;
-import ru.citeck.ecos.model.RequirementModel;
-import ru.citeck.ecos.pred.Quantifier;
 //import ru.citeck.ecos.test.ApplicationContextHelper;
 
-import ru.citeck.ecos.icase.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 //@ContextConfiguration(loader=ApplicationContextHelper.class)

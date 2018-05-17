@@ -446,6 +446,7 @@
 		<property name="personService" ref="PersonService"/>
 		<property name="behaviourFilter" ref="policyBehaviourFilter" />
 		<property name="transactionService" ref="TransactionService"/>
+		<property name="nodeUtils" ref="nodeUtils" />
 	</bean>
 
 	<bean id="historyGetService" class="ru.citeck.ecos.history.impl.HistoryGetServiceImpl">
@@ -588,6 +589,7 @@
 		<property name="dictionaryService" ref="dictionaryService"/>
 		<property name="restTemplate" ref="caseRestTemplate"/>
 		<property name="transactionService" ref="transactionService"/>
+		<property name="lockService" ref="lockService"/>
 	</bean>
 
 	<bean id="remoteRestoreCaseModelService" class="ru.citeck.ecos.cases.impl.RemoteRestoreCaseModelServiceImpl">

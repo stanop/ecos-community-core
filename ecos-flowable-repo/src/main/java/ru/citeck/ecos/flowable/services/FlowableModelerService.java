@@ -8,11 +8,11 @@ import java.io.InputStream;
  * @author Roman Makarskiy
  */
 public interface FlowableModelerService {
-    public void importProcessModel(NodeRef nodeRef);
+    void importProcessModel(NodeRef nodeRef);
 
-    public void importProcessModel(InputStream inputStream);
+    void importProcessModel(InputStream inputStream);
 
-    public void importProcessModel();
+    void importProcessModel();
 
-    public boolean importIsPossible();
+    boolean importIsPossible();
 }

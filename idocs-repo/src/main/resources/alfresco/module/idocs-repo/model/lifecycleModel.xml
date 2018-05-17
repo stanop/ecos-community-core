@@ -88,7 +88,7 @@
                 <child-association name="lc:transitionRules">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>lc:transitionRule</class>

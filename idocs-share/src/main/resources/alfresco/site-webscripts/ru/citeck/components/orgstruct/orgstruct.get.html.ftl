@@ -33,6 +33,13 @@
 
 <#assign el=args.htmlid?html>
 <#assign rootGroup = "_orgstruct_home_" />
+<#assign excludeAuthorities>
+    <#if config.scoped["InvariantControlsConfiguration"]?? &&
+         config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
+         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"]??>
+             '${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"]}'
+    <#else>''</#if>
+</#assign>
 <script type="text/javascript">//<![CDATA[
 
     var url = Alfresco.constants.PROXY_URI + '/api/people/'+ Alfresco.constants.USERNAME;
@@ -60,7 +67,7 @@
                                     formats: {
                                         "authority": {
                                             name: "authority-{fullName}",
-                                            keys: [ "{groupType}-manager-{roleIsManager}", "{authorityType}-{groupType}", "{authorityType}", "available-{available}" ]
+                                            keys: [ "{groupType}-manager-{roleIsManager}", "{authorityType}-{groupType}", "{authorityType}", "available-{available}", "isPersonDisabled-{isPersonDisabled}" ]
                                         }
                                     },
                                     item: {
@@ -76,7 +83,7 @@
                                     children: {
                                         "root": {
                                             "format": "authority",
-                                            "get": "${page.url.context}/proxy/alfresco/api/orgstruct/group/${rootGroup}/children/",
+                                            "get": "${page.url.context}/proxy/alfresco/api/orgstruct/group/${rootGroup}/children/?excludeAuthorities=" + ${excludeAuthorities?trim},
                                             "delete": "${page.url.context}/proxy/alfresco/api/groups/${rootGroup}/children/{item.fullName}",
                                         },
                                         "search": {
@@ -87,7 +94,7 @@
                                         "GROUP": {
                                             "format": "authority",
                                             "get": "${page.url.context}/proxy/alfresco/api/orgstruct/group/{shortName}/children/?showdisabled=" +
-                                                    (Alfresco.constants.Citeck.userIsAdmin ? "true" : "false"),
+                                                    (Alfresco.constants.Citeck.userIsAdmin ? "true" : "false") + "&excludeAuthorities=" + ${excludeAuthorities?trim},
                                             "add": "${page.url.context}/proxy/alfresco/api/groups/{parent.shortName}/children/{item.fullName}",
                                             "delete": "${page.url.context}/proxy/alfresco/api/groups/{parent.shortName}/children/{item.fullName}",
                                         }

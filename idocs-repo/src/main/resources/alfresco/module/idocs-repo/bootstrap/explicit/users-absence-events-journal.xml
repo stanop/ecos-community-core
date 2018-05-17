@@ -11,8 +11,8 @@
                     <sys:node-uuid>users-absence-events-journal</sys:node-uuid>
                     <cm:name>users-absence-events</cm:name>
                     <cm:title>
-                        <view:mlvalue view:locale="en_US">${journal.absence-events}</view:mlvalue>
-                        <view:mlvalue view:locale="ru_RU">${journal.absence-events}</view:mlvalue>
+                        <view:mlvalue view:locale="en_US">${journal.absence-events_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.absence-events_ru}</view:mlvalue>
                     </cm:title>
                     <journal:journalType>users-absence-events</journal:journalType>
                 </view:properties>
@@ -44,10 +44,8 @@
                         <view:properties>
                             <cm:name>default</cm:name>
                             <cm:title>
-                                <view:mlvalue view:locale="en_US">${journal.absence-events.create-variant.title}
-                                </view:mlvalue>
-                                <view:mlvalue view:locale="ru_RU">${journal.absence-events.create-variant.title}
-                                </view:mlvalue>
+                                <view:mlvalue view:locale="en_US">${journal.absence-events.create-variant.title_en}</view:mlvalue>
+                                <view:mlvalue view:locale="ru_RU">${journal.absence-events.create-variant.title_ru}</view:mlvalue>
                             </cm:title>
                             <journal:type>{http://www.citeck.ru/model/deputy/1.0}selfAbsenceEvent</journal:type>
                             <journal:formId></journal:formId>
@@ -70,8 +68,8 @@
                     <sys:node-uuid>journal-meta-l-absence-events</sys:node-uuid>
                     <cm:name>global-absence</cm:name>
                     <cm:title>
-                        <view:mlvalue view:locale="en_US">${journal.absence-events}</view:mlvalue>
-                        <view:mlvalue view:locale="ru_RU">${journal.absence-events}</view:mlvalue>
+                        <view:mlvalue view:locale="en_US">${journal.absence-events_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${journal.absence-events_ru}</view:mlvalue>
                     </cm:title>
                 </view:properties>
                 <view:associations>

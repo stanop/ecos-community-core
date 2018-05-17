@@ -330,7 +330,11 @@
     <bean id="ecosConfigService" class="ru.citeck.ecos.config.EcosConfigService">
         <property name="searchService" ref="searchService"/>
         <property name="nodeService" ref="nodeService"/>
-        <property name="namespaceService" ref="namespaceService"/>
+    </bean>
+
+    <bean id="ecosConfigServiceJS" class="ru.citeck.ecos.config.EcosConfigServiceJs" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="ecosConfigService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 
     <bean id="applicationContextProvider" class="ru.citeck.ecos.providers.ApplicationContextProvider"/>

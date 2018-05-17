@@ -104,7 +104,7 @@
 				</association>
 				<association name="letters:subdivision">
 					<source>
-						<mandatory>true</mandatory>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -114,7 +114,7 @@
 				</association>
 				<association name="letters:nomenclature">
 					<source>
-						<mandatory>true</mandatory>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -124,7 +124,7 @@
 				</association>
 				<association name="letters:activityDirection">
 					<source>
-						<mandatory>true</mandatory>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -134,7 +134,7 @@
 				</association>
 				<association name="letters:outcome">
 					<source>
-						<mandatory>true</mandatory>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -147,6 +147,7 @@
 				<aspect>letters:incomeType</aspect>
 				<aspect>letters:hasDelivery</aspect>
 				<aspect>idocs:hasRestrictedDocumentStatus</aspect>
+				<aspect>idocs:lifeCycle</aspect>
 			</mandatory-aspects>
 		</type>
 		
@@ -166,7 +167,7 @@
 				</association>
 				<association name="letters:income">
 					<source>
-						<mandatory>true</mandatory>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -176,7 +177,7 @@
 				</association>
 				<association name="letters:outcomeNomenclature">
 					<source>
-						<mandatory>true</mandatory>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -190,6 +191,7 @@
 				<aspect>idocs:hasPerformer</aspect>
 				<aspect>letters:hasDelivery</aspect>
 				<aspect>idocs:hasSignatory</aspect>
+				<aspect>idocs:lifeCycle</aspect>
 			</mandatory-aspects>
 		</type>
 		

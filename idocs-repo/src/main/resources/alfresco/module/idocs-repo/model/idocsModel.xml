@@ -158,9 +158,6 @@
                     <type>d:boolean</type>
                     <default>false</default>
                 </property>
-                <property name="idocs:useNewHistory">
-                    <type>d:boolean</type>
-                </property>
             </properties>
             <mandatory-aspects>
                 <aspect>idocs:hasLegalEntity</aspect>
@@ -169,7 +166,6 @@
                 <aspect>idocs:hasSummary</aspect>
                 <aspect>idocs:hasController</aspect>
                 <aspect>idocs:hasNote</aspect>
-                <aspect>idocs:lifeCycle</aspect>
                 <aspect>tk:documentTypeKind</aspect>
                 <aspect>history:historical</aspect>
             </mandatory-aspects>
@@ -314,7 +310,7 @@
                 <association name="idocs:contacts">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>idocs:contact</class>
@@ -1033,7 +1029,7 @@
                     <title>Факсимиле подписи</title>
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>cm:content</class>
@@ -1193,7 +1189,7 @@
 					<title>Подписанная версия</title>
 					<source>
 						<mandatory>false</mandatory>
-						<many>false</many>
+						<many>true</many>
 					</source>
 					<target>
 						<class>cm:content</class>
@@ -1437,6 +1433,14 @@
                     <constraints>
                         <constraint ref="idocs:constraint:attachmentStateOptions" />
                     </constraints>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasUseNewHistoryFlag">
+            <properties>
+                <property name="idocs:useNewHistory">
+                    <type>d:boolean</type>
                 </property>
             </properties>
         </aspect>

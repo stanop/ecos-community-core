@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.lock.LockService;
+import org.alfresco.service.cmr.lock.LockStatus;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -12,6 +14,8 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.alfresco.service.transaction.TransactionService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
@@ -34,6 +38,11 @@ import java.util.*;
  * Remote case model service
  */
 public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
+
+    /**
+     * Logger
+     */
+    private static Log LOGGER = LogFactory.getLog(RemoteCaseModelServiceImpl.class);
 
     /**
      * Exclude properties
@@ -110,6 +119,11 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
      */
     private RestTemplate restTemplate;
 
+    /**
+     * Lock service
+     */
+    private LockService lockService;
+
 
     /**
      * Global properties
@@ -142,6 +156,11 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
      */
     @Override
     public void sendAndRemoveCaseModelsByDocument(NodeRef documentRef) {
+        LockStatus lockStatus = lockService.getLockStatus(documentRef);
+        if (lockStatus != null && lockStatus!= LockStatus.NO_LOCK) {
+            LOGGER.info("Document " + documentRef.getId() + " is locked - " + lockStatus);
+            return;
+        }
         transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
             ArrayNode arrayNode = objectMapper.createArrayNode();
             List<NodeRef> forDelete = new ArrayList<>();
@@ -1022,6 +1041,14 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
      */
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    /**
+     * Set lock service
+     * @param lockService Lock service
+     */
+    public void setLockService(LockService lockService) {
+        this.lockService = lockService;
     }
 }
 

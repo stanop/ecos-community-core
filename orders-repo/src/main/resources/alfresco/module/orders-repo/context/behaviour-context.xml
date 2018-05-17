@@ -5,14 +5,14 @@
     <bean id="orders.internal.autoNameBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="orders:internal" />
         <property name="nameTemplate">
-            <value><![CDATA[<#if node.assocs['icase:caseStatusAssoc']?? && node.assocs['icase:caseStatusAssoc']?size &gt; 0 && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"]?? && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"] == 'active'>Документ № #{'$'}{node.properties['idocs:registrationNumber']!'б/н'}<#else>Документ № #{'$'}{node.properties['orders:projectNumber']!'б/н'}</#if>]]></value>
+            <value><![CDATA[<#if (node.assocs['icase:caseStatusAssoc']?? && node.assocs['icase:caseStatusAssoc']?size &gt; 0 && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"]?? && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"] == 'active') || (node.properties["idocs:registrationNumber"]?? && node.properties["idocs:registrationNumber"] != "")>Документ № #{'$'}{node.properties['idocs:registrationNumber']!'б/н'}<#else>Документ № #{'$'}{node.properties['orders:projectNumber']!'б/н'}</#if>]]></value>
         </property>
     </bean>
 
     <bean id="orders.internal.titleGenerationBehaviour" parent="TitleGenerationBehaviour">
         <property name="className" value="orders:internal" />
         <property name="titleTemplate">
-            <value><![CDATA[<#if node.assocs['icase:caseStatusAssoc']?? && node.assocs['icase:caseStatusAssoc']?size &gt; 0 && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"]?? && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"] == 'active'>Документ № #{'$'}{node.properties['idocs:registrationNumber']!'б/н'}<#else>Документ № #{'$'}{node.properties['orders:projectNumber']!'б/н'}</#if>]]></value>
+            <value><![CDATA[<#if (node.assocs['icase:caseStatusAssoc']?? && node.assocs['icase:caseStatusAssoc']?size &gt; 0 && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"]?? && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"] == 'active') || (node.properties["idocs:registrationNumber"]?? && node.properties["idocs:registrationNumber"] != "")>Документ № #{'$'}{node.properties['idocs:registrationNumber']!'б/н'}<#else>Документ № #{'$'}{node.properties['orders:projectNumber']!'б/н'}</#if>]]></value>
         </property>
     </bean>
 
@@ -20,7 +20,7 @@
         <property name="className" value="orders:subject" />
         <property name="nameTemplate" value="#{'$'}{node.properties['idocs:fileIndex']!} (#{'$'}{node.properties['idocs:fileName']!})" />
     </bean>
-    
+
     <bean id="orders.internal.projectNumber.EnumerationBehaviour" parent="EnumerationBehaviour" depends-on="orders.dictionaryBootstrap">
         <property name="className" value="orders:internal" />
         <property name="numberField" value="orders:projectNumber" />
@@ -43,38 +43,27 @@
         <property name="className" value="orders:internal"/>
         <property name="allowedProperties">
             <list>
+                <value>cm:content</value>
                 <value>idocs:initiator</value>
-                <value>dms:agreement_to_files</value>
-                <value>idocs:caseCompleted</value>
-                <value>idocs:caseModelsSent</value>
-                <value>idocs:legalEntity</value>
+                <value>idocs:appendixPagesNumber</value>
+                <value>idocs:pagesNumber</value>
                 <value>idocs:registrationNumber</value>
                 <value>idocs:registrationDate</value>
-                <value>idocs:pagesNumber</value>
-                <value>idocs:appendixPagesNumber</value>
                 <value>idocs:summary</value>
                 <value>idocs:controller</value>
-                <value>idocs:note</value>
-                <value>orders:executionReport</value>
-                <value>orders:projectNumber</value>
-                <value>orders:projectNumberSort</value>
-                <value>orders:creationDate</value>
-                <value>orders:header</value>
-                <value>orders:fingerboard</value>
-                <value>orders:expirationDate</value>
-                <value>orders:appendixNumber</value>
-                <value>orders:placeOfOriginal</value>
-                <value>orders:signComment</value>
-                <value>orders:confirmComment</value>
-                <value>orders:toEmployee</value>
-                <value>orders:branch</value>
-                <value>orders:fileCode</value>
-                <value>tk:type</value>
                 <value>idocs:performer</value>
                 <value>idocs:signatory</value>
                 <value>idocs:registrator</value>
+                <value>orders:creationDate</value>
+                <value>orders:header</value>
+                <value>orders:fingerboard</value>
+                <value>orders:appendixNumber</value>
+                <value>orders:projectNumber</value>
+                <value>orders:branch</value>
+                <value>orders:expirationDate</value>
+                <value>orders:fileCode</value>
+                <value>tk:kind</value>
                 <value>dms:updateContent</value>
-                <value>dms:templateAssociation</value>
                 <value>icase:documents</value>
             </list>
         </property>

@@ -197,8 +197,9 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                     });
                 }
             }
-            model.attributes = attributes;
-            this.setModel(model);
+            var result = _.clone(model);
+            result.attributes = attributes;
+            this.setModel(result);
         }, true)
         .shortcut('id', 'nodeRef')
         .property('attributes', [JsonObjectAttr])
@@ -511,7 +512,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
                                     record['nodeRef'] = item;
                                 } else {
                                     record.attributes[item.name] = (item.val || []).map(function (it) {
-                                        if (it.str) {
+                                        if (it.hasOwnProperty('str')) {
                                             return it.str;
                                         } else {
                                             var result = [];
@@ -1365,6 +1366,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'lib/moment'], function(k
             return null;
         })
         .method('reset', function(full, depth) {
+
+            if (!this.persisted.loaded()) {
+                return;
+            }
 
             if (_.isFinite(depth)) {
                 depth--;
