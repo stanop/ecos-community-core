@@ -3094,7 +3094,7 @@ ko.bindingHandlers.orgstructControl = {
                     },
 
                     buildTreeNodeUrl: function (group, query, excludeAuthorities) {
-                        var uriTemplate ="api/orgstruct/group/" + Alfresco.util.encodeURIPath(group) + "/children?branch=true&role=true&group=true&user=true";
+                        var uriTemplate ="api/orgstruct/v2/group/" + Alfresco.util.encodeURIPath(group) + "/children?branch=true&role=true&group=true&user=true";
                         if (query) {
                             uriTemplate += "&filter=" + encodeURI(query) + "&recurse=true";
                         }
