@@ -855,9 +855,15 @@
         <property name="enableHistoryOnDeleteChildAssocs" value="true"/>
     </bean>
 
-    <bean id="idocs.addCreatedPersonToAllGroup" class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
+    <!--<bean id="idocs.addCreatedPersonToAllGroup" class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
         <property name="groupFullName" value="GROUP_all"/>
-    </bean>
+        <property name="skipPersons">
+            <list>
+                <value>System</value>
+                <value>guest</value>
+            </list>
+        </property>
+    </bean>-->
 
     <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
           class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
