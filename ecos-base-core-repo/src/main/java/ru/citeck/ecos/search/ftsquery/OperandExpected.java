@@ -1,6 +1,7 @@
 package ru.citeck.ecos.search.ftsquery;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.search.PermissionEvaluationMode;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.namespace.QName;
@@ -145,9 +146,24 @@ public interface OperandExpected {
     OperandExpected bulkFetch(boolean value);
 
     /**
+     * Set max items
+     */
+    OperandExpected maxItems(int value);
+
+    /**
+     * Set skip count
+     */
+    OperandExpected skipCount(int value);
+
+    /**
      * Add sorting
      */
     OperandExpected addSort(QName field, boolean ascending);
     OperandExpected addSort(String field, boolean ascending);
     OperandExpected addSort(SearchParameters.SortDefinition sortDefinition);
+
+    /**
+     * Set permissions mode
+     */
+    OperandExpected permissionsMode(PermissionEvaluationMode mode);
 }

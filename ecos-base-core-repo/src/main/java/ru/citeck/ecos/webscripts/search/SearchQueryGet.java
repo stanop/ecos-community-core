@@ -2,9 +2,6 @@ package ru.citeck.ecos.webscripts.search;
 
 import lombok.Setter;
 import org.alfresco.error.AlfrescoRuntimeException;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.search.SearchService;
-import org.alfresco.service.namespace.NamespaceService;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +9,6 @@ import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
-import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.search.SearchQuery;
 
 import java.util.HashMap;
