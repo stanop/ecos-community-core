@@ -1688,14 +1688,14 @@
                     var renderRequest = function(object) {
                         var hasReqData = propsArr.every(function(k) {
                             return _.values(object).find(function (val) {
-                                return val.name == k;
+                                return val && val.name == k;
                             });
                         });
                         if (hasReqData) {
                             if (elCell.innerHTML) elCell.innerHTML += "<br>";
                             var values = [];
                             _.values(object).map(function (item) {
-                                if (item.val && item.val.length) {
+                                if (item.val) {
                                     item.val.map(function (val) {
                                         if (val.str) {
                                             values.push(val.str);
