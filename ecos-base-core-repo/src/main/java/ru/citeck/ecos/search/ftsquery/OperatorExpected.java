@@ -1,6 +1,7 @@
 package ru.citeck.ecos.search.ftsquery;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.search.PermissionEvaluationMode;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
@@ -98,4 +99,9 @@ public interface OperatorExpected {
     OperatorExpected addSort(QName field, boolean ascending);
     OperatorExpected addSort(String field, boolean ascending);
     OperatorExpected addSort(SearchParameters.SortDefinition sortDefinition);
+
+    /**
+     * Set permissions mode
+     */
+    OperatorExpected permissionsMode(PermissionEvaluationMode mode);
 }

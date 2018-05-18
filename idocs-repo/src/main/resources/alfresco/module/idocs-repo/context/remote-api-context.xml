@@ -411,4 +411,6 @@
         <property name="authenticationService" ref="authenticationService"/>
     </bean>
 
+    <bean id="webscript.ru.citeck.orgstruct.v2.children.get" class="ru.citeck.ecos.webscripts.orgstruct.ChildrenGet" parent="webscript" />
+
 </beans>

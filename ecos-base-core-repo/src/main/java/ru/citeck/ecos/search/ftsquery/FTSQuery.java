@@ -2,10 +2,7 @@ package ru.citeck.ecos.search.ftsquery;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.search.QueryConsistency;
-import org.alfresco.service.cmr.search.ResultSet;
-import org.alfresco.service.cmr.search.SearchParameters;
-import org.alfresco.service.cmr.search.SearchService;
+import org.alfresco.service.cmr.search.*;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -234,6 +231,12 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
     @Override
     public FTSQuery skipCount(int value) {
         searchParameters.setSkipCount(value);
+        return this;
+    }
+
+    @Override
+    public FTSQuery permissionsMode(PermissionEvaluationMode mode) {
+        searchParameters.setPermissionEvaluation(mode);
         return this;
     }
 
