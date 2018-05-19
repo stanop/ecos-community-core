@@ -427,7 +427,7 @@
         <property name="nodeService" ref="nodeService" />
         <property name="scriptService" ref="scriptService" />
     </bean>
-    
+
     <!--<bean id="idocs.ResetLifeCyclePropertyBehaviour" parent="CopyDocumentChangePropertyBehaviour">
         <property name="classNames">
             <list>
@@ -829,7 +829,7 @@
         </property>
         <property name="order" value="40"/>
     </bean>
-        
+
     <bean id="ecos.document.historyBehaviour" parent="history.historicalPropertiesBehaviour">
         <property name="className" value="ecos:document"/>
         <property name="allowedProperties">
@@ -855,7 +855,8 @@
         <property name="enableHistoryOnDeleteChildAssocs" value="true"/>
     </bean>
 
-    <!--<bean id="idocs.addCreatedPersonToAllGroup" class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
+    <bean id="idocs.addCreatedPersonToAllGroup"
+          class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
         <property name="groupFullName" value="GROUP_all"/>
         <property name="skipPersons">
             <list>
@@ -863,10 +864,10 @@
                 <value>guest</value>
             </list>
         </property>
-    </bean>-->
+    </bean>
 
     <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
           class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
-    
+
 </beans>
 

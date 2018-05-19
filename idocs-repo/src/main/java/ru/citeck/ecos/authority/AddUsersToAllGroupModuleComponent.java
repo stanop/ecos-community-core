@@ -12,7 +12,6 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.util.*;
@@ -52,18 +51,17 @@ public class AddUsersToAllGroupModuleComponent extends AbstractModuleComponent {
                 throw new IllegalStateException("Error, " + GROUP_ALL + " not found");
             }
 
-            AuthenticationUtil.runAsSystem(() -> {
-                BatchProcessor<PersonService.PersonInfo> batchProcessor = new BatchProcessor<>(
-                        PROCESS_NAME,
-                        retryingTransactionHelper,
-                        new AddAllUsersToGroupWorkProvider(personService),
-                        WORKER_THREADS, BATCH_SIZE,
-                        null, logger, LOGGING_INTERVAL
-                );
 
-                batchProcessor.process(new AddAllUsersToGroupWorker(authorityService), true);
-                return null;
-            });
+            BatchProcessor<PersonService.PersonInfo> batchProcessor = new BatchProcessor<>(
+                    PROCESS_NAME,
+                    retryingTransactionHelper,
+                    new AddAllUsersToGroupWorkProvider(personService),
+                    WORKER_THREADS, BATCH_SIZE,
+                    null, logger, LOGGING_INTERVAL
+            );
+
+            batchProcessor.process(new AddAllUsersToGroupWorker(authorityService), true);
+
 
             logger.info("Finished executing");
         });
@@ -97,7 +95,7 @@ public class AddUsersToAllGroupModuleComponent extends AbstractModuleComponent {
     private static class AddAllUsersToGroupWorkProvider implements BatchProcessWorkProvider<PersonService.PersonInfo> {
 
         private int skip = 0;
-        private int maxItems = 500;
+        private int maxItems = 480;
         private boolean hasMore = true;
 
         private PersonService personService;
