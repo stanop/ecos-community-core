@@ -12,6 +12,9 @@ import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
 import ru.citeck.ecos.utils.RepoUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AddCreatedPersonToGroupBehaviour extends AbstractBehaviour implements NodeServicePolicies.OnCreateNodePolicy {
 
     private final static Logger logger = Logger.getLogger(AddCreatedPersonToGroupBehaviour.class);
@@ -20,6 +23,7 @@ public class AddCreatedPersonToGroupBehaviour extends AbstractBehaviour implemen
     private AuthorityService authorityService;
 
     private String groupFullName;
+    private List<String> skipPersons = new ArrayList<>();
 
     @Override
     protected void beforeInit() {
@@ -38,12 +42,16 @@ public class AddCreatedPersonToGroupBehaviour extends AbstractBehaviour implemen
 
         String personName = RepoUtils.getProperty(childAssocRef.getChildRef(), ContentModel.PROP_USERNAME, String.class,
                 nodeService);
-        if (StringUtils.isNoneBlank(personName)) {
+        if (StringUtils.isNoneBlank(personName) && !skipPersons.contains(personName)) {
             authorityService.addAuthority(groupFullName, personName);
         }
     }
 
     public void setGroupFullName(String groupFullName) {
         this.groupFullName = groupFullName;
+    }
+
+    public void setSkipPersons(List<String> skipPersons) {
+        this.skipPersons = skipPersons;
     }
 }
