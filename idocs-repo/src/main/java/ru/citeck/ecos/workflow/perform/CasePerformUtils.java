@@ -380,12 +380,12 @@ public class CasePerformUtils {
         return result;
     }
 
-    public NodeRefToNodeRefsMap getRolesPool(VariableScope scope) {
+    public Map<NodeRef, List<NodeRef>> getRolesPool(VariableScope scope) {
         Object result =  scope.getVariable(PERFORMERS_ROLES_POOL);
         if (result == null) {
             result = new NodeRefToNodeRefsMap();
         }
-        return (NodeRefToNodeRefsMap) result;
+        return (Map<NodeRef, List<NodeRef>>) result;
     }
 
     public void setNodeService(NodeService nodeService) {
