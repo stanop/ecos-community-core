@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ChildrenGet extends AbstractWebScript {
 
@@ -64,7 +65,7 @@ public class ChildrenGet extends AbstractWebScript {
     private EcosConfigService ecosConfigService;
     private AuthenticationService authenticationService;
 
-    private LoadingCache<FilterOptions, List<Pair<NodeRef, String>>> searchCache;
+    private LoadingCache<RequestParams, List<Pair<NodeRef, String>>> authoritiesCache;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -82,12 +83,12 @@ public class ChildrenGet extends AbstractWebScript {
         this.authorityService = serviceRegistry.getAuthorityService();
         this.authenticationService = serviceRegistry.getAuthenticationService();
 
-        searchCache = CacheBuilder.newBuilder()
-                                  .expireAfterWrite(5, TimeUnit.MINUTES)
-                                  .maximumSize(200)
-                                  .build(CacheLoader.from(options ->
-                                          AuthenticationUtil.runAsSystem(() -> findAuthorities(options))
-                                  ));
+        authoritiesCache = CacheBuilder.newBuilder()
+                                       .expireAfterWrite(5, TimeUnit.MINUTES)
+                                       .maximumSize(200)
+                                       .build(CacheLoader.from(options ->
+                                           AuthenticationUtil.runAsSystem(() -> getAuthorities(options))
+                                       ));
     }
 
     @Override
@@ -101,8 +102,8 @@ public class ChildrenGet extends AbstractWebScript {
             return;
         }
 
-        List<Pair<NodeRef, String>> users = getAuthorities(params);
-        List<Authority> authorities = formatAuthorities(users);
+        List<Pair<NodeRef, String>> authoritiesRaw = authoritiesCache.getUnchecked(params);
+        List<Authority> authorities = formatAuthorities(authoritiesRaw);
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getWriter(), authorities);
@@ -185,18 +186,27 @@ public class ChildrenGet extends AbstractWebScript {
     }
 
     private List<Pair<NodeRef, String>> getAuthorities(RequestParams params) {
-        if (params.recurse && StringUtils.isNotBlank(params.filterOptions.filter)) {
-            return searchCache.getUnchecked(params.filterOptions);
+
+        FilterOptions filterOptions = params.filterOptions;
+        Stream<Pair<NodeRef, String>> authorities;
+
+        if (params.recurse && StringUtils.isNotBlank(filterOptions.filter)) {
+            authorities = findAuthorities(filterOptions);
+        } else {
+            boolean immediate = !params.recurse;
+            String rootGroup = filterOptions.rootGroup;
+            Set<String> children = authorityService.getContainedAuthorities(null, rootGroup, immediate);
+            authorities = children.stream().map(this::getAuthorityNameRef);
         }
-        boolean immediate = !params.recurse;
-        String rootGroup = params.filterOptions.rootGroup;
-        Set<String> children = authorityService.getContainedAuthorities(null, rootGroup, immediate);
-        return children.stream()
-                       .map(this::getAuthorityNameRef)
-                       .collect(Collectors.toList());
+
+        Map<String, Boolean> inRootGroupCache = new HashMap<>();
+
+        return authorities.filter(auth -> filterAuthority(auth, filterOptions, inRootGroupCache))
+                          .limit(filterOptions.limit)
+                          .collect(Collectors.toList());
     }
 
-    private List<Pair<NodeRef, String>> findAuthorities(FilterOptions filterOptions) {
+    private Stream<Pair<NodeRef, String>> findAuthorities(FilterOptions filterOptions) {
 
         FTSQuery query = FTSQuery.createRaw()
                                  .eventual()
@@ -233,14 +243,9 @@ public class ChildrenGet extends AbstractWebScript {
             query.close();
         }
 
-        Map<String, Boolean> inRootGroupCache = new HashMap<>();
-
         return query.query(searchService)
                     .stream()
-                    .map(this::getAuthorityNameRef)
-                    .filter(auth -> filterAuthority(auth, filterOptions, inRootGroupCache))
-                    .limit(filterOptions.limit)
-                    .collect(Collectors.toList());
+                    .map(this::getAuthorityNameRef);
     }
 
     private boolean filterAuthority(Pair<NodeRef, String> authority,
@@ -409,15 +414,17 @@ public class ChildrenGet extends AbstractWebScript {
             options.filterTokens = Collections.emptySet();
         }
 
+        String currentAuthority = authenticationService.getCurrentUserName();
+        options.userIsAdmin = StringUtils.isNotBlank(currentAuthority) &&
+                              authorityService.isAdminAuthority(currentAuthority);
+
         Boolean showInactiveOnlyForAdmin =
                 strToBool((String) ecosConfigService.getParamValue(CONFIG_KEY_SHOW_INACTIVE), null);
 
         if (showInactiveOnlyForAdmin == null || !showInactiveOnlyForAdmin) {
             options.showDisabled = strToBool(req.getParameter(PARAM_SHOW_DISABLED), defaultEnabled);
         } else {
-            String currentAuthority = authenticationService.getCurrentUserName();
-            options.showDisabled = StringUtils.isNotBlank(currentAuthority) &&
-                                   authorityService.isAdminAuthority(currentAuthority);
+            options.showDisabled = options.userIsAdmin;
         }
 
         Set<String> excludeAuthorities = new HashSet<>();
@@ -429,9 +436,32 @@ public class ChildrenGet extends AbstractWebScript {
     }
 
     private static class RequestParams {
+
         boolean recurse;
         NodeRef groupRef;
         FilterOptions filterOptions;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            RequestParams that = (RequestParams) o;
+            return recurse == that.recurse &&
+                   Objects.equals(groupRef, that.groupRef) &&
+                   filterOptions.equals(that.filterOptions);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = (recurse ? 1 : 0);
+            result = 31 * result + Objects.hashCode(groupRef);
+            result = 31 * result + filterOptions.hashCode();
+            return result;
+        }
     }
 
     private static class FilterOptions {
@@ -441,6 +471,7 @@ public class ChildrenGet extends AbstractWebScript {
         boolean group;
         boolean branch;
         boolean showDisabled;
+        boolean userIsAdmin;
         int limit;
         String filter;
         Set<String> filterTokens;
@@ -460,7 +491,8 @@ public class ChildrenGet extends AbstractWebScript {
 
             FilterOptions that = (FilterOptions) o;
 
-            return branch == that.branch &&
+            return userIsAdmin == that.userIsAdmin &&
+                   branch == that.branch &&
                    role == that.role &&
                    group == that.group &&
                    user == that.user &&
@@ -479,6 +511,7 @@ public class ChildrenGet extends AbstractWebScript {
             result = 31 * result + (group ? 1 : 0);
             result = 31 * result + (user ? 1 : 0);
             result = 31 * result + (showDisabled ? 1 : 0);
+            result = 31 * result + (userIsAdmin ? 1 : 0);
             result = 31 * result + Objects.hashCode(rootGroup);
             result = 31 * result + Objects.hashCode(filter);
             result = 31 * result + limit;
