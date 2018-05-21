@@ -430,7 +430,14 @@ public class ChildrenGet extends AbstractWebScript {
         Set<String> excludeAuthorities = new HashSet<>();
         excludeAuthorities.addAll(strToSet(req.getParameter(PARAM_EXCLUDE_AUTHORITIES)));
         excludeAuthorities.addAll(strToSet((String) ecosConfigService.getParamValue(CONFIG_KEY_HIDE_IN_ORGSTRUCT)));
-        options.excludeAuthorities = excludeAuthorities;
+
+        options.excludeAuthorities = new HashSet<>();
+        for (String auth : excludeAuthorities) {
+            options.excludeAuthorities.add(auth);
+            if (!auth.startsWith(GROUP_PREFIX)) {
+                options.excludeAuthorities.add(GROUP_PREFIX + auth);
+            }
+        }
 
         return options;
     }
