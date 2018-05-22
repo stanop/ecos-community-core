@@ -142,6 +142,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
+                    <classifier>${ecos.project.classifier}</classifier>
                     <!--  Here is can control the order of overlay of your (WAR, AMP, etc.) dependencies
                         | NOTE: At least one WAR dependency must be uncompressed first
                         | NOTE: In order to have a dependency effectively added to the WAR you need to

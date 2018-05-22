@@ -127,6 +127,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
+                    <classifier>${ecos.project.classifier}</classifier>
                     <!-- Bring in the MANIFEST.MF file from the original share.war, it contains version information
                          that is needed for it to operate properly -->
                     <archive>
