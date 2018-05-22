@@ -1033,12 +1033,12 @@
     <!-- Deployment configuration -->
     <distributionManagement>
         <repository>
-            <id>releases</id>
-            <url>${community.release.distr.url}</url>
+            <id>citeck-community-releases</id>
+            <url>${community.releases.distr.url}</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <url>${community.snapshot.distr.url}</url>
+            <id>citeck-community-snapshots</id>
+            <url>${community.snapshots.distr.url}</url>
         </snapshotRepository>
     </distributionManagement>
 
