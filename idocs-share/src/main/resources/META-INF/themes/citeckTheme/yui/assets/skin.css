@@ -5105,6 +5105,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
 .yui-skin-citeckTheme .form-buttons .yui-button > span.first-child > button,
 .yui-skin-citeckTheme .form-field.suggested-actions .yui-button > span.first-child > button,
 .yui-skin-citeckTheme .share-form .form-fields .form-field .yui-button > span.first-child > button,
+.yui-skin-citeckTheme .form-fields .form-field.route .yui-button > span.first-child > button,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .bd .browse-wrapper .yui-button > span.first-child > button,
 #bd #yui-main .search .yui-gc .yui-u .yui-button.search-icon > .first-child > button,
 #bd .yui-gc > .yui-u .document-details-panel .panel-body .vers-menu + .yui-button.yui-button-button > .first-child > button,
@@ -5129,6 +5130,10 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
     font-weight: 900;
     padding: 4px 10px;
     border: 2px solid #1c55da;
+}
+
+.yui-skin-citeckTheme .cardlet div[id*="route"].form-container {
+    padding: 10px 0 10px 26px;
 }
 
 .yui-skin-citeckTheme .form-buttons .yui-button.yui-button-hover > span.first-child > button,
