@@ -523,7 +523,6 @@
 		<property name="grantedPermission" value="${workflow-security.grant-permission}" />
 		<property name="permissionService" ref="PermissionService"/>
 		<property name="nodeService" ref="nodeService"/>
-
 	</bean>
 
 	<bean id="grantWorkflowTaskPermissionExecutor"

@@ -61,6 +61,7 @@ public class SimpleGrantWorkflowPackageListener implements TaskListener {
 
         return nodeRefs;
     }
+    
     private Set<String> getTaskActors(DelegateTask task) {
         Set<String> actors = new HashSet<String>();
 
