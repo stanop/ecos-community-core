@@ -3208,11 +3208,11 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
   border: none;
 }
 
-.share-form .form-container .form-fields .set-title.bold {
+.yui-skin-citeckTheme .form-container .form-fields .set-title.bold {
   font-weight: 900;
 }
 
-.share-form .form-container .form-fields .set-title.upcase {
+.yui-skin-citeckTheme .form-container .form-fields .set-title.upcase {
   text-transform: uppercase;
 }
 
