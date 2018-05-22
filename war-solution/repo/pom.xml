@@ -18,6 +18,7 @@
     </parent>
 
     <dependencies>
+
         <!-- Original Alfresco WAR
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
@@ -53,7 +54,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-graphql-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
@@ -61,70 +61,60 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>1st-override-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-forms-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>journals-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>idocs-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>contracts-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>letters-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>meetings-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>orders-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-order-pass-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
@@ -132,7 +122,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-flowable-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
@@ -145,24 +134,6 @@
             <type>amp</type>
         </dependency>
 
-        <!-- Uncomment if you are using SPP (SharePoint Protocol Support) for Online Edit etc -->
-        <!--
-        <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-spp</artifactId>
-            <version>${alfresco.version}</version>
-            <type>amp</type>
-        </dependency>
-        -->
-        <!-- Uncomment if you are using the RM (Records Management) module. -->
-        <!-- Set alfresco.rm.version in parent pom to appropriate version for 5.1
-        <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-rm</artifactId>
-            <version>${alfresco.rm.version}</version>
-            <type>amp</type>
-        </dependency>
-        -->
     </dependencies>
 
     <build>
@@ -171,7 +142,6 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <classifier>${ecos.project.classifier}</classifier>
                     <!--  Here is can control the order of overlay of your (WAR, AMP, etc.) dependencies
                         | NOTE: At least one WAR dependency must be uncompressed first
                         | NOTE: In order to have a dependency effectively added to the WAR you need to
@@ -203,73 +173,61 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-graphql-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>1st-override-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-base-core-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>journals-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-forms-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>idocs-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>contracts-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>letters-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>meetings-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>orders-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-order-pass-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-flowable-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
 
@@ -279,23 +237,6 @@
                             <artifactId>alfresco-trashcan-cleaner</artifactId>
                             <type>amp</type>
                         </overlay>
-
-                        <!-- Uncomment if you are using SPP -->
-                        <!--
-                        <overlay>
-                            <groupId>${alfresco.groupId}</groupId>
-                            <artifactId>alfresco-spp</artifactId>
-                            <type>amp</type>
-                        </overlay>
-                        -->
-                        <!-- Uncomment if you are using RM -->
-                        <!--
-                        <overlay>
-                            <groupId>${alfresco.groupId}</groupId>
-                            <artifactId>alfresco-rm</artifactId>
-                            <type>amp</type>
-                        </overlay>
-                        -->
                     </overlays>
                 </configuration>
                 <dependencies>

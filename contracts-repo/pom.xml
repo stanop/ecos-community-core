@@ -24,19 +24,16 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>1st-override-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>idocs-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
     </dependencies>

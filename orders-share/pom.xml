@@ -33,7 +33,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>idocs-share</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
     </dependencies>

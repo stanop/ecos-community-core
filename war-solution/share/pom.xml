@@ -17,13 +17,14 @@
     </parent>
 
     <dependencies>
+
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>share</artifactId>
             <version>${alfresco.share.version}</version>
             <type>war</type>
         </dependency>
-        <!-- Demonstrating the dependency / installation of the share AMP developed in the 'share-amp' module -->
+
         <dependency>
             <groupId>de.fmaul</groupId>
             <artifactId>javascript-console-share</artifactId>
@@ -34,41 +35,35 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-graphql-share</artifactId>
             <version>${project.version}</version>
-            <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>1st-override-share</artifactId>
             <version>${project.version}</version>
-            <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-share</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-forms-share</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>journals-share</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>idocs-share</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
@@ -76,47 +71,33 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>contracts-share</artifactId>
             <version>${project.version}</version>
-            <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>letters-share</artifactId>
             <version>${project.version}</version>
-            <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>meetings-share</artifactId>
             <version>${project.version}</version>
-            <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>orders-share</artifactId>
             <version>${project.version}</version>
-            <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-flowable-share</artifactId>
             <version>${project.version}</version>
-            <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
 
-        <!-- Uncomment if you are using RM (Records Management) module -->
-        <!-- Make sure to set the correct version for 5.1 with alfresco.rm.version property in parent POM
-        <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-rm-share</artifactId>
-            <version>${alfresco.rm.version}</version>
-            <type>amp</type>
-        </dependency>
-        -->
     </dependencies>
 
     <build>
@@ -146,7 +127,6 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <classifier>${ecos.project.classifier}</classifier>
                     <!-- Bring in the MANIFEST.MF file from the original share.war, it contains version information
                          that is needed for it to operate properly -->
                     <archive>
@@ -179,78 +159,59 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-graphql-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>1st-override-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-base-core-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>journals-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-forms-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>idocs-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>contracts-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>letters-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>meetings-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>orders-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-flowable-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>
 
-                        <!-- Uncomment if you are using RM module -->
-                        <!--
-                        <overlay>
-                            <groupId>${alfresco.groupId}</groupId>
-                            <artifactId>alfresco-rm-share</artifactId>
-                            <type>amp</type>
-                        </overlay>
-                        -->
                     </overlays>
                 </configuration>
                 <dependencies>

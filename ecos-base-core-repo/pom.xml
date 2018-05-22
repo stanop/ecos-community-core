@@ -36,7 +36,6 @@
         <dependency>
             <groupId>ru.citeck.ecos.community</groupId>
             <artifactId>ecos-graphql-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
     </dependencies>

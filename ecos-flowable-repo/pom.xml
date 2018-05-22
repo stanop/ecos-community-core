@@ -22,19 +22,16 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>idocs-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-forms-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
