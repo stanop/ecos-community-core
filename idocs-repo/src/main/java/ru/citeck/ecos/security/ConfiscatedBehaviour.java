@@ -39,12 +39,10 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 {
 	private ConfiscateServiceImpl confiscateService;
 
-	private boolean enabled;
-
 	@Override
 	public void init() {
 		super.init();
-		policyComponent.bindClassBehaviour(CopyServicePolicies.OnCopyCompletePolicy.QNAME, className, 
+		policyComponent.bindClassBehaviour(CopyServicePolicies.OnCopyCompletePolicy.QNAME, className,
 				new JavaBehaviour(this, "onCopyComplete", NotificationFrequency.TRANSACTION_COMMIT));
 	}
 
@@ -54,10 +52,6 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 
 	@Override
 	protected void onCreateAssociation(final NodeRef child, NodeRef parent, final boolean primary) {
-		if (!enabled) {
-			return;
-		}
-
 		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
 
 			@Override
@@ -67,16 +61,12 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 				confiscateService.confiscateNodeImpl(child, restrictInheritance);
 				return null;
 			}
-			
+
 		});
 	}
 
 	@Override
 	protected void onDeleteAssociation(final NodeRef child, NodeRef parent, boolean primary) {
-		if (!enabled) {
-			return;
-		}
-
 		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
 
 			@Override
@@ -84,17 +74,13 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 				confiscateService.returnNodeImpl(child, true);
 				return null;
 			}
-			
+
 		});
 	}
 
 	@Override
-	public void onCopyComplete(QName classRef, NodeRef source, final NodeRef target, 
+	public void onCopyComplete(QName classRef, NodeRef source, final NodeRef target,
 			boolean copyToNewNode, Map<NodeRef, NodeRef> copyMap) {
-		if (!enabled) {
-			return;
-		}
-
 		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
 
 			@Override
@@ -102,11 +88,8 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 				confiscateService.returnNodeImpl(target, false);
 				return null;
 			}
-			
+
 		});
 	}
 
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
 }
