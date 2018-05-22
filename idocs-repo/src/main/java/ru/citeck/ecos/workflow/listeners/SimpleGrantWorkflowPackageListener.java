@@ -46,22 +46,22 @@ public class SimpleGrantWorkflowPackageListener implements TaskListener {
 
         if (nodeRefExists(wfPackage)) {
             nodeRefs.add(wfPackage);
-        }
 
-        List<ChildAssociationRef> childAssocRefs = nodeService.getChildAssocs(wfPackage,
-                BpmPackageModel.ASSOC_PACKAGE_CONTAINS,
-                RegexQNamePattern.MATCH_ALL);
+            List<ChildAssociationRef> childAssocRefs = nodeService.getChildAssocs(wfPackage,
+                    BpmPackageModel.ASSOC_PACKAGE_CONTAINS,
+                    RegexQNamePattern.MATCH_ALL);
 
-        for (ChildAssociationRef childAssocRef : childAssocRefs) {
-            NodeRef childRef = childAssocRef.getChildRef();
-            if (nodeRefExists(childRef)) {
-                nodeRefs.add(childRef);
+            for (ChildAssociationRef childAssocRef : childAssocRefs) {
+                NodeRef childRef = childAssocRef.getChildRef();
+                if (nodeRefExists(childRef)) {
+                    nodeRefs.add(childRef);
+                }
             }
         }
 
         return nodeRefs;
     }
-    
+
     private Set<String> getTaskActors(DelegateTask task) {
         Set<String> actors = new HashSet<String>();
 
