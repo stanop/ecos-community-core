@@ -39,6 +39,8 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 {
 	private ConfiscateServiceImpl confiscateService;
 
+	private boolean enabled;
+
 	@Override
 	public void init() {
 		super.init();
@@ -52,6 +54,10 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 
 	@Override
 	protected void onCreateAssociation(final NodeRef child, NodeRef parent, final boolean primary) {
+		if (!enabled) {
+			return;
+		}
+
 		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
 
 			@Override
@@ -67,6 +73,10 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 
 	@Override
 	protected void onDeleteAssociation(final NodeRef child, NodeRef parent, boolean primary) {
+		if (!enabled) {
+			return;
+		}
+
 		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
 
 			@Override
@@ -81,6 +91,10 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 	@Override
 	public void onCopyComplete(QName classRef, NodeRef source, final NodeRef target, 
 			boolean copyToNewNode, Map<NodeRef, NodeRef> copyMap) {
+		if (!enabled) {
+			return;
+		}
+
 		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
 
 			@Override
@@ -92,4 +106,7 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 		});
 	}
 
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 }

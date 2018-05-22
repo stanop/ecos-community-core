@@ -41,6 +41,7 @@ public class RevokeFinalWorkflowPackageListener implements ExecutionListener {
     
     private boolean revokeTaskPermissions = true;
     private boolean revokeProcessPermissions = true;
+    private boolean enabled;
 	
 	public void setHelper(GrantWorkflowPackageHelper helper) {
 		this.helper = helper;
@@ -56,6 +57,10 @@ public class RevokeFinalWorkflowPackageListener implements ExecutionListener {
 
 	@Override
 	public void notify(DelegateExecution execution) throws Exception {
+
+		if (!enabled) {
+			return;
+		}
 		
 		// revoke all permissions granted on task scope:
 		List<Task> tasks = Context.getProcessEngineConfiguration().getTaskService().createTaskQuery().processInstanceId(execution.getProcessInstanceId()).list();
@@ -81,4 +86,7 @@ public class RevokeFinalWorkflowPackageListener implements ExecutionListener {
 		
 	}
 
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 }

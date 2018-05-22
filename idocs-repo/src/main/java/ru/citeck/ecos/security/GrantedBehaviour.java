@@ -38,6 +38,8 @@ public class GrantedBehaviour extends AssociationWalkerBehaviour implements Copy
 {
 	private GrantPermissionServiceImpl grantPermissionService;
 
+	private boolean enabled;
+
 	@Override
 	public void init() {
 		super.init();
@@ -51,20 +53,35 @@ public class GrantedBehaviour extends AssociationWalkerBehaviour implements Copy
 
 	@Override
 	protected void onCreateAssociation(NodeRef child, NodeRef parent, boolean primary) {
+		if (!enabled) {
+			return;
+		}
+
 		grantPermissionService.grantPermissionsImpl(child, parent);
 	}
 
 	@Override
 	protected void onDeleteAssociation(NodeRef child, NodeRef parent, boolean primary) {
+		if (!enabled) {
+			return;
+		}
+
 		grantPermissionService.revokePermissionsImpl(child, parent);
 	}
 
 	@Override
 	public void onCopyComplete(QName classRef, NodeRef sourceNodeRef,
 			NodeRef targetNodeRef, boolean copyToNewNode,
-			Map<NodeRef, NodeRef> copyMap) 
+			Map<NodeRef, NodeRef> copyMap)
 	{
+		if (!enabled) {
+			return;
+		}
+
 		grantPermissionService.revokePermissionsOnCopy(sourceNodeRef, targetNodeRef);
 	}
 
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 }

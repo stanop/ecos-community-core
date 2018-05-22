@@ -21,6 +21,8 @@ package ru.citeck.ecos.workflow.listeners;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 
+import java.util.Properties;
+
 /**
  * "Grant workflow package" activiti task listener.
  * Grants workflow package and its children to task assignees and candidate users/groups.
@@ -34,6 +36,7 @@ public class GrantWorkflowPackageListener implements TaskListener {
 	
 	private GrantWorkflowPackageHelper helper;
 	private String grantedPermission;
+	private boolean enabled;
 	
 	public void setHelper(GrantWorkflowPackageHelper helper) {
 		this.helper = helper;
@@ -51,6 +54,10 @@ public class GrantWorkflowPackageListener implements TaskListener {
 	@Override
 	public void notify(DelegateTask task) {
 
+		if (!enabled) {
+			return;
+		}
+
 		// if it is assignment (not create) - first revoke all given permissions
 		// UPD: assignment can be fired before create, so we need to revoke in create too
 		helper.revoke(task);
@@ -64,4 +71,7 @@ public class GrantWorkflowPackageListener implements TaskListener {
 		}
 	}
 
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 }

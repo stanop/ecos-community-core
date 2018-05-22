@@ -35,6 +35,7 @@ public class RevokeWorkflowPackageListener implements TaskListener {
 	
 	private GrantWorkflowPackageHelper helper;
 	private String postRevokePermission;
+	private boolean enabled;
 	
 	public void setHelper(GrantWorkflowPackageHelper helper) {
 		this.helper = helper;
@@ -52,6 +53,10 @@ public class RevokeWorkflowPackageListener implements TaskListener {
 
 	@Override
 	public void notify(DelegateTask task) {
+
+		if (!enabled) {
+			return;
+		}
 		
 		// revoke permission
 		helper.revoke(task);
@@ -65,4 +70,7 @@ public class RevokeWorkflowPackageListener implements TaskListener {
 		}
 	}
 
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 }
