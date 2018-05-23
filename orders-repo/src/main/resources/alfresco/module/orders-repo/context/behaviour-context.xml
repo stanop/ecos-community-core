@@ -5,14 +5,14 @@
     <bean id="orders.internal.autoNameBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="orders:internal" />
         <property name="nameTemplate">
-            <value><![CDATA[<#if (node.assocs['icase:caseStatusAssoc']?? && node.assocs['icase:caseStatusAssoc']?size &gt; 0 && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"]?? && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"] == 'active') || (node.properties["idocs:registrationNumber"]?? && node.properties["idocs:registrationNumber"] != "")>Документ № #{'$'}{node.properties['idocs:registrationNumber']!'б/н'}<#else>Документ № #{'$'}{node.properties['orders:projectNumber']!'б/н'}</#if>]]></value>
+            <value><![CDATA[<#if node.properties["idocs:registrationNumber"]?? && node.properties["idocs:registrationNumber"] != "">Документ № #{'$'}{node.properties['idocs:registrationNumber']!'б/н'}<#else>Документ № #{'$'}{node.properties['orders:projectNumber']!'б/н'}</#if>]]></value>
         </property>
     </bean>
 
     <bean id="orders.internal.titleGenerationBehaviour" parent="TitleGenerationBehaviour">
         <property name="className" value="orders:internal" />
         <property name="titleTemplate">
-            <value><![CDATA[<#if (node.assocs['icase:caseStatusAssoc']?? && node.assocs['icase:caseStatusAssoc']?size &gt; 0 && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"]?? && node.assocs['icase:caseStatusAssoc'][0].properties["cm:name"] == 'active') || (node.properties["idocs:registrationNumber"]?? && node.properties["idocs:registrationNumber"] != "")>Документ № #{'$'}{node.properties['idocs:registrationNumber']!'б/н'}<#else>Документ № #{'$'}{node.properties['orders:projectNumber']!'б/н'}</#if>]]></value>
+            <value><![CDATA[<#if node.properties["idocs:registrationNumber"]?? && node.properties["idocs:registrationNumber"] != "">Документ № #{'$'}{node.properties['idocs:registrationNumber']!'б/н'}<#else>Документ № #{'$'}{node.properties['orders:projectNumber']!'б/н'}</#if>]]></value>
         </property>
     </bean>
 

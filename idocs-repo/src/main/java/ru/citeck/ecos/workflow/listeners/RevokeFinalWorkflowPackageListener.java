@@ -41,11 +41,11 @@ public class RevokeFinalWorkflowPackageListener implements ExecutionListener {
     
     private boolean revokeTaskPermissions = true;
     private boolean revokeProcessPermissions = true;
-	
+
 	public void setHelper(GrantWorkflowPackageHelper helper) {
 		this.helper = helper;
 	}
-    
+
     public void setRevokeTaskPermissions(boolean revoke) {
         this.revokeTaskPermissions = revoke;
     }
@@ -56,10 +56,10 @@ public class RevokeFinalWorkflowPackageListener implements ExecutionListener {
 
 	@Override
 	public void notify(DelegateExecution execution) throws Exception {
-		
+
 		// revoke all permissions granted on task scope:
 		List<Task> tasks = Context.getProcessEngineConfiguration().getTaskService().createTaskQuery().processInstanceId(execution.getProcessInstanceId()).list();
-		
+
 		Object revokeTaskPermissions = execution.getVariable(VAR_REVOKE_TASK_PERMISSIONS);
         if(revokeTaskPermissions == null) {
             revokeTaskPermissions = this.revokeTaskPermissions;
@@ -69,7 +69,7 @@ public class RevokeFinalWorkflowPackageListener implements ExecutionListener {
 				helper.revoke(task, execution);
 			}
 		}
-		
+
 		// revoke all permissions granted on process scope:
 		Object revokeProcessPermissions = execution.getVariable(VAR_REVOKE_PROCESS_PERMISSIONS);
         if(revokeProcessPermissions == null) {
@@ -78,7 +78,7 @@ public class RevokeFinalWorkflowPackageListener implements ExecutionListener {
 		if(Boolean.TRUE.equals(revokeProcessPermissions)) {
 			helper.revoke(execution);
 		}
-		
+
 	}
 
 }
