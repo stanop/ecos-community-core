@@ -25,11 +25,11 @@ public class SimpleGrantWorkflowPackageListener implements TaskListener {
     @Override
     public void notify(DelegateTask task) {
         String permission = this.grantedPermission;
-        if(permission != null) {
+        if (permission != null) {
             List<NodeRef> nodeRefs = getNodeRefsList(task);
-            if (nodeRefs != null && nodeRefs.size() > 0) {
+            if (nodeRefs.size() > 0) {
                 Set<String> authorities = getTaskActors(task);
-                if (authorities != null && authorities.size() > 0) {
+                if (authorities.size() > 0) {
                     for (NodeRef nodeRef : nodeRefs) {
                         for (String authority : authorities) {
                             permissionService.setPermission(nodeRef, authority, permission, true);
@@ -66,21 +66,22 @@ public class SimpleGrantWorkflowPackageListener implements TaskListener {
         Set<String> actors = new HashSet<String>();
 
         String actor = task.getAssignee();
-        if(actor != null) {
+        if (actor != null) {
             actors.add(actor);
         }
 
         Set<IdentityLink> candidates = ((TaskEntity)task).getCandidates();
-        if(candidates != null) {
+        if (candidates != null) {
             for(IdentityLink candidate : candidates) {
-                if(candidate.getGroupId() != null) {
+                if (candidate.getGroupId() != null) {
                     actors.add(candidate.getGroupId());
                 }
-                if(candidate.getUserId() != null) {
+                if (candidate.getUserId() != null) {
                     actors.add(candidate.getUserId());
                 }
             }
         }
+
         return actors;
     }
 
