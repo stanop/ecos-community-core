@@ -168,20 +168,10 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
     }
 
     private void updateProcessModelToNewVersion(Model model) {
-        List<Model> oldModels = getProcessModelsByModelKey(model.getKey());
-        /** Create model with new version */
-        Integer lastVersion = getLastProcessModelVersion(model.getKey());
-        model.setVersion(lastVersion + 1);
-        createProcessModel(model);
-        /** Create history models from old models */
-        List<String> oldIds = new ArrayList<>(oldModels.size());
-        for (Model currentModel : oldModels) {
-            oldIds.add(currentModel.getId());
-            createProcessHistoryModel(createHistoryModelFromModel(currentModel, model.getId()));
-        }
-        /** Remove old models */
-        for (String modelId : oldIds) {
-            deleteProcessModelsByIds(modelId);
+        Model lastVersion = getLastModelByModelKey(model.getKey());
+        if (lastVersion != null) {
+            model.setId(lastVersion.getId());
+            updateProcessModel(model);
         }
     }
 
@@ -196,6 +186,30 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
                 };
 
         managementService.executeCustomSql(insertModelSqlExecution);
+    }
+
+    private void updateProcessModel(Model model) {
+        CustomSqlExecution<ModelMapper, String> updateModelSqlExecution =
+                new AbstractCustomSqlExecution<ModelMapper, String>(ModelMapper.class) {
+                    @Override
+                    public String execute(ModelMapper modelMapper) {
+                        modelMapper.updateModel(model);
+                        return null;
+                    }
+                };
+
+        managementService.executeCustomSql(updateModelSqlExecution);
+    }
+
+    private Model getLastModelByModelKey(String modelKey) {
+        CustomSqlExecution<ModelMapper, Model> sqlExecution =
+                new AbstractCustomSqlExecution<ModelMapper, Model>(ModelMapper.class) {
+                    @Override
+                    public Model execute(ModelMapper modelMapper) {
+                        return modelMapper.getLastProcessModelByModelKey(modelKey);
+                    }
+                };
+        return managementService.executeCustomSql(sqlExecution);
     }
 
     private void createProcessHistoryModel(ModelHistory model) {
