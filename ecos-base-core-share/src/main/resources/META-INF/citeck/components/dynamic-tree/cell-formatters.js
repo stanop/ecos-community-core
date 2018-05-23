@@ -279,8 +279,8 @@
                     elCell.innerHTML = sData["cm:authorityDisplayName"] || sData["cm:authorityName"] || sData.displayName || "";
                     return;
                 }
-                elCell.innerHTML = (sData.hasOwnProperty('str') ? sData.str : sData) ||
-                                   (sData.displayName ? sData.displayName.value || sData.displayName : "");
+                elCell.innerHTML = (sData.displayName ? sData.displayName.value || sData.displayName : "") ||
+                                   (sData.hasOwnProperty('str') ? sData.str : sData);
             };
         },
 
