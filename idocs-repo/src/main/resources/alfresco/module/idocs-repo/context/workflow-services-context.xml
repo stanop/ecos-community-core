@@ -237,6 +237,7 @@
 				<ref bean="workflowMirrorListener" />
 				<ref bean="taskAssignDateListener" />
 				<!--<ref bean="grantWorkflowPackage" />-->
+				<ref bean="simpleGrantWorkflowPackage" />
 				<ref bean="taskHistoryListener" />
 				<ref bean="sendUnavailableOnAssignTaskListener" />
 			</list>
@@ -252,6 +253,7 @@
 				<ref bean="taskOriginalOwner"/>
 				<ref bean="workflowMirrorListener" />
 				<!--<ref bean="grantWorkflowPackage" />-->
+				<ref bean="simpleGrantWorkflowPackage" />
 				<ref bean="taskHistoryListener" />
 				<ref bean="assignTaskToSingleCandidate" />
 				<ref bean="sendTaskNotificationListener" />
@@ -496,7 +498,7 @@
 		<property name="availabilityService" ref="availabilityService"/>
 		<property name="delegateListenerName" value="deputyListener.taskManagement"/>
 	</bean>
-	
+
 	<!--Set workflow initiator-->
 	<bean id="setInitiatorStartProcessListener" class="ru.citeck.ecos.workflow.listeners.SetInitiatorStartProcessListener" />
 
@@ -515,6 +517,12 @@
 	<bean id="grantWorkflowPackage" class="ru.citeck.ecos.workflow.listeners.GrantWorkflowPackageListener">
 		<property name="helper" ref="GrantWorkflowPackageHelper" />
 		<property name="grantedPermission" value="${workflow-security.grant-permission}" />
+	</bean>
+
+	<bean id="simpleGrantWorkflowPackage" class="ru.citeck.ecos.workflow.listeners.SimpleGrantWorkflowPackageListener">
+		<property name="grantedPermission" value="${workflow-security.grant-permission}" />
+		<property name="permissionService" ref="PermissionService"/>
+		<property name="nodeService" ref="nodeService"/>
 	</bean>
 
 	<bean id="grantWorkflowTaskPermissionExecutor"

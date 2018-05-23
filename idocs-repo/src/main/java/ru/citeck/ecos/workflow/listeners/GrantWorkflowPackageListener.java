@@ -25,16 +25,16 @@ import org.activiti.engine.delegate.TaskListener;
  * "Grant workflow package" activiti task listener.
  * Grants workflow package and its children to task assignees and candidate users/groups.
  * Can be set at 'create' or 'assignment' task events.
- * 
+ *
  * @author Sergey Tiunov
  */
 public class GrantWorkflowPackageListener implements TaskListener {
-	
+
 	private static final String VAR_GRANTED_PERMISSION = "grantedPermission";
-	
+
 	private GrantWorkflowPackageHelper helper;
 	private String grantedPermission;
-	
+
 	public void setHelper(GrantWorkflowPackageHelper helper) {
 		this.helper = helper;
 	}
@@ -54,9 +54,9 @@ public class GrantWorkflowPackageListener implements TaskListener {
 		// if it is assignment (not create) - first revoke all given permissions
 		// UPD: assignment can be fired before create, so we need to revoke in create too
 		helper.revoke(task);
-		
+
 		// grant permissions
-		String permission = task.hasVariable(VAR_GRANTED_PERMISSION) 
+		String permission = task.hasVariable(VAR_GRANTED_PERMISSION)
 				? (String) task.getVariable(VAR_GRANTED_PERMISSION)
 				: this.grantedPermission;
 		if(permission != null) {

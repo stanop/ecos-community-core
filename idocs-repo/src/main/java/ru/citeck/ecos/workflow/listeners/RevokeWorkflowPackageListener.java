@@ -35,7 +35,7 @@ public class RevokeWorkflowPackageListener implements TaskListener {
 	
 	private GrantWorkflowPackageHelper helper;
 	private String postRevokePermission;
-	
+
 	public void setHelper(GrantWorkflowPackageHelper helper) {
 		this.helper = helper;
 	}
@@ -52,12 +52,12 @@ public class RevokeWorkflowPackageListener implements TaskListener {
 
 	@Override
 	public void notify(DelegateTask task) {
-		
+
 		// revoke permission
 		helper.revoke(task);
-		
+
 		// process post-revoke permission
-		String permission = task.hasVariable(VAR_POST_REVOKE_PERMISSION) 
+		String permission = task.hasVariable(VAR_POST_REVOKE_PERMISSION)
 				? (String) task.getVariable(VAR_POST_REVOKE_PERMISSION)
 				: this.postRevokePermission;
 		if(permission != null && !permission.isEmpty()) {
