@@ -3,6 +3,7 @@ package ru.citeck.ecos.flowable.services.impl;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.flowable.app.domain.editor.Model;
 import org.flowable.app.domain.editor.ModelHistory;
 import java.util.List;
@@ -39,6 +40,16 @@ public interface ModelMapper {
                 "#{modelType, jdbcType=INTEGER}",
             ")"})
     void insertModel(Model model);
+
+    @Update("UPDATE ACT_DE_MODEL " +
+            "SET NAME = #{name}, " +
+            "DESCRIPTION = #{description}, " +
+            "MODEL_COMMENT = #{comment}, " +
+            "LAST_UPDATED = #{lastUpdated}, " +
+            "LAST_UPDATED_BY = #{lastUpdatedBy}, " +
+            "MODEL_EDITOR_JSON = #{modelEditorJson} " +
+            "WHERE ID = #{id}")
+    void updateModel(Model model);
 
     @Insert({"INSERT INTO ACT_DE_MODEL_HISTORY (",
             "ID,",
@@ -92,8 +103,26 @@ public interface ModelMapper {
             "VERSION as version, " +
             "MODEL_EDITOR_JSON as modelEditorJson," +
             "MODEL_TYPE as modelType " +
-            "FROM ACT_DE_MODEL WHERE MODEL_TYPE = 0 AND MODEL_KEY = #{modelKey}")
+            "FROM ACT_DE_MODEL WHERE MODEL_TYPE = 0 AND MODEL_KEY = #{modelKey} " +
+            "ORDER BY VERSION DESC")
     List<Model> getProcessModelsByModelKey(String modelKey);
+
+    @Select("SELECT ID as id, " +
+            "NAME as name, " +
+            "MODEL_KEY as key, " +
+            "DESCRIPTION as description, " +
+            "MODEL_COMMENT as comment, " +
+            "CREATED as created, " +
+            "CREATED_BY as createdBy, " +
+            "LAST_UPDATED as lastUpdated, " +
+            "LAST_UPDATED_BY as lastUpdatedBy, " +
+            "VERSION as version, " +
+            "MODEL_EDITOR_JSON as modelEditorJson," +
+            "MODEL_TYPE as modelType " +
+            "FROM ACT_DE_MODEL WHERE MODEL_TYPE = 0 AND MODEL_KEY = #{modelKey} " +
+            "ORDER BY VERSION DESC " +
+            "LIMIT 1")
+    Model getLastProcessModelByModelKey(String modelKey);
 
     @Delete("DELETE FROM ACT_DE_MODEL WHERE ID = #{modelId}")
     void deleteProcessModelsById(String modelId);
