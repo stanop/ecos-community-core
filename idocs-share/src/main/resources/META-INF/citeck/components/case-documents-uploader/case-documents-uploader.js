@@ -1034,7 +1034,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                 draggable: true
             });
 
-            this.widgets.viewDialog.render();
+            this.widgets.viewDialog.render(document.body);
         },
 
         addIntermediateFileDialog: function() {
