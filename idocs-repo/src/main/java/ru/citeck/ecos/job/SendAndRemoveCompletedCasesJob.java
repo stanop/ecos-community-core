@@ -12,6 +12,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import ru.citeck.ecos.cases.RemoteCaseModelService;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Send and remove completed cases job
@@ -21,7 +22,8 @@ public class SendAndRemoveCompletedCasesJob extends AbstractScheduledLockedJob {
     /**
      * Constants
      */
-    private static final Integer MAX_ITEMS_COUNT = 500;
+    private static final Integer MAX_ITEMS_COUNT = 50;
+    private static final String MAX_ITEMS_COUNT_PROPERTY = "citeck.remote.case.service.max.items";
 
     /**
      * Store reference
@@ -39,12 +41,18 @@ public class SendAndRemoveCompletedCasesJob extends AbstractScheduledLockedJob {
     private RemoteCaseModelService remoteCaseModelService;
 
     /**
+     * Global properties
+     */
+    private Properties globalProperties;
+
+    /**
      * Init job service
      * @param jobDataMap Job data map
      */
     private void init(JobDataMap jobDataMap) {
         searchService = (SearchService) jobDataMap.get("searchService");
         remoteCaseModelService = (RemoteCaseModelService) jobDataMap.get("remoteCaseModelService");
+        globalProperties = (Properties) jobDataMap.get("global-properties");
         storeRef = StoreRef.STORE_REF_WORKSPACE_SPACESSTORE;
     }
 
@@ -60,30 +68,20 @@ public class SendAndRemoveCompletedCasesJob extends AbstractScheduledLockedJob {
     public void executeJob(JobExecutionContext jobContext) throws JobExecutionException {
         init(jobContext.getJobDetail().getJobDataMap());
         AuthenticationUtil.runAsSystem(() -> {
-            int skipCount = 0;
-            boolean hasMore;
-            ResultSet resultSet = getDocumentsResultSetByOffset(skipCount);
-            /** Start processing */
-            do {
-                List<NodeRef> documents = resultSet.getNodeRefs();
-                hasMore = resultSet.hasMore();
-                /** Process each document */
-                for (NodeRef documentRef : documents) {
-                    remoteCaseModelService.sendAndRemoveCaseModelsByDocument(documentRef);
-                }
-                skipCount += documents.size();
-                resultSet = getDocumentsResultSetByOffset(skipCount);
-            } while (hasMore);
+            ResultSet resultSet = getDocumentsResultSet();
+            List<NodeRef> documents = resultSet.getNodeRefs();
+            for (NodeRef documentRef : documents) {
+                remoteCaseModelService.sendAndRemoveCaseModelsByDocument(documentRef);
+            }
             return null;
         });
     }
 
     /**
      * Get documents by offset
-     * @param offset Offset
      * @return Set of documents
      */
-    private ResultSet getDocumentsResultSetByOffset(Integer offset) {
+    private ResultSet getDocumentsResultSet() {
         SearchParameters parameters = new SearchParameters();
         parameters.addStore(storeRef);
         parameters.setLanguage(SearchService.LANGUAGE_LUCENE);
@@ -91,9 +89,24 @@ public class SendAndRemoveCompletedCasesJob extends AbstractScheduledLockedJob {
                 "AND @idocs\\:caseCompleted:true " +
                 "AND -@idocs\\:caseModelsSent:true");
         parameters.addSort("@cm:created", true);
-        parameters.setMaxItems(MAX_ITEMS_COUNT);
-        parameters.setSkipCount(offset);
+        parameters.setMaxItems(getMaxItemsCount());
         return searchService.query(parameters);
+    }
+
+    /**
+     * Get max items count
+     * @return Max items count
+     */
+    private Integer getMaxItemsCount() {
+        if (globalProperties == null) {
+            return MAX_ITEMS_COUNT;
+        }
+        String maxItemsRawValue = globalProperties.getProperty(MAX_ITEMS_COUNT_PROPERTY);
+        if (maxItemsRawValue == null) {
+            return MAX_ITEMS_COUNT;
+        } else {
+            return Integer.valueOf(maxItemsRawValue);
+        }
     }
 
 }
