@@ -88,6 +88,7 @@
                     <map>
                         <entry key="searchService" value-ref="searchService"/>
                         <entry key="remoteCaseModelService" value-ref="remoteCaseModelService"/>
+                        <entry key="global-properties" value-ref="global-properties"/>
                         <entry key="jobLockService">
                             <ref bean="jobLockService"/>
                         </entry>
