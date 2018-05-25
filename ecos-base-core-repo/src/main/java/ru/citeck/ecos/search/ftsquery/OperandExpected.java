@@ -70,6 +70,11 @@ public interface OperandExpected {
     OperatorExpected value(QName field, Serializable value, boolean exact);
 
     /**
+     * Add path term
+     */
+    OperatorExpected path(String path);
+
+    /**
      * Field is set
      */
     OperatorExpected isSet(QName field);
@@ -94,6 +99,11 @@ public interface OperandExpected {
      * @param field field to check
      */
     OperatorExpected empty(QName field);
+
+    /**
+     * Field value is null on unset or empty string
+     */
+    OperatorExpected emptyString(QName field);
 
     /**
      * Search within parent

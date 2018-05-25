@@ -63,14 +63,17 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return new FTSQuery();
     }
 
+    @Override
     public FTSQuery values(Map<QName, Serializable> values) {
         return values(values, BinOperator.AND, false);
     }
 
+    @Override
     public FTSQuery values(Map<QName, Serializable> values, BinOperator joinOperator) {
         return values(values, joinOperator, false);
     }
 
+    @Override
     public FTSQuery values(Map<QName, Serializable> values, BinOperator joinOperator, boolean exact) {
         int count = values.size();
         if (count == 0) {
@@ -87,6 +90,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
+    @Override
     public FTSQuery any(QName field, Iterable<Serializable> values) {
         Iterator<Serializable> it = values.iterator();
         if (!it.hasNext()) {
@@ -101,18 +105,32 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
+    @Override
     public FTSQuery empty(QName field) {
-        return open().isNull(field).or().isUnset(field).close();
+        return open().isNull(field).or()
+                     .isUnset(field)
+                     .close();
     }
 
+    @Override
+    public FTSQuery emptyString(QName field) {
+        return open().isNull(field).or()
+                     .isUnset(field).or()
+                     .exact(field, "")
+                     .close();
+    }
+
+    @Override
     public FTSQuery exact(QName field, Serializable value) {
         return value(field, value, true);
     }
 
+    @Override
     public FTSQuery value(QName field, Serializable value) {
         return value(field, value, false);
     }
 
+    @Override
     public FTSQuery value(QName field, Serializable value, boolean exact) {
         if (value == null) {
             empty(field);
@@ -126,97 +144,117 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
+    @Override
     public FTSQuery path(String path) {
         group.addTerm(new SysValueOperator(PATH, path));
         return this;
     }
 
+    @Override
     public FTSQuery isSet(QName field) {
         return isNotNull(field);
     }
 
+    @Override
     public FTSQuery isUnset(QName field) {
         group.addTerm(new SysValueOperator(ISUNSET, field));
         return this;
     }
 
+    @Override
     public FTSQuery isNull(QName field) {
         group.addTerm(new SysValueOperator(ISNULL, field));
         return this;
     }
 
+    @Override
     public FTSQuery isNotNull(QName field) {
         group.addTerm(new SysValueOperator(ISNOTNULL, field));
         return this;
     }
 
+    @Override
     public FTSQuery parent(NodeRef parent) {
         group.addTerm(new SysValueOperator(PARENT, parent));
         return this;
     }
 
+    @Override
     public FTSQuery type(QName typeName) {
         group.addTerm(new SysValueOperator(TYPE, typeName));
         return this;
     }
 
+    @Override
     public FTSQuery or() {
         group.setBiOperator(new BinOperatorTerm(BinOperator.OR));
         return this;
     }
 
+    @Override
     public FTSQuery and() {
         group.setBiOperator(new BinOperatorTerm(BinOperator.AND));
         return this;
     }
 
+    @Override
     public FTSQuery not() {
         group.setUnOperator(new UnOperatorTerm(NOT));
         return this;
     }
 
+    @Override
     public FTSQuery open() {
         group.startGroup();
         return this;
     }
 
+    @Override
     public FTSQuery close() {
         group.stopGroup();
         return this;
     }
 
+    @Override
     public FTSQuery transactionalIfPossible() {
         return consistency(QueryConsistency.TRANSACTIONAL_IF_POSSIBLE);
     }
 
+    @Override
     public FTSQuery transactional() {
         return consistency(QueryConsistency.TRANSACTIONAL);
     }
 
+    @Override
     public FTSQuery eventual() {
         return consistency(QueryConsistency.EVENTUAL);
     }
 
+    @Override
     public FTSQuery consistency(QueryConsistency consistency) {
         searchParameters.setQueryConsistency(consistency);
         return this;
     }
 
+    @Override
     public FTSQuery bulkFetch(boolean value) {
         searchParameters.setBulkFetchEnabled(value);
         return this;
     }
 
+    @Override
     public FTSQuery addSort(QName field, boolean ascending) {
         searchParameters.addSort("@" + field, ascending);
         return this;
     }
 
+    @Override
     public FTSQuery addSort(String field, boolean ascending) {
         searchParameters.addSort(field, ascending);
         return this;
     }
 
+    @Override
     public FTSQuery addSort(SearchParameters.SortDefinition sortDefinition) {
         searchParameters.addSort(sortDefinition);
         return this;
