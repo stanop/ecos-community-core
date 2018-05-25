@@ -104,4 +104,9 @@ public interface OperatorExpected {
      * Set permissions mode
      */
     OperatorExpected permissionsMode(PermissionEvaluationMode mode);
+
+    /**
+     * Search all nodes without limits
+     */
+    OperatorExpected unlimited();
 }

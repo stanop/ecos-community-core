@@ -166,4 +166,9 @@ public interface OperandExpected {
      * Set permissions mode
      */
     OperandExpected permissionsMode(PermissionEvaluationMode mode);
+
+    /**
+     * Search all nodes without limits
+     */
+    OperandExpected unlimited();
 }

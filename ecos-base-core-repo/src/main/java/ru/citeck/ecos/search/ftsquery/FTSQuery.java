@@ -240,6 +240,16 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
+    @Override
+    public FTSQuery unlimited() {
+        searchParameters.setLimit(0);
+        searchParameters.setLimitBy(LimitBy.UNLIMITED);
+        searchParameters.setMaxItems(-1);
+        searchParameters.setMaxPermissionChecks(Integer.MAX_VALUE);
+        searchParameters.setMaxPermissionCheckTimeMillis(Integer.MAX_VALUE);
+        return this;
+    }
+
     public String getQuery() {
         return group.getQuery();
     }
