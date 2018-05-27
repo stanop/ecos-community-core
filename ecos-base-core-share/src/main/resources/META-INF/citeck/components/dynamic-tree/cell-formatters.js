@@ -1903,7 +1903,6 @@
         },
 
         taskTitle: function () {
-
             var typeName = this.typeName(null);
 
             return function(elCell, oRecord, oColumn, sData) {
@@ -1914,8 +1913,12 @@
                     typeName.call(this, elCell, oRecord, oColumn, sData);
                 }
             };
+        },
+
+        formatterFromString: function (expression) {
+            return function (elCell, oRecord, oColumn, sData) {
+                eval(expression);
+            }
         }
-
     });
-
 })();
