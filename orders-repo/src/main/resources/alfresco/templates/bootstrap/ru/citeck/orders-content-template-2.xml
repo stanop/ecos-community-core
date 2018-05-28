@@ -9,7 +9,7 @@
 					<sys:node-uuid>default-orders-leave-template</sys:node-uuid>
 					<cm:content>contentUrl=classpath:alfresco/module/orders-repo/bootstrap/templates/orders-leave-template.doc|mimetype=application/msword|encoding=ISO-8859-1</cm:content>
 					<tk:appliesToType>workspace://SpacesStore/orders-cat-doctype-internal</tk:appliesToType>
-					<tk:appliesToKind>workspace://SpacesStore/orders-cat-internal-transfer</tk:appliesToKind>
+					<tk:appliesToKind>workspace://SpacesStore/orders-cat-internal-leave</tk:appliesToKind>
 				  </view:properties>
 				</dms:template>
 				<dms:template view:childName="cm:default-orders-transfer-template.doc">
