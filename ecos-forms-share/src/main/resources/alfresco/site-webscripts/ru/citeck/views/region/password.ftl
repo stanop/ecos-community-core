@@ -10,4 +10,10 @@
     <#else>protected</#if>
 </#assign>
 
-<input id="${fieldId}" type="password" data-bind="textInput: ${textValueInput?trim}, disable: ${disabled?trim}" />
+<#assign maxlength>
+    <#if params.maxlength??>
+        maxlength="${params.maxlength}"
+    </#if>
+</#assign>
+
+<input id="${fieldId}" type="password" data-bind="textInput: ${textValueInput?trim}, disable: ${disabled?trim}" ${maxlength}/>

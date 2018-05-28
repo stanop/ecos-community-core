@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="ctrwf:contractsWorkflowModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <author>Citeck</author>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/workflow/case-perform/1.0" prefix="wfcp" />
+        <import uri="http://www.citeck.ru/model/contracts/1.0" prefix="contracts" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/contracts/workflow/1.0" prefix="ctrwf" />
+    </namespaces>
+
+    <types>
+        <type name="ctrwf:confirmTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:confirmOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Confirm</value>
+                                    <value>Rework</value>
+                                    <value>Reject</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="ctrwf:reworkTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:reworkOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Done</value>
+                                    <value>Reject</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="ctrwf:confirmCancellationTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:confirmCancellationOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>SendAgain</value>
+                                    <value>Reject</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="ctrwf:signTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:signOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Sign</value>
+                                    <value>Reject</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="ctrwf:signCounterpartyTask">
+            <parent>ctrwf:signTask</parent>
+        </type>
+
+        <type name="ctrwf:signWithReworkTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:signWithReworkOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Sign</value>
+                                    <value>Rework</value>
+                                    <value>Reject</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="ctrwf:signCounterpertyWithReworkTask">
+            <parent>ctrwf:signWithReworkTask</parent>
+        </type>
+
+        <type name="ctrwf:esignTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:esignOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Complete</value>
+                                    <value>Rework</value>
+                                    <value>Reject</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="ctrwf:scanTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:scanOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Done</value>
+                                    <value>Reject</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="ctrwf:archiveTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:archiveOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Done</value>
+                                    <value>Reject</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="ctrwf:SAPCodeTask">
+            <parent>wfcp:performTask</parent>
+            <properties>
+                <property name="ctrwf:SAPCode">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:SAPCodeTaskOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Done</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="ctrwf:closeTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:closeOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Done</value>
+                                    <value>Reject</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="ctrwf:confirmAddAprovalTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:confirmAddAprovalOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Confirm</value>
+                                    <value>Rework</value>
+                                    <value>Reject</value>
+                                    <value>SendAddAproval</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="ctrwf:selectSignerTask">
+            <parent>wfcp:performTask</parent>
+            <overrides>
+                <property name="wfcp:performOutcome">
+                    <constraints>
+                        <constraint name="ctrwf:selectSignerTaskOutcomeConstraint" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Done</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </overrides>
+        </type>
+
+    </types>
+
+    <aspects>
+        <aspect name="ctrwf:hasSelectedAttachments">
+            <associations>
+                <association name="ctrwf:selectedAttachments">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:doc</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="ctrwf:hasContractLinks">
+            <properties>
+                <property name="ctrwf:contractLinks">
+                    <title>Contract</title>
+                    <type>d:noderef</type>
+                    <multiple>true</multiple>
+                </property>
+            </properties>
+            <associations>
+                <association name="ctrwf:linkedContracts">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>contracts:agreement</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+        <aspect name="ctrwf:hasRkkLinks">
+            <properties>
+                <property name="ctrwf:rkkLinks">
+                    <title>RKK Links</title>
+                    <type>d:noderef</type>
+                    <multiple>true</multiple>
+                </property>
+            </properties>
+            <associations>
+                <association name="ctrwf:linkedRKK">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:doc</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="ctrwf:hasScan">
+            <properties>
+                <property name="ctrwf:scan">
+                    <title>Has scan</title>
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+        </aspect>
+
+    </aspects>
+
+</model>
+
+

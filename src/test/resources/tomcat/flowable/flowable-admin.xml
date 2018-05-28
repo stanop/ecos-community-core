@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<Context antiJARLocking="true">
+
+    <Environment name="spring.datasource.driver-class-name" value="${flowable.webapps.db.driver.class.name}" type="java.lang.String"/>
+    <Environment name="spring.datasource.url" value="${flowable.webapps.db.url}" type="java.lang.String"/>
+    <Environment name="spring.datasource.username" value="${flowable.webapps.db.username}" type="java.lang.String"/>
+    <Environment name="spring.datasource.password" value="${flowable.webapps.db.password}" type="java.lang.String"/>
+
+    <!-- Process engine -->
+    <Environment name="flowable.admin.app.server-config.process.server-address" value="${flowable.webapps.admin.rest.app.host}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.process.port" value="${flowable.webapps.admin.rest.app.port}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.process.user-name" value="${flowable.webapps.admin.rest.app.user}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.process.password" value="${flowable.webapps.admin.rest.app.password}" type="java.lang.String"/>
+
+    <!-- CMMN Engine -->
+    <Environment name="flowable.admin.app.server-config.cmmn.server-address" value="${flowable.webapps.admin.rest.app.host}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.cmmn.port" value="${flowable.webapps.admin.rest.app.port}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.cmmn.user-name" value="${flowable.webapps.admin.rest.app.user}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.cmmn.password" value="${flowable.webapps.admin.rest.app.password}" type="java.lang.String"/>
+
+    <!-- DMN engine -->
+    <Environment name="flowable.admin.app.server-config.dmn.server-address" value="${flowable.webapps.admin.rest.app.host}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.dmn.port" value="${flowable.webapps.admin.rest.app.port}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.dmn.user-name" value="${flowable.webapps.admin.rest.app.user}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.dmn.password" value="${flowable.webapps.admin.rest.app.password}" type="java.lang.String"/>
+
+    <!-- Form engine -->
+    <Environment name="flowable.admin.app.server-config.form.server-address" value="${flowable.webapps.admin.rest.app.host}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.form.port" value="${flowable.webapps.admin.rest.app.port}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.form.user-name" value="${flowable.webapps.admin.rest.app.user}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.form.password" value="${flowable.webapps.admin.rest.app.password}" type="java.lang.String"/>
+
+    <!-- Content engine -->
+    <Environment name="flowable.admin.app.server-config.content.server-address" value="${flowable.webapps.admin.rest.app.host}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.content.port" value="${flowable.webapps.admin.rest.app.port}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.content.user-name" value="${flowable.webapps.admin.rest.app.user}" type="java.lang.String"/>
+    <Environment name="flowable.admin.app.server-config.content.password" value="${flowable.webapps.admin.rest.app.password}" type="java.lang.String"/>
+
+    <Environment name="flowable.common.app.idm-admin.user" value="${flowable.webapps.admin.userid}" type="java.lang.String"/>
+    <Environment name="flowable.common.app.idm-admin.password" value="${flowable.webapps.admin.password}" type="java.lang.String"/>
+    <Environment name="flowable.common.app.idm-url" value="${flowable.webapps.idm.app.url}" type="java.lang.String"/>
+</Context>

@@ -1,6 +1,8 @@
 package ru.citeck.ecos.history.impl;
 
-import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.policy.BehaviourFilter;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport.TxnReadState;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -24,12 +26,15 @@ import ru.citeck.ecos.history.HistoryRemoteService;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.model.IdocsModel;
+import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static org.alfresco.repo.transaction.AlfrescoTransactionSupport.getTransactionReadState;
 
 /**
  * History remote service
@@ -95,12 +100,11 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      * Services
      */
     private RestTemplate restTemplate;
-
     private TransactionService transactionService;
-
     private NodeService nodeService;
-
     private PersonService personService;
+    private BehaviourFilter behaviourFilter;
+    private NodeUtils nodeUtils;
 
     @Autowired(required = false)
     private RabbitTemplate rabbitTemplate;
@@ -181,11 +185,6 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         } catch (Exception exception) {
             logger.error(exception);
         }
-
-        /** Remove old nodes */
-        for (AssociationRef associationRef : associations) {
-            nodeService.deleteNode(associationRef.getSourceRef());
-        }
     }
 
     /**
@@ -203,7 +202,6 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         }
         Map<String, Object> requestParams = getEventMap(eventRef, documentRef);
         sendHistoryEventToRemoteService(requestParams);
-        nodeService.deleteNode(eventRef);
     }
 
     /**
@@ -314,21 +312,11 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      */
     @Override
     public void updateDocumentHistoryStatus(NodeRef documentNodeRef, boolean newStatus) {
-        RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
-        txnHelper.setForceWritable(true);
-        boolean requiresNew = false;
-        if (AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
-            requiresNew = true;
-        }
         try {
-            txnHelper.doInTransaction(() -> {
-                if (documentNodeRef != null && nodeService.exists(documentNodeRef)) {
-                    nodeService.setProperty(documentNodeRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY, newStatus);
-                }
-                return null;
-            }, false, requiresNew);
+            setUseNewHistoryStatus(documentNodeRef, newStatus);
         } catch (Exception e) {
-            logger.error("Unexpected error", e);
+            logger.error("Unexpected error with args documentNodeRef = " + documentNodeRef +
+                    ", newStatus = "+ newStatus, e);
         }
     }
 
@@ -363,6 +351,29 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         }
     }
 
+    private void setUseNewHistoryStatus(NodeRef documentNodeRef, boolean newStatus) {
+
+        Boolean currentStatus = nodeUtils.getProperty(documentNodeRef, IdocsModel.PROP_USE_NEW_HISTORY);
+
+        if (!Boolean.valueOf(newStatus).equals(currentStatus) && !transactionService.isReadOnly()) {
+
+            boolean requiresNew = getTransactionReadState() != TxnReadState.TXN_READ_WRITE;
+            RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
+
+            AuthenticationUtil.runAsSystem(() -> txnHelper.doInTransaction(() -> {
+                try {
+                    behaviourFilter.disableBehaviour(documentNodeRef);
+                    if (nodeUtils.isValidNode(documentNodeRef)) {
+                        nodeService.setProperty(documentNodeRef, IdocsModel.PROP_USE_NEW_HISTORY, newStatus);
+                    }
+                    return null;
+                } finally {
+                    behaviourFilter.enableBehaviour(documentNodeRef);
+                }
+            }, false, requiresNew));
+        }
+    }
+
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -377,5 +388,13 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     public void setPersonService(PersonService personService) {
         this.personService = personService;
+    }
+
+    public void setBehaviourFilter(BehaviourFilter behaviourFilter) {
+        this.behaviourFilter = behaviourFilter;
+    }
+
+    public void setNodeUtils(NodeUtils nodeUtils) {
+        this.nodeUtils = nodeUtils;
     }
 }

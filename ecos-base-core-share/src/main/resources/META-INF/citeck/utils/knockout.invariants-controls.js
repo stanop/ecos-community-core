@@ -251,17 +251,61 @@ ko.components.register("number", {
             }
             return false;
         };
-
-        this.OnBlurEvent = function(data, event) {
-            // for Google Chrome (incorrect processing of a value with a dot at the end)
-            if (isNaN(document.getElementById(self.id).valueAsNumber)) {
-                document.getElementById(self.id).value = null;
-            }
-        };
     },
     template:
-       '<input type="number" data-bind="value: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation, blur: OnBlurEvent }" />'
+       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
 });
+
+// ---------------
+// TASK-BUTTONS
+// ---------------
+
+    ko.components.register("task-buttons", {
+        viewModel: function(params) {
+            var self = this;
+
+            require(['citeck/utils/knockout.utils'], function(koutils) {
+
+                self.buttons = params["buttons"] || [];
+                self.buttons = self.buttons.map(function (button) {
+                    button.title = Alfresco.util.message(button.title);
+                    return button;
+                });
+                self.attribute = params["attribute"];
+                self.node = self.attribute.node();
+
+                self.onClick = function (item) {
+                    if (item.actionId) {
+                        var redirect = item.redirect ? item.redirect : (window.location.pathname.indexOf("card-details") == -1 ? "/share/page/journals2/list/tasks" : null),
+                            onRedirect = function () {
+                                if (redirect) {
+                                    window.location = redirect;
+                                } else {
+                                    YAHOO.Bubbling.fire("metadataRefresh");
+                                }
+                            };
+                        if (item.actionId == "submit") {
+                            if (self.attribute.value() != item.value) {
+                                self.attribute.value(item.value);
+                                koutils.subscribeOnce(self.attribute.jsonValue, function () {
+                                    self.node.thisclass.save(self.node, onRedirect);
+                                });
+                            } else {
+                                self.node.thisclass.save(self.node, onRedirect);
+                            }
+                        } else {
+                            onRedirect();
+                        }
+                    }
+                };
+                self.disabled = self.attribute['protected'];
+            });
+        },
+        template:
+            '<!-- ko foreach: buttons -->\
+                <button data-bind="text: $data.title, click: $component.onClick, disable: $component.disabled" />\
+            <!-- /ko -->'
+    });
 
 // ---------------
 // FREE-CONTENT
@@ -320,12 +364,15 @@ ko.components.register("multiple-text", {
         koutils.subscribeOnce(this.value, function(newValue) {
             var stringsArray = [];
             if (newValue && newValue.length) {
-                for (var i in newValue) {
-                    stringsArray.push(new String(newValue[i]));
+                if (newValue instanceof Array) {
+                    for (var i in newValue) {
+                        stringsArray.push(new String(newValue[i]));
+                    }
+                } else {
+                    stringsArray.push(new String(newValue));
                 }
                 self.strings(stringsArray);
             }
-
         });
 
         this.removeString = function(data) {
@@ -657,7 +704,9 @@ ko.bindingHandlers.dateControl = {
             params = allBindings();
 
         var localization = params.localization,
-            mode = params.mode;
+            mode = params.mode,
+            min = params.min,
+            max = params.max;
 
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
@@ -712,8 +761,12 @@ ko.bindingHandlers.dateControl = {
                     // selected date
                     calendar.selectEvent.subscribe(function() {
                         if (calendar.getSelectedDates().length > 0) {
-                            var selectedDate = calendar.getSelectedDates()[0];
-                            value(selectedDate.toString("yyyy-MM-dd"));
+                            var selectedDate = calendar.getSelectedDates()[0],
+                                nowDate = new Date;
+
+                            selectedDate.setHours(-nowDate.getTimezoneOffset()/60);
+
+                            value(selectedDate);
                         }
                         calendarDialog.hide();
                     });
@@ -726,15 +779,24 @@ ko.bindingHandlers.dateControl = {
         } else {
             // set max and min attributes
             var date = new Date(),
-                year = date.getFullYear()
+                year = date.getFullYear();
 
             if (input) {
-                input.setAttribute("max", (year + 50) + "-12-31");
-                input.setAttribute("min", (year - 25) + "-12-31");
+                if (max) {
+                    input.setAttribute("max", max);
+                } else {
+                    input.setAttribute("max", (year + 50) + "-12-31");
+                }
+
+                if (min) {
+                    input.setAttribute("min", min);
+                } else {
+                    input.setAttribute("min", (year - 25) + "-12-31");
+                }
 
                 Dom.setStyle(input, "color", value() ? "" : "lightgray");
                 value.subscribe(function(value) {
-                  Dom.setStyle(input, "color", value ? "" : "lightgray");
+                    Dom.setStyle(input, "color", value ? "" : "lightgray");
                 });
             }
         }
@@ -795,7 +857,8 @@ ko.bindingHandlers.journalControl = {
         defaultCriteria             = params.defaultCriteria,
         hiddenCriteria              = params.hiddenCriteria || [],
         optionsFilter               = params.optionsFilter ? params.optionsFilter() : null,
-        createVariantsVisibility    = params.createVariantsVisibility;
+        createVariantsVisibility    = params.createVariantsVisibility,
+        filterCriteriaVisibility    = ko.observable(false);
 
     if (defaultVisibleAttributes) {
         defaultVisibleAttributes = _.map(defaultVisibleAttributes.split(","), function(item) { return trim(item) });
@@ -861,7 +924,6 @@ ko.bindingHandlers.journalControl = {
 
                 var selectedElements = ko.observableArray(),
                     selectedFilterCriteria = ko.observableArray(),
-                    filterCriteriaVisibility = ko.observable(false),
                     loading = ko.observable(true),
                     criteriaListShow = ko.observable(false),
                     searchBar = params.searchBar ? params.searchBar == "true" : true,
@@ -897,7 +959,7 @@ ko.bindingHandlers.journalControl = {
                             skipCount: skipCount(),
                             searchScript: searchScript,
                             sortBy: sortBy
-                        });
+                        }, params.journalType);
                         var config = nudeOptions.pagination, result;
 
                         var tempAdditionalOptions = additionalOptions();
@@ -964,7 +1026,9 @@ ko.bindingHandlers.journalControl = {
                     }
 
                     // add default option's filter criteria from view
-                    if (optionsFilter && optionsFilter() && optionsFilter().length) criteria(optionsFilter());
+                    if (optionsFilter) {
+                        criteria(optionsFilter() && optionsFilter().length ? optionsFilter() : []);
+                    }
 
                     if (dc) {
                         for (var i in dc) {
@@ -1151,7 +1215,7 @@ ko.bindingHandlers.journalControl = {
 
                     if (event.target.tagName == "A") {
                         if ($(event.target).hasClass("journal-tab-button")) {
-                            if (event.target.id == filterTabId) filterCriteriaVisibility(true);
+                            if (event.target.id == filterTabId) filterCriteriaVisibility(!filterCriteriaVisibility());
 
                             switch (mode) {
                                 case "full":
@@ -1274,7 +1338,7 @@ ko.bindingHandlers.journalControl = {
                             selectedCriteria = selectedFilterCriteria();
 
                         if (selectedCriteria.length == 0) {
-                            criteria([])
+                            criteria(optionsFilter && optionsFilter() ? optionsFilter() : []);
                         } else {
                             for (var i in selectedCriteria) {
                                 if (selectedCriteria[i].value() && selectedCriteria[i].predicateValue() && selectedCriteria[i].name()) {
@@ -1284,6 +1348,19 @@ ko.bindingHandlers.journalControl = {
                                         value: selectedCriteria[i].value()
                                     })
                                 }
+                            }
+
+                            // add filters, which by default are not in the journal
+                            if (optionsFilter && optionsFilter() && optionsFilter().length) {
+                                optionsFilter().forEach(function(item) {
+                                    var filterCriteria = _.find(selectedCriteria, function(filter) {
+                                        return item.attribute == filter.name();
+                                    });
+                                    if (!filterCriteria) {
+                                        criteriaList.push(item);
+                                    }
+                                });
+
                             }
                             criteria(criteriaList);
                         }
@@ -1383,6 +1460,10 @@ ko.bindingHandlers.journalControl = {
                 });
             }
 
+            var filterTab = Dom.get(filterTabId);
+            if (!filterCriteriaVisibility() && params.defaultFiltersVisibility == "true" && filterTab) {
+                filterTab.click();
+            }
             scope.panel.show();
             scope.panel.center();
 
@@ -1916,6 +1997,7 @@ ko.components.register("select2", {
         this.additionalOptions = ko.observable([]);
         this._criteriaListShow = ko.observable(false);
         this._filterVisibility = ko.observable(false);
+        this.searchBarVisibility = params.searchBarVisibility ? params.searchBarVisibility == "true" : true;
 
 
         // computed
@@ -2099,9 +2181,8 @@ ko.components.register("select2", {
                 }
 
                 // add default option's filter criteria from view
-                var optionsFilter = self.optionsFilter && self.optionsFilter() ? self.optionsFilter() : [];
-                if (optionsFilter && optionsFilter.length) {
-                    self.criteria(optionsFilter);
+                if (self.optionsFilter) {
+                    self.criteria(self.optionsFilter() && self.optionsFilter().length ? self.optionsFilter() : []);
                 }
 
                 if (dc.length) {
@@ -2111,8 +2192,8 @@ ko.components.register("select2", {
                         newCriterion.predicateValue = ko.observable();
 
                         // add value of default option's filter criteria on filter form
-                        if (optionsFilter.length && newCriterion.name) {
-                            var filterCriterion = _.find(optionsFilter, function(item) {
+                        if (self.optionsFilter && self.optionsFilter() && self.optionsFilter().length && newCriterion.name) {
+                            var filterCriterion = _.find(self.optionsFilter, function(item) {
                                 return item.attribute == newCriterion.name();
                             });
                             if (filterCriterion) newCriterion.value(filterCriterion.value);
@@ -2235,25 +2316,26 @@ ko.components.register("select2", {
                 data.panel.setHeader(data.localization.title);
                 data.panel.setBody('\
                     <div class="journal-picker-header collapse" id="' + journalPickerHeaderId + '">\
-                            <!-- ko if: filters -->\
-                                <a id="' + filterTabId + '" class="journal-tab-button" data-bind="text: labels.filterTab, click: filter, clickBubble: false"></a>\
-                            <!-- /ko -->\
-                            <!-- ko if: createVariantsVisibility -->\
-                                <!-- ko component: { name: "createObjectButton", params: {\
-                                    scope: scope,\
-                                    source: createVariantsSource,\
-                                    callback: callback,\
-                                    buttonTitle: labels.createTab,\
-                                    virtualParent: virtualParent,\
-                                    journalType: journalType\
-                                }} --><!-- /ko -->\
-                            <!-- /ko -->\
-                        <div class="journal-search">\
-                            <input type="search" class="journal-search-input" data-bind="\
-                                textInput: searchQuery,\
-                                attr: { placeholder: labels.search }\
-                            " />\
-                        </div>\
+                        <!-- ko if: filters -->\
+                            <a id="' + filterTabId + '" class="journal-tab-button" data-bind="text: labels.filterTab, click: filter, clickBubble: false"></a>\
+                        <!-- /ko -->\
+                        <!-- ko if: createVariantsVisibility -->\
+                            <!-- ko component: { name: "createObjectButton", params: {\
+                                scope: scope,\
+                                source: createVariantsSource,\
+                                callback: callback,\
+                                buttonTitle: labels.createTab,\
+                                virtualParent: virtualParent,\
+                                journalType: journalType\
+                            }} --><!-- /ko -->\
+                        <!-- /ko -->\
+                        ' + (data.searchBarVisibility ? '\
+                            <div class="journal-search">\
+                                <input type="search" class="journal-search-input" data-bind="\
+                                    textInput: searchQuery,\
+                                    attr: { placeholder: labels.search }\
+                                " />\
+                            </div>': '') + '\
                     </div>\
                     <div class="journal-picker-page-container">\
                         <!-- ko if: filters -->\
@@ -2466,7 +2548,7 @@ ko.components.register("select2", {
                             $(elementsPage).removeClass("hidden");
                         }
 
-                        data.filterVisibility(true);
+                        data.filterVisibility(!data.filterVisibility());
 
                         // clear tab selection
                         var buttons = Dom.getElementsBy(function(element) {
@@ -2519,6 +2601,10 @@ ko.components.register("select2", {
                 }, data.panel.footer);
             }
 
+            var filterTab = Dom.get(filterTabId);
+            if (!data._filterVisibility() && params.defaultFiltersVisibility == "true" && filterTab) {
+                filterTab.click();
+            }
             data.panel.show();
         }
 
@@ -2585,11 +2671,9 @@ ko.components.register("select2", {
                             <span class="select2-message empty-message" data-bind="text: localization.empty"></span>\
                         <!-- /ko -->\
                     <!-- /ko -->\
-                    <!-- ko if: hasMore -->\
-                        <div class="select2-more">\
-                            <a data-bind="click: more, attr: { title: localization.more }">...</a>\
-                        </div>\
-                    <!-- /ko -->\
+                    <div class="select2-more" data-bind="style: hasMore() ? \'\' : {display: \'none\'}">\
+                        <a data-bind="click: more, attr: { title: localization.more }">...</a>\
+                    </div>\
                 </div>\
             <!-- /ko -->\
         <!-- /ko -->\
@@ -2609,8 +2693,23 @@ ko.bindingHandlers.fileUploadControl = {
             value = settings.value,
             multiple = settings.multiple,
             type = settings.type,
+            alowedFileTypes = (settings.alowedFileTypes || '').toLowerCase().split(' ').join('').split(','),
+            maxSize = settings.maxSize || '',
+            maxCount = settings.maxCount || '',
             properties = settings.properties,
             importUrl = settings.importUrl;
+
+        if (_.isNumber(maxSize)) {
+            maxSize = +maxSize;
+        } else {
+            maxSize = 0;
+        }
+
+        if (_.isNumber(maxCount)) {
+            maxCount = +maxCount;
+        } else {
+            maxCount = 0;
+        }
 
         // Invariants global object
         var Node = koutils.koclass('invariants.Node');
@@ -2630,6 +2729,48 @@ ko.bindingHandlers.fileUploadControl = {
             $(input).click();
         });
 
+        function checkFile(file) {
+            function b2mb(val) {
+                if (!val) return '';
+                var res = Math.round((val / 1024 / 1024) * 1000) / 1000;
+                if (res < 1) {
+                    res = Math.round((val / 1024) * 1000) / 1000;
+                    return res + ' Kb'
+                };
+                return res + ' Mb'
+            };
+
+            if (!file) return false;
+
+            var result = true,
+                ext = '',
+                arr = [];
+
+            // check file type
+            arr = file.name.split('.');
+            ext = (arr.length > 1 ? arr[arr.length-1] : "").toLowerCase();
+
+            result = alowedFileTypes[0] == '' || !!~alowedFileTypes.indexOf(ext);
+            if (!result) {
+                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('incorrect-file-type')});
+                return false;
+            }
+
+            // check file size
+            if (file.size && file.size > 0 && maxSize > 0) {
+                result = file.size <= maxSize;
+            } else {
+                result = true;
+            }
+
+            if (!result) {
+                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('file-larger-than-allowed') + ' ' + b2mb(maxSize) });
+                return false;
+            }
+
+            return true;
+        }
+
         // get files from input[file]
         Event.on(input, 'change', function(event) {
             var files = event.target.files,
@@ -2637,6 +2778,17 @@ ko.bindingHandlers.fileUploadControl = {
 
             if (files.length === 0) {
                 return;
+            }
+
+            if (maxCount > 0 && files.length > maxCount) {
+                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('file-count-restrict') + ': ' + maxCount });
+            }
+
+            for (var i = 0, count = files.length; i < count; i++) {
+                    if (!checkFile(files[i])) {
+                        event.target.value = '';
+                        return;
+                    }
             }
 
             loadedFiles.subscribe(function(newValue) {
@@ -2756,7 +2908,7 @@ ko.bindingHandlers.orgstructControl = {
         var settings = valueAccessor(),
             value = settings.value,
             multiple = settings.multiple,
-            params = allBindings().params();
+            params = allBindings().params() ? allBindings().params() : {};
 
         var showVariantsButton = Dom.get(element.id + "-showVariantsButton"),
             orgstructPanelId = element.id + "-orgstructPanel", orgstructPanel, resize,
@@ -2846,47 +2998,37 @@ ko.bindingHandlers.orgstructControl = {
                 // initialize tree function
                 tree.fn = {
                     loadNodeData: function(node, fnLoadComplete) {
-                        if (node.data.shortName != "all_users") {
-                            YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName), {
-                                success: function (oResponse) {
-                                    var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
-                                    if (params && params.excludeFields) {
-                                        results = results.filter(function(item) {
-                                            return params.excludeFields.indexOf(item.shortName) == -1;
-                                        });
-                                    }
+                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(node.data.shortName, null, params.excludeAuthorities), {
+                            success: function (oResponse) {
+                                var results = YAHOO.lang.JSON.parse(oResponse.responseText), item, treeNode;
+                                if (results) {
+                                    for (var i = 0; i < results.length; i++) {
+                                        item = results[i];
 
-                                    if (results) {
-                                        for (var i = 0; i < results.length; i++) {
-                                            item = results[i];
-
-                                            treeNode = this.buildTreeNode(item, node, false);
-                                            if (item.authorityType == "USER") {
-                                                treeNode.isLeaf = true;
-                                            }
+                                        treeNode = this.buildTreeNode(item, node, false);
+                                        if (item.authorityType == "USER") {
+                                            treeNode.isLeaf = true;
                                         }
                                     }
-
-                                    oResponse.argument.fnLoadComplete();
-                                },
-
-                                failure: function(oResponse) {
-                                    // error
-                                },
-
-                                scope: tree.fn,
-                                argument: {
-                                    "node": node,
-                                    "fnLoadComplete": fnLoadComplete
                                 }
-                            });
-                        } else {
-                            alert("Просьба обратиться к администратору системы, код ошибки 'all_users'");
-                        }
+
+                                oResponse.argument.fnLoadComplete();
+                            },
+
+                            failure: function(oResponse) {
+                                // error
+                            },
+
+                            scope: tree.fn,
+                            argument: {
+                                "node": node,
+                                "fnLoadComplete": fnLoadComplete
+                            }
+                        });
                     },
 
                     loadRootNodes: function(tree, scope, query) {
-                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(options.rootGroup(), query), {
+                        YAHOO.util.Connect.asyncRequest('GET', tree.fn.buildTreeNodeUrl(options.rootGroup(), query, params.excludeAuthorities), {
                             success: function(oResponse) {
                                 var results = YAHOO.lang.JSON.parse(oResponse.responseText),
                                     rootNode = tree.getRoot(), treeNode,
@@ -2921,7 +3063,7 @@ ko.bindingHandlers.orgstructControl = {
 
                     buildTreeNode: function(p_oItem, p_oParent, p_expanded) {
                         var textNode = new YAHOO.widget.TextNode({
-                                label: $html(p_oItem[tree.fn.getNodeLabelKey(p_oItem)] || p_oItem.displayName || p_oItem.shortName),
+                                label: $html(p_oItem[tree.fn.getNodeLabelKey(p_oItem)]) || p_oItem.displayName || p_oItem.shortName,
                                 nodeRef: p_oItem.nodeRef,
                                 shortName: p_oItem.shortName,
                                 displayName: p_oItem.displayName,
@@ -2951,9 +3093,14 @@ ko.bindingHandlers.orgstructControl = {
                         return textNode;
                     },
 
-                    buildTreeNodeUrl: function (group, query) {
-                        var uriTemplate ="api/orgstruct/group/" + Alfresco.util.encodeURIPath(group) + "/children?branch=true&role=true&group=true&user=true";
-                        if (query) uriTemplate += "&filter=" + encodeURI(query) + "&recurse=true";
+                    buildTreeNodeUrl: function (group, query, excludeAuthorities) {
+                        var uriTemplate ="api/orgstruct/v2/group/" + Alfresco.util.encodeURIPath(group) + "/children?branch=true&role=true&group=true&user=true";
+                        if (query) {
+                            uriTemplate += "&filter=" + encodeURI(query) + "&recurse=true";
+                        }
+                        if (excludeAuthorities) {
+                            uriTemplate += "&excludeAuthorities=" + excludeAuthorities;
+                        }
                         return  Alfresco.constants.PROXY_URI + uriTemplate;
                     },
 

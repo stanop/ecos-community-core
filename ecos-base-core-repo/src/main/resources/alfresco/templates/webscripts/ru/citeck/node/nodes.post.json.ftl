@@ -1,8 +1,8 @@
-<#include "/ru/citeck/search/search-macros.ftl">
+<#import "/ru/citeck/search/search-macros.ftl" as search>
 <#escape x as jsonUtils.encodeJSONString(x)>
 {
     "nodes": [
-        <@printNodes nodes/>
+        <@search.printNodes nodes/>
     ]
 }
 </#escape>

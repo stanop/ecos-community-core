@@ -3,11 +3,12 @@ package ru.citeck.ecos.behavior.event.trigger;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.apache.commons.lang.mutable.MutableInt;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
-import ru.citeck.ecos.cmmn.model.Stage;
 import ru.citeck.ecos.event.EventService;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
@@ -24,6 +25,9 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
                                                  CaseActivityPolicies.OnCaseActivityStoppedPolicy {
 
     private static final String ACTIVITY_EVENT_TRIGGER_DATA_KEY = "case-activity-event-trigger-data";
+    private static final String STAGE_CHILDREN_COMPLETED_TXN_KEY = "case-activity-stage-children-completed";
+
+    private static final int STAGE_COMPLETE_LIMIT = 40;
 
     private CaseActivityService caseActivityService;
     private DictionaryService dictionaryService;
@@ -89,12 +93,26 @@ public class CaseActivityEventTrigger implements CaseActivityPolicies.OnCaseActi
     }
 
     private void tryToFireStageChildrenStoppedEvents(TransactionData data, NodeRef document) {
+
+        Map<NodeRef, MutableInt> completedStages =
+                TransactionalResourceHelper.getMap(STAGE_CHILDREN_COMPLETED_TXN_KEY);
+
         Queue<NodeRef> stages = new ArrayDeque<>(data.stagesToTryComplete);
         data.stagesToTryComplete.clear();
 
         while (!stages.isEmpty()) {
+
             NodeRef stage = stages.poll();
+
             if (!caseActivityService.hasActiveChildren(stage)) {
+
+                MutableInt completedCounter = completedStages.computeIfAbsent(stage, s -> new MutableInt(0));
+                completedCounter.increment();
+
+                if (completedCounter.intValue() > STAGE_COMPLETE_LIMIT) {
+                    throw new IllegalStateException("Stage " + stage + " completed more than " + STAGE_COMPLETE_LIMIT +
+                                                    " times. Seems it is a infinite loop. Document: " + document);
+                }
                 eventService.fireEvent(stage, document, ICaseEventModel.CONSTR_STAGE_CHILDREN_STOPPED);
             }
             for (NodeRef st : data.stagesToTryComplete) {

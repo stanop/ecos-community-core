@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+	<shortname>nodeview</shortname>
+	<description>Get node view</description>
+	<url>/citeck/ecos/forms/node-view?formType={formType}&amp;formKey={formKey}&amp;formId={formId?}&amp;mode={mode?}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>

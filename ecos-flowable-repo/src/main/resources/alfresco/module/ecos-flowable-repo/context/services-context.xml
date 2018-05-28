@@ -48,6 +48,21 @@
 		<property name="personService" ref="PersonService"/>
 	</bean>
 
+	<bean id="flowableModelerService" class="ru.citeck.ecos.flowable.services.impl.FlowableModelerServiceImpl">
+		<property name="managementService" ref="flowableManagementService"/>
+		<property name="locations">
+			<bean factory-bean="resourceResolver" factory-method="getResources">
+				<constructor-arg>
+					<list>
+						<value>classpath*:alfresco/workflow/**/*flowable*.xml</value>
+						<value>classpath*:alfresco/module/*/workflow/**/*flowable*.xml</value>
+						<value>classpath*:alfresco/extension/workflow/**/*flowable*.xml</value>
+					</list>
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
+
 	<!-- Utils -->
 	<bean id="flowableCasePerformUtils" class="ru.citeck.ecos.flowable.utils.FlowableCasePerformUtils">
 		<property name="nodeService" ref="nodeService" />
@@ -70,14 +85,16 @@
 		<property name="personService" ref="PersonService"/>
 		<property name="flowableTaskService" ref="flowableCustomTaskService"/>
 		<property name="flowableHistoryService" ref="flowableCustomHistoryService"/>
+		<property name="flowableWorkflowComponent" ref="flowableWorkflowComponent"/>
 		<property name="handlerRegistry" ref="flowableWorkflowPropertyHandlerRegistry"/>
 		<property name="typeManager" ref="flowableTaskTypeManager"/>
+		<property name="flowableProcessDefinitionService" ref="flowableCustomProcessDefinitionService"/>
 	</bean>
 
-	<bean id="flowableGrantWorkflowPackageHelper" class="ru.citeck.ecos.flowable.utils.FlowableGrantWorkflowPackageHelper">
+	<!--<bean id="flowableGrantWorkflowPackageHelper" class="ru.citeck.ecos.flowable.utils.FlowableGrantWorkflowPackageHelper">
 		<property name="grantPermissionService" ref="GrantPermissionService" />
 		<property name="authorityHelper" ref="authorityHelper"/>
-	</bean>
+	</bean>-->
 
 	<!-- Senders -->
 
@@ -140,11 +157,11 @@
 	</bean>
 
 	<!-- End process -->
-	<bean id="flowableRevokeFinalWorkflowPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.end.RevokeFinalWorkflowPackageListener">
+	<!--<bean id="flowableRevokeFinalWorkflowPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.end.RevokeFinalWorkflowPackageListener">
 		<property name="helper" ref="flowableGrantWorkflowPackageHelper" />
 		<property name="revokeTaskPermissions" value="${workflow-security.revoke-task-permissions}" />
 		<property name="revokeProcessPermissions" value="${workflow-security.revoke-process-permissions}" />
-	</bean>
+	</bean>-->
 
 	<bean id="flowableCancelWorkflowListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.end.CancelWorkflowListener">
 		<property name="enabled" value="${notification.cancel.workflow.enabled}"/>
@@ -196,10 +213,10 @@
 		<property name="enabled" value="${task.assign.date.listener.enabled}"/>
 	</bean>
 
-	<bean id="flowableGrantWorkflowPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.GrantWorkflowPackageListener">
+	<!--<bean id="flowableGrantWorkflowPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.GrantWorkflowPackageListener">
 		<property name="grantedPermission" value="${workflow-security.grant-permission}"/>
 		<property name="helper" ref="flowableGrantWorkflowPackageHelper"/>
-	</bean>
+	</bean>-->
 
 	<bean id="flowableTaskHistoryListener" init-method="init"
 		  class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.TaskHistoryListener">
@@ -234,10 +251,10 @@
 		<property name="namespaceService" ref="NamespaceService"/>
 	</bean>
 
-	<bean id="flowableRevokeWorkflowPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.RevokeWorkflowPackageListener">
+	<!--<bean id="flowableRevokeWorkflowPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.RevokeWorkflowPackageListener">
 		<property name="helper" ref="flowableGrantWorkflowPackageHelper"/>
 		<property name="postRevokePermission" value="${workflow-security.post-revoke-permission}" />
-	</bean>
+	</bean>-->
 
 	<!-- Mirror listeners -->
 	<bean id="flowableMirrorListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.MirrorListener">
@@ -268,6 +285,13 @@
 	<bean name="FlowableConfirmDecisionsJS" class="ru.citeck.ecos.flowable.example.FlowableConfirmDecisionsJS" parent="baseJavaScriptExtension">
 		<property name="extensionName" value="flowableConfirmDecisions" />
 		<property name="impl" ref="FlowableConfirmHelper" />
+		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+	<bean id="flowableModelerServiceJS" name="FlowableModelerServiceJS" class="ru.citeck.ecos.flowable.services.FlowableModelerServiceJS"
+		  parent="baseJavaScriptExtension">
+		<property name="extensionName" value="flowableModelerService"/>
+		<property name="flowableModelerService" ref="flowableModelerService"/>
 		<property name="serviceRegistry" ref="ServiceRegistry" />
 	</bean>
 

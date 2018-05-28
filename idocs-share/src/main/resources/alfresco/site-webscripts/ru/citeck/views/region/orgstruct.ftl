@@ -16,17 +16,17 @@
         <#assign groupLabel = config.scoped["InvariantControlsConfiguration"].orgstruct.childrenMap["group"][0].attributes["label"]>
 </#if>
 
-<#assign allExcludeFields>
+<#assign allExcludeAuthorities>
     <#if config.scoped["InvariantControlsConfiguration"]?? &&
          config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
-         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]?? && params.excludeFields??>
-             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"] + "," + params.excludeFields}
+         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"]?? && params.excludeAuthorities??>
+             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"] + "," + params.excludeAuthorities}
     <#elseif config.scoped["InvariantControlsConfiguration"]?? &&
          config.scoped["InvariantControlsConfiguration"].orgstruct?? &&
-         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]??>
-             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeFields"]}
-    <#elseif params.excludeFields??>
-         ${params.excludeFields}
+         config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"]??>
+             ${config.scoped["InvariantControlsConfiguration"].orgstruct.attributes["excludeAuthorities"]}
+    <#elseif params.excludeAuthorities??>
+         ${params.excludeAuthorities}
     <#else></#if>
 </#assign>
 
@@ -44,8 +44,8 @@
                                                                         allowedGroupType: '${params.allowedGroupType}',
                                                                     </#if>
 
-                                                                    <#if allExcludeFields??>
-                                                                        excludeFields: '${allExcludeFields?trim}',
+                                                                    <#if allExcludeAuthorities??>
+                                                                        excludeAuthorities: '${allExcludeAuthorities?trim}',
                                                                     </#if>
 
                                                                     <#if params.rootGroup??>

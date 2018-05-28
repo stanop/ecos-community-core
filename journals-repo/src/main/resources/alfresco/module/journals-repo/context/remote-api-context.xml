@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="webscript.ru.citeck.journals2.records.records.post" parent="webscript"
+          class="ru.citeck.ecos.journals.webscripts.JournalRecordsPost">
+        <property name="gqlBaseQuery">
+            <value>
+                query getJournalRecords($datasource: String, $query: String, $language: String, $pageInfo: InputJournalGqlPageInfoInput) {
+                    journalRecords(datasource: $datasource, query: $query, language: $language, pageInfo: $pageInfo) {
+                        records {...recordsFields}
+                        totalCount
+                        pageInfo {
+                            hasNextPage
+                            skipCount
+                            maxItems
+                        }
+                    }
+                }
+            </value>
+        </property>
+    </bean>
+
+    <bean id="webscript.ru.citeck.journals2.create-variants.get" parent="webscript"
+          class="ru.citeck.ecos.journals.webscripts.CreateVariantsGet">
+        <property name="cacheAgeSeconds" value="600" />
+    </bean>
+
+</beans>

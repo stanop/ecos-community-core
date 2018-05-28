@@ -24,39 +24,43 @@ import java.util.Map;
 import org.alfresco.service.namespace.QName;
 
 public interface JournalType {
-    
-    public String getId();
-    
-    public Map<String, String> getOptions();
-    
-    public List<QName> getAttributes();
-    
-    public List<QName> getDefaultAttributes();
-    
-    public List<QName> getVisibleAttributes();
-    
-    public List<QName> getSearchableAttributes();
-    
-    public List<QName> getSortableAttributes();
-    
-    public List<QName> getGroupableAttributes();
-    
-    public Map<String, String> getAttributeOptions(QName attributeKey);
-    
-    public boolean isAttributeDefault(QName attributeKey);
-    
-    public boolean isAttributeVisible(QName attributeKey);
-    
-    public boolean isAttributeSearchable(QName attributeKey);
-    
-    public boolean isAttributeSortable(QName attributeKey);
-    
-    public boolean isAttributeGroupable(QName attributeKey);
 
-    public List<JournalBatchEdit> getBatchEdit(QName attributeKey);
+    String getDataSource();
 
-    public List<JournalGroupAction> getGroupActions();
+    String getId();
+    
+    Map<String, String> getOptions();
+    
+    List<QName> getAttributes();
+    
+    List<QName> getDefaultAttributes();
+    
+    List<QName> getVisibleAttributes();
+    
+    List<QName> getSearchableAttributes();
+    
+    List<QName> getSortableAttributes();
+    
+    List<QName> getGroupableAttributes();
+    
+    Map<String, String> getAttributeOptions(QName attributeKey);
+    
+    boolean isAttributeDefault(QName attributeKey);
+    
+    boolean isAttributeVisible(QName attributeKey);
+    
+    boolean isAttributeSearchable(QName attributeKey);
+    
+    boolean isAttributeSortable(QName attributeKey);
+    
+    boolean isAttributeGroupable(QName attributeKey);
 
-    public JournalCriterion getCriterion(QName attributeKey);
+    List<JournalBatchEdit> getBatchEdit(QName attributeKey);
+
+    List<JournalGroupAction> getGroupActions();
+
+    JournalCriterion getCriterion(QName attributeKey);
+    
+    String getFieldsSchema();
     
 }

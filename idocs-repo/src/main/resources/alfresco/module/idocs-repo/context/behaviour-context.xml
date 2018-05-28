@@ -24,11 +24,20 @@
         <property name="policyComponent" ref="policyComponent"/>
     </bean>
 
-    <bean id="GrantedAspectBehaviour" class="ru.citeck.ecos.security.GrantedBehaviour" init-method="init">
+    <!--<bean id="GrantedAspectBehaviour" class="ru.citeck.ecos.security.GrantedBehaviour" init-method="init">
         <property name="walker" ref="GrantPermissionServiceWalker"/>
         <property name="grantPermissionService" ref="GrantPermissionService"/>
         <property name="policyComponent" ref="policyComponent"/>
         <property name="className" value="{http://www.citeck.ru/model/grant-permission/1.0}granted"/>
+    </bean>-->
+
+    <bean id="copyNodeIgnoreAttributesBehaviour.permissions" class="ru.citeck.ecos.behavior.common.EcosCopyBehaviourCallback">
+        <property name="className" value="{http://www.citeck.ru/model/grant-permission/1.0}granted" />
+        <property name="ignoredAttributes">
+            <list>
+                <value>{http://www.citeck.ru/model/grant-permission/1.0}permissions</value>
+            </list>
+        </property>
     </bean>
 
     <!-- The undeletable aspect override -->
@@ -88,7 +97,7 @@
         <property name="dictionaryService" ref="dictionaryService"/>
         <property name="mimetypeService" ref="mimetypeService"/>
         <property name="templateService" ref="templateService"/>
-        <property name="templateEngine" value="freemarker"/>
+        <property name="scriptService" ref="scriptService"/>
         <property name="nodeVariable" value="node"/>
         <property name="restrictedPatterns">
             <!-- cm:filename constraint -->
@@ -143,19 +152,13 @@
         <property name="nodeService" ref="NodeService"/>
     </bean>
 
-    <bean id="templateChange" class="ru.citeck.ecos.behavior.common.TemplateChangeBehaviour" init-method="init">
-        <property name="policyComponent" ref="policyComponent"/>
-        <property name="nodeService" ref="nodeService"/>
-        <property name="serviceRegistry" ref="ServiceRegistry"/>
-    </bean>
-
-    <bean id="ConfiscatedAspectBehaviour" class="ru.citeck.ecos.security.ConfiscatedBehaviour"
+    <!--<bean id="ConfiscatedAspectBehaviour" class="ru.citeck.ecos.security.ConfiscatedBehaviour"
           init-method="init">
         <property name="walker" ref="ConfiscateServiceWalker"/>
         <property name="confiscateService" ref="ConfiscateService"/>
         <property name="policyComponent" ref="policyComponent"/>
         <property name="className" value="{http://www.citeck.ru/model/grant-permission/1.0}confiscated" />
-    </bean>
+    </bean>-->
 
 	<bean id="DynamicClassificationBehaviour" class="ru.citeck.ecos.behavior.tk.DynamicClassificationBehaviour" init-method="init">
 		<property name="policyComponent" ref="policyComponent" />
@@ -423,10 +426,9 @@
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService" />
         <property name="scriptService" ref="scriptService" />
-
     </bean>
 
-    <bean id="idocs.ResetLifeCyclePropertyBehavoiur" parent="CopyDocumentChangePropertyBehaviour">
+    <!--<bean id="idocs.ResetLifeCyclePropertyBehaviour" parent="CopyDocumentChangePropertyBehaviour">
         <property name="classNames">
             <list>
                 <value>idocs:doc</value>
@@ -441,7 +443,7 @@
                 </bean>
             </list>
         </property>
-    </bean>
+    </bean>-->
 
     <bean id="idocs.AddCurrentUserToObjectBehaviour"
           class="ru.citeck.ecos.behavior.common.AddCurrentUserBehaviour" abstract="true" init-method="init">
@@ -513,6 +515,15 @@
         <property name="nodeService" ref="nodeService"/>
         <property name="historyService" ref="historyService"/>
         <property name="dictionaryService" ref="DictionaryService"/>
+    </bean>
+
+    <bean id="copyNodeIgnoreAttributesBehaviour.history" class="ru.citeck.ecos.behavior.common.EcosCopyBehaviourCallback">
+        <property name="className" value="{http://www.citeck.ru/model/history/1.0}eventContainedAspect" />
+        <property name="ignoredAttributes">
+            <list>
+                <value>{http://www.citeck.ru/model/history/1.0}eventContained</value>
+            </list>
+        </property>
     </bean>
 
 	<bean id="idocs.ContentNodeBehavior" class="ru.citeck.ecos.behavior.content.ContentNodeBehaviorImpl" >
@@ -743,10 +754,24 @@
         </property>
     </bean>
 
+    <bean id="ecos.caseStatusCompleteBehaviour" class="ru.citeck.ecos.behavior.icase.CaseStatusCompleteBehaviour" init-method="init">
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="searchService" ref="searchService" />
+        <property name="nodeUtils" ref="nodeUtils" />
+    </bean>
+
+    <!--<bean id="ecos.caseStatusCompleteBehaviour" class="ru.citeck.ecos.behavior.icase.CaseStatusCompleteBehaviourOld" init-method="init">
+        <property name="policyComponent" ref="policyComponent" />
+        <property name="nodeService" ref="nodeService" />
+        <property name="searchService" ref="searchService"/>
+    </bean>-->
+
     <bean class="ru.citeck.ecos.behavior.role.UpdateRolesBehaviour" init-method="init">
         <property name="caseRoleService" ref="caseRoleService" />
         <property name="policyComponent" ref="policyComponent" />
         <property name="nodeService" ref="nodeService" />
+        <property name="mergeRolesUpdating" value="false" />
     </bean>
 
     <bean class="ru.citeck.ecos.behavior.role.UpdateRoleBehaviour" init-method="init">
@@ -758,6 +783,10 @@
     <bean class="ru.citeck.ecos.behavior.icase.UpdateCasePerformAssignees" init-method="init">
         <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
+
+    <bean class="ru.citeck.ecos.behavior.icase.ClearNodeActionsCache" />
+
+    <bean class="ru.citeck.ecos.behavior.icase.UpdateCaseModifiedDate" />
 
     <bean id="ecos.splitChildrenBehaviour" class="ru.citeck.ecos.behavior.common.SplitChildrenBehaviour"
           init-method="init" abstract="true">
@@ -785,6 +814,60 @@
     <bean id="ru.citeck.ecos.caseTemplateContentSyncBehaviour"
           class="ru.citeck.ecos.cmmn.behaviour.CaseTemplateContentSyncBehaviour">
     </bean>
+
+    <bean id="ru.citeck.ecos.disablingPersonBehaviour" class="ru.citeck.ecos.behavior.authority.DisablingPersonBehaviour"
+          init-method="init">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="authorityService" ref="authorityService" />
+        <property name="authenticationService" ref="AuthenticationService" />
+    </bean>
+
+    <bean id="idocs.productsAndServices.nameBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="pas:pasEntityCopied"/>
+        <property name="nameTemplate">
+            <value><![CDATA[#{'$'}{node.properties['cm:title']!'no-name'}]]></value>
+        </property>
+        <property name="order" value="40"/>
+    </bean>
+
+    <bean id="ecos.document.historyBehaviour" parent="history.historicalPropertiesBehaviour">
+        <property name="className" value="ecos:document"/>
+        <property name="allowedProperties">
+            <list>
+                <value>cm:content</value>
+                <value>cm:name</value>
+                <value>ecos:documentNumber</value>
+                <value>ecos:documentDate</value>
+                <value>ecos:documentAmount</value>
+                <value>idocs:documentStatus</value>
+                <value>idocs:note</value>
+                <value>idocs:legalEntity</value>
+                <value>idocs:contractor</value>
+                <value>idocs:currencyDocument</value>
+                <value>tk:kind</value>
+                <value>dms:updateContent</value>
+            </list>
+        </property>
+        <property name="enableHistoryOnUpdateProps" value="true"/>
+        <property name="enableHistoryOnAddAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteAssocs" value="true"/>
+        <property name="enableHistoryOnAddChildAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+    </bean>
+
+    <bean id="idocs.addCreatedPersonToAllGroup"
+          class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
+        <property name="groupFullName" value="GROUP_all"/>
+        <property name="skipPersons">
+            <list>
+                <value>System</value>
+                <value>guest</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
+          class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
 
 </beans>
 

@@ -20,7 +20,7 @@ import org.flowable.engine.repository.DeploymentBuilder;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.engine.runtime.ProcessInstanceBuilder;
-import org.flowable.engine.task.Task;
+import org.flowable.task.api.Task;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,8 +43,8 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
     /**
      * Constants
      */
-    private static final String FLOWABLE_ENGINE_NAME = "flowable";
-    private static final String ENGINE_PREFIX = "flowable$";
+    public static final String FLOWABLE_ENGINE_NAME = "flowable";
+    public static final String ENGINE_PREFIX = "flowable$";
     private static final QName INITIATOR_QNAME = QName.createQName("initiator");
     private static final QName INITIATOR_USERNAME_QNAME = QName.createQName("initiator_username");
 

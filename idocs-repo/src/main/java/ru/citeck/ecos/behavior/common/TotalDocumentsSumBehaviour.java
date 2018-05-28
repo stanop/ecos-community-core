@@ -3,7 +3,7 @@ package ru.citeck.ecos.behavior.common;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
-import org.alfresco.repo.policy.JavaBehaviour;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.AssociationRef;

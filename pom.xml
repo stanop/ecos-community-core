@@ -4,7 +4,7 @@
 
     <groupId>ru.citeck.ecos.community</groupId>
     <artifactId>ecos-community</artifactId>
-    <version>3.2.0.3-SNAPSHOT</version>
+    <version>3.2.1.0</version>
     <packaging>pom</packaging>
 
     <name>ecos-community</name>
@@ -65,6 +65,8 @@
         <ecos.project.classifier>${alfresco.platform.version}-com</ecos.project.classifier>
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
+        <flowable.version>6.3.0</flowable.version>
+        <ecos.flowable.version>1.0.1-SNAPSHOT</ecos.flowable.version>
     </properties>
 
     <profiles>
@@ -84,6 +86,108 @@
                 <yuicompressor.compress.skip>true</yuicompressor.compress.skip>
             </properties>
         </profile>
+        <profile>
+            <id>flowable</id>
+            <activation>
+                <property>
+                    <name>!offFlowable</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <inherited>false</inherited>
+                        <executions>
+                            <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>${project.build.testOutputDirectory}/tomcat/flowable/flowable-webapps.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>ru.citeck.maven.plugin</groupId>
+                        <artifactId>ecos-maven-plugin</artifactId>
+                        <version>1.2</version>
+
+                        <configuration>
+                            <tomcatSystemProperties>
+                                <flowable.webapps.db.url>${flowable.webapps.db.url}</flowable.webapps.db.url>
+                                <flowable.webapps.db.driver.class.name>${flowable.webapps.db.driver.class.name}</flowable.webapps.db.driver.class.name>
+                                <flowable.webapps.db.username>${flowable.webapps.db.username}</flowable.webapps.db.username>
+                                <flowable.webapps.db.password>${flowable.webapps.db.password}</flowable.webapps.db.password>
+
+                                <flowable.webapps.admin.userid>${flowable.webapps.admin.userid}</flowable.webapps.admin.userid>
+                                <flowable.webapps.admin.password>${flowable.webapps.admin.password}</flowable.webapps.admin.password>
+
+                                <flowable.webapps.idm.app.url>${flowable.webapps.idm.app.url}</flowable.webapps.idm.app.url>
+                                <flowable.webapps.deployment.api.url>${flowable.webapps.deployment.api.url}</flowable.webapps.deployment.api.url>
+
+                                <flowable.webapps.rest.create.demo.definitions>${flowable.webapps.rest.create.demo.definitions}</flowable.webapps.rest.create.demo.definitions>
+
+                                <flowable.webapps.admin.rest.app.host>${flowable.webapps.admin.rest.app.host}</flowable.webapps.admin.rest.app.host>
+                                <flowable.webapps.admin.rest.app.port>${flowable.webapps.admin.rest.app.port}</flowable.webapps.admin.rest.app.port>
+                                <flowable.webapps.admin.rest.app.user>${flowable.webapps.admin.rest.app.user}</flowable.webapps.admin.rest.app.user>
+                                <flowable.webapps.admin.rest.app.password>${flowable.webapps.admin.rest.app.password}</flowable.webapps.admin.rest.app.password>
+                            </tomcatSystemProperties>
+
+                            <tomcatCustomWebapps>
+                                <webapp>
+                                    <groupId>ru.citeck.maven.tomcat</groupId>
+                                    <artifactId>manager</artifactId>
+                                    <version>1.0</version>
+                                </webapp>
+                                <webapp>
+                                    <groupId>ru.citeck.ecos.flowable</groupId>
+                                    <artifactId>flowable-ui-idm-app</artifactId>
+                                    <version>${ecos.flowable.version}</version>
+                                    <contextPath>flowable-idm</contextPath>
+                                    <contextFile>${project.build.testOutputDirectory}/tomcat/flowable/flowable-idm.xml</contextFile>
+                                </webapp>
+                                <webapp>
+                                    <groupId>ru.citeck.ecos.flowable</groupId>
+                                    <artifactId>flowable-ui-modeler-app</artifactId>
+                                    <version>${ecos.flowable.version}</version>
+                                    <contextPath>flowable-modeler</contextPath>
+                                    <contextFile>${project.build.testOutputDirectory}/tomcat/flowable/flowable-modeler.xml</contextFile>
+                                </webapp>
+                                <webapp>
+                                    <groupId>ru.citeck.ecos.flowable</groupId>
+                                    <artifactId>flowable-ui-admin-app</artifactId>
+                                    <version>${ecos.flowable.version}</version>
+                                    <contextPath>flowable-admin</contextPath>
+                                    <contextFile>${project.build.testOutputDirectory}/tomcat/flowable/flowable-admin.xml</contextFile>
+                                </webapp>
+                                <webapp>
+                                    <groupId>ru.citeck.ecos.flowable</groupId>
+                                    <artifactId>flowable-app-rest</artifactId>
+                                    <version>${ecos.flowable.version}</version>
+                                    <contextPath>flowable-rest</contextPath>
+                                    <contextFile>${project.build.testOutputDirectory}/tomcat/flowable/flowable-rest.xml</contextFile>
+                                </webapp>
+                                <webapp>
+                                    <groupId>ru.citeck.ecos.flowable</groupId>
+                                    <artifactId>flowable-ui-task-app</artifactId>
+                                    <version>${ecos.flowable.version}</version>
+                                    <contextPath>flowable-task</contextPath>
+                                    <contextFile>${project.build.testOutputDirectory}/tomcat/flowable/flowable-task.xml</contextFile>
+                                </webapp>
+                            </tomcatCustomWebapps>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -100,6 +204,13 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+            <version>3.2.17.RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
             <version>3.2.17.RELEASE</version>
             <scope>provided</scope>
         </dependency>
@@ -179,7 +290,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.16</version>
+            <version>1.16.20</version>
             <scope>provided</scope>
         </dependency>
 
@@ -399,6 +510,21 @@
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-flowable-share</artifactId>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-graphql-repo</artifactId>
+                <classifier>${ecos.project.classifier}</classifier>
+                <version>${project.parent.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -523,6 +649,10 @@
                                 <skip>${yuicompressor.compress.skip}</skip>
                                 <excludes>
                                     <exclude>alfresco/**</exclude>
+                                    <exclude>**/*.min.js</exclude>
+                                    <exclude>**/*-min.js</exclude>
+                                    <exclude>**/*.min.css</exclude>
+                                    <exclude>**/*-min.css</exclude>
                                 </excludes>
                             </configuration>
                         </execution>
@@ -574,7 +704,7 @@
             <plugin>
                 <groupId>ru.citeck.maven.plugin</groupId>
                 <artifactId>ecos-maven-plugin</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.2</version>
 
                 <configuration>
 
@@ -588,6 +718,19 @@
                     <enableShare>true</enableShare>
                     <!-- Enable the REST API Explorer -->
                     <enableApiExplorer>true</enableApiExplorer>
+
+                    <tomcatCustomConfigs>
+                        <tomcatUsers>${project.build.testOutputDirectory}/tomcat/tomcat-users.xml</tomcatUsers>
+                        <contextFile>${project.build.testOutputDirectory}/tomcat/tomcat-context.xml</contextFile>
+                    </tomcatCustomConfigs>
+
+                    <tomcatCustomWebapps>
+                        <webapp>
+                            <groupId>ru.citeck.maven.tomcat</groupId>
+                            <artifactId>manager</artifactId>
+                            <version>1.0</version>
+                        </webapp>
+                    </tomcatCustomWebapps>
 
                     <!--
                         JARs and AMPs that should be overlayed/applied to the Platform/Repository WAR
@@ -699,6 +842,14 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-graphql-repo</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                         <!-- Bring in the integration tests -->
                         <!--<moduleDependency>
                             <groupId>${project.groupId}</groupId>
@@ -793,6 +944,22 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-graphql-share</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-flowable-share</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                     </shareModules>
                 </configuration>
             </plugin>
@@ -863,6 +1030,8 @@
     </build>
 
     <modules>
+        <module>ecos-graphql-repo</module>
+        <module>ecos-graphql-share</module>
         <module>1st-override-repo</module>
         <module>1st-override-share</module>
         <module>ecos-base-core-repo</module>
@@ -883,6 +1052,7 @@
         <module>orders-share</module>
         <module>ecos-order-pass-repo</module>
         <module>ecos-flowable-repo</module>
+        <module>ecos-flowable-share</module>
     </modules>
 
     <repositories>

@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.alfresco.repo.copy.CopyServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import org.alfresco.repo.policy.JavaBehaviour;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 
@@ -41,7 +41,7 @@ public class GrantedBehaviour extends AssociationWalkerBehaviour implements Copy
 	@Override
 	public void init() {
 		super.init();
-		policyComponent.bindClassBehaviour(CopyServicePolicies.OnCopyCompletePolicy.QNAME, className, 
+		policyComponent.bindClassBehaviour(CopyServicePolicies.OnCopyCompletePolicy.QNAME, className,
 				new JavaBehaviour(this, "onCopyComplete", NotificationFrequency.TRANSACTION_COMMIT));
 	}
 
@@ -62,7 +62,7 @@ public class GrantedBehaviour extends AssociationWalkerBehaviour implements Copy
 	@Override
 	public void onCopyComplete(QName classRef, NodeRef sourceNodeRef,
 			NodeRef targetNodeRef, boolean copyToNewNode,
-			Map<NodeRef, NodeRef> copyMap) 
+			Map<NodeRef, NodeRef> copyMap)
 	{
 		grantPermissionService.revokePermissionsOnCopy(sourceNodeRef, targetNodeRef);
 	}

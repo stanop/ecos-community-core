@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.citeck.ru/workflow/sign/1.0">
+    <process id="flowable-sign" name="Sign Workflow (flowable)" isExecutable="true">
+        <extensionElements>
+            <flowable:executionListener event="start" class="ru.citeck.ecos.flowable.listeners.FlowableSystemScriptExecutionListener">
+                <flowable:field name="script">
+                    <flowable:expression><![CDATA[if(typeof wfsgn_signer == "undefined") {
+  execution.setVariable("wfsgn_signer", null);
+}
+if(typeof wfsgn_signerGroup == "undefined") {
+  execution.setVariable("wfsgn_signerGroup", null);
+}]]></flowable:expression>
+                </flowable:field>
+            </flowable:executionListener>
+        </extensionElements>
+        <startEvent id="startevent1" name="Submit Sign Task" flowable:formKey="wfsgn:submitSignTask"></startEvent>
+        <endEvent id="endevent1" name="End"></endEvent>
+        <userTask id="usertask1" name="Sign Task" flowable:dueDate="${bpm_workflowDueDate}" flowable:formKey="wfsgn:signTask">
+            <extensionElements>
+                <flowable:taskListener event="create" class="ru.citeck.ecos.flowable.example.FlowableAssignTaskToAuthority">
+                    <flowable:field name="authority">
+                        <flowable:expression><![CDATA[${wfsgn_signer}]]></flowable:expression>
+                    </flowable:field>
+                </flowable:taskListener>
+                <flowable:taskListener event="create" class="ru.citeck.ecos.flowable.example.FlowableAssignTaskToAuthority">
+                    <flowable:field name="authority">
+                        <flowable:expression><![CDATA[${wfsgn_signerGroup}]]></flowable:expression>
+                    </flowable:field>
+                </flowable:taskListener>
+                <flowable:taskListener event="create" class="ru.citeck.ecos.flowable.example.FlowableVariablePull">
+                    <flowable:field name="variableExpr">
+                        <flowable:string><![CDATA[wfsgn_canReturnToConfirm]]></flowable:string>
+                    </flowable:field>
+                </flowable:taskListener>
+                <flowable:taskListener event="create" class="ru.citeck.ecos.flowable.example.FlowableVariablePull">
+                    <flowable:field name="variableExpr">
+                        <flowable:string><![CDATA[wfsgn_canReturnToCorrect]]></flowable:string>
+                    </flowable:field>
+                </flowable:taskListener>
+                <flowable:taskListener event="create" class="ru.citeck.ecos.flowable.example.FlowableVariablePull">
+                    <flowable:field name="variableExpr">
+                        <flowable:string><![CDATA[wfsgn_dueDate]]></flowable:string>
+                    </flowable:field>
+                </flowable:taskListener>
+                <flowable:taskListener event="complete" class="ru.citeck.ecos.flowable.example.FlowableVariablePush">
+                    <flowable:field name="variableExpr">
+                        <flowable:string><![CDATA[wfsgn_confirmers]]></flowable:string>
+                    </flowable:field>
+                </flowable:taskListener>
+                <flowable:taskListener event="complete" class="ru.citeck.ecos.flowable.example.FlowableVariablePush">
+                    <flowable:field name="variableExpr">
+                        <flowable:string><![CDATA[wfsgn_dueDate]]></flowable:string>
+                    </flowable:field>
+                </flowable:taskListener>
+            </extensionElements>
+        </userTask>
+        <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+        <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="endevent1"></sequenceFlow>
+    </process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_flowable-sign">
+        <bpmndi:BPMNPlane bpmnElement="flowable-sign" id="BPMNPlane_flowable-sign">
+            <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+                <omgdc:Bounds height="30.0" width="30.0" x="21.0" y="182.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+                <omgdc:Bounds height="28.0" width="28.0" x="290.0" y="182.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+                <omgdc:Bounds height="55.0" width="105.0" x="120.0" y="172.0"></omgdc:Bounds>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+                <omgdi:waypoint x="50.9974848335286" y="197.2746792094053"></omgdi:waypoint>
+                <omgdi:waypoint x="120.0" y="198.53846153846155"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+                <omgdi:waypoint x="225.0" y="198.10266159695817"></omgdi:waypoint>
+                <omgdi:waypoint x="290.00495623572823" y="196.3724916591251"></omgdi:waypoint>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</definitions>

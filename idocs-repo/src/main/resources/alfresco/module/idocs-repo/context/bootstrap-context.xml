@@ -57,6 +57,7 @@
                 <value>alfresco/module/idocs-repo/model/case_mt/stagesModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/case_mt/caseTimerModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/telegramModel.xml</value>
+                <value>alfresco/module/idocs-repo/model/ecosContentModel.xml</value>
             </list>
         </property>
         <property name="labels">
@@ -163,12 +164,6 @@
                 <props>
                     <prop key="engineId">activiti</prop>
                     <prop key="location">alfresco/module/idocs-repo/workflow/confirm-workflow/activiti-confirm-workflow.bpmn20.xml</prop>
-                    <prop key="mimetype">text/xml</prop>
-                    <prop key="redeploy">true</prop>
-                </props>
-                <props>
-                    <prop key="engineId">flowable</prop>
-                    <prop key="location">alfresco/module/idocs-repo/workflow/confirm-workflow/confirm-workflow.bpmn20.xml</prop>
                     <prop key="mimetype">text/xml</prop>
                     <prop key="redeploy">true</prop>
                 </props>
@@ -283,12 +278,6 @@
                 <props>
                     <prop key="engineId">activiti</prop>
                     <prop key="location">alfresco/module/idocs-repo/workflow/case-perform/case-perform.bpmn</prop>
-                    <prop key="mimetype">text/xml</prop>
-                    <prop key="redeploy">true</prop>
-                </props>
-                <props>
-                    <prop key="engineId">flowable</prop>
-                    <prop key="location">alfresco/module/idocs-repo/workflow/case-perform/case-perform.bpmn20.xml</prop>
                     <prop key="mimetype">text/xml</prop>
                     <prop key="redeploy">true</prop>
                 </props>
@@ -547,6 +536,7 @@
         <property name="description" value="Document folders" />
         <property name="sinceVersion" value="2.3" />
         <property name="appliesFromVersion" value="2.3" />
+        <property name="executeOnceOnly" value="false" />
         <property name="bootstrapView">
             <props>
                 <prop key="uuidBinding">UPDATE_EXISTING</prop>

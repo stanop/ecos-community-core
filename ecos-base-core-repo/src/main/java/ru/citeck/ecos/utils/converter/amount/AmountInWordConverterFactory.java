@@ -24,14 +24,13 @@ public class AmountInWordConverterFactory {
      * @see AmountInWordUkConverter
      */
     public AmountInWordConverter getConverter() {
-        Locale ruLocale = new Locale("ru", "");
         Locale locale = I18NUtil.getLocale();
 
-        if (locale.equals(ruLocale)) {
+        if (locale.getLanguage().equals(new Locale("ru").getLanguage())) {
             return new AmountInWordRuConverter();
-        } else if (locale.getLanguage().equals("uk")) {
+        } else if (locale.getLanguage().equals(new Locale("uk").getLanguage())) {
             return new AmountInWordUkConverter();
-        } else if (locale.equals(Locale.ENGLISH) || locale.equals(Locale.US)) {
+        } else if (locale.getLanguage().equals(new Locale("en").getLanguage())) {
             return new AmountInWordEnConverter();
         }
 

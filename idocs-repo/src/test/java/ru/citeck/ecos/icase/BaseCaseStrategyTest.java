@@ -2,29 +2,21 @@ package ru.citeck.ecos.icase;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
-
-import org.alfresco.model.ContentModel;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.security.PersonService;
-import org.alfresco.service.namespace.QName;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import ru.citeck.ecos.model.ICaseModel;
+import ru.citeck.ecos.icase.element.CaseElementDAO;
 //import ru.citeck.ecos.test.ApplicationContextHelper;
 
 @RunWith(SpringJUnit4ClassRunner.class)

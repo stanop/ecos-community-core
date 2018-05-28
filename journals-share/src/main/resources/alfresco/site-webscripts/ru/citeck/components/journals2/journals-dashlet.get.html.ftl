@@ -16,7 +16,7 @@
 	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="journals2" />
 	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="journals2" />
 	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/criteria-model.js" group="journals2" />
-	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js" group="journals2" />
+	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js?t=523453241" group="journals2" />
 	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="journals2" />
 	<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/action-renderer.js" group="journals2" />
 	<@script type="text/javascript" src="${url.context}/res/citeck/components/form/constraints.js" group="journals2" />
@@ -27,6 +27,19 @@
 <#assign id = args.htmlid?html />
 <#assign toolbarId = id + "-toolbar" />
 <#assign pagingOptions = args.pagingOptions!"10,30,50,100" />
+
+<#if config.scoped["ShowStartWorkflowButton"]?? &&
+     config.scoped["ShowStartWorkflowButton"].view?? &&
+     config.scoped["ShowStartWorkflowButton"].view.attributes["showButton"]??>
+        <#assign strValue = config.scoped["ShowStartWorkflowButton"].view.attributes["showButton"]>
+        <#if strValue == "false">
+            <#assign showWorkflowButton = false>
+        <#else>
+            <#assign showWorkflowButton = true>
+        </#if>
+<#else>
+    <#assign showWorkflowButton = true>
+</#if>
 
 <script type="text/javascript">//<![CDATA[
 require(['citeck/components/journals2/journals-dashlet', 'citeck/utils/knockout.yui', 'citeck/utils/knockout.components'], function(JournalsDashlet, koyui, kocomponents) {
@@ -105,7 +118,7 @@ editEvent.subscribe(dashlet.onEditConfig, dashlet, true);
 		
 		<@journals.renderCreateReportMenu id />
 
-		<#if (journalsListId!"") == "global-tasks">
+		<#if (journalsListId!"") == "global-tasks" && showWorkflowButton!true>
 			<span data-bind="yuiButton: { type: 'push' }">
 				<span class="first-child">
 					<a href="/share/page/start-workflow" target="_blank">${msg("button.start-workflow")}</a>

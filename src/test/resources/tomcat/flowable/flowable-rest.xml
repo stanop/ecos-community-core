@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<Context antiJARLocking="true">
+
+    <Environment name="spring.datasource.driver-class-name" value="${flowable.webapps.db.driver.class.name}" type="java.lang.String"/>
+    <Environment name="spring.datasource.url" value="${flowable.webapps.db.url}" type="java.lang.String"/>
+    <Environment name="spring.datasource.username" value="${flowable.webapps.db.username}" type="java.lang.String"/>
+    <Environment name="spring.datasource.password" value="${flowable.webapps.db.password}" type="java.lang.String"/>
+
+    <Environment name="flowable.rest.app.admin.user-id" value="${flowable.webapps.admin.userid}" type="java.lang.String"/>
+    <Environment name="flowable.rest.app.admin.password" value="${flowable.webapps.admin.password}" type="java.lang.String"/>
+    <Environment name="flowable.rest.app.create-demo-definitions" value="${flowable.webapps.rest.create.demo.definitions}" type="java.lang.Boolean"/>
+</Context>

@@ -231,13 +231,15 @@
             </action>
 
             <!-- task actions -->
-            <action id="task-edit-metadata" type="pagelink" label="actions.task.edit-metadata">
-                <param name="page">task-edit?taskId={node.properties.cm:name}</param>
+            <action id="task-edit-metadata" type="javascript" label="actions.task.edit-metadata">
+                <param name="function">onShowTaskForm</param>
+                <param name="formMode">edit</param>
                 <evaluator>evaluator.task.isActive</evaluator>
             </action>
 
-            <action id="task-view-details" type="pagelink" label="actions.task.view-details">
-                <param name="page">task-details?taskId={node.properties.cm:name}</param>
+            <action id="task-view-details" type="javascript" label="actions.task.view-details">
+                <param name="function">onShowTaskForm</param>
+                <param name="formMode">view</param>
             </action>
 
             <action id="task-view-workflow" type="pagelink" label="actions.task.view-workflow">
@@ -444,13 +446,13 @@
         
         <!-- disable multi-select actions for task mirrors -->
         <multi-select>
-            <action notAspect="wfm:attributes" id="onActionDownload" />
-            <action notAspect="wfm:attributes" id="onActionCopyTo" />
-            <action notAspect="wfm:attributes" id="onActionMoveTo" />
+            <action notAspect="wfm:attributes" label="group-action.select.download" id="onActionDownload" />
+            <action notAspect="wfm:attributes" label="group-action.select.copy-to" id="onActionCopyTo" />
+            <action notAspect="wfm:attributes" label="group-action.select.move-to" id="onActionMoveTo" />
             <!-- disable start-workflow -->
             <!-- TODO configure hidden-workflows instead -->
             <action notAspect="cm:auditable" id="onActionAssignWorkflow" />
-            <action notAspect="wfm:attributes" id="onActionDelete" isDoclib="false" />
+            <action notAspect="wfm:attributes" label="group-action.select.delete" id="onActionDelete" isDoclib="false" />
         </multi-select>
 
         <!-- global associations UI configuration -->

@@ -40,6 +40,14 @@
         </forms>
     </config>
 
+	<config evaluator="string-compare" condition="flowable$flowable-sign">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/sign/submit-sign-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
     <config evaluator="task-type" condition="wfsgn:submitSignTask">
         <forms>
             <form>

@@ -6,8 +6,8 @@ import org.alfresco.service.cmr.repository.ScriptService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.cmmn.model.Definitions;
-import ru.citeck.ecos.content.config.ConfigData;
-import ru.citeck.ecos.content.config.TypeKindConfigRegistry;
+import ru.citeck.ecos.content.ContentData;
+import ru.citeck.ecos.content.TypeKindContentDAO;
 import ru.citeck.ecos.model.ICaseModel;
 
 import java.util.HashMap;
@@ -19,19 +19,19 @@ import java.util.Optional;
  * @author Pavel Simonov
  */
 
-public class CaseTemplateRegistry extends TypeKindConfigRegistry<Definitions> {
+public class CaseTemplateRegistry extends TypeKindContentDAO<Definitions> {
 
     private static final String SCRIPT_ENGINE = "javascript";
     private ScriptService scriptService;
 
     public Optional<Definitions> getDefinitionForCase(NodeRef caseRef) {
 
-        List<ConfigData<Definitions>> configs = getConfigsByNodeTKC(caseRef);
+        List<ContentData<Definitions>> configs = getContentDataByNodeTKC(caseRef);
 
         return configs.stream()
                       .filter(d -> d.getData().isPresent() && evalCondition(d.getNodeRef(), caseRef))
                       .findFirst()
-                      .flatMap(ConfigData::getData);
+                      .flatMap(ContentData::getData);
     }
 
     private boolean evalCondition(NodeRef templateRef, NodeRef caseNode) {

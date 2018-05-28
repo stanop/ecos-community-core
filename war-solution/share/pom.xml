@@ -13,7 +13,7 @@
     <parent>
         <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>war-solution</artifactId>
-        <version>3.2.0.3-SNAPSHOT</version>
+        <version>3.2.1.0</version>
     </parent>
 
     <dependencies>
@@ -28,6 +28,13 @@
             <groupId>de.fmaul</groupId>
             <artifactId>javascript-console-share</artifactId>
             <version>0.6</version>
+            <type>amp</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-graphql-share</artifactId>
+            <version>${project.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
         </dependency>
         <dependency>
@@ -89,6 +96,13 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>orders-share</artifactId>
+            <version>${project.version}</version>
+            <classifier>${ecos.project.classifier}</classifier>
+            <type>amp</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-flowable-share</artifactId>
             <version>${project.version}</version>
             <classifier>${ecos.project.classifier}</classifier>
             <type>amp</type>
@@ -164,6 +178,12 @@
                         </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-graphql-share</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
                             <artifactId>1st-override-share</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
@@ -213,6 +233,12 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>orders-share</artifactId>
+                            <classifier>${ecos.project.classifier}</classifier>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-flowable-share</artifactId>
                             <classifier>${ecos.project.classifier}</classifier>
                             <type>amp</type>
                         </overlay>

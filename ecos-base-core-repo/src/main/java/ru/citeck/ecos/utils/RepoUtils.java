@@ -48,6 +48,8 @@ public class RepoUtils {
     private static final String DOWNLOAD_API_SUFFIX = "/content;cm:content";
     private static QName PROP_FILE_NAME = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, "filename");
 
+    private static NodeUtils nodeUtils;
+
     /**
      * It returns a property value or throws an exception.
      *
@@ -776,11 +778,11 @@ public class RepoUtils {
                                          QName name, boolean isTarget, NodeService nodeService) {
         try {
             if (isTarget) {
-                if (!NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
+                if (nodeUtils.isValidNode(nodeRef)) {
                     nodeService.removeAssociation(nodeRef, linkedNode, name);
                 }
             } else {
-                if (!NodeUtils.isNodeForDeleteOrNotExist(linkedNode, nodeService)) {
+                if (nodeUtils.isValidNode(linkedNode)) {
                     nodeService.removeAssociation(linkedNode, nodeRef, name);
                 }
             }
@@ -828,7 +830,7 @@ public class RepoUtils {
 
     public static void setChildAssocs(NodeRef nodeRef, Map<QName, List<NodeRef>> childAssocs, boolean primary,
                                       boolean full, NodeService nodeService) {
-        if (NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
+        if (!nodeUtils.isValidNode(nodeRef)) {
             return;
         }
         for (QName assocName : childAssocs.keySet()) {
@@ -862,7 +864,7 @@ public class RepoUtils {
         }
 
         if (full) {
-            if (NodeUtils.isNodeForDeleteOrNotExist(nodeRef, nodeService)) {
+            if (!nodeUtils.isValidNode(nodeRef)) {
                 return;
             }
             List<ChildAssociationRef> allChildAssocs = nodeService.getChildAssocs(nodeRef);
@@ -1048,5 +1050,9 @@ public class RepoUtils {
         }
 
         return fullName.toString();
+    }
+
+    public static void setNodeUtils(NodeUtils nodeUtils) {
+        RepoUtils.nodeUtils = nodeUtils;
     }
 }

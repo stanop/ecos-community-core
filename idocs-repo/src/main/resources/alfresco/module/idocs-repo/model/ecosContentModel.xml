@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="ecosCont:model" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Ecos Content model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/ecos/content/1.0" prefix="ecosCont"/>
+    </namespaces>
+
+    <aspects>
+
+        <aspect name="ecosCont:hasContentChecksum">
+            <properties>
+                <property name="ecosCont:deployedChecksum">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+    </aspects>
+
+</model>

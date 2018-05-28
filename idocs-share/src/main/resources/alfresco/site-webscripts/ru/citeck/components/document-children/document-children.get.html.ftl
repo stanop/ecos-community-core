@@ -13,7 +13,7 @@
     <@script type="text/javascript" src="${url.context}/res/components/documentlibrary/actions.js" group="document-children" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="document-children" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="document-children" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js" group="document-children" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js?t=523453241" group="document-children" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/dynamic-table.js" group="document-children" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/action-renderer.js" group="document-children" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/document-children/document-children.js" group="document-children" />
@@ -68,7 +68,9 @@
 			, childrenFormat: "${childrenFormat?js_string}"
 			</#if>
 		}).setMessages(${messages});
-		Alfresco.util.createTwister("${dcid}-heading", "${args.twisterKey!'dc'}");
+        <#if (args.hideTwister!'false') == 'false'>
+            Alfresco.util.createTwister("${dcid}-heading", "${args.twisterKey!'dc'}");
+        </#if>
 	//]]></script>
 </div>
 </#if>

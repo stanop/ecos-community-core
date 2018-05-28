@@ -127,4 +127,16 @@ public interface NodeViewService {
      */
     NodeRef saveNodeView(QName typeQName, String id, Map<QName, Object> attributes, Map<String, Object> params);
 
+    /**
+     * Is node in a draft state or can be returned to it
+     * see invariants:draftAspect
+     */
+    boolean canBeDraft(NodeRef nodeRef);
+
+    /**
+     * Check if nodes with specified type can be draft or not
+     * see invariants:draftAspect
+     * @return true if type has mandatory aspect invariants:draftAspect
+     */
+    boolean canBeDraft(QName type);
 }

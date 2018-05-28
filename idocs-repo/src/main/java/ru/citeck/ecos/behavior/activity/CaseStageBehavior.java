@@ -32,7 +32,11 @@ public class CaseStageBehavior implements CaseActivityPolicies.BeforeCaseActivit
         this.policyComponent.bindClassBehaviour(
                 CaseActivityPolicies.BeforeCaseActivityStartedPolicy.QNAME,
                 StagesModel.TYPE_STAGE,
-                new ChainingJavaBehaviour(this, "beforeCaseActivityStarted", Behaviour.NotificationFrequency.EVERY_EVENT)
+                new ChainingJavaBehaviour(
+                        this,
+                        "beforeCaseActivityStarted",
+                         Behaviour.NotificationFrequency.EVERY_EVENT
+                )
         );
     }
 

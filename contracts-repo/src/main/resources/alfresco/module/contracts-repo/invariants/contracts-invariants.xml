@@ -8,6 +8,7 @@
         <import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
         <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
     </imports>
 
     <type name="contracts:agreement">
@@ -38,21 +39,14 @@
         </association>
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>
-            <!-- <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Type of contract:";} else if (navigator.languages[0].includes("ru")) {"Вид договора:";}
-            </invariant> -->
         </property>
         <property name="contracts:agreementNumber">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
-
-        <!-- <property name="contracts:agreementDate">
-            <invariant on="value" language="javascript">node.properties["contracts:duration"].setFullYear(value.getFullYear() + 1)</invariant>
-        </property> -->
         <property name="contracts:agreementDate">
             <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
             <invariant on="value-title" language="javascript">value.toString("dd.MM.yyyy hh:mm")</invariant>
         </property>
-
         <property name="contracts:duration">
             <invariant on="default" language="javascript">
                 if (node.properties["contracts:agreementDate"] != null &amp;&amp; node.properties["contracts:duration"] == null) {
@@ -74,8 +68,38 @@
             <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">value > 0</invariant>
         </property>
         <property name="cm:content">
-            <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
-            <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+            <invariant on="relevant" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+            <invariant on="mandatory" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+        </property>
+        <property name="contracts:digiSign">
+            <invariant on="protected" language="javascript"><![CDATA[
+                (function() {
+                    var attInfo = node.impl() && node.impl().getAttribute("contracts:digiSign") ? node.impl().getAttribute("contracts:digiSign").info() : {};
+                    var deps = attInfo._dependencies();
+                    if (!deps) {
+                        attInfo._dependencies({isEntInstalled: ko.observable(true)});
+                        deps = attInfo._dependencies();
+                    } else if (deps.isEntInstalled() == null) {
+                        deps.isEntInstalled(true);
+                    }
+                    Alfresco.util.Ajax.jsonGet({
+                        url: Alfresco.constants.PROXY_URI + "citeck/info/is-ent-installed",
+                        successCallback: {
+                            fn: function(response) {
+                                if (response && response.json) {
+                                    if (response.json.isEntInstalled == "false") {
+                                        deps.isEntInstalled(false);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    return !deps.isEntInstalled();
+                })()
+                ]]></invariant>
+        </property>
+        <property name="dms:updateContent">
+            <invariant on="relevant" language="javascript">view.mode == "create"</invariant>
         </property>
         <association name="contracts:attachmentRkkCreatedFrom">
             <invariant on="value" language="javascript"><![CDATA[
@@ -86,9 +110,9 @@
                 })()
             ]]></invariant>
         </association>
-        <!--association name="contracts:agreementSubject">
+        <association name="idocs:signatory">
             <invariant on="mandatory" language="explicit">true</invariant>
-        </association-->
+        </association>
     </type>
 
     <type name="payments:payment">
@@ -140,10 +164,10 @@
         <property name="payments:paymentAccount">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
-        <association name="pas:containsOriginalProductsAndServices">
+        <child-association name="pas:containsProductsAndServices">
             <invariant on="relevant" language="javascript">view.mode=="create" &amp;&amp; node.properties["dms:updateContent"];</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"]</invariant>
-        </association>
+        </child-association>
         <association name="payments:currency">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="value" language="javascript">
@@ -166,9 +190,9 @@
             <invariant on="default" language="javascript"><![CDATA[
                 (function() {
                     var sum = 0;
-                    var arr = node.assocs["pas:containsOriginalProductsAndServices"];
+                    var arr = node.childAssocs["pas:containsProductsAndServices"];
                     arr.forEach(function(item) {
-                      sum += item.properties["pas:pricePerUnit"];
+                      sum += item.properties["pas:total"];
                     });
                     return sum;
                 })()
@@ -180,8 +204,11 @@
             <invariant on="default" language="javascript">0</invariant>
         </property>
         <property name="cm:content">
-            <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
-            <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+            <invariant on="relevant" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+            <invariant on="mandatory" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+        </property>
+        <property name="dms:updateContent">
+            <invariant on="relevant" language="javascript">view.mode == "create"</invariant>
         </property>
         <association name="payments:beneficiary">
             <invariant on="value" language="javascript">node.assocs["payments:basis"][0].assocs["contracts:contractor"][0]</invariant>
@@ -227,8 +254,6 @@
         </association>
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>
-            <!-- <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Document type:";} else if (navigator.languages[0].includes("ru")) {"Вид документа:";}
-</invariant> -->
         </property>
         <property name="contracts:closingDocumentDate">
             <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
@@ -238,8 +263,11 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
         <property name="cm:content">
-            <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
-            <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+            <invariant on="relevant" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+            <invariant on="mandatory" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+        </property>
+        <property name="dms:updateContent">
+            <invariant on="relevant" language="javascript">view.mode == "create"</invariant>
         </property>
         <association name="contracts:contractor">
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -270,12 +298,12 @@
            <invariant on="value" language="javascript">view.params.invoice</invariant>
            <invariant on="protected" language="javascript"><![CDATA[view.params.invoice != null]]></invariant>
         </association>
-        <!-- <association name="contracts:closingDocumentSigner">
-           <invariant on="mandatory" language="javascript">node.assocs["contracts:closingDocumentPayment"] == false</invariant>
-        </association> -->
     </type>
 
     <type name="contracts:supplementaryAgreement">
+        <association name="idocs:signatory">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
         <association name="contracts:mainAgreement">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="value" language="javascript">view.params.contract</invariant>
@@ -310,10 +338,6 @@
                 node.assocs["contracts:mainAgreement"][0].assocs["contracts:contractor"][0]
             </invariant>
         </association>
-        <!-- <property name="tk:kind">
-            <invariant on="title" language="javascript">if (navigator.languages[0].length == 0 || navigator.languages[0].includes("en")) {"Type of add'l agreement:";} else if (navigator.languages[0].includes("ru")) {"Вид доп. соглашения:";}
-</invariant>
-        </property> -->
         <association name="contracts:agreementCurrency">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="default" language="explicit">workspace://SpacesStore/currency-rur</invariant>
@@ -329,8 +353,11 @@
             <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">value >= 0</invariant>
         </property>
         <property name="cm:content">
-            <invariant on="relevant" language="javascript">node.properties["dms:updateContent"] == false</invariant>
-            <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+            <invariant on="relevant" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+            <invariant on="mandatory" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+        </property>
+        <property name="dms:updateContent">
+            <invariant on="relevant" language="javascript">view.mode == "create"</invariant>
         </property>
     </type>
 

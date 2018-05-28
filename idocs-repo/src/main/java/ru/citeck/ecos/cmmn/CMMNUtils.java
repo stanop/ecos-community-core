@@ -20,14 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.ParameterCheck;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.cmmn.model.*;
-import ru.citeck.ecos.content.config.converter.ContentValueConverter;
+import ru.citeck.ecos.content.converter.ContentValueConverter;
 import ru.citeck.ecos.model.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * Provides Marshaller and Unmarshaller for mappings in CMMN standard v1.1
@@ -41,9 +40,6 @@ public class CMMNUtils implements ContentValueConverter {
 
     private static final String TRANSACTION_ID_BY_NODEREF = CMMNUtils.class.getName() + ".id-storage";
     private static final String TRANSACTION_ID_COUNTER = CMMNUtils.class.getName() + ".id-counter";
-
-    private static final Pattern NODE_REF_PATTERN =
-            Pattern.compile("(?ui)(workspace://SpacesStore/)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
 
     public static final Logger log = LoggerFactory.getLogger(CMMNUtils.class);
 

@@ -76,4 +76,45 @@
 		<property name="nameTemplate" value="#{'$'}{node.properties['meet:question']!''}"/>
 	</bean>
 
+    <bean id="meetings.historyBehaviour" parent="history.historicalPropertiesBehaviour">
+        <property name="className" value="meet:meeting"/>
+        <property name="allowedProperties">
+            <list>
+                <value>idocs:documentStatus</value>
+                <value>meet:initiator</value>
+                <value>meet:where</value>
+                <value>meet:when</value>
+                <value>meet:subject</value>
+                <value>meet:meetingNumber</value>
+                <value>meet:confirmDueDate</value>
+                <value>meet:childAnsweredQuestions</value>
+                <value>meet:childAgenda</value>
+                <value>meet:childProtocol</value>
+                <value>meet:participants</value>
+                <value>meet:plannedReporters</value>
+            </list>
+        </property>
+        <property name="enableHistoryOnUpdateProps" value="true"/>
+        <property name="enableHistoryOnAddAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteAssocs" value="true"/>
+        <property name="enableHistoryOnAddChildAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+    </bean>
+
+    <bean id="meetings.caseStatusHistory" parent="ecos.caseStatusHistoryBehaviour">
+        <property name="transitions">
+            <list>
+                <bean class="ru.citeck.ecos.behavior.history.CaseStatusHistoryBehaviour.MultipleTargetsTransition">
+                    <property name="className" value="{http://www.citeck.ru/model/meetings/1.0}meeting"/>
+                    <property name="fromStatus" value="ANY"/>
+                    <property name="toStatuses">
+                        <list>
+                            <value>ANY</value>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
 </beans>

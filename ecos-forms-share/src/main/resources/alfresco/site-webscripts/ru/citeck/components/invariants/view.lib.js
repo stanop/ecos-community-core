@@ -46,11 +46,15 @@ function getAttributeSet(args, view) {
 
     view.elements.forEach(function(element) {
         if (element.type == "field") {
-            attributeSet.attributes.push({ name: element.attribute, template: element.template });
+            var attribute = {
+                template: element.template,
+                name: element.attribute
+            };
+            attributeSet.attributes.push(attribute);
         } else if (element.type == "view") {
             attributeSet.sets.push(getAttributeSet(args, element));
         }
-    })
+    });
 
     attributeSet.id = view.params.setId = view.id || makeId(34);
 
@@ -104,22 +108,64 @@ function getWritePermission(nodeRef) {
     return response;
 }
 
-function getViewData(args) {
-    var serviceURI = '/citeck/invariants/view?';
+function _convertNodeViewGetParams(args) {
 
-    // try-block is used to protect from absense of page object in model.
-    // typeof page somehow fails with exception:
-    // Invalid JavaScript value of type java.util.HashMap
+    var params = {};
+    var viewParams = ["formKey", "formMode", "formType", "formId"];
+
     try {
-        for(var name in page.url.args) {
-            if(!name.match(/^param_/)) continue;
-            serviceURI += name + '=' + encodeURIComponent(page.url.args[name]) + '&';
+        var urlArgs = page.url.args;
+
+        for (var paramName in urlArgs) {
+            var paramValue = urlArgs[paramName];
+            if (paramName.match(/^param_/)) {
+                params[paramName] = paramValue;
+            }
         }
     } catch(e) {}
 
-    for(var name in args) {
-        if(name == 'htmlid') continue;
-        serviceURI += name + '=' + encodeURIComponent(args[name]) + '&';
+    for (var paramName in args) {
+        var paramValue = args[paramName];
+        if (viewParams.indexOf(paramName) >= 0 || paramName.match(/^param_/)) {
+            params[paramName] = paramValue;
+        }
+    }
+    if (args["nodeRefAttr"]) {
+        params['param_nodeRefAttr'] = args['nodeRefAttr'];
+    }
+
+    if (!params.formType) {
+        if (args.nodeRef) {
+            params.formType = "nodeRef";
+            params.formKey = args.nodeRef;
+        } else if (args.type) {
+            params.formType = "type";
+            params.formKey = args.type;
+        } else if (args.taskId) {
+            params.formType = "taskId";
+            params.formKey = args.taskId;
+        } else {
+            throw "Parameters must contain either type, nodeRef or taskId";
+        }
+    }
+
+    if (!params.formId && args.viewId) {
+        params.formId = args.viewId;
+    }
+
+    if (!params.formMode && args.mode) {
+        params.formMode = args.mode;
+    }
+    return params;
+}
+
+function getViewData(args) {
+
+    var serviceURI = '/citeck/ecos/forms/node-view?';
+
+    var params = _convertNodeViewGetParams(args);
+    for (var name in params) {
+        serviceURI += name + '=' + encodeURIComponent(params[name]) + '&';
     }
 
     var response = remote.call(serviceURI);

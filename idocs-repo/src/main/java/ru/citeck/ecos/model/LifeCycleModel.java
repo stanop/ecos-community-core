@@ -38,10 +38,6 @@ public class LifeCycleModel {
     public static final QName PROP_LIFECYCLE_ENABLED = QName.createQName(NAMESPACE, "lifecycleEnabled");
     public static final QName PROP_LIFECYCLE_FORMAT = QName.createQName(NAMESPACE, "lifecycleFormat");
     public static final QName PROP_LIFECYCLE_TITLE = QName.createQName(NAMESPACE, "lifecycleTitle");
-    //public static final QName TYPE_STATUS = QName.createQName(NAMESPACE, "status");
-    //public static final QName TYPE_TRANSITION_RULE = QName.createQName(NAMESPACE, "transitionRule");
-    //public static final QName TYPE_TRANSITION_TABLE = QName.createQName(NAMESPACE, "transitionTable");
-    //public static final QName TYPE_ACTION = QName.createQName(NAMESPACE, "action");
 
     // aspects
     public static final QName ASPECT_HAS_STATE = QName.createQName(NAMESPACE, "hasState");
@@ -49,24 +45,9 @@ public class LifeCycleModel {
     public static final QName ASPECT_HAS_DOC_TYPE = QName.createQName(NAMESPACE, "hasDocType");
 
     // properties
-    //public static final QName PROP_STATUS_ID = QName.createQName(NAMESPACE, "statusID");
-    //public static final QName PROP_STATUS_NAME = QName.createQName(NAMESPACE, "statusName");
-    //public static final QName PROP_ACTION_CAPTION = QName.createQName(NAMESPACE, "actionCaption");
-    //public static final QName PROP_TRANSITION_CONDITION = QName.createQName(NAMESPACE, "transitionCondition");
-    //public static final QName PROP_FROM_STATE = QName.createQName(NAMESPACE, "fromState");
-    //public static final QName PROP_TO_STATE = QName.createQName(NAMESPACE, "toState");
     public static final QName PROP_DOC_TYPE = QName.createQName(NAMESPACE, "docType");
-    //public static final QName PROP_ACTION = QName.createQName(NAMESPACE, "action");
     public static final QName PROP_STATE = QName.createQName(NAMESPACE, "state");
-    //public static final QName PROP_EVENT = QName.createQName(NAMESPACE, "event");
     public static final QName PROP_EVENT_TIME = QName.createQName(NAMESPACE, "eventTime");
-
-    // association
-    //public static final QName ASSOC_TO_STATUS = QName.createQName(NAMESPACE, "toStatus");
-    //public static final QName ASSOC_ACTION = QName.createQName(NAMESPACE, "action");
-    //public static final QName ASSOC_TRANSITION_RULES = QName.createQName(NAMESPACE, "transitionRules");
-    //public static final QName ASSOC_TRANSITION_TABLE = QName.createQName(NAMESPACE, "transitionTable");
-    //public static final QName ASSOC_STATUS = QName.createQName(NAMESPACE, "status");
 
     // constraint
     public static final String CONSTR_AUTOMATIC_TRANSITION = "automaticTransition";

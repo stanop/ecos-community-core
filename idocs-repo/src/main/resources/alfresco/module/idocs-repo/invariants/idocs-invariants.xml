@@ -83,12 +83,25 @@
         <property name="idocs:crrDate">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
+        <property name="idocs:crrSyncDate">
+            <invariant on="value" language="javascript">Alfresco.util.formatDate(node.properties["idocs:crrDate"], "dd.mm.yyyy")</invariant>
+        </property>
         <association name="idocs:crrBaseCurrency">
             <invariant on="mandatory" language="explicit">true</invariant>
         </association>
         <association name="idocs:crrTargetCurrency">
             <invariant on="mandatory" language="explicit">true</invariant>
         </association>
+    </type>
+
+    <type name="idocs:documentFinalStatus">
+        <property name="idocs:documentType">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="options" language="javascript">dictionary.getAllTypes()</invariant>
+        </property>
+        <property name="idocs:finalStatuses">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
     </type>
 
 </invariants>

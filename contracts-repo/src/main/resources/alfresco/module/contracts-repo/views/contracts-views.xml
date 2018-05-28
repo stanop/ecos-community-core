@@ -9,6 +9,9 @@
         <import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
         <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
+        <import uri="http://www.citeck.ru/model/contracts/event/1.0" prefix="ctrEvent"/>
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
+        <import uri="http://www.citeck.ru/model/iEvent/1.0" prefix="iEvent"/>
     </imports>
 
     <views any="true">
@@ -27,18 +30,11 @@
         <fields prop="tk:kind">
             <region name="input" template="view" />
         </fields>
-
     </views>
-
-
 
     <views mode="view">
         <fields kind="mode-view" template="none" />
     </views>
-
-    <view class="contracts:agreement" mode="view">
-        <field assoc="idocs:signedVersion" />
-    </view>
 
     <view class="contracts:agreement">
         <views mode="create" kind="3-column" />
@@ -183,7 +179,7 @@
                 </region>
             </field>
         </view>
-        <field prop="dms:updateContent" kind="mode-view">
+        <field prop="dms:updateContent">
             <region name="label" template="label">
                 <param name="key">dms_dms.property.dms_updateContent.title</param>
             </region>
@@ -204,15 +200,21 @@
         <field prop="contracts:barcode" template="none">
             <invariant on="value" language="explicit">-</invariant>
         </field>
+        <field assoc="icase:documents">
+            <region name="input" template="view">
+                <param name="completeDelete">true</param>
+            </region>
+            <region name="select" template="file-upload">
+                <param name="properties">{
+                    'tk:type': 'workspace://SpacesStore/category-document-type',
+                    'tk:kind': 'workspace://SpacesStore/cat-document-other'
+                    }</param>
+            </region>
+            <region name="label" template="label">
+                <param name="key">icase_icase.association.icase_documents.title</param>
+            </region>
+        </field>
     </view>
-
-    <!-- <view class="contracts:agreement" mode="create">
-        <view class="contracts:agreement" id="create-edit" kind="3-column" />
-    </view>
-    <view class="contracts:agreement" mode="edit">
-        <view class="contracts:agreement" id="create-edit" kind="3-column" />
-    </view> -->
-
 
     <view class="contracts:subject">
         <field prop="contracts:subjectCode">
@@ -261,10 +263,6 @@
             <field assoc="payments:basis">
                 <region name="select" template="select-journal">
                     <param name="journalType">contract-agreements</param>
-                    <!--<param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
-                    <param name="defaultCriteria">[{ attribute: 'type', predicate: 'type-not-equals', value: 'payments:payment' }]</param>
-                    <param name="defaultVisibleAttributes">cm:title, tk:type</param>
-                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>-->
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -360,15 +358,13 @@
                 </region>
             </field>
         </view>
-        <field assoc="pas:containsOriginalProductsAndServices" kind="mode-view">
-            <region name="select" template="select-journal">
-                <param name="journalType">products-and-services</param>
+        <field assoc="pas:containsProductsAndServices">
+            <region name="select" template="create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
             </region>
             <region name="input" template="view-table">
-                <param name="journalType">products-and-services</param>
-            </region>
-            <region name="label" template="label">
-                <param name="key">payments_paymentsModel.association.products_and_services.title</param>
+                <param name="columns">cm:title, pas:pricePerUnit, pas:quantity, pas:entityUnit, pas:type, pas:currency</param>
             </region>
         </field>
         <view>
@@ -468,17 +464,6 @@
             <field assoc="contracts:closingDocumentAgreement" >
                 <region name="select" template="select-journal" >
                     <param name="journalType">contract-agreements</param>
-                    <!--<param name="sortBy">{ attribute: 'cm:created', order: 'desc' }</param>
-                    <param name="defaultCriteria">
-                        [
-                            {attribute: 'type', predicate: 'type-not-equals', value: 'contracts:closingDocument'},
-                            {attribute: 'type', predicate: 'type-not-equals', value: 'payments:payment'},
-                            {attribute: 'type', predicate: 'type-not-equals', value: 'letters:income'},
-                            {attribute: 'type', predicate: 'type-not-equals', value: 'letters:outcome'},
-                            {attribute: 'type', predicate: 'type-not-equals', value: 'orders:internal'}
-                        ]</param>
-                    <param name="defaultVisibleAttributes">cm:title, tk:type</param>
-                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>-->
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -564,14 +549,6 @@
         <field prop="cm:content" />
     </view>
 
-    <view class="contracts:supplementaryAgreement" mode="view">
-        <field assoc="idocs:signedVersion">
-            <region name="label" template="label">
-                <param name="key">idocs_idocsModel.association.idocs_signedVersion.title</param>
-            </region>
-        </field>
-    </view>
-
     <view class="contracts:supplementaryAgreement">
         <views mode="create" kind="3-column" />
         <views mode="edit" kind="3-column" />
@@ -603,7 +580,6 @@
                     <param name="key">contracts_contractsModel.association.contracts_contractor.title</param>
                 </region>
             </field>
-            <!-- <field prop="contracts:contractWith" /> -->
         </view>
         <view>
             <field assoc="contracts:agreementSubject" >
@@ -707,7 +683,7 @@
                 </region>
             </field>
         </view>
-        <field prop="dms:updateContent" kind="mode-view">
+        <field prop="dms:updateContent">
             <region name="label" template="label">
                 <param name="key">dms_dms.property.dms_updateContent.title</param>
             </region>
@@ -729,6 +705,21 @@
 
     <view class="contracts:originalLocation">
         <field prop="cm:name" />
+    </view>
+
+    <view class="ctrEvent:changeSigner">
+        <field assoc="ctrEvent:signer">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+    </view>
+
+    <view class="ctrEvent:cancelApproval">
+        <field prop="iEvent:comment">
+            <region name="input" template="textarea">
+                <param name="height">70px</param>
+            </region>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
     </view>
 
 </views>

@@ -6,10 +6,10 @@ import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.flowable.engine.delegate.DelegateExecution;
-import org.flowable.engine.delegate.DelegateTask;
-import org.flowable.engine.impl.persistence.entity.TaskEntity;
-import org.flowable.engine.task.IdentityLink;
-import org.flowable.engine.task.Task;
+import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.task.api.Task;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import ru.citeck.ecos.deputy.AuthorityHelper;
 import ru.citeck.ecos.security.GrantPermissionService;
 import ru.citeck.ecos.workflow.listeners.ListenerUtils;
@@ -81,7 +81,7 @@ public class FlowableGrantWorkflowPackageHelper {
         final Set<String> authorities = getTaskActors(task);
         final NodeRef workflowPackage = FlowableListenerUtils.getWorkflowPackage(task);
         final String provider = processScope ?
-                getProcessPermissionProvider(task.getExecution()) :
+                getProcessPermissionProvider(task) :
                 getTaskPermissionProvider(task);
 
         if(authorities.size() == 0 || workflowPackage == null) {
@@ -314,6 +314,15 @@ public class FlowableGrantWorkflowPackageHelper {
      */
     private String getProcessPermissionProvider(DelegateExecution execution) {
         return PROCESS_PROVIDER_PREFIX + execution.getId();
+    }
+
+    /**
+     * Get task permission provider
+     * @param delegateTask Delegate task
+     * @return Provider name
+     */
+    private String getProcessPermissionProvider(DelegateTask delegateTask) {
+        return PROCESS_PROVIDER_PREFIX + delegateTask.getId();
     }
 
 }

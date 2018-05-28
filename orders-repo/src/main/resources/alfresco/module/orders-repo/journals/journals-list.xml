@@ -1,45 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <journals xmlns="http://www.citeck.ru/ecos/journals/1.0">
 
-	<imports>
-		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
-		<import uri="http://www.citeck.ru/model/content/idocs/1.0"
-			prefix="idocs" />
-		<import uri="http://www.citeck.ru/model/content/classification/tk/1.0"
-			prefix="tk" />
-		<import uri="http://www.citeck.ru/model/orders/common/1.0" prefix="orders" />
-	</imports>
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0"
+            prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0"
+            prefix="tk" />
+        <import uri="http://www.citeck.ru/model/orders/common/1.0" prefix="orders" />
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
+    </imports>
 
-	<journal id="orders-internal">
-		<option name="type">orders:internal</option>
-		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
-		<headers>
-			<header key="tk:kind" default="true" />
-			<header key="idocs:documentStatus" default="true" />
-			<header key="orders:branch" default="true" />
-			<header key="orders:header" default="true" />
-			<header key="idocs:summary" default="false" />
-			<header key="orders:fingerboard" default="false" />
-			<header key="orders:projectNumber" default="true" />
-			<header key="orders:creationDate" default="false">
-				<option name="formatter">dateFormatter('dd.MM.yyyy')</option>
-			</header>
-			<header key="idocs:registrationNumber" default="true" />
-			<header key="idocs:registrationDate" default="true">
-				<option name="formatter">dateFormatter('dd.MM.yyyy')</option>
-			</header>
-			<header key="idocs:registrator" default="false" />
-			<header key="idocs:signatory" default="false" />
-			<header key="idocs:initiator" default="false" />
-			<header key="orders:fileCode" default="true" />
-			<header key="orders:expirationDate" default="false">
-				<option name="formatter">dateFormatter('dd.MM.yyyy')</option>
-			</header>
-			<header key="orders:appendixNumber" default="false" />
-			<header key="orders:placeOfOriginal" default="false" />
+    <journal id="orders-internal">
+        <option name="type">orders:internal</option>
+        <option name="doubleClickId">nodeRef</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
+        <headers>
+            <header key="cm:created" default="false" />
+            <header key="tk:kind" default="true" />
+            <header key="icase:caseStatusAssoc" default="true">
+                <option name="searchCriteria">[{ attribute: "cm:title", predicate: "string-contains" }]</option>
+            </header>
+            <header key="orders:branch" default="true" />
+            <header key="orders:header" default="true" />
+            <header key="idocs:summary" default="false" />
+            <header key="orders:fingerboard" default="false" />
+            <header key="orders:projectNumber" default="true" />
+            <header key="orders:creationDate" default="false">
+                <option name="formatter">dateFormatter('dd.MM.yyyy')</option>
+            </header>
+            <header key="idocs:registrationNumber" default="true" />
+            <header key="idocs:registrationDate" default="true">
+                <option name="formatter">dateFormatter('dd.MM.yyyy')</option>
+            </header>
+            <header key="idocs:registrator" default="false" />
+            <header key="idocs:signatory" default="false" />
+            <header key="idocs:initiator" default="false" />
+            <header key="orders:fileCode" default="true" />
+            <header key="orders:expirationDate" default="false">
+                <option name="formatter">dateFormatter('dd.MM.yyyy')</option>
+            </header>
+            <header key="orders:appendixNumber" default="false" />
+            <header key="orders:placeOfOriginal" default="false" />
 
-		</headers>
-	</journal>
+        </headers>
+    </journal>
 
 </journals>

@@ -5,7 +5,7 @@ import org.alfresco.repo.node.NodeServicePolicies.OnCreateAssociationPolicy;
 import org.alfresco.repo.node.NodeServicePolicies.OnDeleteAssociationPolicy;
 import org.alfresco.repo.node.NodeServicePolicies.OnCreateNodePolicy;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import org.alfresco.repo.policy.OrderedBehaviour;
+import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.role.CaseRoleService;
+import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -29,12 +30,16 @@ public class UpdateRolesBehaviour implements OnUpdatePropertiesPolicy,
                                              OnDeleteAssociationPolicy,
                                              OnCreateNodePolicy {
 
+    private static final String NODES_TO_UPDATE_TXN_KEY = UpdateRolesBehaviour.class.getName();
+
     private static final Log LOGGER = LogFactory.getLog(UpdateRolesBehaviour.class);
     private static final int ORDER = 100;
 
     private PolicyComponent policyComponent;
     private CaseRoleService caseRoleService;
     private NodeService nodeService;
+
+    private boolean mergeRolesUpdating = true;
 
     public void init() {
 
@@ -63,35 +68,36 @@ public class UpdateRolesBehaviour implements OnUpdatePropertiesPolicy,
 
     @Override
     public void onCreateAssociation(AssociationRef associationRef) {
-        NodeRef caseRef = associationRef.getSourceRef();
-        if (isValidCase(caseRef)) {
-            caseRoleService.updateRoles(associationRef.getSourceRef());
-        }
+        updateRoles(associationRef.getSourceRef());
     }
 
     @Override
     public void onDeleteAssociation(AssociationRef associationRef) {
-        NodeRef caseRef = associationRef.getSourceRef();
-        if (isValidCase(caseRef)) {
-            caseRoleService.updateRoles(caseRef);
-        }
+        updateRoles(associationRef.getSourceRef());
     }
 
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> map, Map<QName, Serializable> map1) {
-        if (isValidCase(nodeRef)) {
-            caseRoleService.updateRoles(nodeRef);
-        }
+        updateRoles(nodeRef);
     }
 
     @Override
     public void onCreateNode(ChildAssociationRef childAssociationRef) {
-        NodeRef caseRef = childAssociationRef.getChildRef();
+        updateRoles(childAssociationRef.getChildRef());
+    }
+
+    private void updateRoles(NodeRef caseRef) {
         if (isValidCase(caseRef)) {
-            caseRoleService.updateRoles(childAssociationRef.getChildRef());
+            if (mergeRolesUpdating) {
+                TransactionUtils.processBeforeCommit(NODES_TO_UPDATE_TXN_KEY,
+                                                     caseRef,
+                                                     caseRoleService::updateRoles);
+            } else {
+                caseRoleService.updateRoles(caseRef);
+            }
         }
     }
-    
+
     private boolean isValidCase(NodeRef caseRef) {
         return caseRef != null && nodeService.exists(caseRef)
                && !nodeService.hasAspect(caseRef, ICaseModel.ASPECT_CASE_TEMPLATE);
@@ -107,5 +113,9 @@ public class UpdateRolesBehaviour implements OnUpdatePropertiesPolicy,
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
+    }
+
+    public void setMergeRolesUpdating(boolean value) {
+        this.mergeRolesUpdating = value;
     }
 }

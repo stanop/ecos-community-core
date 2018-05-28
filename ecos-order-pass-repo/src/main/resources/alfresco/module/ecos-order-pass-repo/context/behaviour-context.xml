@@ -55,4 +55,20 @@
         <property name="enableHistoryOnDeleteChildAssocs" value="true" />
     </bean>
 
+    <bean id="order-pass.orderPassStatusHistory" parent="ecos.caseStatusHistoryBehaviour">
+        <property name="transitions">
+            <list>
+                <bean class="ru.citeck.ecos.behavior.history.CaseStatusHistoryBehaviour.MultipleTargetsTransition">
+                    <property name="className" value="{http://www.citeck.ru/model/content/order-pass/1.0}orderPass"/>
+                    <property name="fromStatus" value="ANY"/>
+                    <property name="toStatuses">
+                        <list>
+                            <value>ANY</value>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
 </beans>

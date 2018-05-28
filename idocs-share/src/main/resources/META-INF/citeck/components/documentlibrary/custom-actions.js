@@ -588,6 +588,33 @@ YAHOO.Bubbling.fire("registerAction", {
 	}
 });
 
+YAHOO.Bubbling.fire("registerAction", {
+    actionName: "onShowTaskForm",
+    fn: function(record, owner) {
+        var jsNode = record.jsNode,
+            params = this.getAction(record, owner).params,
+            formMode = params.formMode || "view";
+
+		Alfresco.util.Ajax.jsonGet({
+            url: Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?taskId=" + jsNode.properties["cm:name"],
+            successCallback: {
+                scope: this,
+                fn: function(response) {
+                    var redirection = "/share/page/";
+
+                    if(response.serverResponse.status == 200) {
+                        var formId = response.json.exists ? "task-view-edit" : (formMode == "edit" ? "task-edit" : "task-details"),
+                            requestParams = "?taskId=" + jsNode.properties["cm:name"] + "&formMode=" + formMode;
+
+                        redirection += formId + requestParams;
+                    }
+                    window.location = redirection;
+                }
+			}
+		});
+	}
+});
+
 function getSiteNameFromLocation(location) {
 	var result = null;
 	if (location) {
@@ -669,24 +696,24 @@ Citeck.format.openCalendar = function() {
 		}
 	});
 
-	YAHOO.Bubbling.fire("registerAction", {
-		actionName: "onShowSignedVersion",
-		fn: function(record) {
-			var jsNode = record.jsNode,
-				nodeRef = jsNode.nodeRef;
+YAHOO.Bubbling.fire("registerAction", {
+	actionName: "onShowSignedVersion",
+	fn: function(record) {
+		var jsNode = record.jsNode,
+			nodeRef = jsNode.nodeRef;
 
-			Alfresco.util.Ajax.jsonGet({
-				url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef.nodeRef,
-				successCallback: {
-					scope: this,
-					fn: function(response) {
-						var redirection = '/share/page/card-details?nodeRef=' + response.json.childAssocs["idocs:signedVersion"][0];
-						window.location = redirection;
-					}
+		Alfresco.util.Ajax.jsonGet({
+			url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRef.nodeRef,
+			successCallback: {
+				scope: this,
+				fn: function(response) {
+					var redirection = '/share/page/card-details?nodeRef=' + response.json.childAssocs["idocs:signedVersion"][0];
+					window.location = redirection;
 				}
-			});
-		}
-	});
+			}
+		});
+	}
+});
 
 
 YAHOO.Bubbling.fire("registerAction", {

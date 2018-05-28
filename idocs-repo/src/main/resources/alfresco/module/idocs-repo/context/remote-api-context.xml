@@ -374,6 +374,11 @@
           parent="webscript">
         <property name="caseImportService" ref="cmmnImportService"/>
     </bean>
+
+    <bean id="webscript.ru.citeck.cases.case-levels.get"
+          class="ru.citeck.ecos.webscripts.icase.CaseLevelsGet"
+          parent="webscript">
+    </bean>
     
     <bean id="webscript.ru.citeck.doc.export-doc.get" class="ru.citeck.ecos.webscripts.doc.ExportDocWebScript" parent="webscript">
         <property name="createMode"      value="true"/>
@@ -382,5 +387,30 @@
         <property name="contentService"  ref="contentService"/>
         <property name="mimetypeService" ref="mimetypeService"/>
     </bean>
+
+    <bean id="webscript.ru.citeck.currency.last-currency-rate.get"
+          class="ru.citeck.ecos.webscripts.currency.LastCurrencyRateGet"
+          parent="webscript">
+        <property name="currencyService" ref="currencyService"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.cases.case-activity.get" class="ru.citeck.ecos.webscripts.cases.CaseActivityGet" parent="webscript">
+        <property name="remoteCaseModelService" ref="remoteCaseModelService"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="templateNodeService" ref="TemplateNodeService"/>
+        <property name="permissionService" ref="permissionService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.cases.case-activities.get" class="ru.citeck.ecos.webscripts.cases.CaseActivitiesGet" parent="webscript">
+        <property name="remoteCaseModelService" ref="remoteCaseModelService"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="templateNodeService" ref="TemplateNodeService"/>
+        <property name="permissionService" ref="permissionService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="authenticationService" ref="authenticationService"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.orgstruct.v2.children.get" class="ru.citeck.ecos.webscripts.orgstruct.ChildrenGet" parent="webscript" />
 
 </beans>

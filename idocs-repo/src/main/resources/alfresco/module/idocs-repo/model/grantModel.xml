@@ -31,9 +31,10 @@
 					<type>d:boolean</type>
 				</property>
 			</properties>
-			<mandatory-aspects>
-				<aspect>ind:doNotIndexTypeCompletely</aspect>
-			</mandatory-aspects>
+			<!--<mandatory-aspects>-->
+				<!-- remove from index by solr patch -->
+				<!--<aspect>ind:doNotIndexTypeCompletely</aspect>-->
+			<!--</mandatory-aspects>-->
 		</type>
 	</types>
 
@@ -42,8 +43,8 @@
 			<associations>
 				<child-association name="grant:permissions">
 					<source>
-						<mandatory>true</mandatory>
-						<many>false</many>
+						<mandatory>false</mandatory>
+						<many>true</many>
 					</source>
 					<target>
 						<class>grant:permission</class>

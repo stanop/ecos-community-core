@@ -1291,7 +1291,7 @@
 
 .orgstruct-tree .ygtvcontent.authorityType-USER .ygtvlabel,
 .orgstruct-layout .selected-object.authorityType-USER {
-  background-image: url(images/user.png)
+  background-image: url(../orgstruct/icons/user-deputy-assistant-add-16.png)
 }
 
 .orgstruct-tree .ygtvcontent.authorityType-GROUP .ygtvlabel,

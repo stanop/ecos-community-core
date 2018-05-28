@@ -35,41 +35,33 @@ public abstract class AbstractDeployerBean extends AbstractLifecycleBean impleme
 
     private Log logger;
     private boolean enabled = true;
-    private final String artifactType;
+    private String artifactType;
     private List<String> locations;
     private String beanName;
-    
-    protected AbstractDeployerBean(String artifactType) {
-        this.artifactType = artifactType;
+
+    protected AbstractDeployerBean() {
         this.logger = LogFactory.getLog(this.getClass());
     }
-    
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-    
-    public void setLocation(String location) {
-        this.locations = Collections.singletonList(location);
-    }
-    
-    public void setLocations(List<String> locations) {
-        this.locations = locations;
+
+    protected AbstractDeployerBean(String artifactType) {
+        this();
+        this.artifactType = artifactType;
     }
 
     public void load() {
-        if(locations == null || locations.isEmpty()) {
+        if (locations == null || locations.isEmpty()) {
             logger.info(beanName + ": nothing to deploy");
             return;
         }
-        
+
         logger.info(beanName + ": deploying " + artifactType + " (" + locations.size() + " locations)");
-        
-        for(String location : locations) {
-            if(logger.isDebugEnabled()) {
+
+        for (String location : locations) {
+            if (logger.isDebugEnabled()) {
                 logger.debug(beanName + ": deploying " + artifactType + ": " + location);
             }
             load(location);
-            if(logger.isDebugEnabled()) {
+            if (logger.isDebugEnabled()) {
                 logger.debug(beanName + ": successfully deployed " + artifactType + ": " + location);
             }
         }
@@ -82,8 +74,9 @@ public abstract class AbstractDeployerBean extends AbstractLifecycleBean impleme
                     ? new UrlResource(location)
                     : new ClassPathResource(location);
             load(resource.getURL().toString(), resource.getInputStream());
-        } catch(Exception e) {
-            throw new IllegalStateException("Could not deploy " + artifactType + ", location: " + location + ", deployer: " + beanName, e);
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not deploy " + artifactType + ", location: " + location
+                    + ", deployer: " + beanName, e);
         }
     }
 
@@ -91,7 +84,7 @@ public abstract class AbstractDeployerBean extends AbstractLifecycleBean impleme
 
     @Override
     protected void onBootstrap(ApplicationEvent event) {
-        if(enabled) {
+        if (enabled) {
             load();
         }
     }
@@ -100,10 +93,29 @@ public abstract class AbstractDeployerBean extends AbstractLifecycleBean impleme
     protected void onShutdown(ApplicationEvent event) {
         // NOOP
     }
-    
+
     @Override
     public void setBeanName(String beanName) {
         this.beanName = beanName;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setLocation(String location) {
+        this.locations = Collections.singletonList(location);
+    }
+
+    public void setLocations(List<String> locations) {
+        this.locations = locations;
+    }
+
+    public String getArtifactType() {
+        return artifactType;
+    }
+
+    public void setArtifactType(String artifactType) {
+        this.artifactType = artifactType;
+    }
 }

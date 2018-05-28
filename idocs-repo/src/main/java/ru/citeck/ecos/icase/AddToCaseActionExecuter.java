@@ -30,6 +30,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.rule.RuleService;
 import org.alfresco.service.namespace.QName;
 
+import ru.citeck.ecos.icase.element.CaseElementService;
 import ru.citeck.ecos.model.ICaseModel;
 
 /**

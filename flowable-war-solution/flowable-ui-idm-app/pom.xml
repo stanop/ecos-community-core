@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ru.citeck.ecos.flowable</groupId>
+        <artifactId>flowable-war-solution</artifactId>
+        <version>1.0.1</version>
+    </parent>
+
+    <artifactId>flowable-ui-idm-app</artifactId>
+    <packaging>war</packaging>
+
+    <name>Ecos Flowable idm</name>
+    <description>Ecos Flowable idm</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-ui-idm-app</artifactId>
+            <version>6.3.0</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <webResources>
+                        <resource>
+                            <directory>resources</directory>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

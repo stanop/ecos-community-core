@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean parent="activiti-listener.task.complete">
+        <property name="values">
+            <list>
+                <ref bean="orders.setLastConfirmOutcomeToOrdersListener"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean parent="activiti-listener.process.start">
+        <property name="values">
+            <list>
+                <ref bean="orders.setConfirmationStatusAtStartToOrdersListener"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean parent="activiti-listener.process.end">
+        <property name="values">
+            <list>
+                <ref bean="orders.setConfirmationStatusAtEndToOrdersListener"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="orders.abstractSetConfirmationStatusToOrdersListener"
+          class="ru.citeck.ecos.workflow.listener.SetConfirmationStatusToOrdersListener"
+          abstract="true">
+        <property name="nodeService" ref="nodeService"/>
+        <property name="workflowService" ref="WorkflowService"/>
+        <property name="requiredDocType" value="orders:internal"/>
+        <property name="requiredWorkflowName" value="confirm"/>
+        <property name="fieldToSet" value="orders:currentConfirmationStatus"/>
+    </bean>
+
+    <bean id="orders.setConfirmationStatusAtStartToOrdersListener"
+          parent="orders.abstractSetConfirmationStatusToOrdersListener">
+        <property name="statusToSet" value="active"/>
+    </bean>
+
+    <bean id="orders.setConfirmationStatusAtEndToOrdersListener"
+          parent="orders.abstractSetConfirmationStatusToOrdersListener">
+        <property name="statusToSet" value="inactive"/>
+    </bean>
+
+    <bean id="orders.setLastConfirmOutcomeToOrdersListener"
+          class="ru.citeck.ecos.workflow.listener.SetLastConfirmOutcomeToOrdersListener">
+        <property name="nodeService" ref="nodeService"/>
+        <property name="namespaceService" ref="namespaceService"/>
+        <property name="fieldToSet" value="orders:lastConfirmOutcome"/>
+        <property name="requiredDocType" value="orders:internal"/>
+    </bean>
+
+</beans>

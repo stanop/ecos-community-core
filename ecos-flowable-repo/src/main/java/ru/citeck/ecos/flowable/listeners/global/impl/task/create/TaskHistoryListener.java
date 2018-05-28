@@ -16,8 +16,8 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.flowable.engine.delegate.DelegateExecution;
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.task.service.delegate.DelegateTask;
+import org.flowable.variable.api.delegate.VariableScope;
 import ru.citeck.ecos.deputy.DeputyService;
 import ru.citeck.ecos.flowable.listeners.global.GlobalAssignmentTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
@@ -98,7 +98,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
             logger.warn("Unsupported flowable task event: " + delegateTask.getEventName());
             return;
         }
-        NodeRef document = FlowableListenerUtils.getDocument(delegateTask.getExecution(), nodeService);
+        NodeRef document = FlowableListenerUtils.getDocument(delegateTask, nodeService);
         if (document == null) {
             return;
         }
@@ -127,7 +127,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
             }
         }
         ArrayList<NodeRef> pooledActors = FlowableListenerUtils.getPooledActors(delegateTask, authorityService);
-        Map<QName, Serializable> additionalProperties = getAdditionalProperties(delegateTask.getExecution());
+        Map<QName, Serializable> additionalProperties = getAdditionalProperties(delegateTask);
 
         if(additionalProperties != null) {
             eventProperties.putAll(additionalProperties);
@@ -161,7 +161,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         eventProperties.put(HistoryModel.PROP_TASK_ROLE, roleName);
 
         eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ENGINE_PREFIX + delegateTask.getProcessInstanceId());
-        eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) delegateTask.getExecution().getVariable(VAR_DESCRIPTION));
+        eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) delegateTask.getVariable(VAR_DESCRIPTION));
         eventProperties.put(HistoryModel.ASSOC_INITIATOR, assignee != null ? assignee : HistoryService.SYSTEM_USER);
         eventProperties.put(HistoryModel.ASSOC_DOCUMENT, document);
         historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
@@ -172,7 +172,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
      * @param execution Execution
      * @return Map of additional properties
      */
-    private Map<QName, Serializable> getAdditionalProperties(DelegateExecution execution) {
+    private Map<QName, Serializable> getAdditionalProperties(VariableScope execution) {
         Object additionalPropertiesObj = execution.getVariable(VAR_ADDITIONAL_EVENT_PROPERTIES);
         if(additionalPropertiesObj == null) {
             return null;

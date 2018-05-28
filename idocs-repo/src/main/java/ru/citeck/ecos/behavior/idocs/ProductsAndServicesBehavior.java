@@ -2,7 +2,7 @@ package ru.citeck.ecos.behavior.idocs;
 
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
-import org.alfresco.repo.policy.JavaBehaviour;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -129,16 +129,12 @@ public class ProductsAndServicesBehavior implements NodeServicePolicies.OnCreate
 
     private List<NodeRef> getEntityRefs(NodeRef entityRef) {
         List<NodeRef> entityRefs = new ArrayList<>();
-
-        List<NodeRef> sources = RepoUtils.getSourceNodeRefs(entityRef,
-                ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES,
+        NodeRef source = RepoUtils.getPrimaryParentRef(entityRef,
                 nodeService);
 
-        if (CollectionUtils.isNotEmpty(sources)) {
-            List<NodeRef> pasEntityRefs = RepoUtils.getTargetAssoc(sources.get(0),
-                    ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
-            entityRefs.addAll(pasEntityRefs);
-        }
+        List<NodeRef> pasEntityRefs = RepoUtils.getChildrenByAssoc(source,
+                ProductsAndServicesModel.ASSOC_CONTAINS_PRODUCTS_AND_SERVICES, nodeService);
+        entityRefs.addAll(pasEntityRefs);
 
         return entityRefs;
     }

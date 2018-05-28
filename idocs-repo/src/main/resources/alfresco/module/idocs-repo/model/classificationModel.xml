@@ -72,6 +72,7 @@
 			<associations>
 				<association name="tk:siteDocumentTypes">
 					<source>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>
@@ -89,35 +90,6 @@
 				</property>
 			</properties>
 		</aspect>
-
-		<!--aspect name="tk:documentTypeKindTemplate">
-			<associations>
-				<association name="tk:appliesToType">
-					<title>Type</title>
-					<source>
-						<mandatory>false</mandatory>
-						<many>false</many>
-					</source>
-					<target>
-						<class>cm:category</class>
-						<mandatory>false</mandatory>
-						<many>true</many>
-					</target>
-				</association>
-				<association name="tk:appliesToKind">
-					<title>Kind</title>
-					<source>
-						<mandatory>false</mandatory>
-						<many>false</many>
-					</source>
-					<target>
-						<class>cm:category</class>
-						<mandatory>false</mandatory>
-						<many>true</many>
-					</target>
-				</association>
-			</associations>
-		</aspect-->
 
 	</aspects>
 

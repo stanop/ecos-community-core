@@ -1,17 +1,28 @@
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/invariants/view.lib.js">
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/citeck.lib.js">
 
-
 (function() {
     model.isMobile = isMobileDevice(context.headers["user-agent"]);
 
     var viewData = getViewData(args);
-    if(!viewData) return;
+    if (!viewData) return;
 
     var view = viewData.view,
         attributeSet = getAttributeSet(args, view),
         attributes = getAttributes(view), 
         attributeNames = map(attributes, function(attr) { return attr.attribute; }),
+        attributesInfo = map(attributes, function (attr) {
+            var params = attr.params || {};
+            return {
+                name: attr.attribute,
+                type: attr.fieldType,
+                nodetype: attr.nodetype,
+                datatype: attr.datatype,
+                javaclass: params.javaclass || attr.javaclass,
+                _dependencies: null,
+                _options: []
+            };
+        }),
         viewNodeRef = viewData.nodeRef;
 
     var writePermission = false,
@@ -65,9 +76,12 @@
     model.viewNodeRef = viewNodeRef ? viewNodeRef : null;
     model.view = view;
     model.defaultModel = defaultModel;
+    model.formKey = viewData.formKey;
+    model.formType = viewData.formType;
 
     model.attributeSet = attributeSet;
     model.attributeNames = attributeNames;
+    model.attributesInfo = attributesInfo;
 
     model.canBeDraft = viewData.canBeDraft;
 

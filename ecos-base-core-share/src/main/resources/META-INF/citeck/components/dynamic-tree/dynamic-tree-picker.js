@@ -109,7 +109,7 @@
 			// create widgets:
 			this.widgets.tree = new Citeck.widget.DynamicTree(this.id + "-results", this.model, this.name);
 			this.widgets.list = new Citeck.widget.DynamicTree(this.id + "-selectedItems", this.model, this.name);
-			this.widgets.dialog = Alfresco.util.createYUIPanel(this.id, { width: "62em" });
+			this.widgets.dialog = Alfresco.util.createYUIPanel(this.id, { width: "62em" }, {render: false});
 			
 			this.widgets.buttonOK = Alfresco.util.createYUIButton(this, "ok", this.onButtonOKClick, {}, this.id.replace(/picker$/,"ok"));
 			this.widgets.buttonCancel = Alfresco.util.createYUIButton(this, "cancel", this.onButtonCancelClick, {}, this.id.replace(/picker$/,"cancel"));
@@ -300,17 +300,21 @@
 		/**
 		 * Show dynamic-tree-picker dialog.
 		 */
-		show: function() {
-			if(this.options.multipleSelectMode) {
-				Dom.removeClass(this.id, "single-selector");
-			} else {
-				Dom.addClass(this.id, "single-selector");
-			} 
-			this.widgets.dialog.show();
-			if(this.searchEnabled) {
-				Dom.get(this.id + "-searchText").focus();
-			}
-		},
+        show: function() {
+            if (!this.widgets.dialog._rendered) {
+                this.widgets.dialog.render(document.body);
+            }
+
+            if(this.options.multipleSelectMode) {
+                Dom.removeClass(this.id, "single-selector");
+            } else {
+                Dom.addClass(this.id, "single-selector");
+            }
+            this.widgets.dialog.show();
+            if(this.searchEnabled) {
+                Dom.get(this.id + "-searchText").focus();
+            }
+        },
 		
 		/**
 		 * Hide dynamic-tree-picker dialog.

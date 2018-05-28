@@ -23,7 +23,6 @@ import org.alfresco.repo.batch.BatchProcessWorkProvider;
 import org.alfresco.repo.batch.BatchProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.ResultSet;
@@ -33,6 +32,7 @@ import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +45,7 @@ import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
 
+import javax.transaction.UserTransaction;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -244,7 +245,7 @@ public class HistoryService {
     }
 
     private void sendHistoryEventToRemoteService(final Map<QName, Serializable> properties, Date creationDate) {
-        Map<String, Object> requestParams = new HashMap();
+        Map<String, Object> requestParams = new HashMap<>();
         /** Document */
         NodeRef document = getDocument(properties);
         if (document == null || isDocumentForDelete(document)) {
@@ -332,63 +333,50 @@ public class HistoryService {
         }
     }
 
-    public String sendAndRemoveAllOldEvents(Integer offset, Integer maxItemsCount, Integer stopCount, Integer threads) {
+    public String sendAndRemoveAllOldEvents(Integer offset, Integer maxItemsCount, Integer stopCount) {
         if (isHistoryTransferring) {
             return "History is transferring";
         }
-        isHistoryTransferring = true;
-        final Integer threadsCount;
-        if (threads != null && threads > 0) {
-            threadsCount = threads;
-        } else {
-            threadsCount = 1;
+        if (!isEnabledRemoteHistoryService()) {
+            return "Remote history service isn't enabled";
         }
-        logger.info("History transferring started with threads " + threadsCount);
+        isHistoryTransferring = true;
         logger.info("History transferring started from position - " + offset);
         logger.info("History transferring. Max load size - " + maxItemsCount);
-
         try {
             /** Load first documents */
-            AuthenticationUtil.runAsSystem(() -> {
-                int documentsTransferred = 0;
-                int skipCount = offset;
-                ResultSet resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
-                boolean hasMore;
+            int documentsTransferred = 0;
+            int skipCount = offset;
+            ResultSet resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
+            boolean hasMore;
 
-                /** Start processing */
-                do {
-                    List<NodeRef> documents = resultSet.getNodeRefs();
-                    hasMore = resultSet.hasMore();
-                    /** Process each document */
-                    for (NodeRef documentRef : documents) {
-                        if (isHistoryTransferringInterrupted) {
-                            logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
-                            return null;
-                        }
-                        RetryingTransactionHelper retryingTransactionHelper = transactionService.getRetryingTransactionHelper();
-                        BatchProcessor<NodeRef> batchProcessor = new BatchProcessor<>(
-                                TRANSFER_PROCESS_NAME,
-                                retryingTransactionHelper,
-                                new HistoryTransferProvider(getEventsByDocumentRef(documentRef)),
-                                threadsCount, BATCH_SIZE,
-                                null, null, LOGGING_INTERVAL
-                        );
-                        batchProcessor.process(new HistoryTransferWorker(historyRemoteService), true);
-                        historyRemoteService.updateDocumentHistoryStatus(documentRef, true);
-                        documentsTransferred++;
-                    }
-                    skipCount += documents.size();
-                    resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
+            /** Start processing */
+            do {
+                if (isHistoryTransferringInterrupted) {
                     logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
-                    if (stopCount != null && stopCount > 0) {
-                        if (stopCount < documentsTransferred) {
-                            break;
-                        }
+                    return "History transferring was interrupted";
+                }
+                List<NodeRef> documents = resultSet.getNodeRefs();
+                hasMore = resultSet.hasMore();
+                /** Process each document */
+                for (NodeRef documentRef : documents) {
+                    if (isHistoryTransferringInterrupted) {
+                        logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
+                        return "History transferring was interrupted";
                     }
-                } while (hasMore);
-                logger.info("History transferring - all documents have been transferred - " + (documentsTransferred + offset));
-                return null;
-            });
+                    sendEventsByDocumentRef(documentRef);
+                    documentsTransferred++;
+                }
+                skipCount += documents.size();
+                resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
+                logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
+                if (stopCount != null && stopCount > 0) {
+                    if (stopCount < documentsTransferred) {
+                        break;
+                    }
+                }
+            } while (hasMore);
+            logger.info("History transferring - all documents have been transferred - " + (documentsTransferred + offset));
             return "History transferring - documents have been transferred";
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -396,6 +384,26 @@ public class HistoryService {
         } finally {
             isHistoryTransferring = false;
             isHistoryTransferringInterrupted = false;
+        }
+    }
+
+    private void sendEventsByDocumentRef(NodeRef documentRef)  {
+        UserTransaction trx = transactionService.getNonPropagatingUserTransaction(false);
+        /** Do processing in transaction */
+        try {
+            trx.setTransactionTimeout(1000);
+            trx.begin();
+            for (NodeRef eventRef : getEventsByDocumentRef(documentRef)) {
+                historyRemoteService.sendHistoryEventToRemoteService(eventRef);
+            }
+            historyRemoteService.updateDocumentHistoryStatus(documentRef, true);
+            trx.commit();
+        } catch (RuntimeException e) {
+            logger.error("Document " + documentRef.getId() + " hadn't been processed correctly");
+            logger.error(e.getMessage(), e);
+        } catch (Exception e) {
+            logger.error("Document " + documentRef.getId() + " hadn't been processed correctly");
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -426,17 +434,17 @@ public class HistoryService {
 
     public void sendAndRemoveOldEventsByDocument(NodeRef documentRef) {
         AuthenticationUtil.runAsSystem(() -> {
-            /** Check - is remote service enabled */
+            /* Check - is remote service enabled */
             if (!isEnabledRemoteHistoryService()) {
                 throw new RuntimeException("Remote history service is disabled. Old history event transferring is impossible");
             }
-            /** Check - node existing */
+            /* Check - node existing */
             if (!nodeService.exists(documentRef)) {
                 return null;
             }
-            Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.DOCUMENT_USE_NEW_HISTORY);
-            /** Send events to remote service or remove old nodes */
-            if (useNewHistory == null || useNewHistory == false) {
+            Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.PROP_USE_NEW_HISTORY);
+            /* Send events to remote service or remove old nodes */
+            if (useNewHistory == null || !useNewHistory) {
                 historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
             } else {
                 List<AssociationRef> associations = nodeService.getSourceAssocs(documentRef, HistoryModel.ASSOC_DOCUMENT);
@@ -464,13 +472,9 @@ public class HistoryService {
      *
      * @return Check result
      */
-    private Boolean isEnabledRemoteHistoryService() {
+    public boolean isEnabledRemoteHistoryService() {
         String propertyValue = properties.getProperty(ENABLED_REMOTE_HISTORY_SERVICE);
-        if (propertyValue == null) {
-            return false;
-        } else {
-            return Boolean.valueOf(propertyValue);
-        }
+        return !StringUtils.isBlank(propertyValue) && Boolean.parseBoolean(propertyValue);
     }
 
     /**
@@ -613,10 +617,7 @@ public class HistoryService {
 
         @Override
         public void process(NodeRef eventRef) throws Throwable {
-            AuthenticationUtil.runAsSystem(() -> {
-                historyService.sendHistoryEventToRemoteService(eventRef);
-                return null;
-            });
+            historyService.sendHistoryEventToRemoteService(eventRef);
         }
     }
 

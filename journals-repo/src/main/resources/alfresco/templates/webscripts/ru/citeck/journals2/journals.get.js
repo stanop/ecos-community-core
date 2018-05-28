@@ -1,2 +1,5 @@
-model.journals = search.luceneSearch('TYPE:"journal:journal"');
-
+model.journals = search.query({
+    query: 'TYPE:"journal:journal"',
+    language: 'fts-alfresco'
+});
+cache.maxAge = 600;

@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
+import ru.citeck.ecos.utils.performance.ActionPerformance;
+import ru.citeck.ecos.utils.performance.Performance;
 
 /**
  * Composite Activiti TaskListener.
@@ -31,17 +33,25 @@ import org.activiti.engine.delegate.TaskListener;
  */
 public class CompositeTaskListener implements TaskListener {
 
-	private List<TaskListener> listeners;
-	
-	@Override
-	public void notify(DelegateTask task) {
-		for(TaskListener listener : listeners) {
-			listener.notify(task);
-		}
-	}
-	
-	public void setListeners(List<TaskListener> listeners) {
-		this.listeners = listeners;
-	}
+    private List<TaskListener> listeners;
+
+    @Override
+    public void notify(DelegateTask task) {
+        for (TaskListener listener : listeners) {
+            String actionKey;
+            if (task != null) {
+                actionKey = String.format("taskId: %s event: %s", task.getId(), task.getEventName());
+            } else {
+                actionKey = "Notify with unknown task";
+            }
+            Performance perf = new ActionPerformance(listener, actionKey);
+            listener.notify(task);
+            perf.stop();
+        }
+    }
+
+    public void setListeners(List<TaskListener> listeners) {
+        this.listeners = listeners;
+    }
 
 }

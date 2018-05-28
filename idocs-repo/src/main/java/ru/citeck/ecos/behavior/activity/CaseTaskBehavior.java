@@ -33,6 +33,9 @@ import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.config.EcosConfigService;
+import ru.citeck.ecos.utils.performance.ActionPerformance;
+import ru.citeck.ecos.workflow.variable.type.NodeRefsList;
+import ru.citeck.ecos.workflow.variable.type.StringsList;
 
 import java.io.Serializable;
 import java.util.*;
@@ -101,24 +104,38 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
         Map<QName, Serializable> workflowProperties = getWorkflowProperties(taskRef, workflowDefinitionName);
 
+        ActionPerformance performance = new ActionPerformance(this, "createPackage");
         NodeRef wfPackage = workflowService.createPackage(null);
+        performance.stop();
+
+        performance.restart("createOrReplaceAssoc");
         createOrReplaceAssociation(taskRef, wfPackage, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
+        performance.stop();
+
         workflowProperties.put(WorkflowModel.ASSOC_PACKAGE, wfPackage);
 
+        performance.restart("getDocument");
         NodeRef parent = caseActivityService.getDocument(taskRef);
+        performance.stop();
 
+        performance.restart("workflowPackage addChild");
         this.nodeService.addChild(wfPackage, parent, WorkflowModel.ASSOC_PACKAGE_CONTAINS,
                 QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
                         QName.createValidLocalName((String) this.nodeService.getProperty(parent, ContentModel.PROP_NAME))));
+        performance.stop();
 
         WorkflowDefinition wfDefinition = workflowService.getDefinitionByName(workflowDefinitionName);
+
+        performance.restart("startWorkflow");
         WorkflowPath wfPath = workflowService.startWorkflow(wfDefinition.getId(), workflowProperties);
+        performance.stop();
+
         nodeService.setProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_INSTANCE_ID, wfPath.getInstance().getId());
     }
 
     private Map<QName, Serializable> getWorkflowProperties(NodeRef taskRef, String workflowDefinitionName) {
 
-        Map<QName, Serializable> workflowProperties = new HashMap<QName, Serializable>();
+        Map<QName, Serializable> workflowProperties = new HashMap<>();
 
         setWorkflowPropertiesFromITask(workflowProperties, taskRef);
 
@@ -134,7 +151,23 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
         workflowProperties.putAll(getTransmittedVariables(workflowDefinitionName));
 
-        return workflowProperties;
+        Map<QName, Serializable> result = new HashMap<>();
+        workflowProperties.forEach((k, v) -> {
+            if (v instanceof List && ((List) v).size() > 0) {
+                Object value = ((List) v).get(0);
+                if (value instanceof NodeRef) {
+                    result.put(k, new NodeRefsList((List) v));
+                } else if (value instanceof String) {
+                    result.put(k, new StringsList((List) v));
+                } else {
+                    result.put(k, v);
+                }
+            } else {
+                result.put(k, v);
+            }
+        });
+
+        return result;
     }
 
     private Map<QName, Serializable> getTransmittedVariables(String workflowDefinitionName) {
@@ -301,6 +334,9 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
             return false;
         }
         NodeRef bpmPackage = wf.getWorkflowPackage();
+        if (bpmPackage == null || !nodeService.exists(bpmPackage)) {
+            return true;
+        }
         Boolean isActive = (Boolean) nodeService.getProperty(bpmPackage, CiteckWorkflowModel.PROP_IS_WORKFLOW_ACTIVE);
         if (isActive == null) {
             isActive = true;

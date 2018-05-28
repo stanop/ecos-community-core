@@ -7,6 +7,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.namespace.QName;
 import org.flowable.engine.delegate.DelegateExecution;
+import org.flowable.variable.api.delegate.VariableScope;
 import ru.citeck.ecos.flowable.utils.FlowableListenerUtils;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
@@ -22,14 +23,12 @@ public class FlowableConfirmDecisionsJS extends AlfrescoScopableProcessorExtensi
     private FlowableConfirmHelper impl;
 
     public void save(Object packageObj,
-                     Object confirmerRole, String confirmTaskId)
-    {
+                     Object confirmerRole, String confirmTaskId) {
         impl.saveConfirmDecision(getWorkflowPackage(packageObj),
                 getAuthorityName(confirmerRole), confirmTaskId);
     }
 
-    public ConfirmDecision get(DelegateExecution execution, String confirmerRole)
-    {
+    public ConfirmDecision get(DelegateExecution execution, String confirmerRole) {
         return impl.getConfirmDecision(execution, getAuthorityName(confirmerRole));
     }
 
@@ -52,25 +51,28 @@ public class FlowableConfirmDecisionsJS extends AlfrescoScopableProcessorExtensi
     }
 
     private NodeRef getWorkflowPackage(Object obj) {
-        if(obj == null) {
+        if (obj == null) {
             return null;
         }
-        if(obj instanceof NodeRef) {
+        if (obj instanceof NodeRef) {
             return (NodeRef) obj;
         }
-        if(obj instanceof ScriptNode) {
-            return ((ScriptNode)obj).getNodeRef();
+        if (obj instanceof ScriptNode) {
+            return ((ScriptNode) obj).getNodeRef();
         }
-        if(obj instanceof DelegateExecution) {
-            return FlowableListenerUtils.getWorkflowPackage((DelegateExecution)obj);
+        if (obj instanceof DelegateExecution) {
+            return FlowableListenerUtils.getWorkflowPackage((DelegateExecution) obj);
+        }
+        if (obj instanceof VariableScope) {
+            return FlowableListenerUtils.getWorkflowPackage((VariableScope) obj);
         }
         throw new IllegalArgumentException("Can not get workflow package for input object of class " + obj.getClass());
     }
 
     private String getAuthorityName(String string) {
-        if(!NodeRef.isNodeRef(string)) {
+        if (!NodeRef.isNodeRef(string)) {
             AuthorityService authorityService = serviceRegistry.getAuthorityService();
-            if(!authorityService.authorityExists(string)) {
+            if (!authorityService.authorityExists(string)) {
                 throw new IllegalArgumentException("Authority does not exist: " + string);
             }
             return string;
@@ -81,14 +83,14 @@ public class FlowableConfirmDecisionsJS extends AlfrescoScopableProcessorExtensi
 
     private String getAuthorityName(NodeRef nodeRef) {
         NodeService nodeService = serviceRegistry.getNodeService();
-        if(!nodeService.exists(nodeRef)) {
+        if (!nodeService.exists(nodeRef)) {
             throw new IllegalArgumentException("Node does not exist: " + nodeRef);
         }
         QName type = nodeService.getType(nodeRef);
-        if(type.equals(ContentModel.TYPE_PERSON)) {
+        if (type.equals(ContentModel.TYPE_PERSON)) {
             return (String) nodeService.getProperty(nodeRef, ContentModel.PROP_USERNAME);
         }
-        if(type.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
+        if (type.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
             return (String) nodeService.getProperty(nodeRef, ContentModel.PROP_AUTHORITY_NAME);
         }
         throw new IllegalArgumentException("Node type is neither cm:person, nor cm:authorityContainer, but " +
@@ -96,16 +98,16 @@ public class FlowableConfirmDecisionsJS extends AlfrescoScopableProcessorExtensi
     }
 
     private String getAuthorityName(Object obj) {
-        if(obj == null) {
+        if (obj == null) {
             return null;
         }
-        if(obj instanceof NodeRef) {
+        if (obj instanceof NodeRef) {
             return getAuthorityName((NodeRef) obj);
         }
-        if(obj instanceof ScriptNode) {
-            return getAuthorityName(((ScriptNode)obj).getNodeRef());
+        if (obj instanceof ScriptNode) {
+            return getAuthorityName(((ScriptNode) obj).getNodeRef());
         }
-        if(obj instanceof String) {
+        if (obj instanceof String) {
             return getAuthorityName((String) obj);
         }
         throw new IllegalArgumentException("Can not get authority name for input object of class " + obj.getClass());

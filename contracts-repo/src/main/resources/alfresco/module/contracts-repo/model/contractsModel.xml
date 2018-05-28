@@ -39,9 +39,7 @@
         <constraint name="contracts:constraint:contractTrueFalse" type="LIST">
 			<parameter name="allowedValues">
 				<list>
-					<!-- да -->
 					<value>true</value>
-					<!-- нет -->
 					<value>false</value>
 				</list>
 			</parameter>
@@ -49,9 +47,7 @@
 		<constraint name="contracts:constraint:contractWith" type="LIST">
 			<parameter name="allowedValues">
 				<list>
-					<!-- заказчик -->
 					<value>client</value>
-					<!-- исполнитель -->
 					<value>performer</value>
 				</list>
 			</parameter>
@@ -92,6 +88,7 @@
 				<aspect>contracts:contractType</aspect>
 			</mandatory-aspects>
 		</type>
+
 		<type name="contracts:supplementaryAgreement">
 			<parent>idocs:doc</parent>
 			<properties></properties>
@@ -231,6 +228,7 @@
 				<aspect>contracts:closingDocumentExtend</aspect>
 				<aspect>contracts:hasContractor</aspect>
 				<aspect>invariants:draftAspect</aspect>
+				<aspect>idocs:lifeCycle</aspect>
 			</mandatory-aspects>
 		</type>
 
@@ -374,27 +372,8 @@
 					<title>Digital signature</title>
 					<type>d:boolean</type>
 				</property>
-				<!--property name="contracts:contractWith">
-					<title>Договор с</title>
-					<type>d:text</type>
-					<default>client</default>
-					<constraints>
-						<constraint ref="contracts:constraint:contractWith" />
-					</constraints>
-				</property-->
 			</properties>
 			<associations>
-				<!-- <association name="contracts:contractor">
-					<source>
-						<mandatory>false</mandatory>
-						<many>true</many>
-					</source>
-					<target>
-						<class>idocs:contractor</class>
-						<mandatory>false</mandatory>
-						<many>false</many>
-					</target>
-				</association> -->
 				<association name="contracts:agreementSubject">
 					<source>
 						<mandatory>false</mandatory>
@@ -446,28 +425,23 @@
 				<aspect>idocs:hasPerformer</aspect>
 				<aspect>idocs:hasSignatory</aspect>
 				<aspect>idocs:hasSupervisor</aspect>
-				<aspect>contracts:hasDocumentStatus</aspect>
 				<aspect>dms:templateable</aspect>
 				<aspect>payments:payable</aspect>
 				<aspect>contracts:contractType</aspect>
 				<aspect>contracts:contractWith</aspect>
-				<!--aspect>idocs:dateConfirmDueDate</aspect>
-				<aspect>idocs:priorityConfirm</aspect>
-				<aspect>idocs:confirmers</aspect>
-				<aspect>idocs:hasContractorApproval</aspect-->
 				<aspect>idocs:hasSignedVersion</aspect>
 				<aspect>contracts:hasContractor</aspect>
 				<aspect>icase:case</aspect>
 				<aspect>icase:hasDocuments</aspect>
 			</mandatory-aspects>
 		</aspect>
+
 		<aspect name="contracts:contractWith">
 			<title>Contract with</title>
 			<properties>
 			<property name="contracts:contractWith">
 				<title>Contract with</title>
 				<type>d:text</type>
-				<!-- <default>client</default> -->
 				<constraints>
 					<constraint ref="contracts:constraint:contractWith" />
 				</constraints>
@@ -524,7 +498,7 @@
 				<association name="contracts:repealedActivity">
 					<source>
 						<mandatory>false</mandatory>
-						<many>false</many>
+						<many>true</many>
 					</source>
 					<target>
 						<class>activ:activity</class>
@@ -535,7 +509,7 @@
 				<association name="contracts:lastActiveActivities">
 					<source>
 						<mandatory>false</mandatory>
-						<many>false</many>
+						<many>true</many>
 					</source>
 					<target>
 						<class>activ:activity</class>

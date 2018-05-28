@@ -2,12 +2,12 @@ package ru.citeck.ecos.flowable.services.impl;
 
 import org.alfresco.repo.workflow.WorkflowObjectFactory;
 import org.alfresco.service.cmr.dictionary.TypeDefinition;
+import org.flowable.task.api.Task;
 import org.flowable.engine.FormService;
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.engine.form.FormData;
 import org.flowable.engine.form.TaskFormData;
-import org.flowable.engine.impl.persistence.entity.TaskEntity;
-import org.flowable.engine.task.Task;
+import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 
 /**

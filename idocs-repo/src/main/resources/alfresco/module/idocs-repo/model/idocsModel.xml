@@ -13,6 +13,7 @@
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
         <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
         <import uri="http://www.citeck.ru/model/history/1.0" prefix="history" />
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
     </imports>
 
     <namespaces>
@@ -149,19 +150,22 @@
         <type name="idocs:doc">
             <parent>dms:doc</parent>
             <properties>
-                <property name="history:useNewHistory">
+                <property name="idocs:caseCompleted">
                     <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+                <property name="idocs:caseModelsSent">
+                    <type>d:boolean</type>
+                    <default>false</default>
                 </property>
             </properties>
             <mandatory-aspects>
                 <aspect>idocs:hasLegalEntity</aspect>
                 <aspect>idocs:registrationInfo</aspect>
-                <!--<aspect>idocs:hasDocumentType</aspect>-->
                 <aspect>idocs:pagesInfo</aspect>
                 <aspect>idocs:hasSummary</aspect>
                 <aspect>idocs:hasController</aspect>
                 <aspect>idocs:hasNote</aspect>
-                <aspect>idocs:lifeCycle</aspect>
                 <aspect>tk:documentTypeKind</aspect>
                 <aspect>history:historical</aspect>
             </mandatory-aspects>
@@ -282,7 +286,6 @@
                 </association-->
             </associations>
             <mandatory-aspects>
-                <!--<aspect>dms:INN_KPP_withConstraint</aspect>-->
                 <aspect>idocs:organizationInfo</aspect>
                 <aspect>idocs:publicRegInfo</aspect>
                 <aspect>idocs:entityInfo</aspect>
@@ -307,7 +310,7 @@
                 <association name="idocs:contacts">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>idocs:contact</class>
@@ -623,6 +626,51 @@
             <parent>idocs:entity</parent>
         </type>
 
+        <type name="idocs:documentFinalStatus">
+            <title>Document final status</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:documentType">
+                    <title>Document type</title>
+                    <type>d:qname</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="idocs:finalStatuses">
+                    <title>Final statuses</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>icase:caseStatus</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+
+        <!--FIAS models. Mocks for db journals-->
+        <type name="idocs:fiasRegion">
+            <title>FIAS region</title>
+        </type>
+        <type name="idocs:fiasDistrict">
+            <title>FIAS district</title>
+        </type>
+        <type name="idocs:fiasCity">
+            <title>FIAS city</title>
+        </type>
+        <type name="idocs:fiasSettlement">
+            <title>FIAS settlement</title>
+        </type>
+        <type name="idocs:fiasStreet">
+            <title>FIAS street</title>
+        </type>
+        <type name="idocs:fiasBuilding">
+            <title>FIAS building</title>
+        </type>
+
     </types>
 
     <aspects>
@@ -822,11 +870,19 @@
                     <title>Document status</title>
                     <type>d:text</type>
                     <default>new</default>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasRestrictedDocumentStatus">
+            <parent>idocs:hasDocumentStatus</parent>
+            <overrides>
+                <property name="idocs:documentStatus">
                     <constraints>
                         <constraint ref="idocs:constraint:documentStatus"/>
                     </constraints>
                 </property>
-            </properties>
+            </overrides>
         </aspect>
         
         <aspect name="idocs:hasDuration">
@@ -891,12 +947,6 @@
         </aspect>
 
         <aspect name="idocs:hasRegistrator">
-            <!--<properties>-->
-                <!--<property name="idocs:registrator">-->
-                    <!--<title>Registrator</title>-->
-                    <!--<type>d:text</type>-->
-                <!--</property>-->
-            <!--</properties>-->
             <associations>
                 <association name="idocs:registrator">
                     <title>Регистратор</title>
@@ -979,7 +1029,7 @@
                     <title>Факсимиле подписи</title>
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>cm:content</class>
@@ -1070,7 +1120,7 @@
             <title>Declension</title>
             <properties>
                 <property name="idocs:nameInGenitiveCase">
-                    <title>Name in genetive case</title>
+                    <title>Name in genitive case</title>
                     <type>d:text</type>
                     <mandatory>false</mandatory>
                 </property>
@@ -1139,7 +1189,7 @@
 					<title>Подписанная версия</title>
 					<source>
 						<mandatory>false</mandatory>
-						<many>false</many>
+						<many>true</many>
 					</source>
 					<target>
 						<class>cm:content</class>
@@ -1383,6 +1433,14 @@
                     <constraints>
                         <constraint ref="idocs:constraint:attachmentStateOptions" />
                     </constraints>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasUseNewHistoryFlag">
+            <properties>
+                <property name="idocs:useNewHistory">
+                    <type>d:boolean</type>
                 </property>
             </properties>
         </aspect>

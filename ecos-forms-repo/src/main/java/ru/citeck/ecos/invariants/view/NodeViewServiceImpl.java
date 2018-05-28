@@ -19,11 +19,7 @@
 package ru.citeck.ecos.invariants.view;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
@@ -31,7 +27,6 @@ import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.security.MutableAuthenticationService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
@@ -40,6 +35,7 @@ import ru.citeck.ecos.invariants.InvariantConstants;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.invariants.InvariantService;
 import ru.citeck.ecos.model.AttributeModel;
+import ru.citeck.ecos.model.InvariantsModel;
 
 class NodeViewServiceImpl implements NodeViewService {
 
@@ -197,6 +193,25 @@ class NodeViewServiceImpl implements NodeViewService {
                 .build());
         executeInvariants(nodeRef, view);
         return nodeRef;
+    }
+
+    @Override
+    public boolean canBeDraft(QName type) {
+        Set<QName> defaultAspects = dictionaryService.getType(type).getDefaultAspectNames();
+        return defaultAspects.contains(InvariantsModel.ASPECT_DRAFT);
+    }
+
+    @Override
+    public boolean canBeDraft(NodeRef nodeRef) {
+        if (!nodeService.hasAspect(nodeRef, InvariantsModel.ASPECT_DRAFT)) {
+            return false;
+        }
+        Boolean isDraft = (Boolean) nodeService.getProperty(nodeRef, InvariantsModel.PROP_IS_DRAFT);
+        if (isDraft == null || isDraft) {
+            return true;
+        }
+        Boolean canReturnToDraft = (Boolean) nodeService.getProperty(nodeRef, InvariantsModel.PROP_CAN_RETURN_TO_DRAFT);
+        return canReturnToDraft != null && canReturnToDraft;
     }
 
     // TODO move execute invariants to behaviour and/or integrity checker

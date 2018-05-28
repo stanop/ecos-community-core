@@ -75,7 +75,8 @@
             <mandatory-aspects>
                 <aspect>cm:titled</aspect>
                 <aspect>activ:hasState</aspect>
-                <aspect>ind:doNotIndexTypeCompletely</aspect>
+                <!-- remove from index by solr patch -->
+                <!--<aspect>ind:doNotIndexTypeCompletely</aspect>-->
             </mandatory-aspects>
         </type>
     </types>
@@ -87,7 +88,7 @@
                 <child-association name="activ:activities">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <class>activ:activity</class>

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
-import org.alfresco.repo.policy.JavaBehaviour;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.site.SiteModel;
 import org.alfresco.service.cmr.repository.AssociationRef;
@@ -163,7 +163,7 @@ public class SiteDocumentTypesBehaviour implements
             
             Map<QName, Serializable> createVariantProps = new HashMap<>();
             createVariantProps.put(ContentModel.PROP_TITLE, typeTitle);
-            createVariantProps.put(JournalsModel.PROP_TYPE, alfrescoType);
+            createVariantProps.put(JournalsModel.PROP_TYPE, alfrescoType.getPrefixedQName(namespaceService));
             createVariantProps.put(JournalsModel.PROP_FORM_ID, "");
             createVariantProps.put(JournalsModel.PROP_IS_DEFAULT, true);
             

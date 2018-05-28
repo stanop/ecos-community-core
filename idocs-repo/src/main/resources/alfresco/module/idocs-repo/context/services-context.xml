@@ -444,7 +444,9 @@
 		<property name="restTemplate" ref="restTemplate"/>
 		<property name="nodeService" ref="NodeService"/>
 		<property name="personService" ref="PersonService"/>
+		<property name="behaviourFilter" ref="policyBehaviourFilter" />
 		<property name="transactionService" ref="TransactionService"/>
+		<property name="nodeUtils" ref="nodeUtils" />
 	</bean>
 
 	<bean id="historyGetService" class="ru.citeck.ecos.history.impl.HistoryGetServiceImpl">
@@ -581,5 +583,28 @@
 
 	<bean id="ru.citeck.ecos.caseTimerEvaluator.cron" parent="ru.citeck.ecos.caseTimerEvaluator"
 		  class="ru.citeck.ecos.icase.timer.evaluator.CronEvaluator" />
+
+	<bean id="remoteCaseModelService" class="ru.citeck.ecos.cases.impl.RemoteCaseModelServiceImpl">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="dictionaryService" ref="dictionaryService"/>
+		<property name="restTemplate" ref="caseRestTemplate"/>
+		<property name="transactionService" ref="transactionService"/>
+		<property name="lockService" ref="lockService"/>
+	</bean>
+
+	<bean id="remoteRestoreCaseModelService" class="ru.citeck.ecos.cases.impl.RemoteRestoreCaseModelServiceImpl">
+		<property name="nodeService" ref="nodeService"/>
+		<property name="remoteCaseModelService" ref="remoteCaseModelService"/>
+	</bean>
+
+	<bean id="caseRestTemplate" class="org.springframework.web.client.RestTemplate">
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+					<constructor-arg value="#{ T(java.nio.charset.StandardCharsets).UTF_8}"/>
+				</bean>
+			</list>
+		</property>
+	</bean>
 
 </beans>

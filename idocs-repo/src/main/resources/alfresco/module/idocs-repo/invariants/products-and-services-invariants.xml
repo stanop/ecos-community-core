@@ -18,6 +18,45 @@
             <invariant on="mandatory" language="explicit" description="Введено некорректное значение">true</invariant>
             <invariant on="value" language="javascript">Math.round(node.properties["pas:pricePerUnit"] * node.properties["pas:quantity"] * 10000) / 10000</invariant>
         </property>
+        <association name="pas:currency">
+            <invariant on="default" language="javascript">
+                <![CDATA[
+                    (function() {
+                        var sourceNode = getSourceNode();
+
+                        if (sourceNode) {
+                            var currencyAssocType = getCurrencyAssocType(sourceNode);
+
+                            var sourceCurrency = (sourceNode.assocs[currencyAssocType] != null
+                                && sourceNode.assocs[currencyAssocType].length > 0) ? sourceNode.assocs[currencyAssocType][0] : null;;
+
+                            if (sourceCurrency) {
+                                return sourceCurrency;
+                            }
+                        }
+
+                        return new Node('workspace://SpacesStore/currency-rur');
+
+                        function getSourceNode() {
+                            var destinationNode = (view.params && view.params.destination) ? new Node(view.params.destination) : null;
+                            return destinationNode || node.parent;
+                        }
+
+                        function getCurrencyAssocType(sourceNode) {
+                            switch (sourceNode.typeShort) {
+                                case "contracts:closingDocument":
+                                    return "contracts:closingDocumentCurrency";
+                                case "payments:payment":
+                                    return "payments:currency";
+                                default:
+                                    return "idocs:currencyDocument";
+                            }
+                        }
+                    })();
+                ]]>
+            </invariant>
+            <invariant on="protected" language="explicit">true</invariant>
+        </association>
     </type>
 
     <type name="pas:pasEntity">

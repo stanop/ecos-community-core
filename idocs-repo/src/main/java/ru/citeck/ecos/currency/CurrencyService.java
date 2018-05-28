@@ -4,6 +4,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * Service for different operations with currencies. That can return currency
@@ -32,4 +33,6 @@ public interface CurrencyService {
     void updateCurrenciesFromRepo();
 
     Currency getCurrencyByNodeRef(NodeRef nodeRef);
+
+    BigDecimal getLastCurrencyRate(NodeRef baseCurrency, NodeRef targetCurrency, Date date);
 }

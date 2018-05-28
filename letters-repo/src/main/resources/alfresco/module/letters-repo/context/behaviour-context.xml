@@ -40,4 +40,91 @@
 		</property>
 	</bean>
 
+	<bean id="letters.income.historyBehaviour" parent="history.historicalPropertiesBehaviour">
+		<property name="className" value="letters:income"/>
+		<property name="allowedProperties">
+			<list>
+				<value>cm:content</value>
+				<value>idocs:documentStatus</value>
+				<value>idocs:summary</value>
+				<value>idocs:note</value>
+				<value>idocs:pagesNumber</value>
+				<value>idocs:appendixPagesNumber</value>
+				<value>letters:deliveryMethod</value>
+				<value>letters:outcome</value>
+				<value>letters:nomenclature</value>
+				<value>letters:reporterOrganization</value>
+				<value>letters:letterWriter</value>
+				<value>letters:subdivision</value>
+				<value>letters:receiver</value>
+				<value>letters:originalLocation</value>
+				<value>letters:copiesCount</value>
+			</list>
+		</property>
+		<property name="enableHistoryOnUpdateProps" value="true"/>
+		<property name="enableHistoryOnAddAssocs" value="true"/>
+		<property name="enableHistoryOnDeleteAssocs" value="true"/>
+		<property name="enableHistoryOnAddChildAssocs" value="true"/>
+		<property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+	</bean>
+
+	<bean id="letters.income.caseStatusHistory" parent="ecos.caseStatusHistoryBehaviour">
+		<property name="transitions">
+			<list>
+				<bean class="ru.citeck.ecos.behavior.history.CaseStatusHistoryBehaviour.MultipleTargetsTransition">
+					<property name="className" value="{http://www.citeck.ru/model/letters/1.0}income"/>
+					<property name="fromStatus" value="ANY"/>
+					<property name="toStatuses">
+						<list>
+							<value>ANY</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="letters.outcome.historyBehaviour" parent="history.historicalPropertiesBehaviour">
+		<property name="className" value="letters:outcome"/>
+		<property name="allowedProperties">
+			<list>
+				<value>cm:content</value>
+				<value>idocs:documentStatus</value>
+				<value>idocs:summary</value>
+				<value>idocs:note</value>
+				<value>idocs:pagesNumber</value>
+				<value>idocs:appendixPagesNumber</value>
+				<value>idocs:performer</value>
+				<value>idocs:signatory</value>
+				<value>idocs:legalEntity</value>
+				<value>letters:deliveryMethod</value>
+				<value>letters:income</value>
+				<value>letters:outcomeNomenclature</value>
+				<value>letters:addressee</value>
+				<value>tk:kind</value>
+			</list>
+		</property>
+		<property name="enableHistoryOnUpdateProps" value="true"/>
+		<property name="enableHistoryOnAddAssocs" value="true"/>
+		<property name="enableHistoryOnDeleteAssocs" value="true"/>
+		<property name="enableHistoryOnAddChildAssocs" value="true"/>
+		<property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+	</bean>
+
+	<bean id="letters.outcome.caseStatusHistory" parent="ecos.caseStatusHistoryBehaviour">
+		<property name="transitions">
+			<list>
+				<bean class="ru.citeck.ecos.behavior.history.CaseStatusHistoryBehaviour.MultipleTargetsTransition">
+					<property name="className" value="{http://www.citeck.ru/model/letters/1.0}outcome"/>
+					<property name="fromStatus" value="ANY"/>
+					<property name="toStatuses">
+						<list>
+							<value>ANY</value>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
 </beans>

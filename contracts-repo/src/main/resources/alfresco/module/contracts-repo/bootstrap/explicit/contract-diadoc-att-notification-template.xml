@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:dms="http://www.citeck.ru/model/content/dms/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0">
+
+    <dms:notificationTemplate view:childName="cm:contract-diadoc-att-notification-template.html.ftl">
+        <view:properties>
+            <sys:node-uuid>contract-att-notification-template</sys:node-uuid>
+            <cm:name>contract-att-notification-template.html.ftl</cm:name>
+            <cm:content>contentUrl=classpath:alfresco/module/contracts-repo/bootstrap/explicit/notification/contract-diadoc-att-notification-template.html.ftl|mimetype=text/plain|encoding=UTF-8</cm:content>
+        </view:properties>
+    </dms:notificationTemplate>
+</view:view>

@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+    <id>flowable-modeler</id>
+    <page-type>flowable-modeler</page-type>
+    <title>BPMN modeler</title>
+    <title-id>page.flowable-modeler.title</title-id>
+    <description>BPMN modeler</description>
+    <description-id>page.flowable-modeler.description</description-id>
+    <template-instance>flowable-modeler</template-instance>
+    <authentication>user</authentication>
+</page>

@@ -1,4 +1,5 @@
 <#macro renderActivity activity>
+
 	<#escape x as jsonUtils.encodeJSONString(x)>
 	{
 		"nodeRef": "${activity.nodeRef}",

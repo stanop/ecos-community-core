@@ -43,9 +43,10 @@
                     </target>
                 </association>
             </associations>
-            <mandatory-aspects>
-                <aspect>ind:doNotIndexTypeCompletely</aspect>
-            </mandatory-aspects>
+            <!--<mandatory-aspects>-->
+                <!-- remove from index by solr patch -->
+                <!--<aspect>ind:doNotIndexTypeCompletely</aspect>-->
+            <!--</mandatory-aspects>-->
         </type>
     </types>
     
@@ -76,7 +77,7 @@
             <associations>
                 <association name="event:document">
                     <source>
-                        <mandatory>true</mandatory>
+                        <mandatory>false</mandatory>
                         <many>true</many>
                     </source>
                     <target>
@@ -87,7 +88,7 @@
                 </association>
                 <association name="event:case">
                     <source>
-                        <mandatory>true</mandatory>
+                        <mandatory>false</mandatory>
                         <many>true</many>
                     </source>
                     <target>

@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.alfresco.repo.node.NodeServicePolicies.OnCreateAssociationPolicy;
 import org.alfresco.repo.node.NodeServicePolicies.OnDeleteAssociationPolicy;
-import org.alfresco.repo.policy.JavaBehaviour;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.service.cmr.repository.AssociationRef;

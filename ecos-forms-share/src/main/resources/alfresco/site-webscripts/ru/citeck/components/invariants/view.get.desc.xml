@@ -4,4 +4,5 @@
 	<description>Get node view by nodeRef or type name</description>
 	<url>/citeck/components/node-view?type={type}</url>
 	<url>/citeck/components/node-view?nodeRef={nodeRef}</url>
+	<url>/citeck/components/node-view?formType={formType}&amp;formKey={formKey}&amp;formId={formId?}&amp;formMode={formMode?}</url>
 </webscript>

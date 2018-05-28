@@ -21,7 +21,7 @@ package ru.citeck.ecos.security;
 import java.util.Map;
 
 import org.alfresco.repo.copy.CopyServicePolicies;
-import org.alfresco.repo.policy.JavaBehaviour;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
@@ -33,6 +33,7 @@ import org.alfresco.service.namespace.QName;
  * When copying file, resets "inheritsPermissions" flag of new object.
  * 
  * @author Sergey Tiunov
+ * //TODO: Remove?
  */
 public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements CopyServicePolicies.OnCopyCompletePolicy
 {
@@ -41,7 +42,7 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 	@Override
 	public void init() {
 		super.init();
-		policyComponent.bindClassBehaviour(CopyServicePolicies.OnCopyCompletePolicy.QNAME, className, 
+		policyComponent.bindClassBehaviour(CopyServicePolicies.OnCopyCompletePolicy.QNAME, className,
 				new JavaBehaviour(this, "onCopyComplete", NotificationFrequency.TRANSACTION_COMMIT));
 	}
 
@@ -60,7 +61,7 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 				confiscateService.confiscateNodeImpl(child, restrictInheritance);
 				return null;
 			}
-			
+
 		});
 	}
 
@@ -73,12 +74,12 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 				confiscateService.returnNodeImpl(child, true);
 				return null;
 			}
-			
+
 		});
 	}
 
 	@Override
-	public void onCopyComplete(QName classRef, NodeRef source, final NodeRef target, 
+	public void onCopyComplete(QName classRef, NodeRef source, final NodeRef target,
 			boolean copyToNewNode, Map<NodeRef, NodeRef> copyMap) {
 		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
 
@@ -87,7 +88,7 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 				confiscateService.returnNodeImpl(target, false);
 				return null;
 			}
-			
+
 		});
 	}
 

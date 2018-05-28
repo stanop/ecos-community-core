@@ -9,7 +9,7 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.task.service.delegate.DelegateTask;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 
@@ -55,9 +55,9 @@ public class TaskSenderPullListener implements GlobalCreateTaskListener {
     @Override
     public void notify(DelegateTask delegateTask) {
         String varName = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_SENDER);
-        Object value = delegateTask.getExecution().getVariable(varName);
+        Object value = delegateTask.getVariable(varName);
         if(value == null) {
-            NodeRef initiator = (NodeRef) delegateTask.getExecution().getVariable(WorkflowConstants.PROP_INITIATOR);
+            NodeRef initiator = (NodeRef) delegateTask.getVariable(WorkflowConstants.PROP_INITIATOR);
             value = nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
         }
         delegateTask.setVariableLocal(varName, value);

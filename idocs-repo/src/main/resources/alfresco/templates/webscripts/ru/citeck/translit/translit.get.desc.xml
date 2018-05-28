@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Translit russian string</shortname>
+    <description>Translit russian string</description>
+    <url>/citeck/translit?string={string}</url>
+    <format default="json"></format>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>

@@ -55,7 +55,7 @@
 				<association name="cdl:nomenclature_to_department">
 					<title>Nomenclature to department</title>
 					<source>
-						<mandatory>true</mandatory>
+						<mandatory>false</mandatory>
 						<many>true</many>
 					</source>
 					<target>

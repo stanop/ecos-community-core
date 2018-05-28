@@ -1,7 +1,6 @@
 package ru.citeck.ecos.job;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -30,34 +29,31 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
     @Override
     public void executeJob(final JobExecutionContext jobContext) throws JobExecutionException {
         final JobDataMap data = jobContext.getJobDetail().getJobDataMap();
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                logger.info("AvailabilityChangeJob is started");
-                if (searchService == null) {
-                    searchService = (SearchService) data.get("searchService");
-                }
-                if (nodeService == null) {
-                    nodeService = (NodeService) data.get("nodeService");
-                }
-                if (availabilityService == null) {
-                    availabilityService = (AvailabilityService) data.get("availabilityService");
-                }
-                if (transactionService == null) {
-                    final ServiceRegistry serviceRegistry = (ServiceRegistry) data.get("serviceRegistry");
-                    transactionService = serviceRegistry.getTransactionService();
-                }
-                ResultSet eventsToStartResultSet = getEventsToStart();
-                ResultSet eventsToStopResultSet = getEventsToStop();
-                if (eventsToStartResultSet != null && eventsToStartResultSet.getNodeRefs() != null) {
-                    makeUsersUnavailable(eventsToStartResultSet.getNodeRefs());
-                }
-                if (eventsToStopResultSet != null && eventsToStopResultSet.getNodeRefs() != null) {
-                    makeUsersAvailable(eventsToStopResultSet.getNodeRefs());
-                }
-                logger.info("AvailabilityChangeJob is finished");
-                return null;
+        AuthenticationUtil.runAsSystem(() -> {
+            logger.info("AvailabilityChangeJob is started");
+            if (searchService == null) {
+                searchService = (SearchService) data.get("searchService");
             }
+            if (nodeService == null) {
+                nodeService = (NodeService) data.get("nodeService");
+            }
+            if (availabilityService == null) {
+                availabilityService = (AvailabilityService) data.get("availabilityService");
+            }
+            if (transactionService == null) {
+                final ServiceRegistry serviceRegistry = (ServiceRegistry) data.get("serviceRegistry");
+                transactionService = serviceRegistry.getTransactionService();
+            }
+            ResultSet eventsToStartResultSet = getEventsToStart();
+            ResultSet eventsToStopResultSet = getEventsToStop();
+            if (eventsToStartResultSet != null && eventsToStartResultSet.getNodeRefs() != null) {
+                makeUsersUnavailable(eventsToStartResultSet.getNodeRefs());
+            }
+            if (eventsToStopResultSet != null && eventsToStopResultSet.getNodeRefs() != null) {
+                makeUsersAvailable(eventsToStopResultSet.getNodeRefs());
+            }
+            logger.info("AvailabilityChangeJob is finished");
+            return null;
         });
     }
 
@@ -85,7 +81,8 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
         if (logger.isDebugEnabled()) {
             logger.debug("eventsToStopQuery.query = " + eventsToStopQuery);
         }
-        return searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, eventsToStopQuery);
+        return searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO,
+                eventsToStopQuery);
     }
 
     private void makeUsersUnavailable(List<NodeRef> eventsToStart) {
@@ -111,7 +108,8 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
         if (logger.isDebugEnabled()) {
             logger.debug("eventsToStartQuery.query = " + eventsToStartQuery);
         }
-        return searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, eventsToStartQuery);
+        return searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO,
+                eventsToStartQuery);
     }
 
     private void processEvent(final NodeRef event, final boolean availability) {
@@ -122,17 +120,14 @@ public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
         if (personToChangeAvailability == null) {
             throw new IllegalArgumentException("Person to change availability is null. Event nodeRef = " + event);
         }
-        transactionService.getRetryingTransactionHelper().doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Void>() {
-            @Override
-            public Void execute() throws Throwable {
-                if (availability) {
-                    nodeService.setProperty(event, DeputyModel.PROP_EVENT_FINISHED, true);
-                } else {
-                    nodeService.setProperty(event, DeputyModel.PROP_EVENT_STARTED, true);
-                }
-                availabilityService.setUserAvailability(personToChangeAvailability, availability);
-                return null;
+        transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
+            if (availability) {
+                nodeService.setProperty(event, DeputyModel.PROP_EVENT_FINISHED, true);
+            } else {
+                nodeService.setProperty(event, DeputyModel.PROP_EVENT_STARTED, true);
             }
+            availabilityService.setUserAvailability(personToChangeAvailability, availability);
+            return null;
         });
 
     }

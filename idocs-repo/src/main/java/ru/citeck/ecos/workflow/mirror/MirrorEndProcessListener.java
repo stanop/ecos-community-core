@@ -28,7 +28,6 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.service.CiteckServices;
-import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.workflow.listeners.AbstractExecutionListener;
 
 import java.util.List;
@@ -72,9 +71,8 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
         } else if(entity.getProcessInstance().isEnded()) {
             String workflowId = "activiti$" + entity.getProcessInstanceId();
             List<NodeRef> mirrors = service.getTaskMirrorsByWorkflowId(workflowId);
-            for(NodeRef mirror : mirrors) {
-                String taskId = (String) nodeService.getProperty(mirror, ContentModel.PROP_NAME);
-                TransactionUtils.doAfterBehaviours(new MirrorTaskWork(service, taskId));
+            for (NodeRef mirror : mirrors) {
+                service.mirrorTask((String) nodeService.getProperty(mirror, ContentModel.PROP_NAME));
             }
         }
     }

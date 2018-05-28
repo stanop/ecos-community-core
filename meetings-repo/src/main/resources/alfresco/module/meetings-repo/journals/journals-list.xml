@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <journals xmlns="http://www.citeck.ru/ecos/journals/1.0">
 
-	<imports>
-		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
-		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
-		<import uri="http://www.citeck.ru/model/meetings/1.0" prefix="meet" />
-	</imports>
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
+        <import uri="http://www.citeck.ru/model/meetings/1.0" prefix="meet" />
+    </imports>
 
-	<journal id="meetings">
-		<option name="doubleClickId">nodeRef</option>
-		<option name="doubleClickLink">card-details?nodeRef={id}</option>
-		<option name="type">meet:meeting</option>
-		<headers>
-			<header key="meet:meetingNumber" default="true" />
-			<header key="idocs:documentStatus" default="true" />
-			<header key="meet:initiator" default="true" />
-			<header key="meet:when" default="true" />
-			<header key="meet:subject" default="true" />
-			<header key="meet:where" />
-		</headers>
-	</journal>
+    <journal id="meetings">
+        <option name="doubleClickId">nodeRef</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <option name="type">meet:meeting</option>
+        <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
+        <headers>
+            <header key="cm:created" default="false" />
+            <header key="meet:meetingNumber" default="true" />
+            <header key="idocs:documentStatus" default="true" />
+            <header key="meet:initiator" default="true" sortable="false"/>
+            <header key="meet:when" default="true" />
+            <header key="meet:subject" default="true" />
+            <header key="meet:where" />
+        </headers>
+    </journal>
 
 </journals>

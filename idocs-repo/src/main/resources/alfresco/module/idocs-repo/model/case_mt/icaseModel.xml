@@ -234,24 +234,6 @@
 			</mandatory-aspects>
 		</type>
 
-		<!--<type name="icase:typeKindStatus">-->
-			<!--<parent>dl:dataListItem</parent>-->
-			<!--<associations>-->
-				<!--<association name="icase:statusLink">-->
-					<!--<source>-->
-						<!--<many>true</many>-->
-					<!--</source>-->
-					<!--<target>-->
-						<!--<class>icase:caseStatus</class>-->
-						<!--<many>false</many>-->
-					<!--</target>-->
-				<!--</association>-->
-			<!--</associations>-->
-			<!--<mandatory-aspects>-->
-				<!--<aspect>tk:documentTypeKind</aspect>-->
-			<!--</mandatory-aspects>-->
-		<!--</type>-->
-
 	</types>
 
 	<aspects>

@@ -72,6 +72,9 @@ function main()
         }
         addLink("deputy-link", "deputy", "link.deputy");
         addLink("user-absence-events-link", "user-absence-events", "link.user-absence-events");
+
+        // Add user trashcan links
+        addLink("user-trashcan-link", "user-trashcan", "link.user-trashcan");
     }
     else
     {

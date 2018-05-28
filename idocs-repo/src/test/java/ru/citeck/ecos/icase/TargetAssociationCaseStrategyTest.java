@@ -9,6 +9,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 
 import org.junit.Ignore;
+import ru.citeck.ecos.icase.element.AssociationCaseElementDAOImpl;
+import ru.citeck.ecos.icase.element.CaseElementDAO;
 import ru.citeck.ecos.model.ICaseModel;
 
 /**

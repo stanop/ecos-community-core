@@ -446,7 +446,7 @@
                 <association name="bpm:groupAssignee">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <!-- TODO: Refactor when group is pulled into content model -->
@@ -469,7 +469,7 @@
                 <association name="bpm:groupAssignees">
                     <source>
                         <mandatory>false</mandatory>
-                        <many>false</many>
+                        <many>true</many>
                     </source>
                     <target>
                         <!-- TODO: Refactor when group is pulled into content model -->

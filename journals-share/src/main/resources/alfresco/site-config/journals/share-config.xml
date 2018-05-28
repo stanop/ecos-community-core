@@ -6,7 +6,7 @@
                 <js src="/modules/simple-dialog.js" />
 
                 <js src="/lib/grouped-datatable.js" />
-                <js src="/citeck/components/dynamic-tree/cell-formatters.js" />
+                <js src="/citeck/components/dynamic-tree/cell-formatters.js?t=523453241" />
                 <js src="/citeck/components/dynamic-tree/error-manager.js" />
 
                 <js src="/citeck/components/dynamic-tree/hierarchy-model.js" />

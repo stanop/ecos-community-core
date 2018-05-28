@@ -33,6 +33,7 @@
     <bean id="CiteckUtilsJS" class="ru.citeck.ecos.utils.CiteckUtilsJS" parent="baseJavaScriptExtension">
         <property name="extensionName" value="citeckUtils" />
         <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="prefixResolver" ref="ecosNsPrefixResolver" />
     </bean>
 
     <bean id="idocs.core.spring.PropertyEditorConfig" class="org.springframework.beans.factory.config.CustomEditorConfigurer">
@@ -331,6 +332,11 @@
         <property name="nodeService" ref="nodeService"/>
     </bean>
 
+    <bean id="ecosConfigServiceJS" class="ru.citeck.ecos.config.EcosConfigServiceJs" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="ecosConfigService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
     <bean id="applicationContextProvider" class="ru.citeck.ecos.providers.ApplicationContextProvider"/>
 
     <bean id="mailWithAttachments" class="ru.citeck.ecos.notification.MailAttachActionExecutor" parent="action-executer">
@@ -387,6 +393,15 @@
         </property>
         <property name="contentService">
             <ref bean="contentService"></ref>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="ru.citeck.ecos.utils.RepoUtils.setNodeUtils"/>
+        <property name="arguments">
+            <list>
+                <ref bean="nodeUtils"/>
+            </list>
         </property>
     </bean>
 

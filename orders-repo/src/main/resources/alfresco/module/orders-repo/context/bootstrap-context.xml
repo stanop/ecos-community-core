@@ -69,7 +69,6 @@
         <property name="description" value="Internals Journals" />
         <property name="sinceVersion" value="0.1" />
         <property name="appliesFromVersion" value="0.1" />
-        <!--<property name="executeOnceOnly" value="false" />-->
         <property name="dependsOn">
             <list>
                 <ref bean="orders.documentFolders" />
@@ -131,12 +130,6 @@
                 <ref bean="orders.categoryBootstrap2" />
             </list>
         </property>
-    </bean>
-
-    <!-- life cycles -->
-    <bean id="orders.orders-lifecycle" parent="idocs.import-lifecycle.csv">
-        <property name="location" value="alfresco/module/orders-repo/lifecycle/orders-lifecycle.csv" />
-        <property name="entityType" value="orders:internal" />
     </bean>
 
     <bean id="orders.module-component.default-orders-content-template" parent="orders.import-spaces">

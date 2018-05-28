@@ -14,7 +14,7 @@
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="document-journal" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="document-journal" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/criteria-model.js" group="document-journal" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js" group="document-journal" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js?t=523453241" group="document-journal" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="document-journal" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/action-renderer.js" group="document-journal" />
     <@script type="text/javascript" src="${url.context}/res/yui/calendar/calendar.js" group="document-journal" />

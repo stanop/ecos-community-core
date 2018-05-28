@@ -1034,7 +1034,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                 draggable: true
             });
 
-            this.widgets.viewDialog.render();
+            this.widgets.viewDialog.render(document.body);
         },
 
         addIntermediateFileDialog: function() {
@@ -1049,7 +1049,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
             });
 
             this.widgets.intermediateFileDialog.setBody("")            
-            this.widgets.intermediateFileDialog.render();
+            this.widgets.intermediateFileDialog.render(document.body);
 
             this.widgets.intermediateFileDialog.hideMaskEvent.subscribe(function() {
                 $("html").css("overflow-y", "auto");
@@ -1079,7 +1079,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
 
         onShowDialog: function CDU_onShowDialog() {
             if(!this.uploadDialog._rendered) {
-                this.uploadDialog.render();
+                this.uploadDialog.render(document.body);
             } else {
                 this.uploadDialog.show();
             }

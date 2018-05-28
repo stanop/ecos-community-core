@@ -1,6 +1,6 @@
 package ru.citeck.ecos.flowable.listeners.global.impl.task.complete;
 
-import org.flowable.engine.delegate.DelegateTask;
+import org.flowable.task.service.delegate.DelegateTask;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 import ru.citeck.ecos.flowable.utils.FlowableGrantWorkflowPackageHelper;
 

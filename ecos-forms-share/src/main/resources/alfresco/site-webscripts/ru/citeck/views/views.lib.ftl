@@ -15,22 +15,23 @@
 	<#assign oldScope = viewScope!{} />
 	<#global viewScope = oldScope + { element.type : element } />
 
-	<#if (viewScope.view.template == "wide" || viewScope.view.template == "blockset") && element.type == "field">
-		<#assign wideBlockWidth>
-			<#-- field level -->
-			<#if element.params.width?has_content>
-				${element.params.width}
+    <#if (viewScope.view.template == "wide" || viewScope.view.template == "blockset") && element.type == "field">
+        <#assign wideBlockWidth>
+            <#-- field level -->
+            <#if element.params.width?has_content>
+                ${element.params.width}
+            <#elseif (view.params.disableWideWidth!"false") != "true">
+                <#-- view level -->
+                <#if viewScope.view.params.width?has_content>
+                    ${viewScope.view.params.width}
 
-			<#-- view level -->
-			<#elseif viewScope.view.params.width?has_content>
-				${viewScope.view.params.width}
-
-			<#-- root view level -->
-			<#elseif view.params.width?has_content>
-				${view.params.width}
-			</#if>
-		</#assign>
-	</#if>
+                <#-- root view level -->
+                <#elseif view.params.width?has_content>
+                    ${view.params.width}
+                </#if>
+            </#if>
+        </#assign>
+    </#if>
 
 	<#-- virtual elements for field -->
 	<#if element.attribute??>
@@ -161,7 +162,7 @@
 			</div>
 		<!-- /ko -->
 
-		<#if view.mode != 'view'>
+		<#if (view.mode != 'view') && ((view.params.showSubmitButtons!"true") == "true")>
 			<div class="form-buttons" data-bind="with: node().impl">
 
 			<#assign submitButtonTitle = view.params.submitButtonTitle!"button.send" />
@@ -183,7 +184,7 @@
 
 			<input id="${id}-form-reset"  type="button" value="${msg(resetButtonTitle)}" data-bind="enable: changed, click: reset" />
 			<input id="${id}-form-cancel" type="button" value="${msg(cancelButtonTitle)}" data-bind="enable: true, click: $root.cancel.bind($root)" />
-		</div>
+			</div>
 		</#if>
 
 	</div>
@@ -298,11 +299,11 @@
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="node-view"></@script>
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="node-view"></@script>
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/criteria-model.js" group="node-view"></@script>
-	<@script src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js" group="node-view"></@script>
+	<@script src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js?t=523453241" group="node-view"></@script>
 	<@script src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="node-view"></@script>
 </#macro>
 
-<#macro nodeViewWidget nodeRef="" type="">
+<#macro nodeViewWidget nodeRef="" type="" formType="" formKey="">
 	<@inlineScript group="node-view">
 		<#assign runtimeKey = args.runtimeKey!args.htmlid />
 		<#assign virtualParent = (args.param_virtualParent!"false") == "true" />
@@ -337,9 +338,11 @@
 						key: "${nodeKey?trim}",
 						nodeRef: <#if nodeRef?has_content>"${nodeRef}"<#else>null</#if>,
 						<#if type?has_content>type: "${type}",</#if>
-
+						formType: "${formType}",
+						formKey: "${formKey}",
 						<#if classNames?has_content>classNames: <@views.renderQNames classNames />,</#if>
 						<#if attributeNames?has_content>viewAttributeNames: <@views.renderValue attributeNames />,</#if>
+						<#if attributesInfo?has_content>viewAttributesInfo: <@views.renderValue attributesInfo />,</#if>
 
 						_set: <@views.renderValue attributeSet />,
 						_invariants: <@views.renderInvariants invariants />,

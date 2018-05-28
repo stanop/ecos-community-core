@@ -22,7 +22,7 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies.OnCreateChildAssociationPolicy;
 import org.alfresco.repo.node.NodeServicePolicies.OnDeleteChildAssociationPolicy;
 import org.alfresco.repo.policy.Behaviour;
-import org.alfresco.repo.policy.JavaBehaviour;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;

@@ -29,6 +29,7 @@
         <property name="extensionName" value="caseActivityService"/>
         <property name="namespaceService" ref="namespaceService"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="remoteRestoreCaseModelService" ref="remoteRestoreCaseModelService"/>
     </bean>
 
     <bean id="caseTaskBehavior" name="CaseTaskBehavior" class="ru.citeck.ecos.behavior.activity.CaseTaskBehavior" init-method="init">
@@ -136,6 +137,7 @@
                     <list>
                         <value>optionalPerformers</value>
                         <value>excludedPerformers</value>
+                        <value>cwf:lastcomment</value>
                     </list>
                 </entry>
                 <entry key="activiti$registration">

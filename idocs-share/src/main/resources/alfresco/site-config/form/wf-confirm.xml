@@ -15,6 +15,20 @@
 		</forms>
 	</config>
 
+	<config evaluator="string-compare" condition="flowable$flowable-confirm">
+		<forms>
+			<form>
+				<create-form template="/ru/citeck/components/form/workflow/confirm/submit-confirm-task.ftl" />
+			</form>
+			<form id="workflow-confirm-with-route">
+				<create-form template="/ru/citeck/components/form/workflow/confirm/submit-confirm-task-with-route.ftl" />
+			</form>
+			<form id="mandatory">
+				<create-form template="/ru/citeck/components/form/workflow/confirm/submit-mandatory-confirm-task.ftl" />
+			</form>
+		</forms>
+	</config>
+
 	<!-- Default flowable task view -->
 	<config evaluator="string-compare" condition="flowable$defaultTaskView">
 		<forms>

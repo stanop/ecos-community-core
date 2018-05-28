@@ -84,6 +84,8 @@ public final class IdocsModel {
     public static final QName PROP_TOTAL_SUM = QName.createQName(IDOCS_NAMESPACE, "totalSum");
     public static final QName PROP_VAT_PART = QName.createQName(IDOCS_NAMESPACE, "vatPart");
     public static final QName PROP_COMMENT = QName.createQName(IDOCS_NAMESPACE, "comment");
+    public static final QName PROP_DOCUMENT_CASE_COMPLETED = QName.createQName(IDOCS_NAMESPACE, "caseCompleted");
+    public static final QName PROP_CASE_MODELS_SENT = QName.createQName(IDOCS_NAMESPACE, "caseModelsSent");
 
     public static final QName PROP_ATTACHMENT_STATE = QName.createQName(IDOCS_NAMESPACE, "attachmentState");
 
@@ -120,7 +122,5 @@ public final class IdocsModel {
     public static final String CORRECTED = "CORRECTED";
     public static final String REVISION_CORRECTED = "REVISION_CORRECTED";
 
-
-    public static final QName DOCUMENT_USE_NEW_HISTORY = QName.createQName(IDOCS_NAMESPACE, "useNewHistory");
-
+    public static final QName PROP_USE_NEW_HISTORY = QName.createQName(IDOCS_NAMESPACE, "useNewHistory");
 }

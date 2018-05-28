@@ -243,13 +243,13 @@
 				addAssocSript = opts.addAssocScript;
 			}
 			Alfresco.util.Ajax.request({
-				//url: Alfresco.constants.PROXY_URI + "citeck/add-assocs",
 				url: Alfresco.constants.PROXY_URI + addAssocSript,
 				dataObj: {
 					sourceRef: opts.nodeRef,
 					targetRef: nodeRefs,
 					assocTypes: opts.assocType
 				},
+                requestContentType: Alfresco.util.Ajax.JSON,
 				method: Alfresco.util.Ajax.POST,
 				successCallback: {
 					fn: function (response) {

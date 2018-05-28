@@ -2,6 +2,7 @@ package ru.citeck.ecos.icase;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +10,7 @@ import java.util.Set;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.policy.BehaviourDefinition;
 import org.alfresco.repo.policy.ClassBehaviourBinding;
-import org.alfresco.repo.policy.JavaBehaviour;
+import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -20,15 +21,16 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import ru.citeck.ecos.icase.element.CaseElementPolicies;
+import ru.citeck.ecos.icase.element.CaseElementServiceImpl;
+import ru.citeck.ecos.icase.element.config.ElementConfigDto;
 import ru.citeck.ecos.model.ICaseModel;
 //import ru.citeck.ecos.test.ApplicationContextHelper;
 
@@ -51,7 +53,7 @@ public class CaseElementServiceTest implements
     private NodeRef rootNode;
     private NodeRef caseNode1, caseNode2;
     private NodeRef testNode1, testNode2;
-    private NodeRef testConfig;
+    private ElementConfigDto testConfig;
     
     private Set<BehaviourCall> additions, updates, removals;
     private BehaviourDefinition<ClassBehaviourBinding> caseElementAddDefinition;
@@ -171,21 +173,21 @@ public class CaseElementServiceTest implements
     }
 
     @Override
-    public void onCaseElementAdd(NodeRef caseRef, NodeRef element, NodeRef config) {
+    public void onCaseElementAdd(NodeRef caseRef, NodeRef element, ElementConfigDto config) {
         Log log = LogFactory.getLog(CaseElementServiceTest.class);
         log.info("Adding case element " + element + " to case " + caseRef + " (config " + config + ")");
         additions.add(new BehaviourCall(caseRef, element, config));
     }
     
     @Override
-    public void onCaseElementUpdate(NodeRef caseRef, NodeRef element, NodeRef config) {
+    public void onCaseElementUpdate(NodeRef caseRef, NodeRef element, ElementConfigDto config) {
         Log log = LogFactory.getLog(CaseElementServiceTest.class);
         log.info("Updating case element " + element + " in case " + caseRef + " (config " + config + ")");
         updates.add(new BehaviourCall(caseRef, element, config));
     }
     
     @Override
-    public void onCaseElementRemove(NodeRef caseRef, NodeRef element, NodeRef config) {
+    public void onCaseElementRemove(NodeRef caseRef, NodeRef element, ElementConfigDto config) {
         Log log = LogFactory.getLog(CaseElementServiceTest.class);
         log.info("Removing case element " + element + " from case " + caseRef + " (config " + config + ")");
         removals.add(new BehaviourCall(caseRef, element, config));
@@ -241,17 +243,16 @@ public class CaseElementServiceTest implements
     
     @SafeVarargs
     private static <E> Set<E> createSet(E... elements) {
-        Set<E> result = new HashSet<E>(elements.length);
-        for(E element : elements) {
-            result.add(element);
-        }
+        Set<E> result = new HashSet<>(elements.length);
+        result.addAll(Arrays.asList(elements));
         return result;
     }
     
     private static final class BehaviourCall {
-        private final NodeRef caseRef, element, config;
+        private final NodeRef caseRef, element;
+        private final ElementConfigDto config;
         
-        public BehaviourCall(NodeRef caseRef, NodeRef element, NodeRef config) {
+        public BehaviourCall(NodeRef caseRef, NodeRef element, ElementConfigDto config) {
             this.caseRef = caseRef;
             this.element = element;
             this.config = config;
@@ -282,15 +283,13 @@ public class CaseElementServiceTest implements
         
         @Override
         public String toString() {
-            return new StringBuilder()
-                    .append("BehaviourCall[case=")
-                    .append(caseRef)
-                    .append(",element=")
-                    .append(element)
-                    .append(",config=")
-                    .append(config)
-                    .append("]")
-                    .toString();
+            return "BehaviourCall[case=" +
+                    caseRef +
+                    ",element=" +
+                    element +
+                    ",config=" +
+                    config +
+                    "]";
         }
         
     }

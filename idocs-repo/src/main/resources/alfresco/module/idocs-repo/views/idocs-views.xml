@@ -303,6 +303,18 @@
         <field assoc="idocs:crrTargetCurrency"/>
         <field prop="idocs:crrValue"/>
         <field prop="idocs:crrDate"/>
+        <field prop="idocs:crrSyncDate" template="none"/>
+    </view>
+
+    <view class="idocs:documentFinalStatus">
+        <field prop="idocs:documentType"/>
+        <field assoc="idocs:finalStatuses">
+            <region name="select" template="select-journal">
+                <param name="journalType">case-status</param>
+                <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
+            </region>
+            <region name="input" template="view"/>
+        </field>
     </view>
 
 </views>
