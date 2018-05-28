@@ -4,6 +4,7 @@ import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.task.IdentityLink;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -32,7 +33,10 @@ public class SimpleGrantWorkflowPackageListener implements TaskListener {
                 if (authorities.size() > 0) {
                     for (NodeRef nodeRef : nodeRefs) {
                         for (String authority : authorities) {
-                            permissionService.setPermission(nodeRef, authority, permission, true);
+                            AuthenticationUtil.runAsSystem(() -> {
+                                permissionService.setPermission(nodeRef, authority, permission, true);
+                                return null;
+                            });
                         }
                     }
                 }
