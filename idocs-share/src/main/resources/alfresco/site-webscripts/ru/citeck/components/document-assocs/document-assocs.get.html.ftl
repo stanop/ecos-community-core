@@ -16,7 +16,7 @@
     <#assign el=args.htmlid?js_string>
     <#assign pickerId = el + "-picker">
 
-<div id="${pickerId}" class="assocs-picker yui-panel yui-module yui-overlay dynamic-tree-picker" style="visibility: hidden; width: 60em;">
+<div id="${pickerId}" class="assocs-picker yui-panel yui-module yui-overlay dynamic-tree-picker" style="visibility: hidden; width: 100%;">
     <div id="${pickerId}-head" class="hd" style="cursor: move;">${msg("create-button.label")}</div>
     <div id="${pickerId}-body" class="bd">
         <div class="picker-header">
