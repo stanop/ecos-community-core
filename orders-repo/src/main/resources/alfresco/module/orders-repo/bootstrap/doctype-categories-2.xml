@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:tk="http://www.citeck.ru/model/content/classification/tk/1.0">
+
+    <cm:category>
+        <view:properties>
+            <sys:node-uuid>orders-cat-internal-leave</sys:node-uuid>
+            <cm:name>${doctype.internal.leave.name}</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">${doctype.internal.leave.title_en}</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">${doctype.internal.leave.title_ru}</view:mlvalue>
+            </cm:title>
+        </view:properties>
+    </cm:category>
+    <cm:category>
+        <view:properties>
+            <sys:node-uuid>orders-cat-internal-transfer</sys:node-uuid>
+            <cm:name>${doctype.internal.transfer.name}</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">${doctype.internal.transfer.title_en}</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">${doctype.internal.transfer.title_ru}</view:mlvalue>
+            </cm:title>
+        </view:properties>
+    </cm:category>
+    <cm:category>
+        <view:properties>
+            <sys:node-uuid>orders-cat-internal-recruitment</sys:node-uuid>
+            <cm:name>${doctype.internal.recruitment.name}</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">${doctype.internal.recruitment.title_en}</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">${doctype.internal.recruitment.title_ru}</view:mlvalue>
+            </cm:title>
+        </view:properties>
+    </cm:category>
+    <cm:category>
+        <view:properties>
+            <sys:node-uuid>orders-cat-internal-dismissal</sys:node-uuid>
+            <cm:name>${doctype.internal.dismissal.name}</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">${doctype.internal.dismissal.title_en}</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">${doctype.internal.dismissal.title_ru}</view:mlvalue>
+            </cm:title>
+        </view:properties>
+    </cm:category>
+
+</view:view>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns="" xmlns:cm="http://www.alfresco.org/model/content/1.0" xmlns:view="http://www.alfresco.org/view/repository/1.0" xmlns:sys="http://www.alfresco.org/model/system/1.0" xmlns:dms="http://www.citeck.ru/model/content/dms/1.0" xmlns:tk="http://www.citeck.ru/model/content/classification/tk/1.0">
+	<view:reference view:pathref=".">
+		<view:associations>
+			<cm:contains>
+				<dms:template view:childName="cm:default-orders-leave-template.doc">
+				  <view:properties>
+					<cm:name>default-orders-leave-template.doc</cm:name>
+					<sys:node-uuid>default-orders-leave-template</sys:node-uuid>
+					<cm:content>contentUrl=classpath:alfresco/module/orders-repo/bootstrap/templates/orders-leave-template.doc|mimetype=application/msword|encoding=ISO-8859-1</cm:content>
+					<tk:appliesToType>workspace://SpacesStore/orders-cat-doctype-internal</tk:appliesToType>
+					<tk:appliesToKind>workspace://SpacesStore/orders-cat-internal-leave</tk:appliesToKind>
+				  </view:properties>
+				</dms:template>
+				<dms:template view:childName="cm:default-orders-transfer-template.doc">
+					<view:properties>
+						<cm:name>default-orders-transfer-template.doc</cm:name>
+						<sys:node-uuid>default-orders-transfer-template</sys:node-uuid>
+						<cm:content>contentUrl=classpath:alfresco/module/orders-repo/bootstrap/templates/orders-transfer-template.doc|mimetype=application/msword|encoding=ISO-8859-1</cm:content>
+						<tk:appliesToType>workspace://SpacesStore/orders-cat-doctype-internal</tk:appliesToType>
+						<tk:appliesToKind>workspace://SpacesStore/orders-cat-internal-transfer</tk:appliesToKind>
+					</view:properties>
+				</dms:template>
+				<dms:template view:childName="cm:default-orders-recruitment-template.doc">
+					<view:properties>
+						<cm:name>default-orders-recruitment-template.doc</cm:name>
+						<sys:node-uuid>default-orders-rcrtmnt-template</sys:node-uuid>
+						<cm:content>contentUrl=classpath:alfresco/module/orders-repo/bootstrap/templates/orders-recruitment-template.doc|mimetype=application/msword|encoding=ISO-8859-1</cm:content>
+						<tk:appliesToType>workspace://SpacesStore/orders-cat-doctype-internal</tk:appliesToType>
+						<tk:appliesToKind>workspace://SpacesStore/orders-cat-internal-recruitment</tk:appliesToKind>
+					</view:properties>
+				</dms:template>
+				<dms:template view:childName="cm:default-orders-dismissal-template.doc">
+					<view:properties>
+						<cm:name>default-orders-dismissal-template.doc</cm:name>
+						<sys:node-uuid>default-orders-dismissal-template</sys:node-uuid>
+						<cm:content>contentUrl=classpath:alfresco/module/orders-repo/bootstrap/templates/orders-dismissal-template.doc|mimetype=application/msword|encoding=ISO-8859-1</cm:content>
+						<tk:appliesToType>workspace://SpacesStore/orders-cat-doctype-internal</tk:appliesToType>
+						<tk:appliesToKind>workspace://SpacesStore/orders-cat-internal-dismissal</tk:appliesToKind>
+					</view:properties>
+				</dms:template>
+			</cm:contains>
+		</view:associations>
+	</view:reference>
+</view:view>
