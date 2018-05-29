@@ -490,6 +490,16 @@
             };
         },
 
+        percent: function () {
+            return this.valueStrFormatter(true, function(elCell, oRecord, oColumn, sData) {
+                if (sData == null) {
+                    elCell.innerHTML = '';
+                } else {
+                    elCell.innerHTML = (100 * sData) + "%";
+                }
+            });
+        },
+
         workflowPriority: function() {
             return function(elCell, oRecord, oColumn, sData) {
                 var codes = {
@@ -539,6 +549,12 @@
                 if (!sData) { return; }
                 if (sData.displayName) {
                     elCell.innerHTML = sData.displayName;
+                    return;
+                }
+                var sDataValues = _.values(sData);
+                if (sDataValues.length && sDataValues[0].name == "classTitle") {
+                    var value = sDataValues[0].val || [];
+                    elCell.innerHTML = value.length ? value[0].str : '';
                     return;
                 }
                 var typeQName = key ? sData[key] : sData;

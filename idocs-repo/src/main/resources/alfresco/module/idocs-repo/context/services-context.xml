@@ -607,4 +607,7 @@
 		</property>
 	</bean>
 
+	<bean id="journal.datasource.taskStatisticDatasource" class="ru.citeck.ecos.journals.datasource.TaskStatisticDatasource">
+	</bean>
+
 </beans>

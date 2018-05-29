@@ -1,14 +1,15 @@
-package ru.citeck.ecos.graphql.journal.record;
+package ru.citeck.ecos.graphql.journal.record.attribute;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.journal.datasource.alfnode.AlfNodeAttributeValue;
+import ru.citeck.ecos.graphql.journal.record.JournalAttributeGql;
+import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class JournalReflectionAttributeGql implements JournalAttributeGql {
 
@@ -17,12 +18,13 @@ public class JournalReflectionAttributeGql implements JournalAttributeGql {
     private Object object;
     private String method;
 
-    private GqlContext context;
-
-    public JournalReflectionAttributeGql(Object object, String method, GqlContext context) {
-        this.object = object;
+    public JournalReflectionAttributeGql(Object object, String method) {
+        if (object instanceof Optional) {
+            this.object = ((Optional<?>) object).orElse(null);
+        } else {
+            this.object = object;
+        }
         this.method = method;
-        this.context = context;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class JournalReflectionAttributeGql implements JournalAttributeGql {
         Class<?> clazz = object.getClass();
         try {
             Method method = clazz.getMethod(this.method);
-            JournalAttributeValueGql value = new AlfNodeAttributeValue(method.invoke(object), context);
+            JournalAttributeValueGql value = new JournalAttributeExplicitValue(method.invoke(object));
             return Collections.singletonList(value);
         } catch (NoSuchMethodException e) {
             logger.error("Method " + method + " not found in " + clazz.getName(), e);

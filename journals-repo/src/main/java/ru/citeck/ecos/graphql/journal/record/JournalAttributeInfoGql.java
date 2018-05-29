@@ -8,6 +8,6 @@ public interface JournalAttributeInfoGql {
     String name();
 
     default List<String> getDefaultInnerAttributes() {
-        return Collections.singletonList("data");
+        return Collections.singletonList("str");
     }
 }

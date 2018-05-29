@@ -69,6 +69,11 @@ public interface OperatorExpected {
     List<NodeRef> query(SearchService searchService, Predicate<NodeRef> filter);
 
     /**
+     * Query nodes and additional info about result
+     */
+    QueryResult queryDetails(SearchService searchService);
+
+    /**
      * Get query string
      */
     String getQuery();

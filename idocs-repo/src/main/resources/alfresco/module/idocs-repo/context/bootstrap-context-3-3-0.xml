@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-3-0" abstract="true" parent="idocs.import-spaces.3-2-1">
+        <property name="sinceVersion" value="3.3.0" />
+        <property name="appliesFromVersion" value="3.3.0" />
+    </bean>
+
+    <bean id="idocs.import-scripts.3-3-0" abstract="true" parent="idocs.import-scripts.3-2-1">
+        <property name="sinceVersion" value="3.3.0" />
+        <property name="appliesFromVersion" value="3.3.0" />
+    </bean>
+
+    <bean id="idocs.module-component.journal-task-statistic" parent="idocs.import-spaces.3-3-0" depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="journals-task-statistic" />
+        <property name="description" value="Task statistic" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/tasks/task-statistic</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <!--<props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/tasks/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/tasks/task-statistic</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>-->
+            </list>
+        </property>
+    </bean>
+
+
+</beans>

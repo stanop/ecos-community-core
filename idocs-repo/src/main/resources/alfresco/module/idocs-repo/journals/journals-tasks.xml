@@ -6,6 +6,8 @@
         <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
         <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf" />
         <import uri="http://www.citeck.ru/model/workflow-mirror/1.0" prefix="wfm" />
+        <import uri="http://www.citeck.ru/model/event/1.0" prefix="event" />
+        <import uri="http://www.citeck.ru/model/history/1.0" prefix="history" />
     </imports>
 
     <journal id="active-tasks">
@@ -115,6 +117,47 @@
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:completionDate" default="true" />
             <header key="bpm:comment" default="true" />
+        </headers>
+    </journal>
+
+    <journal id="task-statistic">
+        <datasource>journal.datasource.taskStatisticDatasource</datasource>
+        <option name="actionGroupId">none</option>
+        <headers>
+            <header key="event:taskType" default="true" searchable="false">
+                <option name="customLabel">Тип задачи</option>
+                <option name="formatter">typeName</option>
+            </header>
+            <header key="event:initiator" default="true">
+                <option name="customLabel">Исполнитель</option>
+                <criterion>
+                    <region name="select" template="orgstruct">
+                        <param name="allowedAuthorityType">USER</param>
+                    </region>
+                </criterion>
+            </header>
+            <header key="event:document" default="true" searchable="false" sortable="false">
+                <option name="customLabel">Документ</option>
+                <option name="formatter">documentLink</option>
+            </header>
+            <header key="history:startedDate" default="true" searchable="false" sortable="false">
+                <option name="customLabel">Дата начала</option>
+                <option name="formatter">datetime</option>
+            </header>
+            <header key="history:completionDate" default="true" searchable="false" sortable="false">
+                <option name="customLabel">Дата завершения</option>
+                <option name="formatter">datetime</option>
+            </header>
+            <header key="history:actualPerformTime" default="true" searchable="false" sortable="false">
+                <option name="customLabel">Время выполнения, ч.</option>
+            </header>
+            <header key="history:expectedPerformTime" default="true" searchable="false" sortable="false">
+                <option name="customLabel">Ожидаемое время выполнения, ч</option>
+            </header>
+            <header key="history:performTimeRatio" default="true" searchable="false" sortable="false">
+                <option name="customLabel">Ожидаемое время / Время выполнения</option>
+                <option name="formatter">percent</option>
+            </header>
         </headers>
     </journal>
 

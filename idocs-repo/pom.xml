@@ -91,6 +91,11 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-graphql-repo</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>1st-override-repo</artifactId>
         </dependency>
 
