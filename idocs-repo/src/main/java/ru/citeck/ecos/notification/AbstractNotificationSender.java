@@ -44,6 +44,7 @@ import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.search.ftsquery.OperatorExpected;
 import ru.citeck.ecos.utils.ReflectionUtils;
+import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -419,7 +420,12 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
             }
 
             // send
-            if (afterCommit) {
+            if (asyncNotification) {
+                notificationContext.setAsyncNotification(false);
+                TransactionUtils.doAfterCommit(() -> {
+                    sendNotificationContext(notificationProviderName, notificationContext);
+                });
+            } else if (afterCommit) {
                 AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
                     @Override
                     public void afterCommit() {
