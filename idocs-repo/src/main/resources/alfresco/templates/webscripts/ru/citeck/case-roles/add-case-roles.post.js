@@ -1,9 +1,11 @@
 (function()
 {
     try {
-        var sourceRefs = args['sourceRef'];
-        var targetRefs = args['targetRef'];
-        var assocType = args['assocTypes'];
+        var json = requestbody.getContent();
+        var jsonData = jsonUtils.toObject(json);
+        var sourceRefs = jsonData.sourceRef;
+        var targetRefs = jsonData.targetRef;
+        var assocType = jsonData.assocTypes;
         if (assocType == undefined) assocType = "";
         var source = '';
         var target = '';
