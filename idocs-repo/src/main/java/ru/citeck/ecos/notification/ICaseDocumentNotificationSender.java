@@ -6,6 +6,7 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.notification.utils.RecipientsUtils;
 
@@ -30,6 +31,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
     private Map<String, List<String>> recipients;
     private Map<String, List<String>> iCaseAspectConditions;
     private List<String> excludeStatuses;
+    private Locale priorityLocale;
 
     private static final String ARG_TARGET_REF = "targetRef";
     private static final String ARG_NOTIFICATION_TYPE = "notificationType";
@@ -92,6 +94,10 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
                                  String notificationType, String subjectTemplate, boolean afterCommit) {
         if (!aspectConditionIsFulfilled(sourceRef) || existExcludeStatus(sourceRef)) {
             return;
+        }
+
+        if (priorityLocale != null) {
+            I18NUtil.setContentLocale(priorityLocale);
         }
 
         this.targetRef = targetRef;
@@ -217,5 +223,9 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
 
     public void setCaseStatusService(CaseStatusService caseStatusService) {
         this.caseStatusService = caseStatusService;
+    }
+
+    public void setPriorityLocale(Locale priorityLocale) {
+        this.priorityLocale = priorityLocale;
     }
 }
