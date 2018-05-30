@@ -39,6 +39,9 @@ public class ICaseTaskModel {
 
     // aspects
 
+    public static final QName ASPECT_HAS_AUTHORITIES = QName.createQName(NAMESPACE, "hasAuthorities");
+    public static final QName ASPECT_HAS_ROLES = QName.createQName(NAMESPACE, "hasRoles");
+
     // properties
     public static final QName PROP_WORKFLOW_DEFINITION_NAME = QName.createQName(NAMESPACE, "workflowDefinitionName");
     public static final QName PROP_WORKFLOW_INSTANCE_ID = QName.createQName(NAMESPACE, "workflowInstanceId");
@@ -56,6 +59,8 @@ public class ICaseTaskModel {
     public static final QName ASSOC_CONTROLLER = QName.createQName(NAMESPACE, "controller");
     public static final QName ASSOC_WORKFLOW_PACKAGE = QName.createQName(NAMESPACE, "workflowPackage");
     public static final QName ASSOC_CONFIRMERS = QName.createQName(NAMESPACE, "confirmers");
+    public static final QName ASSOC_AUTHORITIES = QName.createQName(NAMESPACE, "authorities");
+    public static final QName ASSOC_ROLES = QName.createQName(NAMESPACE, "roles");
 
     // constraint
 }
