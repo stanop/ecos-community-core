@@ -97,7 +97,7 @@ public class ICaseDocumentNotificationSender extends DocumentNotificationSender 
         }
 
         if (priorityLocale != null) {
-            I18NUtil.setContentLocale(priorityLocale);
+            I18NUtil.setLocale(priorityLocale);
         }
 
         this.targetRef = targetRef;
