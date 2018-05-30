@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.namespace.QName;
+import org.codehaus.jackson.map.util.ISO8601Utils;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
@@ -18,7 +19,6 @@ import ru.citeck.ecos.dto.*;
 import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.template.TemplateNodeService;
 
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,12 +43,6 @@ public class CaseActivityGet extends DeclarativeWebScript {
      * Object mapper
      */
     protected ObjectMapper objectMapper = new ObjectMapper();
-
-    /**
-     * Date format
-     */
-    protected SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
 
     /**
      * Remote case model service
@@ -77,9 +71,10 @@ public class CaseActivityGet extends DeclarativeWebScript {
 
     /**
      * Execute implementation
-     * @param req Http-request
+     *
+     * @param req    Http-request
      * @param status Status
-     * @param cache Cache
+     * @param cache  Cache
      * @return Map of attributes
      */
     @Override
@@ -113,6 +108,7 @@ public class CaseActivityGet extends DeclarativeWebScript {
 
     /**
      * Create object node from node reference
+     *
      * @param nodeRef Node reference
      * @return Object node
      */
@@ -169,6 +165,7 @@ public class CaseActivityGet extends DeclarativeWebScript {
 
     /**
      * Create object node from remote data transfer object
+     *
      * @param caseModelDto Remote case model data transfer object
      * @return Object node
      */
@@ -197,11 +194,12 @@ public class CaseActivityGet extends DeclarativeWebScript {
     }
 
     private String formatDate(Date date) {
-        return date != null ? dateFormat.format(date) : null;
+        return date != null ? ISO8601Utils.format(date) : null;
     }
 
     /**
      * Get case model type
+     *
      * @param caseModelDto Case model data transfer object
      * @return Type
      */
@@ -239,7 +237,9 @@ public class CaseActivityGet extends DeclarativeWebScript {
         return ActivityModel.TYPE_ACTIVITY;
     }
 
-    /** Setters */
+    /**
+     * Setters
+     */
 
     public void setRemoteCaseModelService(RemoteCaseModelService remoteCaseModelService) {
         this.remoteCaseModelService = remoteCaseModelService;
