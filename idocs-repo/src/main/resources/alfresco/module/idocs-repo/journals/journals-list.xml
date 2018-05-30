@@ -191,7 +191,32 @@
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
         <headers>
-            <header key="tk:kind" default="true" />
+            <header key="tk:kind" default="true" >
+                <criterion>
+                    <region name="input" template="select" />
+                        <invariant on="options" language="javascript"><![CDATA[
+                    (function() {
+                        var filterHelper = {
+                            loadTypes : function () {
+                                var url = Alfresco.constants.PROXY_URI + 'citeck/node/child-assocs?nodeRef=' +
+                                'workspace://SpacesStore/cat-doc-type-general-case' +
+                                '&amp;assocType=cm:subcategories';
+                                var request = new XMLHttpRequest();
+                                request.open('GET', url, false);
+                                request.send(null);
+                                if (request.status === 200) {
+                                    var jsonResult = JSON.parse(request.response);
+                                    if (jsonResult && jsonResult.nodes && jsonResult.nodes.length > 0) {
+                                        return jsonResult.nodes;
+                                    }
+                                }
+                            }
+                        };
+                        return filterHelper.loadTypes();
+                    })()
+                    ]]></invariant>
+                </criterion>
+            </header>
             <header key="cm:name" default="true" />
             <header key="idocs:note" default="true" />
             <header key="ecos:documentNumber" default="true" />
