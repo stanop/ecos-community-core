@@ -12,10 +12,7 @@ import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.utils.performance.ActionPerformance;
 import ru.citeck.ecos.utils.performance.Performance;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class TransactionUtils {
@@ -103,7 +100,7 @@ public class TransactionUtils {
         if (elements.isEmpty()) {
             TransactionUtils.doBeforeCommit(transactionKey, () -> {
                 AuthenticationUtil.runAsSystem(() -> {
-                    elements.forEach(consumer);
+                    new HashSet<>(elements).forEach(consumer);
                     return null;
                 });
                 elements.clear();
@@ -117,7 +114,7 @@ public class TransactionUtils {
         if (elements.isEmpty()) {
             TransactionUtils.doAfterBehaviours(transactionKey, () -> {
                 AuthenticationUtil.runAsSystem(() -> {
-                    elements.forEach(consumer);
+                    new HashSet<>(elements).forEach(consumer);
                     return null;
                 });
                 elements.clear();
