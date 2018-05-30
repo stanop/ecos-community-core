@@ -21,6 +21,8 @@ public class TransactionUtils {
 
     private static final String AFTER_COMMIT_JOBS_KEY = TransactionUtils.class + ".after-commit-jobs";
 
+    private static final int ELEMENTS_PROCESSING_LIMIT = 10;
+
     private static TransactionService transactionService;
 
     public static void doBeforeCommit(final Runnable runnable) {
@@ -100,7 +102,7 @@ public class TransactionUtils {
         if (elements.isEmpty()) {
             TransactionUtils.doBeforeCommit(transactionKey, () -> {
                 AuthenticationUtil.runAsSystem(() -> {
-                    new HashSet<>(elements).forEach(consumer);
+                    processElements(elements, consumer);
                     return null;
                 });
                 elements.clear();
@@ -114,13 +116,21 @@ public class TransactionUtils {
         if (elements.isEmpty()) {
             TransactionUtils.doAfterBehaviours(transactionKey, () -> {
                 AuthenticationUtil.runAsSystem(() -> {
-                    new HashSet<>(elements).forEach(consumer);
+                    processElements(elements, consumer);
                     return null;
                 });
                 elements.clear();
             });
         }
         elements.add(element);
+    }
+
+    private static <T> void processElements(Set<T> elements, Consumer<T> consumer) {
+        for (int i = 0; i < ELEMENTS_PROCESSING_LIMIT && !elements.isEmpty(); i++) {
+            Set<T> copyElements = new HashSet<>(elements);
+            elements.clear();
+            copyElements.forEach(consumer);
+        }
     }
 
     private static Thread prepareAfterCommitJobsThread(List<Job> jobs, final String currentUser, final Locale locale) {
