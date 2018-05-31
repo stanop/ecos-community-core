@@ -105,7 +105,6 @@ public class TransactionUtils {
                     processElements(elements, consumer);
                     return null;
                 });
-                elements.clear();
             });
         }
         elements.add(element);
@@ -119,17 +118,23 @@ public class TransactionUtils {
                     processElements(elements, consumer);
                     return null;
                 });
-                elements.clear();
             });
         }
         elements.add(element);
     }
 
     private static <T> void processElements(Set<T> elements, Consumer<T> consumer) {
-        for (int i = 0; i < ELEMENTS_PROCESSING_LIMIT && !elements.isEmpty(); i++) {
+        Set<T> processedElements = new HashSet<>();
+
+        while (!elements.isEmpty() && !processedElements.containsAll(elements)) {
             Set<T> copyElements = new HashSet<>(elements);
             elements.clear();
-            copyElements.forEach(consumer);
+
+            for (T copyElement : copyElements) {
+                if (processedElements.add(copyElement)) {
+                    consumer.accept(copyElement);
+                }
+            }
         }
     }
 
