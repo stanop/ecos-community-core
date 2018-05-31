@@ -50,16 +50,14 @@ public class CounterServiceImpl implements CounterService {
             return null;
         });
 
-        transactionService.getRetryingTransactionHelper().doInTransaction(
-                (RetryingTransactionHelper.RetryingTransactionCallback<Void>) () -> {
-                    try {
-                        executor.execute();
-                    } catch (EnumerationException e) {
-                        logger.error("setCounterLast something goes wrong", e);
-                    }
-                    return null;
-                }, false, true);
-
+        transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
+            try {
+                executor.execute();
+            } catch (EnumerationException e) {
+                logger.error("setCounterLast something goes wrong", e);
+            }
+            return null;
+        }, false, true);
     }
 
     @Override

@@ -42,7 +42,9 @@ public class EnumerationServiceJS extends AlfrescoScopableProcessorExtension {
         NodeRef template;
         if (NodeRef.isNodeRef(templateName)) {
             template = new NodeRef(templateName);
-            if (!enumerationService.isTemplate(template)) return null;
+            if (!enumerationService.isTemplate(template)) {
+                return null;
+            }
         } else {
             template = enumerationService.getTemplate(templateName);
         }
