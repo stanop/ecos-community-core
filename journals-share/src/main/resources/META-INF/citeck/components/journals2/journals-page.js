@@ -337,10 +337,12 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                                     });
 
                                     if (record) {
-                                        var id = record.attributes()["cm:name"];
+                                        var name     = record.attributes()["cm:name"],
+                                            id       = name && name[0] && name[0].hasOwnProperty('str') ? name[0].str : name,
+                                            document = record.attributes()["wfm:document"];
 
-                                        if (record.isDocument() && record.attributes()["wfm:document"]) {
-                                            id = record.attributes()["wfm:document"].displayName;
+                                        if (record.isDocument() && document) {
+                                            id = document.displayName || (document[0] && document[0].hasOwnProperty('str') ? document[0].str : "");
                                         }
 
                                         rtbody.append(
