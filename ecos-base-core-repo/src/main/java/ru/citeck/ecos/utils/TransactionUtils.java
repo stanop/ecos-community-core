@@ -21,8 +21,6 @@ public class TransactionUtils {
 
     private static final String AFTER_COMMIT_JOBS_KEY = TransactionUtils.class + ".after-commit-jobs";
 
-    private static final int ELEMENTS_PROCESSING_LIMIT = 10;
-
     private static TransactionService transactionService;
 
     public static void doBeforeCommit(final Runnable runnable) {
