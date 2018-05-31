@@ -413,7 +413,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
             for (String to : recipients) {
                 notificationContext.addTo(to);
             }
-            notificationContext.setAsyncNotification(asyncNotification);
+            notificationContext.setAsyncNotification(false);
             logger.debug("sendNotification_asyncNotification: " + asyncNotification + " instance = " + toString());
             if (null != from) {
                 notificationContext.setFrom(from);
@@ -421,7 +421,6 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 
             // send
             if (asyncNotification) {
-                notificationContext.setAsyncNotification(false);
                 TransactionUtils.doAfterCommit(() -> {
                     sendNotificationContext(notificationProviderName, notificationContext);
                 });
