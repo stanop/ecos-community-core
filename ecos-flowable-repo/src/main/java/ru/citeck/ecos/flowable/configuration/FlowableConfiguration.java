@@ -74,12 +74,17 @@ public class FlowableConfiguration {
     @Bean(name = "flowableDataSource")
     public DataSource flowableDataSource() {
         if (properties.getProperty(FLOWABLE_DB_URL) != null) {
-            DriverManagerDataSource result = new DriverManagerDataSource();
-            result.setDriverClassName(properties.getProperty(FLOWABLE_DRIVER_CLASS_NAME));
-            result.setUrl(properties.getProperty(FLOWABLE_DB_URL));
-            result.setUsername(properties.getProperty(FLOWABLE_DB_USERNAME));
-            result.setPassword(properties.getProperty(FLOWABLE_DB_PASSWORD));
-            return result;
+            try {
+                DriverManagerDataSource result = new DriverManagerDataSource();
+                result.setDriverClassName(properties.getProperty(FLOWABLE_DRIVER_CLASS_NAME));
+                result.setUrl(properties.getProperty(FLOWABLE_DB_URL));
+                result.setUsername(properties.getProperty(FLOWABLE_DB_USERNAME));
+                result.setPassword(properties.getProperty(FLOWABLE_DB_PASSWORD));
+                return result;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         } else {
             return null;
         }
