@@ -24,16 +24,15 @@ import org.alfresco.service.cmr.repository.NodeRef;
 
 import ru.citeck.ecos.node.NodeInfo;
 
-public interface EnumerationService 
-{
-    
-    public static final String KEY_COUNT = "count";
-    public static final String KEY_NODE = "node";
-    public static final String KEY_TEMPLATE = "template";
-    
+public interface EnumerationService {
+
+    String KEY_COUNT = "count";
+    String KEY_NODE = "node";
+    String KEY_TEMPLATE = "template";
+
     /**
      * Get template by name.
-     * 
+     *
      * @param templateName
      * @return template nodeRef or null, if template is not found.
      */
@@ -41,15 +40,15 @@ public interface EnumerationService
 
     /**
      * Checks if the specified node is a valid enumeration template.
-     * 
+     *
      * @param nodeRef
      * @return
      */
     public boolean isTemplate(NodeRef nodeRef);
-    
+
     /**
      * Generate number for the node by template with incrementing the counter.
-     * 
+     *
      * @param template - template reference
      * @param nodeInfo - node information
      * @return - generated number
@@ -59,12 +58,12 @@ public interface EnumerationService
 
     /**
      * Generate number for the node by template.
-     * 
+     * <p>
      * If count parameter is not null, the counter is not incremented.
-     * 
+     *
      * @param template - template reference
      * @param nodeInfo - node information
-     * @param count - count value 
+     * @param count    - count value
      * @return - generated number
      * @throws EnumerationException - thrown if number can not be generated
      */
@@ -72,9 +71,9 @@ public interface EnumerationService
 
     /**
      * Generate number for the node by template with incrementing the counter.
-     * 
+     *
      * @param template - template reference
-     * @param nodeRef - node reference
+     * @param nodeRef  - node reference
      * @return - generated number
      * @throws EnumerationException - thrown if number can not be generated
      */
@@ -82,12 +81,12 @@ public interface EnumerationService
 
     /**
      * Generate number for the node by template.
-     * 
+     * <p>
      * If count parameter is not null, the counter is not incremented.
-     * 
+     *
      * @param template - template reference
-     * @param nodeRef - node reference
-     * @param count - count value
+     * @param nodeRef  - node reference
+     * @param count    - count value
      * @return - generated number
      * @throws EnumerationException - thrown if number can not be generated
      */
@@ -95,17 +94,17 @@ public interface EnumerationService
 
     /**
      * Generate number from the model.
-     * 
+     * <p>
      * This is the most general version of getNumber method, all other methods are added for convenience.
      * The model can contain 'node' entry (see KEY_NODE constant), that is automatically converted to Node.
-     * The model can also contain 'count' entry (see KEY_COUNT contant), 
-     *   and if does not contain it, count is generated from template.
-     * 
+     * The model can also contain 'count' entry (see KEY_COUNT constant),
+     * and if does not contain it, count is generated from template.
+     *
      * @param template freemarker template string
-     * @param model model for template
+     * @param model    model for template
      * @return generated number
      * @throws EnumerationException
      */
     public String getNumber(NodeRef template, Map<String, Object> model) throws EnumerationException;
-    
+
 }
