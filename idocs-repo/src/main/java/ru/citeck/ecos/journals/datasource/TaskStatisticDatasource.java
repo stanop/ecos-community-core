@@ -2,10 +2,7 @@ package ru.citeck.ecos.journals.datasource;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
-import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceException;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -24,7 +21,7 @@ import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.record.attribute.JournalAttributeMapValue;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
-import ru.citeck.ecos.model.ActivityModel;
+import ru.citeck.ecos.history.HistoryEventType;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.CriteriaTriplet;
@@ -32,10 +29,11 @@ import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.search.SearchCriteriaParser;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.search.ftsquery.QueryResult;
-import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Task statistic journal prototype
@@ -46,27 +44,19 @@ public class TaskStatisticDatasource implements JournalDataSource {
 
     private static final Log logger = LogFactory.getLog(TaskStatisticDatasource.class);
 
-    private NodeService nodeService;
     private SearchService searchService;
     private NamespaceService namespaceService;
     private SearchCriteriaParser criteriaParser;
-    private WorkflowService workflowService;
     private AssociationIndexPropertyRegistry assocsPropsRegistry;
-
-    private NodeUtils nodeUtils;
 
     @Autowired
     public TaskStatisticDatasource(ServiceRegistry serviceRegistry,
                                    SearchCriteriaParser criteriaParser,
-                                   AssociationIndexPropertyRegistry assocsPropsRegistry,
-                                   NodeUtils nodeUtils) {
+                                   AssociationIndexPropertyRegistry assocsPropsRegistry) {
         this.criteriaParser = criteriaParser;
-        this.nodeService = serviceRegistry.getNodeService();
         this.searchService = serviceRegistry.getSearchService();
         this.namespaceService = serviceRegistry.getNamespaceService();
-        this.workflowService = serviceRegistry.getWorkflowService();
         this.assocsPropsRegistry = assocsPropsRegistry;
-        this.nodeUtils = nodeUtils;
     }
 
     @Override
@@ -74,10 +64,12 @@ public class TaskStatisticDatasource implements JournalDataSource {
                                                String query,
                                                String language,
                                                JournalGqlPageInfoInput pageInfo) {
-        boolean searchByStartedEvent = true;
+
+        int maxItems = pageInfo.getMaxItems() * 2;
 
         FTSQuery searchQuery = FTSQuery.createRaw()
-                                       .maxItems(pageInfo.getMaxItems())
+                                       .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_ASSIGN)
+                                       .maxItems(maxItems)
                                        .skipCount(pageInfo.getSkipCount());
 
         SearchCriteria criteria = criteriaParser.parse(query);
@@ -86,10 +78,8 @@ public class TaskStatisticDatasource implements JournalDataSource {
             try {
                 QName field = QName.resolveToQName(namespaceService, triplet.getField());
                 if (field.equals(HistoryModel.ASSOC_INITIATOR)) {
-                    searchByStartedEvent = false;
                     QName assocPropName = assocsPropsRegistry.getAssociationIndexProperty(HistoryModel.ASSOC_INITIATOR);
-                    searchQuery.value(HistoryModel.PROP_NAME, "task.complete").and()
-                               .value(assocPropName, triplet.getValue());
+                    searchQuery.and().value(assocPropName, triplet.getValue());
                     break;
                 }
             } catch (NamespaceException e) {
@@ -97,55 +87,86 @@ public class TaskStatisticDatasource implements JournalDataSource {
             }
         }
 
-        if (searchByStartedEvent) {
-            searchQuery.value(HistoryModel.PROP_NAME, "task.create");
-        }
-
         QueryResult queryResult = searchQuery.queryDetails(searchService);
-        List<NodeRef> eventsNodes = queryResult.getNodeRefs();
+        List<GqlAlfNode> assignEvents = queryResult.getNodeRefs()
+                                                   .stream()
+                                                   .map(context::getNode)
+                                                   .filter(Optional::isPresent)
+                                                   .map(Optional::get)
+                                                   .collect(Collectors.toList());
+
+        Map<String, GqlAlfNode> assignNodes = new HashMap<>();
+        for (GqlAlfNode assignNode : assignEvents) {
+            String taskId = (String) assignNode.getProperties().get(HistoryModel.PROP_TASK_INSTANCE_ID);
+            if (taskId != null) {
+                GqlAlfNode storedEvent = assignNodes.get(taskId);
+                if (storedEvent == null) {
+                    assignNodes.put(taskId, assignNode);
+                } else {
+                    Date assignDate = (Date) assignNode.getProperties().get(HistoryModel.PROP_DATE);
+                    Date storedAssignDate = (Date) storedEvent.getProperties().get(HistoryModel.PROP_DATE);
+                    if (storedAssignDate == null || assignDate != null && assignDate.after(storedAssignDate)) {
+                        assignNodes.put(taskId, assignNode);
+                    }
+                }
+            }
+        }
 
         List<JournalAttributeValueGql> records = new ArrayList<>();
 
-        for (NodeRef firstEventRef : eventsNodes) {
+        assignNodes.forEach((taskId, assignNode) -> {
 
-            Optional<GqlAlfNode> optFirstEventNode = context.getNode(firstEventRef);
-            if (!optFirstEventNode.isPresent()) {
-                continue;
+            if (records.size() == pageInfo.getMaxItems()) {
+                return;
             }
 
-            String taskId = (String) optFirstEventNode.get().getProperties().get(HistoryModel.PROP_TASK_INSTANCE_ID);
-            Optional<NodeRef> optSecondEvent = FTSQuery.create()
+            List<GqlAlfNode> taskStartStopEvents = FTSQuery.create()
                     .value(HistoryModel.PROP_TASK_INSTANCE_ID, taskId).and()
-                    .value(HistoryModel.PROP_NAME, searchByStartedEvent ? "task.complete" : "task.create")
-                    .queryOne(searchService);
+                    .open()
+                        .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_CREATE).or()
+                        .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_COMPLETE)
+                    .close()
+                    .query(searchService)
+                    .stream()
+                    .map(context::getNode)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
 
-            Optional<GqlAlfNode> optSecondEventNode = optSecondEvent.flatMap(context::getNode);
+            Optional<GqlAlfNode> startEvent = Optional.empty();
+            Optional<GqlAlfNode> completeEvent = Optional.empty();
 
-
-            Map<String, Object> recordAttributes;
-
-            if (searchByStartedEvent) {
-                recordAttributes = getRecord(optFirstEventNode.orElse(null),
-                                             optSecondEventNode.orElse(null),
-                                             context);
-            } else {
-                recordAttributes = getRecord(optSecondEventNode.orElse(null),
-                                             optFirstEventNode.orElse(null),
-                                             context);
+            for (GqlAlfNode node : taskStartStopEvents) {
+                String name = (String) node.getProperties().get(HistoryModel.PROP_NAME);
+                if (HistoryEventType.TASK_CREATE.equals(name)) {
+                    startEvent = Optional.of(node);
+                } else if (HistoryEventType.TASK_COMPLETE.equals(name)) {
+                    completeEvent = Optional.of(node);
+                }
+                if (startEvent.isPresent() && completeEvent.isPresent()) {
+                    break;
+                }
             }
+
+            Map<String, Object> recordAttributes = getRecord(startEvent.orElse(null),
+                                                             completeEvent.orElse(null),
+                                                             assignNode,
+                                                             context);
 
             if (recordAttributes != null) {
-                JournalAttributeMapValue record = new JournalAttributeMapValue(firstEventRef.toString());
+                JournalAttributeMapValue record = new JournalAttributeMapValue(taskId);
                 record.setAttributes(recordAttributes);
                 records.add(record);
             }
-        }
+        });
 
         JournalRecordsConnection connection = new JournalRecordsConnection();
         connection.setRecords(records);
 
+        int numberFound = queryResult.getNodeRefs().size();
+
         JournalGqlPageInfo outPageInfo = new JournalGqlPageInfo();
-        outPageInfo.setHasNextPage(queryResult.hasMore());
+        outPageInfo.setHasNextPage(numberFound == maxItems || queryResult.hasMore());
         outPageInfo.setMaxItems(pageInfo.getMaxItems());
         outPageInfo.setSkipCount(pageInfo.getSkipCount());
         connection.setPageInfo(outPageInfo);
@@ -156,18 +177,19 @@ public class TaskStatisticDatasource implements JournalDataSource {
 
     }
 
-    private Map<String, Object> getRecord(GqlAlfNode startEvent, GqlAlfNode endEvent, GqlContext context) {
+    private Map<String, Object> getRecord(GqlAlfNode startEvent,
+                                          GqlAlfNode endEvent,
+                                          GqlAlfNode assignEvent,
+                                          GqlContext context) {
 
-        if (startEvent == null) {
+        if (startEvent == null || assignEvent == null) {
             return null;
         }
 
-        String documentAttrName = HistoryModel.ASSOC_DOCUMENT.toPrefixString(namespaceService);
-        Attribute documentAttr = startEvent.attribute(documentAttrName);
-        JournalAttributeGql docAttributeGql = new AlfNodeAttribute(documentAttr, context);
-
         Map<String, Object> recordAttributes = new HashMap<>();
 
+        String documentAttrName = HistoryModel.ASSOC_DOCUMENT.toPrefixString(namespaceService);
+        JournalAttributeGql docAttributeGql = getAssocAttribute(startEvent, documentAttrName, context);
         recordAttributes.put(documentAttrName, docAttributeGql);
 
         Map<QName, Serializable> startedProps = startEvent.getProperties();
@@ -183,39 +205,37 @@ public class TaskStatisticDatasource implements JournalDataSource {
         Date startDate = (Date) startedProps.get(HistoryModel.PROP_DATE);
         recordAttributes.put("history:startedDate", ISO8601Utils.format(startDate));
 
-        NodeRef caseTask = (NodeRef) startedProps.get(HistoryModel.PROP_CASE_TASK);
+        Date dueDate = (Date) startEvent.getProperties().get(HistoryModel.PROP_TASK_DUE_DATE);
 
-        int expectedPerformTime = 0;
-        if (caseTask != null) {
-            Integer time = (Integer) nodeService.getProperty(caseTask, ActivityModel.PROP_EXPECTED_PERFORM_TIME);
-            if (time != null) {
-                expectedPerformTime = time;
-                recordAttributes.put("history:expectedPerformTime", time);
-            }
+        long expectedPerformTime = 0;
+        if (dueDate != null) {
+            long timeDiff = dueDate.getTime() - startDate.getTime();
+            expectedPerformTime = Math.round(timeDiff / (1000f * 60 * 60));
+            recordAttributes.put("history:expectedPerformTime", expectedPerformTime);
         }
 
-        final int finalExpPerformTime = expectedPerformTime;
+        String initiatorAttrName = HistoryModel.ASSOC_INITIATOR.toPrefixString(namespaceService);
+        recordAttributes.put(initiatorAttrName, getAssocAttribute(assignEvent, initiatorAttrName, context));
 
         if (endEvent != null) {
-
             Date completionDate = (Date) endEvent.getProperties().get(HistoryModel.PROP_DATE);
             recordAttributes.put("history:completionDate", ISO8601Utils.format(completionDate));
-            long actualPerformTime = (completionDate.getTime() - startDate.getTime()) / (1000 * 60 * 60);
+            long timeDiff = completionDate.getTime() - startDate.getTime();
+            long actualPerformTime = Math.round(timeDiff / (1000f * 60 * 60));
             recordAttributes.put("history:actualPerformTime", actualPerformTime);
             if (actualPerformTime > 0) {
-                recordAttributes.put("history:performTimeRatio", ((float) finalExpPerformTime / actualPerformTime));
+                recordAttributes.put("history:performTimeRatio", ((float) expectedPerformTime / actualPerformTime));
             } else {
                 recordAttributes.put("history:performTimeRatio", 1f);
             }
-
-            String initiatorAttrName = HistoryModel.ASSOC_INITIATOR.toPrefixString(namespaceService);
-
-            Attribute initiatorAttr = endEvent.attribute(initiatorAttrName);
-            AlfNodeAttribute alfNodeInitiatorAttribute = new AlfNodeAttribute(initiatorAttr, context);
-            recordAttributes.put(initiatorAttrName, alfNodeInitiatorAttribute);
         }
 
         return recordAttributes;
+    }
+
+    private AlfNodeAttribute getAssocAttribute(GqlAlfNode node, String key, GqlContext context) {
+        Attribute initiatorAttr = node.attribute(key);
+        return new AlfNodeAttribute(initiatorAttr, context);
     }
 
     @Override

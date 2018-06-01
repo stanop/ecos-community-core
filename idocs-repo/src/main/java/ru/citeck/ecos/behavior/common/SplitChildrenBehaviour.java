@@ -1,6 +1,8 @@
 package ru.citeck.ecos.behavior.common;
 
-import org.alfresco.error.AlfrescoRuntimeException;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies.OnCreateChildAssociationPolicy;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
@@ -9,15 +11,13 @@ import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.*;
-import org.alfresco.service.cmr.search.QueryConsistency;
-import org.alfresco.service.cmr.search.ResultSet;
-import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.alfresco.util.ParameterCheck;
 import org.apache.log4j.Logger;
+import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -50,9 +50,13 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
     private QName containerType = ContentModel.TYPE_FOLDER;
     private QName childAssocType = ContentModel.ASSOC_CONTAINS;
 
-    private Map<Pair<NodeRef, String>, NodeRef> containersCache = new HashMap<>();
+    private LoadingCache<Pair<NodeRef, String>, Optional<NodeRef>> containersCache;
 
     public void init() {
+
+        containersCache = CacheBuilder.newBuilder()
+                                      .maximumSize(400)
+                                      .build(CacheLoader.from(this::queryContainerByName));
 
         ParameterCheck.mandatoryString("node", node);
         ParameterCheck.mandatory("splitBehaviour", splitBehaviour);
@@ -61,33 +65,33 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
         this.policyComponent.bindAssociationBehaviour(
                 OnCreateChildAssociationPolicy.QNAME, containerType, childAssocType,
-                new OrderedBehaviour(this, "onCreateChildAssociation", NotificationFrequency.TRANSACTION_COMMIT, order)
+                new OrderedBehaviour(this, "onCreateChildAssociation",
+                                     NotificationFrequency.TRANSACTION_COMMIT, order)
         );
     }
 
     @Override
     public void onCreateChildAssociation(final ChildAssociationRef childAssociationRef, boolean b) {
 
-        if (!enabled) return;
+        if (!enabled) {
+            return;
+        }
 
         final NodeRef parent = childAssociationRef.getParentRef();
         final NodeRef child = childAssociationRef.getChildRef();
 
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
+        AuthenticationUtil.runAsSystem(() -> {
 
-                if (parent.equals(getNodeRef()) && nodeService.exists(child)
-                        && !containerType.equals(nodeService.getType(child))) {
+            if (parent.equals(getNodeRef()) && nodeService.exists(child)
+                    && !containerType.equals(nodeService.getType(child))) {
 
-                    NodeRef actualParent = nodeService.getPrimaryParent(child).getParentRef();
+                NodeRef actualParent = nodeService.getPrimaryParent(child).getParentRef();
 
-                    if (parent.equals(actualParent)) {
-                        moveChild(childAssociationRef);
-                    }
+                if (parent.equals(actualParent)) {
+                    moveChild(childAssociationRef);
                 }
-                return null;
             }
+            return null;
         });
     }
 
@@ -147,43 +151,28 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
         Pair<NodeRef, String> data = new Pair<>(parent, name);
 
-        NodeRef containerRef = containersCache.get(data);
-        if (containerRef != null && nodeService.exists(containerRef)) {
-            ChildAssociationRef containerParent = nodeService.getPrimaryParent(containerRef);
+        Optional<NodeRef> containerRef = containersCache.getUnchecked(data);
+        if (containerRef.isPresent() && nodeService.exists(containerRef.get())) {
+            ChildAssociationRef containerParent = nodeService.getPrimaryParent(containerRef.get());
             if (Objects.equals(parent, containerParent.getParentRef())) {
-                return containerRef;
+                return containerRef.get();
             }
         }
-
-        containerRef = queryContainerByName(parent, name);
-        containersCache.put(data, containerRef);
-
-        return containerRef;
+        containersCache.invalidate(data);
+        return containersCache.getUnchecked(data).orElse(null);
     }
 
-    private NodeRef queryContainerByName(NodeRef parent, String name) {
+    private Optional<NodeRef> queryContainerByName(Pair<NodeRef, String> parentChild) {
+        return queryContainerByName(parentChild.getFirst(), parentChild.getSecond());
+    }
 
-        String query = String.format("PARENT:\"%s\" AND TYPE:\"%s\" AND =cm\\:name:\"%s\"", parent, containerType, name);
-        SearchParameters searchParameters = new SearchParameters();
-        searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-        searchParameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
-        searchParameters.setQuery(query);
-        searchParameters.setQueryConsistency(QueryConsistency.TRANSACTIONAL);
-
-        ResultSet results = null;
-        try {
-            results = searchService.query(searchParameters);
-            if (results != null && results.length() > 0) {
-                return results.getNodeRef(0);
-            }
-            return null;
-        } catch (Exception e) {
-            throw new AlfrescoRuntimeException("Children search failed. Query: \"" + query + "\"", e);
-        } finally {
-            if (results != null) {
-                results.close();
-            }
-        }
+    private Optional<NodeRef> queryContainerByName(NodeRef parent, String name) {
+        return FTSQuery.create()
+                       .type(containerType).and()
+                       .parent(parent).and()
+                       .exact(ContentModel.PROP_NAME, name)
+                       .transactional()
+                       .queryOne(searchService);
     }
 
     private NodeRef getNodeRef() {
@@ -238,36 +227,6 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
         void onSuccess(NodeRef parent, NodeRef node);
     }
 
-    /*public class ScriptSplit implements SplitBehaviour {
-
-        private String script;
-
-        @Override
-        public List<String> getPath(NodeRef parent, NodeRef node) {
-
-            if (StringUtils.isBlank(script)) {
-                throw new IllegalStateException("Script is not specified!");
-            }
-
-            Map<String, Object> model = new HashMap<>();
-            model.put("document", node);
-
-            @SuppressWarnings("unchecked")
-            List<String> result = (List<String>) scriptService.executeScriptString(script, model);
-
-            return result;
-        }
-
-        @Override
-        public void onSuccess(NodeRef parent, NodeRef node) {
-
-        }
-
-        public void setScript(String script) {
-            this.script = script;
-        }
-    }*/
-
     public static class DateSplit implements SplitBehaviour {
 
         public enum Depth {
@@ -304,9 +263,15 @@ public class SplitChildrenBehaviour implements OnCreateChildAssociationPolicy {
 
                 List<String> path = new ArrayList<>();
 
-                if (depth.hasYear) path.add(String.valueOf(cal.get(Calendar.YEAR)));
-                if (depth.hasMonth) path.add(String.valueOf(cal.get(Calendar.MONTH) + 1));
-                if (depth.hasDay) path.add(String.valueOf(cal.get(Calendar.DAY_OF_MONTH)));
+                if (depth.hasYear) {
+                    path.add(String.valueOf(cal.get(Calendar.YEAR)));
+                }
+                if (depth.hasMonth) {
+                    path.add(String.valueOf(cal.get(Calendar.MONTH) + 1));
+                }
+                if (depth.hasDay) {
+                    path.add(String.valueOf(cal.get(Calendar.DAY_OF_MONTH)));
+                }
 
                 return path;
             }

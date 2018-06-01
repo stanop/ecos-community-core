@@ -811,6 +811,16 @@
         <property name="order" value="400" />
     </bean>
 
+    <bean id="ecos.history-root.split-children" parent="ecos.splitChildrenBehaviour">
+        <property name="node" value="workspace://SpacesStore/history-events-root" />
+        <property name="splitBehaviour">
+            <bean class="ru.citeck.ecos.behavior.common.SplitChildrenBehaviour.DateSplit" />
+        </property>
+        <property name="containerType" value="{http://www.alfresco.org/model/content/1.0}systemfolder" />
+        <property name="childAssocType" value="{http://www.alfresco.org/model/content/1.0}contains" />
+        <property name="order" value="400" />
+    </bean>
+
     <bean id="ru.citeck.ecos.caseTemplateContentSyncBehaviour"
           class="ru.citeck.ecos.cmmn.behaviour.CaseTemplateContentSyncBehaviour">
     </bean>
