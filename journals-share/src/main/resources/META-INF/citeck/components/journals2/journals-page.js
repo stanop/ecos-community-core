@@ -337,15 +337,20 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                                     });
 
                                     if (record) {
-                                        var id = record.attributes()["cm:name"];
+                                        var nameAttr   = record.attributes()["cm:name"],
+                                            name       = nameAttr && nameAttr[0] && nameAttr[0].hasOwnProperty('str') ? nameAttr[0].str : nameAttr,
+                                            titleAttr  = record.attributes()["cm:title"],
+                                            title      = titleAttr && titleAttr[0] && titleAttr[0].hasOwnProperty('str') ? titleAttr[0].str : titleAttr,
+                                            recordName = title || name,
+                                            document   = record.attributes()["wfm:document"];
 
-                                        if (record.isDocument() && record.attributes()["wfm:document"]) {
-                                            id = record.attributes()["wfm:document"].displayName;
+                                        if (record.isDocument() && document) {
+                                            id = document.displayName || (document[0] && document[0].hasOwnProperty('str') ? document[0].str : "");
                                         }
 
                                         rtbody.append(
                                             $("<tr>")
-                                                .append($("<td>", { text: id }))
+                                                .append($("<td>", { text: recordName }))
                                                 .append($("<td>", {
                                                     text: msg("batch-edit.message." + result.status)
                                                 }))

@@ -72,7 +72,7 @@
                             "workspace://SpacesStore/orders-cat-internal-recruitment",
                             "workspace://SpacesStore/orders-cat-internal-dismissal"
                         ];
-                        return (node.properties["dms:updateContent"] == false && view.mode == "create") || (view.mode != "create") || (requiredKinds.indexOf(node.properties['tk:kind'].nodeRef) >= 0);
+                        return (node.properties["dms:updateContent"] == false && view.mode == "create") || (view.mode != "create") || (requiredKinds.indexOf(node.properties['tk:kind'].nodeRef) < 0);
                     })()
                 ]]>
             </invariant>
@@ -86,7 +86,7 @@
                             "workspace://SpacesStore/orders-cat-internal-recruitment",
                             "workspace://SpacesStore/orders-cat-internal-dismissal"
                         ];
-                        return (node.properties["dms:updateContent"] == false && view.mode == "create") || (view.mode != "create") || (requiredKinds.indexOf(node.properties['tk:kind'].nodeRef) >= 0);
+                        return (node.properties["dms:updateContent"] == false && view.mode == "create") || (view.mode != "create") || (requiredKinds.indexOf(node.properties['tk:kind'].nodeRef) < 0);
                     })()
                 ]]>
             </invariant>

@@ -472,7 +472,7 @@ public class LuceneQuery implements SearchQueryBuilder {
                 }
             } else {
                 StringBuilder term = new StringBuilder();
-                term.append(field).append(SEPARATOR).append(QUOTE).append(value).append(QUOTE);
+                term.append(field).append(SEPARATOR).append(QUOTE).append(value.replace("\"", "\\\"")).append(QUOTE);
                 queryElement.setQueryPart(term.toString());
                 if (shouldAppendQuery) {
                     query.append(term);

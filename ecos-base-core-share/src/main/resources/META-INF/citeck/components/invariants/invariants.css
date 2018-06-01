@@ -566,12 +566,12 @@
 }
 
 .invariants-form .template-wide .template-block-checkbox .block-region-input {
-  width: 15px;
   margin-right: 5px;
 }
 
 .invariants-form .template-wide .template-block-checkbox .block-region-label {
   width: calc(100% - 20px);
+  margin-bottom: 10px;
 }
 
 .invariants-form .template-wide .template-message span.validation-message {
