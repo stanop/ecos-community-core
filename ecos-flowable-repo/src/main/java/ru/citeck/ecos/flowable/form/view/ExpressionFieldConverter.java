@@ -29,7 +29,7 @@ public class ExpressionFieldConverter extends FieldConverter<ExpressionFormField
 
     private static final Log logger = LogFactory.getLog(ExpressionFieldConverter.class);
 
-    @Autowired
+    @Autowired(required = false)
     @Qualifier("flowableEngineConfiguration")
     private ProcessEngineConfigurationImpl flowableEngineConfiguration;
 
