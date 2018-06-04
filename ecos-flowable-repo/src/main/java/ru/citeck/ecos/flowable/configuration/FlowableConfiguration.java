@@ -51,8 +51,6 @@ public class FlowableConfiguration {
     private static final String FLOWABLE_DB_PASSWORD = "flowable.db.password";
     private static final String FLOWABLE_DRIVER_CLASS_NAME = "flowable.db.driver.class.name";
 
-    private static final List<String> EXCLUDE_JS_SERVICES = Collections.singletonList("flowableModelerServiceJS");
-
     /**
      * Application context provider
      */
@@ -114,16 +112,6 @@ public class FlowableConfiguration {
             // Beans
             Map<Object, Object> beans = new HashMap<>();
             beans.put(FlowableConstants.SERVICE_REGISTRY_BEAN_KEY, descriptorRegistry);
-            setGlobalListenerBeans(beans);
-
-            // Javascipt services
-            Map<String, BaseScopableProcessorExtension> servicesMap = applicationContext.getBeansOfType(BaseScopableProcessorExtension.class);
-            for (BaseScopableProcessorExtension extension : servicesMap.values()) {
-                if (!EXCLUDE_JS_SERVICES.contains(extension.getExtensionName())) {
-                    beans.put(extension.getExtensionName(), extension);
-                }
-            }
-
             engineConfiguration.setBeans(beans);
 
             // Listeners and handlers
@@ -134,22 +122,6 @@ public class FlowableConfiguration {
             return engineConfiguration;
         } else {
             return null;
-        }
-    }
-
-    /**
-     * Set global listener beans
-     *
-     * @param beans Beans map
-     */
-    private void setGlobalListenerBeans(Map<Object, Object> beans) {
-        Map<String, GlobalExecutionListener> executionListenerMap = applicationContext.getBeansOfType(GlobalExecutionListener.class);
-        for (String key : executionListenerMap.keySet()) {
-            beans.put(key, executionListenerMap.get(key));
-        }
-        Map<String, GlobalTaskListener> taskListenerMap = applicationContext.getBeansOfType(GlobalTaskListener.class);
-        for (String key : taskListenerMap.keySet()) {
-            beans.put(key, taskListenerMap.get(key));
         }
     }
 
