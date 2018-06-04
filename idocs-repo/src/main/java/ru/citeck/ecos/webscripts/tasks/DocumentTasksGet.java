@@ -40,6 +40,7 @@ import org.alfresco.service.cmr.workflow.WorkflowTaskState;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery.OrderBy;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
@@ -60,6 +61,7 @@ public class DocumentTasksGet extends DeclarativeWebScript {
 
     private static final String PARAM_NODEREF = "nodeRef";
     private static final String MODEL_TASK_ID = "taskId";
+    private static final String MODEL_TASK_TITLE = "taskTitle";
     private static final String MODEL_TASK_TYPE = "taskType";
     private static final String MODEL_START_DATE = "startDate";
     private static final String MODEL_DUE_DATE = "dueDate";
@@ -170,13 +172,14 @@ public class DocumentTasksGet extends DeclarativeWebScript {
     private Map<String, Object> generateTaskModel(WorkflowTask task) {
         Map<QName, Serializable> properties = task.getProperties();
         
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put(MODEL_TASK_ID, task.getId());
         model.put(MODEL_TASK_TYPE, task.getName());
         model.put(MODEL_START_DATE, properties.get(WorkflowModel.PROP_START_DATE));
         model.put(MODEL_DUE_DATE, properties.get(WorkflowModel.PROP_DUE_DATE));
         model.put(MODEL_SENDER, properties.get(CiteckWorkflowModel.PROP_SENDER_NAME));
         model.put(MODEL_LAST_COMMENT, properties.get(CiteckWorkflowModel.PROP_LASTCOMMENT));
+        model.put(MODEL_TASK_TITLE, task.getTitle());
 
         List<?> pooledActors = (List<?>) properties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
 
