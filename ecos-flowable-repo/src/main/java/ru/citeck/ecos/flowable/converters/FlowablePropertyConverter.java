@@ -1,5 +1,6 @@
 package ru.citeck.ecos.flowable.converters;
 
+import liquibase.util.StringUtils;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.tenant.TenantService;
@@ -31,6 +32,7 @@ import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.*;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
+import ru.citeck.ecos.model.CiteckWorkflowModel;
 
 import java.io.Serializable;
 import java.util.*;
@@ -490,6 +492,10 @@ public class FlowablePropertyConverter {
                 }
             }
 
+        }
+
+        if (StringUtils.isNotEmpty(task.getName())) {
+            defaultValues.put(CiteckWorkflowModel.PROP_TASK_TITLE, task.getName());
         }
 
         if (defaultValues.size() > 0) {
