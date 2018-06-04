@@ -17,7 +17,8 @@
             <#list task.outcomes?keys as outcome>
                 "${outcome}": "${task.outcomes[outcome]}"<#if outcome_has_next>,</#if>
             </#list>
-            }
+            },
+            "taskTitle": "${task.taskTitle!}"
         }<#if task_has_next>,</#if>
     </#list>
     ]
