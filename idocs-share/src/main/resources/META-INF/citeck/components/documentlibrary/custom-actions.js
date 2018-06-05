@@ -928,7 +928,7 @@ YAHOO.Bubbling.fire("registerAction", {
 				}, {
                     "destination": props.destination,
                     "destinationAssoc": props.destinationAssoc,
-                    "title": props.title
+                    "title": this.msg(props.title) || props.title
                 });
             }
         }
