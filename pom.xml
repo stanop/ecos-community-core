@@ -578,6 +578,7 @@
                             <nonFilteredFileExtension>ico</nonFilteredFileExtension>
                             <nonFilteredFileExtension>psd</nonFilteredFileExtension>
                             <nonFilteredFileExtension>js</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>jsx</nonFilteredFileExtension>
                         </nonFilteredFileExtensions>
                     </configuration>
                 </plugin>
@@ -643,6 +644,45 @@
                             </configuration>
                         </execution>
                     </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.github.eirslett</groupId>
+                    <artifactId>frontend-maven-plugin</artifactId>
+                    <version>1.6</version>
+                    <executions>
+                        <execution>
+                            <id>install node and npm</id>
+                            <goals>
+                                <goal>install-node-and-npm</goal>
+                            </goals>
+                            <phase>generate-resources</phase>
+                        </execution>
+                        <execution>
+                            <id>npm install</id>
+                            <goals>
+                                <goal>npm</goal>
+                            </goals>
+                            <phase>generate-resources</phase>
+                            <configuration>
+                                <arguments>install</arguments>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>npm build</id>
+                            <goals>
+                                <goal>npm</goal>
+                            </goals>
+                            <phase>process-resources</phase>
+                            <configuration>
+                                <arguments>run-script build</arguments>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <installDirectory>../nodejs</installDirectory>
+                        <nodeVersion>v8.11.2</nodeVersion>
+                    </configuration>
                 </plugin>
 
             </plugins>
