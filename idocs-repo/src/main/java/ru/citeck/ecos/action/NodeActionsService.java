@@ -13,6 +13,7 @@ import org.alfresco.util.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
 
 import java.util.*;
@@ -69,6 +70,10 @@ public class NodeActionsService {
             for (NodeActionDefinition action : list) {
                 action.setActionId(Integer.toString(id++));
                 if (action.isValid()) {
+                    String newTitle = I18NUtil.getMessage(action.getTitle());
+                    if (newTitle != null) {
+                        action.setTitle(newTitle);
+                    }
                     actionsData.add(action.getProperties());
                 } else {
                     StringBuilder sb = new StringBuilder();
