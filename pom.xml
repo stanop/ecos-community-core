@@ -675,11 +675,12 @@
                             </goals>
                             <phase>process-resources</phase>
                             <configuration>
-                                <arguments>run-script build</arguments>
+                                <arguments>run-script build -- --${project.artifactId}</arguments>
                             </configuration>
                         </execution>
                     </executions>
                     <configuration>
+                        <workingDirectory>../</workingDirectory>
                         <installDirectory>../nodejs</installDirectory>
                         <nodeVersion>v8.11.2</nodeVersion>
                     </configuration>

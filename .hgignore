@@ -13,8 +13,9 @@ build.properties
 *~
 target/*
 nodejs/*
-*/node_modules/*
-*/package-lock.json
+node_modules/*
+node/*
+package-lock.json
 */$*
 *.log
 *.log.*

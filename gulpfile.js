@@ -5,7 +5,9 @@ let gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     cleanCSS = require('gulp-clean-css');
 
-let webRoot = "target/classes/META-INF/";
+let moduleId = process.argv[3].substring(2);
+
+let webRoot = moduleId + "/target/classes/META-INF/";
 let source = {
     jsx: [
         webRoot + '**/*.jsx'
@@ -28,7 +30,7 @@ gulp.task('process-css', function() {
             rebase: false
         }))
         .pipe(rename(function (path) {
-            path.basename += "-min";
+            path.basename += ".min";
         }))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(function(file) {
@@ -42,10 +44,15 @@ gulp.task('process-jsx', function() {
         .pipe(babel({
             compact: true,
             comments: false,
-            plugins: ["transform-es2015-modules-amd"]
+            presets: [
+                ['env', {
+                    modules: 'amd'
+                }],
+                'react'
+            ]
         }))
         .pipe(rename(function (path) {
-            path.basename += "-min";
+            path.basename += ".min";
         }))
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(function(file) {
@@ -57,7 +64,12 @@ gulp.task('process-js', function() {
     return gulp.src(source.js)
         .pipe(sourcemaps.init())
         .pipe(babel({
-            compact: false
+            compact: false,
+            presets: [
+                ['env', {
+                    modules: false
+                }]
+            ]
         }))
         .pipe(uglify())
         .pipe(rename(function (path) {
