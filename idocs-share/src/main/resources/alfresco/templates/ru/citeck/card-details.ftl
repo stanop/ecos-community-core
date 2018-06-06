@@ -10,7 +10,6 @@
    <@link rel="stylesheet" type="text/css" href="${url.context}/res/components/folder-details/folder-details-panel.css" />
    <@link rel="stylesheet" type="text/css" href="${url.context}/res/components/document-details/document-details-panel.css" />
    <@templateHtmlEditorAssets />
-
     <#include "/org/alfresco/components/form/form.css.ftl"/>
     <#include "/org/alfresco/components/form/form.js.ftl"/>
 </@>
@@ -26,12 +25,14 @@
 
 <@templateBody>
 	<div id="alf-hd">
-        <#include "/ru/citeck/include/header.ftl" />
+   <#include "/ru/citeck/include/header.ftl" />
 	</div>
 	<div id="bd">
+
 		<@region id="actions-common" scope="template" />
-	
-		<@renderRegions topRegions />
+		<div id="card-details-root"></div>
+
+		<#--<@renderRegions topRegions />
 		<div class="yui-gc">
 			<div class="yui-u first">
 				<@renderRegions leftRegions />
@@ -40,7 +41,7 @@
 				<@renderRegions rightRegions />
 			</div>
 		</div>
-		<@renderRegions bottomRegions />
+		<@renderRegions bottomRegions />-->
 	</div>
 	
 	<@region id="html-upload" scope="template"/>
@@ -49,10 +50,22 @@
 	<@region id="dnd-upload" scope="template"/>
 	<@region id="archive-and-download" scope="template"/>
 	<@region id="doclib-custom" scope="template"/>
+
 </@>
 
 <@templateFooter>
 	<div id="alf-ft">
 		<@region id="footer" scope="global" />
 	</div>
+
+<script type="text/javascript">
+    require(['js/citeck/modules/card-details/card-details', 'react-dom', 'react'], function(comp, ReactDOM, React) {
+        ReactDOM.render(
+												React.createElement(comp.CardDetails, {
+																nodeRef: "${nodeRef!"workspace://SpacesStore/journal-meta-j-active-tasks"}"
+												}),
+												document.getElementById('card-details-root')
+        );
+    });
+</script>
 </@>

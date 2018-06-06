@@ -1,5 +1,12 @@
 <import resource="classpath:/alfresco/templates/org/alfresco/import/alfresco-util.js">
 
+if (!this['page']) {
+    page = {
+        url: url
+    };
+    model.page = page;
+}
+
 function getAssocList(assocs, listName, defaultList) {
     var listElements = assocs.childrenMap[listName];
     var list = [];
