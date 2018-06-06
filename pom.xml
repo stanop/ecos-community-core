@@ -67,6 +67,8 @@
 
         <flowable.version>6.3.0</flowable.version>
         <ecos.flowable.version>1.2.0-SNAPSHOT</ecos.flowable.version>
+
+        <web.compression.skip>false</web.compression.skip>
     </properties>
 
     <profiles>
@@ -83,7 +85,7 @@
         <profile>
             <id>development</id>
             <properties>
-                <yuicompressor.compress.skip>true</yuicompressor.compress.skip>
+                <web.compression.skip>true</web.compression.skip>
             </properties>
         </profile>
         <profile>
@@ -623,30 +625,6 @@
                 </plugin>
 
                 <plugin>
-                    <groupId>net.alchim31.maven</groupId>
-                    <artifactId>yuicompressor-maven-plugin</artifactId>
-                    <version>1.5.1</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>compress</goal>
-                            </goals>
-                            <configuration>
-                                <jswarn>false</jswarn>
-                                <skip>${yuicompressor.compress.skip}</skip>
-                                <excludes>
-                                    <exclude>alfresco/**</exclude>
-                                    <exclude>**/*.min.js</exclude>
-                                    <exclude>**/*-min.js</exclude>
-                                    <exclude>**/*.min.css</exclude>
-                                    <exclude>**/*-min.css</exclude>
-                                </excludes>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <plugin>
                     <groupId>com.github.eirslett</groupId>
                     <artifactId>frontend-maven-plugin</artifactId>
                     <version>1.6</version>
@@ -675,7 +653,7 @@
                             </goals>
                             <phase>process-resources</phase>
                             <configuration>
-                                <arguments>run-script build -- --${project.artifactId}</arguments>
+                                <arguments>run-script build -- --artifactId=${project.artifactId} --skipCompression=${web.compression.skip}</arguments>
                             </configuration>
                         </execution>
                     </executions>

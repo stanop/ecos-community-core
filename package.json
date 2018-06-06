@@ -1,10 +1,11 @@
 {
-  "name": "idocs-share",
+  "name": "ecos-community",
   "version": "1.0.0",
-  "description": "idocs-share",
+  "description": "ecos-community",
   "repository": "-",
   "devDependencies": {
     "gulp": "3.9.1",
+    "gulp-util": "3.0.8",
     "react": "16.4.0",
     "gulp-babel": "7.0.1",
     "gulp-sourcemaps": "2.6.4",
