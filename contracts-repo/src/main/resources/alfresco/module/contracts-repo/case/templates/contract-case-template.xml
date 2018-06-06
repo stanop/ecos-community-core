@@ -1558,7 +1558,7 @@
                 </cmmn:planItem>
                 <cmmn:planItem definitionRef="id-297" id="id-298"/>
                 <cmmn:sentry id="id-299" ns8:originalEvent="user-action" ns8:additionalDataType="iEvent:additionalConfirmer">
-                    <cmmn:planItemOnPart sourceRef="id-298" id="id-296" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/iEvent/1.0}userAction" ns8:title="Добавить дополнительного согласующего">
+                    <cmmn:planItemOnPart sourceRef="id-298" id="id-296" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/iEvent/1.0}userAction" ns8:title="userActions.contract.property.addApprover">
                         <cmmn:standardEvent>occur</cmmn:standardEvent>
                     </cmmn:planItemOnPart>
                     <cmmn:ifPart>
@@ -1656,7 +1656,7 @@ confirmUtils.canAddConfirmer()&lt;/value&gt;
                 </cmmn:planItem>
                 <cmmn:planItem definitionRef="id-330" id="id-331"/>
                 <cmmn:sentry id="id-332" ns8:originalEvent="user-action" ns8:additionalDataType="ctrEvent:cancelApproval">
-                    <cmmn:planItemOnPart sourceRef="id-331" id="id-329" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/iEvent/1.0}userAction" ns8:title="Отмена согласования">
+                    <cmmn:planItemOnPart sourceRef="id-331" id="id-329" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/iEvent/1.0}userAction" ns8:title="userActions.contract.property.approvalCancelation">
                         <cmmn:standardEvent>occur</cmmn:standardEvent>
                     </cmmn:planItemOnPart>
                     <cmmn:ifPart>
