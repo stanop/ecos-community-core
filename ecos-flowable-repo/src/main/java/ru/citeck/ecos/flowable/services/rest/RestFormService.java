@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.http.BasicAuthInterceptor;
 
 import javax.annotation.PostConstruct;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -111,8 +112,11 @@ public class RestFormService {
 
         SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
 
+        HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+
         CloseableHttpClient httpClient = HttpClients.custom()
                 .setSSLSocketFactory(csf)
+                .setSSLHostnameVerifier(hostnameVerifier)
                 .build();
 
         HttpComponentsClientHttpRequestFactory requestFactory =
