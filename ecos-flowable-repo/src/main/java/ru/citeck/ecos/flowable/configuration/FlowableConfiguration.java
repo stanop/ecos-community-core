@@ -52,6 +52,17 @@ public class FlowableConfiguration {
     private static final String FLOWABLE_DRIVER_CLASS_NAME = "flowable.db.driver.class.name";
 
     /**
+     * Mail properties constants
+     */
+    private static final String FLOWABLE_MAIL_SERVER_HOST = "flowable.mail.server.host";
+    private static final String FLOWABLE_MAIL_SERVER_PORT = "flowable.mail.server.port";
+    private static final String FLOWABLE_MAIL_SERVER_USERNAME = "flowable.mail.server.username";
+    private static final String FLOWABLE_MAIL_SERVER_PASSWORD = "flowable.mail.server.password";
+    private static final String FLOWABLE_MAIL_SERVER_DEFAULT_FROM = "flowable.mail.server.default.from";
+    private static final String FLOWABLE_MAIL_SERVER_USE_TLS = "flowable.mail.server.use.tls";
+    private static final String FLOWABLE_MAIL_SERVER_USE_SSL = "flowable.mail.server.use.ssl";
+
+    /**
      * Application context provider
      */
     @Autowired
@@ -114,6 +125,7 @@ public class FlowableConfiguration {
             beans.put(FlowableConstants.SERVICE_REGISTRY_BEAN_KEY, descriptorRegistry);
             engineConfiguration.setBeans(beans);
 
+            setMailConfiguration(engineConfiguration);
             // Listeners and handlers
             List<BpmnParseHandler> parseHandlers = new ArrayList<>(2);
             parseHandlers.add(new ProcessBpmnParseHandler());
@@ -122,6 +134,46 @@ public class FlowableConfiguration {
             return engineConfiguration;
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Set mail configuration
+     * @param processEngineConfiguration Process engine configuration
+     */
+    private void setMailConfiguration(StandaloneProcessEngineConfiguration processEngineConfiguration) {
+        String mailHost = properties.getProperty(FLOWABLE_MAIL_SERVER_HOST);
+        if (mailHost != null) {
+            processEngineConfiguration.setMailServerHost(mailHost);
+        }
+
+        String mailPort = properties.getProperty(FLOWABLE_MAIL_SERVER_PORT);
+        if (mailPort != null) {
+            processEngineConfiguration.setMailServerPort(Integer.valueOf(mailPort));
+        }
+
+        String mailUsername = properties.getProperty(FLOWABLE_MAIL_SERVER_USERNAME);
+        if (mailUsername != null) {
+            processEngineConfiguration.setMailServerUsername(mailUsername);
+        }
+
+        String mailPassword = properties.getProperty(FLOWABLE_MAIL_SERVER_PASSWORD);
+        if (mailPassword != null) {
+            processEngineConfiguration.setMailServerPassword(mailPassword);
+        }
+
+        String mailDefaultFrom = properties.getProperty(FLOWABLE_MAIL_SERVER_DEFAULT_FROM);
+        if (mailDefaultFrom != null) {
+            processEngineConfiguration.setMailServerDefaultFrom(mailDefaultFrom);
+        }
+
+        String mailUseTLS = properties.getProperty(FLOWABLE_MAIL_SERVER_USE_TLS);
+        if (mailUseTLS != null) {
+            processEngineConfiguration.setMailServerUseTLS(Boolean.valueOf(mailUseTLS));
+        }
+        String mailUseSSL = properties.getProperty(FLOWABLE_MAIL_SERVER_USE_SSL);
+        if (mailUseSSL != null) {
+            processEngineConfiguration.setMailServerUseSSL(Boolean.valueOf(mailUseSSL));
         }
     }
 
