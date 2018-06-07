@@ -90,27 +90,12 @@ class Cardlet extends React.Component {
             return response.text();
         }).then(text => {
 
-            let scriptSrcRegexp = /<script type="text\/javascript" src="\/share\/res\/([^_]+)_\S+?.js"><\/script>/g;
-            let dependencies = [];
+            let scriptSrcRegexp = /<script type="text\/javascript" src="\/share\/res\/([^_]+)_\S+?\.js"><\/script>/g;
+            let dependencies = ['jquery'];
             text = text.replace(scriptSrcRegexp, function (match, jsSrc) {
                 dependencies.push(jsSrc);
                 return '';
             });
-
-            if (dependencies.length > 0) {
-
-                let inlineScriptRegexp = /<script type="text\/javascript">\/\/<!\[CDATA\[([\S\s]+?)\/\/]]><\/script>/g;
-                let inlineScripts = [];
-
-                text = text.replace(inlineScriptRegexp, function (match, inlineScript) {
-                    inlineScripts.push(inlineScript);
-                    return '';
-                });
-
-                text += '\n' + '<script type="text/javascript">' +
-                                   '//<![CDATA[\n' + inlineScripts.join('\n') + '\n\/\/]]>' +
-                               '</script>';
-            }
 
             this.resolveDependencies(dependencies, 0, () => {
                 $('#' + this.state.cardletRootId).html(text);
