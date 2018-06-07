@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>get-cardlet</shortname>
+    <description>Get card-details cardlet</description>
+    <url>/citeck/card-details/cardlet?nodeRef={nodeRef?}&amp;regionId={regionId}</url>
+    <format default="html">any</format>
+</webscript>

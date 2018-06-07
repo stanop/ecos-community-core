@@ -5,7 +5,7 @@
   "repository": "-",
   "devDependencies": {
     "gulp": "3.9.1",
-    "gulp-util": "3.0.8",
+    "through2": "2.0.3",
     "react": "16.4.0",
     "gulp-babel": "7.0.1",
     "gulp-sourcemaps": "2.6.4",
