@@ -3,11 +3,6 @@
    <@link rel="stylesheet" type="text/css" href="${url.context}/res/components/document-details/document-workflows.css" group="inactive-workflows" />
 </@>
 
-<@markup id="js">
-   <#-- JavaScript Dependencies -->
-   <@script type="text/javascript" src="${url.context}/res/citeck/components/document-details/inactive-workflows.js" group="inactive-workflows" />
-</@>
-
 <#if workflows??>
    <#assign el=args.htmlid?js_string>
 
@@ -69,13 +64,15 @@
 
       <#if workflows?size &gt; 0>
          <script type="text/javascript">
-            new Citeck.widget.InactiveWorkflows("${el}").setOptions({
-               isActiveWorkflows: ${args.active},
-               sortBy: "${args.sortBy}",
-               nodeRef: "${nodeRef?js_string}",
-               siteId: <#if site??>"${site?js_string}"<#else>null</#if>,
-               destination: <#if destination??>"${destination}"<#else>null</#if>
-            }).setMessages(${messages});
+             require(['citeck/components/document-details/inactive-workflows'], function() {
+                 new Citeck.widget.InactiveWorkflows("${el}").setOptions({
+                     isActiveWorkflows: ${args.active},
+                     sortBy: "${args.sortBy}",
+                     nodeRef: "${nodeRef?js_string}",
+                 siteId: <#if site??>"${site?js_string}"<#else>null</#if>,
+                 destination: <#if destination??>"${destination}"<#else>null</#if>
+                 }).setMessages(${messages});
+             });
          </script>
       </#if>
 

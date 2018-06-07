@@ -114,9 +114,7 @@
     <bean id="webscript.ru.citeck.components.card.cardlet.get"
 		class="ru.citeck.ecos.webscripts.CardletGet"
 		parent="webscript">
-        <property name="configService" ref="web.config" />
         <property name="modelObjectService" ref="webframework.service.modelobject" />
-        <property name="webScriptsContainer" ref="ecos.local.webscripts.container" />
 	</bean>
 
 	<!-- webscript-messages webscript -->
