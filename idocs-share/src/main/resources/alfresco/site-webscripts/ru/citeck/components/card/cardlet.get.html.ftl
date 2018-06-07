@@ -1,3 +1,4 @@
 <@outputCSS/>
 <@outputJavaScript/>
-<@region id="${args.regionId}" scope="page" chromeless="true" source="card-details" />
+<#assign chromelessParam = (args.chromeless!"false") />
+<@region id="${args.regionId}" scope="page" chromeless=chromelessParam source="card-details" />
