@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="contracts.workflowMirror.documentToCounterparty.mapping" class="ru.citeck.ecos.spring.registry.MappingRegistrar">
+        <property name="mapping">
+            <map>
+                <entry key="payments:payment" value="payments:beneficiary"/>
+                <entry key="contracts:agreement" value="contracts:contractor"/>
+                <entry key="contracts:closingDocument" value="contracts:contractor"/>
+                <entry key="contracts:supplementaryAgreement" value="contracts:contractor"/>
+            </map>
+        </property>
+    </bean>
+
+</beans>
