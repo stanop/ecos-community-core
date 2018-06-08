@@ -31,15 +31,8 @@
                     <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/tasks/task-statistic</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
-                <!--<props>
-                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
-                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/tasks/journal-in-list.xml</prop>
-                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/tasks/task-statistic</prop>
-                    <prop key="encoding">UTF-8</prop>
-                </props>-->
             </list>
         </property>
     </bean>
-
 
 </beans>
