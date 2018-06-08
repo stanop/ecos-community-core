@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2018 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -20,8 +20,6 @@ package ru.citeck.ecos.model;
 
 import org.alfresco.service.namespace.QName;
 
-import javax.print.attribute.standard.MediaSize;
-
 public interface WorkflowMirrorModel {
 
     public static final String NAMESPACE = "http://www.citeck.ru/model/workflow-mirror/1.0";
@@ -41,6 +39,7 @@ public interface WorkflowMirrorModel {
     public static final QName PROP_ASSIGNEE_MANAGER = QName.createQName(NAMESPACE, "assigneeManager");
     public static final QName PROP_WORKFLOW_NAME = QName.createQName(NAMESPACE, "workflowName");
     public static final QName PROP_WORKFLOW_INITIATOR = QName.createQName(NAMESPACE, "workflowInitiator");
+    public static final QName PROP_COUNTERPARTY = QName.createQName(NAMESPACE, "counterparty");
 
     public static final QName ASSOC_ASSIGNEE_MIRROR = QName.createQName(NAMESPACE, "assigneeMirror");
 }

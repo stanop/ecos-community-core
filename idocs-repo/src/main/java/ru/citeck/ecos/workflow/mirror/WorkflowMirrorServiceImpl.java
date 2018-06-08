@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2018 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -25,6 +25,7 @@ import org.alfresco.repo.processor.BaseProcessorExtension;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionService;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.i18n.MessageLookup;
@@ -39,6 +40,7 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
 import org.alfresco.service.cmr.workflow.WorkflowTaskState;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
@@ -49,11 +51,14 @@ import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.orgstruct.OrgStructService;
+import ru.citeck.ecos.spring.registry.MappingRegistry;
 import ru.citeck.ecos.utils.NodeUtils;
+import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements WorkflowMirrorService {
 
@@ -74,6 +79,8 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     private DictionaryService dictionaryService;
     private MessageLookup messageLookup;
     private NodeService mlAwareNodeService;
+    private NamespaceService namespaceService;
+    private MappingRegistry<String, String> documentToCounterparty;
 
     private NodeUtils nodeUtils;
 
@@ -165,7 +172,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     private void mirrorTaskBeforeCommit(String taskId) {
         TransactionUtils.processAfterBehaviours(KEY_TASKS_TO_MIRROR, taskId, id ->
-            mirrorTaskImpl(getTask(id), getTaskMirror(id))
+                mirrorTaskImpl(getTask(id), getTaskMirror(id))
         );
     }
 
@@ -208,6 +215,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT, document);
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE, nodeService.getType(document));
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE_TITLE, getMlDocumentTypeTitle(document));
+                nodeInfo.setProperty(WorkflowMirrorModel.PROP_COUNTERPARTY, getCounterparty(document));
 
                 NodeRef documentKind = getDocumentKind(document);
                 if (documentKind != null && nodeService.exists(documentKind)) {
@@ -242,7 +250,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     private LinkedList<NodeRef> getActors(WorkflowTask task) {
         String assigneeName = (String) task.getProperties().get(ContentModel.PROP_OWNER);
-        LinkedList<NodeRef> results = new LinkedList<NodeRef>();
+        LinkedList<NodeRef> results = new LinkedList<>();
         if (assigneeName == null) {
             @SuppressWarnings({"unchecked", "rawtypes"})
             List<NodeRef> pooledActors = (List) task.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
@@ -376,6 +384,33 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         return null;
     }
 
+    private NodeRef getCounterparty(NodeRef document) {
+        QName documentType = nodeService.getType(document);
+
+        Map<QName, QName> mapping = documentToCounterparty.getMapping().entrySet().stream().collect(Collectors.toMap(
+                entry -> QName.resolveToQName(namespaceService, entry.getKey()),
+                entry -> QName.resolveToQName(namespaceService, entry.getValue())
+        ));
+
+        if (mapping.containsKey(documentType)) {
+            return RepoUtils.getFirstTargetAssoc(document, mapping.get(documentType), nodeService);
+        }
+
+        ClassDefinition classDefinition = dictionaryService.getClass(documentType);
+        while (classDefinition != null) {
+            classDefinition = classDefinition.getParentClassDefinition();
+            if (classDefinition != null) {
+                QName currentName = classDefinition.getName();
+                if (mapping.containsKey(currentName)) {
+                    QName assocType= mapping.get(currentName);
+                    return RepoUtils.getFirstTargetAssoc(document, assocType, nodeService);
+                }
+            }
+        }
+
+        return null;
+    }
+
     public void setSearchService(SearchService searchService) {
         this.searchService = searchService;
     }
@@ -419,7 +454,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     public void setDictionaryService(DictionaryService dictionaryService) {
         this.dictionaryService = dictionaryService;
     }
-    
+
     @Autowired
     public void setNodeUtils(NodeUtils nodeUtils) {
         this.nodeUtils = nodeUtils;
@@ -431,5 +466,13 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     public void setMlAwareNodeService(NodeService mlAwareNodeService) {
         this.mlAwareNodeService = mlAwareNodeService;
+    }
+
+    public void setDocumentToCounterparty(MappingRegistry<String, String> documentToCounterparty) {
+        this.documentToCounterparty = documentToCounterparty;
+    }
+
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
     }
 }

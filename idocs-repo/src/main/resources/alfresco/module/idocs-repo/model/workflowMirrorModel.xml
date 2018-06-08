@@ -83,6 +83,14 @@
                         <tokenised>false</tokenised>
                     </index>
                 </property>
+                <property name="wfm:counterparty">
+                    <type>d:noderef</type>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <stored>false</stored>
+                        <tokenised>false</tokenised>
+                    </index>
+                </property>
             </properties>
             <associations>
                 <association name="wfm:assigneeMirror">
