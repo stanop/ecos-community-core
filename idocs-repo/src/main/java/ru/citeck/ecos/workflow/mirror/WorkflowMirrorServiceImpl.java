@@ -25,6 +25,7 @@ import org.alfresco.repo.processor.BaseProcessorExtension;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionService;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.i18n.MessageLookup;
@@ -39,6 +40,7 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
 import org.alfresco.service.cmr.workflow.WorkflowTaskState;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
@@ -56,6 +58,7 @@ import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements WorkflowMirrorService {
 
@@ -76,7 +79,8 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     private DictionaryService dictionaryService;
     private MessageLookup messageLookup;
     private NodeService mlAwareNodeService;
-    private MappingRegistry<QName, QName> documentToCounterparty;
+    private NamespaceService namespaceService;
+    private MappingRegistry<String, String> documentToCounterparty;
 
     private NodeUtils nodeUtils;
 
@@ -381,26 +385,30 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     }
 
     private NodeRef getCounterparty(NodeRef document) {
-        NodeRef counterparty = null;
         QName documentType = nodeService.getType(document);
 
-        Map<QName, QName> mapping = documentToCounterparty.getMapping();
+        Map<QName, QName> mapping = documentToCounterparty.getMapping().entrySet().stream().collect(Collectors.toMap(
+                entry -> QName.resolveToQName(namespaceService, entry.getKey()),
+                entry -> QName.resolveToQName(namespaceService, entry.getValue())
+        ));
 
         if (mapping.containsKey(documentType)) {
             return RepoUtils.getFirstTargetAssoc(document, mapping.get(documentType), nodeService);
         }
 
-        for (Map.Entry<QName, QName> entry : mapping.entrySet()) {
-            QName docType = entry.getKey();
-            QName assocType = entry.getValue();
-
-            if (dictionaryService.isSubClass(documentType, docType)) {
-                counterparty = RepoUtils.getFirstTargetAssoc(document, assocType, nodeService);
-                break;
+        ClassDefinition classDefinition = dictionaryService.getClass(documentType);
+        while (classDefinition != null) {
+            classDefinition = classDefinition.getParentClassDefinition();
+            if (classDefinition != null) {
+                QName currentName = classDefinition.getName();
+                if (mapping.containsKey(currentName)) {
+                    QName assocType= mapping.get(currentName);
+                    return RepoUtils.getFirstTargetAssoc(document, assocType, nodeService);
+                }
             }
         }
 
-        return counterparty;
+        return null;
     }
 
     public void setSearchService(SearchService searchService) {
@@ -460,7 +468,11 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         this.mlAwareNodeService = mlAwareNodeService;
     }
 
-    public void setDocumentToCounterparty(MappingRegistry<QName, QName> documentToCounterparty) {
+    public void setDocumentToCounterparty(MappingRegistry<String, String> documentToCounterparty) {
         this.documentToCounterparty = documentToCounterparty;
+    }
+
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
     }
 }

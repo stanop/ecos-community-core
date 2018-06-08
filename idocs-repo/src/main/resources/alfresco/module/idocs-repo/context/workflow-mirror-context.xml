@@ -43,6 +43,7 @@
 		<property name="dictionaryService" ref="dictionaryService" />
 		<property name="messageLookup" ref="messageService" />
 		<property name="mlAwareNodeService" ref="mlAwareNodeService" />
+		<property name="namespaceService" ref="namespaceService"/>
 		<property name="documentToCounterparty" ref="documentToCounterparty.mappingRegistry"/>
 	</bean>
 
