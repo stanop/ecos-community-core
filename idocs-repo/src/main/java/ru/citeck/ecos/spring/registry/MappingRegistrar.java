@@ -1,7 +1,5 @@
 package ru.citeck.ecos.spring.registry;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +13,6 @@ public class MappingRegistrar<K, V> {
 
     private Map<K, V> mapping = new HashMap<>();
 
-    @Autowired
     public MappingRegistrar(MappingRegistry<K, V> registry) {
         this.registry = registry;
     }

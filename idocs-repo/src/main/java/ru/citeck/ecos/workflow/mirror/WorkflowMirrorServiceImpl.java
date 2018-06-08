@@ -39,7 +39,6 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
 import org.alfresco.service.cmr.workflow.WorkflowTaskState;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
@@ -77,8 +76,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     private DictionaryService dictionaryService;
     private MessageLookup messageLookup;
     private NodeService mlAwareNodeService;
-    private NamespaceService namespaceService;
-    private MappingRegistry documentToCounterparty;
+    private MappingRegistry<QName, QName> documentToCounterparty;
 
     private NodeUtils nodeUtils;
 
@@ -248,7 +246,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     private LinkedList<NodeRef> getActors(WorkflowTask task) {
         String assigneeName = (String) task.getProperties().get(ContentModel.PROP_OWNER);
-        LinkedList<NodeRef> results = new LinkedList<NodeRef>();
+        LinkedList<NodeRef> results = new LinkedList<>();
         if (assigneeName == null) {
             @SuppressWarnings({"unchecked", "rawtypes"})
             List<NodeRef> pooledActors = (List) task.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
@@ -382,19 +380,23 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     private NodeRef getCounterparty(NodeRef document) {
         NodeRef counterparty = null;
         QName documentType = nodeService.getType(document);
 
-        Map<String, String> mapping = documentToCounterparty.getMapping();
+        Map<QName, QName> mapping = documentToCounterparty.getMapping();
 
-        for (Map.Entry<String, String> entry : mapping.entrySet()) {
-            QName docType = QName.resolveToQName(namespaceService, entry.getKey());
-            QName assocType = QName.resolveToQName(namespaceService, entry.getValue());
+        if (mapping.containsKey(documentType)) {
+            return RepoUtils.getFirstTargetAssoc(document, mapping.get(documentType), nodeService);
+        }
+
+        for (Map.Entry<QName, QName> entry : mapping.entrySet()) {
+            QName docType = entry.getKey();
+            QName assocType = entry.getValue();
 
             if (dictionaryService.isSubClass(documentType, docType)) {
                 counterparty = RepoUtils.getFirstTargetAssoc(document, assocType, nodeService);
+                break;
             }
         }
 
@@ -458,11 +460,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         this.mlAwareNodeService = mlAwareNodeService;
     }
 
-    public void setDocumentToCounterparty(MappingRegistry documentToCounterparty) {
+    public void setDocumentToCounterparty(MappingRegistry<QName, QName> documentToCounterparty) {
         this.documentToCounterparty = documentToCounterparty;
-    }
-
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
     }
 }

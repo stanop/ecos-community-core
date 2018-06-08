@@ -19,6 +19,7 @@
 	<bean id="documentToCounterparty.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
 
 	<bean id="idocs.workflowMirror.documentToCounterparty.mapping" class="ru.citeck.ecos.spring.registry.MappingRegistrar">
+		<constructor-arg ref="documentToCounterparty.mappingRegistry"/>
 		<property name="mapping">
 			<map>
 				<entry key="idocs:doc" value="idocs:contractor"/>
@@ -42,7 +43,6 @@
 		<property name="dictionaryService" ref="dictionaryService" />
 		<property name="messageLookup" ref="messageService" />
 		<property name="mlAwareNodeService" ref="mlAwareNodeService" />
-		<property name="namespaceService" ref="namespaceService"/>
 		<property name="documentToCounterparty" ref="documentToCounterparty.mappingRegistry"/>
 	</bean>
 

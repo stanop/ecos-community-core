@@ -3,6 +3,7 @@
 <beans>
 
     <bean id="contracts.workflowMirror.documentToCounterparty.mapping" class="ru.citeck.ecos.spring.registry.MappingRegistrar">
+        <constructor-arg ref="documentToCounterparty.mappingRegistry"/>
         <property name="mapping">
             <map>
                 <entry key="payments:payment" value="payments:beneficiary"/>
