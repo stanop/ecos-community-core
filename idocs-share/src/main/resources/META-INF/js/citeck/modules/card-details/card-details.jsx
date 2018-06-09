@@ -1,5 +1,6 @@
 
 import React from 'react';
+import {SurfRegion} from "../surf/surf-region";
 
 export class CardDetails extends React.Component {
 
@@ -11,13 +12,14 @@ export class CardDetails extends React.Component {
     }
 
     componentDidMount() {
+        let pageArgs = this.props.pageArgs;
         let requestArgs = [
-            'nodeRef=' + this.props.nodeRef
+            'nodeRef=' + pageArgs.nodeRef
         ];
         if (this.props.mode) {
-            requestArgs.push('mode=' + this.props.mode);
+            requestArgs.push('mode=' + pageArgs.mode);
         }
-        let url = Alfresco.constants.PROXY_URI + "/citeck/card/cardlets?" + requestArgs.join('&');
+        let url = this.props.alfescoUrl + "citeck/card/cardlets?" + requestArgs.join('&');
         fetch(url, {
             credentials: 'include'
         }).then(response => {
@@ -29,31 +31,51 @@ export class CardDetails extends React.Component {
 
     render() {
 
-        let counter = 0;
+        let pageArgs = this.props.pageArgs;
+        let toCardlet = function (props) {
+            return <Cardlet pageArgs={pageArgs} {...props} />;
+        };
 
-        let cardlets = this.state.cardlets.map(c => {
-            return {
-                data: c,
-                component: <Cardlet index={counter++} pageArgs={this.props} {...c} />
-            }
-        });
+        let cardlets = this.state.cardlets;
 
-        let topRegions = cardlets.filter(c => c.data.regionColumn == 'top');
-        let leftRegions = cardlets.filter(c => c.data.regionColumn == 'left');
-        let bottomRegions = cardlets.filter(c => c.data.regionColumn == 'bottom');
-        let rightRegions = cardlets.filter(c => c.data.regionColumn == 'right');
+        let topRegions = cardlets.filter(c => c.regionColumn == 'top');
+        let leftRegions = cardlets.filter(c => c.regionColumn == 'left');
+        let bottomRegions = cardlets.filter(c => c.regionColumn == 'bottom');
+        let rightRegions = cardlets.filter(c => c.regionColumn == 'right');
 
-        return <div id="bd">
-                {topRegions.map(c => c.component)}
-            <div className="yui-gc">
-                <div className="yui-u first">
-                    {leftRegions.map(c => c.component)}
-                </div>
-                <div className="yui-u">
-                    {rightRegions.map(c => c.component)}
-                </div>
+        return <div>
+            <div id="alf-hd">
+                <SurfRegion args={{
+                    regionId: "share-header",
+                    scope: "global",
+                    chromeless: "true",
+                    pageid: "card-details",
+                    site: pageArgs.site,
+                    theme: pageArgs.theme,
+                    cacheAge: 600
+                }} />
             </div>
-            {bottomRegions.map(c => c.component)}
+            <div id="bd">
+                {topRegions.map(toCardlet)}
+                <div className="yui-gc">
+                    <div className="yui-u first">
+                        {leftRegions.map(toCardlet)}
+                    </div>
+                    <div className="yui-u">
+                        {rightRegions.map(toCardlet)}
+                    </div>
+                </div>
+                {bottomRegions.map(toCardlet)}
+            </div>
+            <div id="alf-ft">
+                <SurfRegion className="sticky-footer" args={{
+                    regionId: "footer",
+                    scope: "global",
+                    pageid: "card-details",
+                    theme: pageArgs.theme,
+                    cacheAge: 600
+                }}/>
+            </div>
         </div>;
     }
 }
@@ -62,60 +84,21 @@ class Cardlet extends React.Component {
 
     constructor(props) {
         super(props);
-        let htmlid = `cardlet-${props.regionId}-${props.regionColumn}-${props.regionPosition}-${props.index}`;
+        let regionProps = {
+            regionId: props.regionId,
+            htmlid: `cardlet-${Alfresco.util.generateDomId()}`,
+            scope: 'page'
+        };
         this.state = {
-            htmlid: htmlid,
-            cardletRootId: htmlid + '-root'
+            regionArgs: Object.assign(regionProps, props.pageArgs)
         };
     }
 
-    componentDidMount() {
-
-        let requestArgs = [
-            'regionId=' + this.props.regionId,
-            'htmlid=' + this.state.htmlid
-        ];
-
-        for (let pageArg in this.props.pageArgs) {
-            if (this.props.pageArgs.hasOwnProperty(pageArg)) {
-                requestArgs.push(pageArg + '=' + this.props.pageArgs[pageArg]);
-            }
-        }
-
-        let url = "/share/service/citeck/card-details/cardlet?" + requestArgs.join('&');
-
-        fetch(url, {
-            credentials: 'include'
-        }).then(response => {
-            return response.text();
-        }).then(text => {
-
-            let scriptSrcRegexp = /<script type="text\/javascript" src="\/share\/res\/([^_]+)_\S+?\.js"><\/script>/g;
-            let dependencies = ['jquery'];
-            text = text.replace(scriptSrcRegexp, function (match, jsSrc) {
-                dependencies.push(jsSrc);
-                return '';
-            });
-
-            this.resolveDependencies(dependencies, 0, () => {
-                $('#' + this.state.cardletRootId).html(text);
-            });
-        });
-    }
-
-    resolveDependencies(dependencies, idx, callback) {
-        if (idx >= dependencies.length) {
-            callback();
-        } else {
-            require([dependencies[idx]], () => this.resolveDependencies(dependencies, idx + 1, callback));
-        }
-    }
-
     render() {
-        return <div id={ this.state.cardletRootId } className='cardlet'
+        return <div className='cardlet'
                     data-available-in-mobile={ this.props.availableInMobile }
                     data-position-index-in-mobile={ this.props.positionIndexInMobile }>
-            Загрузка...
+            <SurfRegion args={ this.state.regionArgs } />
         </div>;
     }
 }

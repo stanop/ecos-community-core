@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-(function(){
+require(['citeck/components/dynamic-tree/error-manager',
+		 'components/documentlibrary/actions'], function(){
+
 
 	/**
 	 * It is a renderer of actions.
@@ -269,4 +271,4 @@
 	new Citeck.widget.ActionRenderer();
 	new Citeck.widget.ActionRequester();
 
-})();
+});
