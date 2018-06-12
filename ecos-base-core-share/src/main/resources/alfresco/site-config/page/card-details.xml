@@ -1,0 +1,20 @@
+<alfresco-config>
+
+    <config evaluator="string-compare" condition="CiteckPage">
+        <card-details>
+            <dependencies>
+                <css src="citeck/components/card/card-details" />
+                <css src="citeck/utils/citeck" />
+                <css src="components/folder-details/folder-details-panel" />
+                <css src="components/document-details/document-details-panel" />
+                <css src="jquery/css/jquery.mmenu.all" />
+                <js src="citeck/components/dynamic-tree/action-renderer" />
+                <js src="modules/documentlibrary/doclib-actions" />
+                <js src="lib/underscore" />
+                <js src="citeck/utils/citeck" />
+                <js src="components/people-finder/people-finder" />
+            </dependencies>
+        </card-details>
+    </config>
+
+</alfresco-config>

@@ -1,7 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 
-export class SurfRegion extends React.Component {
+export default class SurfRegion extends React.Component {
 
     constructor(props) {
         super(props);
@@ -50,6 +50,9 @@ export class SurfRegion extends React.Component {
     }
 
     render() {
-        return <div className={this.props.className} id={this.state.rootId}>Загрузка...</div>;
+        return <div id={this.state.rootId}
+                    className={this.props.className}>
+            Загрузка...
+        </div>;
     }
 }
