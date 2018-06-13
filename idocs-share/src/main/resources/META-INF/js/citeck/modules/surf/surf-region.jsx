@@ -63,7 +63,6 @@ export default class SurfRegion extends React.Component {
     render() {
         return <div id={this.state.rootId}
                     className={this.props.className}>
-            Загрузка...
         </div>;
     }
 }
