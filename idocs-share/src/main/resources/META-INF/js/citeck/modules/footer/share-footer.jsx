@@ -2,7 +2,7 @@
 import React from 'react';
 import SurfRegion from "../surf/surf-region";
 
-const ShareFooter = function ({theme}) {
+const ShareFooter = function ({theme, cacheBust}) {
 
     return <div id="alf-ft">
         <SurfRegion className="sticky-footer" args={{
@@ -10,7 +10,8 @@ const ShareFooter = function ({theme}) {
             scope: "global",
             pageid: "card-details",
             theme: theme,
-            cacheAge: 600
+            cacheAge: 600,
+            cb: cacheBust
         }}/>
     </div>;
 };

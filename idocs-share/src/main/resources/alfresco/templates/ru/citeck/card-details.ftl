@@ -103,7 +103,7 @@
                             locale: (navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage)).toLowerCase(),
                             async: true,
                             parseOnLoad: false,
-                            cacheBust: "${citeckUtils.getModulePackage("ecos-base-core-share").getVersion().toString()}",
+                            cacheBust: "${citeckUtils.getCacheBust()}",
                             packages: [
                                 <#assign packages = webframeworkConfig.dojoPackages>
                                 <#list packages?keys as name>
@@ -136,6 +136,7 @@
                         ReactDOM.render(
                             React.createElement(components.CardDetails, {
                                 alfescoUrl: window.location.protocol + "//" + window.location.host + "${url.context?js_string}/proxy/alfresco/",
+                                cacheBust: "${citeckUtils.getCacheBust()}",
                                 pageArgs: {
                                 <#list pageArgsMap?keys as argKey>
                                     "${argKey}":"${pageArgsMap[argKey]!}"<#if argKey_has_next>,</#if>
@@ -146,7 +147,8 @@
                         );
                         ReactDOM.render(
                             React.createElement(ShareFooter.default, {
-                                theme: "${theme!}"
+                                theme: "${theme!}",
+                                cacheBust: "${citeckUtils.getCacheBust()}"
                             }),
                             document.getElementById('card-details-footer')
                         );

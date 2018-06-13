@@ -16,6 +16,7 @@ public class SurfRegionGet extends DeclarativeWebScript {
 
     private static final String ARG_PAGE_ID = "pageid";
     private static final String ARG_THEME = "theme";
+    private static final String ARG_TEMPLATE_ID = "templateId";
     private static final String ARG_CACHE_AGE = "cacheAge";
 
     private ModelObjectService modelObjectService;
@@ -28,13 +29,17 @@ public class SurfRegionGet extends DeclarativeWebScript {
 
         Map<String, Object> model = new HashMap<>(context.getModel());
         model.put("url", new DefaultURLHelper(context));
+        context.setModel(model);
 
         String pageId = req.getParameter(ARG_PAGE_ID);
         if (StringUtils.isNotBlank(pageId)) {
             context.setPage(modelObjectService.getPage(pageId));
         }
 
-        context.setModel(model);
+        String templateId = req.getParameter(ARG_TEMPLATE_ID);
+        if (StringUtils.isNotBlank(templateId)) {
+            context.setTemplate(modelObjectService.getTemplate(templateId));
+        }
 
         long cacheAge = NumberUtils.toLong(req.getParameter(ARG_CACHE_AGE));
         if (cacheAge > 0) {

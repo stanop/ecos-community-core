@@ -18,8 +18,8 @@ export default class NodeHeader extends React.Component {
     }
 
     componentDidMount() {
-        let nodeRef = this.props.args.nodeRef;
-        let url = this.props.alfescoUrl + "citeck/components/node-header?nodeRef=" + nodeRef;
+        let nodeRef = this.props.pageArgs.nodeRef;
+        let url = "/share/proxy/alfresco/citeck/components/node-header?nodeRef=" + nodeRef;
         fetch(url, {
             credentials: 'include'
         }).then(response => {

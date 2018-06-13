@@ -33,9 +33,10 @@ export class CardDetails extends React.Component {
 
     render() {
 
+        let self = this;
         let pageArgs = this.props.pageArgs;
         let toCardlet = function (props) {
-            return <Cardlet pageArgs={pageArgs} {...props} />;
+            return <Cardlet cacheBust={self.cacheBust} pageArgs={pageArgs} {...props} />;
         };
 
         let cardlets = this.state.cardlets;
@@ -51,6 +52,16 @@ export class CardDetails extends React.Component {
         let rightRegions = cardlets.filter(c => c.regionColumn == 'right');
         let bottomRegions = cardlets.filter(c => c.regionColumn == 'bottom');
 
+        let createUploaderRegion = function (id) {
+            return <SurfRegion args={{
+                regionId: id,
+                scope: 'template',
+                templateId: "card-details",
+                cacheAge: 1000,
+                cb: self.props.cacheBust
+            }}/>
+        };
+
         return [
             <div id="alf-hd">
                 <SurfRegion args={{
@@ -60,7 +71,8 @@ export class CardDetails extends React.Component {
                     pageid: "card-details",
                     site: pageArgs.site,
                     theme: pageArgs.theme,
-                    cacheAge: 600
+                    cacheAge: 300,
+                    cb: this.props.cacheBust
                 }} />
             </div>,
             <div id="bd">
@@ -74,6 +86,13 @@ export class CardDetails extends React.Component {
                     </div>
                 </div>
                 {bottomRegions.map(toCardlet)}
+                {[
+                    createUploaderRegion('html-upload'),
+                    createUploaderRegion('flash-upload'),
+                    createUploaderRegion('dnd-upload'),
+                    createUploaderRegion('archive-and-download'),
+                    createUploaderRegion('file-upload')
+                ]}
             </div>
         ];
     }
@@ -109,7 +128,7 @@ export class Cardlet extends React.Component {
             require([componentId], function(component) {
 
                 self.setState({
-                    component: component.default
+                    component: <component.default {...self.props} />
                 });
 
                 if (component.cssDependencies) {
@@ -120,12 +139,12 @@ export class Cardlet extends React.Component {
                         Cardlet.prototype.loadedCssDeps = loadedDeps;
                     }
 
-                    for (var dep of component.cssDependencies) {
+                    for (let dep of component.cssDependencies) {
                         if (!loadedDeps[dep]) {
                             $('<link>').attr({
                                 type: 'text/css',
                                 rel: 'stylesheet',
-                                href: '/share/res/' + dep + '.css'
+                                href: '/share/res/' + dep + '.css?' + self.props.cacheBust
                             }).appendTo('head');
                             loadedDeps[dep] = true;
                         }
@@ -136,12 +155,10 @@ export class Cardlet extends React.Component {
     }
 
     render() {
-        /*let ComponentTag = ;*/
-
         return <div className='cardlet'
                     data-available-in-mobile={ this.props.availableInMobile }
                     data-position-index-in-mobile={ this.props.positionIndexInMobile }>
-            {this.state.component /*<ComponentTag />*/}
+            { this.state.component }
         </div>;
     }
 }

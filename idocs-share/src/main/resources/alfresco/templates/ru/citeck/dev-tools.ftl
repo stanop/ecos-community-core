@@ -93,8 +93,11 @@ iframe:hover {
     <form action="${url.context}/page/caches/dependency/clear" method="post" target="share-caches">
         <input type="submit" name="submit" value="Clear Dependency Caches" />
     </form>
+    <form action="${url.context}/page/citeck/cache/clear?updateCacheBust=true" method="post" target="share-caches">
+        <input type="submit" name="submit" value="Update cache bust" />
+    </form>
     <iframe name="share-caches"></iframe>
-    
+
     <iframe name="share-surfbug" src="${url.context}/page/surfBugStatus"></iframe>
 
 </body>
