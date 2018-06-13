@@ -36,7 +36,7 @@ export class CardDetails extends React.Component {
         let self = this;
         let pageArgs = this.props.pageArgs;
         let toCardlet = function (props) {
-            return <Cardlet cacheBust={self.cacheBust} pageArgs={pageArgs} {...props} />;
+            return <Cardlet pageArgs={pageArgs} {...props} />;
         };
 
         let cardlets = this.state.cardlets;
@@ -57,8 +57,7 @@ export class CardDetails extends React.Component {
                 regionId: id,
                 scope: 'template',
                 templateId: "card-details",
-                cacheAge: 1000,
-                cb: self.props.cacheBust
+                cacheAge: 1000
             }}/>
         };
 
@@ -71,8 +70,7 @@ export class CardDetails extends React.Component {
                     pageid: "card-details",
                     site: pageArgs.site,
                     theme: pageArgs.theme,
-                    cacheAge: 300,
-                    cb: this.props.cacheBust
+                    cacheAge: 300
                 }} />
             </div>,
             <div id="bd">
@@ -144,7 +142,7 @@ export class Cardlet extends React.Component {
                             $('<link>').attr({
                                 type: 'text/css',
                                 rel: 'stylesheet',
-                                href: '/share/res/' + dep + '.css?' + self.props.cacheBust
+                                href: '/share/res/' + dep + '.css?' + (new Date().getTime()) //TODO add cache bust support. see surf-region.jsx
                             }).appendTo('head');
                             loadedDeps[dep] = true;
                         }

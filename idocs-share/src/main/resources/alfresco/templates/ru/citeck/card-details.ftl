@@ -117,7 +117,6 @@
                 </#if>
             </#if>
 
-
             <@relocateJavaScript/>
 
             <#assign pageArgsMap = ((page.url.templateArgs!{}) + (page.url.args!{}) + {
@@ -136,7 +135,6 @@
                         ReactDOM.render(
                             React.createElement(components.CardDetails, {
                                 alfescoUrl: window.location.protocol + "//" + window.location.host + "${url.context?js_string}/proxy/alfresco/",
-                                cacheBust: "${citeckUtils.getCacheBust()}",
                                 pageArgs: {
                                 <#list pageArgsMap?keys as argKey>
                                     "${argKey}":"${pageArgsMap[argKey]!}"<#if argKey_has_next>,</#if>
@@ -147,24 +145,23 @@
                         );
                         ReactDOM.render(
                             React.createElement(ShareFooter.default, {
-                                theme: "${theme!}",
-                                cacheBust: "${citeckUtils.getCacheBust()}"
+                                theme: "${theme!}"
                             }),
                             document.getElementById('card-details-footer')
                         );
-                });//DEBUG: ${(DEBUG?string)!"null"} CONFIG: ${common.globalConfig("client-debug", "false")}
+                });
             //]]></script>
 
             <div id="alfresco-yuiloader"></div>
 
             <script type="text/javascript">//<![CDATA[
-            Alfresco.util.YUILoaderHelper.loadComponents(true);
-            <#-- Security - ensure user has a currently authenticated Session when viewing a user auth page e.g. when Back button is used -->
-            <#if page?? && (page.authentication="user" || page.authentication="admin")>
-                Alfresco.util.Ajax.jsonGet({
-                    url: Alfresco.constants.URL_CONTEXT + "service/modules/authenticated?noCache=" + new Date().getTime() + "&a=${page.authentication?html}"
-                });
-            </#if>
+                Alfresco.util.YUILoaderHelper.loadComponents(true);
+                <#-- Security - ensure user has a currently authenticated Session when viewing a user auth page e.g. when Back button is used -->
+                <#if page?? && (page.authentication="user" || page.authentication="admin")>
+                    Alfresco.util.Ajax.jsonGet({
+                        url: Alfresco.constants.URL_CONTEXT + "service/modules/authenticated?noCache=" + new Date().getTime() + "&a=${page.authentication?html}"
+                    });
+                </#if>
             //]]></script>
         </#if>
     </body>

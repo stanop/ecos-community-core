@@ -12,8 +12,19 @@ export default class SurfRegion extends React.Component {
             htmlid = `SurfRegion-id-${idCounter}`;
             SurfRegion.prototype.idCounter = idCounter + 1;
         }
+
+        let additionalArgs = {
+            htmlid: htmlid
+        };
+        if (props.args.cacheAge && window.dojoConfig) {
+            let cacheBust = window.dojoConfig.cacheBust;
+            if (cacheBust) {
+                additionalArgs['cb'] = cacheBust;
+            }
+        }
+
         this.state = {
-            queryArgs: Object.assign(props.args, { htmlid: htmlid }),
+            queryArgs: Object.assign(props.args, additionalArgs),
             rootId: `${htmlid}-root`
         }
     }
