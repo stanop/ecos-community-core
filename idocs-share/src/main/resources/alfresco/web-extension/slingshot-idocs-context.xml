@@ -111,8 +111,8 @@
 		<property name="configService" ref="web.config" />
 	</bean>
 
-    <bean id="webscript.ru.citeck.components.card.cardlet.get"
-		class="ru.citeck.ecos.webscripts.CardletGet"
+    <bean id="webscript.ru.citeck.components.surf.surf-region.get"
+		class="ru.citeck.ecos.webscripts.SurfRegionGet"
 		parent="webscript">
         <property name="modelObjectService" ref="webframework.service.modelobject" />
 	</bean>
@@ -135,10 +135,5 @@
 	<bean id="slingshot.scriptprocessor.messages" parent="baseScriptExtension" class="ru.citeck.ecos.webscripts.MessagesProcessorExtension">
 		<property name="extensionName" value="messages" />
 	</bean>
-
-    <bean id="ecos.local.webscripts.container" parent="webscripts.container"
-          class="ru.citeck.ecos.webscripts.runtime.LocalWebScriptRuntimeContainer">
-        <property name="name" value="Ecos Local WebscriptsContainer" />
-    </bean>
 
 </beans>

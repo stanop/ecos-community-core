@@ -31,7 +31,6 @@
             <configurations>
 				<config evaluator="string-compare" condition="CiteckDependencies">
             <dependencies>
-                <js src="/lib/underscore.js"/>
                 <js src="/citeck/utils/citeck.js"/>
                 <css src="/citeck/utils/citeck.css"/>
                 <css src="/jquery/css/jquery.mmenu.all.css"/>

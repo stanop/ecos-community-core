@@ -16,33 +16,36 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-_.extend(Citeck.format, {
+require(['lib/underscore'], function() {
 
-	buttons: function() {
-		return function(elCell, oRecord, oColumn, oData) {
-			var data = oData || oRecord.getData(),
-				Button = YAHOO.widget.Button;
-			elCell.innerHTML = "";
-			var editButton = new Button({
-				container: elCell,
-				type: 'link',
-				title: Alfresco.util.message('button.edit'),
-				href: Alfresco.constants.URL_PAGECONTEXT + "edit-metadata?nodeRef=" + data.nodeRef
-			});
-			var removeButton = new Button({
-				container: elCell,
-				type: 'push',
-				title: Alfresco.util.message('button.remove'),
-				onclick: { 
-					fn: function() {
-						YAHOO.Bubbling.fire("removeJournalRecord", oRecord.getData('nodeRef'));
-    					}
-				}
-			});
-			Dom.addClass(elCell, "actions-cell");
-			editButton.addClass('edit');
-			removeButton.addClass('remove');
-		};
-	},
+    _.extend(Citeck.format, {
 
+        buttons: function () {
+            return function (elCell, oRecord, oColumn, oData) {
+                var data = oData || oRecord.getData(),
+                    Button = YAHOO.widget.Button;
+                elCell.innerHTML = "";
+                var editButton = new Button({
+                    container: elCell,
+                    type: 'link',
+                    title: Alfresco.util.message('button.edit'),
+                    href: Alfresco.constants.URL_PAGECONTEXT + "edit-metadata?nodeRef=" + data.nodeRef
+                });
+                var removeButton = new Button({
+                    container: elCell,
+                    type: 'push',
+                    title: Alfresco.util.message('button.remove'),
+                    onclick: {
+                        fn: function () {
+                            YAHOO.Bubbling.fire("removeJournalRecord", oRecord.getData('nodeRef'));
+                        }
+                    }
+                });
+                Dom.addClass(elCell, "actions-cell");
+                editButton.addClass('edit');
+                removeButton.addClass('remove');
+            };
+        },
+
+    });
 });
