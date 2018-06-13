@@ -18,6 +18,7 @@
     <@script type="text/javascript" src="${url.context}/res/modules/simple-dialog.js" group="orgstruct" />
 
     <@script type="text/javascript" src="${url.context}/res/components/form/form.js" group="orgstruct" />
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/form/constraints.js" group="orgstruct" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/form/select.js" group="orgstruct" />
 
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="orgstruct" />
