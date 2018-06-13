@@ -29,6 +29,7 @@
 		<property name="flowableProcessInstanceService" ref="flowableCustomProcessInstanceService"/>
 		<property name="flowableHistoryService" ref="flowableCustomHistoryService"/>
 		<property name="flowablePropertyConverter" ref="flowablePropertyConverter"/>
+		<property name="runtimeService" ref="flowableRuntimeService"/>
 	</bean>
 
 	<bean id="flowableCustomProcessDefinitionService" class="ru.citeck.ecos.flowable.services.impl.FlowableProcessDefinitionServiceImpl">
