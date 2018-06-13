@@ -102,7 +102,7 @@ export class Cardlet extends React.Component {
         super(props);
         if (props.component) {
             this.state = {
-                component: 'Загрузка...'
+                component: ''
             };
         } else {
             let regionArgs = {
