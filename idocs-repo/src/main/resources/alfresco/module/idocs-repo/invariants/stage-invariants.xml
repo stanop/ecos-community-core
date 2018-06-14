@@ -10,47 +10,54 @@
         <import uri="http://www.citeck.ru/model/stages/1.0" prefix="stages" />
     </imports>
 
+    <aspect name="stages:hasStartCompletenessLevelsRestriction">
+        <association name="stages:startCompletenessLevelsRestriction">
+            <invariant on="options" language="javascript">
+                (function() {
+                    var parent = node.parent;
+                    while (parent &amp;&amp; parent.hasClassName("activ:activity")) {
+                        parent = parent.parent;
+                    }
+                    var result = [];
+                    if (parent) {
+                        var levels = parent.assocs["req:completenessLevels"];
+                        for (var i in levels) result.push(levels[i]);
+                    }
+                    return result;
+                })()
+            </invariant>
+        </association>
+    </aspect>
+
+    <aspect name="stages:hasStopCompletenessLevelsRestriction">
+        <association name="stages:stopCompletenessLevelsRestriction">
+            <invariant on="options" language="javascript">
+                (function() {
+                    var parent = node.parent;
+                    while (parent &amp;&amp; parent.hasClassName("activ:activity")) {
+                        parent = parent.parent;
+                    }
+                    var result = [];
+                    if (parent) {
+                        var levels = parent.assocs["req:completenessLevels"];
+                        for (var i in levels) result.push(levels[i]);
+                    }
+                    return result;
+                })()
+            </invariant>
+        </association>
+    </aspect>
+    
     <type name="activ:activity">
         <associations type="req:completenessLevel">
             <invariant on="relevant" language="javascript">
                 (function() {
                     var parent = node.parent;
-                    while(parent &amp;&amp; parent.isSubType("activ:activity")) parent = parent.parent;
+                    while(parent &amp;&amp; parent.hasClassName("activ:activity")) parent = parent.parent;
                     return parent.hasAspect("req:hasCompletenessLevels");
                 })();
             </invariant>
         </associations>
-        
-        <association name="stages:startCompletenessLevelsRestriction">
-            <invariant on="options" language="javascript">
-                (function() {
-                    var parent = node.parent;
-                    while(parent &amp;&amp; parent.isSubType("activ:activity")) parent = parent.parent;
-                    var result = [];
-                    if (parent) {
-                        var levels = parent.assocs["req:completenessLevels"];
-                        for (var i in levels) result.push(levels[i]);
-                    }
-                    return result;
-                })();
-            </invariant>
-        </association>
-
-        <association name="stages:stopCompletenessLevelsRestriction">
-            <invariant on="options" language="javascript">
-                (function() {
-                    var parent = node.parent;
-                    while(parent &amp;&amp; parent.isSubType("activ:activity")) parent = parent.parent;
-                    var result = [];
-                    if (parent) {
-                        var levels = parent.assocs["req:completenessLevels"];
-                        for (var i in levels) result.push(levels[i]);
-                    }
-                    return result;
-                })();
-            </invariant>
-        </association>
-
     </type>
 
 </invariants>
