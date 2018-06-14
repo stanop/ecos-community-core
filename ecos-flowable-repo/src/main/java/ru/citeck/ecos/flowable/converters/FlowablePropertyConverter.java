@@ -17,6 +17,7 @@ import org.alfresco.util.Pair;
 import org.alfresco.util.collections.CollectionUtils;
 import org.alfresco.util.collections.EntryTransformer;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.identitylink.api.IdentityLink;
@@ -31,6 +32,7 @@ import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.*;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
+import ru.citeck.ecos.model.CiteckWorkflowModel;
 
 import java.io.Serializable;
 import java.util.*;
@@ -444,7 +446,7 @@ public class FlowablePropertyConverter {
     public void setDefaultTaskProperties(DelegateTask task) {
         TypeDefinition typeDefinition = typeManager.getFullTaskDefinition(task);
         Map<QName, Serializable> existingValues = getTaskProperties(task, typeDefinition, true);
-        Map<QName, Serializable> defaultValues = new HashMap<QName, Serializable>();
+        Map<QName, Serializable> defaultValues = new HashMap<>();
 
         Map<QName, PropertyDefinition> propertyDefs = typeDefinition.getProperties();
 
@@ -490,6 +492,10 @@ public class FlowablePropertyConverter {
                 }
             }
 
+        }
+
+        if (StringUtils.isNotEmpty(task.getName())) {
+            defaultValues.putIfAbsent(CiteckWorkflowModel.PROP_TASK_TITLE, task.getName());
         }
 
         if (defaultValues.size() > 0) {

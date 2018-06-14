@@ -41,6 +41,9 @@
             <header key="wfm:document" default="true" searchable="false">
                 <option name="formatter">documentLink</option>
             </header>
+            <header key="wfm:counterparty" default="true" searchable="false">
+                <option name="formatter">documentLink</option>
+            </header>
             <header key="wfm:documentTypeTitle" default="true"/>
             <header key="wfm:documentKindTitle" default="true"/>
             <header key="bpm:startDate" />
