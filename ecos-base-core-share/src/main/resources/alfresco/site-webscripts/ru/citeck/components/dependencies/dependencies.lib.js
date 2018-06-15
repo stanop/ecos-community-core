@@ -1,38 +1,50 @@
 const Dependencies = {
 
-    getByPage: function (pageId, type) {
+    _dependencyExtensionRegexp: /(\.css$|\.js$|\.properties$)/,
+
+    getScoped: function (path) {
 
         var result = {
             js: [],
             css: []
         };
 
-        var pageConfig = config.scoped["CiteckPage"][pageId];
-        if (!pageConfig) {
+        var tokens = path.split("/");
+
+        if (tokens.length < 2) {
+            throw "Incorrect tokens count. Expected at least 2. Path: " + path;
+        }
+
+        var root = config.scoped[tokens[0]];
+        if (!root) {
             return result;
         }
-        var pageDependencies = pageConfig.getChild("dependencies");
-        if (!pageDependencies) {
+        root = root[tokens[1]];
+        if (!root) {
             return result;
         }
-        var typedDependencies;
-        if (type) {
-            typedDependencies = pageDependencies.getChildren(type);
-        } else {
-            typedDependencies = pageDependencies.getChildren();
+        var i;
+        for (i = 2; i < tokens.length; i++) {
+            root = root.getChild(tokens[i]);
+            if (!root) {
+                return result;
+            }
         }
-        if (typedDependencies) {
-            for (var i = 0; i < typedDependencies.size(); i++) {
-                var element = typedDependencies.get(i);
-                var depsArr = result[element.getName()];
-                if (!depsArr) {
-                    depsArr = [];
-                    result[element.getName()] = depsArr;
+
+        var children = root.getChildren();
+        for (i = 0; i < children.size(); i++) {
+            var element = children.get(i);
+            var depsArr = result[element.getName()];
+            if (!depsArr) {
+                depsArr = [];
+                result[element.getName()] = depsArr;
+            }
+            var src = element.getAttribute("src");
+            if (src) {
+                if (src.startsWith('/')) {
+                    src = src.substring(1);
                 }
-                var src = element.getAttribute("src");
-                if (src) {
-                    depsArr.push(src);
-                }
+                depsArr.push((src + "").replace(this._dependencyExtensionRegexp, ''));
             }
         }
         return result;

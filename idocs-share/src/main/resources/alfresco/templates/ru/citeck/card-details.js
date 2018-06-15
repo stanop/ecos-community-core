@@ -19,6 +19,6 @@ if (nodeRef) {
     }
 
     if (model.hasReadPermissions) {
-        model.pageDependencies = Dependencies.getByPage('card-details');
+        model.pageDependencies = Dependencies.getScoped('CiteckPage/card-details/dependencies');
     }
 }
