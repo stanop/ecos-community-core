@@ -4,12 +4,50 @@ import React from 'react';
 import SurfRegion from '../../surf/surf-region';
 import $ from 'jquery';
 
-export class CardDetails extends React.Component {
+export function CardDetails(props) {
+
+    let pageArgs = props.pageArgs;
+
+    let createUploaderRegion = function (id) {
+        return <SurfRegion args={{
+            regionId: id,
+            scope: 'template',
+            templateId: "card-details",
+            cacheAge: 1000
+        }}/>
+    };
+
+    return [
+        <div id="alf-hd">
+            <SurfRegion args={{
+                regionId: "share-header",
+                scope: "global",
+                chromeless: "true",
+                pageid: "card-details",
+                site: pageArgs.site,
+                theme: pageArgs.theme,
+                cacheAge: 300
+            }} />
+        </div>,
+        <div id="bd">
+            <CardletsBody {...props} />
+            {[
+                createUploaderRegion('html-upload'),
+                createUploaderRegion('flash-upload'),
+                createUploaderRegion('dnd-upload'),
+                createUploaderRegion('archive-and-download'),
+                createUploaderRegion('file-upload')
+            ]}
+        </div>
+    ];
+}
+
+class CardletsBody extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            cardlets: []
+            data: null
         };
     }
 
@@ -27,19 +65,40 @@ export class CardDetails extends React.Component {
         }).then(response => {
             return response.json();
         }).then(json => {
-            this.setState(json);
+            this.setState({data: json});
         });
+    }
+
+    getCardletInstance(props) {
+
+        let key = `${props.regionId}-${props.regionColumn}-${props.regionPosition}`;
+
+        let instances = CardDetails.prototype.cardlets;
+        if (!instances) {
+            instances = {};
+            CardDetails.prototype.cardlets = instances;
+        }
+        let result = instances[key];
+        if (!result) {
+            result = <Cardlet pageArgs={this.props.pageArgs} {...props} />;
+            instances[key] = result;
+        }
+
+        return result;
     }
 
     render() {
 
+        if (!this.state.data) {
+            return '';
+        }
+
         let self = this;
-        let pageArgs = this.props.pageArgs;
         let toCardlet = function (props) {
-            return <Cardlet pageArgs={pageArgs} {...props} />;
+            return self.getCardletInstance(props);
         };
 
-        let cardlets = this.state.cardlets;
+        let cardlets = this.state.data.cardlets;
 
         //TODO add ability to setup 'component' field for any cardlet
         let nodeHeader = cardlets.find(c => c.regionId == 'node-header');
@@ -52,47 +111,21 @@ export class CardDetails extends React.Component {
         let rightRegions = cardlets.filter(c => c.regionColumn == 'right');
         let bottomRegions = cardlets.filter(c => c.regionColumn == 'bottom');
 
-        let createUploaderRegion = function (id) {
-            return <SurfRegion args={{
-                regionId: id,
-                scope: 'template',
-                templateId: "card-details",
-                cacheAge: 1000
-            }}/>
-        };
-
-        return [
-            <div id="alf-hd">
-                <SurfRegion args={{
-                    regionId: "share-header",
-                    scope: "global",
-                    chromeless: "true",
-                    pageid: "card-details",
-                    site: pageArgs.site,
-                    theme: pageArgs.theme,
-                    cacheAge: 300
-                }} />
-            </div>,
-            <div id="bd">
-                {topRegions.map(toCardlet)}
-                <div className="yui-gc">
-                    <div className="yui-u first">
-                        {leftRegions.map(toCardlet)}
-                    </div>
-                    <div className="yui-u">
-                        {rightRegions.map(toCardlet)}
-                    </div>
+        let result = [];
+        result.push(topRegions.map(toCardlet));
+        result.push(
+            <div className="yui-gc">
+                <div className="yui-u first">
+                    {leftRegions.map(toCardlet)}
                 </div>
-                {bottomRegions.map(toCardlet)}
-                {[
-                    createUploaderRegion('html-upload'),
-                    createUploaderRegion('flash-upload'),
-                    createUploaderRegion('dnd-upload'),
-                    createUploaderRegion('archive-and-download'),
-                    createUploaderRegion('file-upload')
-                ]}
+                <div className="yui-u">
+                    {rightRegions.map(toCardlet)}
+                </div>
             </div>
-        ];
+        );
+        result.push(bottomRegions.map(toCardlet));
+
+        return result;
     }
 }
 
