@@ -138,7 +138,8 @@
                     elCell.innerHTML = falseLabel;
                     return;
                 }
-                elCell.innerHTML = sData === "true" || sData === true ? trueLabel : falseLabel;
+                var bool = sData.hasOwnProperty('str') ? sData.str : sData;
+                elCell.innerHTML = bool === "true" || bool === true ? trueLabel : falseLabel;
             };
         },
 
