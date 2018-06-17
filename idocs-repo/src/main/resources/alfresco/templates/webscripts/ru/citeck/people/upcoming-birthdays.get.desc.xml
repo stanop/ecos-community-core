@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Get upcoming users birthdays</shortname>
+    <description>Get upcoming users birthdays</description>
+    <url>/citeck/people/upcoming-birthdays</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+</webscript>
