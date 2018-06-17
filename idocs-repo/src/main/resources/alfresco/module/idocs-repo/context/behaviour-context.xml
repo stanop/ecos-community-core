@@ -879,5 +879,9 @@
     <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
           class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
 
+    <bean id="setMontDayPersonAttributeBehaviour"
+          class="ru.citeck.ecos.behavior.common.FillMonthDayPersonPropertyBehaviour">
+    </bean>
+
 </beans>
 

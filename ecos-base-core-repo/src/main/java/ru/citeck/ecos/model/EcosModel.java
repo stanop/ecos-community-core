@@ -7,20 +7,39 @@ public interface EcosModel {
     // model
     String ECOS_MODEL_PREFIX = "ecos";
 
-    // namespace
-    String NAMESPACE = "http://www.citeck.ru/model/content/ecos/1.0";
+    //Namespaces
+    public static final String ECOS_NAMESPACE = "http://www.citeck.ru/model/content/ecos/1.0";
 
-    // types
-    QName TYPE_DOCUMENT = QName.createQName(NAMESPACE, "document");
+    //Types
+    public static final QName TYPE_DOCUMENT = QName.createQName(ECOS_NAMESPACE, "document");
+    public static final QName TYPE_CASE = QName.createQName(ECOS_NAMESPACE, "case");
 
-    // aspects
+    //Aspects
+    public static final QName ASPECT_HAS_RESPONSIBLE = QName.createQName(ECOS_NAMESPACE, "hasResponsible");
+    public static final QName ASPECT_DOCUMENT_TYPE = QName.createQName(ECOS_NAMESPACE, "documentType");
+    public static final QName ASPECT_HAS_NUMBER_AND_DATE = QName.createQName(ECOS_NAMESPACE, "hasNumberAndDate");
+    public static final QName ASPECT_HAS_AMOUNT = QName.createQName(ECOS_NAMESPACE, "hasAmount");
+    public static final QName ASPECT_HAS_VAT = QName.createQName(ECOS_NAMESPACE, "hasVAT");
+    public static final QName ASPECT_HAS_ADDITIONAL_PERSON_PROPERTIES = QName.createQName(ECOS_NAMESPACE, "hasAdditionalPersonProperties");
 
-    // properties
-    QName PROP_OLD_PASS = QName.createQName(NAMESPACE, "oldPass");
-    QName PROP_PASS = QName.createQName(NAMESPACE, "pass");
-    QName PROP_PASS_VERIFY = QName.createQName(NAMESPACE, "passVerify");
-    QName PROP_IS_PERSON_DISABLED = QName.createQName(NAMESPACE, "isPersonDisabled");
+    //Properties
+    public static final QName PROP_DOCUMENT_NUMBER = QName.createQName(ECOS_NAMESPACE, "documentNumber");
+    public static final QName PROP_DOCUMENT_DATE = QName.createQName(ECOS_NAMESPACE, "documentDate");
+    public static final QName PROP_DOCUMENT_AMOUNT = QName.createQName(ECOS_NAMESPACE, "documentAmount");
+    public static final QName PROP__VAT = QName.createQName(ECOS_NAMESPACE, "VAT");
+    public static final QName PROP_PHOTO = QName.createQName(ECOS_NAMESPACE, "photo");
+    public static final QName PROP_BIRTH_DATE = QName.createQName(ECOS_NAMESPACE, "birthDate");
+    public static final QName PROP_BIRTH_MONTH_DAY = QName.createQName(ECOS_NAMESPACE, "birthMonthDay");
+    public static final QName PROP_CITY = QName.createQName(ECOS_NAMESPACE, "city");
+    public static final QName PROP_SEX = QName.createQName(ECOS_NAMESPACE, "sex");
+    public static final QName PROP_PHONE_WORKING = QName.createQName(ECOS_NAMESPACE, "phoneWorking");
+    public static final QName PROP_PHONE_INTERNAL = QName.createQName(ECOS_NAMESPACE, "phoneInternal");
+    public static final QName PROP_OLD_PASS = QName.createQName(ECOS_NAMESPACE, "oldPass");
+    public static final QName PROP_PASS = QName.createQName(ECOS_NAMESPACE, "pass");
+    public static final QName PROP_PASS_VERIFY = QName.createQName(ECOS_NAMESPACE, "passVerify");
+    public static final QName PROP_IS_PERSON_DISABLED = QName.createQName(ECOS_NAMESPACE, "isPersonDisabled");
 
-    // assocs
+    //Associations
+    public static final QName ASSOC_RESPONSIBLE = QName.createQName(ECOS_NAMESPACE, "responsible");
 
 }

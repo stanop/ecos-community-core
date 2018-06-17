@@ -131,6 +131,10 @@
                     <title>Birth date</title>
                     <type>d:date</type>
                 </property>
+                <property name="ecos:birthMonthDay">
+                    <title>Birth month and day</title>
+                    <type>d:int</type>
+                </property>
                 <property name="ecos:city">
                     <title>City</title>
                     <type>d:text</type>
