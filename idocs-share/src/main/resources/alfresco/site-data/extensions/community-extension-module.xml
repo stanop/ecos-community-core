@@ -70,6 +70,7 @@
                             <packages>
                                 <package name='react' location='/share/res/js/citeck/lib' main="react.min" />
                                 <package name='react-dom' location='/share/res/js/citeck/lib' main="react-dom.min" />
+                                <package name='xstyle' location='/share/res/js/citeck/lib/xstyle' main="css.min" />
                             </packages>
                         </dojo-pages>
                     </web-framework>
