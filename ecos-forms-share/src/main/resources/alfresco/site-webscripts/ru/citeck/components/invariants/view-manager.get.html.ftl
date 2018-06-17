@@ -3,12 +3,13 @@
 <#assign redirect><#if page.url.args.redirect??>${page.url.args.redirect}<#elseif args.redirect??>${args.redirect}</#if></#assign>
 
 <@markup id="js">
-  <@script type="text/javascript" src="${url.context}/res/citeck/components/invariants/view-manager.js" group="node-view"/>
   <@inlineScript group="node-view">
-    new Citeck.invariants.NodeViewManager("${args.runtimeKey}").setOptions({
-      <#if onsubmit?has_content>onsubmit: "${onsubmit}",</#if>
-      <#if oncancel?has_content>oncancel: "${oncancel}",</#if>
-      <#if redirect?has_content>redirect: ${redirect}</#if>
-    });
+      require(['citeck/components/invariants/view-manager'], function() {
+          new Citeck.invariants.NodeViewManager("${args.runtimeKey}").setOptions({
+            <#if onsubmit?has_content>onsubmit: "${onsubmit}",</#if>
+            <#if oncancel?has_content>oncancel: "${oncancel}",</#if>
+            <#if redirect?has_content>redirect: ${redirect}</#if>
+          });
+      });
   </@inlineScript>
 </@>

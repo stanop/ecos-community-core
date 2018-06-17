@@ -4,7 +4,7 @@ let gulp = require('gulp'),
     rename = require('gulp-rename'),
     uglify = require('gulp-uglify'),
     cleanCSS = require('gulp-clean-css'),
-    gutil = require('gulp-util');
+    through2 = require('through2');
 
 let buildParams = {};
 for (let arg of process.argv) {
@@ -60,7 +60,7 @@ function processMinResources(paths, processors) {
 
 gulp.task('process-css', function() {
     return processMinResources(source.css, [
-        skipCompression ? gutil.noop() : cleanCSS({
+        skipCompression ? through2.obj() : cleanCSS({
             inline: false,
             rebase: false
         })
@@ -78,7 +78,7 @@ gulp.task('process-jsx', function() {
                 'react'
             ]
         }),
-        skipCompression ? gutil.noop() : uglify()
+        skipCompression ? through2.obj() : uglify()
     ]);
 });
 
@@ -92,13 +92,13 @@ gulp.task('process-babel-js', function() {
                 }]
             ]
         }),
-        skipCompression ? gutil.noop() : uglify()
+        skipCompression ? through2.obj() : uglify()
     ]);
 });
 
 gulp.task('process-js', function() {
     return processMinResources(source.js, [
-        skipCompression ? gutil.noop() : uglify()
+        skipCompression ? through2.obj() : uglify()
     ]);
 });
 

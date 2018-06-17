@@ -19,10 +19,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CiteckUtilsTemplate extends BaseProcessorExtension {
 
+    private final static String CURRENT_MODULE_ID = "ecos-base-core-share";
+
     private final Map<String, TemplateBooleanModel> templateExistsCache = new ConcurrentHashMap<>();
     private final Map<String, ModulePackage> modulePackagesById = new ConcurrentHashMap<>();
 
     private ModulePackageManager modulePackageManager;
+
+    private String cacheBust;
 
     public TemplateBooleanModel templateExists(String path) {
         return templateExistsCache.computeIfAbsent(path, this::templateExistsImpl);
@@ -37,8 +41,24 @@ public class CiteckUtilsTemplate extends BaseProcessorExtension {
         });
     }
 
+    public String getCacheBust() {
+        if (cacheBust == null) {
+            ModulePackage modulePackage = getModulePackage(CURRENT_MODULE_ID);
+            if (modulePackage != null) {
+                cacheBust = modulePackage.getVersion().toString();
+            } else {
+                cacheBust = String.valueOf(System.currentTimeMillis());
+            }
+        }
+        return cacheBust;
+    }
+
     public void clearCache() {
         templateExistsCache.clear();
+    }
+
+    public void updateCacheBust() {
+        cacheBust = String.valueOf(System.currentTimeMillis());
     }
 
     private TemplateBooleanModel templateExistsImpl(String path) {

@@ -17,20 +17,25 @@ import org.alfresco.util.Pair;
 import org.alfresco.util.collections.CollectionUtils;
 import org.alfresco.util.collections.EntryTransformer;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.flowable.engine.TaskService;
+import org.flowable.engine.history.HistoricActivityInstance;
+import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.identitylink.service.IdentityLinkType;
-import org.flowable.task.service.delegate.DelegateTask;
-import org.flowable.engine.history.HistoricActivityInstance;
-import org.flowable.engine.history.HistoricProcessInstance;
-import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.api.Task;
+import org.flowable.task.api.history.HistoricTaskInstance;
+import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
-import ru.citeck.ecos.flowable.services.*;
+import ru.citeck.ecos.flowable.services.FlowableHistoryService;
+import ru.citeck.ecos.flowable.services.FlowableProcessDefinitionService;
+import ru.citeck.ecos.flowable.services.FlowableTaskService;
+import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
+import ru.citeck.ecos.model.CiteckWorkflowModel;
 
 import java.io.Serializable;
 import java.util.*;
@@ -444,7 +449,7 @@ public class FlowablePropertyConverter {
     public void setDefaultTaskProperties(DelegateTask task) {
         TypeDefinition typeDefinition = typeManager.getFullTaskDefinition(task);
         Map<QName, Serializable> existingValues = getTaskProperties(task, typeDefinition, true);
-        Map<QName, Serializable> defaultValues = new HashMap<QName, Serializable>();
+        Map<QName, Serializable> defaultValues = new HashMap<>();
 
         Map<QName, PropertyDefinition> propertyDefs = typeDefinition.getProperties();
 
@@ -490,6 +495,10 @@ public class FlowablePropertyConverter {
                 }
             }
 
+        }
+
+        if (StringUtils.isNotEmpty(task.getName())) {
+            defaultValues.putIfAbsent(CiteckWorkflowModel.PROP_TASK_TITLE, task.getName());
         }
 
         if (defaultValues.size() > 0) {

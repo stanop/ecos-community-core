@@ -16,9 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-Citeck.namespace('invariants');
-(function() {
-    
+require(['citeck/utils/citeck'], function() {
+
+    Citeck.namespace('invariants');
+
     Citeck.invariants.NodeViewManager = function(key) {
         this.key = key;
         
@@ -100,4 +101,4 @@ Citeck.namespace('invariants');
         
     };
     
-})()
+});

@@ -1,6 +1,7 @@
 <import resource="classpath:/alfresco/templates/org/alfresco/import/alfresco-util.js">
 <import resource="classpath:/alfresco/site-webscripts/org/alfresco/components/documentlibrary/include/documentlist.lib.js">
 <import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/documentlibrary/data/surf-doclist-custom.lib.js">
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/dependencies/dependencies.lib.js">
 
 function main()
 {
@@ -35,7 +36,8 @@ function main()
             repositoryBrowsing : (model.rootNode != null),
             syncMode : model.syncMode != null ? model.syncMode : "",
             actionLinkClass : model.actionLinkClass,
-			view : args.view || "details"
+            view : args.view || "details",
+            dependencies: Dependencies.getScoped('DocLibCustom/dependencies')
         }
     };
     model.widgets = [documentActions];

@@ -34,6 +34,19 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.journal-task-statistic-add-to-list" parent="module.baseComponent"
+          class="ru.citeck.ecos.journals.module.AddToJournalListModuleComponent">
+        <property name="name" value="add-task-statistic-to-list" />
+        <property name="moduleId" value="idocs-repo" />
+        <property name="journalList" value="global-tasks" />
+        <property name="journal" value="task-statistic" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journal-task-statistic" />
+            </list>
+        </property>
+    </bean>
+
     <bean id="idocs.module-component.fill-monthday-property"
           class="ru.citeck.ecos.migration.FillMonthDayPersonPropertyModuleComponent"
           parent="idocs.module-component.users-batch-processing">
