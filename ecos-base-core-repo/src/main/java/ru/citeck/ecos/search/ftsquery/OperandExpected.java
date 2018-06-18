@@ -1,5 +1,6 @@
 package ru.citeck.ecos.search.ftsquery;
 
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.PermissionEvaluationMode;
 import org.alfresco.service.cmr.search.QueryConsistency;
@@ -7,6 +8,7 @@ import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.namespace.QName;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
 
 public interface OperandExpected {
@@ -68,6 +70,57 @@ public interface OperandExpected {
      * @param exact search by exact match or not
      */
     OperatorExpected value(QName field, Serializable value, boolean exact);
+
+    /**
+     * Search by date field from MIN to "to" argument
+     * @param field date field. mandatory
+     */
+    FTSQuery rangeTo(QName field, Date to);
+
+    /**
+     * Search by date field from "from" argument to MAX
+     * @param field date field. mandatory
+     */
+    FTSQuery rangeFrom(QName field, Date from);
+
+    /**
+     * Search by date field from "from" to "to" arguments
+     * at least one of "from" or "to" arguments must be specified
+     * @param from converts to MIN if null
+     * @param to converts to MAX if null
+     * @param field date field. mandatory
+     */
+    FTSQuery range(QName field, Date from, Date to);
+
+    /**
+     * Search by numeric field from MIN to "to" argument
+     * @param field numeric field. mandatory
+     */
+    FTSQuery rangeTo(QName field, Number to);
+
+    /**
+     * Search by numeric field from "from" argument to MAX
+     * @param field numeric field. mandatory
+     */
+    FTSQuery rangeFrom(QName field, Number from);
+
+    /**
+     * Search by numeric field from "from" to "to" arguments
+     * at least one of "from" or "to" arguments must be specified
+     * @param from converts to MIN if null
+     * @param to converts to MAX if null
+     * @param field numeric field. mandatory
+     */
+    FTSQuery range(QName field, Number from, Number to);
+
+    /**
+     * Search by any field from "from" to "to" arguments
+     * at least one of "from" or "to" arguments must be specified
+     * @param from converts to MIN if null
+     * @param to converts to MAX if null
+     * @param field field name. mandatory
+     */
+    FTSQuery range(QName field, String from, String to);
 
     /**
      * Add path term
