@@ -6,11 +6,28 @@
         <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
         <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
     </imports>
 
     <namespaces>
         <namespace uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
     </namespaces>
+    
+    <types>
+        <type name="cwf:flowableProcessCustomComment">
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="cwf:processDefinitionKey">
+                    <title>Process definition key</title>
+                    <type>d:text</type>
+                </property>
+                <property name="cwf:customCommentFieldId">
+                    <title>Custom comment field id</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </type>
+    </types>
 
     <aspects>
         <aspect name="cwf:sender">
