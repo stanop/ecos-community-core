@@ -84,9 +84,9 @@ public class FlowableCustomCommentServiceImpl implements FlowableCustomCommentSe
     private List<String> getProcessCustomComments(String processDefinitionKey) {
         List<NodeRef> links = getProcessCustomCommentsLinks(processDefinitionKey);
         List<String> result = new ArrayList<>(links.size());
-        for (NodeRef link : links) {
+        links.forEach(link -> {
             result.add((String) nodeService.getProperty(link, COMMENT_FIELD_ID));
-        }
+        });
         return result;
     }
 

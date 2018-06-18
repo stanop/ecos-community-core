@@ -40,13 +40,13 @@ public class FormCommentsListener implements GlobalCreateTaskListener, GlobalAss
      */
     private void setFirstComment(DelegateTask delegateTask) {
         List<String> commentFieldIds = flowableCustomCommentService.getFieldIdsByProcessDefinitionId(delegateTask.getProcessDefinitionId());
-        for (String commentFieldId : commentFieldIds) {
+        commentFieldIds.forEach(commentFieldId -> {
             String comments = (String) taskService.getVariable(delegateTask.getId(), commentFieldId);
             if (comments != null) {
                 taskService.setVariable(delegateTask.getId(),"bpm_comment", comments);
                 taskService.setVariable(delegateTask.getId(), "cwf_lastcomment", comments);
             }
-        }
+        });
     }
 
     /** Setters */

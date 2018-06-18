@@ -71,10 +71,10 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
             String id = taskId.substring(taskId.indexOf("$") + 1);
             Map<String, Object> variables = taskService.getVariables(id);
             List<String> commentFieldIds = flowableCustomCommentService.getFieldIdsByTaskId(id);
-            for (String commentFieldId : commentFieldIds) {
+            commentFieldIds.forEach(commentFieldId -> {
                 variables.remove(commentFieldId);
                 taskService.removeVariable(id, commentFieldId);
-            }
+            });
             definition.nodeView = getNodeView(formModel.get(), mode, variables);
         }
 
