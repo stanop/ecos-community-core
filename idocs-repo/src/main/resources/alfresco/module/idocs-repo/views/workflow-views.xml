@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+    <imports>
+        <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
+    </imports>
+
+    <view class="cwf:flowableProcessCustomComment">
+        <field prop="cwf:processDefinitionKey"/>
+        <field prop="cwf:customCommentFieldId"/>
+    </view>
+
+</views>

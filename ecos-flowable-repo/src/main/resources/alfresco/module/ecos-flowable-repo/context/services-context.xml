@@ -267,6 +267,8 @@
 		<property name="nodeService" ref="nodeService"/>
 	</bean>
 
+	<bean id="flowableFormCommentsListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.FormCommentsListener"/>
+
 	<!-- Example -->
 	<bean id="flowable-ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.flowable.example.FlowableCasePerformWorkflowHandler"
 		  init-method="init">
@@ -294,6 +296,13 @@
 		<property name="extensionName" value="flowableModelerService"/>
 		<property name="flowableModelerService" ref="flowableModelerService"/>
 		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+	<bean id="flowableCustomCommentService" class="ru.citeck.ecos.flowable.services.impl.FlowableCustomCommentServiceImpl">
+		<property name="flowableTaskService" ref="flowableCustomTaskService"/>
+		<property name="flowableProcessDefinitionService" ref="flowableCustomProcessDefinitionService"/>
+		<property name="searchService" ref="searchService"/>
+		<property name="nodeService" ref="nodeService"/>
 	</bean>
 
 </beans>
