@@ -2731,7 +2731,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 /* breadcrumbs */
 
 .node-path {
-  padding: 5px 40px;
+  padding: 5px 0;
 }
 
 .node-path .folder-link a{
