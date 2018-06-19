@@ -24,13 +24,14 @@ export class UpcomingBirthdays extends React.Component {
     }
 
     render() {
-        let avatar = Alfresco.constants.URL_RESCONTEXT + "citeck/components/upcoming-birthdays/images/avatar.png";
+        let defaultAvatar = Alfresco.constants.URL_RESCONTEXT + "citeck/components/upcoming-birthdays/images/avatar.png";
+        let avatarPrefix = Alfresco.constants.PROXY_URI + "api/node/content;ecos:photo/workspace/SpacesStore/";
     return (
         <div>
             {this.state.data.map((person, index) => (
                 <div className="birthday-record" key={person.id}>
                     <div className="avatar">
-                        <img className="user-photo" src={String(person.hasphoto) === "true" ? Alfresco.constants.PROXY_URI + "api/node/content;ecos:photo/workspace/SpacesStore/" + person.id + "/" + person.username : avatar} alt={person.firstname}/>
+                        <img className="user-photo" src={String(person.hasphoto) === "true" ? avatarPrefix + person.id + "/" + person.username : defaultAvatar} alt={person.firstname}/>
                     </div>
                     <div className="content">
                         <span><a href={Alfresco.constants.URL_PAGECONTEXT + "user/" + person.username + "/profile"}>{person.firstname} {person.lastname}</a></span>

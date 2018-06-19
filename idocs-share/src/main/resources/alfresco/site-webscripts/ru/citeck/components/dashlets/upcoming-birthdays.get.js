@@ -1,5 +1,4 @@
-function main()
-{
+function main() {
 
     var dashletResizer = {
         id : "DashletResizer",
