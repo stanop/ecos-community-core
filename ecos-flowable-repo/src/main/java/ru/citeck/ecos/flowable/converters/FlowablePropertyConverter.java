@@ -155,8 +155,12 @@ public class FlowablePropertyConverter {
         properties.put(WorkflowModel.PROP_PRIORITY, task.getPriority());
         properties.put(ContentModel.PROP_CREATED, task.getCreateTime());
         properties.put(ContentModel.PROP_OWNER, getOwner(task));
-        if (!properties.containsKey(WorkflowModel.PROP_DESCRIPTION)) {
-            properties.put(WorkflowModel.PROP_DESCRIPTION, task.getDescription());
+        if (task.getName() != null) {
+            properties.put(WorkflowModel.PROP_DESCRIPTION, task.getName());
+        } else {
+            if (!properties.containsKey(WorkflowModel.PROP_DESCRIPTION)) {
+                properties.put(WorkflowModel.PROP_DESCRIPTION, task.getDescription());
+            }
         }
         if (!properties.containsKey(WorkflowModel.PROP_DUE_DATE)) {
             properties.put(WorkflowModel.PROP_DUE_DATE, task.getDueDate());
