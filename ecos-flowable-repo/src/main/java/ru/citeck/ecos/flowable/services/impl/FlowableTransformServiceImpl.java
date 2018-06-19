@@ -463,15 +463,15 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
             WorkflowInstance result = new WorkflowInstance(
                     ENGINE_PREFIX + processInstance.getId(),
                     transformProcessDefinition(flowableProcessDefinitionService.getProcessDefinitionById(processInstance.getProcessDefinitionId())),
-                    (String) getProcessVariable(processInstance.getId(), "bpm_workflowDescription"),
-                    (NodeRef) getProcessVariable(processInstance.getId(), "initiator"),
-                    (NodeRef) getProcessVariable(processInstance.getId(), "bpm_package"),
+                    (String) getHistoryProcessVariable(processInstance.getId(), "bpm_workflowDescription"),
+                    (NodeRef) getHistoryProcessVariable(processInstance.getId(), "initiator"),
+                    (NodeRef) getHistoryProcessVariable(processInstance.getId(), "bpm_package"),
                     null,
                     processInstance.getEndTime() == null,
                     processInstance.getStartTime(),
                     processInstance.getEndTime()
             );
-            result.dueDate = (Date) getProcessVariable(processInstance.getId(), "bpm_workflowDueDate");
+            result.dueDate = (Date) getHistoryProcessVariable(processInstance.getId(), "bpm_workflowDueDate");
             return result;
         } else {
             return null;
@@ -486,6 +486,23 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
      */
     private Object getProcessVariable(String processId, String variableKey) {
         Map<String, Object> variables = runtimeService.getVariables(processId);
+        if (variables == null) {
+            return null;
+        }
+        return variables.get(variableKey);
+    }
+
+    /**
+     * Get history process variable
+     * @param variableKey Variable key
+     * @return Process variable
+     */
+    private Object getHistoryProcessVariable(String processId, String variableKey) {
+        HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceByIdWithVariables(processId);
+        if (historicProcessInstance == null) {
+            return null;
+        }
+        Map<String, Object> variables = historicProcessInstance.getProcessVariables();
         if (variables == null) {
             return null;
         }
