@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-3-0" abstract="true" parent="idocs.import-spaces.3-2-1">
+        <property name="sinceVersion" value="3.3.0" />
+        <property name="appliesFromVersion" value="3.3.0" />
+    </bean>
+
+    <bean id="idocs.import-scripts.3-3-0" abstract="true" parent="idocs.import-scripts.3-2-1">
+        <property name="sinceVersion" value="3.3.0" />
+        <property name="appliesFromVersion" value="3.3.0" />
+    </bean>
+
+    <bean id="idocs.module-component.case-process-cardlets.permissions-update" parent="idocs.import-spaces.3-3-0">
+        <property name="name" value="case-process-cardlets" />
+        <property name="description" value="Case process cardlets permissions update. Show case-process for all, case-mgmt for admins"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets"/>
+                <ref bean="idocs.module-component.system-journals.cardmodes"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode-with-allowed-authorities-update.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/case-process-mode</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode-with-allowed-authorities-update.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/case-mgmt-mode</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>
