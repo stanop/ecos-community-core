@@ -33,10 +33,13 @@ public class FillMonthDayPersonPropertyModuleComponent extends UsersBatchProcess
 
     @Override
     protected void startProcessing(BatchProcessor<PersonService.PersonInfo> batchProcessor) {
-        batchProcessor.process(new FillMonthDayPersonPropertyModuleComponent.FillMonthDayPersonPropertyWorker(nodeService, monthDayBehaviour), true);
+        batchProcessor.process(
+                new FillMonthDayPersonPropertyModuleComponent
+                        .FillMonthDayPersonPropertyWorker(nodeService, monthDayBehaviour), true);
     }
 
-    private static class FillMonthDayPersonPropertyWorker extends BatchProcessor.BatchProcessWorkerAdaptor<PersonService.PersonInfo> {
+    private static class FillMonthDayPersonPropertyWorker
+            extends BatchProcessor.BatchProcessWorkerAdaptor<PersonService.PersonInfo> {
 
         private NodeService nodeService;
         private FillMonthDayPersonPropertyBehaviour monthDayBehaviour;

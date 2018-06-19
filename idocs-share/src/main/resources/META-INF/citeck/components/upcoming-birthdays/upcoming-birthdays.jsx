@@ -17,7 +17,9 @@ export class UpcomingBirthdays extends React.Component {
         }).then(response => {
             return response.json();
         }).then(json => {
-            this.setState(json);
+            this.setState({
+                data: json
+            });
         });
     }
 

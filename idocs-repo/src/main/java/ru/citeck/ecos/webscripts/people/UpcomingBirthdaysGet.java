@@ -1,37 +1,32 @@
 package ru.citeck.ecos.webscripts.people;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.search.ResultSet;
-import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.extensions.webscripts.Cache;
-import org.springframework.extensions.webscripts.DeclarativeWebScript;
-import org.springframework.extensions.webscripts.Status;
-import org.springframework.extensions.webscripts.WebScriptRequest;
+import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.model.EcosModel;
-import ru.citeck.ecos.search.SearchQuery;
+import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.RepoUtils;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class UpcomingBirthdaysGet extends DeclarativeWebScript {
+/**
+ *  Get people with upcoming birthdays in next 30 days.
+ *  Searching by {@code ecos:birthMonthDay} attribute
+ */
+public class UpcomingBirthdaysGet extends AbstractWebScript {
     private NodeService nodeService;
     private SearchService searchService;
 
-    private static final String KEY_UPCOMING_BIRTHDAYS = "upcomingBirthdays";
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     private static final String KEY_USERNAME = "username";
     private static final String KEY_FIRSTNAME = "firstname";
     private static final String KEY_LASTNAME = "lastname";
@@ -40,15 +35,20 @@ public class UpcomingBirthdaysGet extends DeclarativeWebScript {
     private static final String KEY_ID = "id";
 
     @Override
-    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
+    public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
+        List<NodeRef> result = search();
+        res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
+        objectMapper.writeValue(res.getOutputStream(), buildResponse(result));
+        res.setStatus(Status.STATUS_OK);
+    }
+
+    private List<NodeRef> search() {
         Integer currentMonthDay = getCurrentMonthDay();
-
-        String query = "TYPE:\"cm:person\" AND @ecos:birthMonthDay:[" + currentMonthDay + " TO " + (currentMonthDay + 100) + "]";
-
-        List<NodeRef> result = search(query);
-        Map<String, Object> map = new HashMap<>();
-        map.put(KEY_UPCOMING_BIRTHDAYS, createJsonResponse(result));
-        return map;
+        return FTSQuery.create()
+                .type(ContentModel.TYPE_PERSON).and()
+                .range(EcosModel.PROP_BIRTH_MONTH_DAY, currentMonthDay, currentMonthDay + 100)
+                .addSort(EcosModel.PROP_BIRTH_MONTH_DAY, true)
+                .query(searchService);
     }
 
     private Integer getCurrentMonthDay() {
@@ -56,34 +56,15 @@ public class UpcomingBirthdaysGet extends DeclarativeWebScript {
         return localDate.getMonthValue() * 100 + localDate.getDayOfMonth();
     }
 
-    private List<NodeRef> search(String query) {
-        SearchParameters searchParameters = new SearchParameters();
-        searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-        searchParameters.setQuery(query);
-        searchParameters.setLanguage(SearchQuery.DEFAULT_LANGUAGE);
-        searchParameters.setMaxItems(100);
-        searchParameters.setSkipCount(0);
-        searchParameters.addSort(EcosModel.PROP_BIRTH_MONTH_DAY.toString(), true);
-
-        ResultSet resultSet = searchService.query(searchParameters);
-        return resultSet.getNodeRefs();
-    }
-
-    private String createJsonResponse(List<NodeRef> nodeRefs) {
-        JSONObject result = new JSONObject();
-        JSONArray array = new JSONArray();
-
-        try {
-            result.put("data", array);
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private List<Map<String, String>> buildResponse(List<NodeRef> nodeRefs) {
+        if (nodeRefs == null || nodeRefs.isEmpty()){
+            return new ArrayList<>(0);
         }
-
+        List<Map<String, String>> response = new ArrayList<>(nodeRefs.size());
         for (NodeRef nodeRef : nodeRefs) {
-            array.put(getPersonInfo(nodeRef));
+            response.add(getPersonInfo(nodeRef));
         }
-
-        return result.toString();
+        return response;
     }
 
     private Map<String, String> getPersonInfo(NodeRef nodeRef){
