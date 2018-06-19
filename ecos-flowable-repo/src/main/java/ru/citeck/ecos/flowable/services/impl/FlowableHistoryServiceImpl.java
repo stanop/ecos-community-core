@@ -73,6 +73,18 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
     }
 
     /**
+     * Get history process instance by id
+     *
+     * @param processInstanceId Process instance id
+     * @return History process instance
+     */
+    @Override
+    public HistoricProcessInstance getProcessInstanceByIdWithVariables(String processInstanceId) {
+        return historyService.createHistoricProcessInstanceQuery()
+                .includeProcessVariables().processInstanceId(processInstanceId).singleResult();
+    }
+
+    /**
      * Get history task instance by id
      *
      * @param taskId Task id

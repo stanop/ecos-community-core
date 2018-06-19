@@ -22,6 +22,13 @@ public interface FlowableHistoryService {
     HistoricProcessInstance getProcessInstanceById(String processInstanceId);
 
     /**
+     * Get history process instance by id
+     * @param processInstanceId Process instance id
+     * @return History process instance
+     */
+    HistoricProcessInstance getProcessInstanceByIdWithVariables(String processInstanceId);
+
+    /**
      * Get history task instance by id
      * @param taskId Task id
      * @return History task instance
