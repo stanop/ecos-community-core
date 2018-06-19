@@ -16,6 +16,7 @@ import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
 import ru.citeck.ecos.flowable.form.view.FieldConverter;
+import ru.citeck.ecos.flowable.services.FlowableCustomCommentService;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskServiceImpl;
 import ru.citeck.ecos.flowable.services.rest.RestFormService;
 import ru.citeck.ecos.forms.FormMode;
@@ -51,6 +52,8 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     private FlowableTaskServiceImpl flowableTaskService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private FlowableCustomCommentService flowableCustomCommentService;
 
     private Map<String, FieldConverter<FormField>> fieldConverters = new HashMap<>();
 
@@ -59,6 +62,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     @Override
     public NodeViewDefinition getNodeView(String taskId, String formId, FormMode mode, Map<String, Object> params) {
 
+
         NodeViewDefinition definition = new NodeViewDefinition();
         definition.canBeDraft = false;
 
@@ -66,6 +70,11 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         if (formModel.isPresent()) {
             String id = taskId.substring(taskId.indexOf("$") + 1);
             Map<String, Object> variables = taskService.getVariables(id);
+            List<String> commentFieldIds = flowableCustomCommentService.getFieldIdsByTaskId(id);
+            commentFieldIds.forEach(commentFieldId -> {
+                variables.remove(commentFieldId);
+                taskService.removeVariable(id, commentFieldId);
+            });
             definition.nodeView = getNodeView(formModel.get(), mode, variables);
         }
 
