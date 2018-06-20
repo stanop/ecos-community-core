@@ -34,20 +34,6 @@ public class RoleChangedHistoryBehaviour implements CaseRolePolicies.OnRoleAssig
     private String documentNamespace;
     private String documentType;
 
-    /*
-     map: {
-         "createdRoles": map {
-             "role":"message",
-             "role":"message",
-             ...
-         },
-         "removedRoles": map {
-            "role":"message",
-            "role":"message",
-            ...
-         }
-     }
-     */
     private Map<String, Map<String, String>> roleMapping;
 
 
@@ -96,11 +82,6 @@ public class RoleChangedHistoryBehaviour implements CaseRolePolicies.OnRoleAssig
     }
 
     private String buildComment(NodeRef personRef, String message) {
-        String internationalizedMessage = I18NUtil.getMessage(message);
-        if (internationalizedMessage != null) {
-            message = internationalizedMessage;
-        }
-
         QName confirmerType = nodeService.getType(personRef);
         String confirmer;
         if (confirmerType.equals(ContentModel.TYPE_PERSON)) {
