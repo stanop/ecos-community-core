@@ -16,6 +16,10 @@
     </@>
 
     <@markup id="html">
+        <script type="text/javascript">
+            Citeck.constants = Citeck.constants || {};
+            Citeck.constants.DOCUMENT_TYPE = '${documentType}';
+        </script>
         <@uniqueIdDiv>
             <#if item??>
                 <#include "/org/alfresco/include/alfresco-macros.lib.ftl" />
