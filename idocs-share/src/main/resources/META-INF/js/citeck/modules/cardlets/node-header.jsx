@@ -1,6 +1,5 @@
-
-import 'js/citeck/lib/fetch';
-import React from 'react';
+import "js/citeck/lib/fetch";
+import React from "react";
 
 export default class NodeHeader extends React.Component {
 

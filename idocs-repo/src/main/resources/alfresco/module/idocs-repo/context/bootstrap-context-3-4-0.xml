@@ -47,4 +47,14 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.fill-monthday-property"
+          class="ru.citeck.ecos.migration.FillMonthDayPersonPropertyModuleComponent"
+          parent="idocs.module-component.users-batch-processing">
+        <property name="name" value="fill-monthday-property"/>
+        <property name="description" value="Filling in ecos:birthMonthDay property"/>
+        <property name="sinceVersion" value="3.4.0"/>
+        <property name="appliesFromVersion" value="3.4.0"/>
+    </bean>
+
+
 </beans>

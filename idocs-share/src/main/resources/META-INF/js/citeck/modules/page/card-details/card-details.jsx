@@ -1,8 +1,7 @@
-
-import 'js/citeck/lib/fetch';
-import React from 'react';
-import SurfRegion from '../../surf/surf-region';
-import $ from 'jquery';
+import "js/citeck/lib/fetch";
+import React from "react";
+import SurfRegion from "../../surf/surf-region";
+import $ from "jquery";
 
 export function CardDetails(props) {
 
