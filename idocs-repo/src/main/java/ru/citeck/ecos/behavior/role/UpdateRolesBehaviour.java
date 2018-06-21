@@ -64,6 +64,17 @@ public class UpdateRolesBehaviour implements OnUpdatePropertiesPolicy,
                 ICaseRoleModel.ASPECT_HAS_ROLES,
                 new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, ORDER)
         );
+
+        this.policyComponent.bindAssociationBehaviour(
+                OnCreateAssociationPolicy.QNAME,
+                ICaseRoleModel.TYPE_ROLE,
+                new OrderedBehaviour(this, "onCreateRoleAssociation",  NotificationFrequency.TRANSACTION_COMMIT, ORDER)
+        );
+        this.policyComponent.bindAssociationBehaviour(
+                OnDeleteAssociationPolicy.QNAME,
+                ICaseRoleModel.TYPE_ROLE,
+                new OrderedBehaviour(this, "onDeleteRoleAssociation", NotificationFrequency.TRANSACTION_COMMIT, ORDER)
+        );
     }
 
     @Override
@@ -86,6 +97,14 @@ public class UpdateRolesBehaviour implements OnUpdatePropertiesPolicy,
         updateRoles(childAssociationRef.getChildRef());
     }
 
+    public void onCreateRoleAssociation(AssociationRef associationRef) {
+        roleChanged(associationRef.getSourceRef(), associationRef.getTargetRef(), null);
+    }
+
+    public void onDeleteRoleAssociation(AssociationRef associationRef) {
+        roleChanged(associationRef.getSourceRef(), null, associationRef.getTargetRef());
+    }
+
     private void updateRoles(NodeRef caseRef) {
         if (isValidCase(caseRef)) {
             if (mergeRolesUpdating) {
@@ -95,6 +114,12 @@ public class UpdateRolesBehaviour implements OnUpdatePropertiesPolicy,
             } else {
                 caseRoleService.updateRoles(caseRef);
             }
+        }
+    }
+
+    private void roleChanged(NodeRef nodeRef, NodeRef added, NodeRef removed) {
+        if (nodeRef != null && nodeService.exists(nodeRef)) {
+            caseRoleService.roleChanged(nodeRef, added, removed);
         }
     }
 

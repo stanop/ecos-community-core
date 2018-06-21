@@ -228,6 +228,19 @@ public class CaseRoleServiceImpl implements CaseRoleService {
     }
 
     @Override
+    public void roleChanged(NodeRef roleRef, NodeRef added, NodeRef removed) {
+        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+            @Override
+            public Void doWork() throws Exception {
+                Set<NodeRef> addedSet = added != null ? new HashSet<>(Collections.singletonList(added)) : null;
+                Set<NodeRef> removedSet = removed != null ? new HashSet<>(Collections.singletonList(removed)) : null;
+                fireAssigneesChangedEvent(roleRef, addedSet, removedSet);
+                return null;
+            }
+        });
+    }
+
+    @Override
     public void register(RoleDAO roleDAO) {
         rolesDAOByType.put(roleDAO.getRoleType(), roleDAO);
     }
