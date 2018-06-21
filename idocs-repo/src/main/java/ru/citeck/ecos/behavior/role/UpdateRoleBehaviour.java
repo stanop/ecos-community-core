@@ -2,6 +2,7 @@ package ru.citeck.ecos.behavior.role;
 
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
+import org.alfresco.service.cmr.repository.AssociationRef;
 import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -17,7 +18,9 @@ import java.util.Map;
 /**
  * @author Pavel Simonov
  */
-public class UpdateRoleBehaviour implements NodeServicePolicies.OnUpdatePropertiesPolicy {
+public class UpdateRoleBehaviour implements NodeServicePolicies.OnUpdatePropertiesPolicy,
+                                            NodeServicePolicies.OnCreateAssociationPolicy,
+                                            NodeServicePolicies.OnDeleteAssociationPolicy {
 
     private static final int ORDER = 150;
 
@@ -31,6 +34,19 @@ public class UpdateRoleBehaviour implements NodeServicePolicies.OnUpdateProperti
                 ICaseRoleModel.TYPE_ROLE,
                 new OrderedBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT, ORDER)
         );
+
+        this.policyComponent.bindAssociationBehaviour(
+                NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
+                ICaseRoleModel.TYPE_ROLE,
+                new OrderedBehaviour(this, "onCreateAssociation",
+                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT, ORDER)
+        );
+        this.policyComponent.bindAssociationBehaviour(
+                NodeServicePolicies.OnDeleteAssociationPolicy.QNAME,
+                ICaseRoleModel.TYPE_ROLE,
+                new OrderedBehaviour(this, "onDeleteAssociation",
+                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT, ORDER)
+        );
     }
 
     @Override
@@ -40,6 +56,22 @@ public class UpdateRoleBehaviour implements NodeServicePolicies.OnUpdateProperti
             if (nodeService.hasAspect(parentRef, ICaseModel.ASPECT_CASE)) {
                 caseRoleService.updateRole(roleRef);
             }
+        }
+    }
+
+    @Override
+    public void onCreateAssociation(AssociationRef nodeAssocRef) {
+        roleChanged(nodeAssocRef.getSourceRef(), nodeAssocRef.getTargetRef(), null);
+    }
+
+    @Override
+    public void onDeleteAssociation(AssociationRef nodeAssocRef) {
+        roleChanged(nodeAssocRef.getSourceRef(), null, nodeAssocRef.getTargetRef());
+    }
+
+    private void roleChanged(NodeRef nodeRef, NodeRef added, NodeRef removed) {
+        if (nodeRef != null && nodeService.exists(nodeRef)) {
+            caseRoleService.roleChanged(nodeRef, added, removed);
         }
     }
 
