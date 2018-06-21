@@ -7,14 +7,12 @@ import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
-import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.history.HistoryService;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.role.CaseRolePolicies;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -61,14 +59,18 @@ public class RoleChangedHistoryBehaviour implements CaseRolePolicies.OnRoleAssig
 
         String roleVarName = (String) nodeService.getProperty(roleRef, ICaseRoleModel.PROP_VARNAME);
 
-        Map<NodeRef, String> dataForSendingCreatingRoles = getPersonRefsForConcreteAction(CREATED_ROLES_KEY, roleVarName, added);
-        for (Map.Entry<NodeRef, String> entry : dataForSendingCreatingRoles.entrySet()) {
-            addNoteToHistory(documentRef, entry.getKey(), entry.getValue());
+        if (added != null && !added.isEmpty()) {
+            String messageTemplateForCreate = getMessageTemplateByAction(CREATED_ROLES_KEY, roleVarName);
+            if (messageTemplateForCreate != null) {
+                added.forEach(personRef -> addNoteToHistory(documentRef, personRef, messageTemplateForCreate));
+            }
         }
 
-        Map<NodeRef, String> dataForSendingRemovingRoles = getPersonRefsForConcreteAction(REMOVED_ROLES_KEY, roleVarName, removed);
-        for (Map.Entry<NodeRef, String> entry : dataForSendingRemovingRoles.entrySet()) {
-            addNoteToHistory(documentRef, entry.getKey(), entry.getValue());
+        if (removed != null && !removed.isEmpty()) {
+            String messageTemplateForRemove = getMessageTemplateByAction(REMOVED_ROLES_KEY, roleVarName);
+            if (messageTemplateForRemove != null) {
+                removed.forEach(personRef -> addNoteToHistory(documentRef, personRef, messageTemplateForRemove));
+            }
         }
     }
 
@@ -95,26 +97,17 @@ public class RoleChangedHistoryBehaviour implements CaseRolePolicies.OnRoleAssig
         return String.format(message, confirmer);
     }
 
-    private Map<NodeRef, String> getPersonRefsForConcreteAction(String action, String roleVarName, Set<NodeRef> persons) {
-        if (persons == null || persons.isEmpty()) {
-            return Collections.emptyMap();
-        }
-
+    private String getMessageTemplateByAction(String action, String roleVarName) {
         Map<String, String> mappedRoles = roleMapping.get(action);
         if (mappedRoles == null || mappedRoles.isEmpty()) {
-            return Collections.emptyMap();
+            return null;
         }
 
-        String internationalizationMessageKey = mappedRoles.get(roleVarName);
-        if (internationalizationMessageKey == null) {
-            return Collections.emptyMap();
+        String messageTemplate = mappedRoles.get(roleVarName);
+        if (messageTemplate == null) {
+            return null;
         }
-
-        Map<NodeRef, String> personRefsWithMessagesMap = new HashMap<>();
-        for (NodeRef personRef : persons) {
-            personRefsWithMessagesMap.put(personRef, internationalizationMessageKey);
-        }
-        return personRefsWithMessagesMap;
+        return messageTemplate;
     }
 
 
