@@ -95,13 +95,17 @@ public class CaseRoleServiceImpl implements CaseRoleService {
         Set<NodeRef> removed = subtract(existing, assignees);
 
         addToTransactionMap(roleRef, added);
-        addToTransactionMap(roleRef, removed);
         for (NodeRef assignee : added) {
             nodeService.createAssociation(roleRef, assignee, ICaseRoleModel.ASSOC_ASSIGNEES);
         }
+        clearTransactionMap();
+
+        addToTransactionMap(roleRef, removed);
         for (NodeRef assignee : removed) {
             nodeService.removeAssociation(roleRef, assignee, ICaseRoleModel.ASSOC_ASSIGNEES);
         }
+        clearTransactionMap();
+
         fireAssigneesChangedEvent(roleRef, added, removed);
     }
 
@@ -125,12 +129,13 @@ public class CaseRoleServiceImpl implements CaseRoleService {
         if (assignees == null || assignees.isEmpty()) {
             return;
         }
-        addToTransactionMap(roleRef, assignees);
         Set<NodeRef> existing = getAssignees(roleRef);
         Set<NodeRef> added = subtract(assignees, existing);
+        addToTransactionMap(roleRef, added);
         for (NodeRef assignee : added) {
             nodeService.createAssociation(roleRef, assignee, ICaseRoleModel.ASSOC_ASSIGNEES);
         }
+        clearTransactionMap();
         fireAssigneesChangedEvent(roleRef, added, null);
     }
 
@@ -160,6 +165,7 @@ public class CaseRoleServiceImpl implements CaseRoleService {
             for (NodeRef ref : assignees) {
                 nodeService.removeAssociation(roleRef, ref, ICaseRoleModel.ASSOC_ASSIGNEES);
             }
+            clearTransactionMap();
             fireAssigneesChangedEvent(roleRef, null, assignees);
         }
     }
@@ -240,20 +246,12 @@ public class CaseRoleServiceImpl implements CaseRoleService {
         AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
             @Override
             public Void doWork() throws Exception {
-                if (added != null) {
-                    if (transactionMapContains(roleRef, added)) {
-                        return null;
-                    } else {
-                        addToTransactionMap(roleRef, added);
-                    }
+                if (added != null && transactionMapContains(roleRef, added)) {
+                    return null;
                 }
 
-                if (removed != null) {
-                    if (transactionMapContains(roleRef, removed)) {
-                        return null;
-                    } else {
-                        addToTransactionMap(roleRef, removed);
-                    }
+                if (removed != null && transactionMapContains(roleRef, removed)) {
+                    return null;
                 }
 
                 Set<NodeRef> addedSet = added != null ? new HashSet<>(Arrays.asList(added)) : null;
@@ -482,6 +480,12 @@ public class CaseRoleServiceImpl implements CaseRoleService {
         } else {
             transactionMap.put(roleRef, new HashSet<>(newAuthorities));
         }
+    }
+
+    private void clearTransactionMap() {
+        Map<NodeRef, Collection<NodeRef>> transactionMap = TransactionalResourceHelper.
+                <NodeRef, Collection<NodeRef>>getMap(ROLE_TO_NOT_FIRE_TXN_KEY);
+        transactionMap.clear();
     }
 
     public void setNodeService(NodeService nodeService) {

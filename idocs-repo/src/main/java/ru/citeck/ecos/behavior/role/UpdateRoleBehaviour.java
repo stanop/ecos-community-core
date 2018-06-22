@@ -39,13 +39,13 @@ public class UpdateRoleBehaviour implements NodeServicePolicies.OnUpdateProperti
                 NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
                 ICaseRoleModel.TYPE_ROLE,
                 new OrderedBehaviour(this, "onCreateAssociation",
-                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT, ORDER)
+                        Behaviour.NotificationFrequency.EVERY_EVENT, ORDER)
         );
         this.policyComponent.bindAssociationBehaviour(
                 NodeServicePolicies.OnDeleteAssociationPolicy.QNAME,
                 ICaseRoleModel.TYPE_ROLE,
                 new OrderedBehaviour(this, "onDeleteAssociation",
-                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT, ORDER)
+                        Behaviour.NotificationFrequency.EVERY_EVENT, ORDER)
         );
     }
 
