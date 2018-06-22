@@ -59,18 +59,14 @@ public class RoleChangedHistoryBehaviour implements CaseRolePolicies.OnRoleAssig
 
         String roleVarName = (String) nodeService.getProperty(roleRef, ICaseRoleModel.PROP_VARNAME);
 
-        if (added != null && !added.isEmpty()) {
-            String messageTemplateForCreate = getMessageTemplateByAction(CREATED_ROLES_KEY, roleVarName);
-            if (messageTemplateForCreate != null) {
-                added.forEach(personRef -> addNoteToHistory(documentRef, personRef, messageTemplateForCreate));
-            }
+        String messageTemplateForCreate = getMessageTemplateByAction(CREATED_ROLES_KEY, roleVarName);
+        if (messageTemplateForCreate != null) {
+            added.forEach(personRef -> addNoteToHistory(documentRef, personRef, messageTemplateForCreate));
         }
 
-        if (removed != null && !removed.isEmpty()) {
-            String messageTemplateForRemove = getMessageTemplateByAction(REMOVED_ROLES_KEY, roleVarName);
-            if (messageTemplateForRemove != null) {
-                removed.forEach(personRef -> addNoteToHistory(documentRef, personRef, messageTemplateForRemove));
-            }
+        String messageTemplateForRemove = getMessageTemplateByAction(REMOVED_ROLES_KEY, roleVarName);
+        if (messageTemplateForRemove != null) {
+            removed.forEach(personRef -> addNoteToHistory(documentRef, personRef, messageTemplateForRemove));
         }
     }
 
@@ -84,17 +80,17 @@ public class RoleChangedHistoryBehaviour implements CaseRolePolicies.OnRoleAssig
     }
 
     private String buildComment(NodeRef personRef, String message) {
-        QName confirmerType = nodeService.getType(personRef);
-        String confirmer;
-        if (confirmerType.equals(ContentModel.TYPE_PERSON)) {
+        QName personType = nodeService.getType(personRef);
+        String person;
+        if (personType.equals(ContentModel.TYPE_PERSON)) {
             String firstName = (String) nodeService.getProperty(personRef, ContentModel.PROP_FIRSTNAME);
             String lastName = (String) nodeService.getProperty(personRef, ContentModel.PROP_LASTNAME);
-            confirmer = String.format("%s %s", firstName, lastName);
+            person = String.format("%s %s", firstName, lastName);
         } else {
-            confirmer = (String) nodeService.getProperty(personRef, ContentModel.PROP_AUTHORITY_DISPLAY_NAME);
+            person = (String) nodeService.getProperty(personRef, ContentModel.PROP_AUTHORITY_DISPLAY_NAME);
         }
 
-        return String.format(message, confirmer);
+        return String.format(message, person);
     }
 
     private String getMessageTemplateByAction(String action, String roleVarName) {
