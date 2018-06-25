@@ -1,10 +1,10 @@
 package ru.citeck.ecos.journals.group;
 
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,9 +30,9 @@ public class GroupActionFormProvider implements NodeViewProvider {
 
     private static final Log logger = LogFactory.getLog(GroupActionFormProvider.class);
 
-    private static final String TYPE = "groupAction";
-    private static final String MODEL_NODE = "nodeRef";
-    private static final String DELIMITER = "_";
+    private static final String TYPE            = "groupAction";
+    private static final String FORM_ATTRIBUTES = "formAttributes";
+    private static final String DELIMITER       = "_";
 
     @Autowired private NodeViewService  nodeViewService;
     @Autowired private ServiceRegistry  serviceRegistry;
@@ -71,12 +71,22 @@ public class GroupActionFormProvider implements NodeViewProvider {
     public Map<String, Object> saveNodeView(String viewKey, String formId, FormMode mode, Map<String, Object> params,
                                             Map<QName, Object> attributes) {
 
-        QName typeName  = QName.resolveToQName(namespaceService, getViewClass(viewKey));
-        NodeRef nodeRef = nodeViewService.saveNodeView(typeName, formId, attributes, params);
+        Map<String, Object> model          = new HashMap<>();
+        Map<String, String> formAttributes = new HashMap<>();
 
-        Map<String, Object> model = new HashMap<>();
+        model.put(FORM_ATTRIBUTES, formAttributes);
 
-        model.put(MODEL_NODE, nodeRef.toString());
+        if (MapUtils.isNotEmpty(attributes)) {
+            for (Map.Entry<QName, Object> attribute: attributes.entrySet()) {
+                String key   = attribute.getKey().toString();
+
+                String value = attribute.getValue() != null
+                        ? attribute.getValue().toString()
+                        : null;
+
+                formAttributes.put(key, value);
+            }
+        }
 
         return model;
     }
