@@ -23,7 +23,9 @@ import ru.citeck.ecos.service.CiteckServices;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class GroupActionFormProvider implements NodeViewProvider {
@@ -36,8 +38,8 @@ public class GroupActionFormProvider implements NodeViewProvider {
 
     @Autowired private NodeViewService  nodeViewService;
     @Autowired private ServiceRegistry  serviceRegistry;
-    private JournalService   journalService;
-    private NamespaceService namespaceService;
+               private JournalService   journalService;
+               private NamespaceService namespaceService;
 
 
     @PostConstruct
@@ -78,11 +80,22 @@ public class GroupActionFormProvider implements NodeViewProvider {
 
         if (MapUtils.isNotEmpty(attributes)) {
             for (Map.Entry<QName, Object> attribute: attributes.entrySet()) {
-                String key   = attribute.getKey().toString();
+                String key   = attribute.getKey().toPrefixString(namespaceService);
+                String value = null;
 
-                String value = attribute.getValue() != null
-                        ? attribute.getValue().toString()
-                        : null;
+                if (attribute.getValue() instanceof List) {
+                    List<?> valueAsList = (List<?>) attribute.getValue();
+
+                    if (CollectionUtils.isNotEmpty(valueAsList)) {
+                        value = valueAsList.stream()
+                                           .map(Object::toString)
+                                           .collect(Collectors.joining(","));
+                    }
+                } else {
+                    value = attribute.getValue() != null
+                            ? attribute.getValue().toString()
+                            : null;
+                }
 
                 formAttributes.put(key, value);
             }
@@ -106,13 +119,15 @@ public class GroupActionFormProvider implements NodeViewProvider {
 
     @Override
     public void reload() {
-
+        /* nothing */
     }
 
     @Override
     public String getType() {
         return TYPE;
     }
+
+    /* Service methods */
 
     private String getViewClass(String viewKey) {
         if (StringUtils.isBlank(viewKey)) {
@@ -145,8 +160,8 @@ public class GroupActionFormProvider implements NodeViewProvider {
 
     private NodeView getViewQuery(QName type, String formId, FormMode mode, Map<String, Object> params) {
         NodeView.Builder builder = new NodeView.Builder(namespaceService)
-                .className(type)
-                .templateParams(params);
+                                               .className(type)
+                                               .templateParams(params);
 
         if (formId != null) {
             builder.id(formId);
