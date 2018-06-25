@@ -1,9 +1,13 @@
 package ru.citeck.ecos.flowable;
 
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.workflow.BPMEngineRegistry;
 import org.alfresco.repo.workflow.WorkflowComponent;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.*;
@@ -27,13 +31,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.*;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
+import ru.citeck.ecos.model.BpmPackageModel;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Flowable workflow component
@@ -47,6 +49,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
     public static final String ENGINE_PREFIX = "flowable$";
     private static final QName INITIATOR_QNAME = QName.createQName("initiator");
     private static final QName INITIATOR_USERNAME_QNAME = QName.createQName("initiator_username");
+    public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
 
     /**
      * BPN engine registry
@@ -134,6 +137,11 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
     private FlowableHistoryService flowableHistoryService;
 
     /**
+     * Node service
+     */
+    private NodeService nodeService;
+
+    /**
      * Set BPN engine registry
      * @param bpmEngineRegistry BPN engine registry
      */
@@ -181,6 +189,13 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
         this.dictionaryService = dictionaryService;
     }
 
+    /**
+     * Set node service
+     * @param nodeService Node service
+     */
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
     /**
      * After properties set
@@ -567,7 +582,9 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
     private WorkflowInstance deleteProcessInstanceWithReason(String workflowId, String reason) {
         ProcessInstance processInstance = flowableProcessInstanceService.getProcessInstanceById(getLocalValue(workflowId));
         if (processInstance != null) {
+            NodeRef bpmPackage = (NodeRef) runtimeService.getVariable(processInstance.getId(), "bpm_package");
             runtimeService.deleteProcessInstance(processInstance.getId(), reason);
+            deleteMirrorTasks(bpmPackage);
             HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceById(processInstance.getId());
             if (historicProcessInstance != null) {
                 historyService.deleteHistoricProcessInstance(historicProcessInstance.getId());
@@ -584,6 +601,36 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
             } else {
                 return null;
             }
+        }
+    }
+
+    /**
+     * Delete mirror tasks
+     * @param bpmPackage Bpm package
+     */
+    private void deleteMirrorTasks(NodeRef bpmPackage) {
+        if (bpmPackage == null || isNodeForDelete(bpmPackage)) {
+            return;
+        }
+        List<AssociationRef> assocs = nodeService.getSourceAssocs(bpmPackage, BpmPackageModel.TYPE);
+        assocs.forEach(association -> {
+            if (association.getSourceRef() != null && !isNodeForDelete(association.getSourceRef())) {
+                nodeService.deleteNode(association.getSourceRef());
+            }
+        });
+    }
+
+    /**
+     * Check - is node for delete
+     * @param nodeRef Node reference
+     * @return Check result
+     */
+    private boolean isNodeForDelete(NodeRef nodeRef) {
+        if(AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
+            return false;
+        } else {
+            Set<NodeRef> nodesPendingDelete = TransactionalResourceHelper.getSet(KEY_PENDING_DELETE_NODES);
+            return nodesPendingDelete.contains(nodeRef);
         }
     }
 
