@@ -34,5 +34,30 @@
             </list>
         </property>
     </bean>
+    
+    <bean id="idocs.module-component.case-process-cardlets.permissions-update" parent="idocs.import-spaces.3-3-0">
+       <property name="name" value="case-process-cardlets" />
+       <property name="description" value="Case process cardlets permissions update. Show case-process for all, case-mgmt for admins"/>
+       <property name="dependsOn">
+           <list>
+               <ref bean="idocs.module-component.system-journals.cardlets"/>
+               <ref bean="idocs.module-component.system-journals.cardmodes"/>
+           </list>
+       </property>
+       <property name="bootstrapViews">
+           <list>
+               <props>
+                   <prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+                   <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode-with-allowed-authorities-update.xml</prop>
+                   <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/case-process-mode</prop>
+               </props>
+               <props>
+                   <prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+                   <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode-with-allowed-authorities-update.xml</prop>
+                   <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/case-mgmt-mode</prop>
+               </props>
+           </list>
+       </property>
+    </bean>
 
 </beans>

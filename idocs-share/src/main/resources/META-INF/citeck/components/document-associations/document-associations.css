@@ -1,0 +1,103 @@
+/* Data Table */
+.yui-skin-lightTheme .yui-dt table {
+    border: none;
+    border-spacing: 0;
+}
+.yui-skin-lightTheme .yui-dt td {
+    border: none;
+}
+
+.document-associations .assoclist + .assoclist {
+    margin-top: 15px;
+}
+
+.document-associations .assoclist table {
+    border: medium none;
+    width: 100%;
+}
+
+.document-associations .assoclist table caption {
+    text-align: left;
+    font-size: 100%;
+    font-style: normal;
+    padding: 5px 0 10px 0;
+}
+
+.document-associations .assoclist tbody {
+    outline: none;
+}
+
+.document-associations .assoclist tbody.yui-dt-data tr {
+    border-top: 1px solid #CCC;
+}
+
+.document-associations .assoclist .yui-dt table {
+    border: none;
+}
+
+.document-associations .assoclist .yui-dt .yui-dt-data td {
+    border-bottom: 1px dashed #d9d9d9;
+    border-right: medium none;
+    vertical-align: top;
+}
+
+.document-associations .assoclist .yui-dt-liner {
+    padding: 4px 4px 4px 0;
+}
+
+.document-associations .assoclist .yui-dt-liner:empty {
+    display: none;
+}
+
+
+/* actions */
+.document-associations .assoclist .yui-dt-col-actions .yui-dt-liner .remove-assoc {
+    text-align: right;
+}
+
+.open-link:hover {
+    text-decoration: underline !important;
+    background: none !important;
+}
+
+.document-associations .alfresco-twister .alfresco-twister-actions a {
+    background-position: 0 center;
+    background-repeat: no-repeat;
+    padding: 1px;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.document-associations .control,
+.document-associations .control-button,
+.document-associations .control-container{
+    width: 0;
+    margin: 0;
+}
+
+.remove-link {
+    display: inline-block;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    background-image: url(../../../themes/citeckTheme/images/remove.png);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.remove-link:hover {
+    background-image: url(../../../themes/citeckTheme/images/remove-active.png);
+}
+
+.create-link {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    background-image: url(../../../themes/citeckTheme/images/create.png);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.create-link:hover {
+    background-image: url(../../../themes/citeckTheme/images/create-active.png);
+}

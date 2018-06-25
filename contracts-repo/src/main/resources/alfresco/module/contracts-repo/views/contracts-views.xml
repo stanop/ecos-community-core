@@ -40,6 +40,8 @@
         <views mode="create" kind="3-column" />
         <views mode="edit" kind="3-column" />
 
+        <field prop="idocs:createdFrom" template="none"/>
+
         <view>
             <field assoc="contracts:agreementLegalEntity" >
                 <region name="select" template="select-journal" >

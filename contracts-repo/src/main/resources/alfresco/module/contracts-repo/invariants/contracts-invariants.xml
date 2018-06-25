@@ -12,6 +12,16 @@
     </imports>
 
     <type name="contracts:agreement">
+        <property name="idocs:createdFrom">
+            <invariant on="value" language="javascript">
+                <![CDATA[
+                    (function() {
+                        var createdFrom = view.params.idocs_createdFrom;
+                        return createdFrom ? createdFrom : null;
+                    })()
+                ]]>
+            </invariant>
+        </property>
         <property name="parent">
             <invariant on="default" language="criteria">
                 <criterion attribute="path" predicate="path-equals" value="/app:company_home/st:sites/cm:contracts/cm:documentLibrary/cm:contracts" />
@@ -35,6 +45,17 @@
                     return null;
                 })()
                 ]]>
+            </invariant>
+            <invariant on="protected" language="javascript">
+                <![CDATA[(function() {
+                    var createdFrom = node.properties['idocs:createdFrom'];
+
+                    if (createdFrom == 'incomePackageTask') {
+                        return true;
+                    }
+
+                    return false;
+                })()]]>
             </invariant>
         </association>
         <property name="tk:kind">
