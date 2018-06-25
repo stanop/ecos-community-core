@@ -143,6 +143,8 @@ public interface CaseRoleService {
      */
     void updateRole(NodeRef caseRef, String roleName);
 
+    void roleChanged(NodeRef roleRef, NodeRef added, NodeRef removed);
+
     /**
      * Register role DAO
      */
