@@ -341,9 +341,13 @@
             } else {
                 mode = 'edit';
             }
-        } else {
+        } else if (Citeck.utils.isShortQName(itemId)) {
             paramName = 'type';
             itemKind = 'type';
+            mode = 'create';
+        } else {
+            paramName = 'groupAction';
+            itemKind = 'groupAction';
             mode = 'create';
         }
 
