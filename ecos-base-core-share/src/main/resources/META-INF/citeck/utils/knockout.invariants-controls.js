@@ -298,7 +298,9 @@ ko.components.register("number", {
                         }
                     }
                 };
-                self.disabled = self.attribute['protected'];
+                self.disabled = ko.computed(function() {
+                    return self.attribute.resolve("protected") || self.node.resolve("impl.invalid");
+                });
             });
         },
         template:
