@@ -14,7 +14,7 @@
         "lastName": "${authority.person.properties.lastName!}",
         <#assign available = authority.person.properties["deputy:available"]!true />
         "available": ${available?string},
-        <#assign isPersonDisabled = authority.person.properties["ecos:isPersonDisabled"]!true />
+        <#assign isPersonDisabled = authority.person.hasAspect("cm:personDisabled")/>
         "isPersonDisabled": ${isPersonDisabled?string},
         "nodeRef": "${authority.personNodeRef}"
     <#else>
