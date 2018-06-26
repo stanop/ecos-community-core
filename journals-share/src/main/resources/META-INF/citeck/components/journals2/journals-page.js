@@ -262,6 +262,8 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
             },
 
             onGroupAction: function (records, action) {
+                var self = this;
+
                 var dataObj = {
                     nodes: _.map(records, function(record) { return record.nodeRef(); }),
                     actionId: action.settings().actionId,
@@ -279,8 +281,8 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                                 var results = response.json;
                                 var downloadReportUrl = results && results[0] && results[0].url;
 
-                                if (!this.widgets.gard) {
-                                    this.widgets.gard = new YAHOO.widget.SimpleDialog("group-action-result-dialog", {
+                                if (!self.widgets.gard) {
+                                    self.widgets.gard = new YAHOO.widget.SimpleDialog("group-action-result-dialog", {
                                         width: "600px",
                                         effect:{
                                             effect: YAHOO.widget.ContainerEffect.FADE,
@@ -294,10 +296,10 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                                         buttons: [ { text: "OK", handler: function() { this.hide()} } ]
                                     });
 
-                                    this.widgets.gard.setHeader(msg("group-action.label.header"));
+                                    self.widgets.gard.setHeader(msg("group-action.label.header"));
 
                                     if (!downloadReportUrl) {
-                                        this.widgets.gard.setBody(
+                                        self.widgets.gard.setBody(
                                             $("<table>").append(
                                                 $("<thead>").append(
                                                     $("<tr>")
@@ -309,10 +311,10 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                                         );
                                     }
 
-                                    this.widgets.gard.render(document.body);
+                                    self.widgets.gard.render(document.body);
                                 }
                                 if (downloadReportUrl) {
-                                    this.widgets.gard.setBody(
+                                    self.widgets.gard.setBody(
                                         '<table  style="width: 100%; height: 60px">' +
                                         '<tr style="text-align: center">' +
                                         '<td>' + msg("group-action.label.report") + '</td>' +
@@ -322,7 +324,7 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                                         '</table>'
                                     )
                                 } else {
-                                    $("table tbody", this.widgets.gard.body).remove();
+                                    $("table tbody", self.widgets.gard.body).remove();
 
                                     var rtbody = $("<tbody>");
                                     _.each(results, function(result) {
@@ -353,9 +355,9 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                                         }
                                     });
 
-                                    $("table", this.widgets.gard.body).append(rtbody);
+                                    $("table", self.widgets.gard.body).append(rtbody);
                                 }
-                                this.widgets.gard.show();
+                                self.widgets.gard.show();
                             }
                         },
                         failureCallback: {
