@@ -211,15 +211,7 @@ require(['citeck/utils/citeck'], function() {
              */
             onReady: function NodeActions_onReady() {
 
-                // Asset data
-                this.recordData = this.options.documentDetails.item;
-                this.doclistMetadata = this.options.documentDetails.metadata;
-                this.currentPath = this.recordData.location.path;
-
-                // Populate convenience property
-                this.recordData.jsNode = new Alfresco.util.Node(this.recordData.node);
-
-                this.actionUrls = this.getActionUrls(this.recordData);
+                this.updateDocumentDetails(this.options.documentDetails);
 
                 var displayName = this.recordData.displayName,
                     downloadUrl = this.actionUrls.downloadUrl;
@@ -314,6 +306,20 @@ require(['citeck/utils/citeck'], function() {
                     self.customActionsLoaded = true;
                     self.renderActions(self);
                 });
+            },
+
+            updateDocumentDetails(details) {
+
+                this.options.documentDetails = details;
+                // Asset data
+                this.recordData = details.item;
+                this.doclistMetadata = details.metadata;
+                this.currentPath = this.recordData.location.path;
+
+                // Populate convenience property
+                this.recordData.jsNode = new Alfresco.util.Node(this.recordData.node);
+
+                this.actionUrls = this.getActionUrls(this.recordData);
             },
 
             registerAction: function NodeActions_registerAction(actionName, fn) {
@@ -819,21 +825,31 @@ require(['citeck/utils/citeck'], function() {
 
             updateServerActions: function (callback) {
                 var self = this;
+                var requstArgs = {
+                    nodeRef: this.options.nodeRef
+                };
+                if (this.options.siteId) {
+                    requstArgs['site'] = this.options.siteId;
+                }
                 Alfresco.util.Ajax.jsonGet({
-                    url: Alfresco.constants.PROXY_URI + 'api/node-action-service/get-actions?nodeRef=' + this.options.nodeRef,
+                    url: '/share/service/citeck/components/document-details/node-actions-details?' + $.param(requstArgs),
                     successCallback: {
                         scope: this,
                         fn: function (response) {
+
+                            self.updateDocumentDetails(response.json.documentDetails);
+                            var responseServerActions = response.json.serverActions;
+
                             var actions = [];
 
-                            for (var i = 0; i < response.json.length; i++) {
+                            for (var i = 0; i < responseServerActions.length; i++) {
                                 actions.push({
                                     id: "server-node-action-" + i,
-                                    label: response.json[i].title,
+                                    label: responseServerActions[i].title,
                                     icon: "task",
                                     type: "javascript",
                                     index: 65535 + i,
-                                    params: {"function": "onServerAction", actionProperties: response.json[i]}
+                                    params: {"function": "onServerAction", actionProperties: responseServerActions[i]}
                                 });
                             }
                             self.serverActions = actions;
