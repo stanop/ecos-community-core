@@ -308,7 +308,7 @@ require(['citeck/utils/citeck'], function() {
                 });
             },
 
-            updateDocumentDetails(details) {
+            updateDocumentDetails: function (details) {
 
                 this.options.documentDetails = details;
                 // Asset data
