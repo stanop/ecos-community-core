@@ -310,6 +310,45 @@ ko.components.register("number", {
     });
 
 // ---------------
+// CUSTOM-ACTION-BUTTON
+// ---------------
+
+    ko.components.register("custom-action-button", {
+        viewModel: function (params) {
+            kocomponents.initializeParameters.call(this, params);
+            var self = this;
+
+            require(['citeck/utils/knockout.utils'], function (koutils) {
+                self.buttonTitle = Alfresco.util.message(params["buttonTitle"]);
+                self.node = self.attribute.node();
+
+                self.onClick = function (item) {
+                    var redirect = "/share/page/card-details?nodeRef=" + self.node.nodeRef;
+                    var onRedirect = function () {
+                        if (redirect) {
+                            window.location = redirect;
+                        } else {
+                            YAHOO.Bubbling.fire("metadataRefresh");
+                        }
+                    };
+
+                    var jsonData = '{"outcome": "' + self.outcome + '", "taskType": "' + self.taskType + '"}';
+                    if (self.value() != jsonData) {
+                        self.value(jsonData);
+                        koutils.subscribeOnce(self.value, function () {
+                            self.node.thisclass.save(self.node, onRedirect);
+                        });
+                    } else {
+                        self.node.thisclass.save(self.node, onRedirect);
+                    }
+                };
+            });
+        },
+        template:
+            '<button data-bind="enable: $root.isSubmitReady, text: $data.buttonTitle, click: $component.onClick" />'
+    });
+
+// ---------------
 // FREE-CONTENT
 // ---------------
 
