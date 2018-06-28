@@ -37,7 +37,7 @@ function main()
             syncMode : model.syncMode != null ? model.syncMode : "",
             actionLinkClass : model.actionLinkClass,
             view : args.view || "details",
-            dependencies: Dependencies.getScoped('DocLibCustom/dependencies')
+            dependencies: Dependencies.getScoped('DocLibCustom/dependencies').dojo
         }
     };
     model.widgets = [documentActions];

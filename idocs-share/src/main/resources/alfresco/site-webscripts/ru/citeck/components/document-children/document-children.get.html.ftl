@@ -1,6 +1,5 @@
 <@markup id="css" >
     <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/dynamic-tree/dynamic-table.css" group="document-children" />
-    <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.css" group="document-children" />
     <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/document-children/document-children.css" group="document-children" />
     <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/dynamic-tree/action-renderer.css" group="document-children" />
 </@>

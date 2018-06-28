@@ -22,8 +22,11 @@
  * @namespace Alfresco
  * @class Alfresco.component.ConsoleOrgstruct
  */
-(function()
-{
+define([
+    'citeck/components/dynamic-tree/hierarchy-model',
+    'citeck/components/dynamic-tree/dynamic-tree'
+], function() {
+
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
 
     /**
@@ -721,4 +724,6 @@
         },
 
     });
-})();
+
+    return Alfresco.component.ConsoleOrgstruct;
+});

@@ -8,7 +8,6 @@
 <@markup id="css" >
     <#include "/org/alfresco/components/form/form.css.ftl"/>
 
-    <@link rel="stylesheet" href="${url.context}/res/citeck/utils/citeck.css" group="journals-list" />
     <@link rel="stylesheet" href="${url.context}/res/citeck/components/form/select.css" group="journals-list" />
     <@link rel="stylesheet" href="${url.context}/res/citeck/components/dynamic-tree/action-renderer.css" group="journals-list" />
 
@@ -23,17 +22,8 @@
     <#include "/org/alfresco/components/form/form.js.ftl"/>
 
     <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" group="journals-list" />
-
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="journals-list" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="journals-list" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/criteria-model.js" group="journals-list" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js" group="journals-list" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="journals-list" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/action-renderer.js" group="journals-list" />
-
     <@script type="text/javascript" src="${url.context}/res/yui/calendar/calendar.js" group="journals-list" />
-
-    <@script type="text/javascript" src="${url.context}/res/citeck/utils/citeck.js" group="journals-list" />
 </@>
 
 <@markup id="widgets">

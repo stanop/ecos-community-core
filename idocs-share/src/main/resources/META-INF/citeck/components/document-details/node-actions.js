@@ -23,7 +23,11 @@
  * @namespace Alfresco
  * @class Citeck.NodeActions
  */
-require(['citeck/utils/citeck'], function() {
+define([
+    'citeck/utils/citeck',
+    'components/documentlibrary/actions',
+    'modules/documentlibrary/doclib-actions'
+], function() {
 
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
 
@@ -165,10 +169,7 @@ require(['citeck/utils/citeck'], function() {
                  */
                 actionLinkClass: "action-link",
 
-                dependencies: {
-                    js: [],
-                    css: []
-                }
+                dependencies: []
             },
 
             /**
@@ -302,7 +303,7 @@ require(['citeck/utils/citeck'], function() {
                     self.serverActionsLoaded = true;
                     self.renderActions(self);
                 });
-                require(this.options.dependencies.js || [], function () {
+                require(this.options.dependencies, function () {
                     self.customActionsLoaded = true;
                     self.renderActions(self);
                 });
@@ -874,4 +875,6 @@ require(['citeck/utils/citeck'], function() {
             }
 
         }, true);
+
+    return Citeck.NodeActions;
 });

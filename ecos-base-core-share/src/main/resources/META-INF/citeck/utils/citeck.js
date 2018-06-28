@@ -16,10 +16,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-require(['lib/underscore'], function() {
+define([
+    'lib/underscore',
+    'js/citeck/lib/fetch',
+    'jquery',
+    'xstyle!citeck/utils/citeck.css'
+], function() {
 
-    if (typeof Citeck == "undefined" || !Citeck)
-    {
+    if (typeof Citeck == "undefined" || !Citeck) {
        Citeck = {};
     }
 
@@ -46,7 +50,7 @@ require(['lib/underscore'], function() {
     Citeck.namespace = function(namespace) {
         var names = namespace.split('.'),
             scope = this;
-        for(var i = 0, ii = names.length; i < ii; i++) {
+        for (var i = 0, ii = names.length; i < ii; i++) {
             var name = names[i];
             if(typeof scope[name] == "undefined") {
                 scope[name] = {};
@@ -112,6 +116,66 @@ require(['lib/underscore'], function() {
             }
         };
         orderedRequire(dependencies, 0, []);
+    };
+
+    Citeck.utils.loadHtml = function (url, args, destination, successCallback, failureCallback) {
+
+        var invokeCallback = function(callback) {
+            if (callback) {
+                if (callback.fn) {
+                    callback.fn.call(callback.scope);
+                } else {
+                    callback.call();
+                }
+            }
+        };
+
+        fetch(url + "?" + $.param(args), {
+            credentials: 'include'
+        }).then(response => {
+            return response.text();
+        }).then(text => {
+
+            var scriptSrcRegexp = /<script type="text\/javascript" src="\/share\/res\/(\S+)_[^_]+?\.js"><\/script>/g;
+            var jsDependencies = [];
+            text = text.replace(scriptSrcRegexp, function (match, jsSrc) {
+                if (jsSrc != "jquery/jquery") {
+                    jsDependencies.push(jsSrc);
+                }
+                return '';
+            });
+
+            var inlineScriptsRegexp = /<script type="text\/javascript">([\S\s]+?)<\/script>/g;
+            var inlineScripts = [];
+            text = text.replace(inlineScriptsRegexp, function (match, jsText) {
+                inlineScripts.push(jsText);
+                return '';
+            });
+
+            var cssSrcRegexp = /@import url\("\/share\/res\/(\S+)_[^_]+?\.css"\);/g;
+            var cssDependencies = [];
+            text = text.replace(cssSrcRegexp, function (match, cssSrc) {
+                cssDependencies.push('xstyle!' + cssSrc + '.css');
+                return '';
+            });
+
+            require(cssDependencies);
+
+            if (_.isFunction(destination)) {
+                destination(text)
+            } else {
+                $(destination).html(text);
+            }
+
+            Citeck.utils.requireInOrder(jsDependencies, function() {
+                for (var i = 0; i < inlineScripts.length; i++) {
+                    eval(inlineScripts[i]);
+                }
+                invokeCallback(successCallback);
+            });
+        }).catch(function() {
+            invokeCallback(failureCallback);
+        });
     };
 
     Citeck.utils.eval = function(context, string) {
@@ -1305,4 +1369,9 @@ require(['lib/underscore'], function() {
       return toISOString.apply(arguments.callee, arguments);
     };
 
+    return {
+        utils: Citeck.utils,
+        UI: Citeck.UI,
+        HTML5: Citeck.HTML5
+    };
 });

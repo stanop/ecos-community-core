@@ -1,12 +1,11 @@
 const Dependencies = {
 
-    _dependencyExtensionRegexp: /(\.css$|\.js$|\.properties$)/,
-
     getScoped: function (path) {
 
         var result = {
             js: [],
-            css: []
+            css: [],
+            dojo: []
         };
 
         var tokens = path.split("/");
@@ -42,9 +41,16 @@ const Dependencies = {
             var src = element.getAttribute("src");
             if (src) {
                 if (src.startsWith('/')) {
-                    src = src.substring(1);
+                    src = url.context + '/res' + src;
+                } else if (src.endsWith('.js') || src.endsWith('.css')) {
+                    src = url.context + "/res/" + src;
                 }
-                depsArr.push((src + "").replace(this._dependencyExtensionRegexp, ''));
+                if (element.name == 'js') {
+                    result.dojo.push(src);
+                } else if (element.name == 'css') {
+                    result.dojo.push("xstyle!" + src);
+                }
+                depsArr.push(src);
             }
         }
         return result;

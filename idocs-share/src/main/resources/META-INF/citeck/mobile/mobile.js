@@ -1,5 +1,5 @@
 // WORK PROCESS
-require(['citeck/utils/citeck'], function() {
+require(['citeck/utils/citeck', 'xstyle!./mobile.css'], function() {
 
     if (Citeck.mobile.isMobileDevice()) {       
         YAHOO.Bubbling.on("on-mobile-device", function(e, args) { if (args[1].fn) fn(); });
@@ -172,7 +172,4 @@ require(['citeck/utils/citeck'], function() {
 
         viewportToggle(isMobile);
     }
-
-
-
 });

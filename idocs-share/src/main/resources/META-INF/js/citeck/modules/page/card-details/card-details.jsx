@@ -1,7 +1,11 @@
 import "js/citeck/lib/fetch";
 import React from "react";
+import ReactDOM from "react-dom";
 import SurfRegion from "../../surf/surf-region";
 import $ from "jquery";
+import ShareFooter from "../../footer/share-footer";
+
+import "xstyle!citeck/components/card/card-details.css"
 
 export function CardDetails(props) {
 
@@ -17,28 +21,38 @@ export function CardDetails(props) {
     };
 
     return [
-        <div id="alf-hd">
-            <SurfRegion args={{
-                regionId: "share-header",
-                scope: "global",
-                chromeless: "true",
-                pageid: "card-details",
-                site: pageArgs.site,
-                theme: pageArgs.theme,
-                cacheAge: 300
-            }} />
+        <div className="sticky-wrapper">
+            <div id="doc3">
+                <div id="alf-hd">
+                    <SurfRegion args={{
+                        regionId: "share-header",
+                        scope: "global",
+                        chromeless: "true",
+                        pageid: "card-details",
+                        site: pageArgs.site,
+                        theme: pageArgs.theme,
+                        cacheAge: 300
+                    }} />
+                </div>
+                <div id="bd">
+                    <CardletsBody {...props} />
+                    {[
+                        createUploaderRegion('html-upload'),
+                        createUploaderRegion('flash-upload'),
+                        createUploaderRegion('dnd-upload'),
+                        createUploaderRegion('archive-and-download'),
+                        createUploaderRegion('file-upload')
+                    ]}
+                </div>
+            </div>
+            <div className="sticky-push" />
         </div>,
-        <div id="bd">
-            <CardletsBody {...props} />
-            {[
-                createUploaderRegion('html-upload'),
-                createUploaderRegion('flash-upload'),
-                createUploaderRegion('dnd-upload'),
-                createUploaderRegion('archive-and-download'),
-                createUploaderRegion('file-upload')
-            ]}
-        </div>
+        <ShareFooter className="sticky-footer" theme={pageArgs.theme} />
     ];
+}
+
+export function renderPage (elementId, props) {
+    ReactDOM.render(React.createElement(CardDetails, props), document.getElementById(elementId));
 }
 
 class CardletsBody extends React.Component {

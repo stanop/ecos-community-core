@@ -29,14 +29,10 @@
             <id>global/citeck-dependencies</id>
             <auto-deploy>true</auto-deploy>
             <configurations>
-				<config evaluator="string-compare" condition="CiteckDependencies">
-            <dependencies>
-                <js src="/citeck/utils/citeck.js"/>
-                <css src="/citeck/utils/citeck.css"/>
-                <css src="/jquery/css/jquery.mmenu.all.css"/>
-                <js src="/citeck/components/dynamic-tree/cell-formatters.js"/>
-            </dependencies>
-				</config>
+                <config evaluator="string-compare" condition="CiteckDependencies">
+                    <dependencies>
+                    </dependencies>
+                </config>
             </configurations>
             <components>
                 <component>

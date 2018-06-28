@@ -39,7 +39,11 @@
     <#-- versions-comparison dependencies -->
     <@script type="text/javascript" src="${page.url.context}/res/citeck/components/document-versions-comparison/document-versions-comparison.js" />
     <@script type="text/javascript" src="${page.url.context}/res/citeck/components/case-documents-uploader/case-documents-uploader.js" />
+
+    <@script type="text/javascript" src="${url.context}/res/components/documentlibrary/actions.js" />
+    <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" />
     <@script type="text/javascript" src="${url.context}/res/components/documentlibrary/documentlist.js" />
+
     <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/handy-doclist.js" />
 </@>
 

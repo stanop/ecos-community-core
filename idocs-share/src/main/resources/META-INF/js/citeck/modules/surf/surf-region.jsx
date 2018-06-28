@@ -1,5 +1,5 @@
 import React from "react";
-import $ from "jquery";
+import {utils as CiteckUtils} from 'citeck/utils/citeck';
 
 export default class SurfRegion extends React.Component {
 
@@ -30,38 +30,16 @@ export default class SurfRegion extends React.Component {
     }
 
     componentDidMount() {
-
-        fetch("/share/service/citeck/surf/region?" + $.param(this.state.queryArgs), {
-            credentials: 'include'
-        }).then(response => {
-            return response.text();
-        }).then(text => {
-
-            let scriptSrcRegexp = /<script type="text\/javascript" src="\/share\/res\/(\S+)_[^_]+?\.js"><\/script>/g;
-            let dependencies = [];
-            text = text.replace(scriptSrcRegexp, function (match, jsSrc) {
-                if (jsSrc != "jquery/jquery") {
-                    dependencies.push(jsSrc);
-                }
-                return '';
-            });
-
-            this.resolveDependencies(dependencies, 0, () => {
-                $('#' + this.state.rootId).html(text);
-            });
-        });
-    }
-
-    resolveDependencies(dependencies, idx, callback) {
-        if (idx >= dependencies.length) {
-            callback();
-        } else {
-            require([dependencies[idx]], () => this.resolveDependencies(dependencies, idx + 1, callback));
-        }
+        let self = this;
+        CiteckUtils.loadHtml(
+            '/share/service/citeck/surf/region',
+            this.state.queryArgs,
+            text => self.setState({innerHtml: {__html: text}})
+        );
     }
 
     render() {
-        return <div id={this.state.rootId}
+        return <div id={this.state.rootId} dangerouslySetInnerHTML={this.state.innerHtml}
                     className={this.props.className}>
         </div>;
     }

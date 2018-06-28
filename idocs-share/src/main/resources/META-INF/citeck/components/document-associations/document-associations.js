@@ -101,7 +101,9 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
              * @property multiple
              * @type Boolean
              */
-            isMultiple: true
+            isMultiple: true,
+
+            dependencies: {js: []}
         },
 
         assocsTable: [],
@@ -118,8 +120,16 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
          *
          * @method: onReady
          */
-        onReady: function() {
-            var me =this;
+        onReady: function () {
+            var self = this;
+            require(this.options.dependencies.js || [], function () {
+                self._initializeComponent();
+            });
+        },
+
+        _initializeComponent: function () {
+
+            var me = this;
 
             for (var i=0; i<this.options.visible.length; i++)
                 if(this.options.visible[i].name != '') {

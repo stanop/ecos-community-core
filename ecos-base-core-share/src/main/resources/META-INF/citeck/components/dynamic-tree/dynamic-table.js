@@ -19,7 +19,7 @@
 /**
  * DynamicTable and DynamicTableControl classes defined here.
  */
-(function() {
+define(['citeck/components/dynamic-tree/error-manager'], function() {
 
 	Citeck = typeof Citeck != "undefined" ? Citeck : {};
 	Citeck.widget = Citeck.widget || {};
@@ -984,4 +984,4 @@
 		}
 	};
 
-})();
+});

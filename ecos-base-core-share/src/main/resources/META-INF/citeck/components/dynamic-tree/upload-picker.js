@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-(function() {
+define([
+	'citeck/components/dynamic-tree/dynamic-tree-picker'
+], function() {
 
 	var thisClass = Citeck.widget.UploadPickerControl = function(htmlid, fieldId, pageHtmlId) {
 		thisClass.superclass.constructor.call(this, htmlid, fieldId, pageHtmlId);
@@ -113,4 +115,4 @@
 
 	});
 
-})();
+});

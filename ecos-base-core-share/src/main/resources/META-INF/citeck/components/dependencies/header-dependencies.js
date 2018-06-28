@@ -1,0 +1,3 @@
+require([
+    'citeck/utils/citeck'
+]);
