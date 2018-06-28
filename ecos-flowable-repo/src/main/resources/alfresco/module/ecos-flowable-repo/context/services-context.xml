@@ -12,6 +12,7 @@
 		<property name="personService" ref="PersonService"/>
 		<property name="namespaceService" ref="namespaceService"/>
 		<property name="dictionaryService" ref="dictionaryService"/>
+		<property name="nodeService" ref="nodeService"/>
 	</bean>
 
 	<bean id="flowableTaskComponent" class="ru.citeck.ecos.flowable.FlowableTaskComponent">

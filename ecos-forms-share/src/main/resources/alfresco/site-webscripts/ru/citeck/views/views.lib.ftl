@@ -169,11 +169,13 @@
             <#assign saveButtonTitle = view.params.saveButtonTitle!"button.save" />
             <#assign resetButtonTitle = view.params.resetButtonTitle!"button.reset" />
             <#assign cancelButtonTitle = view.params.cancelButtonTitle!"button.cancel" />
+            <#assign hideSubmitButton = view.params.hideSubmitButton == "true"!false />
 
             <#if canBeDraft!false>
-                <input id="${args.htmlid}-form-submit-and-send" type="submit" value="${msg(submitButtonTitle)}"
-                       data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
-
+                <#if !hideSubmitButton>
+                    <input id="${args.htmlid}-form-submit-and-send" type="submit" value="${msg(submitButtonTitle)}"
+                           data-bind="enable: valid() && !inSubmitProcess(), click: $root.submit.bind($root)" />
+                </#if>
                 <input id="${args.htmlid}-form-submit" type="submit" value="${msg(saveButtonTitle)}"
                        data-bind="enable: validDraft() && !inSubmitProcess(), click: $root.submitDraft.bind($root)" />
             <#else>

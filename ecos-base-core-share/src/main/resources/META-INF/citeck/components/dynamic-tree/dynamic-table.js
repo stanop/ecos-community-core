@@ -911,16 +911,17 @@
 				var allowSelectAll = this.options.checkboxMultipleSelectMode;
 
 				config.columns.unshift({
-					key: "checkbox-selection",
-					label: allowSelectAll ? '<input type="checkbox" id="' + this.id + '-select-all"/>' : '',
-		            formatter: function(elCell, oRecord) {
-		            	var checked = this.getSelectedRows().indexOf(oRecord.getId()) != -1,
-		            		disabled = oRecord.getData().disabled;
+                    key: "checkbox-selection",
+                    label: allowSelectAll ? '<input type="checkbox" id="' + this.id + '-select-all"/>' : '',
+                    formatter: function(elCell, oRecord) {
+                        var checked = this.getSelectedRows().indexOf(oRecord.getId()) != -1,
+                            defaultChecked = oRecord.getData().checked,
+                            disabled = oRecord.getData().disabled;
 
-		            	elCell.innerHTML = '<input type="checkbox" ' +  (checked && !disabled ? 'checked' : '') + '' + (disabled ? 'disabled' : '') +  ' />';
-		            },
-					resizeable: false 
-				});
+                        elCell.innerHTML = '<input type="checkbox" ' +  (checked && (!disabled || defaultChecked) ? 'checked ' : '') + '' + (disabled ? 'disabled' : '') +  ' />';
+                    },
+                    resizeable: false
+                });
 
 				config.selection = this.options.selection
 			}
