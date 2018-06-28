@@ -45,6 +45,7 @@ public final class IdocsModel {
     // aspects
     public static final QName ASPECT_LIFECYCLE = QName.createQName(IDOCS_NAMESPACE, "lifeCycle");
     public static final QName ASPECT_HAS_ATTORNEYS = QName.createQName(IDOCS_NAMESPACE, "hasAttorneys");
+    public static final QName ASPECT_HAS_CUSTOM_FORM_ACTION = QName.createQName(IDOCS_NAMESPACE, "hasCustomFormAction");
 
     // properties
     public static final QName PROP_REGISTRATION_DATE = QName.createQName(IDOCS_NAMESPACE, "registrationDate");
@@ -90,6 +91,8 @@ public final class IdocsModel {
     public static final QName PROP_ATTACHMENT_STATE = QName.createQName(IDOCS_NAMESPACE, "attachmentState");
 
     public static final QName PROP_ABSTRACT_CONTRACTOR = QName.createQName(IDOCS_NAMESPACE, "abstractContractor");
+
+    public static final QName PROP_CUSTOM_FORM_ACTION_DATA = QName.createQName(IDOCS_NAMESPACE, "customFormActionData");
 
     //assocs
     public static final QName ASSOC_GENERAL_DIRECTOR = QName.createQName(IDOCS_NAMESPACE, "generalDirector");

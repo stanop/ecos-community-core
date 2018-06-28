@@ -869,5 +869,12 @@
     <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
           class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
 
+    <bean id="ru.citeck.ecos.behavior.icase.FormActionBehaviour" init-method="init"
+          class="ru.citeck.ecos.behavior.icase.FormActionBehaviour">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="formActionHandlerProvider" ref="formActionHandlerProvider"/>
+    </bean>
+
 </beans>
 
