@@ -1688,7 +1688,7 @@
                 if (sData instanceof Object) {
                     var renderRequest = function(object) {
                         var hasReqData = propsArr.every(function(k) {
-                            return _.values(object).find(function (val) {
+                            return _.find(_.values(object), function (val) {
                                 return val && val.name == k;
                             });
                         });
