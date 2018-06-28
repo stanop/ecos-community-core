@@ -30,9 +30,6 @@
 
         <js src="/citeck/components/form/controls/types-and-kinds.js" />
         <css src="/citeck/components/form/controls/types-and-kinds.css" />
-
-        <js src="/citeck/components/form/controls/route.js" />
-        <css src="/citeck/components/form/controls/route.css" />
       </dependencies>
       <constraint-handlers>
         <constraint
