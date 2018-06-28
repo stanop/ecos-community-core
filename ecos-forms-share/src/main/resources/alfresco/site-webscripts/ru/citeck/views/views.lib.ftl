@@ -169,7 +169,7 @@
             <#assign saveButtonTitle = view.params.saveButtonTitle!"button.save" />
             <#assign resetButtonTitle = view.params.resetButtonTitle!"button.reset" />
             <#assign cancelButtonTitle = view.params.cancelButtonTitle!"button.cancel" />
-            <#assign hideSubmitButton = view.params.hideSubmitButton == "true"!false />
+            <#assign hideSubmitButton = (view.params.hideSubmitButton!"false") == "true"!false />
 
             <#if canBeDraft!false>
                 <#if !hideSubmitButton>
