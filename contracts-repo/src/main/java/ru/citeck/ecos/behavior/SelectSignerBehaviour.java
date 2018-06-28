@@ -14,6 +14,7 @@ import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.model.ContractsWorkflowModel;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Anton Ivanov
@@ -60,16 +61,17 @@ public class SelectSignerBehaviour implements NodeServicePolicies.OnCreateAssoci
         List<WorkflowInstance> workflows = workflowService.getWorkflowsForContent(contractRef, true);
 
         for (WorkflowInstance wf : workflows) {
+            if (Objects.equals(wf.getDefinition().getName(), "activiti$case-perform")) {
+                WorkflowTaskQuery tasksQuery = new WorkflowTaskQuery();
+                tasksQuery.setActive(true);
+                tasksQuery.setTaskState(WorkflowTaskState.IN_PROGRESS);
+                tasksQuery.setProcessId(wf.getId());
+                tasksQuery.setTaskName(ContractsWorkflowModel.TYPE_SELECT_SIGNER_TASK);
 
-            WorkflowTaskQuery tasksQuery = new WorkflowTaskQuery();
-            tasksQuery.setActive(true);
-            tasksQuery.setTaskState(WorkflowTaskState.IN_PROGRESS);
-            tasksQuery.setProcessId(wf.getId());
-            tasksQuery.setTaskName(ContractsWorkflowModel.TYPE_SELECT_SIGNER_TASK);
-
-            List<WorkflowTask> tasks = workflowService.queryTasks(tasksQuery, false);
-            for (WorkflowTask task : tasks) {
-                workflowService.endTask(task.getId(), TASK_OUTCOME);
+                List<WorkflowTask> tasks = workflowService.queryTasks(tasksQuery, false);
+                for (WorkflowTask task : tasks) {
+                    workflowService.endTask(task.getId(), TASK_OUTCOME);
+                }
             }
         }
     }
