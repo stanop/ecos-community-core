@@ -170,30 +170,9 @@ export class Cardlet extends React.Component {
         if (componentId) {
 
             require([componentId], function(component) {
-
                 self.setState({
                     component: <component.default {...self.props} />
                 });
-
-                if (component.cssDependencies) {
-
-                    let loadedDeps = Cardlet.prototype.loadedCssDeps;
-                    if (!loadedDeps) {
-                        loadedDeps = {};
-                        Cardlet.prototype.loadedCssDeps = loadedDeps;
-                    }
-
-                    for (let dep of component.cssDependencies) {
-                        if (!loadedDeps[dep]) {
-                            $('<link>').attr({
-                                type: 'text/css',
-                                rel: 'stylesheet',
-                                href: '/share/res/' + dep + '.css?' + (new Date().getTime()) //TODO add cache bust support. see surf-region.jsx
-                            }).appendTo('head');
-                            loadedDeps[dep] = true;
-                        }
-                    }
-                }
             });
         }
     }

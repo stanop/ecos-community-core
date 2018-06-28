@@ -4979,7 +4979,7 @@ body:not(.mobile).yui-skin-citeckTheme #bd .site-document-types {
     padding-left: 15px;
 }
 
-body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="case-documents"] {
+body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="SurfRegion"] > div[id*="case-documents"] {
     box-shadow: inset 15px -1px 10px -15px grey;
     padding-left: 4px;
 }
