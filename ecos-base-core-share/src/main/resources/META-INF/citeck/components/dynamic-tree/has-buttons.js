@@ -130,6 +130,7 @@
             // generate html:
             for(var i in buttonIds) {
                 if(!buttonIds.hasOwnProperty(i)) continue;
+                if(this.model.getItemName(parent) == "search" && buttonIds[i] == "deleteItem" && item.authorityType == "USER") continue;
                 var button = this.buttons && this.buttons[buttonIds[i]];
                 if(!button) {
                     button = {
