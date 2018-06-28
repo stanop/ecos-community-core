@@ -34,7 +34,7 @@
       <property name="transformers">
          <list>
             <ref bean="transformer.ImageTransform" />
-            <ref bean="transformer.ImageTransform" />
+            <ref bean="transformer.ImageMagick" />
          </list>
       </property>
       <property name="intermediateMimetypes">
