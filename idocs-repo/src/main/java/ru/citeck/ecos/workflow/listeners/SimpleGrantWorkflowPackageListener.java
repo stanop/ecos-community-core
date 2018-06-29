@@ -10,21 +10,25 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.model.BpmPackageModel;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class SimpleGrantWorkflowPackageListener implements TaskListener {
 
     private NodeService nodeService;
     private PermissionService permissionService;
     private String grantedPermission;
+    private String requiredTaskFormKey;
 
     @Override
     public void notify(DelegateTask task) {
+        if (StringUtils.isNotEmpty(requiredTaskFormKey)
+                && !Objects.equals(requiredTaskFormKey, task.getFormKey())) {
+            return;
+        }
+
         String permission = this.grantedPermission;
         if (permission != null) {
             List<NodeRef> nodeRefs = getNodeRefsList(task);
@@ -32,12 +36,14 @@ public class SimpleGrantWorkflowPackageListener implements TaskListener {
                 Set<String> authorities = getTaskActors(task);
                 if (authorities.size() > 0) {
                     for (NodeRef nodeRef : nodeRefs) {
-                        for (String authority : authorities) {
-                            AuthenticationUtil.runAsSystem(() -> {
-                                permissionService.setPermission(nodeRef, authority, permission, true);
+                        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
+                            public Object doWork() throws Exception {
+                                for(String authority : authorities) {
+                                    permissionService.setPermission(nodeRef, authority, permission, true);
+                                }
                                 return null;
-                            });
-                        }
+                            }
+                        });
                     }
                 }
             }
@@ -103,5 +109,9 @@ public class SimpleGrantWorkflowPackageListener implements TaskListener {
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
+    }
+
+    public void setRequiredTaskFormKey(String requiredTaskFormKey) {
+        this.requiredTaskFormKey = requiredTaskFormKey;
     }
 }
