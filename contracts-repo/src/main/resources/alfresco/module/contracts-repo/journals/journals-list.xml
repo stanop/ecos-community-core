@@ -22,7 +22,7 @@
             <header key="cm:name" default="false" />
             <header key="cm:title" default="true" />
             <header key="contracts:agreementNumber" />
-            <header key="icase:caseStatusAssoc" default="true">
+            <header key="icase:caseStatusAssoc" default="true" sortable="false">
                 <option name="searchCriteria">[{ attribute: "cm:title", predicate: "string-contains" }]</option>
             </header>
             <header key="contracts:agreementLegalEntity" default="true" sortable="false"/>
@@ -154,7 +154,8 @@
             <header key="contracts:mainAgreement" default="true" sortable="false"/>
             <header key="idocs:registrationNumber" />
             <header key="idocs:registrationDate" />
-            <header key="contracts:agreementNumber" default="true" /><header key="icase:caseStatusAssoc" default="true">
+            <header key="contracts:agreementNumber" default="true" />
+            <header key="icase:caseStatusAssoc" default="true" sortable="false">
                 <option name="searchCriteria">[{ attribute: "cm:title", predicate: "string-contains" }]</option>
             </header>
             <header key="contracts:agreementLegalEntity" default="true" sortable="false"/>

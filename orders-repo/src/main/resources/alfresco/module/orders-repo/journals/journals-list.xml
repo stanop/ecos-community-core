@@ -19,7 +19,7 @@
         <headers>
             <header key="cm:created" default="false" />
             <header key="tk:kind" default="true" />
-            <header key="icase:caseStatusAssoc" default="true">
+            <header key="icase:caseStatusAssoc" default="true" sortable="false">
                 <option name="searchCriteria">[{ attribute: "cm:title", predicate: "string-contains" }]</option>
             </header>
             <header key="orders:branch" default="true" />
