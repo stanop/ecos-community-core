@@ -43,7 +43,8 @@ public class FormActionBehaviour implements NodeServicePolicies.OnUpdateProperti
             }
 
             FormActionData formActionData = deserializeActionDataProperty(after);
-            List<FormActionHandler> handlersByTaskType = formActionHandlerProvider.getHandlersByTaskType(formActionData.taskType);
+            List<FormActionHandler> handlersByTaskType =
+                    formActionHandlerProvider.getHandlersByTaskType(formActionData.taskType);
             for (FormActionHandler handler : handlersByTaskType) {
                 handler.handle(nodeRef, formActionData.getOutcome());
             }
