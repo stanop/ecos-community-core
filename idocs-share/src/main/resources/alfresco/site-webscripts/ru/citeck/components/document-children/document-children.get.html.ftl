@@ -22,7 +22,7 @@
 	</div>
 	<script type="text/javascript">//<![CDATA[
 
-    require(['citeck/utils/citeck'], function() {
+    require(['js/citeck/modules/utils/citeck'], function() {
 
         Citeck.utils.requireInOrder(['lib/grouped-datatable',
             'modules/documentlibrary/global-folder',

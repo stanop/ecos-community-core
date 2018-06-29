@@ -19,7 +19,7 @@
 /**
  * Default cell formatters for YUI DataTable.
  */
-define(['citeck/utils/citeck', 'components/form/date'], function() {
+define(['js/citeck/modules/utils/citeck', 'components/form/date'], function() {
 
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
     Citeck.format = Citeck.format || {};

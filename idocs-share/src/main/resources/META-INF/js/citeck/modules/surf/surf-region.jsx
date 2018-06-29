@@ -1,5 +1,5 @@
 import React from "react";
-import {utils as CiteckUtils} from 'citeck/utils/citeck';
+import {utils as CiteckUtils} from 'js/citeck/modules/utils/citeck';
 
 export default class SurfRegion extends React.Component {
 

@@ -1,3 +1,3 @@
 require([
-    'citeck/utils/citeck'
+    'js/citeck/modules/utils/citeck'
 ]);

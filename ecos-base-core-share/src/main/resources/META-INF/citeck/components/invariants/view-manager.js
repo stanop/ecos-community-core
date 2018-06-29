@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['citeck/utils/citeck'], function() {
+define(['js/citeck/modules/utils/citeck'], function() {
 
     Citeck.namespace('invariants');
 

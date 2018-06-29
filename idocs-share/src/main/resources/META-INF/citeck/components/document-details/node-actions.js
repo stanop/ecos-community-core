@@ -24,7 +24,7 @@
  * @class Citeck.NodeActions
  */
 define([
-    'citeck/utils/citeck',
+    'js/citeck/modules/utils/citeck',
     'components/documentlibrary/actions',
     'modules/documentlibrary/doclib-actions'
 ], function() {

@@ -20,7 +20,7 @@ define([
     'lib/knockout',
     'citeck/utils/knockout.utils',
     'lib/moment',
-    'citeck/utils/citeck'
+    'js/citeck/modules/utils/citeck'
 ], function(ko, koutils, moment) {
     var logger = Alfresco.logger,
         koclass = koutils.koclass,
