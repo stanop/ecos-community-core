@@ -1,11 +1,9 @@
 package ru.citeck.ecos.form.action;
 
-import org.springframework.stereotype.Component;
 import ru.citeck.ecos.form.action.handlers.FormActionHandler;
 
 import java.util.*;
 
-@Component
 public class FormActionHandlerProvider {
 
     private Map<String, List<FormActionHandler>> handlers = new HashMap<>();
