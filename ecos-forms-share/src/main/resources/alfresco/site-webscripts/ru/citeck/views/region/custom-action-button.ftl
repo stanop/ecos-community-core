@@ -4,7 +4,7 @@
 <#assign taskType = params.taskType! />
 
 <div id="${fieldId}-buttons-control" class="buttons-control"
-    data-bind="component: { name: 'custom-action-button', params: {
+     data-bind="component: { name: 'custom-action-button', params: {
         value: value,
         fieldId: $element.id,
         attribute: $data,

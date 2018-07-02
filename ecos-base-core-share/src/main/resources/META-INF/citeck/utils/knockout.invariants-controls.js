@@ -325,11 +325,7 @@ ko.components.register("number", {
                 self.onClick = function (item) {
                     var redirect = "/share/page/card-details?nodeRef=" + self.node.nodeRef;
                     var onRedirect = function () {
-                        if (redirect) {
-                            window.location = redirect;
-                        } else {
-                            YAHOO.Bubbling.fire("metadataRefresh");
-                        }
+                        window.location = redirect;
                     };
 
                     var jsonData = '{"outcome": "' + self.outcome + '", "taskType": "' + self.taskType + '"}';
@@ -342,10 +338,15 @@ ko.components.register("number", {
                         self.node.thisclass.save(self.node, onRedirect);
                     }
                 };
+                self.disabled = ko.computed(function() {
+                    var protected = self.attribute.resolve("protected");
+                    var isSubmitReady = self.attribute.resolve("node.impl.runtime.isSubmitReady");
+                    return !isSubmitReady || protected;
+                });
             });
         },
         template:
-            '<button data-bind="enable: $root.isSubmitReady, text: $data.buttonTitle, click: $component.onClick" />'
+            '<button data-bind="text: $data.buttonTitle, click: $component.onClick, disable: $component.disabled" />'
     });
 
 // ---------------
