@@ -2837,6 +2837,16 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
    border-right: 1px solid #ccc;
 }
 
+#bd .card-mode-body > .yui-gc:not(.grid) > .yui-u {
+    width: 33.85%;
+    margin: 0;
+}
+
+#bd .card-mode-body > .yui-gc:not(.grid) > .yui-u.first {
+   width: 66%;
+   background-color: white;
+   border-right: 1px solid #ccc;
+}
 
 #bd .yui-gc:not(.grid) > .yui-u .document-details-panel {
    background-color: none;
@@ -4946,13 +4956,13 @@ div#HEADER_USER_STATUS {
 }
 
 /*shadow of new menu*/
-body:not(.mobile).yui-skin-citeckTheme  .sticky-wrapper #alf-hd,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #alf-hd,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .node-header,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .header-tabs,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet .previewer.PdfJs,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet .previewer .flat-button,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc:not(.flat-button),
-body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .first .cardlet,
 body:not(.mobile).yui-skin-citeckTheme #bd .user-profile.node-view.static,
 body:not(.mobile).yui-skin-citeckTheme #bd .profile,
 body:not(.mobile).yui-skin-citeckTheme #bd .customise-layout,

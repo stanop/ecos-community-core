@@ -4,15 +4,16 @@ import ReactDOM from "react-dom";
 import SurfRegion from "../../surf/surf-region";
 import $ from "jquery";
 import ShareFooter from "../../footer/share-footer";
+import {utils as CiteckUtils} from 'js/citeck/modules/utils/citeck';
 
-import "xstyle!citeck/components/card/card-details.css"
+import "xstyle!citeck/components/card/card-details.css";
 
-export function CardDetails(props) {
+function CardDetails(props) {
 
     let pageArgs = props.pageArgs;
 
     let createUploaderRegion = function (id) {
-        return <SurfRegion args={{
+        return <SurfRegion key={`uploader-${id}`} args={{
             regionId: id,
             scope: 'template',
             templateId: "card-details",
@@ -21,7 +22,7 @@ export function CardDetails(props) {
     };
 
     return [
-        <div className="sticky-wrapper">
+        <div key="card-details-body" className="sticky-wrapper">
             <div id="doc3">
                 <div id="alf-hd">
                     <SurfRegion args={{
@@ -47,7 +48,7 @@ export function CardDetails(props) {
             </div>
             <div className="sticky-push" />
         </div>,
-        <ShareFooter className="sticky-footer" theme={pageArgs.theme} />
+        <ShareFooter key="card-details-footer" className="sticky-footer" theme={pageArgs.theme} />
     ];
 }
 
@@ -60,25 +61,89 @@ class CardletsBody extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: null
+            data: null,
+            cardmodes: null,
+            activeMode: "default"
         };
+
+        let self = this;
+
+        window.onpopstate = function() {
+            let urlMode = CiteckUtils.getURLParameterByName("mode");
+            self.setState({
+                activeMode: urlMode ? urlMode : "default"
+            });
+        }
     }
 
     componentDidMount() {
-        let pageArgs = this.props.pageArgs;
-        let requestArgs = [
-            'nodeRef=' + pageArgs.nodeRef
-        ];
-        if (pageArgs.mode) {
-            requestArgs.push('mode=' + pageArgs.mode);
+
+        let initialMode = CiteckUtils.getURLParameterByName("mode");
+        if (initialMode) {
+            this.setState({
+                activeMode: initialMode
+            });
         }
-        let url = this.props.alfescoUrl + "citeck/card/cardlets?" + requestArgs.join('&');
-        fetch(url, {
+
+        let pageArgs = this.props.pageArgs;
+        let requestArgs = {
+            'nodeRef': pageArgs.nodeRef,
+            'mode': 'all'
+        };
+        fetch(this.props.alfescoUrl + "citeck/card/cardlets?" + $.param(requestArgs), {
             credentials: 'include'
         }).then(response => {
             return response.json();
         }).then(json => {
-            this.setState({data: json});
+            let cardlets = {};
+            for (let cardlet of json.cardlets) {
+                if (cardlet.regionId == 'card-modes') {
+                    continue;
+                }
+                let mode;
+                if (cardlet.regionColumn != 'top' || cardlet.regionPosition > 'm5') {
+                    mode = cardlet.cardMode || 'default';
+                } else {
+                    mode = 'all'
+                }
+                let columns = cardlets[mode];
+                if (!columns) {
+                    columns = {
+                        top: [],
+                        left: [],
+                        right: [],
+                        bottom: []
+                    };
+                    cardlets[mode] = columns;
+                }
+                let column = columns[cardlet.regionColumn];
+                if (column) {
+                    column.push(this.getCardletInstance(cardlet));
+                }
+            }
+            this.setState({
+                data: json,
+                cardlets: cardlets
+            });
+        });
+
+        requestArgs = {
+            nodeRef: this.props.pageArgs.nodeRef
+        };
+        fetch(this.props.alfescoUrl + "citeck/card/modes?" + $.param(requestArgs), {
+            credentials: 'include'
+        }).then(response => {
+            return response.json();
+        }).then(json => {
+            this.setState({
+                cardmodes: [{
+                        "id": "default",
+                        "title": Alfresco.util.message('card.mode.default.title'),
+                        "description": Alfresco.util.message('card.mode.default.description')
+                    },
+                    ...json.cardmodes
+                ]
+            });
         });
     }
 
@@ -93,7 +158,7 @@ class CardletsBody extends React.Component {
         }
         let result = instances[key];
         if (!result) {
-            result = <Cardlet pageArgs={this.props.pageArgs} {...props} />;
+            result = <Cardlet key={key} pageArgs={this.props.pageArgs} {...props} />;
             instances[key] = result;
         }
 
@@ -102,43 +167,107 @@ class CardletsBody extends React.Component {
 
     render() {
 
-        if (!this.state.data) {
+        if (!this.state.data || !this.state.cardmodes) {
             return '';
         }
 
         let self = this;
-        let toCardlet = function (props) {
-            return self.getCardletInstance(props);
+        let modes = this.state.cardmodes;
+
+        let onModeTabClick = function (modeId) {
+            CiteckUtils.setURLParameter("mode", modeId);
+            self.setState({
+                activeMode: modeId
+            });
         };
 
-        let cardlets = this.state.data.cardlets;
+        const cardlets = this.state.cardlets;
 
-        //TODO add ability to setup 'component' field for any cardlet
-        let nodeHeader = cardlets.find(c => c.regionId == 'node-header');
-        if (nodeHeader) {
-            //nodeHeader.component = 'js/citeck/modules/cardlets/node-header';
+        let tabsData = modes.map(mode => {
+            let isActive = mode.id == self.state.activeMode;
+            return {
+                link: <CardletModeTab key={`link-${mode.id}`}
+                                      modeId={mode.id}
+                                      isActive={isActive}
+                                      title={mode.title}
+                                      onClick={onModeTabClick} />,
+                body: <CardletModeBody key={`route-${mode.id}`}
+                                       modeId={mode.id}
+                                       cardlets={cardlets[mode.id]}
+                                       isActive={isActive} />
+            }
+        });
+
+        return <div>
+            {cardlets['all']['top']}
+            <div id="card-details-tabs" className="header-tabs">
+                {tabsData.map(tab => tab.link)}
+            </div>
+            <div>
+                {tabsData.map(tab => tab.body)}
+            </div>
+        </div>;
+    }
+}
+
+function CardletModeTab(props) {
+
+    let className = "header-tab";
+
+    if (props.isActive) {
+        className += " current";
+    }
+
+    return <span className={className}>
+        <a onClick={() => props.onClick(props.modeId)}>{props.title}</a>
+    </span>
+}
+
+class CardletModeBody extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            initialized: false,
+            cardlets: {
+                left: [],
+                right: [],
+                bottom: [],
+                top: []
+            }
+        }
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        if (state.initialized == false && props.isActive) {
+            return {
+                initialized: true,
+                cardlets: props.cardlets
+            }
+        }
+        return null;
+    }
+
+    render() {
+
+        let className = "card-mode-body";
+        if (!this.props.isActive) {
+            className += " hidden";
         }
 
-        let topRegions = cardlets.filter(c => c.regionColumn == 'top');
-        let leftRegions = cardlets.filter(c => c.regionColumn == 'left');
-        let rightRegions = cardlets.filter(c => c.regionColumn == 'right');
-        let bottomRegions = cardlets.filter(c => c.regionColumn == 'bottom');
-
-        let result = [];
-        result.push(topRegions.map(toCardlet));
-        result.push(
+        let cardlets = this.state.cardlets;
+        return <div id={`card-mode-${this.props.modeId}`} className={className}>
+            {cardlets['top']}
             <div className="yui-gc">
                 <div className="yui-u first">
-                    {leftRegions.map(toCardlet)}
+                    {cardlets['left']}
                 </div>
                 <div className="yui-u">
-                    {rightRegions.map(toCardlet)}
+                    {cardlets['right']}
                 </div>
             </div>
-        );
-        result.push(bottomRegions.map(toCardlet));
-
-        return result;
+            {cardlets['bottom']}
+        </div>
     }
 }
 

@@ -252,27 +252,25 @@
 
 .properties,
 .versions,
-.versions-comparison,
-.actions {
+.versions-comparison .actions {
     width: 25%; 
     float: right;
 }
 
 .versions,
-.versions-comparison,
-.actions {
+.versions-comparison .actions {
     clear: right;
 }
 
-.actions .action-set {
+.yui-panel-container .actions .action-set {
     margin-left: -3px;
 }
 
-.actions .action-set > div {
+.yui-panel-container .actions .action-set > div {
     display: inline-block;
 }
 
-.actions .action-set a {
+.yui-panel-container .actions .action-set a {
     background-repeat: no-repeat;
     text-indent: -9999px;
     background-position: center;
@@ -281,7 +279,7 @@
     display: block;
 }
 
-.actions {
+.yui-panel-container .actions {
     margin: 0 0 15px 0;
     border-bottom: 1px solid #ccc;
     padding-bottom: 6px;
@@ -293,7 +291,6 @@
     margin-bottom: 10px;
     border-bottom: 1px solid #CCC;
 }
-
 
 .document-versions-minimalistic,
 .document-versions-comparison {

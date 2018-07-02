@@ -1,5 +1,6 @@
-import React from "react";
+import React from 'react';
 import {utils as CiteckUtils} from 'js/citeck/modules/utils/citeck';
+import 'lib/underscore'
 
 export default class SurfRegion extends React.Component {
 
@@ -31,11 +32,19 @@ export default class SurfRegion extends React.Component {
 
     componentDidMount() {
         let self = this;
-        CiteckUtils.loadHtml(
-            '/share/service/citeck/surf/region',
-            this.state.queryArgs,
-            text => self.setState({innerHtml: {__html: text}})
-        );
+        if (_.isUndefined(this.state.initialized)) {
+            self.setState({
+                loaded: false
+            });
+            CiteckUtils.loadHtml(
+                '/share/service/citeck/surf/region',
+                this.state.queryArgs,
+                text => self.setState({
+                    innerHtml: {__html: text},
+                    loaded: true
+                })
+            );
+        }
     }
 
     render() {

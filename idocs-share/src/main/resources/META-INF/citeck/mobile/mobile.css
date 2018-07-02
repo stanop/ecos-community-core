@@ -403,3 +403,9 @@
     float: none;
 }
 
+.mobile #bd .card-mode-body > .yui-gc > .yui-u {
+    width: 100% !important;
+    margin: 0;
+    float: none;
+}
+
