@@ -78,7 +78,7 @@
                     </#if>
                 </#if>
             <div class="node-info">
-                <#if showPath == "true" && node.type == "ecos:document">
+                <#if showPath == "true">
                     <!-- Path-->
                     <div class="node-path">
                         <@renderPaths paths />

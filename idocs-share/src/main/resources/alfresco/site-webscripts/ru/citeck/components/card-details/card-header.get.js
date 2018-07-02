@@ -11,7 +11,8 @@ function main() {
     AlfrescoUtil.param("showComments", "true");
     AlfrescoUtil.param("showQuickShare", "true");
     AlfrescoUtil.param("showDownload", "true");
-    AlfrescoUtil.param("showPath", "true");
+    AlfrescoUtil.param("showPath", "false");
+    AlfrescoUtil.param("showPathForType", null);
     AlfrescoUtil.param("libraryRoot", null);
     AlfrescoUtil.param("pagecontext", null);
     AlfrescoUtil.param("template", null);
@@ -40,6 +41,10 @@ function main() {
 
         var template = model.template ? eval('model.item.' + model.template) : null;
         model.displayName = (template || model.item.displayName || model.item.fileName);
+
+        if (model.showPathForType != null) {
+            model.showPath = (nodeDetails.item.node.type == model.showPathForType).toString();
+        }
 
         var nodeHeader = {
             id: "NodeHeader",
