@@ -7,9 +7,7 @@
 
                 <js src="/lib/grouped-datatable.js" />
 
-                <js src="/citeck/components/dynamic-tree/has-buttons.js" />
                 <css src="/citeck/components/orgstruct/orgstruct-icons.css" />
-                <js src="/citeck/components/dynamic-tree/dynamic-doclib-table.js" />
                 <css src="/citeck/components/dynamic-tree/dynamic-doclib-table.css" />
                 <css src="/citeck/components/dynamic-tree/dynamic-table.css" />
 

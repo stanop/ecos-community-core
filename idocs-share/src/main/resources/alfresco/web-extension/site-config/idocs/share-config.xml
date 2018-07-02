@@ -105,7 +105,6 @@
       <js src="/components/documentlibrary/documentlist-view-simple.js" />
       <js src="/components/documentlibrary/documentlist-view-gallery.js" />
       <js src="/components/documentlibrary/documentlist-view-filmstrip.js" />
-      <js src="/citeck/components/dynamic-tree/handy-doclist.js" />
       <js src="/yui/slider/slider.js" />
       <messages component="org/alfresco/components/documentlibrary/documentlist.get" scope="Alfresco.DocumentList" />
     </dependencies>

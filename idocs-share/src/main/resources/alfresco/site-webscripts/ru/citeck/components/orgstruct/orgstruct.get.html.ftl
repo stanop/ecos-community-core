@@ -19,7 +19,6 @@
     <@script type="text/javascript" src="${url.context}/res/citeck/components/form/constraints.js" group="orgstruct" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/form/select.js" group="orgstruct" />
 
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="orgstruct" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/dynamic-toolbar.js" group="orgstruct" />
 
     <@script type="text/javascript" src="${url.context}/res/citeck/components/orgstruct/picker-dialogs.js" group="orgstruct" />

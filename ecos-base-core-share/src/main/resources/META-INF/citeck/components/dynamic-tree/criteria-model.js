@@ -17,7 +17,7 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 define([
-	'citeck/components/dynamic-tree/hierarchy-model'
+    './hierarchy-model'
 ], function() {
 
     if (typeof Citeck == "undefined") Citeck = {};

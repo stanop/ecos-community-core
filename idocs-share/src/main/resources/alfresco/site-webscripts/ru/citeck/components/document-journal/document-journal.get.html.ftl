@@ -10,7 +10,6 @@
 
 <@markup id="js">
     <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" group="document-journal" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="document-journal" />
     <@script type="text/javascript" src="${url.context}/res/yui/calendar/calendar.js" group="document-journal" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/document-journal/document-journal.js" group="document-journal" />
 </@>

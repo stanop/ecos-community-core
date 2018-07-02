@@ -12,7 +12,6 @@
 				<@script type="text/javascript" src="${url.context}/res/components/documentlibrary/actions.js" group="journals2" />
 				<@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" group="journals2" />
 				<@script type="text/javascript" src="${url.context}/res/citeck/components/documentlibrary/custom-actions.js" group="journals2" />
-				<@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="journals2" />
 				<@script type="text/javascript" src="${url.context}/res/citeck/components/form/constraints.js" group="journals2" />
 				<@script type="text/javascript" src="${url.context}/res/modules/journals/buttons.js" group="journals2" />
 				<@script type="text/javascript" src="${page.url.context}/res/components/form/date.js" group="journals2" />
