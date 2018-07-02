@@ -8,27 +8,27 @@
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<bean parent="activiti-listener.task.assignment">
-		<property name="values">
-			<list>
-				<ref bean="contracts.scanTaskSimpleGrantWorkflowPackage" />
-			</list>
-		</property>
-	</bean>
+    <bean parent="activiti-listener.task.assignment">
+        <property name="values">
+            <list>
+                <ref bean="contracts.scanTaskSimpleGrantWorkflowPackage" />
+            </list>
+        </property>
+    </bean>
 
-	<bean parent="activiti-listener.task.create">
-		<property name="values">
-			<list>
-				<ref bean="contracts.scanTaskSimpleGrantWorkflowPackage" />
-			</list>
-		</property>
-	</bean>
+    <bean parent="activiti-listener.task.create">
+        <property name="values">
+            <list>
+                <ref bean="contracts.scanTaskSimpleGrantWorkflowPackage" />
+            </list>
+        </property>
+    </bean>
 
-	<bean id="contracts.scanTaskSimpleGrantWorkflowPackage" class="ru.citeck.ecos.workflow.listeners.SimpleGrantWorkflowPackageListener">
-		<property name="permissionService" ref="PermissionService"/>
-		<property name="nodeService" ref="nodeService"/>
-		<property name="grantedPermission" value="CreateChildren" />
-		<property name="requiredTaskFormKey" value="ctrwf:scanTask" />
-	</bean>
+    <bean id="contracts.scanTaskSimpleGrantWorkflowPackage" class="ru.citeck.ecos.workflow.listeners.SimpleGrantWorkflowPackageListener">
+        <property name="permissionService" ref="PermissionService"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="grantedPermission" value="CreateChildren" />
+        <property name="requiredTaskFormKey" value="ctrwf:scanTask" />
+    </bean>
 
 </beans>

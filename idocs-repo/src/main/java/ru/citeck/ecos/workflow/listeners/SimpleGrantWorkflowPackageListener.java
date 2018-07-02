@@ -36,13 +36,11 @@ public class SimpleGrantWorkflowPackageListener implements TaskListener {
                 Set<String> authorities = getTaskActors(task);
                 if (authorities.size() > 0) {
                     for (NodeRef nodeRef : nodeRefs) {
-                        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-                            public Object doWork() throws Exception {
-                                for(String authority : authorities) {
-                                    permissionService.setPermission(nodeRef, authority, permission, true);
-                                }
-                                return null;
+                        AuthenticationUtil.runAsSystem(() -> {
+                            for(String authority : authorities) {
+                                permissionService.setPermission(nodeRef, authority, permission, true);
                             }
+                            return null;
                         });
                     }
                 }
