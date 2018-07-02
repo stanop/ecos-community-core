@@ -6,28 +6,15 @@
                 <js src="/modules/simple-dialog.js" />
 
                 <js src="/lib/grouped-datatable.js" />
-                <js src="/citeck/components/dynamic-tree/cell-formatters.js?t=523453241" />
-                <js src="/citeck/components/dynamic-tree/error-manager.js" />
 
-                <js src="/citeck/components/dynamic-tree/hierarchy-model.js" />
-                <js src="/citeck/components/dynamic-tree/has-buttons.js" />
-                <js src="/citeck/components/dynamic-tree/dynamic-tree.js" />
-                <css src="/citeck/components/dynamic-tree/dynamic-tree.css" />
-                <js src="/citeck/components/dynamic-tree/dynamic-tree-picker.js" />
-                <css src="/citeck/components/dynamic-tree/dynamic-tree-picker.css" />
-                <js src="/citeck/components/dynamic-tree/upload-picker.js" />
-                <js src="/citeck/components/dynamic-tree/doclib-picker.js" />
                 <css src="/citeck/components/orgstruct/orgstruct-icons.css" />
-                <js src="/citeck/components/dynamic-tree/dynamic-doclib-table.js" />
                 <css src="/citeck/components/dynamic-tree/dynamic-doclib-table.css" />
-                <js src="/citeck/components/dynamic-tree/dynamic-table.js" />
                 <css src="/citeck/components/dynamic-tree/dynamic-table.css" />
 
                 <js src="/citeck/components/dynamic-tree/handy-doclist-dependencies-uploader.js" />
-        <js src="/yui/resize/resize.js" />
+                <js src="/yui/resize/resize.js" />
 
                 <css src="/citeck/components/journals2/journals.css" />
-                <js src="/citeck/components/dynamic-tree/criteria-model.js" />
 
                 <css src="/citeck/components/form/citeck-object-finder.css" />
                 <js src="/citeck/components/form/citeck-object-finder.js" />
@@ -39,8 +26,6 @@
                 <js src="/citeck/components/form/controls/js-variable-value.js" />
                 <js src="/citeck/components/form/controls/groupable.js" />
                 <css src="/citeck/components/form/controls/groupable.css" />
-                <js src="/citeck/components/form/controls/auto-number.js" />
-                <css src="/citeck/components/form/controls/auto-number.css" />
                 <js src="/citeck/components/form/controls/auto-manual.js" />
                 <css src="/citeck/components/form/controls/auto-manual.css" />
                 <js src="/citeck/components/form/multipart-form-support.js" />

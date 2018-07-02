@@ -5,7 +5,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.*;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.util.ParameterCheck;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -348,28 +347,39 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return this;
     }
 
+    @Override
     public String getQuery() {
         return group != null ? group.getQuery() : "";
     }
 
+    @Override
     public Optional<NodeRef> queryOne(SearchService searchService) {
         return query(searchService).stream()
                                    .findFirst();
     }
 
+    @Override
     public Optional<NodeRef> queryOne(SearchService searchService, Predicate<NodeRef> filter) {
         return query(searchService).stream()
                                    .filter(filter)
                                    .findFirst();
     }
 
+    @Override
     public List<NodeRef> query(SearchService searchService, Predicate<NodeRef> filter) {
         return query(searchService).stream()
                                    .filter(filter)
                                    .collect(Collectors.toList());
     }
 
+    @Override
     public List<NodeRef> query(SearchService searchService) {
+        QueryResult result = queryDetails(searchService);
+        return result.getNodeRefs();
+    }
+
+    @Override
+    public QueryResult queryDetails(SearchService searchService) {
 
         String query = group.getQuery();
 
@@ -380,10 +390,11 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         searchParameters.setQuery(query);
 
         ResultSet resultSet = null;
-
         try {
             resultSet = searchService.query(searchParameters);
-            return resultSet.getNodeRefs();
+            return new QueryResult(resultSet.getNodeRefs(),
+                                   resultSet.hasMore(),
+                                   resultSet.getNumberFound());
         } finally {
             if (resultSet != null) {
                 resultSet.close();
@@ -391,6 +402,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         }
     }
 
+    @Override
     public FTSQuery copy() {
         return new FTSQuery(this);
     }

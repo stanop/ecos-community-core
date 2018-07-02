@@ -1,29 +1,24 @@
-function filterAndSort(cardlets, column) {
-	var filteredCardlets = [];
-	for(var i in cardlets) {
-		if(cardlets[i].regionColumn == column) {
-			filteredCardlets.push(cardlets[i]);
-		}
-	}
-	return filteredCardlets.sort(function(a, b) {
-		return a.regionPosition < b.regionPosition ? -1
-				: a.regionPosition > b.regionPosition ? 1 
-				: 0;
-	});
-}
+<import resource="classpath:/alfresco/site-webscripts/org/alfresco/components/head/resources.get.js">
+<import resource="classpath:/alfresco/templates/org/alfresco/import/alfresco-util.js">
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/dependencies/dependencies.lib.js">
+// See if a site page's title has been renamed by the site manager
+model.metaPage = AlfrescoUtil.getMetaPage();
 
-(function() 
-{
-	// get case element configs
-	var result = remote.call("/citeck/cardlets?nodeRef=" + page.url.args.nodeRef + "&mode=" + (page.url.args.mode || ""));
-	if(result.status == 200) {
-		var cardlets = eval('(' + result + ')').cardlets;
-	} else {
-		var cardlets = [];
-	}
-	
-	model.topRegions = filterAndSort(cardlets, "top");
-	model.leftRegions = filterAndSort(cardlets, "left");
-	model.rightRegions = filterAndSort(cardlets, "right");
-	model.bottomRegions = filterAndSort(cardlets, "bottom");
-})();
+model.hasReadPermissions = false;
+const connector = remote.connect("alfresco");
+const nodeRef = page.url.args.nodeRef;
+
+if (nodeRef) {
+    const permCheckUrl = "/citeck/has-permission?nodeRef=" + nodeRef + "&permission=Read";
+    try {
+        const result = connector.get(permCheckUrl);
+        model.hasReadPermissions = result.status == 200 && result.response == "true";
+    } catch (e) {
+        logger.warn("Connection to " + permCheckUrl + " is failed");
+        logger.warn("Error", e);
+    }
+
+    if (model.hasReadPermissions) {
+        model.pageDependencies = Dependencies.getScoped('CiteckPage/card-details/dependencies');
+    }
+}

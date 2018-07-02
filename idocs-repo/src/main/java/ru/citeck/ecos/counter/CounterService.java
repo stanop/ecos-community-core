@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2018 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -20,29 +20,30 @@ package ru.citeck.ecos.counter;
 
 public interface CounterService {
 
-	/**
-	 * Sets current value for specified counter.
-	 * This value can be further retrieved by getCounterLast function.
-	 * @param counterName
-	 * @param value
-	 */
-	public void setCounterLast(String counterName, int value);
-	
-	/**
-	 * Gets last number, that was given by this counter or null, if counter does not exist.
-	 * @param counterName
-	 * @return
-	 */
-	public Integer getCounterLast(String counterName);
-	
-	/**
-	 * Gets next number, that would be given by this counter.
-	 * @param counterName
-	 * @param increment - if true, increment counter, if false - just give the value or null
-	 * @return
-	 * 
-	 * Note: if increment == false and counter does not exist, null should be returned.
-	 */
-	public Integer getCounterNext(String counterName, boolean increment);
-	
+    /**
+     * Sets current value for specified counter.
+     * This value can be further retrieved by getCounterLast function.
+     *
+     * @param counterName
+     * @param value
+     */
+    public void setCounterLast(String counterName, long value);
+
+    /**
+     * Gets last number, that was given by this counter or null, if counter does not exist.
+     *
+     * @param counterName
+     * @return
+     */
+    public Long getCounterLast(String counterName);
+
+    /**
+     * Gets next number, that would be given by this counter.
+     *
+     * @param counterName
+     * @param increment   - if true, increment counter, if false - just give the value or null
+     * @return Note: if increment == false and counter does not exist, null should be returned.
+     */
+    public Long getCounterNext(String counterName, boolean increment);
+
 }

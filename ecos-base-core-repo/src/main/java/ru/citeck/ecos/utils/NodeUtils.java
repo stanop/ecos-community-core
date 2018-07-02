@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -92,6 +93,15 @@ public class NodeUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * Get first node associated as target or child of specified sourceRef
+     *
+     * @return associated node
+     */
+    public Optional<NodeRef> getAssocTarget(NodeRef sourceRef, QName assocName) {
+        return getAssocTargets(sourceRef, assocName).stream().findFirst();
     }
 
     /**

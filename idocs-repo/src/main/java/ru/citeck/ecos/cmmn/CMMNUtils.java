@@ -81,6 +81,8 @@ public class CMMNUtils implements ContentValueConverter {
     private static final QName QNAME_PERFORMERS = new QName(NAMESPACE, "performers");
     private static final QName QNAME_PERFORMERS_ROLES = new QName(NAMESPACE, "performersRoles");
     private static final QName QNAME_CONTROLLER = new QName(NAMESPACE, "controller");
+    private static final QName QNAME_TASK_AUTHORITIES = new QName(NAMESPACE, "taskAuthorities");
+    private static final QName QNAME_TASK_ROLES = new QName(NAMESPACE, "taskRoles");
 
     private static final QName QNAME_ROLE_VARNAME = new QName(NAMESPACE, "roleVarName");
     private static final QName QNAME_ROLE_REFERENSE = new QName(NAMESPACE, "isReferenceRole");
@@ -117,6 +119,8 @@ public class CMMNUtils implements ContentValueConverter {
         mapping.put(QNAME_PERFORMER, ICaseTaskModel.ASSOC_PERFORMER);
         mapping.put(QNAME_PERFORMERS, ICaseTaskModel.ASSOC_PERFORMERS);
         mapping.put(QNAME_CONTROLLER, ICaseTaskModel.ASSOC_CONTROLLER);
+        mapping.put(QNAME_TASK_AUTHORITIES, ICaseTaskModel.ASSOC_AUTHORITIES);
+        mapping.put(QNAME_TASK_ROLES, ICaseTaskModel.ASSOC_ROLES);
         mapping.put(QNAME_PERFORMERS_ROLES, CasePerformModel.ASSOC_PERFORMERS_ROLES);
         mapping.put(QNAME_REFERENSE_ROLE, ICaseRoleModel.ASSOC_REFERENCE_ROLE);
         ROLES_ASSOCS_MAPPING = Collections.unmodifiableMap(mapping);

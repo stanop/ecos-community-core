@@ -1,0 +1,11 @@
+<webscript>
+    <shortname>get-surf-region</shortname>
+    <description>Get surf region</description>
+    <url>/citeck/surf/region?regionId={regionId}&amp;scope={scope}&amp;pageId={pageId?}&amp;chromeless={chromeless?}&amp;source={source?}</url>
+    <format default="html">any</format>
+    <cache>
+        <never>false</never>
+        <public>false</public>
+        <mustrevalidate/>
+    </cache>
+</webscript>

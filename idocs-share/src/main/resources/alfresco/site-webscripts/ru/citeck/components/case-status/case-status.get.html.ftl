@@ -1,11 +1,13 @@
 <#assign id=args.htmlid?js_string>
 
 <script type="text/javascript">
-    new Citeck.widget.CaseStatus("${id}").setOptions({
-        nodeRef: "${nodeRef}",
-        isPendingUpdate: ${isPendingUpdate?string},
-        htmlid: "${id}"
-    }).setMessages(${messages});
+    require(['citeck/components/case-status/case-status'], function () {
+        new Citeck.widget.CaseStatus("${id}").setOptions({
+            nodeRef: "${nodeRef}",
+            isPendingUpdate: ${isPendingUpdate?string},
+            htmlid: "${id}"
+        }).setMessages(${messages});
+    });
 </script>
 
 <style type="text/css">

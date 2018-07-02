@@ -1,6 +1,7 @@
 (function() {
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
     Citeck.widget = Citeck.widget || {};
+    Citeck.constants = Citeck.constants || {};
 
     Citeck.widget.CaseStatus = function(htmlid) {
         Citeck.widget.CaseStatus.superclass.constructor.call(this, "Citeck.widget.CaseStatus", htmlid, null);
@@ -41,6 +42,7 @@
                 successCallback: {
                     scope: this,
                     fn: function (response) {
+                        Citeck.constants.CASE_STATUS_ID = response.json.statusId || "";
                         statusNameEl.html(response.json.statusName || this.msg("status.empty"));
                         statusHeaderEl.html(this.msg("header." + response.json.statusType));
                         statusNameEl.removeClass("loading");

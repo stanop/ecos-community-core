@@ -146,6 +146,9 @@
                 <property name="event:caseTask">
                     <type>d:noderef</type>
                 </property>
+                <property name="event:taskDueDate">
+                    <type>d:date</type>
+                </property>
             </properties>
         </aspect>
         

@@ -16,64 +16,67 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-(function() {
+define([
+    './upload-picker',
+    './has-buttons'
+], function() {
 
-	var $buttonSubscribe = Citeck.widget.HasButtons.subscribe;
-	var $buttonUnsubscribe = Citeck.widget.HasButtons.unsubscribe;
+    var $buttonSubscribe = Citeck.widget.HasButtons.subscribe;
+    var $buttonUnsubscribe = Citeck.widget.HasButtons.unsubscribe;
 
-	var thisClass = Citeck.widget.DoclibPickerControl = function(htmlid, fieldId, pageHtmlId) {
-		thisClass.superclass.constructor.call(this, htmlid, fieldId, pageHtmlId);
-		YAHOO.Bubbling.on("metadataRefresh", this.onMetadataRefresh, this);
-	};
+    var thisClass = Citeck.widget.DoclibPickerControl = function(htmlid, fieldId, pageHtmlId) {
+        thisClass.superclass.constructor.call(this, htmlid, fieldId, pageHtmlId);
+        YAHOO.Bubbling.on("metadataRefresh", this.onMetadataRefresh, this);
+    };
 
-	YAHOO.extend(Citeck.widget.DoclibPickerControl, Citeck.widget.UploadPickerControl, {
+    YAHOO.extend(Citeck.widget.DoclibPickerControl, Citeck.widget.UploadPickerControl, {
 
-		options: YAHOO.lang.merge(Citeck.widget.UploadPickerControl.prototype.options, {
-			// custom upload button label:
-			uploadButtonLabel: null,
-		}),
+        options: YAHOO.lang.merge(Citeck.widget.UploadPickerControl.prototype.options, {
+            // custom upload button label:
+            uploadButtonLabel: null,
+        }),
 
-		_initCurrentValuesList: function() {
-			this.widgets.table = new Citeck.widget.DynamicDoclibTable(this.id + "-currentValueDisplay", this.model, this.name);
-			this.widgets.table.setContext("selected-items", "none");
-			// when our documentlist is ready
-			YAHOO.Bubbling.on("dynamicDoclibTableLoaded", function(layer, args) {
-				// react only on our documentlist
-				var eventGroup = args[1].eventGroup;
-				if(eventGroup != this.id + "-currentValueDisplay") {
-					return;
-				}
-				// register "unselect" action"
-				YAHOO.Bubbling.fire("registerAction", {
-					actionName: "onActionUnselect",
-					fn: this.bind(this.onActionUnselect)
-				});
-			}, this);
-			// subscribe on button events:
-			$buttonSubscribe("itemUnselect", this.onItemUnselect, this, [this.widgets.table.id]);
-		},
+        _initCurrentValuesList: function() {
+            this.widgets.table = new Citeck.widget.DynamicDoclibTable(this.id + "-currentValueDisplay", this.model, this.name);
+            this.widgets.table.setContext("selected-items", "none");
+            // when our documentlist is ready
+            YAHOO.Bubbling.on("dynamicDoclibTableLoaded", function(layer, args) {
+                // react only on our documentlist
+                var eventGroup = args[1].eventGroup;
+                if(eventGroup != this.id + "-currentValueDisplay") {
+                    return;
+                }
+                // register "unselect" action"
+                YAHOO.Bubbling.fire("registerAction", {
+                    actionName: "onActionUnselect",
+                    fn: this.bind(this.onActionUnselect)
+                });
+            }, this);
+            // subscribe on button events:
+            $buttonSubscribe("itemUnselect", this.onItemUnselect, this, [this.widgets.table.id]);
+        },
 
-		onActionUnselect: function(record) {
-			//*
-			YAHOO.Bubbling.fire("itemUnselect", {
-				from: "selected-items",
-				item: record.nodeRef,
-				id: this.id + "-currentValueDisplay"
-			});
-			//*/
-		},
+        onActionUnselect: function(record) {
+            //*
+            YAHOO.Bubbling.fire("itemUnselect", {
+                from: "selected-items",
+                item: record.nodeRef,
+                id: this.id + "-currentValueDisplay"
+            });
+            //*/
+        },
 
-		onMetadataRefresh: function(layer, args) {
-			var obj = args[1];
-			if(obj && obj.highlightFile != null) {
-				var items = this.model.getItemsByProperty("fileName", obj.highlightFile);
-				for(var i in items) {
+        onMetadataRefresh: function(layer, args) {
+            var obj = args[1];
+            if(obj && obj.highlightFile != null) {
+                var items = this.model.getItemsByProperty("fileName", obj.highlightFile);
+                for(var i in items) {
                     if(!items.hasOwnProperty(i)) continue;
-					this.model.updateItem(items[i]);
-				}
-			}
-		}
+                    this.model.updateItem(items[i]);
+                }
+            }
+        }
 
-	});
+    });
 
-})();
+});

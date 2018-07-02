@@ -1,7 +1,6 @@
 package ru.citeck.ecos.flowable.configuration;
 
 import org.alfresco.repo.i18n.MessageService;
-import org.alfresco.repo.jscript.BaseScopableProcessorExtension;
 import org.alfresco.repo.service.ServiceDescriptorRegistry;
 import org.alfresco.repo.tenant.TenantService;
 import org.alfresco.repo.workflow.DefaultWorkflowPropertyHandler;
@@ -22,8 +21,6 @@ import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
 import ru.citeck.ecos.flowable.handlers.UserTaskBpmnParseHandler;
-import ru.citeck.ecos.flowable.listeners.global.GlobalExecutionListener;
-import ru.citeck.ecos.flowable.listeners.global.GlobalTaskListener;
 import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
 import ru.citeck.ecos.flowable.services.impl.ModelMapper;

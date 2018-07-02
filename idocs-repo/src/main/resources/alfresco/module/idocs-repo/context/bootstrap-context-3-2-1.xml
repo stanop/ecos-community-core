@@ -310,8 +310,7 @@
 
     <bean id="idocs.module-component.add-users-to-all-group"
           class="ru.citeck.ecos.authority.AddUsersToAllGroupModuleComponent"
-          parent="module.baseComponent">
-        <property name="moduleId" value="idocs-repo" />
+          parent="idocs.module-component.users-batch-processing">
         <property name="name" value="add-users-to-all-group"/>
         <property name="description" value="Add all user to GROUP_all"/>
         <property name="dependsOn">

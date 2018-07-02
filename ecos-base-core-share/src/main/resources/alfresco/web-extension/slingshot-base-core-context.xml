@@ -62,6 +62,12 @@
         <property name="configService" ref="web.config" />
     </bean>
 
+    <bean id="webscript.ru.citeck.cache.cache-clear.post"
+          class="ru.citeck.ecos.webscripts.CacheClearPost"
+          parent="webscript">
+        <property name="templateUtils" ref="ru.citeck.ecos.share.template.CiteckUtilsTemplate" />
+    </bean>
+
     <!--====================================-->
     <!--             evaluators             -->
     <!--====================================-->

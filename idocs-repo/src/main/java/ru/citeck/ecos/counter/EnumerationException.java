@@ -18,19 +18,16 @@
  */
 package ru.citeck.ecos.counter;
 
-public class EnumerationException extends Exception 
-{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8310410507330343656L;
+public class EnumerationException extends Exception {
 
-	public EnumerationException(String message) {
-		super(message);
-	}
+    private static final long serialVersionUID = -8310410507330343656L;
 
-	public EnumerationException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public EnumerationException(String message) {
+        super(message);
+    }
+
+    public EnumerationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

@@ -19,3 +19,9 @@
 .yui-gd .yui-gb:not(.plain) > div.yui-u.first { 
   width: 32%; 
 }
+
+#card-details-root,
+#page-content-root {
+    height: 100%;
+    min-height: 100%;
+}
