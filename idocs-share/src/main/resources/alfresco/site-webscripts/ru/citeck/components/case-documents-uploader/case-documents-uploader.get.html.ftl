@@ -43,8 +43,6 @@
     <@script type="text/javascript" src="${url.context}/res/components/documentlibrary/actions.js" />
     <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" />
     <@script type="text/javascript" src="${url.context}/res/components/documentlibrary/documentlist.js" />
-
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/handy-doclist.js" />
 </@>
 
 <div id="${cdid}-upload-dialog" style="visibility: hidden;" class="doc-uploader">
@@ -151,26 +149,32 @@
 
 <script type="text/javascript">//<![CDATA[
 YAHOO.util.Event.onContentReady("${cdid}", function() {
-    var component = new Citeck.widget.CaseDocumentsUploader("${cdid}");
-    component.setOptions({
-        nodeRef: "${nodeRef?js_string}",
-        documentType: "${documentType?js_string}",
-        documentKind: "${documentKind?js_string}",
 
-        <#if documentUploadDefaultType??>
-            documentUploadDefaultType: "${documentUploadDefaultType}",
-        </#if>
-        <#if documentUploadDefaultKind??>
-            documentUploadDefaultKind: "${documentUploadDefaultKind}",
-        </#if>
+    require(['citeck/components/dynamic-tree/handy-doclist'], function(withHandyList) {
 
-        // formId for block of properties on intermediate preview dialog window
-        intermediateDialog: {
-            <#if intermediateDialogFormId??>
-                formId: "${intermediateDialogFormId?js_string}"
+        withHandyList(function() {
+            var component = new Citeck.widget.CaseDocumentsUploader("${cdid}");
+            component.setOptions({
+                nodeRef: "${nodeRef?js_string}",
+                documentType: "${documentType?js_string}",
+                documentKind: "${documentKind?js_string}",
+
+            <#if documentUploadDefaultType??>
+                documentUploadDefaultType: "${documentUploadDefaultType}",
             </#if>
-        }
-    }).setMessages(${messages});
+            <#if documentUploadDefaultKind??>
+                documentUploadDefaultKind: "${documentUploadDefaultKind}",
+            </#if>
+
+                // formId for block of properties on intermediate preview dialog window
+                intermediateDialog: {
+                <#if intermediateDialogFormId??>
+                    formId: "${intermediateDialogFormId?js_string}"
+                </#if>
+                }
+            }).setMessages(${messages});
+        })
+    });
 });
 //]]></script>
 

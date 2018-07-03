@@ -17,8 +17,8 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 define([
-    './handy-doclist',
     'xstyle!./dynamic-doclib-table.css'
+], function() {
 ], function() {
 
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
@@ -171,8 +171,7 @@ define([
         onChildDeleted: function() {
             // use simple implementation - update the whole list
             this.onChildrenUpdated.apply(this, arguments);
-        },
+        }
 
     });
-
-})();
+});
