@@ -45,7 +45,6 @@
                         <rootPage>repository</rootPage>
                         <rootLabelId>path.repository</rootLabelId>
                         <showDownload>false</showDownload>
-                        <showPathForType>ecos:document</showPathForType>
                         <template>node.properties['cm:title']</template>
                     </properties>
                 </evaluation>
