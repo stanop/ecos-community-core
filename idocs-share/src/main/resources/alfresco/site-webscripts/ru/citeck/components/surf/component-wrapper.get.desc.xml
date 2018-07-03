@@ -1,0 +1,5 @@
+<webscript>
+    <shortname>component-wrapper</shortname>
+    <description>Surf component wrapper to include in pages</description>
+    <url>/citeck/components/surf/component-wrapper</url>
+</webscript>

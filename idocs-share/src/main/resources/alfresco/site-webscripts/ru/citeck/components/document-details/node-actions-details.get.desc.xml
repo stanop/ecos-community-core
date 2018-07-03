@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>node-actions-details</shortname>
+    <description>Get json node actions json</description>
+    <url>/citeck/components/document-details/node-actions-details</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+</webscript>

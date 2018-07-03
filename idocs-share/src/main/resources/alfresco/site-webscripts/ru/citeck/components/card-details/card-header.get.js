@@ -30,6 +30,7 @@ function main() {
         model.showOnlyLocation = model.showOnlyLocation.toString();
         var count = nodeDetails.item.node.properties["fm:commentCount"];
         model.commentCount = (count != undefined ? count : null);
+        model.documentType = nodeDetails.item && nodeDetails.item.node ? nodeDetails.item.node.type : "";
 
         // Widget instantiation metadata...
         var likes = {};

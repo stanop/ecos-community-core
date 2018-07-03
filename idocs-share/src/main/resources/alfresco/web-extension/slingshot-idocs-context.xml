@@ -111,6 +111,12 @@
 		<property name="configService" ref="web.config" />
 	</bean>
 
+    <bean id="webscript.ru.citeck.components.surf.surf-region.get"
+		class="ru.citeck.ecos.webscripts.SurfRegionGet"
+		parent="webscript">
+        <property name="modelObjectService" ref="webframework.service.modelobject" />
+	</bean>
+
 	<!-- webscript-messages webscript -->
 	<bean id="webscript.ru.citeck.components.dependencies.webscript-messages.get"
 		class="ru.citeck.ecos.webscripts.WebscriptMessagesGet"

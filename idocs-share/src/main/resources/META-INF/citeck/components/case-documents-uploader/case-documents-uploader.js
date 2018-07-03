@@ -3,14 +3,15 @@
  *
  * @class Citeck.widget.CaseDocumentsUploader
  */
-if (typeof Citeck == "undefined" || !Citeck) {
-    var Citeck = {};
-}
-if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
-    Citeck.widget = {};
-}
 
-(function() {
+define([], function() {
+
+    if (typeof Citeck == "undefined" || !Citeck) {
+        Citeck = {};
+    }
+    if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
+        Citeck.widget = {};
+    }
 
     /**
      * YUI Library aliases
@@ -1859,85 +1860,85 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
         }
     });
 
-})();
+    Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.attributes.showFullWindowButton = false;
 
+    Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.display = function WebPreviewer_display() {
+        var ctx = this.resolveUrls();
 
-Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.attributes.showFullWindowButton = false;
+        this.createSwfDiv();
 
-Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.display = function WebPreviewer_display() {
-    var ctx = this.resolveUrls();
+        var swfId = "WebPreviewer_" + this.wp.id;
+        var so = new YAHOO.deconcept.SWFObject(Alfresco.constants.URL_CONTEXT + "res/components/preview/WebPreviewer.swf",
+            swfId, "100%", "100%", "9.0.45");
 
-    this.createSwfDiv();
+        so.addVariable("fileName", this.wp.options.name);
+        so.addVariable("paging", this.attributes.paging);
+        so.addVariable("url", ctx.url);
+        so.addVariable("jsCallback", "Alfresco_WebPreview_WebPreviewerPlugin_onWebPreviewerEvent");
+        so.addVariable("jsLogger", "Alfresco_WebPreview_WebPreviewerPlugin_onWebPreviewerLogging");
+        so.addVariable("i18n_actualSize", this.wp.msg("preview.actualSize"));
+        so.addVariable("i18n_fitPage", this.wp.msg("preview.fitPage"));
+        so.addVariable("i18n_fitWidth", this.wp.msg("preview.fitWidth"));
+        so.addVariable("i18n_fitHeight", this.wp.msg("preview.fitHeight"));
+        so.addVariable("i18n_fullscreen", this.wp.msg("preview.fullscreen"));
+        so.addVariable("i18n_fullwindow", this.wp.msg("preview.fullwindow"));
+        so.addVariable("i18n_fullwindow_escape", this.wp.msg("preview.fullwindowEscape"));
+        so.addVariable("i18n_page", this.wp.msg("preview.page"));
+        so.addVariable("i18n_pageOf", this.wp.msg("preview.pageOf"));
 
-    var swfId = "WebPreviewer_" + this.wp.id;
-    var so = new YAHOO.deconcept.SWFObject(Alfresco.constants.URL_CONTEXT + "res/components/preview/WebPreviewer.swf",
-        swfId, "100%", "100%", "9.0.45");
+        so.addVariable("show_fullscreen_button", this.attributes.showFullScreenButton);
+        so.addVariable("show_fullwindow_button", this.attributes.showFullWindowButton);
+        so.addVariable("disable_i18n_input_fix", this.disableI18nInputFix());
 
-    so.addVariable("fileName", this.wp.options.name);
-    so.addVariable("paging", this.attributes.paging);
-    so.addVariable("url", ctx.url);
-    so.addVariable("jsCallback", "Alfresco_WebPreview_WebPreviewerPlugin_onWebPreviewerEvent");
-    so.addVariable("jsLogger", "Alfresco_WebPreview_WebPreviewerPlugin_onWebPreviewerLogging");
-    so.addVariable("i18n_actualSize", this.wp.msg("preview.actualSize"));
-    so.addVariable("i18n_fitPage", this.wp.msg("preview.fitPage"));
-    so.addVariable("i18n_fitWidth", this.wp.msg("preview.fitWidth"));
-    so.addVariable("i18n_fitHeight", this.wp.msg("preview.fitHeight"));
-    so.addVariable("i18n_fullscreen", this.wp.msg("preview.fullscreen"));
-    so.addVariable("i18n_fullwindow", this.wp.msg("preview.fullwindow"));
-    so.addVariable("i18n_fullwindow_escape", this.wp.msg("preview.fullwindowEscape"));
-    so.addVariable("i18n_page", this.wp.msg("preview.page"));
-    so.addVariable("i18n_pageOf", this.wp.msg("preview.pageOf"));
+        so.addParam("allowNetworking", "all");
+        so.addParam("allowScriptAccess", "sameDomain");
+        so.addParam("allowFullScreen", "true");
+        so.addParam("wmode", "transparent");
 
-    so.addVariable("show_fullscreen_button", this.attributes.showFullScreenButton);
-    so.addVariable("show_fullwindow_button", this.attributes.showFullWindowButton);
-    so.addVariable("disable_i18n_input_fix", this.disableI18nInputFix());
+        so.write(this.swfDiv.get("id"));
 
-    so.addParam("allowNetworking", "all");
-    so.addParam("allowScriptAccess", "sameDomain");
-    so.addParam("allowFullScreen", "true");
-    so.addParam("wmode", "transparent");
+        this.synchronizeSwfDivPosition();
+    };
 
-    so.write(this.swfDiv.get("id"));  
+    Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.createSwfDiv = function WebPreviewer_createSwfDiv() {
+        if (!this.swfDiv) {
+            var realSwfDivEl = new YAHOO.util.Element(document.createElement("div"));
+            realSwfDivEl.set("id", this.wp.id + "-full-window-div");
+            realSwfDivEl.setStyle("position", "absolute");
+            realSwfDivEl.addClass("web-preview");
+            realSwfDivEl.addClass("real");
 
-    this.synchronizeSwfDivPosition();
-};
+            var realSwfContainerDivEl = new YAHOO.util.Element(document.getElementById(this.wp.id + "-previewer-div").parentNode);
+            realSwfContainerDivEl.setStyle("position", "relative");
+            realSwfDivEl.appendTo(realSwfContainerDivEl);
 
-Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.createSwfDiv = function WebPreviewer_createSwfDiv() {    
-    if (!this.swfDiv) {
-        var realSwfDivEl = new YAHOO.util.Element(document.createElement("div"));
-        realSwfDivEl.set("id", this.wp.id + "-full-window-div");
-        realSwfDivEl.setStyle("position", "absolute");
-        realSwfDivEl.addClass("web-preview");
-        realSwfDivEl.addClass("real");
-        
-        var realSwfContainerDivEl = new YAHOO.util.Element(document.getElementById(this.wp.id + "-previewer-div").parentNode);
-        realSwfContainerDivEl.setStyle("position", "relative");
-        realSwfDivEl.appendTo(realSwfContainerDivEl);
-
-        this.swfDiv = realSwfDivEl;
-    }
-};   
-
-Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.synchronizeSwfDivPosition = function WebPreviewer_synchronizePosition() {
-    var sourceYuiEl = new YAHOO.util.Element(this.wp.getPreviewerElement());
-    var region = YAHOO.util.Dom.getRegion(sourceYuiEl.get("id"));
-
-    var sourceElement = YAHOO.util.Dom.get(sourceYuiEl.get("id")),
-        containerElement = sourceElement, zindex;
-
-    if (containerElement) {
-        while (containerElement.tagName != "BODY") {
-          if (containerElement.classList.contains("yui-panel-container") && containerElement.id.indexOf("intermediate-file-dialog") != -1) {
-            this.swfDiv.setStyle("z-index", containerElement.style.zIndex);
-            break;
-          }
-
-          containerElement = containerElement.parentNode;
+            this.swfDiv = realSwfDivEl;
         }
+    };
 
-        this.swfDiv.setStyle("left", 0 + "px");
-        this.swfDiv.setStyle("top", 0 + "px");
-        this.swfDiv.setStyle("width", region.width + "px");
-        this.swfDiv.setStyle("height", region.height + "px");
-    }
-};
+    Alfresco.WebPreview.prototype.Plugins.WebPreviewer.prototype.synchronizeSwfDivPosition = function WebPreviewer_synchronizePosition() {
+        var sourceYuiEl = new YAHOO.util.Element(this.wp.getPreviewerElement());
+        var region = YAHOO.util.Dom.getRegion(sourceYuiEl.get("id"));
+
+        var sourceElement = YAHOO.util.Dom.get(sourceYuiEl.get("id")),
+            containerElement = sourceElement, zindex;
+
+        if (containerElement) {
+            while (containerElement.tagName != "BODY") {
+                if (containerElement.classList.contains("yui-panel-container") && containerElement.id.indexOf("intermediate-file-dialog") != -1) {
+                    this.swfDiv.setStyle("z-index", containerElement.style.zIndex);
+                    break;
+                }
+
+                containerElement = containerElement.parentNode;
+            }
+
+            this.swfDiv.setStyle("left", 0 + "px");
+            this.swfDiv.setStyle("top", 0 + "px");
+            this.swfDiv.setStyle("width", region.width + "px");
+            this.swfDiv.setStyle("height", region.height + "px");
+        }
+    };
+});
+
+

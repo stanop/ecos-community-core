@@ -1,11 +1,20 @@
 <@standalone>
 
+    <@markup id="css" >
+        <#include "/org/alfresco/components/form/form.css.ftl"/>
+    </@>
+
+    <@markup id="js">
+        <#include "/org/alfresco/components/form/form.js.ftl"/>
+    </@>
+
     <@markup id="widgets">
         <@createWidgets/>
     </@>
 
     <@markup id="html">
         <@uniqueIdDiv>
+
             <#import "/org/alfresco/components/form/form.lib.ftl" as formLib />
             <#import "/ru/citeck/components/form/ftl-forms.lib.ftl" as forms />
 

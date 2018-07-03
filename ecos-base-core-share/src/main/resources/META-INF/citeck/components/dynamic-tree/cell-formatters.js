@@ -19,7 +19,11 @@
 /**
  * Default cell formatters for YUI DataTable.
  */
-(function() {
+define([
+    'js/citeck/modules/utils/citeck',
+    'components/form/date',
+    'xstyle!./cell-formatters.css'
+], function() {
 
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
     Citeck.format = Citeck.format || {};
@@ -491,6 +495,16 @@
             };
         },
 
+        percent: function () {
+            return this.valueStrFormatter(true, function(elCell, oRecord, oColumn, sData) {
+                if (sData == null) {
+                    elCell.innerHTML = '';
+                } else {
+                    elCell.innerHTML = (100 * sData) + "%";
+                }
+            });
+        },
+
         workflowPriority: function() {
             return function(elCell, oRecord, oColumn, sData) {
                 var codes = {
@@ -540,6 +554,12 @@
                 if (!sData) { return; }
                 if (sData.displayName) {
                     elCell.innerHTML = sData.displayName;
+                    return;
+                }
+                var sDataValues = _.values(sData);
+                if (sDataValues.length && sDataValues[0].name == "classTitle") {
+                    var value = sDataValues[0].val || [];
+                    elCell.innerHTML = value.length ? value[0].str : '';
                     return;
                 }
                 var typeQName = key ? sData[key] : sData;
@@ -930,37 +950,35 @@
                                     }
                                 });
                             } else {
-                                Alfresco.util.Ajax.request({
-                                    url: Alfresco.constants.URL_SERVICECONTEXT + "citeck/form/inline?itemKind=task&itemId=" +
-                                    taskId + "&formId=inline&submitType=json&htmlid=" + htmlid + "&showSubmitButton=false",
-                                    execScripts: true,
-                                    successCallback: {
-                                        fn: function (response) {
-                                            elCell.innerHTML = response.serverResponse.responseText;
-                                            YAHOO.Bubbling.on("beforeFormRuntimeInit", function(layer, args) {
-                                                if (Alfresco.util.hasEventInterest(htmlid + "-form", args))
-                                                {
-                                                    args[1].runtime.setAJAXSubmit(true, {
-                                                        successCallback: {
-                                                            scope: this,
-                                                            fn: function(response) {
-                                                                //setTimeout(function () { checkMirror() }, 1000);
-                                                                YAHOO.Bubbling.fire("metadataRefresh");
-                                                            }
-                                                        },
-                                                        failureCallback: {
-                                                            scope: this,
-                                                            fn: formatterScope.onFailure
-                                                        }
-                                                    });
+
+                                YAHOO.Bubbling.on("beforeFormRuntimeInit", function(layer, args) {
+                                    if (Alfresco.util.hasEventInterest(htmlid + "-form", args)) {
+                                        args[1].runtime.setAJAXSubmit(true, {
+                                            successCallback: {
+                                                scope: this,
+                                                fn: function(response) {
+                                                    //setTimeout(function () { checkMirror() }, 1000);
+                                                    YAHOO.Bubbling.fire("metadataRefresh");
                                                 }
-                                            });
-                                        }
-                                    },
-                                    failureCallback: {
-                                        scope: this,
-                                        fn: formatterScope.onFailure
+                                            },
+                                            failureCallback: {
+                                                scope: this,
+                                                fn: formatterScope.onFailure
+                                            }
+                                        });
                                     }
+                                });
+
+                                Citeck.utils.loadHtml(Alfresco.constants.URL_SERVICECONTEXT + "citeck/form/inline", {
+                                    itemKind: 'task',
+                                    itemId: taskId,
+                                    formId: 'inline',
+                                    submitType: 'json',
+                                    htmlid: htmlid,
+                                    showSubmitButton: false
+                                }, elCell, null, {
+                                    scope: this,
+                                    fn: formatterScope.onFailure
                                 });
                             }
                         }
@@ -1173,39 +1191,28 @@
                     elCell.innerHTML+='<div style="display: none;"> <div id="'+htmlid+'-reassignPanel" class="task-edit-header reassign-panel"> <div class="hd">'+Alfresco.util.message("panel.reassign.header")+'</div> <div class="bd"> <div style="margin: auto 10px;"> <div id="'+htmlid+'-peopleFinder"></div> </div> </div> </div> </div>';
 
 
-                    Alfresco.util.Ajax.request(
-                    {
-                        url: Alfresco.constants.URL_SERVICECONTEXT + "components/people-finder/people-finder",
-                        dataObj:
-                        {
-                            htmlid: htmlid + "-peopleFinder"
-                        },
-                        successCallback:
-                        {
-                            fn: function (response) {
-                                var finderDiv = Dom.get(htmlid+'-peopleFinder');
-                                finderDiv.innerHTML = response.serverResponse.responseText;
+                    //+htmlid+'-peopleFinder
+                    var finderHtmlId = htmlid + "-peopleFinder";
+                    var url = Alfresco.constants.URL_SERVICECONTEXT + "components/people-finder/people-finder";
 
-                                // Create the Assignee dialog
-                                reassignPanel = Alfresco.util.createYUIPanel(htmlid + "-reassignPanel");
+                    Citeck.utils.loadHtml(url, {htmlid: finderHtmlId}, Dom.get(finderHtmlId), function() {
 
-                                // Find the People Finder by container ID
-                                var peopleFinder = Alfresco.util.ComponentManager.get(htmlid + "-peopleFinder");
+                        // Create the Assignee dialog
+                        reassignPanel = Alfresco.util.createYUIPanel(htmlid + "-reassignPanel");
 
-                                // Set the correct options for our use
-                                peopleFinder.setOptions(
-                                {
-                                    singleSelectMode: true,
-                                    addButtonLabel: Alfresco.util.message("button.select")
-                                });
+                        // Find the People Finder by container ID
+                        var peopleFinder = Alfresco.util.ComponentManager.get(htmlid + "-peopleFinder");
 
-                                // Make sure we listen for events when the user selects a person
-                                YAHOO.Bubbling.on("personSelected", onPersonSelected, this);
-                            }
-                        },
-                        failureMessage: "Could not load People Finder component",
-                        execScripts: true
+                        // Set the correct options for our use
+                        peopleFinder.setOptions({
+                            singleSelectMode: true,
+                            addButtonLabel: Alfresco.util.message("button.select")
+                        });
+
+                        // Make sure we listen for events when the user selects a person
+                        YAHOO.Bubbling.on("personSelected", onPersonSelected, this);
                     });
+
                     //var onPeopleFinderLoaded =
                     var onPersonSelected = function(e, args)
                     {
@@ -1353,8 +1360,11 @@
         onFailure : function(response) {
             var failure = Alfresco.util.message("message.failure");
             var errorMsg = failure;
-            if (response.json && response.json.message)
+            if (response.json && response.json.message) {
                 errorMsg = response.json.message;
+            } else if (response.message) {
+                errorMsg = response.message;
+            }
             Alfresco.util.PopupManager.displayPrompt({
                 title : failure,
                 text : errorMsg
@@ -1922,4 +1932,6 @@
             }
         }
     });
-})();
+
+    return Citeck.format;
+});

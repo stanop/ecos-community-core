@@ -19,176 +19,178 @@
 /**
  * DynamicTable and DynamicTableControl classes defined here.
  */
-(function() {
+define([
+    'citeck/components/dynamic-tree/error-manager'
+], function() {
 
-	Citeck = typeof Citeck != "undefined" ? Citeck : {};
-	Citeck.widget = Citeck.widget || {};
+    Citeck = typeof Citeck != "undefined" ? Citeck : {};
+    Citeck.widget = Citeck.widget || {};
 
-	var Dom = YAHOO.util.Dom;
+    var Dom = YAHOO.util.Dom;
 
-	/**
-	 * DynamicTable class.
-	 * It is view of the MVC pattern.
-	 * 
-	 * Supported messages:
-	 * message.dynamic-table.empty
-	 * message.dynamic-table.error
-	 * message.dynamic-table.loading
-	 * message.dynamic-table.sortasc
-	 * message.dynamic-table.sortdesc
-	 */
-	Citeck.widget.DynamicTable = function(htmlid, model, name) {
+    /**
+     * DynamicTable class.
+     * It is view of the MVC pattern.
+     *
+     * Supported messages:
+     * message.dynamic-table.empty
+     * message.dynamic-table.error
+     * message.dynamic-table.loading
+     * message.dynamic-table.sortasc
+     * message.dynamic-table.sortdesc
+     */
+    Citeck.widget.DynamicTable = function(htmlid, model, name) {
 
-		Citeck.widget.DynamicTable.superclass.constructor.call(this, name || "Citeck.widget.DynamicTable", htmlid);
+        Citeck.widget.DynamicTable.superclass.constructor.call(this, name || "Citeck.widget.DynamicTable", htmlid);
 
-		this.state = {};
-		this.defaultData = {
-			items: [],
-			startIndex: 0,
-			totalRecords: 0
-		};
-		this.defaultResponseSchema = {
-			resultsList: "items",
-			fields: [] 
-		};
-		this.defaultResponseType = YAHOO.util.DataSource.TYPE_JSON;
-		this.defaultColumnConfig = [];
-		this.model = model;
-		this.loaded = false;
-		this.deferredItems = null;
-		this.config = {};
+        this.state = {};
+        this.defaultData = {
+            items: [],
+            startIndex: 0,
+            totalRecords: 0
+        };
+        this.defaultResponseSchema = {
+            resultsList: "items",
+            fields: []
+        };
+        this.defaultResponseType = YAHOO.util.DataSource.TYPE_JSON;
+        this.defaultColumnConfig = [];
+        this.model = model;
+        this.loaded = false;
+        this.deferredItems = null;
+        this.config = {};
 
-		// subscribe on model updates:
-		model.subscribe("itemUpdated", this.onItemUpdated, this, true);
-		model.subscribe("childrenUpdated", this.onChildrenUpdated, this, true);
-		model.subscribe("childAdded", this.onChildAdded, this, true);
-		model.subscribe("childDeleted", this.onChildDeleted, this, true);
+        // subscribe on model updates:
+        model.subscribe("itemUpdated", this.onItemUpdated, this, true);
+        model.subscribe("childrenUpdated", this.onChildrenUpdated, this, true);
+        model.subscribe("childAdded", this.onChildAdded, this, true);
+        model.subscribe("childDeleted", this.onChildDeleted, this, true);
 
-		this.createEvent("sortColumnChange");
+        this.createEvent("sortColumnChange");
 
-		return this;
-	};
+        return this;
+    };
 
-	Citeck.widget.DynamicTable.CLASS_NAME = "dynamic-table";
+    Citeck.widget.DynamicTable.CLASS_NAME = "dynamic-table";
 
-	YAHOO.extend(Citeck.widget.DynamicTable, Alfresco.component.Base);
-	YAHOO.lang.augmentObject(Citeck.widget.DynamicTable.prototype, YAHOO.util.EventProvider.prototype);
-	YAHOO.lang.augmentObject(Citeck.widget.DynamicTable.prototype, {
+    YAHOO.extend(Citeck.widget.DynamicTable, Alfresco.component.Base);
+    YAHOO.lang.augmentObject(Citeck.widget.DynamicTable.prototype, YAHOO.util.EventProvider.prototype);
+    YAHOO.lang.augmentObject(Citeck.widget.DynamicTable.prototype, {
 
-		/**
-		 * Set table configuration.
-		 * See columns configuration: 
-		 *    http://yui.github.io/yui2/docs/yui_2.9.0_full/datatable/index.html#instantiating
-		 *    http://yui.github.io/yui2/docs/yui_2.9.0_full/docs/YAHOO.widget.DataTable.html
-		 * See responseSchema configuration:
-		 *    http://yui.github.io/yui2/docs/yui_2.9.0_full/datasource/index.html#schemas , section JSON
-		 *    http://yui.github.io/yui2/docs/yui_2.9.0_full/docs/YAHOO.util.DataSourceBase.html
-		 * configuration can contain:
-		 * columns: [
-		 *    {key: "col1", label: "Column 1"},
-		 *    {key: "col2", label: "Column 2"},
-		 *    ...
-		 * ],
-		 * responseSchema: {
-		 *    resultsList: "see.example", // Dot-notation location to results. Not all data is required to have a field.
-		 *    fields: [{key: "id"}, {key: "obj.nested"}], // Array. String locator for each field of data coming in.
-		 *    metaFields: { totalRecords: "see.example_total" } // (Optional) String locator of additional meta data.
-		 * }
-		 */
-		setConfig: function(config) {
-			this.config = config;
-			if (this.loaded) {
-				this._updateColumns();
-				this._updateResponseSchema();
-				this.loadData(this.state.rootItem._item_children_);
-			}
-		},
+        /**
+         * Set table configuration.
+         * See columns configuration:
+         *    http://yui.github.io/yui2/docs/yui_2.9.0_full/datatable/index.html#instantiating
+         *    http://yui.github.io/yui2/docs/yui_2.9.0_full/docs/YAHOO.widget.DataTable.html
+         * See responseSchema configuration:
+         *    http://yui.github.io/yui2/docs/yui_2.9.0_full/datasource/index.html#schemas , section JSON
+         *    http://yui.github.io/yui2/docs/yui_2.9.0_full/docs/YAHOO.util.DataSourceBase.html
+         * configuration can contain:
+         * columns: [
+         *    {key: "col1", label: "Column 1"},
+         *    {key: "col2", label: "Column 2"},
+         *    ...
+         * ],
+         * responseSchema: {
+         *    resultsList: "see.example", // Dot-notation location to results. Not all data is required to have a field.
+         *    fields: [{key: "id"}, {key: "obj.nested"}], // Array. String locator for each field of data coming in.
+         *    metaFields: { totalRecords: "see.example_total" } // (Optional) String locator of additional meta data.
+         * }
+         */
+        setConfig: function(config) {
+            this.config = config;
+            if (this.loaded) {
+                this._updateColumns();
+                this._updateResponseSchema();
+                this.loadData(this.state.rootItem._item_children_);
+            }
+        },
 
-		/**
-		 * Set table context.
-		 * Table context is a data item, that corresponds to table root.
-		 * Note: If table receives message, that its root item is removed from its parent,
-		 *       it clears data and sets context to "none", "none".
-		 * @param item - item that corresponds to table root.
-		 * @param parent - root's parent
-		 */
-		setContext: function(item, parent) {
-			this.state.rootItem = this.model.getItem(item);
-			this.state.rootParent = this.model.getItem(parent);
-			if (this.loaded)
-				this.showMessageLoading();
-		},
+        /**
+         * Set table context.
+         * Table context is a data item, that corresponds to table root.
+         * Note: If table receives message, that its root item is removed from its parent,
+         *       it clears data and sets context to "none", "none".
+         * @param item - item that corresponds to table root.
+         * @param parent - root's parent
+         */
+        setContext: function(item, parent) {
+            this.state.rootItem = this.model.getItem(item);
+            this.state.rootParent = this.model.getItem(parent);
+            if (this.loaded)
+                this.showMessageLoading();
+        },
 
-		/**
-		 * Model update handler - item updated.
-		 * Re-renders all views of changed item in table.
-		 * @param args.item - updated item
-		 */
-		onItemUpdated: function(args) {
-			var item = this.model.getItem(args.item);
-			var found = false;
-			var items = this.state.rootItem._item_children_;
-			for (var i = 0; i < items.length; i++) {
-				if(items[i]._item_name_ == item._item_name_) {
-					items.splice(i, 1, item);
-					found = true;
-				}
-			}
-			if (found) {
-				this.loadData(items);
-			}
-		},
+        /**
+         * Model update handler - item updated.
+         * Re-renders all views of changed item in table.
+         * @param args.item - updated item
+         */
+        onItemUpdated: function(args) {
+            var item = this.model.getItem(args.item);
+            var found = false;
+            var items = this.state.rootItem._item_children_;
+            for (var i = 0; i < items.length; i++) {
+                if(items[i]._item_name_ == item._item_name_) {
+                    items.splice(i, 1, item);
+                    found = true;
+                }
+            }
+            if (found) {
+                this.loadData(items);
+            }
+        },
 
-		/** 
-		 * Model update handler - children updated.
-		 * It refreshes table data source and render new items.
-		 * @param args.from - parent of updated items
-		 * @param args.items - updated items
-		 */
-		onChildrenUpdated: function(args) {
-			var parent = this.model.getItem(args.from);
-			if(parent == this.state.rootItem) {
+        /**
+         * Model update handler - children updated.
+         * It refreshes table data source and render new items.
+         * @param args.from - parent of updated items
+         * @param args.items - updated items
+         */
+        onChildrenUpdated: function(args) {
+            var parent = this.model.getItem(args.from);
+            if(parent == this.state.rootItem) {
                 parent._item_children_ = args.items;
                 this.loadData(args.items);
             }
-		},
+        },
 
-		/**
-		 * Model update handler - child added.
-		 * It is only refresh all table.
-		 * @param args.item - added item
-		 * @param args.from - item, to which it was added
-		 */
-		onChildAdded: function(args) {
+        /**
+         * Model update handler - child added.
+         * It is only refresh all table.
+         * @param args.item - added item
+         * @param args.from - item, to which it was added
+         */
+        onChildAdded: function(args) {
             var parent = this.model.getItem(args.from);
             if(parent == this.state.rootItem)
                 this.loadData(parent._item_children_);
-		},
+        },
 
-		/**
-		 * Model update handler - child removed.
-		 * It is only refresh all table.
-		 * @param args.item - deleted item
-		 * @param args.from - item, from which it was deleted
-		 */
-		onChildDeleted: function(args) {
+        /**
+         * Model update handler - child removed.
+         * It is only refresh all table.
+         * @param args.item - deleted item
+         * @param args.from - item, from which it was deleted
+         */
+        onChildDeleted: function(args) {
             var parent = this.model.getItem(args.from);
             if(parent == this.state.rootItem)
                 this.loadData(parent._item_children_);
         },
 
         getSelectedRecords: function() {
-        	var self = this;
-        	return _.map(self.widgets.table.getSelectedRows(), function(item) {
-        		return self.widgets.table.getRecord(item);
-        	});
+            var self = this;
+            return _.map(self.widgets.table.getSelectedRows(), function(item) {
+                return self.widgets.table.getRecord(item);
+            });
         },
 
         /**
          * when on ready
          * */
-		onReady: function() {
-			var self = this;
+        onReady: function() {
+            var self = this;
 
             this._setupDataSource();
             this._setupDataTable();
@@ -201,12 +203,12 @@
             this._updatingErrorMsg = this.msg("message.dynamic-table.error");
             Dom.addClass(this.id, Citeck.widget.DynamicTable.CLASS_NAME);
 
-			this.loaded = true;
-			this._updateColumns();
-			this._updateResponseSchema();
-			if (this.deferredItems) this.loadData(this.deferredItems);
+            this.loaded = true;
+            this._updateColumns();
+            this._updateResponseSchema();
+            if (this.deferredItems) this.loadData(this.deferredItems);
 
-			var table = this.widgets.table;
+            var table = this.widgets.table;
 
             // SELECTION
             if (this.config.selection == "checkbox") {
@@ -238,204 +240,204 @@
                 }
             }
 
-			// PREVIEW
-			if (this.config.preview) {
-				var cell = cell = this.config.previewByClickOnCell || "cm_title";
-				table.subscribe("cellClickEvent", function(args) {
-					if (args.target.headers.indexOf(cell) != -1) {
-						var record = table.getRecord(args.target),
-							preview = Alfresco.util.ComponentManager.get(record.getId());
+            // PREVIEW
+            if (this.config.preview) {
+                var cell = cell = this.config.previewByClickOnCell || "cm_title";
+                table.subscribe("cellClickEvent", function(args) {
+                    if (args.target.headers.indexOf(cell) != -1) {
+                        var record = table.getRecord(args.target),
+                            preview = Alfresco.util.ComponentManager.get(record.getId());
 
-						if (!preview) {
-							preview = new Citeck.UI.preview(record.getId(), { nodeRef: record.getData().nodeRef, renderImmediately: true });
-							Alfresco.util.ComponentManager.register(preview);
-						}
+                        if (!preview) {
+                            preview = new Citeck.UI.preview(record.getId(), { nodeRef: record.getData().nodeRef, renderImmediately: true });
+                            Alfresco.util.ComponentManager.register(preview);
+                        }
 
-						preview.show();
-					}
-				});
-			}
+                        preview.show();
+                    }
+                });
+            }
 
-			// BEFORE RENDER
-			if (this.config.beforeRender) {
-				table.subscribe("beforeRenderEvent", this.config.beforeRender);
-			}
+            // BEFORE RENDER
+            if (this.config.beforeRender) {
+                table.subscribe("beforeRenderEvent", this.config.beforeRender);
+            }
 
             YAHOO.Bubbling.fire("tableViewReady", {
                 eventGroup: this
             });
-		},
+        },
 
-		/**
-		 * It loads new data.
-		 */
-		loadData: function(items) {
-			if (!this.loaded) {
-				this.deferredItems = items;
-			}
-			else {
-				var scope = this;
-				if (scope.widgets.dataSource.responseType === YAHOO.util.DataSource.TYPE_JSARRAY)
-					scope.widgets.dataSource.liveData = items;
-				else
-					scope.widgets.dataSource.liveData[this.config.responseSchema.resultsList] = items;
-				scope.widgets.dataSource.sendRequest(
-					"", {
-						success: function(sRequest, oResponse, oPayload) {
-							scope.widgets.table.onDataReturnInitializeTable.call(scope.widgets.table, sRequest, oResponse, oPayload);
-							scope.widgets.table.set('sortedBy', scope.config.sortedBy);
-						},
-						failure: function(sRequest, oResponse) {
-							if (scope._updatingErrorMsg)
-								Alfresco.util.PopupManager.displayMessage({ text: scope._updatingErrorMsg });
-						},
-						scope: scope
-					}
-				);
-			}
-		},
+        /**
+         * It loads new data.
+         */
+        loadData: function(items) {
+            if (!this.loaded) {
+                this.deferredItems = items;
+            }
+            else {
+                var scope = this;
+                if (scope.widgets.dataSource.responseType === YAHOO.util.DataSource.TYPE_JSARRAY)
+                    scope.widgets.dataSource.liveData = items;
+                else
+                    scope.widgets.dataSource.liveData[this.config.responseSchema.resultsList] = items;
+                scope.widgets.dataSource.sendRequest(
+                    "", {
+                        success: function(sRequest, oResponse, oPayload) {
+                            scope.widgets.table.onDataReturnInitializeTable.call(scope.widgets.table, sRequest, oResponse, oPayload);
+                            scope.widgets.table.set('sortedBy', scope.config.sortedBy);
+                        },
+                        failure: function(sRequest, oResponse) {
+                            if (scope._updatingErrorMsg)
+                                Alfresco.util.PopupManager.displayMessage({ text: scope._updatingErrorMsg });
+                        },
+                        scope: scope
+                    }
+                );
+            }
+        },
 
-		showMessageLoading: function() {
-			this.widgets.table.showTableMessage(
-					this.widgets.table.get("MSG_LOADING"),
-					YAHOO.widget.DataTable.CLASS_LOADING);
-		},
+        showMessageLoading: function() {
+            this.widgets.table.showTableMessage(
+                    this.widgets.table.get("MSG_LOADING"),
+                    YAHOO.widget.DataTable.CLASS_LOADING);
+        },
 
-		showMessageEmpty: function() {
-			this.widgets.table.showTableMessage(
-					this.widgets.table.get("MSG_EMPTY"),
-					YAHOO.widget.DataTable.CLASS_EMPTY);
-		},
+        showMessageEmpty: function() {
+            this.widgets.table.showTableMessage(
+                    this.widgets.table.get("MSG_EMPTY"),
+                    YAHOO.widget.DataTable.CLASS_EMPTY);
+        },
 
-		/**
-		 * Called on destroy.
-		 * Unsubscribe from button events.
-		 */
-		destroy: function() {
-			if (this.model)
-				this.model.unsubscribeAll(this);
-			if (this.widgets && this.widgets.table)
-				this.widgets.table.unsubscribeAll(this);
-			Citeck.widget.DynamicTable.superclass.destroy.call(this);
-		},
+        /**
+         * Called on destroy.
+         * Unsubscribe from button events.
+         */
+        destroy: function() {
+            if (this.model)
+                this.model.unsubscribeAll(this);
+            if (this.widgets && this.widgets.table)
+                this.widgets.table.unsubscribeAll(this);
+            Citeck.widget.DynamicTable.superclass.destroy.call(this);
+        },
 
-		_updateColumns: function() {
-			var columns = this.config.columns,
-				table = this.widgets.table;
-			if (columns && table) {
-				var columnSet = this.widgets.table.getColumnSet(),
-					columnDefinitions = columnSet.getDefinitions();
-				// save sortedBy and reset it:
-				var sortedBy = table.get("sortedBy");
-				table.set("sortedBy", null);
-				// first remove all columns:
-				for(var i = columnDefinitions.length; i--; ) {
-					var def = columnDefinitions[i],
-						column = columnSet.getColumn(def.key);
-					if(column != null) {
-						table.removeColumn(column);
-					}
-				}
-				// next add all columns:
-				for(var i = 0, ii = columns.length; i < ii; i++) {
-					var def = columns[i];
-					if(def != null && def.key != null) {
-						table.insertColumn(def, i);
-					}
-				}
-				// reset sortedBy if there is such a key:
-				if(sortedBy) {
-					for(var i = 0, ii = columns.length; i < ii; i++) {
-						var def = columns[i];
-						if(def.key == sortedBy.key) {
-							table.set("sortedBy", sortedBy);
-							break;
-						}
-					}
-				}
-				// Refreshing MSG body, in other case, message shows in only one column, because of we construct current table in the constructor.
-				var elTbody = this.widgets.table._elTbody;
-				this.widgets.table._destroyMsgTbodyEl();
-				this.widgets.table._elMsgTbody = null;
-				this.widgets.table._elTbody = elTbody;
-				this.widgets.table._initMsgTbodyEl(this.widgets.table._elTable);
-			}
-		},
-		
-		_updateResponseSchema: function() {
-			if (this.config && this.widgets && this.widgets.dataSource) {
-				if (typeof this.config.responseSchema !== 'undefined' && this.config.responseSchema !== null)
-					this.widgets.dataSource.responseSchema = this.config.responseSchema;
-				if (typeof this.config.responseType !== 'undefined' && this.config.responseType !== null)
-					this.widgets.dataSource.responseType = this.config.responseType;
-			}
-		},
+        _updateColumns: function() {
+            var columns = this.config.columns,
+                table = this.widgets.table;
+            if (columns && table) {
+                var columnSet = this.widgets.table.getColumnSet(),
+                    columnDefinitions = columnSet.getDefinitions();
+                // save sortedBy and reset it:
+                var sortedBy = table.get("sortedBy");
+                table.set("sortedBy", null);
+                // first remove all columns:
+                for(var i = columnDefinitions.length; i--; ) {
+                    var def = columnDefinitions[i],
+                        column = columnSet.getColumn(def.key);
+                    if(column != null) {
+                        table.removeColumn(column);
+                    }
+                }
+                // next add all columns:
+                for(var i = 0, ii = columns.length; i < ii; i++) {
+                    var def = columns[i];
+                    if(def != null && def.key != null) {
+                        table.insertColumn(def, i);
+                    }
+                }
+                // reset sortedBy if there is such a key:
+                if(sortedBy) {
+                    for(var i = 0, ii = columns.length; i < ii; i++) {
+                        var def = columns[i];
+                        if(def.key == sortedBy.key) {
+                            table.set("sortedBy", sortedBy);
+                            break;
+                        }
+                    }
+                }
+                // Refreshing MSG body, in other case, message shows in only one column, because of we construct current table in the constructor.
+                var elTbody = this.widgets.table._elTbody;
+                this.widgets.table._destroyMsgTbodyEl();
+                this.widgets.table._elMsgTbody = null;
+                this.widgets.table._elTbody = elTbody;
+                this.widgets.table._initMsgTbodyEl(this.widgets.table._elTable);
+            }
+        },
 
-		_setupDataSource: function() {
-			var ds = this.widgets.dataSource = new YAHOO.util.LocalDataSource(this.defaultData);
-			ds.responseType = this.defaultResponseType;
-			ds.responseSchema = this.defaultResponseSchema;
-		},
+        _updateResponseSchema: function() {
+            if (this.config && this.widgets && this.widgets.dataSource) {
+                if (typeof this.config.responseSchema !== 'undefined' && this.config.responseSchema !== null)
+                    this.widgets.dataSource.responseSchema = this.config.responseSchema;
+                if (typeof this.config.responseType !== 'undefined' && this.config.responseType !== null)
+                    this.widgets.dataSource.responseType = this.config.responseType;
+            }
+        },
 
-		_setupDataTable: function() {
-			var table = this.widgets.table = new YAHOO.widget.GroupedDataTable(
-				this.id,
-				this.defaultColumnConfig,
-				this.widgets.dataSource,
-				{
-					groupBy: this.config.groupBy
-				}
-			);
+        _setupDataSource: function() {
+            var ds = this.widgets.dataSource = new YAHOO.util.LocalDataSource(this.defaultData);
+            ds.responseType = this.defaultResponseType;
+            ds.responseSchema = this.defaultResponseSchema;
+        },
 
- 			table.doBeforeSortColumn = this.bind(function(column, dir) {
-				this.fireEvent("sortColumnChange", {
-					column: column.key,
-					desc: dir == YAHOO.widget.DataTable.CLASS_DESC
-				});
-				return false;
-			});
-		},
+        _setupDataTable: function() {
+            var table = this.widgets.table = new YAHOO.widget.GroupedDataTable(
+                this.id,
+                this.defaultColumnConfig,
+                this.widgets.dataSource,
+                {
+                    groupBy: this.config.groupBy
+                }
+            );
 
-		_setMessage: function(property, messageCode) {
-			var msg = this.msg(messageCode);
-			var table = this.widgets.table;
-			if (msg && table)
-				table.setAttributeConfig(property, { value: msg });
-		}
-		
-	});
+            table.doBeforeSortColumn = this.bind(function(column, dir) {
+                this.fireEvent("sortColumnChange", {
+                    column: column.key,
+                    desc: dir == YAHOO.widget.DataTable.CLASS_DESC
+                });
+                return false;
+            });
+        },
 
-	/**
-	 * DynamicTableControl class.
-	 * It is controller of the MVC pattern.
-	 */
-	Citeck.widget.DynamicTableControl = function(htmlId, fieldId) {
-		var name = "Citeck.widget.DynamicTableControl";
-		Citeck.widget.DynamicTableControl.superclass.constructor.call(this, name, htmlId, null);
-		this.loaded = false;
-		this.deferredItem = null;
-		this.fieldId = fieldId;
-		this.htmlId = htmlId;
+        _setMessage: function(property, messageCode) {
+            var msg = this.msg(messageCode);
+            var table = this.widgets.table;
+            if (msg && table)
+                table.setAttributeConfig(property, { value: msg });
+        }
 
-		YAHOO.Bubbling.on("formContainerDestroyed", this.onFormContainerDestroyed, this);
-		YAHOO.Bubbling.on("metadataRefresh", this.onItemUpdated, this);
-		YAHOO.Bubbling.on("folderDeleted", this.onItemUpdated, this);
-		YAHOO.Bubbling.on("fileDeleted", this.onItemUpdated, this);
-		YAHOO.Bubbling.on("actionNonContentButtonClicked", this.onActionButtonClicked, this);
+    });
 
-	};
+    /**
+     * DynamicTableControl class.
+     * It is controller of the MVC pattern.
+     */
+    Citeck.widget.DynamicTableControl = function(htmlId, fieldId) {
+        var name = "Citeck.widget.DynamicTableControl";
+        Citeck.widget.DynamicTableControl.superclass.constructor.call(this, name, htmlId, null);
+        this.loaded = false;
+        this.deferredItem = null;
+        this.fieldId = fieldId;
+        this.htmlId = htmlId;
 
-	YAHOO.extend(Citeck.widget.DynamicTableControl, Alfresco.component.Base, {
-		// default values for options
-		options: {
+        YAHOO.Bubbling.on("formContainerDestroyed", this.onFormContainerDestroyed, this);
+        YAHOO.Bubbling.on("metadataRefresh", this.onItemUpdated, this);
+        YAHOO.Bubbling.on("folderDeleted", this.onItemUpdated, this);
+        YAHOO.Bubbling.on("fileDeleted", this.onItemUpdated, this);
+        YAHOO.Bubbling.on("actionNonContentButtonClicked", this.onActionButtonClicked, this);
+
+    };
+
+    YAHOO.extend(Citeck.widget.DynamicTableControl, Alfresco.component.Base, {
+        // default values for options
+        options: {
             // true if field is mandatory
             mandatory: false,
 
-			// model configuration
-			model: {},
+            // model configuration
+            model: {},
 
-			// columns configuration
-			columns: {},
+            // columns configuration
+            columns: {},
 
             // forms configuration
             forms: {
@@ -454,12 +456,12 @@
             // field value delimiter (in multipleSelectMode)
             fieldValueDelim: ",",
 
-			// data source configuration
-			responseSchema: {},
-			responseType: YAHOO.util.DataSource.TYPE_JSON,
+            // data source configuration
+            responseSchema: {},
+            responseType: YAHOO.util.DataSource.TYPE_JSON,
 
-			// root item
-			rootNode: {},
+            // root item
+            rootNode: {},
 
             // selected items
             selectedItems: {},
@@ -499,21 +501,21 @@
             throw "dynamic-table.js: " + msg;
         },
 
-		/**
-		 * Set options for this table
-		 */
-		setOptions: function(options) {
-			Citeck.widget.DynamicTableControl.superclass.setOptions.call(this, options);
-			return this;
-		},
+        /**
+         * Set options for this table
+         */
+        setOptions: function(options) {
+            Citeck.widget.DynamicTableControl.superclass.setOptions.call(this, options);
+            return this;
+        },
 
-		/**
-		 * Set messages for this table
-		 */
-		setMessages: function(messages) {
-			Citeck.widget.DynamicTableControl.superclass.setMessages.call(this, messages);
-			return this;
-		},
+        /**
+         * Set messages for this table
+         */
+        setMessages: function(messages) {
+            Citeck.widget.DynamicTableControl.superclass.setMessages.call(this, messages);
+            return this;
+        },
 
         /**
          * ON READY
@@ -544,15 +546,15 @@
 
             this._initButtons();
 
-			// tell the world, that we are ready:
-			YAHOO.Bubbling.fire("dynamicTableReady", {
-				eventGroup: this
-			});
-			this.loaded = true;
+            // tell the world, that we are ready:
+            YAHOO.Bubbling.fire("dynamicTableReady", {
+                eventGroup: this
+            });
+            this.loaded = true;
 
-			if (this.deferredItem)
-				this.onItemUpdated(this.deferredItem);
-		},
+            if (this.deferredItem)
+                this.onItemUpdated(this.deferredItem);
+        },
 
         /**
          * Initialization tool-bar for table..
@@ -754,7 +756,7 @@
             } else if (el.eventType === "remove") {
                 this.removeItem({ "item": el });
             } else if (el.eventType === "start-workflow") {
-				
+
                 document.location.href = '/share/page/start-specified-workflow?'+el.wf_params;
             }
         },
@@ -793,27 +795,27 @@
             }
         },
 
-		/**
-		 * Event handler - it updates children when rootItem is updated
-		 */
-		onItemUpdated: function(args) {
-			var item = args && args.item ? args.item : "selected-items";
-			if (this.loaded) {
-				this.widgets.tableView.showMessageLoading();
-				this.model.updateChildren(item, false);
-			}
-			else {
-				this.deferredItem = item;
-			}
-		},
+        /**
+         * Event handler - it updates children when rootItem is updated
+         */
+        onItemUpdated: function(args) {
+            var item = args && args.item ? args.item : "selected-items";
+            if (this.loaded) {
+                this.widgets.tableView.showMessageLoading();
+                this.model.updateChildren(item, false);
+            }
+            else {
+                this.deferredItem = item;
+            }
+        },
 
-		/**
-		 * Event handler - current form is being destroyed.
-		 * Destroy the component too.
-		 */
-		onFormContainerDestroyed: function(layer, args) {
-			this.destroy();
-		},
+        /**
+         * Event handler - current form is being destroyed.
+         * Destroy the component too.
+         */
+        onFormContainerDestroyed: function(layer, args) {
+            this.destroy();
+        },
 
         /**
          * Event handler - child was deleted.
@@ -857,60 +859,60 @@
             }
         },
 
-		/**
-		 * Called on destroy.
-		 * Unsubscribe from button events.
-		 */
-		destroy: function() {
-			YAHOO.Bubbling.unsubscribe("formContainerDestroyed", this.onFormContainerDestroyed, this);
-			YAHOO.Bubbling.unsubscribe("metadataRefresh", this.onItemUpdated, this);
-			YAHOO.Bubbling.unsubscribe("folderDeleted", this.onItemUpdated, this);
-			YAHOO.Bubbling.unsubscribe("fileDeleted", this.onItemUpdated, this);
-			if (this.model) {
-				this.model.unsubscribeAll();
-				delete this.model;
-			}
-			if (this.widgets) {
-				if (this.widgets.tableView)
-					this.widgets.tableView.unsubscribeAll(this);
-			}
-			Citeck.widget.DynamicTableControl.superclass.destroy.call(this);
-		},
+        /**
+         * Called on destroy.
+         * Unsubscribe from button events.
+         */
+        destroy: function() {
+            YAHOO.Bubbling.unsubscribe("formContainerDestroyed", this.onFormContainerDestroyed, this);
+            YAHOO.Bubbling.unsubscribe("metadataRefresh", this.onItemUpdated, this);
+            YAHOO.Bubbling.unsubscribe("folderDeleted", this.onItemUpdated, this);
+            YAHOO.Bubbling.unsubscribe("fileDeleted", this.onItemUpdated, this);
+            if (this.model) {
+                this.model.unsubscribeAll();
+                delete this.model;
+            }
+            if (this.widgets) {
+                if (this.widgets.tableView)
+                    this.widgets.tableView.unsubscribeAll(this);
+            }
+            Citeck.widget.DynamicTableControl.superclass.destroy.call(this);
+        },
 
-		_initModel: function() {
-			// take model from dialog
-			var modelConfig = this.options.model;
-			this.model = new Citeck.util.HierarchyModel(this.name);
-			this.model.setConfig(modelConfig);
+        _initModel: function() {
+            // take model from dialog
+            var modelConfig = this.options.model;
+            this.model = new Citeck.util.HierarchyModel(this.name);
+            this.model.setConfig(modelConfig);
 
-			this.model.createSpecialItem(
-					this.options.rootNode,
-					{ name: "root", keys: ["root"] } );
+            this.model.createSpecialItem(
+                    this.options.rootNode,
+                    { name: "root", keys: ["root"] } );
 
-			this.model.createSpecialItem(this.options.selectedItems, {
-				name: "selected-items",
-				keys: ["selected-items"]
-			});
-			// it is called when table item is updated
-			this.model.subscribe("itemUpdated", this.onItemUpdated, this, true);
-			// it is called when root element is updated
-			this.model.subscribe("childrenUpdated", this.onChildrenUpdated, this, true);
-			// it is called when table item is added
-			this.model.subscribe("childAdded", this.onChildAdded, this, true);
-			// it is called when table item is deleted
-			this.model.subscribe("childDeleted", this.onChildDeleted, this, true);
-		},
+            this.model.createSpecialItem(this.options.selectedItems, {
+                name: "selected-items",
+                keys: ["selected-items"]
+            });
+            // it is called when table item is updated
+            this.model.subscribe("itemUpdated", this.onItemUpdated, this, true);
+            // it is called when root element is updated
+            this.model.subscribe("childrenUpdated", this.onChildrenUpdated, this, true);
+            // it is called when table item is added
+            this.model.subscribe("childAdded", this.onChildAdded, this, true);
+            // it is called when table item is deleted
+            this.model.subscribe("childDeleted", this.onChildDeleted, this, true);
+        },
 
-		_initTable: function() {
-			var self = this,
-				tableView = this.widgets.tableView = new Citeck.widget.DynamicTable(this.id + "-view", this.model, this.name),
-				config = { responseSchema: this.options.responseSchema, columns: this.options.columns };
+        _initTable: function() {
+            var self = this,
+                tableView = this.widgets.tableView = new Citeck.widget.DynamicTable(this.id + "-view", this.model, this.name),
+                config = { responseSchema: this.options.responseSchema, columns: this.options.columns };
 
-			if (this.options.selection == "checkbox") {
+            if (this.options.selection == "checkbox") {
 
-				var allowSelectAll = this.options.checkboxMultipleSelectMode;
+                var allowSelectAll = this.options.checkboxMultipleSelectMode;
 
-				config.columns.unshift({
+                config.columns.unshift({
                     key: "checkbox-selection",
                     label: allowSelectAll ? '<input type="checkbox" id="' + this.id + '-select-all"/>' : '',
                     formatter: function(elCell, oRecord) {
@@ -923,25 +925,25 @@
                     resizeable: false
                 });
 
-				config.selection = this.options.selection
-			}
+                config.selection = this.options.selection
+            }
 
-			config.checkboxMultipleSelectMode = this.options.checkboxMultipleSelectMode;
+            config.checkboxMultipleSelectMode = this.options.checkboxMultipleSelectMode;
 
-			if (this.options.preview) {
-				config.preview = this.options.preview;
+            if (this.options.preview) {
+                config.preview = this.options.preview;
 
-				if (this.options.previewByClickOnCell)
-					config.previewByClickOnCell = this.options.previewByClickOnCell;
-			}
+                if (this.options.previewByClickOnCell)
+                    config.previewByClickOnCell = this.options.previewByClickOnCell;
+            }
 
-			if (this.options.beforeRender) {
-				config.beforeRender = this.options.beforeRender;
-			}
+            if (this.options.beforeRender) {
+                config.beforeRender = this.options.beforeRender;
+            }
 
-			tableView.setConfig(config);
-			tableView.setContext("selected-items", "none");
-		},
+            tableView.setConfig(config);
+            tableView.setContext("selected-items", "none");
+        },
 
         _updateFields: function() {
             var selectedItems = this.model.getItem("selected-items")._item_children_;
@@ -972,16 +974,16 @@
             }
         },
 
-	});
-	YAHOO.lang.augmentObject(Citeck.widget.DynamicTableControl.prototype, Citeck.util.ErrorManager.prototype);
+    });
+    YAHOO.lang.augmentObject(Citeck.widget.DynamicTableControl.prototype, Citeck.util.ErrorManager.prototype);
 
-	Citeck.widget.FileSizeFormatter = Citeck.widget.FileSizeFormatter || {};
-	Citeck.widget.FileSizeFormatter.get = function() {
-		return function(elCell, oRecord, oColumn, oData) {
-			var value = parseInt(oData);
-			if (!isNaN(value))
-				elCell.innerHTML = Alfresco.util.formatFileSize(value);
-		}
-	};
+    Citeck.widget.FileSizeFormatter = Citeck.widget.FileSizeFormatter || {};
+    Citeck.widget.FileSizeFormatter.get = function() {
+        return function(elCell, oRecord, oColumn, oData) {
+            var value = parseInt(oData);
+            if (!isNaN(value))
+                elCell.innerHTML = Alfresco.util.formatFileSize(value);
+        }
+    };
 
-})();
+});

@@ -1,4 +1,5 @@
 <import resource="classpath:/alfresco/templates/org/alfresco/import/alfresco-util.js">
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/dependencies/dependencies.lib.js">
 
 function getAssocList(assocs, listName, defaultList) {
     var listElements = assocs.childrenMap[listName];
@@ -69,5 +70,7 @@ function getAssocList(assocs, listName, defaultList) {
         addable: addable,
         removeable: removeable
     };
+
+    model.dependencies = Dependencies.getScoped('DocLibCustom/dependencies');
 
 })();

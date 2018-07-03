@@ -2,8 +2,6 @@
 <@markup id="css" >
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/manage-permissions/manage-permissions.css" group="manage-permissoins" />
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/people-finder/authority-finder.css" group="manage-permissoins" />
-    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.css" group="manage-permissoins" />
-    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree-picker.css" group="manage-permissoins" />
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/orgstruct/orgstruct-icons.css" group="manage-permissoins" />
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/orgstruct/console.css" group="manage-permissoins" />
 </@>
@@ -12,11 +10,6 @@
     <@script type="text/javascript" src="${page.url.context}/res/citeck/components/manage-permissions/manage-permissions.js" group="manage-permissoins" />
     <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/authority-finder.js" group="manage-permissoins" />
     <@script type="text/javascript" src="${page.url.context}/res/yui/resize/resize.js" group="manage-permissoins" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="manage-permissoins" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="manage-permissoins" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="manage-permissoins" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.js" group="manage-permissoins" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree-picker.js" group="manage-permissoins" />
     <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/people-finder.js" group="manage-permissoins" />
     <@script type="text/javascript" src="${page.url.context}/res/citeck/components/orgstruct/picker-dialogs.js" group="manage-permissoins" />
 </@>

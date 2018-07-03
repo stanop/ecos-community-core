@@ -17,8 +17,10 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
-
+define([
+    'jquery',
+    'xstyle!./route.css'
+], function() {
 
     if(typeof Citeck == "undefined") Citeck = {};
     if(typeof Citeck.widget == "undefined") Citeck.widget = {};
@@ -1256,5 +1258,5 @@
         }
     });
 
-
-})()
+    return Citeck.widget.Route;
+});

@@ -354,6 +354,14 @@
   max-height: 20px;
 }
 
+#HEADER_APP_MENU_BAR #HEADER_MOBILE_MENU {
+  display: none;
+}
+
+#HEADER_APP_MENU_BAR .dijitMenuItem {
+  display: inline-block;
+}
+
 #HEADER_APP_MENU_BAR #HEADER_MOBILE_LOGO img {
   max-width: 16px;
   max-height: 16px;
@@ -397,4 +405,19 @@
 
 #alfresco-console .application .row {
   height: 3.5em;
+}
+
+.loading-container .loading-indicator {
+  width: 250px;
+  height: 250px;
+  margin: 0 auto;
+  border: 10px solid #2d3541;
+  border-radius: 50%;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  animation: cssload-spin 1100ms infinite linear;
+  -o-animation: cssload-spin 1100ms infinite linear;
+  -ms-animation: cssload-spin 1100ms infinite linear;
+  -webkit-animation: cssload-spin 1100ms infinite linear;
+  -moz-animation: cssload-spin 1100ms infinite linear;
 }

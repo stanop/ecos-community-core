@@ -4,7 +4,8 @@ let gulp = require('gulp'),
     rename = require('gulp-rename'),
     uglify = require('gulp-uglify'),
     cleanCSS = require('gulp-clean-css'),
-    through2 = require('through2');
+    through2 = require('through2'),
+    log = require('fancy-log');
 
 let buildParams = {};
 for (let arg of process.argv) {
@@ -39,13 +40,19 @@ let source = {
     ]
 };
 
+function _handleError(err) {
+    log.error(err.toString());
+    throw err;
+}
+
 function processMinResources(paths, processors) {
 
     let stream = gulp.src(paths)
         .pipe(sourcemaps.init());
 
     for (let proc of processors) {
-        stream = stream.pipe(proc);
+        stream = stream.pipe(proc)
+                       .on('error', _handleError);
     }
 
     return stream

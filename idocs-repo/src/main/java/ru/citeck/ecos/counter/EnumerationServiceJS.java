@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2018 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -33,75 +33,77 @@ import static ru.citeck.ecos.utils.JavaScriptImplUtils.*;
 public class EnumerationServiceJS extends AlfrescoScopableProcessorExtension {
 
     private EnumerationService enumerationService;
-    
+
     public void setEnumerationService(EnumerationService enumerationService) {
         this.enumerationService = enumerationService;
     }
 
     public ScriptNode getTemplate(String templateName) {
         NodeRef template;
-        if(NodeRef.isNodeRef(templateName)) {
+        if (NodeRef.isNodeRef(templateName)) {
             template = new NodeRef(templateName);
-            if(!enumerationService.isTemplate(template)) return null;
+            if (!enumerationService.isTemplate(template)) {
+                return null;
+            }
         } else {
             template = enumerationService.getTemplate(templateName);
         }
         return template != null ? wrapNode(template, this) : null;
     }
-    
+
     public boolean isTemplate(ScriptNode node) {
         return enumerationService.isTemplate(node.getNodeRef());
     }
-    
+
     public String getNumber(ScriptNode template, ScriptNode node) throws EnumerationException {
         return enumerationService.getNumber(template.getNodeRef(), node.getNodeRef());
-        
+
     }
-    
+
     public String getNumber(String templateName, ScriptNode node) throws EnumerationException {
         return enumerationService.getNumber(
-                needTemplate(templateName), 
+                needTemplate(templateName),
                 node.getNodeRef());
     }
 
     private NodeRef needTemplate(String templateName) {
         NodeRef template = enumerationService.getTemplate(templateName);
-        if(template == null) {
+        if (template == null) {
             throw new IllegalArgumentException("Can not find template " + templateName);
         }
         return template;
     }
-    
+
     public String getNumber(ScriptNode template, ScriptableObject model) throws EnumerationException {
         return enumerationService.getNumber(
                 template.getNodeRef(),
                 convertScriptableToMap(model));
     }
-    
+
     public String getNumber(String templateName, ScriptableObject model) throws EnumerationException {
         return enumerationService.getNumber(
                 needTemplate(templateName),
                 convertScriptableToMap(model));
     }
-    
+
     public String getNumber(ScriptNode template, Map<String, Object> model) throws EnumerationException {
         return enumerationService.getNumber(template.getNodeRef(), model);
     }
-    
+
     public String getNumber(String templateName, Map<String, Object> model) throws EnumerationException {
         return enumerationService.getNumber(needTemplate(templateName), model);
     }
-    
+
     public String getNumber(ScriptNode template, JSONObject model) throws EnumerationException {
         return enumerationService.getNumber(
                 template.getNodeRef(),
                 JSONUtils.convertJSON(model));
     }
-    
+
     public String getNumber(String templateName, JSONObject model) throws EnumerationException {
         return enumerationService.getNumber(
                 needTemplate(templateName),
                 JSONUtils.convertJSON(model));
     }
-    
+
 }

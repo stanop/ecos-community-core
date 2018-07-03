@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>Upcoming birthdays</shortname>
+    <description>This dashlet displays a list of people whose birthdays are within the next 30 days.</description>
+    <family>user-dashlet</family>
+    <url>/components/dashlets/upcoming-birthdays</url>
+</webscript>
