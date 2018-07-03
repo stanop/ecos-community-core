@@ -49,6 +49,7 @@
 	<bean id="flowableCustomHistoryService" class="ru.citeck.ecos.flowable.services.impl.FlowableHistoryServiceImpl">
 		<property name="historyService" ref="flowableHistoryService"/>
 		<property name="personService" ref="PersonService"/>
+		<property name="serviceRegistry" ref="ServiceRegistry"/>
 	</bean>
 
 	<bean id="flowableModelerService" class="ru.citeck.ecos.flowable.services.impl.FlowableModelerServiceImpl">
