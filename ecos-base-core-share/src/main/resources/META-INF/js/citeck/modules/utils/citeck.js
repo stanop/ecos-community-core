@@ -122,12 +122,22 @@ define([
 
     Citeck.utils.loadHtml = function (url, args, destination, successCallback, failureCallback) {
 
-        let invokeCallback = function (callback) {
+        let invokeCallback = function (callback, param) {
+            let scope = null;
+            let func = null;
             if (callback) {
                 if (callback.fn) {
-                    callback.fn.call(callback.scope);
+                    func = callback.fn;
+                    scope = callback.scope;
                 } else {
-                    callback.call();
+                    func = callback;
+                }
+            }
+            if (func) {
+                if (param) {
+                    func.call(scope, param)
+                } else {
+                    func.call(scope)
                 }
             }
         };
@@ -163,20 +173,30 @@ define([
 
             require(cssDependencies);
 
-            if (_.isFunction(destination)) {
-                destination(text)
-            } else {
-                $(destination).html(text);
+            try {
+                if (_.isFunction(destination)) {
+                    destination(text)
+                } else {
+                    $(destination).html(text);
+                }
+            } catch (e) {
+                console.error("Exception while set html from url: " + url + " with args: ", args, e);
+                throw e
             }
 
             Citeck.utils.requireInOrder(jsDependencies, function () {
                 for (let i = 0; i < inlineScripts.length; i++) {
-                    eval(inlineScripts[i]);
+                    try {
+                        eval(inlineScripts[i]);
+                    } catch (e) {
+                        console.error("Exception while eval scripts from url: " + url + " with args: ", args, e);
+                        throw e
+                    }
                 }
                 invokeCallback(successCallback);
             });
-        }).catch(function () {
-            invokeCallback(failureCallback);
+        }).catch(function (response) {
+            invokeCallback(failureCallback, response);
         });
     };
 

@@ -1360,8 +1360,11 @@ define([
         onFailure : function(response) {
             var failure = Alfresco.util.message("message.failure");
             var errorMsg = failure;
-            if (response.json && response.json.message)
+            if (response.json && response.json.message) {
                 errorMsg = response.json.message;
+            } else if (response.message) {
+                errorMsg = response.message;
+            }
             Alfresco.util.PopupManager.displayPrompt({
                 title : failure,
                 text : errorMsg
