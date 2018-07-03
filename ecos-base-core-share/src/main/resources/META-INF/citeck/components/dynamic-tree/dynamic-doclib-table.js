@@ -17,7 +17,6 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 define([
-    './handy-doclist',
     'xstyle!./dynamic-doclib-table.css'
 ], function() {
 
@@ -171,8 +170,7 @@ define([
         onChildDeleted: function() {
             // use simple implementation - update the whole list
             this.onChildrenUpdated.apply(this, arguments);
-        },
+        }
 
     });
-
-})();
+});
