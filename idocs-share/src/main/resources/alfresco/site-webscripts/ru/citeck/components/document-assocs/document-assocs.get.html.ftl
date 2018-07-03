@@ -93,7 +93,8 @@ require(['citeck/components/dynamic-tree/hierarchy-model',
     'citeck/components/dynamic-tree/dynamic-tree',
     'citeck/components/dynamic-tree/dynamic-tree-picker',
     'components/object-finder/object-finder',
-    'citeck/components/document-assocs/document-assocs'], function() {
+    'citeck/components/document-assocs/document-assocs',
+    'citeck/components/dynamic-tree/cell-formatters'], function() {
 
     YAHOO.util.Event.onContentReady("${el}", function () {
         var model = {
