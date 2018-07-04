@@ -1454,6 +1454,14 @@
             </properties>
         </aspect>
 
+        <aspect name="idocs:hasCustomFormAction">
+            <properties>
+                <property name="idocs:customFormActionData">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
     </aspects>
 
 </model>

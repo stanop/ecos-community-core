@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="formActionHandlerProvider" class="ru.citeck.ecos.form.action.FormActionHandlerProvider"/>
+
+    <bean id="abstractFormActionHandler" class="ru.citeck.ecos.form.action.handlers.AbstractFormActionHandler"
+          abstract="true" init-method="init">
+        <property name="formActionHandlerProvider" ref="formActionHandlerProvider"/>
+    </bean>
+
+</beans>

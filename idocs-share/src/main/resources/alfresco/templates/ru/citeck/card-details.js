@@ -4,19 +4,31 @@
 // See if a site page's title has been renamed by the site manager
 model.metaPage = AlfrescoUtil.getMetaPage();
 
-model.hasReadPermissions = false;
+model.nodeBaseInfo = {
+    permissions: {
+        Read: false,
+        Write: false
+    }
+};
+model.nodeBaseInfoStr = '{"modified": null}';
+
 const connector = remote.connect("alfresco");
 const nodeRef = page.url.args.nodeRef;
 
 if (nodeRef) {
-    const permCheckUrl = "/citeck/has-permission?nodeRef=" + nodeRef + "&permission=Read";
+    const nodeBaseInfoUrl = "/citeck/node/base-info?nodeRef=" + nodeRef;
     try {
-        const result = connector.get(permCheckUrl);
-        model.hasReadPermissions = result.status == 200 && result.response == "true";
+        const result = connector.get(nodeBaseInfoUrl);
+        if (result.status == 200) {
+            model.nodeBaseInfoStr = result + '';
+            model.nodeBaseInfo = eval('(' + result + ')');
+        }
     } catch (e) {
-        logger.warn("Connection to " + permCheckUrl + " is failed");
+        logger.warn("Connection to " + nodeBaseInfoUrl + " is failed");
         logger.warn("Error", e);
     }
+
+    model.hasReadPermissions = model.nodeBaseInfo.permissions.Read;
 
     if (model.hasReadPermissions) {
         model.pageDependencies = Dependencies.getScoped('CiteckPage/card-details/dependencies');

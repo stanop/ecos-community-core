@@ -25,14 +25,30 @@
         if (positionIndexInMobile == null) {
             positionIndexInMobile = -1;
         }
-        return {
+
+        var cardletData = {
             regionId: cardlet.properties["cardlet:regionId"],
             regionColumn: cardlet.properties["cardlet:regionColumn"],
             regionPosition: cardlet.properties["cardlet:regionPosition"],
             availableInMobile: availableInMobile,
-            positionIndexInMobile: positionIndexInMobile,
-            cardMode: cardlet.properties["cardlet:cardMode"]
+            positionIndexInMobile: positionIndexInMobile
+        };
+
+        if (cardletData.regionColumn != 'top' || cardletData.regionPosition > 'm5') {
+            cardletData['cardMode'] = cardlet.properties["cardlet:cardMode"] || "default";
+        } else {
+            cardletData['cardMode'] = 'all';
         }
+        return cardletData;
+    };
+
+    var renderMode = function (mode) {
+        return {
+            "id": mode.properties["cardlet:cardModeId"],
+            "order": mode.properties["cardlet:cardModeOrder"],
+            "title": mode.properties['cm:title'] || null,
+            "description": mode.properties['cm:description'] || null
+        };
     };
 
     model.result = {
@@ -40,5 +56,11 @@
         type: node.typeShort,
         cardMode: args.cardMode || '',
         cardlets: cardletsList.map(renderCardlet)
+    };
+
+    if (args.withModes == "true") {
+        var modes = cardlets.queryCardModes(node);
+        model.result['cardModes'] = modes.map(renderMode);
     }
+
 })();
