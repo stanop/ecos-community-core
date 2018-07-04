@@ -26,8 +26,10 @@ public class FormActionBehaviour implements NodeServicePolicies.OnUpdateProperti
     private PolicyComponent policyComponent;
     private NodeService nodeService;
     private FormActionHandlerProvider formActionHandlerProvider;
+    private ObjectMapper objectMapper;
 
     public void init() {
+        objectMapper = new ObjectMapper();
         policyComponent.bindClassBehaviour(
                 NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,
                 IdocsModel.ASPECT_HAS_CUSTOM_FORM_ACTION,
@@ -43,13 +45,15 @@ public class FormActionBehaviour implements NodeServicePolicies.OnUpdateProperti
             }
 
             FormActionData formActionData = deserializeActionDataProperty(after);
+            if (formActionData == null) {
+                return;
+            }
+
             List<FormActionHandler> handlersByTaskType =
                     formActionHandlerProvider.getHandlersByTaskType(formActionData.taskType);
             for (FormActionHandler handler : handlersByTaskType) {
                 handler.handle(nodeRef, formActionData.getOutcome());
             }
-        } catch (IOException e) {
-            logger.error(e);
         } finally {
             if (nodeService.exists(nodeRef)) {
                 nodeService.setProperty(nodeRef, IdocsModel.PROP_CUSTOM_FORM_ACTION_DATA, null);
@@ -57,10 +61,14 @@ public class FormActionBehaviour implements NodeServicePolicies.OnUpdateProperti
         }
     }
 
-    private FormActionData deserializeActionDataProperty(Map<QName, Serializable> after) throws IOException {
-        String jsonFormData = (String) after.get(IdocsModel.PROP_CUSTOM_FORM_ACTION_DATA);
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(jsonFormData, FormActionData.class);
+    private FormActionData deserializeActionDataProperty(Map<QName, Serializable> after) {
+        try {
+            String jsonFormData = (String) after.get(IdocsModel.PROP_CUSTOM_FORM_ACTION_DATA);
+            return objectMapper.readValue(jsonFormData, FormActionData.class);
+        } catch (IOException e) {
+            logger.error(e);
+            return null;
+        }
     }
 
     private boolean checkProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
