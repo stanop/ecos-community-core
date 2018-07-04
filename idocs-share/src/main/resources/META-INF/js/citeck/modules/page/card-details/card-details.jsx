@@ -63,7 +63,8 @@ class CardletsBody extends React.Component {
         this.state = {
             data: null,
             cardmodes: null,
-            activeMode: "default"
+            activeMode: "default",
+            nodeBaseInfo: props.nodeBaseInfo
         };
 
         let self = this;
@@ -73,7 +74,9 @@ class CardletsBody extends React.Component {
             self.setState({
                 activeMode: urlMode ? urlMode : "default"
             });
-        }
+        };
+
+        YAHOO.Bubbling.on('metadataRefresh', this._updateNodeBaseInfo, this);
     }
 
     componentDidMount() {
@@ -85,17 +88,44 @@ class CardletsBody extends React.Component {
             });
         }
 
+        this._updateCardlets();
+    }
+
+    _updateNodeBaseInfo() {
+        let requestArgs = {
+            nodeRef: this.props.pageArgs.nodeRef
+        };
+        fetch(this.props.alfescoUrl + "citeck/node/base-info?" + $.param(requestArgs), {
+            credentials: 'include'
+        }).then(response => {
+            return response.json();
+        }).then(json => {
+            if (this.state.nodeBaseInfo.modified != json.modified) {
+                this.setState({
+                    nodeBaseInfo: json
+                });
+                this._updateCardlets();
+            }
+        });
+    }
+
+    _updateCardlets() {
+
         let pageArgs = this.props.pageArgs;
         let requestArgs = {
             'nodeRef': pageArgs.nodeRef,
-            'mode': 'all'
+            'mode': 'all',
+            'cb': this.state.nodeBaseInfo.modified,
+            'withModes': true
         };
         fetch(this.props.alfescoUrl + "citeck/card/cardlets?" + $.param(requestArgs), {
             credentials: 'include'
         }).then(response => {
             return response.json();
         }).then(json => {
-            let cardlets = {};
+            let cardlets = {
+                'all': {'top': []}
+            };
             for (let cardlet of json.cardlets) {
                 if (cardlet.regionId == 'card-modes') {
                     continue;
@@ -123,25 +153,14 @@ class CardletsBody extends React.Component {
             }
             this.setState({
                 data: json,
-                cardlets: cardlets
-            });
-        });
-
-        requestArgs = {
-            nodeRef: this.props.pageArgs.nodeRef
-        };
-        fetch(this.props.alfescoUrl + "citeck/card/modes?" + $.param(requestArgs), {
-            credentials: 'include'
-        }).then(response => {
-            return response.json();
-        }).then(json => {
-            this.setState({
-                cardmodes: [{
+                cardlets: cardlets,
+                cardmodes: [
+                    {
                         "id": "default",
                         "title": Alfresco.util.message('card.mode.default.title'),
                         "description": Alfresco.util.message('card.mode.default.description')
                     },
-                    ...json.cardmodes
+                    ...json.cardModes
                 ]
             });
         });

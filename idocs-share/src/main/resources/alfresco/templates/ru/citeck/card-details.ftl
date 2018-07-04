@@ -86,6 +86,8 @@
                 "theme": "${theme!}"
             }) />
 
+            <@relocateJavaScript/>
+
             <script type="text/javascript">//<![CDATA[
 
                 require(['js/citeck/modules/page/card-details/card-details'], function(components) {
@@ -95,7 +97,8 @@
                             <#list pageArgsMap?keys as argKey>
                                 "${argKey}":"${pageArgsMap[argKey]!}"<#if argKey_has_next>,</#if>
                             </#list>
-                        }
+                        },
+                        nodeBaseInfo: ${nodeBaseInfoStr}
                     });
                 });
 
@@ -114,8 +117,6 @@
                     document.write("<link rel='stylesheet' type='text/css' href='${tabletCSS}'/>");
                 }
             //]]></script>
-
-            <@relocateJavaScript/>
 
             <div id="alfresco-yuiloader"></div>
 
