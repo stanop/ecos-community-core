@@ -9,7 +9,6 @@
 <@markup id="js">
     <@script type="text/javascript" src="${page.url.context}/res/citeck/components/manage-permissions/manage-permissions.js" group="manage-permissoins" />
     <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/authority-finder.js" group="manage-permissoins" />
-    <@script type="text/javascript" src="${page.url.context}/res/yui/resize/resize.js" group="manage-permissoins" />
     <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/people-finder.js" group="manage-permissoins" />
     <@script type="text/javascript" src="${page.url.context}/res/citeck/components/orgstruct/picker-dialogs.js" group="manage-permissoins" />
 </@>
