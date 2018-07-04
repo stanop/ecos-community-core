@@ -60,6 +60,7 @@ public final class HistoryModel {
     public static final QName PROP_TASK_ATTACHMENTS = QName.createQName(EVENT_NAMESPACE, "taskAttachments");
     public static final QName PROP_TASK_ROLE = QName.createQName(EVENT_NAMESPACE, "taskRole");
     public static final QName PROP_CASE_TASK = QName.createQName(EVENT_NAMESPACE, "caseTask");
+    public static final QName PROP_TASK_DUE_DATE = QName.createQName(EVENT_NAMESPACE, "taskDueDate");
     public static final QName INITIATOR = QName.createQName(EVENT_NAMESPACE, "initiator_added");
 
     public static final QName PROP_WORKFLOW_INSTANCE_ID = QName.createQName(EVENT_NAMESPACE, "workflowInstanceId");

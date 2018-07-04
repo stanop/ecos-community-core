@@ -31,10 +31,7 @@ import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRoleService;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Task history listener
@@ -99,9 +96,6 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
             return;
         }
         NodeRef document = FlowableListenerUtils.getDocument(delegateTask, nodeService);
-        if (document == null) {
-            return;
-        }
 
         /**
          * Collect properties
@@ -159,6 +153,7 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         eventProperties.put(HistoryModel.PROP_TASK_ATTACHMENTS, taskAttachments);
         eventProperties.put(HistoryModel.PROP_TASK_POOLED_ACTORS, pooledActors);
         eventProperties.put(HistoryModel.PROP_TASK_ROLE, roleName);
+        eventProperties.put(HistoryModel.PROP_TASK_DUE_DATE, delegateTask.getDueDate());
 
         eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ENGINE_PREFIX + delegateTask.getProcessInstanceId());
         eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) delegateTask.getVariable(VAR_DESCRIPTION));
@@ -212,6 +207,9 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
      * @return List of role nodes
      */
     private List<NodeRef> getListRoles(NodeRef document) {
+        if (document == null) {
+            return Collections.emptyList();
+        }
         List<ChildAssociationRef> childsAssocRefs = nodeService.getChildAssocs(document, ICaseRoleModel.ASSOC_ROLES, RegexQNamePattern.MATCH_ALL);
         List<NodeRef> roles = new ArrayList<>();
         for (ChildAssociationRef childAssociationRef: childsAssocRefs) {

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-(function() {
+define(['xstyle!./auto-manual.css'], function() {
 
 if(typeof Citeck == "undefined") Citeck = {};
 if(typeof Citeck.widget == "undefined") Citeck.widget = {};
@@ -71,4 +71,4 @@ YAHOO.extend(Citeck.widget.AutoManualInput, Alfresco.component.Base, {
 });
 
 
-})();
+});

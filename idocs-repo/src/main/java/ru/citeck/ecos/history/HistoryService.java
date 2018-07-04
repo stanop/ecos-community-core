@@ -178,11 +178,10 @@ public class HistoryService {
 
     private NodeRef persistEventToAlfresco(final QName type, final Map<QName, Serializable> properties, Date creationDate) {
         return AuthenticationUtil.runAsSystem(() -> {
+
             NodeRef initiator = getInitiator(properties);
             properties.remove(HistoryModel.ASSOC_INITIATOR);
-            if (initiator == null) {
-                properties.put(HistoryModel.PROP_NAME, UNKNOWN_USER);
-            }
+
             NodeRef document = getDocument(properties);
             properties.remove(HistoryModel.ASSOC_DOCUMENT);
 

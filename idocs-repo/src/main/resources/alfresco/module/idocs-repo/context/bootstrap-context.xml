@@ -702,4 +702,11 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.users-batch-processing"
+          abstract="true"
+          class="ru.citeck.ecos.migration.UsersBatchProcessing"
+          parent="module.baseComponent">
+        <property name="moduleId" value="idocs-repo" />
+    </bean>
+
 </beans>

@@ -52,6 +52,12 @@
         <hide-likes>false</hide-likes>
         <hide-share>false</hide-share>
     </config>
+
+    <!-- 'show-path-for-types' overrides 'show-path', so use one or another -->
+    <config evaluator="string-compare" condition="ModuleConfig.card-header">
+        <!--<show-path></show-path>-->
+        <show-path-for-types>ecos:document</show-path-for-types>
+    </config>
     
     <config evaluator="string-compare" condition="ModuleConfig.versions-difference">
         <versions-difference-color>false</versions-difference-color>

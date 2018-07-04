@@ -16,7 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-(function() {
+define([
+    './has-buttons',
+    'xstyle!./dynamic-tree.css'
+], function() {
 
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
     Citeck.widget = Citeck.widget || {};
@@ -417,4 +420,5 @@
         }
     });
 
-})();
+    return Citeck.widget.DynamicTree;
+});

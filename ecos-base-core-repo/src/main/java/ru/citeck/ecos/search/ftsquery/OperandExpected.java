@@ -1,6 +1,5 @@
 package ru.citeck.ecos.search.ftsquery;
 
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.PermissionEvaluationMode;
 import org.alfresco.service.cmr.search.QueryConsistency;

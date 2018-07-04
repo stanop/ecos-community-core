@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2018 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -71,8 +71,8 @@ public class ReportProducer extends AbstractDataBundleLine {
     @Override
     public void init() {
         super.init();
-        nodeAttributeService = (NodeAttributeService)serviceRegistry.getService(CiteckServices.NODE_ATTRIBUTE_SERVICE);
-        messageService = (MessageService)serviceRegistry.getService(AlfrescoServices.MESSAGE_SERVICE);
+        nodeAttributeService = (NodeAttributeService) serviceRegistry.getService(CiteckServices.NODE_ATTRIBUTE_SERVICE);
+        messageService = (MessageService) serviceRegistry.getService(AlfrescoServices.MESSAGE_SERVICE);
         namespaceService = serviceRegistry.getNamespaceService();
         dictionaryService = serviceRegistry.getDictionaryService();
     }
@@ -81,28 +81,27 @@ public class ReportProducer extends AbstractDataBundleLine {
     @Override
     public DataBundle process(DataBundle input) {
         Map<String, Object> model = input.needModel();
-        
-        HashMap<String, Object> newModel = new HashMap<String, Object>();
-        newModel.putAll(model);
-        
+
+        HashMap<String, Object> newModel = new HashMap<>(model);
+
         List<Map<String, String>> reportColumns = (List<Map<String, String>>) model.get(REPORT_COLUMNS);
         List<NodeRef> nodes = (List<NodeRef>) model.get(NODES);
         newModel.put("reportData", produceReportData(reportColumns, nodes));
-        
+
         return new DataBundle(newModel);
     }
-    
+
     private List<List<Map<String, Object>>> produceReportData(List<Map<String, String>> reportColumns, List<NodeRef> nodes) {
-        List<List<Map<String, Object>>> res = new ArrayList<List<Map<String, Object>>>();
+        List<List<Map<String, Object>>> res = new ArrayList<>();
 
         if ((reportColumns != null) && (reportColumns.size() > 0) && (nodes != null) && (nodes.size() > 0)) {
             int i = 0;
             for (NodeRef node : nodes) {
                 if (node != null) {
-                    List<Map<String, Object>> row = new ArrayList<Map<String, Object>>();
+                    List<Map<String, Object>> row = new ArrayList<>();
 
                     for (Map<String, String> col : reportColumns) {
-                        Map<String, Object> data = new HashMap<String, Object>();
+                        Map<String, Object> data = new HashMap<>();
 
                         // default type
                         data.put(DATA_TYPE_ATTR, "String");
@@ -140,12 +139,12 @@ public class ReportProducer extends AbstractDataBundleLine {
         }
         return res;
     }
-    
+
     @SuppressWarnings("rawtypes")
     private String getFormattedValue(QName property, Object value, String dateFormat) {
-        String res = "";
+        StringBuilder res = new StringBuilder();
 
-        if ((dateFormat == null) || (dateFormat.isEmpty())){
+        if ((dateFormat == null) || (dateFormat.isEmpty())) {
             dateFormat = DEFAULT_DATE_FORMAT;
         }
 
@@ -155,37 +154,38 @@ public class ReportProducer extends AbstractDataBundleLine {
             if (value instanceof Boolean) {
                 boolean bValue = (Boolean) value;
                 if (bValue)
-                    res = I18NUtil.getMessage("label.yes");
+                    res = new StringBuilder(I18NUtil.getMessage("label.yes"));
                 else
-                    res = I18NUtil.getMessage("label.no");
+                    res = new StringBuilder(I18NUtil.getMessage("label.no"));
             } else if (ClassUtils.isPrimitiveOrWrapper(value.getClass())) {
-                res = String.valueOf(value);
+                res = new StringBuilder(String.valueOf(value));
             } else if (value instanceof String) {
-                res = getLabel(property, (String) value);
+                res = new StringBuilder(getLabel(property, (String) value));
             } else if (value instanceof List) {
                 for (Object o : (List) value) {
                     String itemValue = getFormattedValue(property, o, dateFormat);
-                    if (!res.isEmpty() && !itemValue.isEmpty()) {
-                        res += ", ";
+                    if ((res.length() > 0) && !itemValue.isEmpty()) {
+                        res.append(", ");
                     }
-                    res += itemValue;
+                    res.append(itemValue);
                 }
             } else if (value instanceof Date) {
-                res = sdf.format((Date) value);
+                res = new StringBuilder(sdf.format((Date) value));
             } else if (value instanceof TemplateNode) {
-                res = getNodeAsString((TemplateNode) value);
+                res = new StringBuilder(getNodeAsString((TemplateNode) value));
             } else if (value instanceof NodeRef) {
-                res = getNodeAsString(new TemplateNode((NodeRef)value, serviceRegistry, null));
+                res = new StringBuilder(getNodeAsString(new TemplateNode((NodeRef) value, serviceRegistry, null)));
             } else if (value instanceof QName) {
-                res = shortQName(value.toString());
+                res = new StringBuilder(shortQName(value.toString()));
             } else if (value instanceof TemplateContentData) {
                 TemplateContentData data = (TemplateContentData) value;
-                res = "/api/node/" + (data.getUrl() != null ? data.getUrl().replaceFirst("/d/d/", "") : "");
+                res = new StringBuilder("/api/node/" + (data.getUrl() != null ? data.getUrl().replaceFirst("/d/d/", "")
+                        : ""));
             } else if (value.toString() != null) {
-                res = value.toString();
+                res = new StringBuilder(value.toString());
             }
         }
-        return res;
+        return res.toString();
     }
 
     private String getLabel(QName property, String value) {
@@ -197,18 +197,18 @@ public class ReportProducer extends AbstractDataBundleLine {
         for (ConstraintDefinition constraintDefinition : constraints) {
 
             Constraint constraint = constraintDefinition.getConstraint();
-            if(!(constraint instanceof ListOfValuesConstraint)) continue;
+            if (!(constraint instanceof ListOfValuesConstraint)) continue;
 
             ListOfValuesConstraint constraintList = (ListOfValuesConstraint) constraint;
             List<String> allowedValues = constraintList.getAllowedValues();
 
-            if(!allowedValues.contains(value)) continue;
+            if (!allowedValues.contains(value)) continue;
 
             return constraintList.getDisplayLabel(value, messageService);
         }
         return value;
     }
-    
+
     private String getNodeAsString(TemplateNode node) {
         String result = "";
 
@@ -220,16 +220,18 @@ public class ReportProducer extends AbstractDataBundleLine {
                     result = appendValue(result, properties, personFirstName, "cm:firstName");
                     result = appendValue(result, properties, personMiddleName, "cm:middleName");
                 }
+            } else if (node.getTypeShort().equals("cm:authorityContainer")) {
+                result = node.getProperties().get("cm:authorityDisplayName").toString();
             } else if (node.getProperties().get("cm:title") != null) {
                 result = node.getProperties().get("cm:title").toString();
             } else if (node.getName() != null) {
                 result = node.getName();
             }
 
-                    }
+        }
 
         return result;
-                }
+    }
 
     private String appendValue(String result, Map<String, Serializable> props, String customKey, String defaultKey) {
         if (!customKey.startsWith("${") && props.get(customKey) != null) {

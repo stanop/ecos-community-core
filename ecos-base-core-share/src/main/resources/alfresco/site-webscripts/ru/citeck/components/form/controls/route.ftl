@@ -63,18 +63,20 @@
             </div>
 
             <script type="text/javascript">
-                $("#routeName").bind("input" , function() {
-                    if (citeckWidgetRoute) {
-                        if (citeckWidgetRoute.buttons.saveAsTemplateSubmit) {
-                            if (this.value) {
-                                // if (!submitButton.disabled)
+                require(['jquery'], function() {
+                    $("#routeName").bind("input" , function() {
+                        if (citeckWidgetRoute) {
+                            if (citeckWidgetRoute.buttons.saveAsTemplateSubmit) {
+                                if (this.value) {
+                                    // if (!submitButton.disabled)
                                     citeckWidgetRoute.buttons.saveAsTemplateSubmit._setDisabled(false);
-                            } else {
-                                // if (submitButton.disabled)
+                                } else {
+                                    // if (submitButton.disabled)
                                     citeckWidgetRoute.buttons.saveAsTemplateSubmit._setDisabled(true);
+                                }
                             }
                         }
-                    }
+                    });
                 });
             </script>
         </#if>
@@ -92,46 +94,48 @@
 </div>
 
 <script type="text/javascript">
-    var citeckWidgetRoute = new Citeck.widget.Route("route-field").setOptions({
-        // Pre-installed template (nodeRef)
+    require(['citeck/components/form/controls/route'], function() {
+        var citeckWidgetRoute = new Citeck.widget.Route("route-field").setOptions({
+            // Pre-installed template (nodeRef)
         <#if field.control.params.presetTemplate??>
             presetTemplate: "${field.control.params.presetTemplate}",
         </#if>
 
-        // Lock template. The user will not be able to delete stages and participants of pre-installed template
-        // true or false. By default false
+            // Lock template. The user will not be able to delete stages and participants of pre-installed template
+            // true or false. By default false
         <#if field.control.params.presetTemplateMandatory??>
             presetTemplateMandatory: "${field.control.params.presetTemplateMandatory}",
         </#if>
 
-        // Which type of node are available for selection
-        // The string contains the node type. "USER, GROUP"
-        // By default "USER"
+            // Which type of node are available for selection
+            // The string contains the node type. "USER, GROUP"
+            // By default "USER"
         <#if field.control.params.allowedAuthorityType??>
             allowedAuthorityType: "${field.control.params.allowedAuthorityType}",
         </#if>
 
-        // Which type of group are available for selection
-        // The string contains the group type. "BRANCH, ROLE"
-        // Parameter will by activated if "allowedAuthorityType" equal "GROUP" or "USER, GROUP"
+            // Which type of group are available for selection
+            // The string contains the group type. "BRANCH, ROLE"
+            // Parameter will by activated if "allowedAuthorityType" equal "GROUP" or "USER, GROUP"
         <#if field.control.params.allowedGroupType??>
             allowedGroupType: "${field.control.params.allowedGroupType}",
         </#if>
 
-        // The possibility of on/off functions to save and load templates
-        // true or false. By default false 
-        saveAndLoadTemplate: "${saveAndLoadTemplate}",
+            // The possibility of on/off functions to save and load templates
+            // true or false. By default false 
+            saveAndLoadTemplate: "${saveAndLoadTemplate}",
 
-        // Input id for array fo stages. String contains JSON
-        routeObjectFieldId: "${args.htmlid?js_string}_${routeObjectFieldId?js_string}",
+            // Input id for array fo stages. String contains JSON
+            routeObjectFieldId: "${args.htmlid?js_string}_${routeObjectFieldId?js_string}",
 
-        // Input id for list of participants. String contains list of nodeRefs through ','
-        participantListFieldId: "${args.htmlid?js_string}_${participantListFieldId?js_string}",
+            // Input id for list of participants. String contains list of nodeRefs through ','
+            participantListFieldId: "${args.htmlid?js_string}_${participantListFieldId?js_string}",
 
-        // Input id for list of participants, grouped by stages. String contains list of nodeRefs through '|' and list of stages through ','
-        priorityFieldId: "${args.htmlid?js_string}_${priorityFieldId?js_string}",
-        
-        mode: "${form.mode}",
-        mandatory: ${field.mandatory?string}
-    }).setMessages(${messages});
+            // Input id for list of participants, grouped by stages. String contains list of nodeRefs through '|' and list of stages through ','
+            priorityFieldId: "${args.htmlid?js_string}_${priorityFieldId?js_string}",
+
+            mode: "${form.mode}",
+            mandatory: ${field.mandatory?string}
+        }).setMessages(${messages});
+    });
 </script>

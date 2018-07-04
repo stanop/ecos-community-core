@@ -49,10 +49,7 @@ import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.service.CiteckServices;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TaskHistoryListener extends AbstractTaskListener {
 
@@ -93,11 +90,8 @@ public class TaskHistoryListener extends AbstractTaskListener {
 			return;
 		}
         NodeRef document = ListenerUtils.getDocument(task.getExecution(), nodeService);
-        if (document == null) {
-            return;
-        }
 
-		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>();
+		Map<QName, Serializable> eventProperties = new HashMap<>();
 		// task type
 		QName taskType = QName.createQName((String) task.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY), namespaceService);
 
@@ -157,6 +151,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		eventProperties.put(HistoryModel.PROP_TASK_ATTACHMENTS, taskAttachments);
 		eventProperties.put(HistoryModel.PROP_TASK_POOLED_ACTORS, pooledActors);
 		eventProperties.put(HistoryModel.PROP_TASK_ROLE, roleName);
+		eventProperties.put(HistoryModel.PROP_TASK_DUE_DATE, task.getDueDate());
 
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ACTIVITI_PREFIX + task.getProcessInstanceId());
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) task.getExecution().getVariable(VAR_DESCRIPTION));
@@ -197,6 +192,9 @@ public class TaskHistoryListener extends AbstractTaskListener {
     }
 
     private List<NodeRef> getListRoles(NodeRef document) {
+        if (document == null) {
+            return Collections.emptyList();
+        }
 		List<ChildAssociationRef> childsAssocRefs = nodeService.getChildAssocs(document, ICaseRoleModel.ASSOC_ROLES, RegexQNamePattern.MATCH_ALL);
 		List<NodeRef> roles = new ArrayList<>();
 		for (ChildAssociationRef childAssociationRef: childsAssocRefs) {

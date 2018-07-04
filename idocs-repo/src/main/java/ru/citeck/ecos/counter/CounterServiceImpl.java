@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2018 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -21,7 +21,6 @@ package ru.citeck.ecos.counter;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.lock.JobLockService;
 import org.alfresco.repo.lock.LockAcquisitionException;
-import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -31,7 +30,6 @@ import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.VmShutdownListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.quartz.JobExecutionException;
 import ru.citeck.ecos.model.CounterModel;
 
 public class CounterServiceImpl implements CounterService {
@@ -44,32 +42,25 @@ public class CounterServiceImpl implements CounterService {
     private TransactionService transactionService;
 
     @Override
-    public void setCounterLast(final String counterName, final int value) {
-        final LockExecutor executor = new LockExecutor<Void>(counterName, new LockExecutorCode<Void>() {
-            @Override
-            public Void execute() {
-                NodeRef counter = getCounter(counterName, true);
-                setCounter(counter, value);
-                return null;
-            }
+    public void setCounterLast(final String counterName, final long value) {
+        final LockExecutor executor = new LockExecutor<>(counterName, () -> {
+            NodeRef counter = getCounter(counterName, true);
+            setCounter(counter, value);
+            return null;
         });
 
-        transactionService.getRetryingTransactionHelper().doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Void>() {
-            @Override
-            public Void execute() throws Throwable {
-                try {
-                    executor.execute();
-                } catch (JobExecutionException | EnumerationException e) {
-                    logger.error("setCounterLast something goes wrong", e);
-                }
-                return null;
+        transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
+            try {
+                executor.execute();
+            } catch (EnumerationException e) {
+                logger.error("setCounterLast something goes wrong", e);
             }
+            return null;
         }, false, true);
-
     }
 
     @Override
-    public Integer getCounterLast(final String counterName) {
+    public Long getCounterLast(final String counterName) {
         NodeRef counter = getCounter(counterName, false);
         if (counter == null) {
             return null;
@@ -78,30 +69,23 @@ public class CounterServiceImpl implements CounterService {
     }
 
     @Override
-    public Integer getCounterNext(final String counterName, final boolean increment) {
-        LockExecutor executor = new LockExecutor<Integer>(counterName, new LockExecutorCode<Integer>() {
-            @Override
-            public Integer execute() {
-                return transactionService.getRetryingTransactionHelper().doInTransaction(new RetryingTransactionHelper.RetryingTransactionCallback<Integer>() {
-                    @Override
-                    public Integer execute() throws Throwable {
-                        NodeRef counter = getCounter(counterName, increment);
-                        if (counter == null) {
-                            return null;
-                        }
-                        int value = getCounter(counter) + 1;
-                        if (increment) {
-                            setCounter(counter, value);
-                        }
-                        return value;
-                    }
-                }, false, true);
+    public Long getCounterNext(final String counterName, final boolean increment) {
+        LockExecutor executor = new LockExecutor<>(
+                counterName, () -> transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
+            NodeRef counter = getCounter(counterName, increment);
+            if (counter == null) {
+                return null;
             }
-        });
-        Integer result = null;
+            long value = getCounter(counter) + 1;
+            if (increment) {
+                setCounter(counter, value);
+            }
+            return value;
+        }, false, true));
+        Long result = null;
         try {
-            result = (Integer) executor.execute();
-        } catch (JobExecutionException | EnumerationException e) {
+            result = (Long) executor.execute();
+        } catch (EnumerationException e) {
             logger.error("getCounterNext goes wrong ", e);
         }
         return result;
@@ -110,18 +94,19 @@ public class CounterServiceImpl implements CounterService {
     private NodeRef getCounter(String counterName, boolean createIfAbsent) {
         NodeRef counter = nodeService.getChildByName(counterRoot, ContentModel.ASSOC_CONTAINS, counterName);
         if (counter == null && createIfAbsent) {
-            ChildAssociationRef counterRef = nodeService.createNode(counterRoot, ContentModel.ASSOC_CONTAINS, QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, counterName), CounterModel.TYPE_COUNTER);
+            ChildAssociationRef counterRef = nodeService.createNode(counterRoot, ContentModel.ASSOC_CONTAINS,
+                    QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, counterName), CounterModel.TYPE_COUNTER);
             counter = counterRef.getChildRef();
             nodeService.setProperty(counter, ContentModel.PROP_NAME, counterName);
         }
         return counter;
     }
 
-    private int getCounter(NodeRef counter) {
-        return (Integer) nodeService.getProperty(counter, CounterModel.PROP_VALUE);
+    private long getCounter(NodeRef counter) {
+        return (Long) nodeService.getProperty(counter, CounterModel.PROP_VALUE);
     }
 
-    private void setCounter(NodeRef counter, int value) {
+    private void setCounter(NodeRef counter, long value) {
         nodeService.setProperty(counter, CounterModel.PROP_VALUE, value);
     }
 
@@ -152,7 +137,7 @@ public class CounterServiceImpl implements CounterService {
             this.code = code;
         }
 
-        public T execute() throws JobExecutionException, EnumerationException {
+        public T execute() throws EnumerationException {
             String lockToken = null;
             try {
                 lockToken = jobLockService.getLock(lockQName, LOCK_TTL, 500, 60);

@@ -3,15 +3,6 @@
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/document-assocs/document-assocs.css" group="document-assocs"/>
 </@>
 
-<@markup id="js">
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="document-assocs" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="document-assocs" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.js" group="document-assocs" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree-picker.js" group="document-assocs" />
-    <@script type="text/javascript" src="${page.url.context}/res/components/object-finder/object-finder.js" group="document-assocs" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/document-assocs/document-assocs.js" group="document-assocs" />
-</@>
-
 <#if nodeRef?? && assocs??>
     <#assign el=args.htmlid?js_string>
     <#assign pickerId = el + "-picker">
@@ -96,121 +87,132 @@
 </#macro>
 
 <script type="text/javascript">//<![CDATA[
-YAHOO.util.Event.onContentReady("${el}", function() {
-    var model = {
-        formats: {
-            //actionGroupId is folder-picker or document-picker
-            "item": {
-                name: "{nodeRef}",
-                keys: [ "selected-{selected}", "item", "{actionGroupId}" ],
-                calc: function(item) {
-                    item.nodeRefForURL = item.nodeRef.replace("://", "/");
+
+require(['citeck/components/dynamic-tree/hierarchy-model',
+    'citeck/components/dynamic-tree/has-buttons',
+    'citeck/components/dynamic-tree/dynamic-tree',
+    'citeck/components/dynamic-tree/dynamic-tree-picker',
+    'components/object-finder/object-finder',
+    'citeck/components/document-assocs/document-assocs',
+    'citeck/components/dynamic-tree/cell-formatters'], function() {
+
+    YAHOO.util.Event.onContentReady("${el}", function () {
+        var model = {
+            formats: {
+                //actionGroupId is folder-picker or document-picker
+                "item": {
+                    name: "{nodeRef}",
+                    keys: ["selected-{selected}", "item", "{actionGroupId}"],
+                    calc: function (item) {
+                        item.nodeRefForURL = item.nodeRef.replace("://", "/");
+                    },
                 },
+                "site": {
+                    name: "site-{shortName}",
+                    keys: ["site-{visibility}", "site"]
+                },
+                "selected-items": {
+                    name: "selected-items",
+                    keys: ["selected-items"]
+                }
             },
-            "site": {
-                name: "site-{shortName}",
-                keys: [ "site-{visibility}", "site" ]
+            item: {
+                "": {
+                    "format": "item",
+                    "get": "${url.context}/service/citeck/components/documentlibrary/data/node/{nodeRefForURL}?view=picker",
+                    "resultsList": "item"
+                }
             },
-            "selected-items": {
-                name: "selected-items",
-                keys: [ "selected-items" ]
-            }
-        },
-        item: {
-            "": {
-                "format": "item",
-                "get": "${url.context}/service/citeck/components/documentlibrary/data/node/{nodeRefForURL}?view=picker",
-                "resultsList": "item"
-            }
-        },
-        children: {
-            "root": {
-                "format": "item",
-                "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/node/alfresco/company/home?view=picker",
-                "resultsList": "items"
+            children: {
+                "root": {
+                    "format": "item",
+                    "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/node/alfresco/company/home?view=picker",
+                    "resultsList": "items"
+                },
+                "companyhome": {
+                    "format": "item",
+                    "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/node/alfresco/company/home?view=picker",
+                    "resultsList": "items"
+                },
+                "search": {
+                    "format": "item",
+                    "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/node/alfresco/company/home?view=picker&filter={query}",
+                    "resultsList": "items"
+                },
+                "userhome": {
+                    "format": "item",
+                    "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/node/alfresco/user/home?view=picker",
+                    "resultsList": "items"
+                },
+                "siteshome": {
+                    "format": "site",
+                    "get": "${url.context}/proxy/alfresco/api/sites"
+                },
+                "site": {
+                    "format": "item",
+                    "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/site/{shortName}/documentLibrary?view=picker",
+                    "resultsList": "items"
+                },
+                "folder-picker": {
+                    "format": "item",
+                    "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/node/{nodeRefForURL}?view=picker",
+                    "resultsList": "items"
+                },
+                "selected-items": {
+                    "format": "item"
+                }
             },
-            "companyhome": {
-                "format": "item",
-                "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/node/alfresco/company/home?view=picker",
-                "resultsList": "items"
+            titles: {
+                "root": "{title}",
+                "sites": "{title}",
+                "site": "{title}",
+                "item": "{displayName}"
             },
-            "search": {
-                "format": "item",
-                "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/node/alfresco/company/home?view=picker&filter={query}",
-                "resultsList": "items"
-            },
-            "userhome": {
-                "format": "item",
-                "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/node/alfresco/user/home?view=picker",
-                "resultsList": "items"
-            },
-            "siteshome": {
-                "format": "site",
-                "get": "${url.context}/proxy/alfresco/api/sites"
-            },
-            "site": {
-                "format": "item",
-                "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/site/{shortName}/documentLibrary?view=picker",
-                "resultsList": "items"
-            },
-            "folder-picker": {
-                "format": "item",
-                "get": "${url.context}/service/citeck/components/documentlibrary/data/doclist/treenode/node/{nodeRefForURL}?view=picker",
-                "resultsList": "items"
-            },
-            "selected-items": {
-                "format": "item"
-            }
-        },
-        titles: {
-            "root": "{title}",
-            "sites": "{title}",
-            "site": "{title}",
-            "item": "{displayName}"
-        },
-    };
+        };
 
 
-    var picker = new Citeck.widget.DynamicTreePicker("${pickerId}").setOptions({
-        model: model,
-        tree: {
-            buttons: {
-                "document-picker": [ "itemSelect" ],
-                "selected-yes": [ "itemUnselect" ]
-            }
-        },
-        list: {
-            buttons: {
-                "selected-yes": [ "itemUnselect" ]
-            }
-        },
-        currentRoot: "siteshome",
-        roots: [
-            {
-                name: "siteshome",
-                keys: [ "siteshome" ],
-                title: "${msg("folder.siteshome.label")}"
+        var picker = new Citeck.widget.DynamicTreePicker("${pickerId}").setOptions({
+            model: model,
+            tree: {
+                buttons: {
+                    "document-picker": ["itemSelect"],
+                    "selected-yes": ["itemUnselect"]
+                }
             },
-            {
-                name: "userhome",
-                keys: [ "userhome" ],
-                title: "${msg("folder.userhome.label")}"
-            }
-        ]
+            list: {
+                buttons: {
+                    "selected-yes": ["itemUnselect"]
+                }
+            },
+            currentRoot: "siteshome",
+            roots: [
+                {
+                    name: "siteshome",
+                    keys: ["siteshome"],
+                    title: "${msg("folder.siteshome.label")}"
+                },
+                {
+                    name: "userhome",
+                    keys: ["userhome"],
+                    title: "${msg("folder.userhome.label")}"
+                }
+            ]
+        });
+
+        var component = new Citeck.widget.DocumentAssocs("${el}").setOptions({
+            nodeRef: "${nodeRef?js_string}",
+
+                <#if columns??>columns: ${columns},</#if>
+
+            visible: <@renderAssocList assocs.visible />,
+            addable: <@renderAssocList assocs.addable />,
+            removeable: <@renderAssocList assocs.removeable />,
+            createAssocPicker: picker
+        }).setMessages(${messages});
+
+        Alfresco.util.createTwister("${el}-heading", "Citeck.widget.DocumentAssocs", {panel: "${el}-body"});
     });
 
-    var component = new Citeck.widget.DocumentAssocs("${el}").setOptions({
-        nodeRef: "${nodeRef?js_string}",
-
-        <#if columns??>columns: ${columns},</#if>
-        
-        visible: <@renderAssocList assocs.visible />,
-        addable: <@renderAssocList assocs.addable />,
-        removeable: <@renderAssocList assocs.removeable />,
-        createAssocPicker: picker
-    }).setMessages(${messages});
-
-    Alfresco.util.createTwister("${el}-heading", "Citeck.widget.DocumentAssocs", { panel: "${el}-body" });
 });
 //]]></script>
 

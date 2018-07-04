@@ -6,7 +6,7 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeGql;
 import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
-import ru.citeck.ecos.graphql.journal.record.JournalReflectionAttributeGql;
+import ru.citeck.ecos.graphql.journal.record.attribute.JournalReflectionAttributeGql;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
@@ -57,7 +57,7 @@ public class AlfNodeAttributeValue implements JournalAttributeValueGql {
             Attribute attribute = alfNode.attribute(name);
             return Optional.of(new AlfNodeAttribute(attribute, context));
         } else if (qName != null) {
-            return Optional.of(new JournalReflectionAttributeGql(qName, name, context));
+            return Optional.of(new JournalReflectionAttributeGql(qName, name));
         }
         return Optional.empty();
     }

@@ -16,8 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/journals', 'lib/knockout'],
-    function (jq, koutils, Journals, ko) {
+define([
+    'jquery',
+    'citeck/utils/knockout.utils',
+    'citeck/components/journals2/journals',
+    'lib/knockout'
+], function (jq, koutils, Journals, ko) {
 
         var PopupManager = Alfresco.util.PopupManager,
             koclass = koutils.koclass,

@@ -5,7 +5,8 @@ define(['dojo/_base/declare',
         'alfresco/core/CoreWidgetProcessing',
         'jquery',
         'jquerymmenu',
-        'jqueryscrollbar'],
+        'jqueryscrollbar',
+        'xstyle!/share/res/jquery/css/jquery.mmenu.all.css'],
 
     function(declare, _WidgetBase, _TemplatedMixin, AlfCore, CoreWidgetProcessing, $) {
         return declare([_WidgetBase, _TemplatedMixin, AlfCore], {
@@ -167,8 +168,8 @@ define(['dojo/_base/declare',
 
                         if (this.documentURI.indexOf("faceted-search") == -1){
                             $('.mm-page.mm-slideout').contents().appendTo($('body'));
-                            $('body>.sticky-wrapper').appendTo($('.mm-page.mm-slideout'));
-                            $('body>.sticky-footer').appendTo($('.mm-page.mm-slideout'));
+                            $('body .sticky-wrapper:first').appendTo($('.mm-page.mm-slideout'));
+                            $('body .sticky-footer:first').appendTo($('.mm-page.mm-slideout'));
                         }
 
                         if (!self.isMobile) {
