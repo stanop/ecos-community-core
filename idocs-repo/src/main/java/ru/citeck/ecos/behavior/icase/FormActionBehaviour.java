@@ -39,25 +39,23 @@ public class FormActionBehaviour implements NodeServicePolicies.OnUpdateProperti
 
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
-        try {
-            if (!checkProperties(nodeRef, before, after)) {
-                return;
-            }
+        if (!checkProperties(nodeRef, before, after)) {
+            return;
+        }
 
-            FormActionData formActionData = deserializeActionDataProperty(after);
-            if (formActionData == null) {
-                return;
-            }
+        FormActionData formActionData = deserializeActionDataProperty(after);
+        if (formActionData == null) {
+            return;
+        }
 
-            List<FormActionHandler> handlersByTaskType =
-                    formActionHandlerProvider.getHandlersByTaskType(formActionData.taskType);
-            for (FormActionHandler handler : handlersByTaskType) {
-                handler.handle(nodeRef, formActionData.getOutcome());
-            }
-        } finally {
-            if (nodeService.exists(nodeRef)) {
-                nodeService.setProperty(nodeRef, IdocsModel.PROP_CUSTOM_FORM_ACTION_DATA, null);
-            }
+        List<FormActionHandler> handlersByTaskType =
+                formActionHandlerProvider.getHandlersByTaskType(formActionData.taskType);
+        for (FormActionHandler handler : handlersByTaskType) {
+            handler.handle(nodeRef, formActionData.getOutcome());
+        }
+
+        if (nodeService.exists(nodeRef)) {
+            nodeService.setProperty(nodeRef, IdocsModel.PROP_CUSTOM_FORM_ACTION_DATA, null);
         }
     }
 
