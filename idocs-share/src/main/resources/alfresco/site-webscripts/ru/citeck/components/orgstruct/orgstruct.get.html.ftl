@@ -10,7 +10,6 @@
 
 <@markup id="js">
     <@script type="text/javascript" src="${url.context}/res/components/console/consoletool.js" group="orgstruct" />
-    <@script type="text/javascript" src="${url.context}/res/yui/resize/resize.js" group="orgstruct" />
     <@script type="text/javascript" src="${url.context}/res/components/people-finder/people-finder.js" group="orgstruct" />
     <@script type="text/javascript" src="${url.context}/res/components/people-finder/group-finder.js" group="orgstruct" />
     <@script type="text/javascript" src="${url.context}/res/modules/simple-dialog.js" group="orgstruct" />

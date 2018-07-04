@@ -11,7 +11,6 @@
 
 <@markup id="js">
     <@script type="text/javascript" src="${page.url.context}/res/components/console/consoletool.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/yui/resize/resize.js" group="profile" />
     <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/people-finder.js" group="profile" />
     <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/group-finder.js" group="profile" />
     <@script type="text/javascript" src="${page.url.context}/res/modules/simple-dialog.js" group="profile" />
