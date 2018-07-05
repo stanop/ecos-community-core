@@ -98,6 +98,7 @@
                                 "${argKey}":"${pageArgsMap[argKey]!}"<#if argKey_has_next>,</#if>
                             </#list>
                         },
+                        userName: "${((user.name)!"")?js_string}",
                         nodeBaseInfo: ${nodeBaseInfoStr}
                     });
                 });
