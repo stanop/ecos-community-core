@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>Get base info about node (modified date, permissions, etc)</shortname>
+    <url>/citeck/node/base-info?nodeRef={nodeRef}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <lifecycle>public_api</lifecycle>
+</webscript>

@@ -11,7 +11,7 @@ function main() {
     AlfrescoUtil.param("showComments", "true");
     AlfrescoUtil.param("showQuickShare", "true");
     AlfrescoUtil.param("showDownload", "true");
-    AlfrescoUtil.param("showPath", "true");
+    AlfrescoUtil.param("showPath", null);
     AlfrescoUtil.param("libraryRoot", null);
     AlfrescoUtil.param("pagecontext", null);
     AlfrescoUtil.param("template", null);
@@ -41,6 +41,10 @@ function main() {
 
         var template = model.template ? eval('model.item.' + model.template) : null;
         model.displayName = (template || model.item.displayName || model.item.fileName);
+
+        if (!model.showPath) {
+            model.showPath = shouldDisplayPathForType(nodeDetails.item.node.type).toString();
+        }
 
         var nodeHeader = {
             id: "NodeHeader",
@@ -79,6 +83,27 @@ function main() {
 
         model.widgets = [nodeHeader];
     }
+
+    function shouldDisplayPathForType(typename) {
+        var showPath = "false";
+        var moduleConfig = config.scoped['ModuleConfig.card-header'];
+        if (moduleConfig) {
+            if (moduleConfig['show-path']) {
+                showPath = moduleConfig['show-path'].value;
+            }
+            var showPathForTypes = moduleConfig['show-path-for-types'];
+            if (showPathForTypes) {
+                var types = showPathForTypes.value.split(',').map(function(n) {return String(n);});
+                if (types.indexOf(typename) !== -1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return showPath == "true";
+    }
+
 }
 
 main();

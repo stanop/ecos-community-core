@@ -114,7 +114,6 @@
     <dependencies>
       <css src="/citeck/components/documentlibrary/idocs-doclib-custom.css" />
       <js src="/citeck/components/documentlibrary/custom-actions.js" />
-      <js src="/yui/resize/resize.js" />
     </dependencies>
   </config>
 
