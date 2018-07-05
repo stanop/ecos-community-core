@@ -16,10 +16,12 @@ public class LastCommentToPackagePushListener implements GlobalCompleteTaskListe
 
     @Override
     public void notify(DelegateTask delegateTask) {
+
         WorkflowInstance workflowInstance = workflowService.getWorkflowById("flowable$" + delegateTask.getProcessInstanceId());
         if (workflowInstance == null) {
             return;
         }
+
         String lastComment = (String) delegateTask.getVariable("cwf_lastcomment");
         nodeService.setProperty(workflowInstance.getWorkflowPackage(),
                 CiteckWorkflowModel.PROP_LASTCOMMENT, lastComment);
