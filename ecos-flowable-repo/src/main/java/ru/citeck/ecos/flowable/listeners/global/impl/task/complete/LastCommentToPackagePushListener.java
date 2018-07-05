@@ -17,7 +17,8 @@ public class LastCommentToPackagePushListener implements GlobalCompleteTaskListe
     @Override
     public void notify(DelegateTask delegateTask) {
 
-        WorkflowInstance workflowInstance = workflowService.getWorkflowById("flowable$" + delegateTask.getProcessInstanceId());
+        WorkflowInstance workflowInstance =
+                workflowService.getWorkflowById("flowable$" + delegateTask.getProcessInstanceId());
         if (workflowInstance == null) {
             return;
         }
