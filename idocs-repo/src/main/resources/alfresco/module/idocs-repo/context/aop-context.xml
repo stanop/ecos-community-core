@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="ignoreSendFailureInterceptor"
+          class="ru.citeck.ecos.notification.aop.IgnoreSendFailureInterceptor"/>
+
+    <bean id="ignoreSendFailureInterceptor.advice"
+          class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">
+        <property name="mappedName" value="execute"/>
+        <property name="advice" ref="ignoreSendFailureInterceptor"/>
+    </bean>
+
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames">
+            <list>
+                <value>mail</value>
+                <value>mailWithAttachments</value>
+            </list>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>ignoreSendFailureInterceptor.advice</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>
