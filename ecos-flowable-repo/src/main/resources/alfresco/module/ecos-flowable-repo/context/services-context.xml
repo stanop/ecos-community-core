@@ -255,6 +255,11 @@
 		<property name="namespaceService" ref="NamespaceService"/>
 	</bean>
 
+	<bean id="flowableTaskLastCommentToPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.LastCommentToPackagePushListener">
+		<property name="workflowService" ref="WorkflowService"/>
+		<property name="nodeService" ref="nodeService"/>
+	</bean>
+
 	<!--<bean id="flowableRevokeWorkflowPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.RevokeWorkflowPackageListener">
 		<property name="helper" ref="flowableGrantWorkflowPackageHelper"/>
 		<property name="postRevokePermission" value="${workflow-security.post-revoke-permission}" />
