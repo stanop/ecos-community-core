@@ -20,7 +20,8 @@
  * DynamicTable and DynamicTableControl classes defined here.
  */
 define([
-    'citeck/components/dynamic-tree/error-manager'
+    'citeck/components/dynamic-tree/error-manager',
+    './hierarchy-model'
 ], function() {
 
     Citeck = typeof Citeck != "undefined" ? Citeck : {};

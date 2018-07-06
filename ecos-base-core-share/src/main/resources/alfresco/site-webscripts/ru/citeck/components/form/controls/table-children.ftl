@@ -26,40 +26,42 @@
 <script type="text/javascript">//<![CDATA[
 (function() {
 
-    var table = new Citeck.widget.DynamicTableControl("${controlId}", "${fieldHtmlId}").setOptions({
-        model: {
-            formats: {
-                "item": {
-                    name: "{nodeRef}",
-                    keys: [ "selected-{selected}", "item",  ],
+    require(['citeck/components/dynamic-tree/dynamic-table'], function() {
+
+        var table = new Citeck.widget.DynamicTableControl("${controlId}", "${fieldHtmlId}").setOptions({
+            model: {
+                formats: {
+                    "item": {
+                        name: "{nodeRef}",
+                        keys: [ "selected-{selected}", "item",  ],
+                    },
+                    "selected-items": {
+                        name: "selected-items",
+                        keys: [ "selected-items" ]
+                    }
                 },
-                "selected-items": {
-                    name: "selected-items",
-                    keys: [ "selected-items" ]
-                }
-            },
-            item: {
-                "": {
-                    "format": "item",
-                    "get": "${url.context}/proxy/alfresco/citeck/node?nodeRef={nodeRef}&replaceColon=_&includeNodeRef=nodeRef",
-                    "resultsList": "props"
-                }
-            },
-            children: {
-                "selected-items": {
-                    "format": "item",
+                item: {
+                    "": {
+                        "format": "item",
+                        "get": "${url.context}/proxy/alfresco/citeck/node?nodeRef={nodeRef}&replaceColon=_&includeNodeRef=nodeRef",
+                        "resultsList": "props"
+                    }
                 },
-                "root": {
-                    "format": "item",
-                    "get": "${childrenUrl}",
-                    "resultsList": "props"
+                children: {
+                    "selected-items": {
+                        "format": "item",
+                    },
+                    "root": {
+                        "format": "item",
+                        "get": "${childrenUrl}",
+                        "resultsList": "props"
+                    },
                 },
-            },
             <#if field.control.params.errors??>
-            errors: ${field.control.params.errors},
+                errors: ${field.control.params.errors},
             </#if>
-        },
-        columns: ${field.control.params.columns},
+            },
+            columns: ${field.control.params.columns},
         <#if field.control.params.selection??>
             selection: "${field.control.params.selection}",
         </#if>
@@ -75,12 +77,12 @@
         <#if field.control.params.previewByClickOnCell??>
             previewByClickOnCell: "${field.control.params.previewByClickOnCell}",
         </#if>
-        responseSchema: ${field.control.params.responseSchema},
-        field: "${field.name?js_string}",
-        checkboxMultipleSelectMode: ${checkboxMultipleSelectMode},
-        forms: {
-            nodeId: "nodeRef"
-        },
+            responseSchema: ${field.control.params.responseSchema},
+            field: "${field.name?js_string}",
+            checkboxMultipleSelectMode: ${checkboxMultipleSelectMode},
+            forms: {
+                nodeId: "nodeRef"
+            },
         <#if field.control.params.rootNode??>
             rootNode: ${field.control.params.rootNode},
         </#if>
@@ -90,37 +92,38 @@
         <#if field.control.params.destNode??>
             destFolder: "${field.control.params.destNode}",
         </#if>
-        itemId: "${field.endpointType}",
+            itemId: "${field.endpointType}",
         <#if field.control.params.assocType??>
             assocType: "${field.control.params.assocType}",
         </#if>
-        btnAddTitle: "${msg("form.button.add.element.title")}",
+            btnAddTitle: "${msg("form.button.add.element.title")}",
         <#if (field.control.params.showAddButton!'false') == "true" >
-        allowSelectAction: true,
+            allowSelectAction: true,
         <#else>
-        allowSelectAction: false,
+            allowSelectAction: false,
         </#if>
         <#if field.control.params.showCancelButton??>
             showCancelButton: "${field.control.params.showCancelButton}",
         </#if>
         <#if (field.control.params.showSearchButton!'false') == "true" >
-        allowSearchAction: true,
-        search: {
-            itemType: "${field.control.params.itemType!'item'}",
-            itemKey: "${field.control.params.itemKey!'id'}",
-            itemTitle: "${field.control.params.itemTitle!'{name}'}",
-            itemURL: "${field.control.params.itemURL!}",
-            itemURLresults: "${field.control.params.itemURLresults!}",
-            searchURL: "${field.control.params.searchURL!}",
-            searchURLresults: "${field.control.params.searchURLresults!}",
-            rootURL: "${field.control.params.rootURL!}",
-            rootURLresults: "${field.control.params.rootURLresults!}",
-            btnSearchTitle: "${field.control.params.btnSearchTitle!}"
-        }
+            allowSearchAction: true,
+            search: {
+                itemType: "${field.control.params.itemType!'item'}",
+                itemKey: "${field.control.params.itemKey!'id'}",
+                itemTitle: "${field.control.params.itemTitle!'{name}'}",
+                itemURL: "${field.control.params.itemURL!}",
+                itemURLresults: "${field.control.params.itemURLresults!}",
+                searchURL: "${field.control.params.searchURL!}",
+                searchURLresults: "${field.control.params.searchURLresults!}",
+                rootURL: "${field.control.params.rootURL!}",
+                rootURLresults: "${field.control.params.rootURLresults!}",
+                btnSearchTitle: "${field.control.params.btnSearchTitle!}"
+            }
         <#else>
-        allowSearchAction: false,
+            allowSearchAction: false,
         </#if>
-    }).setMessages(${messages});
+        }).setMessages(${messages});
+    });
 
 })();
 //]]></script>
