@@ -45,6 +45,7 @@
 	background-color: transparent;
 	background-repeat: no-repeat;
 	background-position: left;
+	cursor: pointer;
 }
 
 .orgstruct-console .toolbar button label
@@ -86,7 +87,6 @@
 
 .orgstruct-console .dynamic-tree
 {
-	height: 100%;
 	overflow-x: hidden;
 	overflow-y: hidden;
 }
@@ -101,7 +101,6 @@
 .orgstruct-console .dynamic-list
 {
 	min-width: 300px;
-	height: 100%;
 	width: 100%;
 	overflow-x: hidden;
 	overflow-y: hidden;

@@ -32,7 +32,8 @@ function CardDetails(props) {
                         pageid: "card-details",
                         site: pageArgs.site,
                         theme: pageArgs.theme,
-                        cacheAge: 300
+                        cacheAge: 300,
+                        userName: props.userName
                     }} />
                 </div>
                 <div id="bd">
