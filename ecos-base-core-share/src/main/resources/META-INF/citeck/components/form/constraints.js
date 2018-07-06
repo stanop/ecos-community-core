@@ -333,7 +333,9 @@
         formId = formId || "";
         params = params || {};
 
-        if(Citeck.utils.isNodeRef(itemId)) {
+        var withoutSaving = params.withoutSaving;
+
+        if (Citeck.utils.isNodeRef(itemId)) {
             paramName = 'nodeRef';
             itemKind = 'node';
             if (params.mode === 'view') {
@@ -342,8 +344,13 @@
                 mode = 'edit';
             }
         } else if (Citeck.utils.isShortQName(itemId)) {
-            paramName = 'type';
-            itemKind = 'type';
+            if (withoutSaving == true) {
+                paramName = 'withoutSavingType';
+                itemKind = 'withoutSavingType';
+            } else {
+                paramName = 'type';
+                itemKind = 'type';
+            }
             mode = 'create';
         } else {
             paramName = 'groupAction';
