@@ -19,7 +19,6 @@
 define([
     'xstyle!./dynamic-doclib-table.css'
 ], function() {
-], function() {
 
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
     Citeck.widget = Citeck.widget || {};
