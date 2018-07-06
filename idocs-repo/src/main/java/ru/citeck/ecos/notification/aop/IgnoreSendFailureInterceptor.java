@@ -10,6 +10,15 @@ public class IgnoreSendFailureInterceptor implements MethodInterceptor {
     @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
         Object[] arguments = methodInvocation.getArguments();
+
+        if (arguments == null || arguments.length == 0) {
+            return methodInvocation.proceed();
+        }
+
+        if (!(arguments[0] instanceof Action)) {
+            return methodInvocation.proceed();
+        }
+
         Action ruleAction = (Action) arguments[0];
 
         Boolean ignoreSendFailure = (Boolean) ruleAction.getParameterValue(MailActionExecuter.PARAM_IGNORE_SEND_FAILURE);
