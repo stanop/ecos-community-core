@@ -1,4 +1,3 @@
-import "js/citeck/lib/fetch";
 import React from "react";
 import ReactDOM from "react-dom";
 import SurfRegion from "../../surf/surf-region";
@@ -65,7 +64,8 @@ class CardletsBody extends React.Component {
             data: null,
             cardmodes: null,
             activeMode: "default",
-            nodeBaseInfo: props.nodeBaseInfo
+            nodeBaseInfo: props.nodeBaseInfo,
+            cardletsLoadingState: {}
         };
 
         let self = this;
@@ -78,6 +78,16 @@ class CardletsBody extends React.Component {
         };
 
         YAHOO.Bubbling.on('metadataRefresh', this._updateNodeBaseInfo, this);
+
+        this.handleCardletInitialized = this.handleCardletInitialized.bind(this);
+    }
+
+    handleCardletInitialized(cardlet) {
+        let loadingState = Object.assign({}, this.state.cardletsLoadingState);
+        loadingState[cardlet.props.cardletKey] = true;
+        this.setState({
+            cardletsLoadingState: loadingState
+        });
     }
 
     componentDidMount() {
@@ -178,7 +188,11 @@ class CardletsBody extends React.Component {
         }
         let result = instances[key];
         if (!result) {
-            result = <Cardlet key={key} pageArgs={this.props.pageArgs} {...props} />;
+            result = <Cardlet key={key}
+                              cardletKey={key}
+                              pageArgs={this.props.pageArgs}
+                              onInitialized={this.handleCardletInitialized}
+                              {...props} />;
             instances[key] = result;
         }
 
@@ -202,19 +216,36 @@ class CardletsBody extends React.Component {
         };
 
         const cardlets = this.state.cardlets;
+        const cardletsLoadingState = this.state.cardletsLoadingState;
 
         let tabsData = modes.map(mode => {
             let isActive = mode.id == self.state.activeMode;
+
+            let isCardletsLoaded = function (cardlets) {
+                for (let column in  cardlets) {
+                    if (cardlets.hasOwnProperty(column)) {
+                        for (let cardlet of cardlets[column]) {
+                            let key = cardlet.props.cardletKey;
+                            if (!cardletsLoadingState[key]) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            };
+
             return {
-                link: <CardletModeTab key={`link-${mode.id}`}
+                link: <CardletModeTab key={`card-mode-link-${mode.id}`}
                                       modeId={mode.id}
                                       isActive={isActive}
                                       title={mode.title}
                                       onClick={onModeTabClick} />,
-                body: <CardletModeBody key={`route-${mode.id}`}
+                body: <CardletModeBody key={`card-mode-body-${mode.id}`}
                                        modeId={mode.id}
                                        cardlets={cardlets[mode.id]}
-                                       isActive={isActive} />
+                                       isActive={isActive}
+                                       loaded={isCardletsLoaded(cardlets[mode.id])} />
             }
         });
 
@@ -247,6 +278,7 @@ class CardletModeBody extends React.Component {
 
     constructor(props) {
         super(props);
+
         this.state = {
             initialized: false,
             cardlets: {
@@ -255,15 +287,16 @@ class CardletModeBody extends React.Component {
                 bottom: [],
                 top: []
             }
-        }
+        };
     }
 
     static getDerivedStateFromProps(props, state) {
+
         if (state.initialized == false && props.isActive) {
             return {
                 initialized: true,
                 cardlets: props.cardlets
-            }
+            };
         }
         return null;
     }
@@ -276,17 +309,28 @@ class CardletModeBody extends React.Component {
         }
 
         let cardlets = this.state.cardlets;
+
+        let contentClass = this.props.loaded ? 'active' : 'not-active';
+        let loadingClass = this.props.loaded ? 'not-active' : 'active';
+
         return <div id={`card-mode-${this.props.modeId}`} className={className}>
-            {cardlets['top']}
-            <div className="yui-gc">
-                <div className="yui-u first">
-                    {cardlets['left']}
-                </div>
-                <div className="yui-u">
-                    {cardlets['right']}
+            <div className={`card-details-mode-body ${loadingClass} loading-overlay`}>
+                <div className="loading-container">
+                    <div className="loading-indicator" />
                 </div>
             </div>
-            {cardlets['bottom']}
+            <div className={`card-details-mode-body ${contentClass}`}>
+                {cardlets['top']}
+                <div className="yui-gc">
+                    <div className="yui-u first">
+                        {cardlets['left']}
+                    </div>
+                    <div className="yui-u">
+                        {cardlets['right']}
+                    </div>
+                </div>
+                {cardlets['bottom']}
+            </div>
         </div>
     }
 }
@@ -295,6 +339,9 @@ export class Cardlet extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.handleInitialized = this.handleInitialized.bind(this);
+
         if (props.component) {
             this.state = {
                 component: ''
@@ -305,9 +352,16 @@ export class Cardlet extends React.Component {
                 scope: 'page'
             };
             regionArgs = Object.assign(regionArgs, props.pageArgs);
+            let region = <SurfRegion autoInit={false} args={ regionArgs } onInitialized={this.handleInitialized} />;
             this.state = {
-                component: <SurfRegion args={ regionArgs } />
+                component: region
             };
+        }
+    }
+
+    handleInitialized() {
+        if (this.props.onInitialized != null) {
+            this.props.onInitialized(this);
         }
     }
 
