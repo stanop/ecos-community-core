@@ -3,6 +3,9 @@
   <config replace="true">
       <header>
           <dependencies>
+              <js src="/js/citeck/lib/polyfill/babel-polyfill.js" />
+              <js src="/js/citeck/lib/polyfill/fetch.js" />
+
               <css src="/modules/create-site.css"/>
               <js src="/modules/create-site.js"/>
              

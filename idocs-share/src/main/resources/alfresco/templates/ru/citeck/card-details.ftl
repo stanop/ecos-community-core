@@ -27,6 +27,10 @@
 
         <#assign webframeworkConfig = config.scoped["WebFramework"]["web-framework"]!>
 
+        <#-- polyfills for old browsers -->
+        <script type="text/javascript" src="${url.context}/res/js/citeck/lib/polyfill/babel-polyfill.min.js"></script>
+        <script type="text/javascript" src="${url.context}/res/js/citeck/lib/polyfill/fetch.min.js" ></script>
+
         <script type="text/javascript">//<![CDATA[
             var appContext = "${url.context?js_string}";
 
@@ -70,12 +74,7 @@
 
     <body id="Share" class="yui-skin-${theme} alfresco-share ${type!} claro">
 
-        <div id="page-loading-root" class="loading-overlay" style="padding-top:100px">
-            <div class="loading-container">
-                <div class="loading-indicator"></div>
-            </div>
-        </div>
-        <div id="page-content-root" style="display: none;">
+        <div id="page-content-root">
             <div id="card-details-root"></div>
         </div>
 
@@ -102,14 +101,6 @@
                         nodeBaseInfo: ${nodeBaseInfoStr}
                     });
                 });
-
-                setTimeout(function() {
-                    require(['jquery'], function() {
-                        $("#page-loading-root").fadeOut("slow", function(){
-                            $("#page-content-root").fadeIn("slow");
-                        });
-                    });
-                }, 2000);
 
                 <#assign tabletCSS><@checksumResource src="${url.context}/res/css/tablet.css"/></#assign>
                 <!-- Android & iPad CSS overrides -->

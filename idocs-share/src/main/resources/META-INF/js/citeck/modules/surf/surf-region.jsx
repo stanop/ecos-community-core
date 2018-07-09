@@ -26,15 +26,17 @@ export default class SurfRegion extends React.Component {
 
         this.state = {
             queryArgs: Object.assign(props.args, additionalArgs),
-            rootId: `${htmlid}-root`
+            rootId: `${htmlid}-root`,
+            innerHtml: {__html: ''}
         }
     }
 
     componentDidMount() {
         let self = this;
-        if (_.isUndefined(this.state.initialized)) {
+        if (_.isUndefined(this.state.loaded)) {
             self.setState({
-                loaded: false
+                loaded: false,
+                initialized: false
             });
             CiteckUtils.loadHtml(
                 '/share/service/citeck/surf/region',
@@ -42,7 +44,20 @@ export default class SurfRegion extends React.Component {
                 text => self.setState({
                     innerHtml: {__html: text},
                     loaded: true
-                })
+                }),
+                function () {
+                    self.setState({
+                        initialized: true
+                    });
+                    if (self.props.onInitialized != null) {
+                        self.props.onInitialized();
+                    }
+                },
+                function () {
+                    if (self.props.onInitialized != null) {
+                        self.props.onInitialized();
+                    }
+                }
             );
         }
     }

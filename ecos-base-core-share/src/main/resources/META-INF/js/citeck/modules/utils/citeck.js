@@ -18,7 +18,6 @@
  */
 define([
     'lib/underscore',
-    'js/citeck/lib/fetch',
     'jquery',
     'xstyle!./citeck.css'
 ], function () {
