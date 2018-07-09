@@ -177,7 +177,9 @@ define([
                 for (var templateName in templatesMethodMap) {
                     var name = templatesMethodMap[templateName].key;
                     var method = templatesMethodMap[templateName].value;
-                    templatesMap[templateName] = item[name][method].toString();
+                    if (item[name]) {
+                        templatesMap[templateName] = item[name][method].toString();
+                    }
                 }
             } else {
                 templatesMap = this.splitTemplatesByDots(templates, function(template, name, method) {
