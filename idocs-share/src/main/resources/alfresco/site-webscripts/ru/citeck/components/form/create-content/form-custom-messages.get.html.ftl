@@ -14,9 +14,11 @@
 
 <#assign headMsg = getMessage([headPrefix + formId + itemId, headPrefix + itemId]) />
 <#if headMsg != "">
-	<script type="text/javascript">
-		jQuery('.create-content-mgr .heading').text("${headMsg}");
-	</script>
+    <script type="text/javascript">
+        require(['jquery'], function (jQuery) {
+            jQuery('.create-content-mgr .heading').text("${headMsg}");
+        });
+    </script>
 </#if>
 
 <#-- todo set failMsg in the future -->
