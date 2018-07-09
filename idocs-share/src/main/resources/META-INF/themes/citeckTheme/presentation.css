@@ -2837,12 +2837,12 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
    border-right: 1px solid #ccc;
 }
 
-#bd .card-mode-body > .yui-gc:not(.grid) > .yui-u {
+#bd .card-details-mode-body > .yui-gc:not(.grid) > .yui-u {
     width: 33.85%;
     margin: 0;
 }
 
-#bd .card-mode-body > .yui-gc:not(.grid) > .yui-u.first {
+#bd .card-details-mode-body > .yui-gc:not(.grid) > .yui-u.first {
    width: 66%;
    background-color: white;
    border-right: 1px solid #ccc;

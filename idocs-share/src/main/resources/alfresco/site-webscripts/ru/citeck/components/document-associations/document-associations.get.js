@@ -71,6 +71,8 @@ function getAssocList(assocs, listName, defaultList) {
         removeable: removeable
     };
 
-    model.dependencies = Dependencies.getScoped('DocLibCustom/dependencies');
+    model.dependencies = {
+        js: []
+    };
 
 })();
