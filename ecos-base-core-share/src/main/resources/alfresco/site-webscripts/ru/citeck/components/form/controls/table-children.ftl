@@ -26,7 +26,8 @@
 <script type="text/javascript">//<![CDATA[
 (function() {
 
-    require(['citeck/components/dynamic-tree/dynamic-table'], function() {
+    require(['citeck/components/dynamic-tree/dynamic-table',
+             'citeck/components/dynamic-tree/cell-formatters'], function() {
 
         var table = new Citeck.widget.DynamicTableControl("${controlId}", "${fieldHtmlId}").setOptions({
             model: {

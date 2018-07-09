@@ -20,7 +20,7 @@
 /**
  * Dynamic Select control.
  */
-(function() {
+require(['js/citeck/modules/utils/citeck'], (function() {
 
 	var Dom = YAHOO.util.Dom;
 
@@ -235,4 +235,4 @@
 
 	});
 
-})();
+})());
