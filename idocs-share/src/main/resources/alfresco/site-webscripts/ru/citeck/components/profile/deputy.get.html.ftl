@@ -11,7 +11,7 @@
 
 <#assign el=args.htmlid?html />
 <script type="text/javascript">//<![CDATA[
-require(['components/console/consoletool'
+require(['components/console/consoletool',
     'components/people-finder/people-finder',
     'components/people-finder/group-finder',
     'modules/simple-dialog',
