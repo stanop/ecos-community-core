@@ -19,6 +19,7 @@
 define([
     './has-buttons',
     './hierarchy-model',
+    './dynamic-tree',
     'xstyle!./dynamic-tree-picker.css'
 ], function() {
 
