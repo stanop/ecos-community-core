@@ -3,6 +3,7 @@ package ru.citeck.ecos.journals.webscripts;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.ExecutionResult;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
@@ -160,10 +161,12 @@ public class JournalRecordsPost extends AbstractWebScript {
         // inner fields
         List<String> innerFields = new ArrayList<>();
 
+        boolean isNode = info != null && info.getDataType().equals(DataTypeDefinition.NODE_REF);
+
         if (formatter.contains("Link") || formatter.contains("nodeRef")) {
             innerFields.add("id");
             innerFields.add("str");
-        } else if (attributesToLoad.isEmpty()){
+        } else if (attributesToLoad.isEmpty() || !isNode){
             innerFields.add("str");
         }
 
