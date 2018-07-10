@@ -24,7 +24,8 @@
  */
 define([
     'citeck/components/dynamic-tree/hierarchy-model',
-    'citeck/components/dynamic-tree/dynamic-tree'
+    'citeck/components/dynamic-tree/dynamic-tree',
+    'citeck/components/dynamic-tree/dynamic-toolbar'
 ], function() {
 
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
