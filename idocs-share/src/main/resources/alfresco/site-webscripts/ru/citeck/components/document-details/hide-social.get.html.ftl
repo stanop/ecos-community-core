@@ -1,6 +1,5 @@
 <#assign cfg = config.scoped['ModuleConfig.node-header']!{} />
 <style>
-/* ${config.scoped['ModuleConfig.node-header']['hide-node-path']} */
 <#if cfg['hide-node-path'].value == 'true'>.node-info .node-path,</#if>
 <#if cfg['hide-modifier'].value == 'true'>.node-info .item-modifier,</#if>
 <#if cfg['hide-social'].value == 'true'>.node-info .item-social,</#if>
