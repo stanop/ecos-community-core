@@ -150,7 +150,8 @@ define([
             let scriptSrcRegexp = /<script type="text\/javascript" src="\/share\/res\/(\S+)_[^_]+?\.js"><\/script>/g;
             let jsDependencies = [];
             text = text.replace(scriptSrcRegexp, function (match, jsSrc) {
-                if (jsSrc != "jquery/jquery") {
+                let excludedSources = ["jquery/jquery", "js/citeck/lib/polyfill/babel-polyfill", "js/citeck/lib/polyfill/fetch"];
+                if (excludedSources.indexOf(jsSrc) == -1) {
                     jsDependencies.push(jsSrc);
                 }
                 return '';
