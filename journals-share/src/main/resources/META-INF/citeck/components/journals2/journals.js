@@ -1208,9 +1208,16 @@ JournalsWidget
             }
 
             // forbidden aspect check
-            var forbiddenAspect = action.forbiddenAspect();
-            if (forbiddenAspect && _.any(records, _.partial(hasAspect, _, forbiddenAspect))) {
-                return false;
+            var forbiddenAspectArray = action.forbiddenAspect();
+
+            if (forbiddenAspectArray != null && forbiddenAspectArray.length > 0) {
+                var forbiddenAspect = forbiddenAspectArray.split(",");
+
+                for (var i = 0; i < forbiddenAspect.length; i++) {
+                    if (forbiddenAspect[i] && _.any(records, _.partial(hasAspect, _, forbiddenAspect[i]))) {
+                        return false;
+                    }
+                }
             }
 
             return true;
