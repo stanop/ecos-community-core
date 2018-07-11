@@ -147,8 +147,11 @@ function _convertNodeViewGetParams(args) {
         } else if (args.groupAction) {
             params.formType = "groupAction";
             params.formKey = args.groupAction;
+        } else if (args.withoutSavingType) {
+            params.formType = "withoutSavingType";
+            params.formKey = args.withoutSavingType;
         } else {
-            throw "Parameters must contain either type, nodeRef or taskId or groupAction";
+            throw "Parameters must contain either type, nodeRef or taskId or groupAction or withoutSavingType";
         }
     }
 

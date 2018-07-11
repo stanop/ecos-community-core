@@ -1353,7 +1353,7 @@ define([
                         }, failureCallback: { scope: this, fn: function(response) {} }, execScripts: true
                     });
                 }
-                elCell.innerHTML = sData;
+                elCell.innerHTML = sData.hasOwnProperty('str') ? sData.str : sData;
             };
         },
 
