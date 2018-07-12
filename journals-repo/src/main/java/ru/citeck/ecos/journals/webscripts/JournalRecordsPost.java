@@ -161,12 +161,14 @@ public class JournalRecordsPost extends AbstractWebScript {
         // inner fields
         List<String> innerFields = new ArrayList<>();
 
-        boolean isNode = info != null && info.getDataType().equals(DataTypeDefinition.NODE_REF);
+        QName dataType = info != null ? info.getDataType() : DataTypeDefinition.ANY;
+        boolean isNode = dataType.equals(DataTypeDefinition.NODE_REF);
+        boolean isQName = dataType.equals(DataTypeDefinition.QNAME);
 
         if (formatter.contains("Link") || formatter.contains("nodeRef")) {
             innerFields.add("id");
             innerFields.add("str");
-        } else if (attributesToLoad.isEmpty() || !isNode){
+        } else if (attributesToLoad.isEmpty() || (!isNode && !isQName)) {
             innerFields.add("str");
         }
 

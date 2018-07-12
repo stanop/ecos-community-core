@@ -764,8 +764,17 @@ Record
         var resAspectList = this.attributes()['attr:aspects'] || [];
         var aspectList = [];
         for (var i = 0; i < resAspectList.length; i++) {
-            for (var attr in resAspectList[i]) {
-                aspectList.push(resAspectList[i][attr].val[0].str);
+            var list = resAspectList[i];
+            for (var attrKey in list) {
+                if (list.hasOwnProperty(attrKey)) {
+                    var attr = list[attrKey];
+                    if (attr && attr.name == 'shortName' && attr.val) {
+                        var value = attr.val[0];
+                        if (value && value.str) {
+                            aspectList.push(value.str);
+                        }
+                    }
+                }
             }
         }
         return aspectList;
