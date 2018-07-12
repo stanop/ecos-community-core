@@ -56,6 +56,10 @@
     left: 50%;
 }
 
+.card-details-mode-body.loading-overlay.not-active {
+    display: none;
+}
+
 .card-details-mode-body.loading-overlay > .loading-container {
     position: relative;
     left: -50%;

@@ -63,9 +63,9 @@ class CardletsBody extends React.Component {
         this.state = {
             data: null,
             cardmodes: null,
-            activeMode: "default",
+            activeMode: null,
             nodeBaseInfo: props.nodeBaseInfo,
-            cardletsLoadingState: {}
+            visitedModes: {}
         };
 
         let self = this;
@@ -83,22 +83,26 @@ class CardletsBody extends React.Component {
     }
 
     handleCardletInitialized(cardlet) {
-        let loadingState = Object.assign({}, this.state.cardletsLoadingState);
-        loadingState[cardlet.props.cardletKey] = true;
-        this.setState({
-            cardletsLoadingState: loadingState
-        });
+        let loadingState = CardletsBody.prototype.cardletsLoadingState;
+        if (!loadingState) {
+            loadingState = {};
+            CardletsBody.prototype.cardletsLoadingState = loadingState;
+        }
+        loadingState[cardlet.props.regionId] = true;
+
+        this.forceUpdate();
     }
 
     componentDidMount() {
 
-        let initialMode = CiteckUtils.getURLParameterByName("mode");
-        if (initialMode) {
-            this.setState({
-                activeMode: initialMode
-            });
-        }
+        let initialMode = CiteckUtils.getURLParameterByName("mode") || "default";
+        let newState = {
+            activeMode: initialMode,
+            visitedModes: {}
+        };
+        newState.visitedModes[initialMode] = true;
 
+        this.setState(newState);
         this._updateCardlets();
     }
 
@@ -181,15 +185,14 @@ class CardletsBody extends React.Component {
 
         let key = `${props.regionId}-${props.regionColumn}-${props.regionPosition}`;
 
-        let instances = CardDetails.prototype.cardlets;
+        let instances = CardletsBody.prototype.cardlets;
         if (!instances) {
             instances = {};
-            CardDetails.prototype.cardlets = instances;
+            CardletsBody.prototype.cardlets = instances;
         }
         let result = instances[key];
         if (!result) {
             result = <Cardlet key={key}
-                              cardletKey={key}
                               pageArgs={this.props.pageArgs}
                               onInitialized={this.handleCardletInitialized}
                               {...props} />;
@@ -210,52 +213,53 @@ class CardletsBody extends React.Component {
 
         let onModeTabClick = function (modeId) {
             CiteckUtils.setURLParameter("mode", modeId);
-            self.setState({
+            let newState = {
                 activeMode: modeId
-            });
+            };
+            if (!self.state.visitedModes[modeId]) {
+                newState.visitedModes = Object.assign({}, self.state.visitedModes);
+                newState.visitedModes[modeId] = true;
+            }
+            self.setState(newState);
         };
 
-        const cardlets = this.state.cardlets;
-        const cardletsLoadingState = this.state.cardletsLoadingState;
+        let loadingState = CardletsBody.prototype.cardletsLoadingState || {};
 
-        let tabsData = modes.map(mode => {
-            let isActive = mode.id == self.state.activeMode;
-
-            let isCardletsLoaded = function (cardlets) {
-                for (let column in  cardlets) {
-                    if (cardlets.hasOwnProperty(column)) {
-                        for (let cardlet of cardlets[column]) {
-                            let key = cardlet.props.cardletKey;
-                            if (!cardletsLoadingState[key]) {
-                                return false;
-                            }
+        let isCardletsLoaded = function (cardlets) {
+            for (let column in  cardlets) {
+                if (cardlets.hasOwnProperty(column)) {
+                    for (let cardlet of cardlets[column]) {
+                        if (!loadingState[cardlet.props.regionId]) {
+                            return false;
                         }
                     }
                 }
-                return true;
-            };
-
-            return {
-                link: <CardletModeTab key={`card-mode-link-${mode.id}`}
-                                      modeId={mode.id}
-                                      isActive={isActive}
-                                      title={mode.title}
-                                      onClick={onModeTabClick} />,
-                body: <CardletModeBody key={`card-mode-body-${mode.id}`}
-                                       modeId={mode.id}
-                                       cardlets={cardlets[mode.id]}
-                                       isActive={isActive}
-                                       loaded={isCardletsLoaded(cardlets[mode.id])} />
             }
-        });
+            return true;
+        };
+
+        let cardlets = this.state.cardlets;
 
         return <div>
             {cardlets['all']['top']}
             <div id="card-details-tabs" className="header-tabs">
-                {tabsData.map(tab => tab.link)}
+                {modes.map(mode => {
+                    return <CardletModeTab key={`card-mode-link-${mode.id}`}
+                                           modeId={mode.id}
+                                           isActive={mode.id == self.state.activeMode}
+                                           title={mode.title}
+                                           onClick={onModeTabClick}/>
+                })}
             </div>
             <div>
-                {tabsData.map(tab => tab.body)}
+                {modes.map(mode => {
+                    let modeCardlets = self.state.visitedModes[mode.id] ? cardlets[mode.id] : {};
+                    return <CardletModeBody key={`card-mode-body-${mode.id}`}
+                                            modeId={mode.id}
+                                            cardlets={modeCardlets}
+                                            isActive={mode.id == self.state.activeMode}
+                                            loaded={isCardletsLoaded(modeCardlets)} />
+                })}
             </div>
         </div>;
     }
@@ -274,65 +278,37 @@ function CardletModeTab(props) {
     </span>
 }
 
-class CardletModeBody extends React.Component {
+function CardletModeBody (props) {
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            initialized: false,
-            cardlets: {
-                left: [],
-                right: [],
-                bottom: [],
-                top: []
-            }
-        };
+    let className = "card-mode-body";
+    if (!props.isActive) {
+        className += " hidden";
     }
 
-    static getDerivedStateFromProps(props, state) {
+    let cardlets = props.cardlets;
 
-        if (state.initialized == false && props.isActive) {
-            return {
-                initialized: true,
-                cardlets: props.cardlets
-            };
-        }
-        return null;
-    }
+    let contentClass = props.loaded ? 'active' : 'not-active';
+    let loadingClass = props.loaded ? 'not-active' : 'active';
 
-    render() {
-
-        let className = "card-mode-body";
-        if (!this.props.isActive) {
-            className += " hidden";
-        }
-
-        let cardlets = this.state.cardlets;
-
-        let contentClass = this.props.loaded ? 'active' : 'not-active';
-        let loadingClass = this.props.loaded ? 'not-active' : 'active';
-
-        return <div id={`card-mode-${this.props.modeId}`} className={className}>
-            <div className={`card-details-mode-body ${loadingClass} loading-overlay`}>
-                <div className="loading-container">
-                    <div className="loading-indicator" />
-                </div>
-            </div>
-            <div className={`card-details-mode-body ${contentClass}`}>
-                {cardlets['top']}
-                <div className="yui-gc">
-                    <div className="yui-u first">
-                        {cardlets['left']}
-                    </div>
-                    <div className="yui-u">
-                        {cardlets['right']}
-                    </div>
-                </div>
-                {cardlets['bottom']}
+    return <div id={`card-mode-${props.modeId}`} className={className}>
+        <div className={`card-details-mode-body ${loadingClass} loading-overlay`}>
+            <div className="loading-container">
+                <div className="loading-indicator" />
             </div>
         </div>
-    }
+        <div className={`card-details-mode-body ${contentClass}`}>
+            {cardlets['top'] || []}
+            <div className="yui-gc">
+                <div className="yui-u first">
+                    {cardlets['left'] || []}
+                </div>
+                <div className="yui-u">
+                    {cardlets['right'] || []}
+                </div>
+            </div>
+            {cardlets['bottom'] || []}
+        </div>
+    </div>
 }
 
 export class Cardlet extends React.Component {

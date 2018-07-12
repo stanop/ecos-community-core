@@ -17,7 +17,7 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 define([
-    './has-buttons'
+    'citeck/components/dynamic-tree/has-buttons'
 ], function() {
 
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
