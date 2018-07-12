@@ -9,7 +9,7 @@
 <#assign doclibView = field.control.params.doclibView!"picker" />
 
 <script type="text/javascript">//<![CDATA[
-(function() {
+require(['citeck/components/dynamic-tree/upload-picker'], function() {
 	<@renderDynamicTreePickerJS field=field pickerVar="picker" pickerClass="Citeck.widget.UploadPickerControl" />
 	var model = {
 		formats: {
@@ -88,7 +88,7 @@
 		contentType: "${field.control.params.contentType?js_string}",
 		</#if>
 	});
-})();
+});
 //]]></script>
 
 <#if field.value?is_number>
