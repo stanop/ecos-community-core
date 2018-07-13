@@ -21,6 +21,7 @@
  */
 define([
     'citeck/components/dynamic-tree/error-manager',
+    'citeck/components/orgstruct/form-dialogs',
     './hierarchy-model'
 ], function() {
 
