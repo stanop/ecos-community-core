@@ -1588,7 +1588,10 @@ define([
                 var values = this.convertValue(this.rawValue(), true);
                 return _.sortBy(values, this.getValueOrder, this);
             },
-            write: function(value) { this.value(value); }
+            write: function(value) {
+                value = _.difference(value, [undefined]);
+                this.value(value);
+            }
         })
         .computed('lastValue', {
             read: function() {
