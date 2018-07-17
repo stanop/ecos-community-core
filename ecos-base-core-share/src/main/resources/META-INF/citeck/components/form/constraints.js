@@ -178,7 +178,7 @@
     };
 
     // duplicate item on table template
-    Citeck.forms.duplicateValue = function (record, parent) {
+    Citeck.forms.duplicateValue = function (record, parent, showAfterClicked) {
         var attributes =  record.resolve('allData.attributes');
         if (attributes && record && record.typeShort()) {
 
@@ -208,6 +208,27 @@
                             arr.push(response.json.result);
                             parent.value(arr);
 
+                            if (showAfterClicked) {
+                                Citeck.forms.dialog(
+                                    response.json.result,
+                                    null,
+                                    function () {
+                                        var itemsToReset = [];
+                                        var items = parent.value();
+                                        for (var i = 0; i < items.length; i++) {
+                                            var itemNodeRef = items[i].nodeRef;
+                                            if (itemNodeRef === response.json.result) {
+                                                itemsToReset.push(items[i]);
+                                            }
+                                        }
+
+                                        for (var j = 0; j < itemsToReset.length; j++) {
+                                            itemsToReset[j].impl().reset(true);
+                                        }
+                                    },
+                                    {}
+                                );
+                            }
                         }
                         record.inSubmitProcess(false);
                     }
