@@ -890,5 +890,28 @@
           class="ru.citeck.ecos.behavior.common.FillMonthDayPersonPropertyBehaviour">
     </bean>
 
+    <!--<bean id="ru.citeck.ecos.copy-metadata-from-target-to-source-assoc"-->
+          <!--class="ru.citeck.ecos.behavior.copy.CopyMetadataFromTargetToSourceBehaviour" init-method="init">-->
+        <!--<property name="policyComponent" ref="policyComponent"/>-->
+        <!--<property name="nodeService" ref="nodeService"/>-->
+        <!--<property name="targetTypeQName" value=""/>-->
+        <!--<property name="sourceTypeQName" value=""/>-->
+        <!--<property name="caseStatusAssocQName" value=""/>-->
+        <!--<property name="assocsToCopy">-->
+            <!--<map>-->
+                <!--<entry key="" value=""/>-->
+            <!--</map>-->
+        <!--</property>-->
+        <!--<property name="propsToCopy">-->
+            <!--<map>-->
+                <!--<entry key="" value=""/>-->
+                <!--<entry key="" value=""/>-->
+                <!--<entry key="" value=""/>-->
+                <!--<entry key="" value=""/>-->
+                <!--<entry key="" value=""/>-->
+            <!--</map>-->
+        <!--</property>-->
+    <!--</bean>-->
+
 </beans>
 
