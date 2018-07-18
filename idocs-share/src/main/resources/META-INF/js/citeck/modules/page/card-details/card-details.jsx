@@ -4,6 +4,7 @@ import SurfRegion from "../../surf/surf-region";
 import $ from "jquery";
 import ShareFooter from "../../footer/share-footer";
 import {utils as CiteckUtils} from 'js/citeck/modules/utils/citeck';
+import 'citeck/mobile/mobile';
 
 import "xstyle!citeck/components/card/card-details.css";
 
