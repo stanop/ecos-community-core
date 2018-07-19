@@ -8,6 +8,9 @@
 <#assign actionIsFirstColumn = params.actionIsFirstColumn!"false" />
 <#assign duplicateButton = params.duplicateButton!"false" />
 <#assign showDialogAfterDuplicate = params.showDialogAfterDuplicate!"false" />
+<#if params.needPullForDuplicate??>
+    <#assign needPullForDuplicate = params.needPullForDuplicate?replace("\\s+", "", "rm") />
+</#if>
 
 <#-- Parametes:
         * journalType - columns is defaultAttributes ("files-numenclature") [optional]
@@ -188,7 +191,7 @@
                     }), clickBubble: false"></a>
             <#if duplicateButton == "true">
                 <a class="duplicate-value-item" title="${msg('button.duplicate')}"
-                    data-bind="click: Citeck.forms.duplicateValue.bind(null, $data, $parents[1], ${showDialogAfterDuplicate}), clickBubble: false"></a>
+                    data-bind="click: Citeck.forms.duplicateValue.bind(null, $data, $parents[1], ${showDialogAfterDuplicate}, '${needPullForDuplicate}'), clickBubble: false"></a>
             </#if>
             <a class="delete-value-item" title="${msg('button.delete')}"
                 data-bind="click: function() {

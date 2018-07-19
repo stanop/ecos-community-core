@@ -178,14 +178,15 @@
     };
 
     // duplicate item on table template
-    Citeck.forms.duplicateValue = function (record, parent, showAfterClicked) {
+    Citeck.forms.duplicateValue = function (record, parent, showDialogAfterDuplicate, needPullForDuplicate) {
         var attributes =  record.resolve('allData.attributes');
         if (attributes && record && record.typeShort()) {
 
             record.inSubmitProcess(true);
-
-            var url = Alfresco.constants.PROXY_URI + "citeck/invariants/view?type=" + record.typeShort(),
-                data = { attributes: {}, view: {'class': record.typeShort(), id: "", kind: "", mode: "create", template: "table", params: {}}};
+            var data = {
+                attributes: {},
+                view: {'class': record.typeShort(), id: "", kind: "", mode: "create", template: "table", params: {}}
+            };
 
             for (var key in attributes) {
                 if (attributes[key] && ["attr:noderef", "attr:parent", "attr:parentassoc", "attr:aspects"].indexOf(key) == -1) {
@@ -197,51 +198,82 @@
                 }
             }
 
-            Alfresco.util.Ajax.jsonPost({
-                url: url,
-                dataObj: data,
-                requestContentType: Alfresco.util.Ajax.JSON,
-                successCallback: {
-                    fn: function (response) {
-                        if (response && response.json && response.json.result) {
-                            var arr = parent.value();
-                            arr.push(response.json.result);
-                            parent.value(arr);
-
-                            if (showAfterClicked) {
-                                Citeck.forms.dialog(
-                                    response.json.result,
-                                    null,
-                                    function () {
-                                        var itemsToReset = [];
-                                        var items = parent.value();
-                                        for (var i = 0; i < items.length; i++) {
-                                            var itemNodeRef = items[i].nodeRef;
-                                            if (itemNodeRef === response.json.result) {
-                                                itemsToReset.push(items[i]);
-                                            }
-                                        }
-
-                                        for (var j = 0; j < itemsToReset.length; j++) {
-                                            itemsToReset[j].impl().reset(true);
-                                        }
-                                    },
-                                    {}
-                                );
-                            }
-                        }
-                        record.inSubmitProcess(false);
-                    }
-                },
-                failureCallback: {
-                    fn: function (response) {
-                        Alfresco.util.PopupManager.displayMessage({
-                            text: Alfresco.util.message("message.request-error")
-                        });
-                        record.inSubmitProcess(false);
-                    }
+            var requests = {requests: []};
+            if (needPullForDuplicate) {
+                var attributeKeysForPull = needPullForDuplicate.split(",");
+                for (var j = 0; j < attributeKeysForPull.length; j ++) {
+                    var attributeKeyForPull = attributeKeysForPull[j];
+                    var request = {
+                        nodeRef: record.nodeRef(),
+                        attribute: attributeKeyForPull
+                    };
+                    requests.requests.push(request);
                 }
-            });
+            }
+
+            var addVariant = function () {
+                var url = Alfresco.constants.PROXY_URI + "citeck/invariants/view?type=" + record.typeShort();
+                Alfresco.util.Ajax.jsonPost({
+                    url: url,
+                    dataObj: data,
+                    requestContentType: Alfresco.util.Ajax.JSON,
+                    successCallback: {
+                        fn: function (response) {
+                            if (response && response.json && response.json.result) {
+                                if (showDialogAfterDuplicate) {
+                                    Citeck.forms.dialog(
+                                        response.json.result,
+                                        null,
+                                        function () {
+                                            var arr = parent.value();
+                                            arr.push(response.json.result);
+                                            parent.value(arr);
+                                        },
+                                        {}
+                                    );
+                                } else {
+                                    var arr = parent.value();
+                                    arr.push(response.json.result);
+                                    parent.value(arr);
+                                }
+                            }
+                            record.inSubmitProcess(false);
+                        }
+                    },
+                    failureCallback: {
+                        fn: function (response) {
+                            Alfresco.util.PopupManager.displayMessage({
+                                text: Alfresco.util.message("message.request-error")
+                            });
+                            record.inSubmitProcess(false);
+                        }
+                    }
+                });
+            };
+
+            if (requests.requests.length > 0) {
+                Alfresco.util.Ajax.jsonPost({
+                    url: Alfresco.constants.PROXY_URI + "citeck/attributes/values",
+                    dataObj: requests,
+                    requestContentType: Alfresco.util.Ajax.JSON,
+                    successCallback: {
+                        fn: function (response) {
+                            var pulledAttributes = response.json.attributes;
+                            for (var i = 0; i < pulledAttributes.length; i++) {
+                                var pulledAttribute = pulledAttributes[i];
+                                if (pulledAttribute && pulledAttribute.persisted) {
+                                    data.attributes[pulledAttribute.attribute] = pulledAttribute.value;
+                                }
+                            }
+                            addVariant();
+                            record.inSubmitProcess(false);
+                        }
+                    }
+                });
+            } else {
+                addVariant();
+                record.inSubmitProcess(false);
+            }
         }
     };
 
