@@ -2655,6 +2655,12 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
     margin-top: 2.5px;
 }
 
+.yui-skin-citeckTheme.alfresco-share.mobile img.user-photo-header {
+    height: 25px;
+    width: 25px;
+    margin-top: 8px;
+}
+
 .yui-skin-citeckTheme #HEADER_SITE_MENU:before,
 .yui-skin-citeckTheme.mobile #HEADER_USER_MENU:before,
 .yui-skin-citeckTheme .hamburger-mobile-menu .hamburger-box:after {
