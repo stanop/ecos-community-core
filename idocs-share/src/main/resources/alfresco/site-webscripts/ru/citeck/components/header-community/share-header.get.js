@@ -467,7 +467,7 @@ var HEADER_USER_MENU = {
             }
         }]
     }
-}
+};
 
 // APP MENU ITEMS
 
@@ -628,6 +628,8 @@ if (isSlideMenu) {
     if (user && user.properties && getPhoto(user.properties.nodeRef)) {
         HEADER_USER_MENU.config.iconClass = "user-photo-header";
         HEADER_USER_MENU.config.profileIconSrc = "api/node/content;ecos:photo/" + user.properties.nodeRef.replace(":/", "") + "/image.jpg"
+    } else if(isMobile) {
+        HEADER_USER_MENU.config.iconSrc = "/share/res/components/images/header/user-profile.png"
     }
     userMenuBar.config.widgets.push(HEADER_USER_MENU);
 
@@ -664,6 +666,9 @@ if (isSlideMenu) {
     }
 
     // USER MENU BAR
+    if(isMobile) {
+        HEADER_USER_MENU.config.iconSrc = "/share/res/components/images/header/user-profile.png"
+    }
     userMenuBar.config.widgets.push(HEADER_USER_MENU);
 
     // BUILD MOBILE MENU

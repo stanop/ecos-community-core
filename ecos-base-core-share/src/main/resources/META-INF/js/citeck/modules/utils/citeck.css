@@ -374,6 +374,12 @@
   padding-left: 5px;
 }
 
+.alfresco-share.mobile img.user-photo-header {
+  height: 25px;
+  width: 25px;
+  margin-top: 5px;
+}
+
 .alfresco-share div.user-photo-header > div{
   height: 25px;
   width: 25px;
