@@ -13,16 +13,14 @@ import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Roman Velikoselsky
  */
 
 public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolicies.OnCreateAssociationPolicy,
+        NodeServicePolicies.OnDeleteAssociationPolicy,
         NodeServicePolicies.OnUpdatePropertiesPolicy,
         CaseStatusPolicies.OnCaseStatusChangedPolicy {
 
@@ -33,8 +31,8 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
     private QName sourceTypeQName;
     private QName caseStatusAssocQName;
     private QName assocTypeQName;
-    private Map<QName, QName> assocsToCopy;
-    private Map<QName, QName> propsToCopy;
+    private Map<QName, QName> assocsToCopy = Collections.emptyMap();
+    private Map<QName, QName> propsToCopy = Collections.emptyMap();
 
     public void init() {
         this.policyComponent.bindClassBehaviour(
@@ -47,6 +45,18 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
                 NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
                 sourceTypeQName,
                 new JavaBehaviour(this, "onCreateAssociation",
+                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+        );
+        this.policyComponent.bindAssociationBehaviour(
+                NodeServicePolicies.OnCreateAssociationPolicy.QNAME,
+                targetTypeQName,
+                new JavaBehaviour(this, "onCreateAssociationOnTarget",
+                        Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
+        );
+        this.policyComponent.bindAssociationBehaviour(
+                NodeServicePolicies.OnDeleteAssociationPolicy.QNAME,
+                targetTypeQName,
+                new JavaBehaviour(this, "onDeleteAssociation",
                         Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
         );
         this.policyComponent.bindClassBehaviour(
@@ -62,6 +72,10 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
         NodeRef sourceRef = associationRef.getSourceRef();
         NodeRef targetRef = associationRef.getTargetRef();
 
+        if (!nodeService.exists(sourceRef) || !nodeService.exists(targetRef)) {
+            return;
+        }
+
         if (!nodeService.getType(targetRef).equals(targetTypeQName) ||
                 !nodeService.getType(sourceRef).equals(sourceTypeQName))  {
             return;
@@ -71,12 +85,38 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
     }
 
     @Override
+    public void onDeleteAssociation(AssociationRef associationRef) {
+        // It's correct! We need target to receive his source assocs
+        NodeRef targetRef = associationRef.getSourceRef();
+        NodeRef targetAssoc = associationRef.getTargetRef();
+
+        if (!nodeService.exists(targetRef)) {
+            return;
+        }
+
+        List<NodeRef> sourceRefs = RepoUtils.getSourceNodeRefs(targetRef, assocTypeQName, nodeService);
+
+        for (NodeRef sourceRef : sourceRefs) {
+            deleteAssocs(sourceRef, targetAssoc);
+        }
+
+    }
+
+    @Override
     public void onUpdateProperties(NodeRef targetRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
+        if (!nodeService.exists(targetRef)) {
+            return;
+        }
+
         checkChangesAtPropsAndUpdate(targetRef, before, after);
     }
 
     @Override
     public void onCaseStatusChanged(NodeRef caseRef, NodeRef caseStatusBefore, NodeRef caseStatusAfter) {
+        if (!nodeService.exists(caseRef)) {
+            return;
+        }
+
         if (!nodeService.getType(caseRef).equals(targetTypeQName))  {
             return;
         }
@@ -90,6 +130,22 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
 
             RepoUtils.createAssociation(document, caseStatusAfter, caseStatusAssocQName, true, nodeService);
         }
+    }
+
+    public void onCreateAssociationOnTarget(AssociationRef associationRef) {
+        NodeRef targetRef = associationRef.getSourceRef();
+        NodeRef targetAssoc = associationRef.getTargetRef();
+
+        if (!nodeService.exists(targetRef) || !nodeService.exists(targetAssoc)) {
+            return;
+        }
+
+        List<NodeRef> sourceRefs = RepoUtils.getSourceNodeRefs(targetRef, assocTypeQName, nodeService);
+
+        for (NodeRef sourceRef : sourceRefs) {
+            updateAssocValue(sourceRef, targetRef);
+        }
+
     }
 
     private void updateSourceAssocs(NodeRef sourceRef, NodeRef targetRef) {
@@ -113,7 +169,7 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
             Serializable propBefore = before.get(propCopyFrom);
             Serializable propAfter = after.get(propCopyFrom);
 
-            if (propChanged(propBefore, propAfter)) {
+            if (!Objects.equals(propBefore, propAfter)) {
                 List<NodeRef> sourceAssocs = RepoUtils.getSourceNodeRefs(targetRef, assocTypeQName, nodeService);
 
                 for (NodeRef node : sourceAssocs) {
@@ -125,7 +181,7 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
 
     private void updateAssocValue(NodeRef sourceRef, NodeRef targetRef) {
         for (Map.Entry<QName, QName> pair : assocsToCopy.entrySet()) {
-            List<AssociationRef> associationRefs = nodeService.getSourceAssocs(targetRef, pair.getKey());
+            List<AssociationRef> associationRefs = nodeService.getTargetAssocs(targetRef, pair.getKey());
 
             if (associationRefs != null && associationRefs.size() > 0) {
                 List<NodeRef> targetRefs = new ArrayList<>();
@@ -143,16 +199,14 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
         }
     }
 
-    private boolean nodeRefExists(NodeRef nodeRef) {
-        return nodeRef != null && nodeService.exists(nodeRef);
+    private void deleteAssocs(NodeRef sourceRef, NodeRef targetAssoc) {
+        for (Map.Entry<QName, QName> pair : assocsToCopy.entrySet()) {
+            RepoUtils.removeAssociation(sourceRef, targetAssoc, pair.getValue(), true, nodeService);
+        }
     }
 
-    private boolean propChanged(Serializable propBefore, Serializable propAfter) {
-        if (propBefore == null) {
-            return propAfter != null;
-        } else {
-            return propAfter == null || !propBefore.equals(propAfter);
-        }
+    private boolean nodeRefExists(NodeRef nodeRef) {
+        return nodeRef != null && nodeService.exists(nodeRef);
     }
 
     public void setPolicyComponent(PolicyComponent policyComponent) {
