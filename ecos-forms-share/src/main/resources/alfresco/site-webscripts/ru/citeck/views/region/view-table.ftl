@@ -11,6 +11,7 @@
 <#if params.needPullForDuplicate??>
     <#assign needPullForDuplicate = params.needPullForDuplicate?replace("\\s+", "", "rm") />
 </#if>
+<#assign cloneParent = params.cloneParent!"false" />
 
 <#-- Parametes:
         * journalType - columns is defaultAttributes ("files-numenclature") [optional]
@@ -196,7 +197,8 @@
                             showDialogAfterDuplicate: ${showDialogAfterDuplicate} || false,
                             needPullForDuplicate: '${needPullForDuplicate}',
                             baseRef: $parents[1].resolve('node.impl.nodeRef') || '',
-                            rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>
+                            rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>,
+                            cloneParent: ${cloneParent} || false
                         }), clickBubble: false"></a>
             </#if>
             <a class="delete-value-item" title="${msg('button.delete')}"

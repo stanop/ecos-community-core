@@ -182,6 +182,7 @@
         params = params || {};
         var showDialogAfterDuplicate = params.showDialogAfterDuplicate || false;
         var needPullForDuplicate = params.needPullForDuplicate || "";
+        var cloneParent = params.cloneParent || false;
 
         var attributes =  record.resolve('allData.attributes');
         if (attributes && record && record.typeShort()) {
@@ -192,8 +193,12 @@
                 view: {'class': record.typeShort(), id: "", kind: "", mode: "create", template: "table", params: {}}
             };
 
+            var ignoredAttributes = ["attr:noderef", "attr:parentassoc", "attr:aspects"];
+            if (!cloneParent) {
+                ignoredAttributes.push("attr:parent");
+            }
             for (var key in attributes) {
-                if (attributes[key] && ["attr:noderef", "attr:parent", "attr:parentassoc", "attr:aspects"].indexOf(key) == -1) {
+                if (attributes[key] && ignoredAttributes.indexOf(key) == -1) {
                     if (key == 'attr:types') {
                         data.attributes[key] = [record.typeShort()]
                     } else {
@@ -280,6 +285,8 @@
                                                 }
                                                 data.attributes[pulledAttribute.attribute] = pulledAttributeValue;
                                             }
+                                        } else if (pulledAttribute.value.shortQName) {
+                                            data.attributes[pulledAttribute.attribute] = pulledAttribute.value.shortQName;
                                         } else {
                                             data.attributes[pulledAttribute.attribute] = pulledAttribute.nodeRef;
                                         }
