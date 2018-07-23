@@ -178,7 +178,11 @@
     };
 
     // duplicate item on table template
-    Citeck.forms.duplicateValue = function (record, parent, showDialogAfterDuplicate, needPullForDuplicate) {
+    Citeck.forms.duplicateValue = function (record, parent, params) {
+        params = params || {};
+        var showDialogAfterDuplicate = params.showDialogAfterDuplicate || false;
+        var needPullForDuplicate = params.needPullForDuplicate || "";
+
         var attributes =  record.resolve('allData.attributes');
         if (attributes && record && record.typeShort()) {
 
@@ -229,7 +233,10 @@
                                             arr.push(response.json.result);
                                             parent.value(arr);
                                         },
-                                        {}
+                                        {
+                                            baseRef: params.baseRef,
+                                            rootAttributeName: params.rootAttributeName
+                                        }
                                     );
                                 } else {
                                     var arr = parent.value();
@@ -262,7 +269,23 @@
                             for (var i = 0; i < pulledAttributes.length; i++) {
                                 var pulledAttribute = pulledAttributes[i];
                                 if (pulledAttribute && pulledAttribute.persisted) {
-                                    data.attributes[pulledAttribute.attribute] = pulledAttribute.value;
+                                    if (typeof pulledAttribute.value === 'object') {
+                                        if (Array.isArray(pulledAttribute.value)) {
+                                            if (pulledAttribute.value.length === 1) {
+                                                data.attributes[pulledAttribute.attribute] = pulledAttribute.value[0].nodeRef;
+                                            } else {
+                                                var pulledAttributeValue = [];
+                                                for (var ii = 0; ii < pulledAttribute.value.length; ii++) {
+                                                    pulledAttributeValue.push(pulledAttribute.value[ii].nodeRef);
+                                                }
+                                                data.attributes[pulledAttribute.attribute] = pulledAttributeValue;
+                                            }
+                                        } else {
+                                            data.attributes[pulledAttribute.attribute] = pulledAttribute.nodeRef;
+                                        }
+                                    } else {
+                                        data.attributes[pulledAttribute.attribute] = pulledAttribute.value;
+                                    }
                                 }
                             }
                             addVariant();
