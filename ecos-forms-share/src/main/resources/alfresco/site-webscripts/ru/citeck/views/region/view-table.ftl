@@ -7,6 +7,11 @@
 
 <#assign actionIsFirstColumn = params.actionIsFirstColumn!"false" />
 <#assign duplicateButton = params.duplicateButton!"false" />
+<#assign showDialogAfterDuplicate = params.showDialogAfterDuplicate!"false" />
+<#if params.needPullForDuplicate??>
+    <#assign needPullForDuplicate = params.needPullForDuplicate?replace("\\s+", "", "rm") />
+</#if>
+<#assign cloneParent = params.cloneParent!"false" />
 
 <#-- Parametes:
         * journalType - columns is defaultAttributes ("files-numenclature") [optional]
@@ -20,6 +25,7 @@
         * downloadActionInViewMode - enable additional actions column in view mode with download button.
         * actionIsFirstColumn - moving action column to left
         * duplicateButton - add duplicate button
+        * showAfterDuplicateButtonClicked - show duplicated item in dialog after duplicate was added.
 -->
 
 <#-- TODO:
@@ -186,7 +192,14 @@
                     }), clickBubble: false"></a>
             <#if duplicateButton == "true">
                 <a class="duplicate-value-item" title="${msg('button.duplicate')}"
-                    data-bind="click: Citeck.forms.duplicateValue.bind(null, $data, $parents[1]), clickBubble: false"></a>
+                    data-bind="click: Citeck.forms.duplicateValue.bind(null, $data, $parents[1],
+                        {
+                            showDialogAfterDuplicate: ${showDialogAfterDuplicate} || false,
+                            needPullForDuplicate: '${needPullForDuplicate}',
+                            baseRef: $parents[1].resolve('node.impl.nodeRef') || '',
+                            rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>,
+                            cloneParent: ${cloneParent} || false
+                        }), clickBubble: false"></a>
             </#if>
             <a class="delete-value-item" title="${msg('button.delete')}"
                 data-bind="click: function() {
