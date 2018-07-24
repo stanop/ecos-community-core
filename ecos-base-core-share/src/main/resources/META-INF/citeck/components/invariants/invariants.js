@@ -1589,7 +1589,7 @@ define([
                 return _.sortBy(values, this.getValueOrder, this);
             },
             write: function(value) {
-                value = _.difference(value, [undefined]);
+                value = _.isArray(value) ? _.difference(value, [undefined]) : value;
                 this.value(value);
             }
         })
