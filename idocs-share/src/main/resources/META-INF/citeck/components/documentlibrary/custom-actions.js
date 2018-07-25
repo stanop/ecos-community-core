@@ -16,7 +16,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-(function() {
+require([
+	'citeck/components/form/constraints'
+], function() {
     
     var PopupManager = Alfresco.util.PopupManager;
 
@@ -928,7 +930,7 @@ YAHOO.Bubbling.fire("registerAction", {
 				}, {
                     "destination": props.destination,
                     "destinationAssoc": props.destinationAssoc,
-                    "title": props.title
+                    "title": this.msg(props.title) || props.title
                 });
             }
         }
@@ -1038,4 +1040,4 @@ YAHOO.Bubbling.fire("registerAction", {
 		}
 	});
 
-})();
+});

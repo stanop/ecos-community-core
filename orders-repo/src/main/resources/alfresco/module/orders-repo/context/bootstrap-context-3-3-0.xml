@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="orders.import-spaces.3-3-0" parent="orders.import-spaces.3-2-1" abstract="true">
+        <property name="sinceVersion" value="3.3.0" />
+        <property name="appliesFromVersion" value="3.3.0" />
+    </bean>
+
+    <bean id="orders.import-scripts.3-3-0" parent="orders.import-scripts.3-2-1" abstract="true">
+        <property name="sinceVersion" value="3.3.0" />
+        <property name="appliesFromVersion" value="3.3.0" />
+    </bean>
+
+    <bean id="orders.categoryBootstrap3" parent="orders.import-spaces.3-3-0">
+        <property name="name" value="orders-doctype-categories" />
+        <property name="description" value="Doctype categories" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="orders.categoryBootstrap2"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">workspace://SpacesStore/orders-cat-doctype-internal</prop>
+                    <prop key="location">alfresco/module/orders-repo/bootstrap/doctype-categories-2.xml</prop>
+                    <prop key="messages">alfresco/module/orders-repo/bootstrap/doctype-categories</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="orders.module-component.default-orders-content-template-2" parent="orders.import-spaces">
+        <property name="name" value="default-orders-content-template-2" />
+        <property name="description" value="default-orders-content-template-2" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="orders.categoryBootstrap3" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:templates</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/orders-content-template-2.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>

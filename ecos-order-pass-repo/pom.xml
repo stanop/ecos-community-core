@@ -13,7 +13,7 @@
     <parent>
         <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>ecos-community</artifactId>
-        <version>3.2.1.0</version>
+        <version>3.3.1</version>
     </parent>
 
     <properties>
@@ -26,31 +26,26 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>1st-override-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>journals-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-forms-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>idocs-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>

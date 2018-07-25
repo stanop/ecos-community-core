@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2018 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -101,7 +101,7 @@ public class EnumerationServiceImpl implements EnumerationService
     public String getNumber(NodeRef template, NodeInfo nodeInfo) 
             throws EnumerationException 
     {
-        Map<String,Object> model = new HashMap<String,Object>(1);
+        Map<String,Object> model = new HashMap<>(1);
         model.put(KEY_NODE, newTemplateNode(nodeInfo));
         return getNumber(template, model);
     }
@@ -110,7 +110,7 @@ public class EnumerationServiceImpl implements EnumerationService
     public String getNumber(NodeRef template, NodeRef nodeRef) 
             throws EnumerationException 
     {
-        Map<String,Object> model = new HashMap<String,Object>(1);
+        Map<String,Object> model = new HashMap<>(1);
         model.put(KEY_NODE, nodeRef);
         return getNumber(template, model);
     }
@@ -118,7 +118,7 @@ public class EnumerationServiceImpl implements EnumerationService
     @Override
     public String getNumber(NodeRef template, NodeInfo nodeInfo, String count)
             throws EnumerationException {
-        Map<String,Object> model = new HashMap<String,Object>(1);
+        Map<String,Object> model = new HashMap<>(1);
         model.put(KEY_NODE, newTemplateNode(nodeInfo));
         model.put(KEY_COUNT, count);
         return getNumber(template, model);
@@ -127,7 +127,7 @@ public class EnumerationServiceImpl implements EnumerationService
     @Override
     public String getNumber(NodeRef template, NodeRef nodeRef, String count)
             throws EnumerationException {
-        Map<String,Object> model = new HashMap<String,Object>(1);
+        Map<String,Object> model = new HashMap<>(1);
         model.put(KEY_NODE, nodeRef);
         model.put(KEY_COUNT, count);
         return getNumber(template, model);
@@ -211,10 +211,10 @@ public class EnumerationServiceImpl implements EnumerationService
                 String initialValueString = templateService.processTemplateString(FREEMARKER_PROCESSOR, 
                         commonTemplate + initialValueTemplate, model);
         
-                // parse this into integer
-                int initialValue;
+                // parse this into long
+                long initialValue;
                 try {
-                    initialValue = Integer.parseInt(initialValueString);
+                    initialValue = Long.parseLong(initialValueString);
                 } catch(NumberFormatException e) {
                     throw new EnumerationException("Initial value evaluated to non-integer: '" + 
                             initialValueString + "' (template " + initialValueTemplate + ")", e);

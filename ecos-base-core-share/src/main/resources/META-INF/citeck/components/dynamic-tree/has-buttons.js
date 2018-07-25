@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-(function() {
+define([], function() {
 
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
     Citeck.widget = Citeck.widget || {};
@@ -130,6 +130,7 @@
             // generate html:
             for(var i in buttonIds) {
                 if(!buttonIds.hasOwnProperty(i)) continue;
+                if(parent && this.model.getItemName(parent) == "search" && buttonIds[i] == "deleteItem" && item.authorityType == "USER") continue;
                 var button = this.buttons && this.buttons[buttonIds[i]];
                 if(!button) {
                     button = {
@@ -169,8 +170,8 @@
             var msgId = "button." + msgType + "." + button.id;
             msg = this.msg(msgId);
             return (msg != msgId) ? msg : "";
-        },
+        }
 
     });
 
-})();
+});

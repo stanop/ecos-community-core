@@ -2,6 +2,49 @@
 
 <#import "/org/alfresco/components/documentlibrary/include/documentlist.lib.ftl" as doclib />
 
+<@markup id="css">
+    <@link href="${url.context}/res/components/preview/web-preview.css" />
+    <@link href="${url.context}/res/components/preview/WebPreviewerHTML.css"  />
+    <@link href="${url.context}/res/components/preview/StrobeMediaPlayback.css"  />
+    <@link href="${url.context}/res/components/preview/Audio.css"  />
+    <@link href="${url.context}/res/components/preview/Image.css"  />
+    <@link href="${url.context}/res/components/preview/PdfJs.css"  />
+
+    <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/document-versions-minimalistic/document-versions.css" />
+    <@link rel="stylesheet" type="text/css" href="${url.context}/res/modules/document-details/revert-version.css" />
+    <@link rel="stylesheet" type="text/css" href="${url.context}/res/modules/document-details/historic-properties-viewer.css" />
+
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/document-versions-comparison/document-versions-comparison.css" />
+    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/case-documents-uploader/case-documents-uploader.css" />
+</@>
+
+<@markup id="js">
+    <@script type="text/javascript" src="${url.context}/res/components/preview/web-preview.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/preview/WebPreviewer.js" />
+    <@script type="text/javascript" src="${url.context}/res/js/flash/extMouseWheel.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/preview/StrobeMediaPlayback.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/preview/Video.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/preview/Audio.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/preview/Flash.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/preview/Image.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/preview/PdfJs.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/preview/pdfjs/compatibility.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/preview/pdfjs/pdf.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/preview/pdfjs/pdf.worker.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/preview/spin.js" />
+    <#-- versions dependencies -->
+    <@script type="text/javascript" src="${url.context}/res/citeck/components/document-versions-minimalistic/document-versions.js" />
+    <@script type="text/javascript" src="${url.context}/res/modules/document-details/revert-version.js" />
+    <@script type="text/javascript" src="${url.context}/res/modules/document-details/historic-properties-viewer.js" />
+    <#-- versions-comparison dependencies -->
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/document-versions-comparison/document-versions-comparison.js" />
+    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/case-documents-uploader/case-documents-uploader.js" />
+
+    <@script type="text/javascript" src="${url.context}/res/components/documentlibrary/actions.js" />
+    <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" />
+    <@script type="text/javascript" src="${url.context}/res/components/documentlibrary/documentlist.js" />
+</@>
+
 <div id="${cdid}-upload-dialog" style="visibility: hidden;" class="doc-uploader">
     <div class="hd" style="cursor: move;">${msg("dialog.header.upload")}</div>
     <div class="bd">
@@ -106,26 +149,32 @@
 
 <script type="text/javascript">//<![CDATA[
 YAHOO.util.Event.onContentReady("${cdid}", function() {
-    var component = new Citeck.widget.CaseDocumentsUploader("${cdid}");
-    component.setOptions({
-        nodeRef: "${nodeRef?js_string}",
-        documentType: "${documentType?js_string}",
-        documentKind: "${documentKind?js_string}",
 
-        <#if documentUploadDefaultType??>
-            documentUploadDefaultType: "${documentUploadDefaultType}",
-        </#if>
-        <#if documentUploadDefaultKind??>
-            documentUploadDefaultKind: "${documentUploadDefaultKind}",
-        </#if>
+    require(['citeck/components/dynamic-tree/handy-doclist'], function(withHandyList) {
 
-        // formId for block of properties on intermediate preview dialog window
-        intermediateDialog: {
-            <#if intermediateDialogFormId??>
-                formId: "${intermediateDialogFormId?js_string}"
+        withHandyList(function() {
+            var component = new Citeck.widget.CaseDocumentsUploader("${cdid}");
+            component.setOptions({
+                nodeRef: "${nodeRef?js_string}",
+                documentType: "${documentType?js_string}",
+                documentKind: "${documentKind?js_string}",
+
+            <#if documentUploadDefaultType??>
+                documentUploadDefaultType: "${documentUploadDefaultType}",
             </#if>
-        }
-    }).setMessages(${messages});
+            <#if documentUploadDefaultKind??>
+                documentUploadDefaultKind: "${documentUploadDefaultKind}",
+            </#if>
+
+                // formId for block of properties on intermediate preview dialog window
+                intermediateDialog: {
+                <#if intermediateDialogFormId??>
+                    formId: "${intermediateDialogFormId?js_string}"
+                </#if>
+                }
+            }).setMessages(${messages});
+        })
+    });
 });
 //]]></script>
 

@@ -16,13 +16,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-(function() {
+define([
+    'modules/simple-dialog',
+    'citeck/components/dynamic-tree/error-manager'
+], function() {
 
-	Citeck = typeof Citeck != "undefined" ? Citeck : {};
-	Citeck.widget = Citeck.widget || {};
+    Citeck = typeof Citeck != "undefined" ? Citeck : {};
+    Citeck.widget = Citeck.widget || {};
 
-	var Dom = YAHOO.util.Dom;
-	
+    var Dom = YAHOO.util.Dom;
+
     Citeck.widget.SafeDialog = function(htmlid) {
         Citeck.widget.SafeDialog.superclass.constructor.call(this, htmlid);
     };
@@ -70,116 +73,117 @@
          
     });
 
-	Citeck.widget.FormDialog = function(htmlid, name) {
-		Citeck.widget.FormDialog.superclass.constructor.call(this, name || "Citeck.widget.FormDialog", htmlid);
-		this.widgets.panel = new Citeck.widget.SafeDialog(htmlid);
-	};
-	
-	YAHOO.extend(Citeck.widget.FormDialog, Alfresco.component.Base);
-	YAHOO.lang.augmentObject(Citeck.widget.FormDialog.prototype, YAHOO.util.EventProvider.prototype);
-	YAHOO.lang.augmentObject(Citeck.widget.FormDialog.prototype, Citeck.util.ErrorManager.prototype);
-	YAHOO.lang.augmentObject(Citeck.widget.FormDialog.prototype, {
-	
-		_show: function(config) {
-			var templateUrl = YAHOO.lang.substitute(Alfresco.constants.URL_SERVICECONTEXT + "components/form?itemKind={itemKind}&itemId={itemId}&destination={destination}&mode={mode}&submitType={submitType}&formId={formId}&assocType={assocType}&showCancelButton=true",
-				config, null, false
-			);
-			var width = (typeof this.options !== 'undefined' && typeof this.options.width !== 'undefined') ? this.options.width : "40em";
-			var doBeforeDialogShow = (typeof this.options !== 'undefined' && typeof this.options.doBeforeDialogShow !== 'undefined') ? this.options.doBeforeDialogShow : {
-				scope: this,
-				// set title:
-				fn: function(form, dialog) {
-					Alfresco.util.populateHTML([dialog.dialog.id + "_h", config.title]);
-				}
-			}; 
-			this.widgets.panel.setOptions({
-				width: width,
-				templateUrl: templateUrl,
-				actionUrl: null,
-				doBeforeDialogShow: doBeforeDialogShow,
+    Citeck.widget.FormDialog = function(htmlid, name) {
+        Citeck.widget.FormDialog.superclass.constructor.call(this, name || "Citeck.widget.FormDialog", htmlid);
+        this.widgets.panel = new Citeck.widget.SafeDialog(htmlid);
+    };
+
+    YAHOO.extend(Citeck.widget.FormDialog, Alfresco.component.Base);
+    YAHOO.lang.augmentObject(Citeck.widget.FormDialog.prototype, YAHOO.util.EventProvider.prototype);
+    YAHOO.lang.augmentObject(Citeck.widget.FormDialog.prototype, Citeck.util.ErrorManager.prototype);
+    YAHOO.lang.augmentObject(Citeck.widget.FormDialog.prototype, {
+
+        _show: function(config) {
+            var templateUrl = YAHOO.lang.substitute(Alfresco.constants.URL_SERVICECONTEXT + "components/form?itemKind={itemKind}&itemId={itemId}&destination={destination}&mode={mode}&submitType={submitType}&formId={formId}&assocType={assocType}&showCancelButton=true",
+                config, null, false
+            );
+            var width = (typeof this.options !== 'undefined' && typeof this.options.width !== 'undefined') ? this.options.width : "40em";
+            var doBeforeDialogShow = (typeof this.options !== 'undefined' && typeof this.options.doBeforeDialogShow !== 'undefined') ? this.options.doBeforeDialogShow : {
+                scope: this,
+                // set title:
+                fn: function(form, dialog) {
+                    Alfresco.util.populateHTML([dialog.dialog.id + "_h", config.title]);
+                }
+            };
+            this.widgets.panel.setOptions({
+                width: width,
+                templateUrl: templateUrl,
+                actionUrl: null,
+                doBeforeDialogShow: doBeforeDialogShow,
                 destroyOnHide: true, // support using this dialog on other forms
-				onSuccess: config.onSuccess,
-				onFailure: config.onFailure,
-			}).show();
-		},
-	
-		hide: function() {
-			this.widgets.panel.hide();
-		},
-	
-	});
+                onSuccess: config.onSuccess,
+                onFailure: config.onFailure,
+            }).show();
+        },
 
-	Citeck.widget.CreateFormDialog = function(htmlid, itemId, formId, destination, assocType, marker, name) {
-		Citeck.widget.CreateFormDialog.superclass.constructor.call(this, htmlid, name);
+        hide: function() {
+            this.widgets.panel.hide();
+        },
 
-		this.itemId = itemId;
-		this.formId = formId;
-		this.destination = destination;
-		this.assocType = assocType;
-		this.marker = marker;
-		this.createEvent("itemCreated");
-	};
-	
-	YAHOO.extend(Citeck.widget.CreateFormDialog, Citeck.widget.FormDialog);
-	YAHOO.lang.augmentObject(Citeck.widget.CreateFormDialog.prototype, {
-	
-		show: function() {
-			this._show({
-				itemKind: "type",
-				itemId: this.itemId,
-				formId: this.formId,
-				mode: "create",
-				destination: this.destination,
-				assocType: this.assocType,
-				submitType: "json",
-				title: this.msg("panel.create." + (this.formId||"default") + ".header"),
-				onSuccess: {
-					scope: this,
-					fn: function(e) {
-						this.fireEvent("itemCreated", this.marker !== null ? this.marker : e);
-					},
-				},
-				onFailure: { 
-					scope: this,
-					fn: this.onFailure,
-				},
-			});
-		},
-		
-	});
-	
-	Citeck.widget.EditFormDialog = function(htmlid, itemId, formId, marker, name) {
-		Citeck.widget.EditFormDialog.superclass.constructor.call(this, htmlid, name);
-		this.itemId = itemId;
-		this.formId = formId;
-		this.marker = marker;
-		this.createEvent("itemEdited");
-	};
-	
-	YAHOO.extend(Citeck.widget.EditFormDialog, Citeck.widget.FormDialog);
-	YAHOO.lang.augmentObject(Citeck.widget.EditFormDialog.prototype, {
+    });
 
-		show: function() {
-			this._show({
-				itemKind: "node",
-				itemId: this.itemId,
-				formId: this.formId,
-				mode: "edit",
-				submitType: "json",
-				title: this.msg("panel.edit." + (this.formId||"default") + ".header"),
-				onSuccess: { 
-					scope: this,
-					fn: function(e) {
-						this.fireEvent("itemEdited", this.marker);
-					},
-				},
-				onFailure: { 
-					scope: this,
-					fn: this.onFailure,
-				},
-			});
-		},
-		
-	});
-	
-})();
+    Citeck.widget.CreateFormDialog = function(htmlid, itemId, formId, destination, assocType, marker, name) {
+        Citeck.widget.CreateFormDialog.superclass.constructor.call(this, htmlid, name);
+
+        this.itemId = itemId;
+        this.formId = formId;
+        this.destination = destination;
+        this.assocType = assocType;
+        this.marker = marker;
+        this.createEvent("itemCreated");
+    };
+
+    YAHOO.extend(Citeck.widget.CreateFormDialog, Citeck.widget.FormDialog);
+    YAHOO.lang.augmentObject(Citeck.widget.CreateFormDialog.prototype, {
+
+        show: function() {
+            this._show({
+                itemKind: "type",
+                itemId: this.itemId,
+                formId: this.formId,
+                mode: "create",
+                destination: this.destination,
+                assocType: this.assocType,
+                submitType: "json",
+                title: this.msg("panel.create." + (this.formId||"default") + ".header"),
+                onSuccess: {
+                    scope: this,
+                    fn: function(e) {
+                        this.fireEvent("itemCreated", this.marker !== null ? this.marker : e);
+                    },
+                },
+                onFailure: {
+                    scope: this,
+                    fn: this.onFailure,
+                },
+            });
+        },
+
+    });
+
+    Citeck.widget.EditFormDialog = function(htmlid, itemId, formId, marker, name) {
+        Citeck.widget.EditFormDialog.superclass.constructor.call(this, htmlid, name);
+        this.itemId = itemId;
+        this.formId = formId;
+        this.marker = marker;
+        this.createEvent("itemEdited");
+    };
+
+    YAHOO.extend(Citeck.widget.EditFormDialog, Citeck.widget.FormDialog);
+    YAHOO.lang.augmentObject(Citeck.widget.EditFormDialog.prototype, {
+
+        show: function() {
+            this._show({
+                itemKind: "node",
+                itemId: this.itemId,
+                formId: this.formId,
+                mode: "edit",
+                submitType: "json",
+                title: this.msg("panel.edit." + (this.formId||"default") + ".header"),
+                onSuccess: {
+                    scope: this,
+                    fn: function(e) {
+                        this.fireEvent("itemEdited", this.marker);
+                    },
+                },
+                onFailure: {
+                    scope: this,
+                    fn: this.onFailure,
+                },
+            });
+        },
+
+    });
+
+    return Citeck.widget.FormDialog;
+});

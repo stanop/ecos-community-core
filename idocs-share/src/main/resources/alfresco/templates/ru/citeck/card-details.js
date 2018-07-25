@@ -1,29 +1,36 @@
-function filterAndSort(cardlets, column) {
-	var filteredCardlets = [];
-	for(var i in cardlets) {
-		if(cardlets[i].regionColumn == column) {
-			filteredCardlets.push(cardlets[i]);
-		}
-	}
-	return filteredCardlets.sort(function(a, b) {
-		return a.regionPosition < b.regionPosition ? -1
-				: a.regionPosition > b.regionPosition ? 1 
-				: 0;
-	});
-}
+<import resource="classpath:/alfresco/site-webscripts/org/alfresco/components/head/resources.get.js">
+<import resource="classpath:/alfresco/templates/org/alfresco/import/alfresco-util.js">
+<import resource="classpath:/alfresco/site-webscripts/ru/citeck/components/dependencies/dependencies.lib.js">
+// See if a site page's title has been renamed by the site manager
+model.metaPage = AlfrescoUtil.getMetaPage();
 
-(function() 
-{
-	// get case element configs
-	var result = remote.call("/citeck/cardlets?nodeRef=" + page.url.args.nodeRef + "&mode=" + (page.url.args.mode || ""));
-	if(result.status == 200) {
-		var cardlets = eval('(' + result + ')').cardlets;
-	} else {
-		var cardlets = [];
-	}
-	
-	model.topRegions = filterAndSort(cardlets, "top");
-	model.leftRegions = filterAndSort(cardlets, "left");
-	model.rightRegions = filterAndSort(cardlets, "right");
-	model.bottomRegions = filterAndSort(cardlets, "bottom");
-})();
+model.nodeBaseInfo = {
+    permissions: {
+        Read: false,
+        Write: false
+    }
+};
+model.nodeBaseInfoStr = '{"modified": null}';
+
+const connector = remote.connect("alfresco");
+const nodeRef = page.url.args.nodeRef;
+
+if (nodeRef) {
+    const nodeBaseInfoUrl = "/citeck/node/base-info?nodeRef=" + nodeRef;
+    try {
+        const result = connector.get(nodeBaseInfoUrl);
+        if (result.status == 200) {
+            model.nodeBaseInfoStr = result + '';
+            model.nodeBaseInfo = eval('(' + result + ')');
+        }
+    } catch (e) {
+        logger.warn("Connection to " + nodeBaseInfoUrl + " is failed");
+        logger.warn("Error", e);
+    }
+
+    model.hasReadPermissions = model.nodeBaseInfo.permissions.Read;
+
+    if (model.hasReadPermissions) {
+        model.pageDependencies = Dependencies.getScoped('CiteckPage/card-details/dependencies');
+    }
+}

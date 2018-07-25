@@ -14,6 +14,9 @@
         } else if (args.taskId) {
             formType = "taskId";
             formKey = args.taskId;
+        } else if (args.groupAction) {
+            formType = "groupAction";
+            formKey = args.groupAction;
         }
     }
 

@@ -2,6 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 <beans>
 	<bean id="flowableSetContextStartListener" class="ru.citeck.ecos.flowable.listeners.utils.FlowableSetContextStartListener"/>
+	<bean id="flowableBeansContextSetListener" class="ru.citeck.ecos.flowable.listeners.utils.FlowableBeansContextSetListener"/>
 
 	<!-- Flowable engine -->
 	<bean id="flowableWorkflowComponent" class="ru.citeck.ecos.flowable.FlowableWorkflowComponent">
@@ -11,6 +12,7 @@
 		<property name="personService" ref="PersonService"/>
 		<property name="namespaceService" ref="namespaceService"/>
 		<property name="dictionaryService" ref="dictionaryService"/>
+		<property name="nodeService" ref="nodeService"/>
 	</bean>
 
 	<bean id="flowableTaskComponent" class="ru.citeck.ecos.flowable.FlowableTaskComponent">
@@ -28,6 +30,7 @@
 		<property name="flowableProcessInstanceService" ref="flowableCustomProcessInstanceService"/>
 		<property name="flowableHistoryService" ref="flowableCustomHistoryService"/>
 		<property name="flowablePropertyConverter" ref="flowablePropertyConverter"/>
+		<property name="runtimeService" ref="flowableRuntimeService"/>
 	</bean>
 
 	<bean id="flowableCustomProcessDefinitionService" class="ru.citeck.ecos.flowable.services.impl.FlowableProcessDefinitionServiceImpl">
@@ -46,6 +49,7 @@
 	<bean id="flowableCustomHistoryService" class="ru.citeck.ecos.flowable.services.impl.FlowableHistoryServiceImpl">
 		<property name="historyService" ref="flowableHistoryService"/>
 		<property name="personService" ref="PersonService"/>
+		<property name="serviceRegistry" ref="ServiceRegistry"/>
 	</bean>
 
 	<bean id="flowableModelerService" class="ru.citeck.ecos.flowable.services.impl.FlowableModelerServiceImpl">
@@ -251,6 +255,11 @@
 		<property name="namespaceService" ref="NamespaceService"/>
 	</bean>
 
+	<bean id="flowableTaskLastCommentToPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.LastCommentToPackagePushListener">
+		<property name="workflowService" ref="WorkflowService"/>
+		<property name="nodeService" ref="nodeService"/>
+	</bean>
+
 	<!--<bean id="flowableRevokeWorkflowPackageListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.RevokeWorkflowPackageListener">
 		<property name="helper" ref="flowableGrantWorkflowPackageHelper"/>
 		<property name="postRevokePermission" value="${workflow-security.post-revoke-permission}" />
@@ -265,6 +274,8 @@
 		<property name="workflowMirrorService" ref="workflowMirrorService"/>
 		<property name="nodeService" ref="nodeService"/>
 	</bean>
+
+	<bean id="flowableFormCommentsListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.FormCommentsListener"/>
 
 	<!-- Example -->
 	<bean id="flowable-ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.flowable.example.FlowableCasePerformWorkflowHandler"
@@ -293,6 +304,13 @@
 		<property name="extensionName" value="flowableModelerService"/>
 		<property name="flowableModelerService" ref="flowableModelerService"/>
 		<property name="serviceRegistry" ref="ServiceRegistry" />
+	</bean>
+
+	<bean id="flowableCustomCommentService" class="ru.citeck.ecos.flowable.services.impl.FlowableCustomCommentServiceImpl">
+		<property name="flowableTaskService" ref="flowableCustomTaskService"/>
+		<property name="flowableProcessDefinitionService" ref="flowableCustomProcessDefinitionService"/>
+		<property name="searchService" ref="searchService"/>
+		<property name="nodeService" ref="nodeService"/>
 	</bean>
 
 </beans>

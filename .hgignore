@@ -12,6 +12,10 @@ build.properties
 *.swp
 *~
 target/*
+nodejs/*
+node_modules/*
+node/*
+package-lock.json
 */$*
 *.log
 *.log.*

@@ -1,6 +1,7 @@
 package ru.citeck.ecos.flowable.services.impl;
 
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowInstanceQuery;
@@ -42,6 +43,11 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
      */
     private PersonService personService;
 
+    /**
+     * Service registry
+     */
+    private ServiceRegistry serviceRegistry;
+
 
     /**
      * Set history service
@@ -62,6 +68,14 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
     }
 
     /**
+     * Set service registry
+     * @param serviceRegistry Service registry
+     */
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+    }
+
+    /**
      * Get history process instance by id
      *
      * @param processInstanceId Process instance id
@@ -70,6 +84,18 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
     @Override
     public HistoricProcessInstance getProcessInstanceById(String processInstanceId) {
         return historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+    }
+
+    /**
+     * Get history process instance by id
+     *
+     * @param processInstanceId Process instance id
+     * @return History process instance
+     */
+    @Override
+    public HistoricProcessInstance getProcessInstanceByIdWithVariables(String processInstanceId) {
+        return historyService.createHistoricProcessInstanceQuery()
+                .includeProcessVariables().processInstanceId(processInstanceId).singleResult();
     }
 
     /**
@@ -255,11 +281,39 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
      */
     private HistoricTaskInstanceQuery buildTaskQuery(WorkflowTaskQuery workflowTaskQuery) {
         HistoricTaskInstanceQuery taskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
-        // Process instance id
+
+        /** Process id */
         if (workflowTaskQuery.getProcessId() != null) {
             taskInstanceQuery = taskInstanceQuery.processInstanceId(workflowTaskQuery.getProcessId());
         }
-        // State
+
+        /** Process name */
+        if (workflowTaskQuery.getProcessName() != null) {
+            taskInstanceQuery = taskInstanceQuery.processDefinitionKey(
+                    workflowTaskQuery.getProcessName().toPrefixString(serviceRegistry.getNamespaceService()));
+        }
+
+        /** Task id */
+        if (workflowTaskQuery.getTaskId() != null) {
+            taskInstanceQuery = taskInstanceQuery.taskId(workflowTaskQuery.getTaskId());
+        }
+
+        /** Task name */
+        if (workflowTaskQuery.getTaskName() != null) {
+            taskInstanceQuery = taskInstanceQuery.taskDefinitionKey(
+                    workflowTaskQuery.getTaskName().toPrefixString(serviceRegistry.getNamespaceService())
+            );
+        }
+
+        /** Active */
+        if (workflowTaskQuery.isActive() != null) {
+            if (workflowTaskQuery.isActive()) {
+                taskInstanceQuery = taskInstanceQuery.processUnfinished();
+            } else {
+                taskInstanceQuery = taskInstanceQuery.processFinished();
+            }
+        }
+        /** State */
         if (workflowTaskQuery.getTaskState() != null) {
             if (workflowTaskQuery.getTaskState() == WorkflowTaskState.IN_PROGRESS) {
                 taskInstanceQuery = taskInstanceQuery.unfinished();

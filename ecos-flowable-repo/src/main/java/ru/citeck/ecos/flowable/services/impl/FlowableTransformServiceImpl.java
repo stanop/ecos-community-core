@@ -3,6 +3,7 @@ package ru.citeck.ecos.flowable.services.impl;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.TypeDefinition;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.*;
@@ -11,6 +12,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flowable.engine.FormService;
+import org.flowable.engine.RuntimeService;
 import org.flowable.engine.form.StartFormData;
 import org.flowable.engine.form.TaskFormData;
 import org.flowable.engine.history.HistoricProcessInstance;
@@ -26,7 +28,9 @@ import ru.citeck.ecos.flowable.services.FlowableProcessInstanceService;
 import ru.citeck.ecos.flowable.services.FlowableTransformService;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Flowable transform service
@@ -88,6 +92,11 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
      * Flowable property converter
      */
     private FlowablePropertyConverter flowablePropertyConverter;
+
+    /**
+     * Runtime service
+     */
+    private RuntimeService runtimeService;
 
     /**
      * Set flowable history service
@@ -168,6 +177,14 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
      */
     public void setFlowablePropertyConverter(FlowablePropertyConverter flowablePropertyConverter) {
         this.flowablePropertyConverter = flowablePropertyConverter;
+    }
+
+    /**
+     * Runtime service
+     * @param runtimeService Runtime service
+     */
+    public void setRuntimeService(RuntimeService runtimeService) {
+        this.runtimeService = runtimeService;
     }
 
     /**
@@ -401,17 +418,19 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
     public WorkflowInstance transformProcessInstanceToWorkflowInstance(ProcessInstance processInstance) {
         if (processInstance != null) {
             HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceById(processInstance.getId());
-            return new WorkflowInstance(
+            WorkflowInstance result = new WorkflowInstance(
                     ENGINE_PREFIX + processInstance.getId(),
                     transformProcessDefinition(flowableProcessDefinitionService.getProcessDefinitionById(processInstance.getProcessDefinitionId())),
-                    processInstance.getDescription(),
-                    personService.getPerson(authenticationService.getCurrentUserName()),
-                    null,
+                    (String) getProcessVariable(processInstance.getId(), "bpm_workflowDescription"),
+                    (NodeRef) getProcessVariable(processInstance.getId(), "initiator"),
+                    (NodeRef) getProcessVariable(processInstance.getId(), "bpm_package"),
                     null,
                     !processInstance.isEnded(),
                     processInstance.getStartTime(),
                     historicProcessInstance != null ? historicProcessInstance.getEndTime() : null
             );
+            result.dueDate = (Date) getProcessVariable(processInstance.getId(), "bpm_workflowDueDate");
+            return result;
         } else {
             return null;
         }
@@ -441,20 +460,53 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
     @Override
     public WorkflowInstance transformHistoryProcessInstanceToWorkflowInstance(HistoricProcessInstance processInstance) {
         if (processInstance != null) {
-            return new WorkflowInstance(
+            WorkflowInstance result = new WorkflowInstance(
                     ENGINE_PREFIX + processInstance.getId(),
                     transformProcessDefinition(flowableProcessDefinitionService.getProcessDefinitionById(processInstance.getProcessDefinitionId())),
-                    processInstance.getDescription(),
-                    personService.getPerson(authenticationService.getCurrentUserName()),
-                    null,
+                    (String) getHistoryProcessVariable(processInstance.getId(), "bpm_workflowDescription"),
+                    (NodeRef) getHistoryProcessVariable(processInstance.getId(), "initiator"),
+                    (NodeRef) getHistoryProcessVariable(processInstance.getId(), "bpm_package"),
                     null,
                     processInstance.getEndTime() == null,
                     processInstance.getStartTime(),
                     processInstance.getEndTime()
             );
+            result.dueDate = (Date) getHistoryProcessVariable(processInstance.getId(), "bpm_workflowDueDate");
+            return result;
         } else {
             return null;
         }
+    }
+
+    /**
+     * Get process variable
+     * @param processId Process id
+     * @param variableKey Variable key
+     * @return Process variable
+     */
+    private Object getProcessVariable(String processId, String variableKey) {
+        Map<String, Object> variables = runtimeService.getVariables(processId);
+        if (variables == null) {
+            return null;
+        }
+        return variables.get(variableKey);
+    }
+
+    /**
+     * Get history process variable
+     * @param variableKey Variable key
+     * @return Process variable
+     */
+    private Object getHistoryProcessVariable(String processId, String variableKey) {
+        HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceByIdWithVariables(processId);
+        if (historicProcessInstance == null) {
+            return null;
+        }
+        Map<String, Object> variables = historicProcessInstance.getProcessVariables();
+        if (variables == null) {
+            return null;
+        }
+        return variables.get(variableKey);
     }
 
     /**

@@ -25,15 +25,7 @@
 			if (args[1] && args[1].selectedItems) {
 				var selectedItems = args[1].selectedItems;
 
-				// 1 item
-		    if (selectedItems.length == 1) {
-		    	citeckWidgetRoute.setRoute(selectedItems[0], true);
-		    };
-
-				// 0 items or more then 1
-				if (selectedItems.length == 0 || selectedItems.length > 1) {
 					citeckWidgetRoute.saveAndLoadTemplateVisibility("visible");
-				}
 			}
       
       YAHOO.Bubbling.fire("mandatoryControlValueUpdated", this);

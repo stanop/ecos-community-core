@@ -3,6 +3,7 @@ package ru.citeck.ecos.role;
 import org.alfresco.repo.policy.ClassPolicyDelegate;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.security.AuthorityService;
@@ -28,6 +29,8 @@ import java.util.*;
  * @author Pavel Simonov
  */
 public class CaseRoleServiceImpl implements CaseRoleService {
+
+    private static final String ROLE_TO_NOT_FIRE_TXN_KEY = CaseRoleServiceImpl.class.getName() + ".roleToNotFire";
 
     private static final int ASSIGNEE_DELEGATION_DEPTH_LIMIT = 100;
 
@@ -90,12 +93,19 @@ public class CaseRoleServiceImpl implements CaseRoleService {
         Set<NodeRef> existing = getAssignees(roleRef);
         Set<NodeRef> added = subtract(assignees, existing);
         Set<NodeRef> removed = subtract(existing, assignees);
+
+        addToTransactionMap(roleRef, added);
         for (NodeRef assignee : added) {
             nodeService.createAssociation(roleRef, assignee, ICaseRoleModel.ASSOC_ASSIGNEES);
         }
+        clearTransactionMap();
+
+        addToTransactionMap(roleRef, removed);
         for (NodeRef assignee : removed) {
             nodeService.removeAssociation(roleRef, assignee, ICaseRoleModel.ASSOC_ASSIGNEES);
         }
+        clearTransactionMap();
+
         fireAssigneesChangedEvent(roleRef, added, removed);
     }
 
@@ -121,9 +131,11 @@ public class CaseRoleServiceImpl implements CaseRoleService {
         }
         Set<NodeRef> existing = getAssignees(roleRef);
         Set<NodeRef> added = subtract(assignees, existing);
+        addToTransactionMap(roleRef, added);
         for (NodeRef assignee : added) {
             nodeService.createAssociation(roleRef, assignee, ICaseRoleModel.ASSOC_ASSIGNEES);
         }
+        clearTransactionMap();
         fireAssigneesChangedEvent(roleRef, added, null);
     }
 
@@ -149,9 +161,11 @@ public class CaseRoleServiceImpl implements CaseRoleService {
     public void removeAssignees(NodeRef roleRef) {
         if (roleRef != null) {
             Set<NodeRef> assignees = getTargets(roleRef, ICaseRoleModel.ASSOC_ASSIGNEES);
+            addToTransactionMap(roleRef, assignees);
             for (NodeRef ref : assignees) {
                 nodeService.removeAssociation(roleRef, ref, ICaseRoleModel.ASSOC_ASSIGNEES);
             }
+            clearTransactionMap();
             fireAssigneesChangedEvent(roleRef, null, assignees);
         }
     }
@@ -222,6 +236,27 @@ public class CaseRoleServiceImpl implements CaseRoleService {
             public Void doWork() throws Exception {
                 NodeRef caseRef = nodeService.getPrimaryParent(roleRef).getParentRef();
                 updateRoleImpl(caseRef, roleRef);
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public void roleChanged(NodeRef roleRef, NodeRef added, NodeRef removed) {
+        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
+            @Override
+            public Void doWork() throws Exception {
+                if (added != null && transactionMapContains(roleRef, added)) {
+                    return null;
+                }
+
+                if (removed != null && transactionMapContains(roleRef, removed)) {
+                    return null;
+                }
+
+                Set<NodeRef> addedSet = added != null ? new HashSet<>(Arrays.asList(added)) : null;
+                Set<NodeRef> removedSet = removed != null ? new HashSet<>(Arrays.asList(removed)) : null;
+                fireAssigneesChangedEvent(roleRef, addedSet, removedSet);
                 return null;
             }
         });
@@ -420,6 +455,37 @@ public class CaseRoleServiceImpl implements CaseRoleService {
             throw new IllegalArgumentException("Role with name '" + name + "' not found in case " + caseRef);
         }
         return roleRef;
+    }
+
+    private boolean transactionMapContains(NodeRef roleRef, NodeRef authorityRef) {
+        Map<NodeRef, Collection<NodeRef>> transactionMap = TransactionalResourceHelper.
+                <NodeRef, Collection<NodeRef>>getMap(ROLE_TO_NOT_FIRE_TXN_KEY);
+        Collection<NodeRef> authorities = transactionMap.get(roleRef);
+        if (authorities == null) {
+            return false;
+        }
+        return authorities.contains(authorityRef);
+    }
+
+    private void addToTransactionMap(NodeRef roleRef, NodeRef authority) {
+        addToTransactionMap(roleRef, Collections.singleton(authority));
+    }
+
+    private void addToTransactionMap(NodeRef roleRef, Collection<NodeRef> newAuthorities) {
+        Map<NodeRef, Collection<NodeRef>> transactionMap = TransactionalResourceHelper.
+                <NodeRef, Collection<NodeRef>>getMap(ROLE_TO_NOT_FIRE_TXN_KEY);
+        Collection<NodeRef> authorities = transactionMap.get(roleRef);
+        if (authorities != null) {
+            authorities.addAll(newAuthorities);
+        } else {
+            transactionMap.put(roleRef, new HashSet<>(newAuthorities));
+        }
+    }
+
+    private void clearTransactionMap() {
+        Map<NodeRef, Collection<NodeRef>> transactionMap = TransactionalResourceHelper.
+                <NodeRef, Collection<NodeRef>>getMap(ROLE_TO_NOT_FIRE_TXN_KEY);
+        transactionMap.clear();
     }
 
     public void setNodeService(NodeService nodeService) {

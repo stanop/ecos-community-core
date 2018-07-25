@@ -5,20 +5,12 @@
     <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/journals2/journals.css" group="document-journal" />
     <@link rel="stylesheet" type="text/css" href="${url.context}/res/citeck/components/journals2/journals-page.css" group="document-journal" />
     <@link rel="stylesheet" href="${page.url.context}/res/yui/calendar/assets/calendar.css" group="document-journal" />
-    <@link rel="stylesheet" href="${url.context}/res/citeck/utils/citeck.css" group="document-journal" />
     <@link type="text/css" href="${url.context}/res/citeck/components/document-journal/document-journal.css" group="document-journal" />
 </@>
 
 <@markup id="js">
     <@script type="text/javascript" src="${url.context}/res/modules/documentlibrary/doclib-actions.js" group="document-journal" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="document-journal" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="document-journal" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/criteria-model.js" group="document-journal" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/cell-formatters.js?t=523453241" group="document-journal" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="document-journal" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/components/dynamic-tree/action-renderer.js" group="document-journal" />
     <@script type="text/javascript" src="${url.context}/res/yui/calendar/calendar.js" group="document-journal" />
-    <@script type="text/javascript" src="${url.context}/res/citeck/utils/citeck.js" group="document-journal" />
     <@script type="text/javascript" src="${url.context}/res/citeck/components/document-journal/document-journal.js" group="document-journal" />
 </@>
 
@@ -29,8 +21,12 @@
 
 <script type="text/javascript">
   //<![CDATA[
-    require(['citeck/components/journals2/journals-page', 'citeck/utils/knockout.yui', 'citeck/utils/knockout.components',
-                 'citeck/utils/knockout.invariants-controls'], function(JournalsPage, koyui, kocomponents, koic) {
+    require(['citeck/components/journals2/journals-page',
+             'citeck/utils/knockout.yui',
+             'citeck/utils/knockout.components',
+             'citeck/utils/knockout.invariants-controls',
+             'citeck/components/dynamic-tree/action-renderer'
+    ], function(JournalsPage, koyui, kocomponents, koic) {
 
       new JournalsPage("${id}").setOptions({
         model: {

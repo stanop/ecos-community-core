@@ -32,11 +32,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.AuthorityService;
-import org.alfresco.service.cmr.workflow.WorkflowInstance;
-import org.alfresco.service.cmr.workflow.WorkflowService;
-import org.alfresco.service.cmr.workflow.WorkflowTask;
-import org.alfresco.service.cmr.workflow.WorkflowTaskQuery;
-import org.alfresco.service.cmr.workflow.WorkflowTaskState;
+import org.alfresco.service.cmr.workflow.*;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery.OrderBy;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
@@ -44,7 +40,6 @@ import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
-
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.service.AlfrescoServices;
 
@@ -60,6 +55,7 @@ public class DocumentTasksGet extends DeclarativeWebScript {
 
     private static final String PARAM_NODEREF = "nodeRef";
     private static final String MODEL_TASK_ID = "taskId";
+    private static final String MODEL_TASK_TITLE = "taskTitle";
     private static final String MODEL_TASK_TYPE = "taskType";
     private static final String MODEL_START_DATE = "startDate";
     private static final String MODEL_DUE_DATE = "dueDate";
@@ -170,13 +166,14 @@ public class DocumentTasksGet extends DeclarativeWebScript {
     private Map<String, Object> generateTaskModel(WorkflowTask task) {
         Map<QName, Serializable> properties = task.getProperties();
         
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put(MODEL_TASK_ID, task.getId());
         model.put(MODEL_TASK_TYPE, task.getName());
         model.put(MODEL_START_DATE, properties.get(WorkflowModel.PROP_START_DATE));
         model.put(MODEL_DUE_DATE, properties.get(WorkflowModel.PROP_DUE_DATE));
         model.put(MODEL_SENDER, properties.get(CiteckWorkflowModel.PROP_SENDER_NAME));
         model.put(MODEL_LAST_COMMENT, properties.get(CiteckWorkflowModel.PROP_LASTCOMMENT));
+        model.put(MODEL_TASK_TITLE, task.getTitle());
 
         List<?> pooledActors = (List<?>) properties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
 

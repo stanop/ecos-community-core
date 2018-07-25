@@ -69,6 +69,11 @@ public interface OperatorExpected {
     List<NodeRef> query(SearchService searchService, Predicate<NodeRef> filter);
 
     /**
+     * Query nodes and additional info about result
+     */
+    QueryResult queryDetails(SearchService searchService);
+
+    /**
      * Get query string
      */
     String getQuery();
@@ -104,4 +109,9 @@ public interface OperatorExpected {
      * Set permissions mode
      */
     OperatorExpected permissionsMode(PermissionEvaluationMode mode);
+
+    /**
+     * Search all nodes without limits
+     */
+    OperatorExpected unlimited();
 }

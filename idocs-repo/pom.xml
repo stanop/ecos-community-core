@@ -13,7 +13,7 @@
     <parent>
         <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>ecos-community</artifactId>
-        <version>3.2.1.0</version>
+        <version>3.3.1</version>
     </parent>
 
     <properties>
@@ -45,6 +45,34 @@
                 <exclusion>
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.avalon.framework</groupId>
+                    <artifactId>avalon-framework-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.avalon.framework</groupId>
+                    <artifactId>avalon-framework-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xalan</groupId>
+                    <artifactId>xalan</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -91,26 +119,27 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-graphql-repo</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>1st-override-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-forms-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>journals-repo</artifactId>
-            <classifier>${ecos.project.classifier}</classifier>
         </dependency>
 
         <dependency>
@@ -128,7 +157,6 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-spring</artifactId>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -170,14 +198,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
             </plugin>
 
         </plugins>

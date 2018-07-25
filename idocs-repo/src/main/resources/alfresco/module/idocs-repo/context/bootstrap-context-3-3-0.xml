@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-3-0" abstract="true" parent="idocs.import-spaces.3-2-1">
+        <property name="sinceVersion" value="3.3.0" />
+        <property name="appliesFromVersion" value="3.3.0" />
+    </bean>
+
+    <bean id="idocs.import-scripts.3-3-0" abstract="true" parent="idocs.import-scripts.3-2-1">
+        <property name="sinceVersion" value="3.3.0" />
+        <property name="appliesFromVersion" value="3.3.0" />
+    </bean>
+
+    <bean id="idocs.module-component.journal-task-statistic" parent="idocs.import-spaces.3-3-0" depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="journals-task-statistic" />
+        <property name="description" value="Task statistic" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/tasks/task-statistic</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="idocs.module-component.case-process-cardlets.permissions-update" parent="idocs.import-spaces.3-3-0">
+       <property name="name" value="case-process-cardlets" />
+       <property name="description" value="Case process cardlets permissions update. Show case-process for all, case-mgmt for admins"/>
+       <property name="dependsOn">
+           <list>
+               <ref bean="idocs.module-component.system-journals.cardlets"/>
+               <ref bean="idocs.module-component.system-journals.cardmodes"/>
+           </list>
+       </property>
+       <property name="bootstrapViews">
+           <list>
+               <props>
+                   <prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+                   <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode-with-allowed-authorities-update.xml</prop>
+                   <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/case-process-mode</prop>
+               </props>
+               <props>
+                   <prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+                   <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode-with-allowed-authorities-update.xml</prop>
+                   <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/case-mgmt-mode</prop>
+               </props>
+           </list>
+       </property>
+    </bean>
+
+    <bean id="idocs.module-component.update-roles-cardlet" parent="idocs.import-spaces.3-3-0">
+        <property name="name" value="update-roles-cardlet"/>
+        <property name="description" value="Move role cardlet to case-process card"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.cardlets-case-roles"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode-update.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case-roles/case-roles</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.journal-task-statistic-add-to-list" parent="module.baseComponent"
+          class="ru.citeck.ecos.journals.module.AddToJournalListModuleComponent">
+        <property name="name" value="add-task-statistic-to-list" />
+        <property name="moduleId" value="idocs-repo" />
+        <property name="journalList" value="global-tasks" />
+        <property name="journal" value="task-statistic" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journal-task-statistic" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.fill-monthday-property"
+          class="ru.citeck.ecos.migration.FillMonthDayPersonPropertyModuleComponent"
+          parent="idocs.module-component.users-batch-processing">
+        <property name="name" value="fill-monthday-property"/>
+        <property name="description" value="Filling in ecos:birthMonthDay property"/>
+        <property name="sinceVersion" value="3.3.0"/>
+        <property name="appliesFromVersion" value="3.3.0"/>
+    </bean>
+
+</beans>

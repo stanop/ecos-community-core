@@ -10,7 +10,7 @@
     <parent>
         <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>ecos-community</artifactId>
-        <version>3.2.1.0</version>
+        <version>3.3.1</version>
     </parent>
 
     <!-- 
@@ -90,27 +90,6 @@
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                    <!--
-                                        <execution>
-                                            <id>locate-depend-amp</id>
-                                            <phase>process-test-resources</phase>
-                                            <goals>
-                                                <goal>copy</goal>
-                                            </goals>
-                                            <configuration>
-                                                <artifactItems>
-                                                    <artifactItem>
-                                                        <groupId>${project.groupId}</groupId>
-                                                        <artifactId>ecos-base-core-repo</artifactId>
-                                                        <version>${ecos-base-core.version}</version>
-                                                        <classifier>${ecos.project.classifier}</classifier>
-                                                        <type>amp</type>
-                                                    </artifactItem>
-                                                </artifactItems>
-                                                <outputDirectory>${project.build.directory}/depend.amp</outputDirectory>
-                                            </configuration>
-                                        </execution>
-                    -->
                     <execution>
                         <id>unpack-alfresco-war</id>
                         <phase>process-test-resources</phase>

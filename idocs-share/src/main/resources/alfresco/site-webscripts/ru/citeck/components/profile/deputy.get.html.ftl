@@ -6,122 +6,116 @@
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/orgstruct/console.css" group="profile" />
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/orgstruct/orgstruct-icons.css" group="profile" />
     <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/deputy/deputy.css" group="profile" />
-    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.css" group="profile" />
 
-</@>
-
-<@markup id="js">
-    <@script type="text/javascript" src="${page.url.context}/res/components/console/consoletool.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/yui/resize/resize.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/people-finder.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/components/people-finder/group-finder.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/modules/simple-dialog.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/has-buttons.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-toolbar.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/error-manager.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/hierarchy-model.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/dynamic-tree/dynamic-tree.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/orgstruct/picker-dialogs.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/orgstruct/form-dialogs.js" group="profile" />
-    <@script type="text/javascript" src="${page.url.context}/res/citeck/components/orgstruct/console.js" group="profile" />
 </@>
 
 <#assign el=args.htmlid?html />
 <script type="text/javascript">//<![CDATA[
-var orgstruct = new Alfresco.component.ConsoleOrgstruct("${el}").setOptions({
-    currentFilter: "deputies",
-    filters: [
-        {
-            name: "deputies",
-            model: {
-                formats: {
-                    "authority": {
-                        name: "authority-{fullName}",
-                        keys: [ "{groupType}-manager-{roleIsManager}", "{authorityType}-{groupType}", "{authorityType}", "deputy-{deputy}", "manage-{manage}", "authority", "available-{available}"]
+require(['components/console/consoletool',
+    'components/people-finder/people-finder',
+    'components/people-finder/group-finder',
+    'modules/simple-dialog',
+    'citeck/components/orgstruct/picker-dialogs',
+    'citeck/components/dynamic-tree/dynamic-toolbar',
+    'citeck/components/orgstruct/console'], function() {
+
+    var orgstruct = new Alfresco.component.ConsoleOrgstruct("${el}").setOptions({
+        currentFilter: "deputies",
+        filters: [
+            {
+                name: "deputies",
+                model: {
+                    formats: {
+                        "authority": {
+                            name: "authority-{fullName}",
+                            keys: [ "{groupType}-manager-{roleIsManager}", "{authorityType}-{groupType}", "{authorityType}", "deputy-{deputy}", "manage-{manage}", "authority", "available-{available}"]
+                        },
+                        "member": {
+                            "name": "deputy-{deputy}-isAssistant-{isAssistant}-{userName}",
+                            keys: ["available-{available}", "deputy-{deputy}", "manage-{manage}", "member", "deputy-{deputy}-isAssistant-{isAssistant}", "canDelete-{canDelete}"],
+                            calc: function(item) {
+                                if(typeof item.deputy == "undefined") item.deputy = true;
+                                if (typeof item.isAssistant == "undefined") item.isAssistant = false;
+                            }
+                        },
+                        "deputy": {
+                            name: "deputy-true-isAssistant-{isAssistant}-{userName}",
+                            keys: ["available-{available}", "deputy-true", "manage-false", "member", "canDelete-{canDelete}", "isAssistant-{isAssistant}", "deputy-true-isAssistant-{isAssistant}"]
+                        },
                     },
-                    "member": {
-                        "name": "deputy-{deputy}-isAssistant-{isAssistant}-{userName}",
-                        keys: ["available-{available}", "deputy-{deputy}", "manage-{manage}", "member", "deputy-{deputy}-isAssistant-{isAssistant}", "canDelete-{canDelete}"],
-                        calc: function(item) {
-                            if(typeof item.deputy == "undefined") item.deputy = true;
-                            if (typeof item.isAssistant == "undefined") item.isAssistant = false;
+                    item: {
+                        "authority": {
+                            "format": "authority",
+                            "get": "${page.url.context}/proxy/alfresco/api/orgstruct/authority/{fullName}",
+                        },
+                        "deputy-false-isAssistant-false": {
+                            "format": "member",
+                            "get": "${page.url.context}/proxy/alfresco/api/deputy/{userName}",
+                        },
+                        "deputy-false-isAssistant-true": {
+                            "format": "member",
+                            "get": "${page.url.context}/proxy/alfresco/api/deputy/{userName}",
+                        },
+                        "deputy-true-isAssistant-false": {
+                            "format": "deputy",
+                            "get": "${page.url.context}/proxy/alfresco/api/deputy/{userName}",
+                        },
+                        "deputy-true-isAssistant-true": {
+                            "format": "deputy",
+                            "get": "${page.url.context}/proxy/alfresco/api/assistant/{userName}",
+                        },
+                    },
+                    children: {
+                        "root": {
+                            "format": "authority",
+                            "get": "${page.url.context}/proxy/alfresco/api/deputy/currentUserRoles",
+                        },
+                        "GROUP": {
+                            "format": "member",
+                            "get": "${page.url.context}/proxy/alfresco/api/deputy/{fullName}/members",
+                            "add": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&addAssistants={item.isAssistant}",
+                            "delete": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&isAssistants={item.isAssistant}",
+                        },
+                        "USER": {
+                            "format": "deputy",
+                            "get": "${page.url.context}/proxy/alfresco/api/deputy/{fullName}/deputies",
+                            "add": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&addAssistants={item.isAssistant}",
+                            "delete": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&isAssistants={item.isAssistant}",
                         }
                     },
-                    "deputy": {
-                        name: "deputy-true-isAssistant-{isAssistant}-{userName}",
-                        keys: ["available-{available}", "deputy-true", "manage-false", "member", "canDelete-{canDelete}", "isAssistant-{isAssistant}", "deputy-true-isAssistant-{isAssistant}"]
+                    titles: {
+                        "root": "{title}",
+                        "GROUP": "{displayName} ({shortName})",
+                        "USER": "{firstName} {lastName} ({fullName})",
+                        "member": "{firstName} {lastName} ({userName})"
                     },
                 },
-                item: {
-                    "authority": {
-                        "format": "authority",
-                        "get": "${page.url.context}/proxy/alfresco/api/orgstruct/authority/{fullName}",
-                    },
-                    "deputy-false-isAssistant-false": {
-                        "format": "member",
-                        "get": "${page.url.context}/proxy/alfresco/api/deputy/{userName}",
-                    },
-                    "deputy-false-isAssistant-true": {
-                        "format": "member",
-                        "get": "${page.url.context}/proxy/alfresco/api/deputy/{userName}",
-                    },
-                    "deputy-true-isAssistant-false": {
-                        "format": "deputy",
-                        "get": "${page.url.context}/proxy/alfresco/api/deputy/{userName}",
-                    },
-                    "deputy-true-isAssistant-true": {
-                        "format": "deputy",
-                        "get": "${page.url.context}/proxy/alfresco/api/assistant/{userName}",
+                forms: {
+                    nodeId: {
+                        "": "{nodeRef}"
                     },
                 },
-                children: {
-                    "root": {
-                        "format": "authority",
-                        "get": "${page.url.context}/proxy/alfresco/api/deputy/currentUserRoles",
+                toolbar: {
+                    buttons: {
+                        "manage-true": ["addDeputy", "addAssistant"],
+                        "": [],
                     },
-                    "GROUP": {
-                        "format": "member",
-                        "get": "${page.url.context}/proxy/alfresco/api/deputy/{fullName}/members",
-                        "add": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&addAssistants={item.isAssistant}",
-                        "delete": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&isAssistants={item.isAssistant}",
+                },
+                tree: {
+                    buttons: {
                     },
-                    "USER": {
-                        "format": "deputy",
-                        "get": "${page.url.context}/proxy/alfresco/api/deputy/{fullName}/deputies",
-                        "add": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&addAssistants={item.isAssistant}",
-                        "delete": "${page.url.context}/proxy/alfresco/api/deputy/{parent.fullName}/deputies?users={item.userName}&isAssistants={item.isAssistant}",
-                    }
                 },
-                titles: {
-                    "root": "{title}",
-                    "GROUP": "{displayName} ({shortName})",
-                    "USER": "{firstName} {lastName} ({fullName})",
-                    "member": "{firstName} {lastName} ({userName})"
+                list: {
+                    buttons: {
+                        "canDelete-true": [ "deleteItem" ]
+                    },
                 },
-            },
-            forms: {
-                nodeId: {
-                    "": "{nodeRef}"
-                },
-            },
-            toolbar: {
-                buttons: {
-                    "manage-true": ["addDeputy", "addAssistant"],
-                    "": [],
-                },
-            },
-            tree: {
-                buttons: {
-                },
-            },
-            list: {
-                buttons: {
-                    "canDelete-true": [ "deleteItem" ]
-                },
-            },
-        }
-    ],
-}).setMessages(${messages});
+            }
+        ],
+    }).setMessages(${messages});
+
+});
+
 //]]></script>
 
 <@orgstruct.renderOrgstructBody el/>

@@ -16,7 +16,7 @@ var roles = {
             var result = [];
             for (var i = 0; i < routings.length; i++) {
                 var condition = routings[i].properties['route:scriptCondition'];
-                if (condition != null) {
+                if (condition != null && condition.replace(/\s/g, "").length != 0) {
                     var conditionResult;
                     try {
                         conditionResult = eval(condition);

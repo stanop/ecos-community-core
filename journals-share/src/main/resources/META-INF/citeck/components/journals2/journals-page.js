@@ -16,8 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/journals', 'lib/knockout'],
-    function (jq, koutils, Journals, ko) {
+define([
+    'jquery',
+    'citeck/utils/knockout.utils',
+    'citeck/components/journals2/journals',
+    'lib/knockout'
+], function (jq, koutils, Journals, ko) {
 
         var PopupManager = Alfresco.util.PopupManager,
             koclass = koutils.koclass,
@@ -262,10 +266,113 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
             },
 
             onGroupAction: function (records, action) {
+                var self = this;
+
                 var dataObj = {
-                  nodes: _.map(records, function(record) { return record.nodeRef(); }),
-                  actionId: action.settings().actionId,
-                  params: action.settings()
+                    nodes: _.map(records, function(record) { return record.nodeRef(); }),
+                    actionId: action.settings().actionId,
+                    params: action.settings()
+                };
+
+                var groupActionPost = function () {
+                    Alfresco.util.Ajax.jsonPost({
+                        url: Alfresco.constants.PROXY_URI + "api/journals/group-action",
+                        dataObj: dataObj,
+                        successCallback: {
+                            scope: this,
+                            fn: function(response) {
+                                YAHOO.Bubbling.fire("metadataRefresh");
+                                var results = response.json;
+                                var downloadReportUrl = results && results[0] && results[0].url;
+
+                                if (!self.widgets.gard) {
+                                    self.widgets.gard = new YAHOO.widget.SimpleDialog("group-action-result-dialog", {
+                                        width: "600px",
+                                        effect:{
+                                            effect: YAHOO.widget.ContainerEffect.FADE,
+                                            duration: 0.25
+                                        },
+                                        fixedcenter: "contained",
+                                        modal: false,
+                                        visible: true,
+                                        draggable: false,
+                                        close: false,
+                                        buttons: [ { text: "OK", handler: function() { this.hide()} } ]
+                                    });
+
+                                    self.widgets.gard.setHeader(msg("group-action.label.header"));
+
+                                    if (!downloadReportUrl) {
+                                        self.widgets.gard.setBody(
+                                            $("<table>").append(
+                                                $("<thead>").append(
+                                                    $("<tr>")
+                                                        .append($("<th>", { text: msg("group-action.label.record") }))
+                                                        .append($("<th>", { text: msg("group-action.label.status") }))
+                                                        .append($("<th>", { text: msg("group-action.label.message") }))
+                                                )
+                                            ).get(0)
+                                        );
+                                    }
+
+                                    self.widgets.gard.render(document.body);
+                                }
+                                if (downloadReportUrl) {
+                                    self.widgets.gard.setBody(
+                                        '<table  style="width: 100%; height: 60px">' +
+                                        '<tr style="text-align: center">' +
+                                        '<td>' + msg("group-action.label.report") + '</td>' +
+                                        '<td><a class="document-link" onclick="event.stopPropagation()" '
+                                        + 'href="' + Alfresco.constants.PROXY_URI + downloadReportUrl + '">' + msg("actions.document.download") + '</a></td>' +
+                                        '</tr>' +
+                                        '</table>'
+                                    )
+                                } else {
+                                    $("table tbody", self.widgets.gard.body).remove();
+
+                                    var rtbody = $("<tbody>");
+                                    _.each(results, function(result) {
+                                        var record = _.find(records, function(rec) {
+                                            return rec.nodeRef() == result.nodeRef;
+                                        });
+
+                                        if (record) {
+                                            var nameAttr   = record.attributes()["cm:name"],
+                                                name       = nameAttr && nameAttr[0] && nameAttr[0].hasOwnProperty('str') ? nameAttr[0].str : nameAttr,
+                                                titleAttr  = record.attributes()["cm:title"],
+                                                title      = titleAttr && titleAttr[0] && titleAttr[0].hasOwnProperty('str') ? titleAttr[0].str : titleAttr,
+                                                recordName = title || name,
+                                                document   = record.attributes()["wfm:document"];
+
+                                            if (record.isDocument() && document) {
+                                                id = document.displayName || (document[0] && document[0].hasOwnProperty('str') ? document[0].str : "");
+                                            }
+
+                                            rtbody.append(
+                                                $("<tr>")
+                                                    .append($("<td>", { text: recordName }))
+                                                    .append($("<td>", {
+                                                        text: msg("batch-edit.message." + result.status)
+                                                    }))
+                                                    .append($("<td>", { text: result.message }))
+                                            );
+                                        }
+                                    });
+
+                                    $("table", self.widgets.gard.body).append(rtbody);
+                                }
+                                self.widgets.gard.show();
+                            }
+                        },
+                        failureCallback: {
+                            scope: this,
+                            fn: function(response) {
+                                Alfresco.util.PopupManager.displayMessage({
+                                    text: this.msg("batch-edit.message.ERROR")
+                                });
+                            }
+                        }
+                    });
                 };
 
                 /** Javascript action */
@@ -275,99 +382,27 @@ define(['jquery', 'citeck/utils/knockout.utils', 'citeck/components/journals2/jo
                     return;
                 }
 
-                Alfresco.util.Ajax.jsonPost({
-                    url: Alfresco.constants.PROXY_URI + "api/journals/group-action",
-                    dataObj: dataObj,
-                    successCallback: {
+                if (action.settings().view) {
+                    var title     = action.settings().title || "group-action.label.title";
+                    var journalId = action.settings().journalId;
+                    var actionId  = action.settings().actionId;
+                    var formId    = action.settings().formId;
+
+                    Citeck.forms.dialog(journalId + "_" + actionId, formId, {
                         scope: this,
-                        fn: function(response) {
-                            YAHOO.Bubbling.fire("metadataRefresh");
-                            var results = response.json;
-                            var downloadReportUrl = results && results[0] && results[0].url;
-
-                            if (!this.widgets.gard) {
-                                this.widgets.gard = new YAHOO.widget.SimpleDialog("group-action-result-dialog", {
-                                    width: "600px",
-                                    effect:{
-                                        effect: YAHOO.widget.ContainerEffect.FADE,
-                                        duration: 0.25
-                                    },
-                                    fixedcenter: "contained",
-                                    modal: false,
-                                    visible: true,
-                                    draggable: false,
-                                    close: false,
-                                    buttons: [ { text: "OK", handler: function() { this.hide()} } ]
-                                });
-
-                                this.widgets.gard.setHeader(msg("group-action.label.header"));
-
-                                if (!downloadReportUrl) {
-                                    this.widgets.gard.setBody(
-                                        $("<table>").append(
-                                            $("<thead>").append(
-                                                $("<tr>")
-                                                    .append($("<th>", { text: msg("group-action.label.record") }))
-                                                    .append($("<th>", { text: msg("group-action.label.status") }))
-                                                    .append($("<th>", { text: msg("group-action.label.message") }))
-                                            )
-                                        ).get(0)
-                                    );
-                                }
-
-                                this.widgets.gard.render(document.body);
+                        fn: function (rsp) {
+                            if (rsp != null && rsp.result != null && rsp.result.formAttributes) {
+                                $.extend(dataObj.params, rsp.result.formAttributes);
                             }
-                            if (downloadReportUrl) {
-                                this.widgets.gard.setBody(
-                                   '<table  style="width: 100%; height: 60px">' +
-                                        '<tr style="text-align: center">' +
-                                            '<td>' + msg("group-action.label.report") + '</td>' +
-                                            '<td><a class="document-link" onclick="event.stopPropagation()" '
-                                                + 'href="' + Alfresco.constants.PROXY_URI + downloadReportUrl + '">' + msg("actions.document.download") + '</a></td>' +
-                                        '</tr>' +
-                                    '</table>'
-                                )
-                            } else {
-                                $("table tbody", this.widgets.gard.body).remove();
 
-                                var rtbody = $("<tbody>");
-                                _.each(results, function(result) {
-                                    var record = _.find(records, function(rec) {
-                                        return rec.nodeRef() == result.nodeRef;
-                                    });
-
-                                    if (record) {
-                                        var id = record.attributes()["cm:name"];
-
-                                        if (record.isDocument() && record.attributes()["wfm:document"]) {
-                                            id = record.attributes()["wfm:document"].displayName;
-                                        }
-
-                                        rtbody.append(
-                                            $("<tr>")
-                                                .append($("<td>", { text: id }))
-                                                .append($("<td>", {
-                                                    text: msg("batch-edit.message." + result.status)
-                                                }))
-                                                .append($("<td>", { text: result.message }))
-                                        );
-                                    }
-                                });
-
-                                $("table", this.widgets.gard.body).append(rtbody);
-                            }
-                            this.widgets.gard.show();
+                            groupActionPost();
                         }
-                  },
-                  failureCallback: {
-                      scope: this,
-                      fn: function(response) {
-                        Alfresco.util.PopupManager.displayMessage({
-                          text: this.msg("batch-edit.message.ERROR")
-                        });
-                      }
-                  }
-                });
+                    }, {
+                        title: Alfresco.util.message(title)
+                    });
+                } else {
+                    groupActionPost();
+                }
             },
 
 

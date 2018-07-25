@@ -16,7 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/invariants/invariants'], function(ko, koutils) {
+define([
+    'lib/knockout',
+    'citeck/utils/knockout.utils',
+    'citeck/components/invariants/invariants',
+    'citeck/components/dynamic-tree/cell-formatters',
+    'citeck/components/dynamic-tree/action-renderer'
+], function(ko, koutils) {
 
 var logger = Alfresco.logger,
         noneActionGroupId = "none",
@@ -1202,9 +1208,16 @@ JournalsWidget
             }
 
             // forbidden aspect check
-            var forbiddenAspect = action.forbiddenAspect();
-            if (forbiddenAspect && _.any(records, _.partial(hasAspect, _, forbiddenAspect))) {
-                return false;
+            var forbiddenAspectArray = action.forbiddenAspect();
+
+            if (forbiddenAspectArray != null && forbiddenAspectArray.length > 0) {
+                var forbiddenAspect = forbiddenAspectArray.split(",");
+
+                for (var i = 0; i < forbiddenAspect.length; i++) {
+                    if (forbiddenAspect[i] && _.any(records, _.partial(hasAspect, _, forbiddenAspect[i]))) {
+                        return false;
+                    }
+                }
             }
 
             return true;

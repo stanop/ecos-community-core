@@ -115,19 +115,19 @@ import java.util.*;
 
         String modeClause;
         if (ALL_MODES.equals(cardMode)) {
-            modeClause = "TRUE";
+            modeClause = "";
         } else {
             Collection<String> modes = new ArrayList<>(2);
             modes.add(cardMode);
             modes.add(CardletService.ALL_MODES);
-            modeClause = disjunction(CardletModel.PROP_CARD_MODE, modes, false, true);
+            modeClause = " AND " + disjunction(CardletModel.PROP_CARD_MODE, modes, false, true);
         }
 
         authorities.add("");
         String typeClause = "TYPE:\"" + CardletModel.TYPE_CARDLET + "\"";
         String documentClause = disjunction(CardletModel.PROP_ALLOWED_TYPE, types, false, true);
         String authorityClause = disjunction(CardletModel.PROP_ALLOWED_AUTHORITIES, authorities, false, true);
-        String query = typeClause + " AND " + modeClause + " AND " + documentClause + " AND " + authorityClause;
+        String query = typeClause + modeClause + " AND " + documentClause + " AND " + authorityClause;
         if (logger.isDebugEnabled()) {
             logger.debug("Quering cardlets: " + query);
         }

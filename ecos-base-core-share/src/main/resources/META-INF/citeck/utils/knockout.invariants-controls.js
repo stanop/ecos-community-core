@@ -298,13 +298,55 @@ ko.components.register("number", {
                         }
                     }
                 };
-                self.disabled = self.attribute['protected'];
+                self.disabled = ko.computed(function() {
+                    return self.attribute.resolve("protected") || self.node.resolve("impl.invalid");
+                });
             });
         },
         template:
             '<!-- ko foreach: buttons -->\
                 <button data-bind="text: $data.title, click: $component.onClick, disable: $component.disabled" />\
             <!-- /ko -->'
+    });
+
+// ---------------
+// CUSTOM-ACTION-BUTTON
+// ---------------
+
+    ko.components.register("custom-action-button", {
+        viewModel: function (params) {
+            kocomponents.initializeParameters.call(this, params);
+            var self = this;
+
+            require(['citeck/utils/knockout.utils'], function (koutils) {
+                self.buttonTitle = Alfresco.util.message(params["buttonTitle"]);
+                self.node = self.attribute.node();
+
+                self.onClick = function (item) {
+                    var redirect = "/share/page/card-details?nodeRef=" + self.node.nodeRef;
+                    var onRedirect = function () {
+                        window.location = redirect;
+                    };
+
+                    var jsonData = '{"outcome": "' + self.outcome + '", "taskType": "' + self.taskType + '"}';
+                    if (self.value() != jsonData) {
+                        self.value(jsonData);
+                        koutils.subscribeOnce(self.value, function () {
+                            self.node.thisclass.save(self.node, onRedirect);
+                        });
+                    } else {
+                        self.node.thisclass.save(self.node, onRedirect);
+                    }
+                };
+                self.disabled = ko.computed(function() {
+                    var protected = self.attribute.resolve("protected");
+                    var isSubmitReady = self.attribute.resolve("node.impl.runtime.isSubmitReady");
+                    return !isSubmitReady || protected;
+                });
+            });
+        },
+        template:
+            '<button data-bind="text: $data.buttonTitle, click: $component.onClick, disable: $component.disabled" />'
     });
 
 // ---------------
@@ -900,9 +942,11 @@ ko.bindingHandlers.journalControl = {
         event.preventDefault();
 
         var showPanelOnClick = function () {
-            var scope = this;
-            if (!scope.panel) {
-                var journalType = params.journalType ? new JournalType(params.journalType) : (data.journalType || null);
+            var scope = this,
+                journalTypeIdFromData = data.journalId && data.journalId() ? data.journalId() : "",
+                journalTypeId = journalTypeIdFromData || params.journalType;
+            if (!scope.panel || journalTypeIdFromData) {
+                var journalType = journalTypeId ? new JournalType(journalTypeId) : (data.journalType || null);
                 if (!journalType) { /* so, it is fail */
                 }
 
@@ -935,6 +979,7 @@ ko.bindingHandlers.journalControl = {
                     }),
                     additionalOptions = ko.observable([]),
                     options = ko.computed(function (page) {
+                        var journalTypeId = data.journalId && data.journalId() || params.journalType;
                         var actualCriteria = criteria();
                         if (hiddenCriteria) {
                             for (var hc in hiddenCriteria) {
@@ -945,21 +990,30 @@ ko.bindingHandlers.journalControl = {
                             }
                         }
 
-                        if (params.journalType) {
+                        if (journalTypeId) {
                             if (!_.find(actualCriteria, function (criterion) {return criterion.predicate == 'journal-id';})) {
                                 actualCriteria.push({
                                     attribute: 'path',
                                     predicate: 'journal-id',
-                                    value: params.journalType
+                                    value: journalTypeId
+                                });
+                            }
+                            if (journalTypeIdFromData) {
+                                actualCriteria = actualCriteria.filter(function(item) {
+                                    if (item.predicate == 'journal-id' && item.value != journalTypeId) {
+                                        item.value = journalTypeId;
+                                    }
+                                    return item;
                                 });
                             }
                         }
+
                         var nudeOptions = data.filterOptions(actualCriteria, {
                             maxItems: maxItems(),
                             skipCount: skipCount(),
                             searchScript: searchScript,
                             sortBy: sortBy
-                        }, params.journalType);
+                        }, journalTypeId);
                         var config = nudeOptions.pagination, result;
 
                         var tempAdditionalOptions = additionalOptions();
@@ -1064,15 +1118,17 @@ ko.bindingHandlers.journalControl = {
                     return "800px";
                 })();
 
-                scope.panel = new YAHOO.widget.Panel(panelId, {
-                    //width:          optimalWidth,
-                    visible: false,
-                    fixedcenter: true,
-                    draggable: true,
-                    modal: true,
-                    zindex: 5,
-                    close: true
-                });
+                if (!scope.panel) {
+                    scope.panel = new YAHOO.widget.Panel(panelId, {
+                        //width:          optimalWidth,
+                        visible: false,
+                        fixedcenter: true,
+                        draggable: true,
+                        modal: true,
+                        zindex: 5,
+                        close: true
+                    });
+                }
 
                 // hide dialog on click 'esc' button
                 scope.panel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, {keys: 27}, {
@@ -1186,7 +1242,7 @@ ko.bindingHandlers.journalControl = {
                 Event.on(submitButtonId, "click", function (event) {
                     if (selectedElements() && selectedElements().length) {
                         value(removeSelection
-                            ? (multiple() ? value().concat(selectedElements()) : selectedElements())
+                            ? (multiple() ? (value() ? value().concat(selectedElements()) : selectedElements()) : selectedElements())
                             : ko.utils.unwrapObservable(selectedElements))
                     }
                     scope.panel.hide();

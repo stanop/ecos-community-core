@@ -2,7 +2,8 @@
 <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
 <beans>
     <!-- models -->
-    <bean id="order-pass.modelBootstrap" parent="dictionaryModelBootstrap" depends-on="idocs.dictionaryBootstrap">
+    <bean id="order-pass.modelBootstrap" parent="dictionaryModelBootstrap"
+          depends-on="idocs.dictionaryBootstrap,idocs.workflowModelsBootstrap">
         <property name="models">
             <list>
                 <value>alfresco/module/ecos-order-pass-repo/model/order-pass-model.xml</value>

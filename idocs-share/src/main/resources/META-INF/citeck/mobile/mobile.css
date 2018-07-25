@@ -68,7 +68,6 @@
 
 /* HEADER and MAIN MENU and USER MENU*/
 
-#HEADER_APP_MENU_BAR #HEADER_MOBILE_MENU,
 .mobile #HEADER_APP_MENU_BAR .dijitMenuItem {
     display: none;
 }
@@ -127,6 +126,7 @@
 
 .mobile #SHARE_HEADER #HEADER_USER_MENU_BAR #HEADER_USER_MENU {
     padding-left: 5px;
+    padding-right: 5px;
 }
 
 .mobile #share-header .alfresco-header-Header {
@@ -398,6 +398,12 @@
 /* CARD */
 
 .mobile #bd > .yui-gc > .yui-u {
+    width: 100% !important;
+    margin: 0;
+    float: none;
+}
+
+.mobile #bd .card-mode-body > .yui-gc > .yui-u {
     width: 100% !important;
     margin: 0;
     float: none;

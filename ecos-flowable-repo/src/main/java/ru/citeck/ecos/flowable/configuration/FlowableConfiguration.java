@@ -1,7 +1,6 @@
 package ru.citeck.ecos.flowable.configuration;
 
 import org.alfresco.repo.i18n.MessageService;
-import org.alfresco.repo.jscript.BaseScopableProcessorExtension;
 import org.alfresco.repo.service.ServiceDescriptorRegistry;
 import org.alfresco.repo.tenant.TenantService;
 import org.alfresco.repo.workflow.DefaultWorkflowPropertyHandler;
@@ -22,8 +21,6 @@ import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
 import ru.citeck.ecos.flowable.handlers.UserTaskBpmnParseHandler;
-import ru.citeck.ecos.flowable.listeners.global.GlobalExecutionListener;
-import ru.citeck.ecos.flowable.listeners.global.GlobalTaskListener;
 import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
 import ru.citeck.ecos.flowable.services.impl.ModelMapper;
@@ -51,7 +48,16 @@ public class FlowableConfiguration {
     private static final String FLOWABLE_DB_PASSWORD = "flowable.db.password";
     private static final String FLOWABLE_DRIVER_CLASS_NAME = "flowable.db.driver.class.name";
 
-    private static final List<String> EXCLUDE_JS_SERVICES = Collections.singletonList("flowableModelerServiceJS");
+    /**
+     * Mail properties constants
+     */
+    private static final String FLOWABLE_MAIL_SERVER_HOST = "flowable.mail.server.host";
+    private static final String FLOWABLE_MAIL_SERVER_PORT = "flowable.mail.server.port";
+    private static final String FLOWABLE_MAIL_SERVER_USERNAME = "flowable.mail.server.username";
+    private static final String FLOWABLE_MAIL_SERVER_PASSWORD = "flowable.mail.server.password";
+    private static final String FLOWABLE_MAIL_SERVER_DEFAULT_FROM = "flowable.mail.server.default.from";
+    private static final String FLOWABLE_MAIL_SERVER_USE_TLS = "flowable.mail.server.use.tls";
+    private static final String FLOWABLE_MAIL_SERVER_USE_SSL = "flowable.mail.server.use.ssl";
 
     /**
      * Application context provider
@@ -74,12 +80,17 @@ public class FlowableConfiguration {
     @Bean(name = "flowableDataSource")
     public DataSource flowableDataSource() {
         if (properties.getProperty(FLOWABLE_DB_URL) != null) {
-            DriverManagerDataSource result = new DriverManagerDataSource();
-            result.setDriverClassName(properties.getProperty(FLOWABLE_DRIVER_CLASS_NAME));
-            result.setUrl(properties.getProperty(FLOWABLE_DB_URL));
-            result.setUsername(properties.getProperty(FLOWABLE_DB_USERNAME));
-            result.setPassword(properties.getProperty(FLOWABLE_DB_PASSWORD));
-            return result;
+            try {
+                DriverManagerDataSource result = new DriverManagerDataSource();
+                result.setDriverClassName(properties.getProperty(FLOWABLE_DRIVER_CLASS_NAME));
+                result.setUrl(properties.getProperty(FLOWABLE_DB_URL));
+                result.setUsername(properties.getProperty(FLOWABLE_DB_USERNAME));
+                result.setPassword(properties.getProperty(FLOWABLE_DB_PASSWORD));
+                return result;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         } else {
             return null;
         }
@@ -109,18 +120,9 @@ public class FlowableConfiguration {
             // Beans
             Map<Object, Object> beans = new HashMap<>();
             beans.put(FlowableConstants.SERVICE_REGISTRY_BEAN_KEY, descriptorRegistry);
-            setGlobalListenerBeans(beans);
-
-            // Javascipt services
-            Map<String, BaseScopableProcessorExtension> servicesMap = applicationContext.getBeansOfType(BaseScopableProcessorExtension.class);
-            for (BaseScopableProcessorExtension extension : servicesMap.values()) {
-                if (!EXCLUDE_JS_SERVICES.contains(extension.getExtensionName())) {
-                    beans.put(extension.getExtensionName(), extension);
-                }
-            }
-
             engineConfiguration.setBeans(beans);
 
+            setMailConfiguration(engineConfiguration);
             // Listeners and handlers
             List<BpmnParseHandler> parseHandlers = new ArrayList<>(2);
             parseHandlers.add(new ProcessBpmnParseHandler());
@@ -133,18 +135,42 @@ public class FlowableConfiguration {
     }
 
     /**
-     * Set global listener beans
-     *
-     * @param beans Beans map
+     * Set mail configuration
+     * @param processEngineConfiguration Process engine configuration
      */
-    private void setGlobalListenerBeans(Map<Object, Object> beans) {
-        Map<String, GlobalExecutionListener> executionListenerMap = applicationContext.getBeansOfType(GlobalExecutionListener.class);
-        for (String key : executionListenerMap.keySet()) {
-            beans.put(key, executionListenerMap.get(key));
+    private void setMailConfiguration(StandaloneProcessEngineConfiguration processEngineConfiguration) {
+        String mailHost = properties.getProperty(FLOWABLE_MAIL_SERVER_HOST);
+        if (mailHost != null) {
+            processEngineConfiguration.setMailServerHost(mailHost);
         }
-        Map<String, GlobalTaskListener> taskListenerMap = applicationContext.getBeansOfType(GlobalTaskListener.class);
-        for (String key : taskListenerMap.keySet()) {
-            beans.put(key, taskListenerMap.get(key));
+
+        String mailPort = properties.getProperty(FLOWABLE_MAIL_SERVER_PORT);
+        if (mailPort != null) {
+            processEngineConfiguration.setMailServerPort(Integer.valueOf(mailPort));
+        }
+
+        String mailUsername = properties.getProperty(FLOWABLE_MAIL_SERVER_USERNAME);
+        if (mailUsername != null) {
+            processEngineConfiguration.setMailServerUsername(mailUsername);
+        }
+
+        String mailPassword = properties.getProperty(FLOWABLE_MAIL_SERVER_PASSWORD);
+        if (mailPassword != null) {
+            processEngineConfiguration.setMailServerPassword(mailPassword);
+        }
+
+        String mailDefaultFrom = properties.getProperty(FLOWABLE_MAIL_SERVER_DEFAULT_FROM);
+        if (mailDefaultFrom != null) {
+            processEngineConfiguration.setMailServerDefaultFrom(mailDefaultFrom);
+        }
+
+        String mailUseTLS = properties.getProperty(FLOWABLE_MAIL_SERVER_USE_TLS);
+        if (mailUseTLS != null) {
+            processEngineConfiguration.setMailServerUseTLS(Boolean.valueOf(mailUseTLS));
+        }
+        String mailUseSSL = properties.getProperty(FLOWABLE_MAIL_SERVER_USE_SSL);
+        if (mailUseSSL != null) {
+            processEngineConfiguration.setMailServerUseSSL(Boolean.valueOf(mailUseSSL));
         }
     }
 

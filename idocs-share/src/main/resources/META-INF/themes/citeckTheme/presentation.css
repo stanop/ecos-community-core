@@ -2655,6 +2655,12 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
     margin-top: 2.5px;
 }
 
+.yui-skin-citeckTheme.alfresco-share.mobile img.user-photo-header {
+    height: 25px;
+    width: 25px;
+    margin-top: 8px;
+}
+
 .yui-skin-citeckTheme #HEADER_SITE_MENU:before,
 .yui-skin-citeckTheme.mobile #HEADER_USER_MENU:before,
 .yui-skin-citeckTheme .hamburger-mobile-menu .hamburger-box:after {
@@ -2731,7 +2737,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 /* breadcrumbs */
 
 .node-path {
-  padding: 5px 40px;
+  padding: 5px 0;
 }
 
 .node-path .folder-link a{
@@ -2837,6 +2843,16 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
    border-right: 1px solid #ccc;
 }
 
+#bd .card-details-mode-body > .yui-gc:not(.grid) > .yui-u {
+    width: 33.85%;
+    margin: 0;
+}
+
+#bd .card-details-mode-body > .yui-gc:not(.grid) > .yui-u.first {
+   width: 66%;
+   background-color: white;
+   border-right: 1px solid #ccc;
+}
 
 #bd .yui-gc:not(.grid) > .yui-u .document-details-panel {
    background-color: none;
@@ -4946,13 +4962,13 @@ div#HEADER_USER_STATUS {
 }
 
 /*shadow of new menu*/
-body:not(.mobile).yui-skin-citeckTheme  .sticky-wrapper #alf-hd,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #alf-hd,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .node-header,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .header-tabs,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet .previewer.PdfJs,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet .previewer .flat-button,
 body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc:not(.flat-button),
-body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet,
+body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .first .cardlet,
 body:not(.mobile).yui-skin-citeckTheme #bd .user-profile.node-view.static,
 body:not(.mobile).yui-skin-citeckTheme #bd .profile,
 body:not(.mobile).yui-skin-citeckTheme #bd .customise-layout,
@@ -4979,7 +4995,7 @@ body:not(.mobile).yui-skin-citeckTheme #bd .site-document-types {
     padding-left: 15px;
 }
 
-body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="case-documents"] {
+body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="SurfRegion"] > div[id*="case-documents"] {
     box-shadow: inset 15px -1px 10px -15px grey;
     padding-left: 4px;
 }

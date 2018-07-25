@@ -44,6 +44,7 @@ import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.search.ftsquery.OperatorExpected;
 import ru.citeck.ecos.utils.ReflectionUtils;
+import ru.citeck.ecos.utils.TransactionUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -412,14 +413,18 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
             for (String to : recipients) {
                 notificationContext.addTo(to);
             }
-            notificationContext.setAsyncNotification(asyncNotification);
+            notificationContext.setAsyncNotification(false);
             logger.debug("sendNotification_asyncNotification: " + asyncNotification + " instance = " + toString());
             if (null != from) {
                 notificationContext.setFrom(from);
             }
 
             // send
-            if (afterCommit) {
+            if (asyncNotification) {
+                TransactionUtils.doAfterCommit(() -> {
+                    sendNotificationContext(notificationProviderName, notificationContext);
+                });
+            } else if (afterCommit) {
                 AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
                     @Override
                     public void afterCommit() {

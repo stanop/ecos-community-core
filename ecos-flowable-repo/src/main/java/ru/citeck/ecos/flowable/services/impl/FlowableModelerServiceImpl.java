@@ -42,6 +42,7 @@ import javax.sql.DataSource;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -338,6 +339,12 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
                     if (ENGINE_NAME.equals(engineId)) {
                         String definitionLocation = definitionProperties.getProperty("location");
                         if (definitionLocation != null) {
+                            String redeployValue = definitionProperties.getProperty("redeploy");
+                            boolean redeploy = redeployValue != null ? Boolean.valueOf(redeployValue) : true;
+                            boolean modelDeployed = isModelDeployed(definitionLocation);
+                            if (!redeploy && modelDeployed) {
+                                continue;
+                            }
                             boolean partOfLocations = false;
                             if (!CollectionUtils.isEmpty(locations)) {
                                 for (String tempLocation : locations) {
@@ -356,6 +363,38 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
             }
         }
         return bootstrapLocations;
+    }
+
+    private boolean isModelDeployed(String location) {
+        Resource resource = new ClassPathResource(location);
+        /** Read process definition from input stream */
+        BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
+        XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
+        XMLStreamReader xmlStreamReader;
+
+        try {
+            xmlStreamReader = xmlFactory.createXMLStreamReader(resource.getInputStream());
+        } catch (XMLStreamException e) {
+            throw new IllegalStateException("Could not create XML streamReader.", e);
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not create XML streamReader.", e);
+        }
+
+        /** Parse process definition */
+        BpmnModel bpmnModel = xmlConverter.convertToBpmnModel(xmlStreamReader);
+        if (CollectionUtils.isEmpty(bpmnModel.getProcesses())) {
+            throw new IllegalArgumentException("No process found in metadata");
+        }
+
+        if (bpmnModel.getLocationMap().size() == 0) {
+            BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
+            bpmnLayout.execute();
+        }
+
+        org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
+        String key = process.getId();
+        /** Check model existing */
+        return existProcessModel(key);
     }
 
     public boolean importIsPossible() {

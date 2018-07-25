@@ -17,13 +17,16 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (typeof Citeck == "undefined" || !Citeck) {
-    var Citeck = {};
-}
+define([
+    'citeck/components/dynamic-tree/error-manager',
+    'xstyle!./auto-number.css'
+], function() {
 
-Citeck.forms = Citeck.forms || {};
+    if (typeof Citeck == "undefined" || !Citeck) {
+        Citeck = {};
+    }
 
-(function() {
+    Citeck.forms = Citeck.forms || {};
 
     var Dom = YAHOO.util.Dom;
 
@@ -160,4 +163,5 @@ Citeck.forms = Citeck.forms || {};
 	// mix-in general configurable onFailure method
 	YAHOO.lang.augmentObject(Citeck.forms.AutoNumberControl.prototype, Citeck.util.ErrorManager.prototype);
 
-})();
+	return Citeck.forms.AutoNumberControl;
+});

@@ -12,10 +12,7 @@ import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.utils.performance.ActionPerformance;
 import ru.citeck.ecos.utils.performance.Performance;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class TransactionUtils {
@@ -103,10 +100,9 @@ public class TransactionUtils {
         if (elements.isEmpty()) {
             TransactionUtils.doBeforeCommit(transactionKey, () -> {
                 AuthenticationUtil.runAsSystem(() -> {
-                    elements.forEach(consumer);
+                    processElements(elements, consumer);
                     return null;
                 });
-                elements.clear();
             });
         }
         elements.add(element);
@@ -117,13 +113,27 @@ public class TransactionUtils {
         if (elements.isEmpty()) {
             TransactionUtils.doAfterBehaviours(transactionKey, () -> {
                 AuthenticationUtil.runAsSystem(() -> {
-                    elements.forEach(consumer);
+                    processElements(elements, consumer);
                     return null;
                 });
-                elements.clear();
             });
         }
         elements.add(element);
+    }
+
+    private static <T> void processElements(Set<T> elements, Consumer<T> consumer) {
+        Set<T> processedElements = new HashSet<>();
+
+        while (!elements.isEmpty() && !processedElements.containsAll(elements)) {
+            Set<T> copyElements = new HashSet<>(elements);
+            elements.clear();
+
+            for (T copyElement : copyElements) {
+                if (processedElements.add(copyElement)) {
+                    consumer.accept(copyElement);
+                }
+            }
+        }
     }
 
     private static Thread prepareAfterCommitJobsThread(List<Job> jobs, final String currentUser, final Locale locale) {

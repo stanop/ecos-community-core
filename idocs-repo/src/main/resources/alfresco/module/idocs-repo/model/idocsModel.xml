@@ -1444,6 +1444,23 @@
                 </property>
             </properties>
         </aspect>
+        
+        <aspect name="idocs:isCreatedFrom">
+            <properties>
+                <property name="idocs:createdFrom">
+                    <title>A code identifying the point the document was created from</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasCustomFormAction">
+            <properties>
+                <property name="idocs:customFormActionData">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
 
     </aspects>
 

@@ -4,7 +4,7 @@
 
     <groupId>ru.citeck.ecos.community</groupId>
     <artifactId>ecos-community</artifactId>
-    <version>3.2.1.0</version>
+    <version>3.3.1</version>
     <packaging>pom</packaging>
 
     <name>ecos-community</name>
@@ -58,15 +58,17 @@
         <activemq.version>5.10.0</activemq.version>
 
         <maven.alfresco.edition>community</maven.alfresco.edition>
+        <ecos.project.classifier>${alfresco.platform.version}-com</ecos.project.classifier>
 
         <!-- ECOS build config -->
 
         <default.locale>en</default.locale>
-        <ecos.project.classifier>${alfresco.platform.version}-com</ecos.project.classifier>
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
         <flowable.version>6.3.0</flowable.version>
-        <ecos.flowable.version>1.0.1</ecos.flowable.version>
+        <ecos.flowable.version>1.1.1</ecos.flowable.version>
+
+        <web.compression.skip>false</web.compression.skip>
     </properties>
 
     <profiles>
@@ -83,7 +85,7 @@
         <profile>
             <id>development</id>
             <properties>
-                <yuicompressor.compress.skip>true</yuicompressor.compress.skip>
+                <web.compression.skip>true</web.compression.skip>
             </properties>
         </profile>
         <profile>
@@ -425,7 +427,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>1st-override-repo</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -434,14 +435,12 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-base-core-share</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-base-core-repo</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -450,14 +449,12 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-forms-repo</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-forms-share</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -466,14 +463,12 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>journals-repo</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>journals-share</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -482,14 +477,12 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>idocs-repo</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>idocs-share</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -497,7 +490,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-order-pass-repo</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -506,14 +498,12 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-flowable-repo</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-flowable-share</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -521,7 +511,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-graphql-repo</artifactId>
-                <classifier>${ecos.project.classifier}</classifier>
                 <version>${project.parent.version}</version>
                 <scope>provided</scope>
             </dependency>
@@ -545,7 +534,7 @@
                                 <goal>single</goal>
                             </goals>
                             <configuration>
-                                <appendAssemblyId>true</appendAssemblyId>
+                                <appendAssemblyId>false</appendAssemblyId>
                                 <descriptor>../src/assembly/amp.xml</descriptor>
                             </configuration>
                         </execution>
@@ -591,6 +580,7 @@
                             <nonFilteredFileExtension>ico</nonFilteredFileExtension>
                             <nonFilteredFileExtension>psd</nonFilteredFileExtension>
                             <nonFilteredFileExtension>js</nonFilteredFileExtension>
+                            <nonFilteredFileExtension>jsx</nonFilteredFileExtension>
                         </nonFilteredFileExtensions>
                     </configuration>
                 </plugin>
@@ -604,7 +594,6 @@
                             <exclude>alfresco/**</exclude>
                             <exclude>META-INF/**</exclude>
                         </excludes>
-                        <classifier>${ecos.project.classifier}</classifier>
                     </configuration>
                 </plugin>
 
@@ -636,27 +625,43 @@
                 </plugin>
 
                 <plugin>
-                    <groupId>net.alchim31.maven</groupId>
-                    <artifactId>yuicompressor-maven-plugin</artifactId>
-                    <version>1.5.1</version>
+                    <groupId>com.github.eirslett</groupId>
+                    <artifactId>frontend-maven-plugin</artifactId>
+                    <version>1.6</version>
                     <executions>
                         <execution>
+                            <id>install node and npm</id>
                             <goals>
-                                <goal>compress</goal>
+                                <goal>install-node-and-npm</goal>
                             </goals>
+                            <phase>generate-resources</phase>
+                        </execution>
+                        <execution>
+                            <id>npm install</id>
+                            <goals>
+                                <goal>npm</goal>
+                            </goals>
+                            <phase>generate-resources</phase>
                             <configuration>
-                                <jswarn>false</jswarn>
-                                <skip>${yuicompressor.compress.skip}</skip>
-                                <excludes>
-                                    <exclude>alfresco/**</exclude>
-                                    <exclude>**/*.min.js</exclude>
-                                    <exclude>**/*-min.js</exclude>
-                                    <exclude>**/*.min.css</exclude>
-                                    <exclude>**/*-min.css</exclude>
-                                </excludes>
+                                <arguments>install</arguments>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>npm build</id>
+                            <goals>
+                                <goal>npm</goal>
+                            </goals>
+                            <phase>process-resources</phase>
+                            <configuration>
+                                <arguments>run-script build -- --artifactId=${project.artifactId} --skipCompression=${web.compression.skip}</arguments>
                             </configuration>
                         </execution>
                     </executions>
+                    <configuration>
+                        <workingDirectory>../</workingDirectory>
+                        <installDirectory>../nodejs</installDirectory>
+                        <nodeVersion>v8.11.2</nodeVersion>
+                    </configuration>
                 </plugin>
 
             </plugins>
@@ -756,7 +761,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>1st-override-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -764,7 +768,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-base-core-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -772,7 +775,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-forms-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -780,7 +782,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>journals-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -788,7 +789,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>idocs-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -796,7 +796,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>contracts-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -804,7 +803,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>letters-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -812,7 +810,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-order-pass-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -821,7 +818,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>meetings-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -829,7 +825,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>orders-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -837,7 +832,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-flowable-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -845,7 +839,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-graphql-repo</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -875,7 +868,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>1st-override-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -883,7 +875,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-base-core-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -891,7 +882,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-forms-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -899,7 +889,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>journals-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -907,7 +896,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>idocs-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -915,7 +903,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>contracts-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -923,7 +910,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>letters-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -931,7 +917,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>meetings-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -939,7 +924,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>orders-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -947,7 +931,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-graphql-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -955,7 +938,6 @@
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-flowable-share</artifactId>
-                            <classifier>${ecos.project.classifier}</classifier>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -1057,47 +1039,27 @@
 
     <repositories>
         <repository>
-            <id>alfresco-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>alfresco-public-snapshots</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
-        </repository>
-        <!-- Alfresco Enterprise Edition Artifacts, put username/pwd for server in settings.xml -->
-        <repository>
-            <id>alfresco-private-repository</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/private</url>
+            <id>citeck-public</id>
+            <url>http://nexus.citeck.ru/repository/maven-public</url>
         </repository>
     </repositories>
+
     <pluginRepositories>
         <pluginRepository>
-            <id>alfresco-plugin-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>alfresco-plugin-public-snapshots</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
+            <id>citeck-plugin-public</id>
+            <url>http://nexus.citeck.ru/repository/maven-public</url>
         </pluginRepository>
     </pluginRepositories>
 
     <!-- Deployment configuration -->
     <distributionManagement>
         <repository>
-            <id>releases</id>
-            <url>${releases.repo.url}</url>
+            <id>citeck-community-releases</id>
+            <url>${community.releases.distr.url}</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <url>${snapshots.repo.url}</url>
+            <id>citeck-community-snapshots</id>
+            <url>${community.snapshots.distr.url}</url>
         </snapshotRepository>
     </distributionManagement>
 

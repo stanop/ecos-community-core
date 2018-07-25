@@ -3,8 +3,8 @@
   <config replace="true">
       <header>
           <dependencies>
-              <js src="/jquery/jquery.js"/>
-              <!-- <js src="/jquery/jquery-migrate.js"/> -->
+              <js src="/js/citeck/lib/polyfill/babel-polyfill.js" />
+              <js src="/js/citeck/lib/polyfill/fetch.js" />
 
               <css src="/modules/create-site.css"/>
               <js src="/modules/create-site.js"/>
@@ -12,9 +12,7 @@
               <js src="/modules/common/ie_fix.js"/>
               <js src="/citeck/components/site/custom-create-site.js"/>
               <js src="/citeck/components/form/constraints.js"/>
-
-              <js src="/citeck/mobile/mobile.js" />
-              <css src="/citeck/mobile/mobile.css"/>
+              <js src="/citeck/components/dependencies/header-dependencies.js"/>
           </dependencies>
       </header>
   </config>
@@ -35,9 +33,6 @@
 
         <js src="/citeck/components/form/controls/types-and-kinds.js" />
         <css src="/citeck/components/form/controls/types-and-kinds.css" />
-
-        <js src="/citeck/components/form/controls/route.js" />
-        <css src="/citeck/components/form/controls/route.css" />
       </dependencies>
       <constraint-handlers>
         <constraint
@@ -113,7 +108,6 @@
       <js src="/components/documentlibrary/documentlist-view-simple.js" />
       <js src="/components/documentlibrary/documentlist-view-gallery.js" />
       <js src="/components/documentlibrary/documentlist-view-filmstrip.js" />
-      <js src="/citeck/components/dynamic-tree/handy-doclist.js" />
       <js src="/yui/slider/slider.js" />
       <messages component="org/alfresco/components/documentlibrary/documentlist.get" scope="Alfresco.DocumentList" />
     </dependencies>
@@ -123,7 +117,6 @@
     <dependencies>
       <css src="/citeck/components/documentlibrary/idocs-doclib-custom.css" />
       <js src="/citeck/components/documentlibrary/custom-actions.js" />
-      <js src="/yui/resize/resize.js" />
     </dependencies>
   </config>
 
