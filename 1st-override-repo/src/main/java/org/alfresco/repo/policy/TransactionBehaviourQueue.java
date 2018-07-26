@@ -9,6 +9,7 @@ import org.alfresco.repo.policy.Policy.Arg;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionListener;
+import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.util.GUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +32,7 @@ public class TransactionBehaviourQueue implements TransactionListener {
 
     // Transaction Keys for Behaviour Execution state
     private static final String QUEUE_CONTEXT_KEY = TransactionBehaviourQueue.class.getName() + ".context";
+    private static final String EXECUTION_CONTEXT_NUMBER_KEY = TransactionBehaviourQueue.class.getName() + ".number";
     private static final Log logger = LogFactory.getLog(TransactionBehaviourQueue.class);
 
     /**
@@ -71,6 +73,7 @@ public class TransactionBehaviourQueue implements TransactionListener {
             executionContext.policyInterface = policyInterface;
             executionContext.order = getOrder(behaviour);
             executionContext.authenticatedUser = AuthenticationUtil.getFullyAuthenticatedUser();
+            executionContext.number = TransactionalResourceHelper.incrementCount(EXECUTION_CONTEXT_NUMBER_KEY);
 
             // Defer or execute now?
             if (!queueContext.committed) {
@@ -288,12 +291,17 @@ public class TransactionBehaviourQueue implements TransactionListener {
         P policyInterface;
         int order;
         String authenticatedUser;
+        int number;
     }
 
     private class OrderComparator implements Comparator<ExecutionContext> {
         @Override
         public int compare(ExecutionContext c1, ExecutionContext c2) {
-            return Integer.compare(c1.order, c2.order);
+            int result = Integer.compare(c1.order, c2.order);
+            if (result == 0) {
+                result = Integer.compare(c1.number, c2.number);
+            }
+            return result;
         }
     }
 
