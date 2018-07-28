@@ -174,4 +174,21 @@ public class SearchCriteria {
         map.put("limit", limit);
         return map;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SearchCriteria (");
+        for (CriteriaTriplet triplet : triplets) {
+            sb.append("[")
+                    .append(triplet.getField())
+                    .append(" ")
+                    .append(triplet.getPredicate())
+                    .append(" ")
+                    .append(triplet.getValue())
+                    .append("] ");
+        }
+        sb.append(")\n");
+        return sb.toString();
+    }
 }

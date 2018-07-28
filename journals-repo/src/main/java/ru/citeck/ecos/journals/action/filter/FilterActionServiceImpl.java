@@ -77,6 +77,8 @@ public class FilterActionServiceImpl implements FilterActionService {
         String query = setSinceDBId(criteria, 0);
         RecordsResult records  = recordsDAO.getRecords(query, language, journalId, pageInfo);
 
+        int total = records.records.size();
+
         while (records.records.size() > 0) {
 
             for (RemoteNodeRef record : records.records) {
@@ -95,8 +97,10 @@ public class FilterActionServiceImpl implements FilterActionService {
 
             query = setSinceDBId(criteria, currentDbId);
             records  = recordsDAO.getRecords(query, language, journalId, pageInfo);
+            total += records.records.size();
         }
 
+        logger.warn("TOTAL PROCESSED: " + total);
         return null;
     }
 
@@ -111,12 +115,12 @@ public class FilterActionServiceImpl implements FilterActionService {
             return objectMapper.writeValueAsString(criteria);
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Can't serialize criteria. " + criteria +
-                    " criteria: " + criteria + " id " + id);
+                                            " criteria: " + criteria + " id " + id);
         }
     }
 
     @Override
-    public void register(FilterActionExecutor executor) {
+    public void register(FilterActionFactory executor) {
 
     }
 }

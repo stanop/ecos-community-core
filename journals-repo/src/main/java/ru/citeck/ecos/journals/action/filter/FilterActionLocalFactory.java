@@ -5,7 +5,7 @@ import ru.citeck.ecos.journals.action.group.GroupActionExecutor;
 
 import java.util.Map;
 
-public abstract class FilterActionLocalExecutor implements FilterActionExecutor {
+public abstract class FilterActionLocalFactory implements FilterActionFactory {
 
     private GroupActionExecutor executor;
 

@@ -19,5 +19,5 @@ public interface FilterActionService {
                                            String actionId,
                                            Map<String, String> params);
 
-    void register(FilterActionExecutor executor);
+    void register(FilterActionFactory executor);
 }
