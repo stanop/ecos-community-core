@@ -66,24 +66,15 @@ public class FilterActionServiceImpl implements FilterActionService {
                                                   String actionId,
                                                   Map<String, String> params) {
 
-        SearchCriteria criteria = new SearchCriteria(searchCriteria);
-        setSinceDBId(criteria, 0);
-
         List<JournalGqlSortBy> sortList = new ArrayList<>(1);
         sortList.add(new JournalGqlSortBy("sys:node-dbid", "asc"));
 
         JournalGqlPageInfoInput pageInfo = new JournalGqlPageInfoInput(0, 100, sortList);
 
-        String query;
-        try {
-            query = objectMapper.writeValueAsString(criteria);
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Can't serialize criteria. " + criteria +
-                    " actionId: " + actionId + " params " + params);
-        }
-
         long currentDbId = 0;
 
+        SearchCriteria criteria = new SearchCriteria(searchCriteria);
+        String query = setSinceDBId(criteria, 0);
         RecordsResult records  = recordsDAO.getRecords(query, language, journalId, pageInfo);
 
         while (records.records.size() > 0) {
@@ -102,18 +93,26 @@ public class FilterActionServiceImpl implements FilterActionService {
                 }
             }
 
-            setSinceDBId(criteria, currentDbId);
+            query = setSinceDBId(criteria, currentDbId);
             records  = recordsDAO.getRecords(query, language, journalId, pageInfo);
         }
 
         return null;
     }
 
-    void setSinceDBId(SearchCriteria criteria, long id) {
+    String setSinceDBId(SearchCriteria criteria, long id) {
+
         CriteriaTriplet dbIdTriplet = new CriteriaTriplet("sys:node-dbid",
                 "number-greater-than",
                 String.valueOf(id));
         criteria.replaceOrAddTriplet(dbIdTriplet);
+
+        try {
+            return objectMapper.writeValueAsString(criteria);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Can't serialize criteria. " + criteria +
+                    " criteria: " + criteria + " id " + id);
+        }
     }
 
     @Override
