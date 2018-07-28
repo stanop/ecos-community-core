@@ -6,8 +6,8 @@ import java.util.Objects;
 
 public class RemoteNodeRef {
 
-    private static final String REMOTE_DELIMITER = "@";
     private static final String LOCAL_ID = "";
+    private static final String REMOTE_DELIMITER = "@";
 
     private final String serverId;
     private final NodeRef nodeRef;

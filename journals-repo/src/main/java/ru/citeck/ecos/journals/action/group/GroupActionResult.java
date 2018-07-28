@@ -30,7 +30,6 @@ public class GroupActionResult {
 
     }
 
-
     public GroupActionResult(String status) {
         this.status = status;
     }

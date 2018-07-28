@@ -1,82 +1,99 @@
 package ru.citeck.ecos.journals.action.group;
 
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.journals.records.IterableJournalRecords;
+import ru.citeck.ecos.journals.records.JournalRecordsDAO;
+import ru.citeck.ecos.repo.RemoteNodeRef;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Pavel Simonov
  */
 public class GroupActionServiceImpl implements GroupActionService {
 
+    private static final long PROCESS_TIMEOUT_SEC = 60 * 5;
+
     private static Log logger = LogFactory.getLog(GroupActionServiceImpl.class);
 
+    private JournalRecordsDAO journalRecordsDAO;
+
+    private Map<String, GroupActionProcFactory> processorFactories = new HashMap<>();
+
     @Autowired
-    private TransactionService transactionService;
-
-    private Map<String, GroupActionExecutor> evaluators = new HashMap<>();
+    public GroupActionServiceImpl(JournalRecordsDAO journalRecordsDAO) {
+        this.journalRecordsDAO = journalRecordsDAO;
+    }
 
     @Override
-    public Map<NodeRef, GroupActionResult> invoke(List<NodeRef> nodeRefs,
-                                                  String actionId,
-                                                  Map<String, String> params) {
+    public Map<RemoteNodeRef, GroupActionResult> invoke(List<RemoteNodeRef> nodeRefs,
+                                                        String actionId,
+                                                        Map<String, String> params) {
 
-        GroupActionExecutor evaluator = evaluators.get(actionId);
-        if (evaluator == null) {
-            throw new IllegalArgumentException("Action not found: '" + actionId + "'");
+        GroupActionProcessor processor = getProcessor(actionId, params);
+
+        Map<RemoteNodeRef, Future<GroupActionResult>> futureResults = new HashMap<>();
+
+        for (RemoteNodeRef ref : nodeRefs) {
+            futureResults.put(ref, processor.process(ref));
         }
-        checkParams(params, evaluator.getMandatoryParams());
 
-        Map<NodeRef, GroupActionResult> statuses = new HashMap<>();
+        Map<RemoteNodeRef, GroupActionResult> results = new HashMap<>();
 
-        for (NodeRef ref : nodeRefs) {
-            if (evaluator.isApplicable(ref, params)) {
-                statuses.put(ref, processNode(ref, evaluator, params));
-            } else {
-                statuses.put(ref, new GroupActionResult(GroupActionResult.STATUS_SKIPPED));
+        futureResults.forEach((ref, res) -> {
+
+            GroupActionResult result;
+            try {
+                result = res.get(PROCESS_TIMEOUT_SEC, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                throw new RuntimeException("Processing result get timeout exception. " +
+                                           "Time: " + PROCESS_TIMEOUT_SEC + " seconds. " +
+                                           "Node: " + ref, e);
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException("Exception while processing result get. Node: " + ref, e);
             }
-        }
+            results.put(ref, result);
+        });
 
-        return statuses;
+        return results;
     }
 
     @Override
-    public Map<NodeRef, GroupActionResult> invokeBatch(List<NodeRef> nodeRefs,
-                                                       String actionId,
-                                                       Map<String, String> params) {
+    public void invoke(String query,
+                       String journalId,
+                       String language,
+                       String actionId,
+                       Map<String, String> params) {
 
-        GroupActionExecutor evaluator = evaluators.get(actionId);
-        if (evaluator == null) {
-            throw new IllegalArgumentException("Action not found: '" + actionId + "'");
+        GroupActionProcessor processor = getProcessor(actionId, params);
+
+        IterableJournalRecords records = new IterableJournalRecords(journalRecordsDAO, query, journalId, language);
+
+        for (RemoteNodeRef nodeRef : records) {
+            processor.process(nodeRef);
         }
-        checkParams(params, evaluator.getMandatoryParams());
-
-        return evaluator.invokeBatch(nodeRefs, params);
     }
 
-    private GroupActionResult processNode(NodeRef nodeRef, GroupActionExecutor evaluator, Map<String, String> params) {
+    private GroupActionProcessor getProcessor(String actionId, Map<String, String> params) {
 
-        final GroupActionResult status = new GroupActionResult();
-
-        try {
-            transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-                evaluator.invoke(nodeRef, params);
-                return null;
-            }, false, true);
-        } catch (Exception e) {
-            status.setStatus(GroupActionResult.STATUS_ERROR);
-            status.setException(e);
-            logger.error("Error while node processing", e);
+        GroupActionProcFactory factory = processorFactories.get(actionId);
+        if (factory == null) {
+            throw new IllegalArgumentException("Action not found: '" + actionId + "'");
         }
-        return status;
+
+        checkParams(params, factory.getMandatoryParams());
+
+        return factory.createProcessor(params);
     }
 
     private void checkParams(Map<String, String> params, String[] mandatoryParams) {
@@ -92,7 +109,7 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public void register(GroupActionExecutor executor) {
-        evaluators.put(executor.getActionId(), executor);
+    public void register(GroupActionProcFactory factory) {
+        processorFactories.put(factory.getActionId(), factory);
     }
 }

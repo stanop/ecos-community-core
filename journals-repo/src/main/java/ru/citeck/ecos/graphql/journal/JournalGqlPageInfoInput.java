@@ -1,7 +1,5 @@
 package ru.citeck.ecos.graphql.journal;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
 
@@ -12,33 +10,42 @@ import java.util.List;
 public class JournalGqlPageInfoInput extends HashMap<String, Object> {
 
     private static final String PROP_SKIP_COUNT = "skipCount";
+    private static final String PROP_AFTER_ID = "afterId";
     private static final String PROP_MAX_ITEMS = "maxItems";
     private static final String PROP_SORT_BY = "sortBy";
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
     @GraphQLField
-    private final int skipCount;
+    private int skipCount;
     @GraphQLField
-    private final int maxItems;
+    private int maxItems;
     @GraphQLField
-    private final List<JournalGqlSortBy> sortBy;
+    private List<JournalGqlSortBy> sortBy;
+    @GraphQLField
+    private String afterId;
 
-    @JsonCreator
     public JournalGqlPageInfoInput(
-            @JsonProperty(PROP_SKIP_COUNT) @GraphQLName(PROP_SKIP_COUNT) Integer skipCount,
-            @JsonProperty(PROP_MAX_ITEMS) @GraphQLName(PROP_MAX_ITEMS) Integer maxItems,
-            @JsonProperty(PROP_SORT_BY) @GraphQLName(PROP_SORT_BY) List<JournalGqlSortBy> sortBy
+            @GraphQLName(PROP_AFTER_ID) String afterId,
+            @GraphQLName(PROP_MAX_ITEMS) Integer maxItems,
+            @GraphQLName(PROP_SORT_BY) List<JournalGqlSortBy> sortBy) {
+        super(3);
+
+        setAfterId(afterId);
+        setMaxItems(maxItems);
+        setSortBy(sortBy);
+    }
+
+    public JournalGqlPageInfoInput(
+            @GraphQLName(PROP_SKIP_COUNT) Integer skipCount,
+            @GraphQLName(PROP_MAX_ITEMS) Integer maxItems,
+            @GraphQLName(PROP_SORT_BY) List<JournalGqlSortBy> sortBy
     ) {
         super(3);
 
-        this.sortBy = sortBy != null ? sortBy : Collections.emptyList();
-        this.maxItems = maxItems != null ? maxItems : DEFAULT_PAGE_SIZE;
-        this.skipCount = skipCount != null ? skipCount : 0;
-
-        put(PROP_SKIP_COUNT, this.skipCount);
-        put(PROP_MAX_ITEMS, this.maxItems);
-        put(PROP_SORT_BY, this.sortBy);
+        setSortBy(sortBy);
+        setMaxItems(maxItems);
+        setSkipCount(skipCount);
     }
 
     public int getSkipCount() {
@@ -51,5 +58,29 @@ public class JournalGqlPageInfoInput extends HashMap<String, Object> {
 
     public List<JournalGqlSortBy> getSortBy() {
         return sortBy;
+    }
+
+    public String getAfterId() {
+        return afterId;
+    }
+
+    public void setAfterId(String afterId) {
+        this.afterId = afterId;
+        put(PROP_AFTER_ID, this.afterId);
+    }
+
+    public void setSkipCount(Integer skipCount) {
+        this.skipCount = skipCount != null ? skipCount : 0;
+        put(PROP_SKIP_COUNT, this.skipCount);
+    }
+
+    public void setMaxItems(Integer maxItems) {
+        this.maxItems = maxItems != null ? maxItems : DEFAULT_PAGE_SIZE;
+        put(PROP_MAX_ITEMS, this.maxItems);
+    }
+
+    public void setSortBy(List<JournalGqlSortBy> sortBy) {
+        this.sortBy = sortBy != null ? sortBy : Collections.emptyList();
+        put(PROP_SORT_BY, this.sortBy);
     }
 }
