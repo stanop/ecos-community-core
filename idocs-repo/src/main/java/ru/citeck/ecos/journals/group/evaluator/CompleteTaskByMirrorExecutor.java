@@ -7,8 +7,8 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.journals.group.GroupActionEvaluator;
-import ru.citeck.ecos.journals.group.GroupActionResult;
+import ru.citeck.ecos.journals.action.group.GroupActionExecutor;
+import ru.citeck.ecos.journals.action.group.GroupActionResult;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * @author Pavel Simonov
  */
-public class CompleteTaskByMirrorEvaluator extends GroupActionEvaluator {
+public class CompleteTaskByMirrorExecutor extends GroupActionExecutor {
 
     public static final String ACTION_ID = "complete-task-by-mirror";
     public static final String TASK_TYPE_KEY = "task-type";

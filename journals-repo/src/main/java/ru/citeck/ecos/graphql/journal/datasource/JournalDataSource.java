@@ -11,7 +11,10 @@ import java.util.Optional;
 
 public interface JournalDataSource {
 
-    JournalRecordsConnection getRecords(GqlContext context, String query, String language, JournalGqlPageInfoInput pageInfo);
+    JournalRecordsConnection getRecords(GqlContext context,
+                                        String query,
+                                        String language,
+                                        JournalGqlPageInfoInput pageInfo);
 
     Optional<JournalAttributeInfoGql> getAttributeInfo(String attributeName);
 

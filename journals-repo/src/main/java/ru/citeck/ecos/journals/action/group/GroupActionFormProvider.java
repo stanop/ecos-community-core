@@ -1,4 +1,4 @@
-package ru.citeck.ecos.journals.group;
+package ru.citeck.ecos.journals.action.group;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespaceService;
@@ -46,6 +46,7 @@ public class GroupActionFormProvider implements NodeViewProvider, WithoutSavingP
 
     @Override
     public NodeViewDefinition getNodeView(String viewKey, String formId, FormMode mode, Map<String, Object> params) {
+
         NodeViewDefinition result = new NodeViewDefinition();
 
         String viewClass = getViewClass(viewKey);

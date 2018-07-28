@@ -1,4 +1,4 @@
-package ru.citeck.ecos.journals.group;
+package ru.citeck.ecos.journals.action.group;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 
@@ -16,5 +16,5 @@ public interface GroupActionService {
 
     Map<NodeRef, GroupActionResult> invokeBatch(List<NodeRef> nodeRefs, String actionId, Map<String, String> params);
 
-    void register(GroupActionEvaluator evaluator);
+    void register(GroupActionExecutor executor);
 }

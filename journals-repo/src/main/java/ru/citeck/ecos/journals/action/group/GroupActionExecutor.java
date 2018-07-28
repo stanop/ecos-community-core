@@ -1,4 +1,4 @@
-package ru.citeck.ecos.journals.group;
+package ru.citeck.ecos.journals.action.group;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -12,14 +12,13 @@ import java.util.Map;
 /**
  * @author Pavel Simonov
  */
-public abstract class GroupActionEvaluator {
+public abstract class GroupActionExecutor {
 
     protected GroupActionService groupActionService;
     protected NamespaceService namespaceService;
     protected WorkflowService workflowService;
     protected NodeService nodeService;
     protected PersonService personService;
-
 
     public void init() {
         groupActionService.register(this);

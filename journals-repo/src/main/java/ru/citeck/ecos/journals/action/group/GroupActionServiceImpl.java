@@ -1,4 +1,4 @@
-package ru.citeck.ecos.journals.group;
+package ru.citeck.ecos.journals.action.group;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
@@ -22,12 +22,14 @@ public class GroupActionServiceImpl implements GroupActionService {
     @Autowired
     private TransactionService transactionService;
 
-    private Map<String, GroupActionEvaluator> evaluators = new HashMap<>();
+    private Map<String, GroupActionExecutor> evaluators = new HashMap<>();
 
     @Override
-    public Map<NodeRef, GroupActionResult> invoke(List<NodeRef> nodeRefs, String actionId, Map<String, String> params) {
+    public Map<NodeRef, GroupActionResult> invoke(List<NodeRef> nodeRefs,
+                                                  String actionId,
+                                                  Map<String, String> params) {
 
-        GroupActionEvaluator evaluator = evaluators.get(actionId);
+        GroupActionExecutor evaluator = evaluators.get(actionId);
         if (evaluator == null) {
             throw new IllegalArgumentException("Action not found: '" + actionId + "'");
         }
@@ -47,20 +49,20 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public Map<NodeRef, GroupActionResult> invokeBatch(List<NodeRef> nodeRefs, String actionId, Map<String, String> params) {
+    public Map<NodeRef, GroupActionResult> invokeBatch(List<NodeRef> nodeRefs,
+                                                       String actionId,
+                                                       Map<String, String> params) {
 
-        GroupActionEvaluator evaluator = evaluators.get(actionId);
+        GroupActionExecutor evaluator = evaluators.get(actionId);
         if (evaluator == null) {
             throw new IllegalArgumentException("Action not found: '" + actionId + "'");
         }
         checkParams(params, evaluator.getMandatoryParams());
 
-        Map<NodeRef, GroupActionResult> statuses = evaluator.invokeBatch(nodeRefs, params);
-
-        return statuses;
+        return evaluator.invokeBatch(nodeRefs, params);
     }
 
-    private GroupActionResult processNode(NodeRef nodeRef, GroupActionEvaluator evaluator, Map<String, String> params) {
+    private GroupActionResult processNode(NodeRef nodeRef, GroupActionExecutor evaluator, Map<String, String> params) {
 
         final GroupActionResult status = new GroupActionResult();
 
@@ -77,7 +79,6 @@ public class GroupActionServiceImpl implements GroupActionService {
         return status;
     }
 
-
     private void checkParams(Map<String, String> params, String[] mandatoryParams) {
         List<String> missing = new ArrayList<>(mandatoryParams.length);
         for (String param : mandatoryParams) {
@@ -91,7 +92,7 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public void register(GroupActionEvaluator evaluator) {
-        evaluators.put(evaluator.getActionId(), evaluator);
+    public void register(GroupActionExecutor executor) {
+        evaluators.put(executor.getActionId(), executor);
     }
 }

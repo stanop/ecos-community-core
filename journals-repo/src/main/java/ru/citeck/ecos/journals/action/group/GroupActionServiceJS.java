@@ -1,4 +1,4 @@
-package ru.citeck.ecos.journals.group;
+package ru.citeck.ecos.journals.action.group;
 
 import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.service.cmr.repository.NodeRef;

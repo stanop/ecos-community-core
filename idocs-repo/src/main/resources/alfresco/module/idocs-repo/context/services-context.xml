@@ -536,7 +536,7 @@
           destroy-method="destroy"/>
 
 	<bean id="journals.group.action.CompleteTaskByMirror"
-		  class="ru.citeck.ecos.journals.group.evaluator.CompleteTaskByMirrorEvaluator"
+		  class="ru.citeck.ecos.journals.group.evaluator.CompleteTaskByMirrorExecutor"
 		  parent="journals.groupActionEvaluator">
 	</bean>
 

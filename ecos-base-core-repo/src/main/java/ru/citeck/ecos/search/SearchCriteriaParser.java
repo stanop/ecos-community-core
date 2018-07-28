@@ -29,23 +29,23 @@ import java.util.Iterator;
  */
 public class SearchCriteriaParser {
 
-    private static final String SKIP = "skipCount";
+    static final String SKIP = "skipCount";
 
-    private static final String LIMIT = "maxItems";
+    static final String LIMIT = "maxItems";
 
-    private static final String FIELD_KEY = "field";
+    static final String FIELD_KEY = "field";
 
-    private static final String SEPARATOR = "_";
+    static final String SEPARATOR = "_";
 
-    private static final String PREDICATE_KEY = "predicate";
+    static final String PREDICATE_KEY = "predicate";
 
-    private static final String VALUE_KEY = "value";
+    static final String VALUE_KEY = "value";
 
-    private static final String SORT_BY = "sortBy";
+    static final String SORT_BY = "sortBy";
 
-	private static final String ATTRIBUTE = "attribute";
+    static final String ATTRIBUTE = "attribute";
 
-	private static final String ORDER = "order";
+    static final String ORDER = "order";
 
     private final int fieldIndexPos = (FIELD_KEY + SEPARATOR).length();
 
@@ -91,15 +91,15 @@ public class SearchCriteriaParser {
                     searchCriteria.addCriteriaTriplet(field, predicate, value);
                 } else if (name.equals(SORT_BY)) {
                     JSONArray sortParams = criteria.getJSONArray(name);
-                    for(int i = 0, ii = sortParams.length(); i < ii; i++) {
-                    	JSONObject sortParam = sortParams.getJSONObject(i);
-                    	String field = sortParam.getString(ATTRIBUTE);
-                    	String order = sortParam.getString(ORDER);
-                    	if(order != null) {
-                    		searchCriteria.addSort(field, order);
-                    	} else {
-                    		searchCriteria.addSort(field, SortOrder.ASCENDING);
-                    	}
+                    for (int i = 0, ii = sortParams.length(); i < ii; i++) {
+                        JSONObject sortParam = sortParams.getJSONObject(i);
+                        String field = sortParam.getString(ATTRIBUTE);
+                        String order = sortParam.getString(ORDER);
+                        if (order != null) {
+                            searchCriteria.addSort(field, order);
+                        } else {
+                            searchCriteria.addSort(field, SortOrder.ASCENDING);
+                        }
                     }
                 }
             } catch (JSONException ex) {

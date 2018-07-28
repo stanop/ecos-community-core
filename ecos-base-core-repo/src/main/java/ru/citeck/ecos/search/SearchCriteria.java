@@ -40,11 +40,36 @@ public class SearchCriteria {
     private NamespacePrefixResolver namespaceService;
 
     public SearchCriteria(NamespacePrefixResolver namespaceService) {
-        triplets = new ArrayList<CriteriaTriplet>();
-        sort = new LinkedHashMap<String, Boolean>();
+        triplets = new ArrayList<>();
+        sort = new LinkedHashMap<>();
         skip = null;
         limit = null;
         this.namespaceService = namespaceService;
+    }
+
+    public SearchCriteria(SearchCriteria other) {
+        this(other.namespaceService);
+        other.triplets.forEach(t ->
+                triplets.add(new CriteriaTriplet(t.getField(), t.getPredicate(), t.getValue())));
+        skip = other.skip;
+        limit = other.limit;
+        sort.putAll(other.sort);
+    }
+
+    /**
+     * Replace first existing field triplet by
+     * @param triplet
+     * @return
+     */
+    public SearchCriteria replaceOrAddTriplet(CriteriaTriplet triplet) {
+        for (int i = 0; i < triplets.size(); i++) {
+            if (Objects.equals(triplets.get(i).getField(), triplet.getField())) {
+                triplets.set(i, triplet);
+                return this;
+            }
+        }
+        triplets.add(triplet);
+        return this;
     }
 
     public SearchCriteria addCriteriaTriplet(String field, String predicate, String value) {
@@ -144,7 +169,7 @@ public class SearchCriteria {
     }
 
     public Map<String, Object> toMap() {
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("skip", skip);
         map.put("limit", limit);
         return map;
