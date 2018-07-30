@@ -35,6 +35,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ScriptableObject;
+import ru.citeck.ecos.repo.RemoteNodeRef;
 
 public class JavaScriptImplUtils {
 
@@ -199,6 +200,25 @@ public class JavaScriptImplUtils {
             qnames.add(convertQName(string, namespaceService));
         }
         return qnames;
+    }
+
+    public static RemoteNodeRef getRemoteNodeRef(Object object) {
+        if (object == null) {
+            return null;
+        }
+        if (object instanceof RemoteNodeRef) {
+            return (RemoteNodeRef) object;
+        }
+        if (object instanceof NodeRef) {
+            return new RemoteNodeRef((NodeRef) object);
+        }
+        if (object instanceof String) {
+            return new RemoteNodeRef((String) object);
+        }
+        if (object instanceof ScriptNode) {
+            return new RemoteNodeRef(((ScriptNode) object).getNodeRef());
+        }
+        throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to RemoteNodeRef");
     }
 
     public static NodeRef getNodeRef(Object object) {

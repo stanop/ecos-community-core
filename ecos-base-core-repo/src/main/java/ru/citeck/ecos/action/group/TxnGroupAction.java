@@ -1,4 +1,4 @@
-package ru.citeck.ecos.journals.action.group;
+package ru.citeck.ecos.action.group;
 
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.transaction.TransactionService;
@@ -7,28 +7,26 @@ import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.repo.RemoteNodeRef;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author Pavel Simonov
  */
-public class TxnGroupActionProcessor extends BaseGroupActionProcessor {
+public abstract class TxnGroupAction extends BaseGroupAction {
 
-    private static final List<Class> RETRY_EXCEPTIONS = Arrays.asList(RetryingTransactionHelper.RETRY_EXCEPTIONS);
-
-    private static final Log logger = LogFactory.getLog(TxnGroupActionProcessor.class);
+    private static final Log logger = LogFactory.getLog(TxnGroupAction.class);
 
     private TransactionService transactionService;
 
-    public TxnGroupActionProcessor(TransactionService transactionService) {
+    public TxnGroupAction(TransactionService transactionService, GroupActionConfig config) {
+        super(config);
         this.transactionService = transactionService;
     }
 
     @Override
-    protected void processNodesImpl(List<ProcessorNode> nodes) {
+    protected void processNodesImpl(List<ActionNode> nodes) {
 
-        List<ProcessorNode> nodesToProcess = new ArrayList<>(nodes);
+        List<ActionNode> nodesToProcess = new ArrayList<>(nodes);
 
         boolean completed = false;
 
@@ -47,12 +45,12 @@ public class TxnGroupActionProcessor extends BaseGroupActionProcessor {
 
                 GroupActionResult result = new GroupActionResult();
                 result.setStatus(GroupActionResult.STATUS_ERROR);
-                result.setException(e.originalException);
+                result.setException(e.cause);
 
-                ProcessorNode node = nodesToProcess.get(e.nodeIdx);
+                ActionNode node = nodesToProcess.get(e.nodeIdx);
                 node.setResult(result);
 
-                logger.warn("Exception while process node " + node.getNodeRef(), e.originalException);
+                logger.warn("Exception while process node " + node.getNodeRef(), e.cause);
 
                 nodesToProcess.remove(e.nodeIdx);
 
@@ -70,19 +68,18 @@ public class TxnGroupActionProcessor extends BaseGroupActionProcessor {
         }
     }
 
-    protected void processNodesInTxn(List<ProcessorNode> nodes) {
+    protected void processNodesInTxn(List<ActionNode> nodes) {
         for (int idx = 0; idx < nodes.size(); idx++) {
             try {
-                ProcessorNode node = nodes.get(idx);
+                ActionNode node = nodes.get(idx);
                 if (isApplicable(node.getNodeRef())) {
                     node.process(this::processImpl);
                 } else {
-                    GroupActionResult result = new GroupActionResult();
-                    result.setStatus(GroupActionResult.STATUS_SKIPPED);
-                    node.setResult(result);
+                    node.setResult(new GroupActionResult(GroupActionResult.STATUS_SKIPPED));
                 }
             } catch (Exception e) {
-                if (!RETRY_EXCEPTIONS.contains(e.getClass())) {
+                Throwable retryCause = RetryingTransactionHelper.extractRetryCause(e);
+                if (retryCause == null) {
                     throw new TxnException(idx, e);
                 } else {
                     throw e;
@@ -103,11 +100,11 @@ public class TxnGroupActionProcessor extends BaseGroupActionProcessor {
     protected static class TxnException extends RuntimeException {
 
         final int nodeIdx;
-        final Exception originalException;
+        final Exception cause;
 
-        TxnException(int idx, Exception originalException) {
+        TxnException(int idx, Exception cause) {
             this.nodeIdx = idx;
-            this.originalException = originalException;
+            this.cause = cause;
         }
     }
 }

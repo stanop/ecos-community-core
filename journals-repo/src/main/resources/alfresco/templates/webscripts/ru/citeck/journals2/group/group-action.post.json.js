@@ -11,7 +11,7 @@
         return;
     }
 
-    var statuses = groupActionService.invoke(nodes, actionId, params);
+    var statuses = groupActionService.execute(nodes, actionId, params);
 
     var results = [];
 

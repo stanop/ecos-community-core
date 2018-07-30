@@ -242,6 +242,10 @@ public class JournalRecordsDAO {
         return schemaBuilder.toString();
     }
 
+    public void clearCache() {
+        gqlQueryWithDataByJournalId.clear();
+    }
+
     @Autowired
     public void setJournalService(JournalService journalService) {
         this.journalService = journalService;

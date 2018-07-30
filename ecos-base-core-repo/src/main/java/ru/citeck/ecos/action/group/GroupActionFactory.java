@@ -1,15 +1,13 @@
-package ru.citeck.ecos.journals.action.group;
-
-import java.util.Map;
+package ru.citeck.ecos.action.group;
 
 /**
  * @author Pavel Simonov
  */
-public interface GroupActionProcFactory {
+public interface GroupActionFactory {
 
     String[] EMPTY_STR_ARR = new String[0];
 
-    GroupActionProcessor createProcessor(Map<String, String> params);
+    GroupAction createAction(GroupActionConfig config);
 
     String getActionId();
 

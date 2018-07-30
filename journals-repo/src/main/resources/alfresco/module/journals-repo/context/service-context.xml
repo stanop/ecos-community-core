@@ -21,26 +21,6 @@
         </property>
     </bean>-->
 
-    <bean id="journals.groupActionService" class="ru.citeck.ecos.journals.action.group.GroupActionServiceImpl">
-    </bean>
-
-    <bean id="journals.filterActionService" class="ru.citeck.ecos.journals.action.filter.FilterActionServiceImpl">
-    </bean>
-
-    <bean id="journals.groupActionServiceJS" class="ru.citeck.ecos.journals.action.group.GroupActionServiceJS" parent="baseJavaScriptExtension">
-        <property name="extensionName" value="groupActionService" />
-        <property name="groupActionService" ref="journals.groupActionService" />
-        <property name="serviceRegistry" ref="ServiceRegistry" />
-    </bean>
-
-    <bean id="journals.groupActionEvaluator" class="ru.citeck.ecos.journals.action.group.GroupActionExecutor"
-                                             abstract="true" init-method="init">
-        <property name="groupActionService" ref="journals.groupActionService" />
-        <property name="namespaceService" ref="namespaceService" />
-        <property name="workflowService" ref="WorkflowService" />
-        <property name="nodeService" ref="nodeService" />
-    </bean>
-
     <bean id="journals.recordsDAO" class="ru.citeck.ecos.journals.records.JournalRecordsDAO">
         <property name="recordsBaseQuery">
             <value>

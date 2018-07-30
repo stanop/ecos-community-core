@@ -38,7 +38,15 @@
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required" />
         <xs:attribute name="title" type="xs:string" use="required" />
+        <xs:attribute name="type" type="j:groupActionType" default="selected" />
     </xs:complexType>
+
+    <xs:simpleType name="groupActionType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="selected" />
+            <xs:enumeration value="filtered" />
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:complexType name="journal">
         <xs:sequence>

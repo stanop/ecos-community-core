@@ -1,52 +1,65 @@
-package ru.citeck.ecos.journals.action.group;
+package ru.citeck.ecos.action.group;
 
 import org.alfresco.repo.jscript.ValueConverter;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ru.citeck.ecos.repo.RemoteNodeRef;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author Pavel Simonov
  */
 public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
 
-    public static final String BATCH_PARAM_KEY = "evaluateBatch";
-
+    private static final String CONFIG_BATCH_SIZE = "batchSize";
 
     private GroupActionService groupActionService;
     private ValueConverter converter = new ValueConverter();
 
-    public GroupActionStatusesJS invoke(Object nodes, String actionId, Object paramsObj) throws JSONException {
-        List<NodeRef> nodeRefs = toNodeRefList(nodes);
-        Map<String, String> params = toStringMap(paramsObj);
-        Map<NodeRef, GroupActionResult> statuses;
+    public GroupActionStatusesJS execute(Object nodes, String actionId, Object paramsObj) throws JSONException {
 
-        if (StringUtils.isNotEmpty(params.get(BATCH_PARAM_KEY)) && params.get(BATCH_PARAM_KEY).equals("true")) {
-            statuses = groupActionService.invokeBatch(nodeRefs, actionId, params);
-        } else {
-            statuses = groupActionService.invoke(nodeRefs, actionId, params);
-        }
+        List<RemoteNodeRef> nodeRefs = toNodeRefList(nodes);
+        Map<String, String> params = toStringMap(paramsObj);
+
+        GroupActionConfig config = new GroupActionConfig();
+        config.setParams(params);
+
+        Map<RemoteNodeRef, GroupActionResult> statuses = groupActionService.execute(nodeRefs, actionId, config);
 
         return new GroupActionStatusesJS(statuses, getScope(), serviceRegistry);
     }
 
-    private List<NodeRef> toNodeRefList(Object array) {
+    public void executeAsync(Object nodes, Consumer<RemoteNodeRef> action, Object config) {
+
+        List<RemoteNodeRef> nodeRefs = toNodeRefList(nodes);
+        Map<String, String> configMap = toStringMap(config);
+
+        GroupActionConfig groupActionConfig = new GroupActionConfig();
+        String batchSize = configMap.get(CONFIG_BATCH_SIZE);
+        if (StringUtils.isNotBlank(batchSize)) {
+            groupActionConfig.setBatchSize(Integer.parseInt(batchSize));
+        }
+
+        groupActionService.executeAsync(nodeRefs, action, groupActionConfig);
+    }
+
+    private List<RemoteNodeRef> toNodeRefList(Object array) {
         Object jArray = converter.convertValueForJava(array);
-        List<NodeRef> result = new ArrayList<>();
+        List<RemoteNodeRef> result = new ArrayList<>();
         if (jArray instanceof List) {
             for (Object obj : (List) jArray) {
-                result.add(JavaScriptImplUtils.getNodeRef(obj));
+                result.add(JavaScriptImplUtils.getRemoteNodeRef(obj));
             }
         } else if (jArray instanceof JSONArray) {
             JSONArray jsonArray = (JSONArray) jArray;
             for (int i = 0; i < jsonArray.length(); i++) {
-                result.add(JavaScriptImplUtils.getNodeRef(jsonArray.opt(i)));
+                result.add(JavaScriptImplUtils.getRemoteNodeRef(jsonArray.opt(i)));
             }
         }
         return result;

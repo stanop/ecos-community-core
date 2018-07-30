@@ -1,4 +1,4 @@
-package ru.citeck.ecos.journals.action.group;
+package ru.citeck.ecos.action.group;
 
 import ru.citeck.ecos.repo.RemoteNodeRef;
 
@@ -9,15 +9,22 @@ import java.util.function.Function;
 /**
  * @author Pavel Simonov
  */
-public class BaseGroupActionProcessor implements GroupActionProcessor {
+public abstract class BaseGroupAction implements GroupAction {
 
-    private int batchSize = 1;
+    private List<ActionNode> nodes = new ArrayList<>();
 
-    private List<ProcessorNode> nodes = new ArrayList<>();
+    private int batchSize;
+
+    protected final GroupActionConfig config;
+
+    public BaseGroupAction(GroupActionConfig config) {
+        this.config = config;
+        batchSize = config != null ? config.getBatchSize() : 1;
+    }
 
     @Override
     public Future<GroupActionResult> process(RemoteNodeRef nodeRef) {
-        ProcessorNode node = new ProcessorNode(nodeRef);
+        ActionNode node = new ActionNode(nodeRef);
         nodes.add(node);
         if (batchSize > 0 && nodes.size() >= batchSize) {
             processNodes();
@@ -37,8 +44,8 @@ public class BaseGroupActionProcessor implements GroupActionProcessor {
         nodes.clear();
     }
 
-    protected void processNodesImpl(List<ProcessorNode> nodes) {
-        for (ProcessorNode node : nodes) {
+    protected void processNodesImpl(List<ActionNode> nodes) {
+        for (ActionNode node : nodes) {
             node.process(this::processImpl);
         }
     }
@@ -51,12 +58,12 @@ public class BaseGroupActionProcessor implements GroupActionProcessor {
         this.batchSize = batchSize;
     }
 
-    public static class ProcessorNode implements Future<GroupActionResult> {
+    public static class ActionNode implements Future<GroupActionResult> {
 
         private final RemoteNodeRef nodeRef;
         private GroupActionResult result;
 
-        ProcessorNode(RemoteNodeRef nodeRef) {
+        ActionNode(RemoteNodeRef nodeRef) {
             this.nodeRef = nodeRef;
         }
 

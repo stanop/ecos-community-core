@@ -1,4 +1,4 @@
-package ru.citeck.ecos.journals.action.group;
+package ru.citeck.ecos.action.group;
 
 import lombok.Getter;
 import lombok.Setter;

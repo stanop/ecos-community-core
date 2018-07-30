@@ -1,12 +1,20 @@
 package ru.citeck.ecos.graphql.journal;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+@JsonDeserialize(using = JournalGqlPageInfoInput.JsonDeserializer.class)
 public class JournalGqlPageInfoInput extends HashMap<String, Object> {
 
     private static final String PROP_SKIP_COUNT = "skipCount";
@@ -28,7 +36,8 @@ public class JournalGqlPageInfoInput extends HashMap<String, Object> {
     public JournalGqlPageInfoInput(
             @GraphQLName(PROP_AFTER_ID) String afterId,
             @GraphQLName(PROP_MAX_ITEMS) Integer maxItems,
-            @GraphQLName(PROP_SORT_BY) List<JournalGqlSortBy> sortBy) {
+            @GraphQLName(PROP_SORT_BY) List<JournalGqlSortBy> sortBy
+    ) {
         super(3);
 
         setAfterId(afterId);
@@ -82,5 +91,56 @@ public class JournalGqlPageInfoInput extends HashMap<String, Object> {
     public void setSortBy(List<JournalGqlSortBy> sortBy) {
         this.sortBy = sortBy != null ? sortBy : Collections.emptyList();
         put(PROP_SORT_BY, this.sortBy);
+    }
+
+    public static class JsonDeserializer extends StdDeserializer<JournalGqlPageInfoInput> {
+
+        public JsonDeserializer() {
+            super(JournalGqlPageInfoInput.class);
+        }
+
+        @Override
+        public JournalGqlPageInfoInput deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+
+            JsonNode node = jp.getCodec().readTree(jp);
+
+            Integer maxItems = asInt(node.get(PROP_MAX_ITEMS));
+            Integer skipCount = asInt(node.get(PROP_SKIP_COUNT));
+            String afterId = asText(node.get(PROP_AFTER_ID));
+
+            JsonNode sortByNode = node.get(PROP_SORT_BY);
+            List<JournalGqlSortBy> sortBy = null;
+
+            if (sortByNode != null) {
+                
+                sortBy = new ArrayList<>();
+
+                for (JsonNode sortNode : sortByNode) {
+
+                    String attribute = asText(sortNode.get(JournalGqlSortBy.PROP_ATTRIBUTE));
+                    String order = asText(sortNode.get(JournalGqlSortBy.PROP_ORDER));
+
+                    sortBy.add(new JournalGqlSortBy(attribute, order));
+                }
+            }
+
+            JournalGqlPageInfoInput result;
+
+            if (afterId != null) {
+                result = new JournalGqlPageInfoInput(afterId, maxItems, sortBy);
+            } else {
+                result = new JournalGqlPageInfoInput(skipCount, maxItems, sortBy);
+            }
+
+            return result;
+        }
+
+        private String asText(JsonNode node) {
+            return node != null ? node.asText() : null;
+        }
+
+        private Integer asInt(JsonNode node) {
+            return node != null ? node.asInt(0) : null;
+        }
     }
 }

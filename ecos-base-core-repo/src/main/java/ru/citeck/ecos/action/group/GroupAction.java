@@ -1,4 +1,4 @@
-package ru.citeck.ecos.journals.action.group;
+package ru.citeck.ecos.action.group;
 
 import ru.citeck.ecos.repo.RemoteNodeRef;
 
@@ -7,9 +7,10 @@ import java.util.concurrent.Future;
 /**
  * @author Pavel Simonov
  */
-public interface GroupActionProcessor {
+@FunctionalInterface
+public interface GroupAction {
 
     Future<GroupActionResult> process(RemoteNodeRef nodeRef);
 
-    void end();
+    default void end() {}
 }

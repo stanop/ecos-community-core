@@ -9,8 +9,8 @@ import java.util.HashMap;
 
 public class JournalGqlSortBy extends HashMap<String, Object> {
 
-    private static final String PARAM_ATTRIBUTE = "attribute";
-    private static final String PARAM_ORDER = "order";
+    static final String PROP_ATTRIBUTE = "attribute";
+    static final String PROP_ORDER = "order";
 
     @GraphQLField
     private final String attribute;
@@ -19,16 +19,16 @@ public class JournalGqlSortBy extends HashMap<String, Object> {
 
     @JsonCreator
     public JournalGqlSortBy(
-            @JsonProperty(PARAM_ATTRIBUTE) @GraphQLName(PARAM_ATTRIBUTE) String attribute,
-            @JsonProperty(PARAM_ORDER) @GraphQLName(PARAM_ORDER) String order
+            @JsonProperty(PROP_ATTRIBUTE) @GraphQLName(PROP_ATTRIBUTE) String attribute,
+            @JsonProperty(PROP_ORDER) @GraphQLName(PROP_ORDER) String order
     ) {
         super(2);
 
         this.attribute = attribute;
         this.order = order;
 
-        put(PARAM_ATTRIBUTE, this.attribute);
-        put(PARAM_ORDER, this.order);
+        put(PROP_ATTRIBUTE, this.attribute);
+        put(PROP_ORDER, this.order);
     }
 
     public String getAttribute() {

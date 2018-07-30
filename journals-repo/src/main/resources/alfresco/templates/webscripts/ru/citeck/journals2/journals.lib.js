@@ -93,7 +93,8 @@ var journalsLib = {
                 func: "onGroupAction",
                 isDoclib: false,
                 settings: this.renderOptions(action.getOptions()),
-                actionId: action.getId()
+                actionId: action.getId(),
+                type: action.getType()
             });
         }
         return result;
