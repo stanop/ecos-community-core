@@ -8,6 +8,7 @@ import org.alfresco.repo.workflow.WorkflowObjectFactory;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.namespace.NamespaceService;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.flowable.engine.*;
 import org.flowable.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.flowable.engine.parse.BpmnParseHandler;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
@@ -47,6 +47,11 @@ public class FlowableConfiguration {
     private static final String FLOWABLE_DB_USERNAME = "flowable.db.username";
     private static final String FLOWABLE_DB_PASSWORD = "flowable.db.password";
     private static final String FLOWABLE_DRIVER_CLASS_NAME = "flowable.db.driver.class.name";
+    private static final String FLOWABLE_DBCP_MIN_IDLE = "flowable.db.dbcp.min.idle";
+    private static final String FLOWABLE_DBCP_MAX_IDLE = "flowable.db.dbcp.max.idle";
+    private static final String FLOWABLE_DBCP_MAX_ACTIVE = "flowable.db.dbcp.max.active";
+    private static final String FLOWABLE_DBCP_MAX_OPEN_PREPARED_STATEMENTS = "flowable.db.dbcp.max.open.prepared.statements";
+
 
     /**
      * Mail properties constants
@@ -81,12 +86,20 @@ public class FlowableConfiguration {
     public DataSource flowableDataSource() {
         if (properties.getProperty(FLOWABLE_DB_URL) != null) {
             try {
-                DriverManagerDataSource result = new DriverManagerDataSource();
-                result.setDriverClassName(properties.getProperty(FLOWABLE_DRIVER_CLASS_NAME));
-                result.setUrl(properties.getProperty(FLOWABLE_DB_URL));
-                result.setUsername(properties.getProperty(FLOWABLE_DB_USERNAME));
-                result.setPassword(properties.getProperty(FLOWABLE_DB_PASSWORD));
-                return result;
+                BasicDataSource dataSource = new BasicDataSource();
+
+                dataSource.setDriverClassName(properties.getProperty(FLOWABLE_DRIVER_CLASS_NAME));
+                dataSource.setUrl(properties.getProperty(FLOWABLE_DB_URL));
+                dataSource.setUsername(properties.getProperty(FLOWABLE_DB_USERNAME));
+                dataSource.setPassword(properties.getProperty(FLOWABLE_DB_PASSWORD));
+
+                dataSource.setMinIdle(Integer.parseInt(properties.getProperty(FLOWABLE_DBCP_MIN_IDLE)));
+                dataSource.setMaxIdle(Integer.parseInt(properties.getProperty(FLOWABLE_DBCP_MAX_IDLE)));
+                dataSource.setMaxActive(Integer.parseInt(properties.getProperty(FLOWABLE_DBCP_MAX_ACTIVE)));
+                dataSource.setMaxOpenPreparedStatements(Integer.parseInt(properties.getProperty(
+                        FLOWABLE_DBCP_MAX_OPEN_PREPARED_STATEMENTS)));
+
+                return dataSource;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
