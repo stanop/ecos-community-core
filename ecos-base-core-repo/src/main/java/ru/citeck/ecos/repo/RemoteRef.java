@@ -1,40 +1,44 @@
 package ru.citeck.ecos.repo;
 
+import lombok.Getter;
 import org.alfresco.service.cmr.repository.NodeRef;
 
 import java.util.Objects;
 
-public class RemoteNodeRef {
+public class RemoteRef {
 
-    private static final String LOCAL_ID = "";
+    private static final String LOCAL_SERVER_ID = "";
     private static final String REMOTE_DELIMITER = "@";
 
     private final String serverId;
-    private final NodeRef nodeRef;
+    private final String localId;
 
-    public RemoteNodeRef(String serverId, NodeRef nodeRef) {
+    @Getter(lazy = true)
+    private final NodeRef nodeRef = evalNodeRef();
+
+    public RemoteRef(String serverId, NodeRef nodeRef) {
         this.serverId = serverId;
-        this.nodeRef = nodeRef;
+        this.localId = nodeRef.toString();
     }
 
-    public RemoteNodeRef(String id) {
+    public RemoteRef(String id) {
         String[] tokens = id.split(REMOTE_DELIMITER);
         if (tokens.length == 1) {
-            serverId = LOCAL_ID;
-            nodeRef = new NodeRef(tokens[0]);
+            serverId = LOCAL_SERVER_ID;
+            localId = tokens[0];
         } else {
             serverId = tokens[0];
-            nodeRef = new NodeRef(tokens[1]);
+            localId = tokens[1];
         }
     }
 
-    public RemoteNodeRef(NodeRef nodeRef) {
-        this.serverId = LOCAL_ID;
-        this.nodeRef = nodeRef;
+    public RemoteRef(NodeRef nodeRef) {
+        this.serverId = LOCAL_SERVER_ID;
+        this.localId = nodeRef.toString();
     }
 
     public boolean isLocal() {
-        return LOCAL_ID.equals(serverId);
+        return LOCAL_SERVER_ID.equals(serverId);
     }
 
     public boolean isRemote() {
@@ -45,8 +49,12 @@ public class RemoteNodeRef {
         return serverId;
     }
 
-    public NodeRef getNodeRef() {
-        return nodeRef;
+    public String getLocalId() {
+        return localId;
+    }
+
+    private NodeRef evalNodeRef() {
+        return new NodeRef(localId);
     }
 
     @Override
@@ -57,24 +65,24 @@ public class RemoteNodeRef {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        RemoteNodeRef that = (RemoteNodeRef) o;
+        RemoteRef that = (RemoteRef) o;
         return Objects.equals(serverId, that.serverId)
-            && Objects.equals(nodeRef, that.nodeRef);
+            && Objects.equals(localId, that.localId);
     }
 
     @Override
     public int hashCode() {
         int result = Objects.hashCode(serverId);
-        result = 31 * result + Objects.hashCode(nodeRef);
+        result = 31 * result + Objects.hashCode(localId);
         return result;
     }
 
     @Override
     public String toString() {
         if (isLocal()) {
-            return nodeRef.toString();
+            return localId;
         } else {
-            return serverId + REMOTE_DELIMITER + nodeRef;
+            return serverId + REMOTE_DELIMITER + localId;
         }
     }
 }

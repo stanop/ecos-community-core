@@ -14,8 +14,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-@JsonDeserialize(using = JournalGqlPageInfoInput.JsonDeserializer.class)
-public class JournalGqlPageInfoInput extends HashMap<String, Object> {
+@JsonDeserialize(using = JGqlPageInfoInput.JsonDeserializer.class)
+public class JGqlPageInfoInput extends HashMap<String, Object> {
+
+    public static final JGqlPageInfoInput DEFAULT = new JGqlPageInfoInput(0, 100, Collections.emptyList());
 
     private static final String PROP_SKIP_COUNT = "skipCount";
     private static final String PROP_AFTER_ID = "afterId";
@@ -29,14 +31,14 @@ public class JournalGqlPageInfoInput extends HashMap<String, Object> {
     @GraphQLField
     private int maxItems;
     @GraphQLField
-    private List<JournalGqlSortBy> sortBy;
+    private List<JGqlSortBy> sortBy;
     @GraphQLField
     private String afterId;
 
-    public JournalGqlPageInfoInput(
+    public JGqlPageInfoInput(
             @GraphQLName(PROP_AFTER_ID) String afterId,
             @GraphQLName(PROP_MAX_ITEMS) Integer maxItems,
-            @GraphQLName(PROP_SORT_BY) List<JournalGqlSortBy> sortBy
+            @GraphQLName(PROP_SORT_BY) List<JGqlSortBy> sortBy
     ) {
         super(3);
 
@@ -45,10 +47,10 @@ public class JournalGqlPageInfoInput extends HashMap<String, Object> {
         setSortBy(sortBy);
     }
 
-    public JournalGqlPageInfoInput(
+    public JGqlPageInfoInput(
             @GraphQLName(PROP_SKIP_COUNT) Integer skipCount,
             @GraphQLName(PROP_MAX_ITEMS) Integer maxItems,
-            @GraphQLName(PROP_SORT_BY) List<JournalGqlSortBy> sortBy
+            @GraphQLName(PROP_SORT_BY) List<JGqlSortBy> sortBy
     ) {
         super(3);
 
@@ -65,7 +67,7 @@ public class JournalGqlPageInfoInput extends HashMap<String, Object> {
         return maxItems;
     }
 
-    public List<JournalGqlSortBy> getSortBy() {
+    public List<JGqlSortBy> getSortBy() {
         return sortBy;
     }
 
@@ -88,19 +90,19 @@ public class JournalGqlPageInfoInput extends HashMap<String, Object> {
         put(PROP_MAX_ITEMS, this.maxItems);
     }
 
-    public void setSortBy(List<JournalGqlSortBy> sortBy) {
+    public void setSortBy(List<JGqlSortBy> sortBy) {
         this.sortBy = sortBy != null ? sortBy : Collections.emptyList();
         put(PROP_SORT_BY, this.sortBy);
     }
 
-    public static class JsonDeserializer extends StdDeserializer<JournalGqlPageInfoInput> {
+    public static class JsonDeserializer extends StdDeserializer<JGqlPageInfoInput> {
 
         public JsonDeserializer() {
-            super(JournalGqlPageInfoInput.class);
+            super(JGqlPageInfoInput.class);
         }
 
         @Override
-        public JournalGqlPageInfoInput deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+        public JGqlPageInfoInput deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 
             JsonNode node = jp.getCodec().readTree(jp);
 
@@ -109,7 +111,7 @@ public class JournalGqlPageInfoInput extends HashMap<String, Object> {
             String afterId = asText(node.get(PROP_AFTER_ID));
 
             JsonNode sortByNode = node.get(PROP_SORT_BY);
-            List<JournalGqlSortBy> sortBy = null;
+            List<JGqlSortBy> sortBy = null;
 
             if (sortByNode != null) {
                 
@@ -117,19 +119,19 @@ public class JournalGqlPageInfoInput extends HashMap<String, Object> {
 
                 for (JsonNode sortNode : sortByNode) {
 
-                    String attribute = asText(sortNode.get(JournalGqlSortBy.PROP_ATTRIBUTE));
-                    String order = asText(sortNode.get(JournalGqlSortBy.PROP_ORDER));
+                    String attribute = asText(sortNode.get(JGqlSortBy.PROP_ATTRIBUTE));
+                    String order = asText(sortNode.get(JGqlSortBy.PROP_ORDER));
 
-                    sortBy.add(new JournalGqlSortBy(attribute, order));
+                    sortBy.add(new JGqlSortBy(attribute, order));
                 }
             }
 
-            JournalGqlPageInfoInput result;
+            JGqlPageInfoInput result;
 
             if (afterId != null) {
-                result = new JournalGqlPageInfoInput(afterId, maxItems, sortBy);
+                result = new JGqlPageInfoInput(afterId, maxItems, sortBy);
             } else {
-                result = new JournalGqlPageInfoInput(skipCount, maxItems, sortBy);
+                result = new JGqlPageInfoInput(skipCount, maxItems, sortBy);
             }
 
             return result;

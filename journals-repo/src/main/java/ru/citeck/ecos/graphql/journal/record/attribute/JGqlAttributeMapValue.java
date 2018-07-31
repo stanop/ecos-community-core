@@ -1,7 +1,7 @@
 package ru.citeck.ecos.graphql.journal.record.attribute;
 
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeGql;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 
 import java.util.Map;
 import java.util.Optional;
@@ -9,12 +9,12 @@ import java.util.Optional;
 /**
  * @author Pavel Simonov
  */
-public class JournalAttributeMapValue implements JournalAttributeValueGql {
+public class JGqlAttributeMapValue implements JGqlAttributeValue {
 
     private String id;
     private Map<String, Object> attributes;
 
-    public JournalAttributeMapValue(String id) {
+    public JGqlAttributeMapValue(String id) {
         this.id = id;
     }
 
@@ -29,13 +29,13 @@ public class JournalAttributeMapValue implements JournalAttributeValueGql {
     }
 
     @Override
-    public Optional<JournalAttributeGql> attr(String name) {
+    public Optional<JGqlAttribute> attr(String name) {
         Object value = attributes.get(name);
-        JournalAttributeGql result;
-        if (value instanceof JournalAttributeGql) {
-            result = (JournalAttributeGql) value;
+        JGqlAttribute result;
+        if (value instanceof JGqlAttribute) {
+            result = (JGqlAttribute) value;
         } else {
-            result = new JournalExplicitAttribute(name, value);
+            result = new JGqlExplicitAttribute(name, value);
         }
         return Optional.of(result);
     }

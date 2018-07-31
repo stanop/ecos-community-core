@@ -4,7 +4,7 @@ import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.mozilla.javascript.Scriptable;
-import ru.citeck.ecos.repo.RemoteNodeRef;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
  */
 public class GroupActionStatusesJS {
 
-    private Map<RemoteNodeRef, GroupActionResult> statusesByRemoteRef;
+    private Map<RemoteRef, GroupActionResult> statusesByRemoteRef;
     private Map<NodeRef, GroupActionResult> statusesByRef;
 
     private ServiceRegistry serviceRegistry;
     private Scriptable scope;
 
-    GroupActionStatusesJS(Map<RemoteNodeRef, GroupActionResult> statuses,
+    GroupActionStatusesJS(Map<RemoteRef, GroupActionResult> statuses,
                                  Scriptable scope, ServiceRegistry serviceRegistry) {
 
         this.statusesByRemoteRef = statuses;
@@ -35,7 +35,7 @@ public class GroupActionStatusesJS {
     public ScriptNode[] getNodes() {
         List<ScriptNode> result = statusesByRemoteRef.keySet()
                                           .stream()
-                                          .filter(RemoteNodeRef::isLocal)
+                                          .filter(RemoteRef::isLocal)
                                           .map(ref -> new ScriptNode(ref.getNodeRef(), serviceRegistry, scope))
                                           .collect(Collectors.toList());
 

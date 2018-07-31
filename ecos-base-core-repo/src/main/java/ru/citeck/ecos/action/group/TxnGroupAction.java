@@ -4,7 +4,7 @@ import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.repo.RemoteNodeRef;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,12 +88,12 @@ public abstract class TxnGroupAction extends BaseGroupAction {
         }
     }
 
-    protected boolean isApplicable(RemoteNodeRef nodeRef) {
+    protected boolean isApplicable(RemoteRef nodeRef) {
         return true;
     }
 
     @Override
-    protected GroupActionResult processImpl(RemoteNodeRef nodeRef) {
+    protected GroupActionResult processImpl(RemoteRef nodeRef) {
         throw new RuntimeException("Method not implemented");
     }
 

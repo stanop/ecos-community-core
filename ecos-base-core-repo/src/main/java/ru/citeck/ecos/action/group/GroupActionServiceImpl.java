@@ -3,7 +3,7 @@ package ru.citeck.ecos.action.group;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.repo.RemoteNodeRef;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,16 +33,16 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public Map<RemoteNodeRef, GroupActionResult> execute(Iterable<RemoteNodeRef> nodeRefs,
-                                                         GroupAction action) {
+    public Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs,
+                                                     GroupAction action) {
 
-        Map<RemoteNodeRef, Future<GroupActionResult>> futureResults = new HashMap<>();
+        Map<RemoteRef, Future<GroupActionResult>> futureResults = new HashMap<>();
 
-        for (RemoteNodeRef ref : nodeRefs) {
+        for (RemoteRef ref : nodeRefs) {
             futureResults.put(ref, action.process(ref));
         }
 
-        Map<RemoteNodeRef, GroupActionResult> results = new HashMap<>();
+        Map<RemoteRef, GroupActionResult> results = new HashMap<>();
 
         futureResults.forEach((ref, res) -> {
 
@@ -63,54 +63,54 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public void executeAsync(Iterable<RemoteNodeRef> nodeRefs,
+    public void executeAsync(Iterable<RemoteRef> nodeRefs,
                              GroupAction action) {
 
-        for (RemoteNodeRef ref : nodeRefs) {
+        for (RemoteRef ref : nodeRefs) {
             action.process(ref);
         }
     }
 
     @Override
-    public Map<RemoteNodeRef, GroupActionResult> execute(Iterable<RemoteNodeRef> nodeRefs,
-                                                         Consumer<RemoteNodeRef> action,
-                                                         GroupActionConfig config) {
+    public Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs,
+                                                     Consumer<RemoteRef> action,
+                                                     GroupActionConfig config) {
 
         return execute(nodeRefs, new CustomTxnGroupAction(transactionService, action, config));
     }
 
     @Override
-    public void executeAsync(Iterable<RemoteNodeRef> nodeRefs,
-                             Consumer<RemoteNodeRef> action,
+    public void executeAsync(Iterable<RemoteRef> nodeRefs,
+                             Consumer<RemoteRef> action,
                              GroupActionConfig config) {
         executeAsync(nodeRefs, new CustomTxnGroupAction(transactionService, action, config));
     }
 
     @Override
-    public Map<RemoteNodeRef, GroupActionResult> execute(Iterable<RemoteNodeRef> nodeRefs,
-                                                         Function<RemoteNodeRef, GroupActionResult> action,
-                                                         GroupActionConfig config) {
+    public Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs,
+                                                     Function<RemoteRef, GroupActionResult> action,
+                                                     GroupActionConfig config) {
 
         return execute(nodeRefs, new CustomTxnGroupAction(transactionService, action, config));
     }
 
     @Override
-    public void executeAsync(Iterable<RemoteNodeRef> nodeRefs,
-                             Function<RemoteNodeRef, GroupActionResult> action,
+    public void executeAsync(Iterable<RemoteRef> nodeRefs,
+                             Function<RemoteRef, GroupActionResult> action,
                              GroupActionConfig config) {
         executeAsync(nodeRefs, new CustomTxnGroupAction(transactionService, action, config));
     }
 
     @Override
-    public Map<RemoteNodeRef, GroupActionResult> execute(Iterable<RemoteNodeRef> nodeRefs,
-                                                         String actionId,
-                                                         GroupActionConfig config) {
+    public Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs,
+                                                     String actionId,
+                                                     GroupActionConfig config) {
 
         return execute(nodeRefs, getProcessor(actionId, config));
     }
 
     @Override
-    public void executeAsync(Iterable<RemoteNodeRef> nodeRefs,
+    public void executeAsync(Iterable<RemoteRef> nodeRefs,
                              String actionId,
                              GroupActionConfig config) {
 

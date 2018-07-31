@@ -18,15 +18,21 @@
  */
 package ru.citeck.ecos.search;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
  * @author Anton Fateev <anton.fateev@citeck.ru>
  */
+@JsonSerialize(using = SearchCriteria.Serializer.class)
 public class SearchCriteria {
 
     private final List<CriteriaTriplet> triplets;
@@ -54,22 +60,6 @@ public class SearchCriteria {
         skip = other.skip;
         limit = other.limit;
         sort.putAll(other.sort);
-    }
-
-    /**
-     * Replace first existing field triplet by
-     * @param triplet
-     * @return
-     */
-    public SearchCriteria replaceOrAddTriplet(CriteriaTriplet triplet) {
-        for (int i = 0; i < triplets.size(); i++) {
-            if (Objects.equals(triplets.get(i).getField(), triplet.getField())) {
-                triplets.set(i, triplet);
-                return this;
-            }
-        }
-        triplets.add(triplet);
-        return this;
     }
 
     public SearchCriteria addCriteriaTriplet(String field, String predicate, String value) {
@@ -190,5 +180,35 @@ public class SearchCriteria {
         }
         sb.append(")\n");
         return sb.toString();
+    }
+
+    public static class Serializer extends StdSerializer<SearchCriteria> {
+
+        public Serializer() {
+            super(SearchCriteria.class);
+        }
+
+        @Override
+        public void serialize(SearchCriteria value,
+                              JsonGenerator jgen,
+                              SerializerProvider provider) throws IOException {
+
+            jgen.writeStartObject();
+
+            String fieldPrefix = SearchCriteriaParser.FIELD_KEY + SearchCriteriaParser.SEPARATOR;
+            String predicatePrefix = SearchCriteriaParser.PREDICATE_KEY + SearchCriteriaParser.SEPARATOR;
+            String valuePrefix = SearchCriteriaParser.VALUE_KEY + SearchCriteriaParser.SEPARATOR;
+
+            int idx = 0;
+
+            for (CriteriaTriplet triplet : value.getTriplets()) {
+                jgen.writeStringField(fieldPrefix + idx, triplet.getField());
+                jgen.writeStringField(predicatePrefix + idx, triplet.getPredicate());
+                jgen.writeStringField(valuePrefix + idx, triplet.getValue());
+                idx++;
+            }
+
+            jgen.writeEndObject();
+        }
     }
 }

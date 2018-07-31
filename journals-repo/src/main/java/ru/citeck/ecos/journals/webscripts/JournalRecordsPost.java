@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.ExecutionResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
-import ru.citeck.ecos.graphql.journal.JournalGqlPageInfoInput;
-import ru.citeck.ecos.journals.records.JournalRecordsDAO;
+import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
+import ru.citeck.ecos.journals.JournalService;
 
 import java.io.IOException;
 
@@ -24,7 +24,7 @@ public class JournalRecordsPost extends AbstractWebScript {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    private JournalRecordsDAO journalRecordsDAO;
+    private JournalService journalService;
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -32,10 +32,10 @@ public class JournalRecordsPost extends AbstractWebScript {
         String journalId = req.getParameter(PARAM_JOURNAL_ID);
 
         RequestBody request = objectMapper.readValue(req.getContent().getContent(), RequestBody.class);
-        ExecutionResult result = journalRecordsDAO.getRecordsWithData(
+        ExecutionResult result = journalService.getRecordsWithData(
+                journalId,
                 request.query,
                 request.language,
-                journalId,
                 request.pageInfo
         );
 
@@ -48,6 +48,6 @@ public class JournalRecordsPost extends AbstractWebScript {
     private static class RequestBody {
         public String query;
         public String language;
-        public JournalGqlPageInfoInput pageInfo;
+        public JGqlPageInfoInput pageInfo;
     }
 }

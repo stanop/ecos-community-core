@@ -10,12 +10,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.graphql.GraphQLService;
-import ru.citeck.ecos.graphql.journal.JournalGqlPageInfoInput;
+import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeInfoGql;
-import ru.citeck.ecos.journals.JournalService;
+import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.CriteriaAlfNodesSearch;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.journals.JournalType;
-import ru.citeck.ecos.repo.RemoteNodeRef;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +35,6 @@ public class JournalRecordsDAO {
     );
 
     private GraphQLService graphQLService;
-    private JournalService journalService;
     private ServiceRegistry serviceRegistry;
     private NamespaceService namespaceService;
 
@@ -46,30 +45,27 @@ public class JournalRecordsDAO {
     private String totalCountPath;
 
     private String recordsBaseQuery;
-    private String gqlRecordsQueryId;
+    private String gqlRecordsIdQuery;
 
     private PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();
 
-    public ExecutionResult getRecordsWithData(String query,
+    public ExecutionResult getRecordsWithData(JournalType journalType,
+                                              String query,
                                               String language,
-                                              String journalId,
-                                              JournalGqlPageInfoInput pageInfo) {
+                                              JGqlPageInfoInput pageInfo) {
 
-        JournalType journalType = getJournalType(journalId);
-        String gqlQuery = gqlQueryWithDataByJournalId.computeIfAbsent(journalId,
+        String gqlQuery = gqlQueryWithDataByJournalId.computeIfAbsent(journalType.getId(),
                                                                       id -> generateGqlQueryWithData(journalType));
 
-        return executeQuery(gqlQuery, query, language, journalType, pageInfo);
+        return executeQuery(journalType, gqlQuery, query, language, pageInfo);
     }
 
-    public RecordsResult getRecords(String query,
+    public RecordsResult getRecords(JournalType journalType,
+                                    String query,
                                     String language,
-                                    String journalId,
-                                    JournalGqlPageInfoInput pageInfo) {
+                                    JGqlPageInfoInput pageInfo) {
 
-        JournalType journalType = getJournalType(journalId);
-
-        ExecutionResult result = executeQuery(gqlRecordsQueryId, query, language, journalType, pageInfo);
+        ExecutionResult result = executeQuery(journalType, gqlRecordsIdQuery, query, language, pageInfo);
 
         List<Map<String, String>> recordsData = null;
         Boolean hasNextPage = null;
@@ -104,36 +100,29 @@ public class JournalRecordsDAO {
             totalCount = (long) recordsData.size();
         }
 
-        List<RemoteNodeRef> records = recordsData.stream()
-                .map(entry -> new RemoteNodeRef(entry.get("id")))
+        List<RemoteRef> records = recordsData.stream()
+                .map(entry -> new RemoteRef(entry.get("id")))
                 .collect(Collectors.toList());
 
         return new RecordsResult(records, hasNextPage, totalCount);
     }
 
-    private ExecutionResult executeQuery(String gqlQuery,
+    private ExecutionResult executeQuery(JournalType journalType,
+                                         String gqlQuery,
                                          String query,
                                          String language,
-                                         JournalType journalType,
-                                         JournalGqlPageInfoInput pageInfo) {
+                                         JGqlPageInfoInput pageInfo) {
 
         String datasource = journalType.getDataSource();
+        String validLanguage = StringUtils.isNotBlank(language) ? language : CriteriaAlfNodesSearch.LANGUAGE;
 
         Map<String, Object> params = new HashMap<>();
         params.put(GQL_PARAM_QUERY, query);
-        params.put(GQL_PARAM_LANGUAGE, language);
+        params.put(GQL_PARAM_LANGUAGE, validLanguage);
         params.put(GQL_PARAM_PAGE_INFO, pageInfo);
         params.put(GQL_PARAM_DATASOURCE, datasource);
 
         return graphQLService.execute(gqlQuery, params);
-    }
-
-    private JournalType getJournalType(String journalId) {
-        JournalType journalType = journalService.getJournalType(journalId);
-        if (journalType == null) {
-            throw new IllegalArgumentException("Journal with id " + journalId + " not found");
-        }
-        return journalType;
     }
 
     private String generateGqlQueryWithData(JournalType journalType) {
@@ -141,7 +130,7 @@ public class JournalRecordsDAO {
         StringBuilder schemaBuilder = new StringBuilder();
         schemaBuilder.append(recordsBaseQuery).append(" ");
 
-        schemaBuilder.append("fragment recordsFields on JournalAttributeValueGql {");
+        schemaBuilder.append("fragment recordsFields on JGqlAttributeValue {");
         schemaBuilder.append("id\n");
 
         int attrCounter = 0;
@@ -165,7 +154,7 @@ public class JournalRecordsDAO {
                     .append(prefixedKey)
                     .append("\"){");
 
-            JournalAttributeInfoGql info = dataSource.getAttributeInfo(prefixedKey).orElse(null);
+            JGqlAttributeInfo info = dataSource.getAttributeInfo(prefixedKey).orElse(null);
             schemaBuilder.append(getAttributeSchema(attributeOptions, info));
 
             schemaBuilder.append("}");
@@ -176,7 +165,7 @@ public class JournalRecordsDAO {
         return schemaBuilder.toString();
     }
 
-    private String getAttributeSchema(Map<String, String> attributeOptions, JournalAttributeInfoGql info) {
+    private String getAttributeSchema(Map<String, String> attributeOptions, JGqlAttributeInfo info) {
 
         String schema = attributeOptions.get("attributeSchema");
         if (StringUtils.isNotBlank(schema)) {
@@ -247,11 +236,6 @@ public class JournalRecordsDAO {
     }
 
     @Autowired
-    public void setJournalService(JournalService journalService) {
-        this.journalService = journalService;
-    }
-
-    @Autowired
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.namespaceService = serviceRegistry.getNamespaceService();
@@ -265,7 +249,7 @@ public class JournalRecordsDAO {
 
     public void setRecordsBaseQuery(String recordsBaseQuery) {
         this.recordsBaseQuery = recordsBaseQuery;
-        this.gqlRecordsQueryId = recordsBaseQuery + "\nfragment recordsFields on JournalAttributeValueGql { id }";
+        this.gqlRecordsIdQuery = recordsBaseQuery + "\nfragment recordsFields on JGqlAttributeValue { id }";
     }
 
     public void setRecordsListPath(String recordsListPath) {

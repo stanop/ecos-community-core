@@ -9,25 +9,25 @@ import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLQueryDefinition;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
-import ru.citeck.ecos.graphql.journal.record.JournalRecordsConnection;
+import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @GraphQLQueryDefinition
-public class JournalGqlQueryDefinition {
+public class JGqlQueryDefinition {
 
-    private static final Log logger = LogFactory.getLog(JournalGqlQueryDefinition.class);
+    private static final Log logger = LogFactory.getLog(JGqlQueryDefinition.class);
 
     private static ConcurrentHashMap<String, Optional<JournalDataSource>> dataSources = new ConcurrentHashMap<>();
 
     @GraphQLField
-    public static Optional<JournalRecordsConnection> journalRecords(DataFetchingEnvironment env,
-                                                                    @GraphQLName("datasource") String datasource,
-                                                                    @GraphQLName("language") String language,
-                                                                    @GraphQLName("query") String query,
-                                                                    @GraphQLName("pageInfo")
-                                                                                JournalGqlPageInfoInput pageInfo) {
+    public static Optional<JGqlRecordsConnection> journalRecords(DataFetchingEnvironment env,
+                                                                 @GraphQLName("datasource") String datasource,
+                                                                 @GraphQLName("language") String language,
+                                                                 @GraphQLName("query") String query,
+                                                                 @GraphQLName("pageInfo")
+                                                                            JGqlPageInfoInput pageInfo) {
         GqlContext context = env.getContext();
 
         Optional<JournalDataSource> dataSource = dataSources.computeIfAbsent(datasource, source -> {

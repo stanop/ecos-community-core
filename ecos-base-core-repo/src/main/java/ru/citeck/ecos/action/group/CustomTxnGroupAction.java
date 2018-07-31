@@ -1,17 +1,17 @@
 package ru.citeck.ecos.action.group;
 
 import org.alfresco.service.transaction.TransactionService;
-import ru.citeck.ecos.repo.RemoteNodeRef;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class CustomTxnGroupAction extends TxnGroupAction {
 
-    private Function<RemoteNodeRef, GroupActionResult> action;
+    private Function<RemoteRef, GroupActionResult> action;
 
     CustomTxnGroupAction(TransactionService transactionService,
-                         Consumer<RemoteNodeRef> action,
+                         Consumer<RemoteRef> action,
                          GroupActionConfig config) {
         super(transactionService, config);
 
@@ -22,7 +22,7 @@ public class CustomTxnGroupAction extends TxnGroupAction {
     }
 
     CustomTxnGroupAction(TransactionService transactionService,
-                         Function<RemoteNodeRef, GroupActionResult> action,
+                         Function<RemoteRef, GroupActionResult> action,
                          GroupActionConfig config) {
         super(transactionService, config);
 
@@ -30,7 +30,7 @@ public class CustomTxnGroupAction extends TxnGroupAction {
     }
 
     @Override
-    protected GroupActionResult processImpl(RemoteNodeRef nodeRef) {
+    protected GroupActionResult processImpl(RemoteRef nodeRef) {
         return action.apply(nodeRef);
     }
 }

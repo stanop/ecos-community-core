@@ -21,11 +21,15 @@ package ru.citeck.ecos.journals;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.service.ServiceRegistry;
 
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.invariants.InvariantDefinition;
+import ru.citeck.ecos.journals.records.JournalRecords;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
 public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
@@ -33,6 +37,9 @@ public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
     private JournalService impl;
     private ServiceRegistry serviceRegistry;
     private NamespaceService namespaceService;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private ValueConverter valueConverter = new ValueConverter();
 
     public JournalTypeJS getJournalType(String id) {
         JournalType type = impl.getJournalType(id);
@@ -47,6 +54,20 @@ public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
             result[i++] = new JournalTypeJS(type, serviceRegistry);
         }
         return result;
+    }
+
+    public JournalRecords getRecordsLazy(String journalId,
+                                         String query,
+                                         String language,
+                                         Object pageInfo) {
+
+        JGqlPageInfoInput pageInfoInput = null;
+        if (pageInfo != null) {
+            Object javaPageInfo = valueConverter.convertValueForJava(pageInfo);
+            pageInfoInput = objectMapper.convertValue(javaPageInfo, JGqlPageInfoInput.class);
+        }
+
+        return impl.getRecordsLazy(journalId, query, language, pageInfoInput);
     }
 
     public InvariantDefinition[] getCriterionInvariants(String journalId, Object attribute) {

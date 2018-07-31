@@ -5,7 +5,7 @@ import org.alfresco.service.namespace.QName;
 import java.util.Collections;
 import java.util.List;
 
-public interface JournalAttributeInfoGql {
+public interface JGqlAttributeInfo {
 
     String name();
 

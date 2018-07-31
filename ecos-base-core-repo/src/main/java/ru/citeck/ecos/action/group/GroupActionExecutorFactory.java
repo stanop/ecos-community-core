@@ -2,7 +2,7 @@ package ru.citeck.ecos.action.group;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
-import ru.citeck.ecos.repo.RemoteNodeRef;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +40,11 @@ public class GroupActionExecutorFactory implements GroupActionFactory {
         return executor.getActionId();
     }
 
+    @Override
+    public String[] getMandatoryParams() {
+        return executor.getMandatoryParams();
+    }
+
     private class BatchAction extends TxnGroupAction {
 
         BatchAction(GroupActionConfig config) {
@@ -47,7 +52,7 @@ public class GroupActionExecutorFactory implements GroupActionFactory {
         }
 
         @Override
-        protected boolean isApplicable(RemoteNodeRef nodeRef) {
+        protected boolean isApplicable(RemoteRef nodeRef) {
             return executor.isApplicable(nodeRef.getNodeRef(), config.getParams());
         }
 
@@ -82,12 +87,12 @@ public class GroupActionExecutorFactory implements GroupActionFactory {
         }
 
         @Override
-        protected boolean isApplicable(RemoteNodeRef nodeRef) {
+        protected boolean isApplicable(RemoteRef nodeRef) {
             return executor.isApplicable(nodeRef.getNodeRef(), config.getParams());
         }
 
         @Override
-        protected GroupActionResult processImpl(RemoteNodeRef nodeRef) {
+        protected GroupActionResult processImpl(RemoteRef nodeRef) {
             executor.invoke(nodeRef.getNodeRef(), config.getParams());
             return new GroupActionResult(GroupActionResult.STATUS_OK);
         }

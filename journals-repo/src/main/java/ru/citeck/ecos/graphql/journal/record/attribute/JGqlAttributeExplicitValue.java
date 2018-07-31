@@ -1,18 +1,18 @@
 package ru.citeck.ecos.graphql.journal.record.attribute;
 
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeGql;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 
 import java.util.Optional;
 
 /**
  * @author Pavel Simonov
  */
-public class JournalAttributeExplicitValue implements JournalAttributeValueGql {
+public class JGqlAttributeExplicitValue implements JGqlAttributeValue {
 
     private Object val;
 
-    public JournalAttributeExplicitValue(Object value) {
+    public JGqlAttributeExplicitValue(Object value) {
         if (value instanceof Optional) {
             val = ((Optional<?>) value).orElse(null);
         } else {
@@ -31,7 +31,7 @@ public class JournalAttributeExplicitValue implements JournalAttributeValueGql {
     }
 
     @Override
-    public Optional<JournalAttributeGql> attr(String name) {
-        return Optional.of(new JournalReflectionAttributeGql(val, name));
+    public Optional<JGqlAttribute> attr(String name) {
+        return Optional.of(new JGqlReflectionAttributeGql(val, name));
     }
 }

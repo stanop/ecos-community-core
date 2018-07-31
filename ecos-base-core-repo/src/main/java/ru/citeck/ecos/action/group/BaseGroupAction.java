@@ -1,6 +1,6 @@
 package ru.citeck.ecos.action.group;
 
-import ru.citeck.ecos.repo.RemoteNodeRef;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -23,7 +23,7 @@ public abstract class BaseGroupAction implements GroupAction {
     }
 
     @Override
-    public Future<GroupActionResult> process(RemoteNodeRef nodeRef) {
+    public Future<GroupActionResult> process(RemoteRef nodeRef) {
         ActionNode node = new ActionNode(nodeRef);
         nodes.add(node);
         if (batchSize > 0 && nodes.size() >= batchSize) {
@@ -50,7 +50,7 @@ public abstract class BaseGroupAction implements GroupAction {
         }
     }
 
-    protected GroupActionResult processImpl(RemoteNodeRef nodeRef) {
+    protected GroupActionResult processImpl(RemoteRef nodeRef) {
         throw new RuntimeException("Method not implemented");
     }
 
@@ -60,18 +60,18 @@ public abstract class BaseGroupAction implements GroupAction {
 
     public static class ActionNode implements Future<GroupActionResult> {
 
-        private final RemoteNodeRef nodeRef;
+        private final RemoteRef nodeRef;
         private GroupActionResult result;
 
-        ActionNode(RemoteNodeRef nodeRef) {
+        ActionNode(RemoteRef nodeRef) {
             this.nodeRef = nodeRef;
         }
 
-        public RemoteNodeRef getNodeRef() {
+        public RemoteRef getNodeRef() {
             return nodeRef;
         }
 
-        public void process(Function<RemoteNodeRef, GroupActionResult> processor) {
+        public void process(Function<RemoteRef, GroupActionResult> processor) {
             result = processor.apply(nodeRef);
         }
 

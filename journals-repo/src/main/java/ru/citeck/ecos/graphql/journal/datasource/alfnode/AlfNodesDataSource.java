@@ -1,81 +1,52 @@
 package ru.citeck.ecos.graphql.journal.datasource.alfnode;
 
 import com.google.common.collect.Lists;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.journal.JournalGqlPageInfo;
-import ru.citeck.ecos.graphql.journal.JournalGqlPageInfoInput;
-import ru.citeck.ecos.graphql.journal.JournalGqlSortBy;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeInfoGql;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
+import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
+import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.AlfNodesSearch;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
-import ru.citeck.ecos.graphql.journal.record.JournalRecordsConnection;
-import ru.citeck.ecos.search.CriteriaSearchResults;
-import ru.citeck.ecos.search.CriteriaSearchService;
-import ru.citeck.ecos.search.SearchCriteria;
-import ru.citeck.ecos.search.SearchCriteriaParser;
-
-import java.util.ArrayList;
+import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AlfNodesDataSource implements JournalDataSource {
 
-    @Autowired
-    private CriteriaSearchService criteriaSearchService;
-    @Autowired
-    private SearchCriteriaParser criteriaParser;
-    @Autowired
     private DictionaryService dictionaryService;
-    @Autowired
     private NamespaceService namespaceService;
 
-    @Override
-    public JournalRecordsConnection getRecords(GqlContext context,
-                                               String query, String language,
-                                               JournalGqlPageInfoInput pageInfo) {
+    private Map<String, AlfNodesSearch> nodesSearchByLang = new ConcurrentHashMap<>();
 
-        if (language == null) {
-            language = SearchService.LANGUAGE_FTS_ALFRESCO;
-        }
+    @Autowired
+    public AlfNodesDataSource(ServiceRegistry serviceRegistry) {
 
-        SearchCriteria criteria = criteriaParser.parse(query);
-        criteria.setSkip(pageInfo.getSkipCount());
-        criteria.setLimit(pageInfo.getMaxItems());
-
-        for (JournalGqlSortBy sortBy : pageInfo.getSortBy()) {
-            criteria.addSort(sortBy.getAttribute(), sortBy.getOrder());
-        }
-
-        CriteriaSearchResults criteriaResults = criteriaSearchService.query(criteria, language);
-
-        List<JournalAttributeValueGql> records = new ArrayList<>();
-
-        for (NodeRef nodeRef : criteriaResults.getResults()) {
-            context.getNode(nodeRef)
-                   .ifPresent(n -> records.add(new AlfNodeRecord(n, context)));
-        }
-
-        JournalRecordsConnection result = new JournalRecordsConnection();
-
-        result.setTotalCount(criteriaResults.getTotalCount());
-        result.setRecords(records);
-
-        JournalGqlPageInfo outPageInfo = new JournalGqlPageInfo();
-        outPageInfo.setHasNextPage(criteriaResults.hasMore());
-        outPageInfo.setSkipCount(pageInfo.getSkipCount());
-        outPageInfo.setMaxItems(pageInfo.getMaxItems());
-        result.setPageInfo(outPageInfo);
-
-        return result;
+        this.namespaceService = serviceRegistry.getNamespaceService();
+        this.dictionaryService = serviceRegistry.getDictionaryService();
     }
 
     @Override
-    public Optional<JournalAttributeInfoGql> getAttributeInfo(String attributeName) {
+    public JGqlRecordsConnection getRecords(GqlContext context,
+                                            String query,
+                                            String language,
+                                            JGqlPageInfoInput pageInfo) {
+
+        AlfNodesSearch alfNodesSearch = nodesSearchByLang.get(language);
+
+        if (alfNodesSearch == null) {
+            throw new IllegalArgumentException("Language " + language + " is not supported!");
+        }
+
+        return alfNodesSearch.query(context, query, pageInfo);
+    }
+
+    @Override
+    public Optional<JGqlAttributeInfo> getAttributeInfo(String attributeName) {
         return Optional.of(new AlfNodeAttributeInfo(attributeName, namespaceService, dictionaryService));
     }
 
@@ -84,5 +55,9 @@ public class AlfNodesDataSource implements JournalDataSource {
         return Lists.newArrayList(AlfNodeRecord.ATTR_ASPECTS,
                                   AlfNodeRecord.ATTR_IS_DOCUMENT,
                                   AlfNodeRecord.ATTR_IS_CONTAINER);
+    }
+
+    public void register(AlfNodesSearch nodesSearch) {
+        nodesSearchByLang.put(nodesSearch.getLanguage(), nodesSearch);
     }
 }

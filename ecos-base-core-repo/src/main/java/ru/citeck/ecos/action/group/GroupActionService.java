@@ -1,6 +1,6 @@
 package ru.citeck.ecos.action.group;
 
-import ru.citeck.ecos.repo.RemoteNodeRef;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -17,35 +17,35 @@ public interface GroupActionService {
      * Raw group action execution
      * Warning! Transaction splitting is not performed by service. Is is responsibility of GroupAction
      */
-    Map<RemoteNodeRef, GroupActionResult> execute(Iterable<RemoteNodeRef> nodeRefs, GroupAction action);
+    Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs, GroupAction action);
 
     /**
      * Raw group action execution
      * Warning! Transaction splitting is not performed by service. Is is responsibility of GroupAction
      */
-    void executeAsync(Iterable<RemoteNodeRef> nodeRefs, GroupAction action);
+    void executeAsync(Iterable<RemoteRef> nodeRefs, GroupAction action);
 
-    Map<RemoteNodeRef, GroupActionResult> execute(Iterable<RemoteNodeRef> nodeRefs,
-                                                  Consumer<RemoteNodeRef> action,
-                                                  GroupActionConfig config);
+    Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs,
+                                              Consumer<RemoteRef> action,
+                                              GroupActionConfig config);
 
-    void executeAsync(Iterable<RemoteNodeRef> nodeRefs,
-                      Consumer<RemoteNodeRef> action,
+    void executeAsync(Iterable<RemoteRef> nodeRefs,
+                      Consumer<RemoteRef> action,
                       GroupActionConfig config);
 
-    Map<RemoteNodeRef, GroupActionResult> execute(Iterable<RemoteNodeRef> nodeRefs,
-                                                  Function<RemoteNodeRef, GroupActionResult> action,
-                                                  GroupActionConfig config);
+    Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs,
+                                              Function<RemoteRef, GroupActionResult> action,
+                                              GroupActionConfig config);
 
-    void executeAsync(Iterable<RemoteNodeRef> nodeRefs,
-                      Function<RemoteNodeRef, GroupActionResult> action,
+    void executeAsync(Iterable<RemoteRef> nodeRefs,
+                      Function<RemoteRef, GroupActionResult> action,
                       GroupActionConfig config);
 
-    Map<RemoteNodeRef, GroupActionResult> execute(Iterable<RemoteNodeRef> nodeRefs,
-                                                  String actionId,
-                                                  GroupActionConfig config);
+    Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs,
+                                              String actionId,
+                                              GroupActionConfig config);
 
-    void executeAsync(Iterable<RemoteNodeRef> nodeRefs,
+    void executeAsync(Iterable<RemoteRef> nodeRefs,
                       String actionId,
                       GroupActionConfig config);
 

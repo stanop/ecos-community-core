@@ -5,7 +5,7 @@ import graphql.annotations.annotationTypes.GraphQLName;
 
 import java.util.Optional;
 
-public interface JournalAttributeValueGql {
+public interface JGqlAttributeValue {
 
     @GraphQLField
     String id();
@@ -14,5 +14,5 @@ public interface JournalAttributeValueGql {
     String str();
 
     @GraphQLField
-    Optional<JournalAttributeGql> attr(@GraphQLName("name") String name);
+    Optional<JGqlAttribute> attr(@GraphQLName("name") String name);
 }

@@ -7,7 +7,7 @@ import graphql.annotations.annotationTypes.GraphQLName;
 
 import java.util.HashMap;
 
-public class JournalGqlSortBy extends HashMap<String, Object> {
+public class JGqlSortBy extends HashMap<String, Object> {
 
     static final String PROP_ATTRIBUTE = "attribute";
     static final String PROP_ORDER = "order";
@@ -18,7 +18,7 @@ public class JournalGqlSortBy extends HashMap<String, Object> {
     private final String order;
 
     @JsonCreator
-    public JournalGqlSortBy(
+    public JGqlSortBy(
             @JsonProperty(PROP_ATTRIBUTE) @GraphQLName(PROP_ATTRIBUTE) String attribute,
             @JsonProperty(PROP_ORDER) @GraphQLName(PROP_ORDER) String order
     ) {
@@ -37,5 +37,9 @@ public class JournalGqlSortBy extends HashMap<String, Object> {
 
     public String getOrder() {
         return order;
+    }
+
+    public boolean isAscending() {
+        return "asc".equalsIgnoreCase(order);
     }
 }

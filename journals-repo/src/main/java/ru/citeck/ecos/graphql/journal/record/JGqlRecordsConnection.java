@@ -1,22 +1,23 @@
 package ru.citeck.ecos.graphql.journal.record;
 
 import graphql.annotations.annotationTypes.GraphQLField;
-import ru.citeck.ecos.graphql.journal.JournalGqlPageInfo;
+import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 
+import java.util.Collections;
 import java.util.List;
 
-public class JournalRecordsConnection {
+public class JGqlRecordsConnection {
 
-    private List<JournalAttributeValueGql> records;
-    private JournalGqlPageInfo pageInfo;
-    private long totalCount;
+    private List<JGqlAttributeValue> records = Collections.emptyList();
+    private JGqlPageInfo pageInfo = new JGqlPageInfo();
+    private long totalCount = 0;
 
     @GraphQLField
-    public List<JournalAttributeValueGql> records() {
+    public List<JGqlAttributeValue> records() {
         return records;
     }
 
-    public void setRecords(List<JournalAttributeValueGql> records) {
+    public void setRecords(List<JGqlAttributeValue> records) {
         this.records = records;
     }
 
@@ -30,11 +31,11 @@ public class JournalRecordsConnection {
     }
 
     @GraphQLField
-    public JournalGqlPageInfo pageInfo() {
+    public JGqlPageInfo pageInfo() {
         return pageInfo;
     }
 
-    public void setPageInfo(JournalGqlPageInfo pageInfo) {
+    public void setPageInfo(JGqlPageInfo pageInfo) {
         this.pageInfo = pageInfo;
     }
 }

@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import ru.citeck.ecos.repo.RemoteNodeRef;
+import ru.citeck.ecos.repo.RemoteRef;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
@@ -24,20 +24,20 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
 
     public GroupActionStatusesJS execute(Object nodes, String actionId, Object paramsObj) throws JSONException {
 
-        List<RemoteNodeRef> nodeRefs = toNodeRefList(nodes);
+        List<RemoteRef> nodeRefs = toNodeRefList(nodes);
         Map<String, String> params = toStringMap(paramsObj);
 
         GroupActionConfig config = new GroupActionConfig();
         config.setParams(params);
 
-        Map<RemoteNodeRef, GroupActionResult> statuses = groupActionService.execute(nodeRefs, actionId, config);
+        Map<RemoteRef, GroupActionResult> statuses = groupActionService.execute(nodeRefs, actionId, config);
 
         return new GroupActionStatusesJS(statuses, getScope(), serviceRegistry);
     }
 
-    public void executeAsync(Object nodes, Consumer<RemoteNodeRef> action, Object config) {
+    public void executeAsync(Object nodes, Consumer<RemoteRef> action, Object config) {
 
-        List<RemoteNodeRef> nodeRefs = toNodeRefList(nodes);
+        List<RemoteRef> nodeRefs = toNodeRefList(nodes);
         Map<String, String> configMap = toStringMap(config);
 
         GroupActionConfig groupActionConfig = new GroupActionConfig();
@@ -49,9 +49,9 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
         groupActionService.executeAsync(nodeRefs, action, groupActionConfig);
     }
 
-    private List<RemoteNodeRef> toNodeRefList(Object array) {
+    private List<RemoteRef> toNodeRefList(Object array) {
         Object jArray = converter.convertValueForJava(array);
-        List<RemoteNodeRef> result = new ArrayList<>();
+        List<RemoteRef> result = new ArrayList<>();
         if (jArray instanceof List) {
             for (Object obj : (List) jArray) {
                 result.add(JavaScriptImplUtils.getRemoteNodeRef(obj));

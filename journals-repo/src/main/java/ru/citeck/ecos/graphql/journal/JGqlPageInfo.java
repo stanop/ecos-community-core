@@ -4,7 +4,7 @@ import graphql.annotations.annotationTypes.GraphQLField;
 
 import java.util.List;
 
-public class JournalGqlPageInfo {
+public class JGqlPageInfo {
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
@@ -15,7 +15,9 @@ public class JournalGqlPageInfo {
     @GraphQLField
     private int maxItems = DEFAULT_PAGE_SIZE;
     @GraphQLField
-    private List<JournalGqlSortBy> sortBy;
+    private List<JGqlSortBy> sortBy;
+    @GraphQLField
+    private String afterId;
 
     public boolean isHasNextPage() {
         return hasNextPage;
@@ -41,11 +43,26 @@ public class JournalGqlPageInfo {
         this.maxItems = maxItems;
     }
 
-    public List<JournalGqlSortBy> getSortBy() {
+    public List<JGqlSortBy> getSortBy() {
         return sortBy;
     }
 
-    public void setSortBy(List<JournalGqlSortBy> sortBy) {
+    public void setSortBy(List<JGqlSortBy> sortBy) {
         this.sortBy = sortBy;
+    }
+
+    public String getAfterId() {
+        return afterId;
+    }
+
+    public void setAfterId(String afterId) {
+        this.afterId = afterId;
+    }
+
+    public void set(JGqlPageInfoInput pageInfo) {
+        skipCount = pageInfo.getSkipCount();
+        maxItems = pageInfo.getMaxItems();
+        sortBy = pageInfo.getSortBy();
+        afterId = pageInfo.getAfterId();
     }
 }

@@ -4,11 +4,11 @@ import graphql.annotations.annotationTypes.GraphQLField;
 
 import java.util.List;
 
-public interface JournalAttributeGql {
+public interface JGqlAttribute {
 
     @GraphQLField
     String name();
 
     @GraphQLField
-    List<JournalAttributeValueGql> val();
+    List<JGqlAttributeValue> val();
 }
