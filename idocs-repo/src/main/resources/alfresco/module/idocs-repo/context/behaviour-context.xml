@@ -882,6 +882,32 @@
         <property name="enableHistoryOnDeleteChildAssocs" value="true"/>
     </bean>
 
+    <bean id="ecos.case.historyBehaviour" parent="history.historicalPropertiesBehaviour">
+        <property name="className" value="ecos:case"/>
+        <property name="allowedProperties">
+            <list>
+                <value>cm:content</value>
+                <value>cm:name</value>
+                <value>ecos:documentNumber</value>
+                <value>ecos:documentDate</value>
+                <value>ecos:documentAmount</value>
+                <value>ecos:responsible</value>
+                <value>idocs:documentStatus</value>
+                <value>idocs:note</value>
+                <value>idocs:legalEntity</value>
+                <value>idocs:contractor</value>
+                <value>idocs:currencyDocument</value>
+                <value>tk:kind</value>
+                <value>dms:updateContent</value>
+            </list>
+        </property>
+        <property name="enableHistoryOnUpdateProps" value="true"/>
+        <property name="enableHistoryOnAddAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteAssocs" value="true"/>
+        <property name="enableHistoryOnAddChildAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+    </bean>
+
     <bean id="idocs.addCreatedPersonToAllGroup"
           class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
         <property name="groupFullName" value="GROUP_all"/>
