@@ -718,6 +718,20 @@ define([
                     'title="' + title +'"/>' + '</div>';
             }
         },
+
+        previewContent: function() {
+            var downloadUrl = Alfresco.constants.PROXY_URI + "/citeck/print/content?download=false&nodeRef=",
+                downloadImage = "/share/res/components/documentlibrary/actions/document-view-details-16.png",
+                title = Alfresco.util.message("actions.document.view-details");
+
+            return function (elCell, oRecord) {
+                var nodeRef = oRecord.getData("nodeRef");
+                var downloadUrlResult = downloadUrl + nodeRef;
+                elCell.innerHTML = '<div class="document-download">' + '<a class="simple-link" onclick="event.stopPropagation()" '
+                    + 'href="' + downloadUrlResult + '" style="background-image: url(' + downloadImage + ')" ' +
+                    'title="' + title +'"  target="_blank"/>' + '</div>';
+            }
+        },
         
         doubleClickLink: function(urlTemplate, fieldId, formatter, target) {
             if (!target) target = '_self';
