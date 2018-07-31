@@ -180,6 +180,12 @@ public class HistoryUtils {
         return I18NUtil.getMessage(modelName + ".association." + propName + ".title");
     }
 
+    private static String getAssocKeyValueForSourceAndTarget(QName qName, boolean forSourceNode, DictionaryService dictionaryService) {
+        String assocPeerPrefix = forSourceNode ? "source" : "target";
+        String modelName = dictionaryService.getAssociation(qName).getModel().getName().getPrefixString().replace(":", "_");
+        String propName = dictionaryService.getAssociation(qName).getName().getPrefixString().replace(":", "_");
+        return I18NUtil.getMessage(modelName + ".association." + propName + "." + assocPeerPrefix + ".title");
+    }
 
     public static void addResourceTransaction(Serializable resourceKey, Serializable nodeAssocRef) {
         List<Serializable> listAssocRef = new ArrayList<>();
@@ -376,6 +382,35 @@ public class HistoryUtils {
             return HistoryUtils.getAssocKeyValue(removed.getTypeQName(), dictionaryService)
                     + ": "
                     + HistoryUtils.getCustomChangeValue(removed.getTargetRef(), nodeService)
+                    + " -> —";
+        } else {
+            return "Something went wrong... Contact the administrator.";
+        }
+    }
+
+    public static String getAssocCommentForSourceAndTarget (AssociationRef added,
+                                                            AssociationRef removed,
+                                                            boolean forSourceNode,
+                                                            DictionaryService dictionaryService,
+                                                            NodeService nodeService) {
+        if (added != null && removed != null) {
+            return HistoryUtils.getAssocKeyValueForSourceAndTarget(added.getTypeQName(), forSourceNode, dictionaryService)
+                    + ": "
+                    + HistoryUtils.getCustomChangeValue(forSourceNode ? removed.getTargetRef() : removed.getSourceRef(),
+                    nodeService)
+                    + " -> "
+                    + HistoryUtils.getCustomChangeValue(forSourceNode ? added.getTargetRef() : added.getSourceRef(),
+                    nodeService);
+        } else if (added != null) {
+            return HistoryUtils.getAssocKeyValueForSourceAndTarget(added.getTypeQName(), forSourceNode, dictionaryService)
+                    + ": — -> "
+                    + HistoryUtils.getCustomChangeValue(forSourceNode ? added.getTargetRef() : added.getSourceRef(),
+                    nodeService);
+        } else if (removed != null) {
+            return HistoryUtils.getAssocKeyValueForSourceAndTarget(removed.getTypeQName(), forSourceNode, dictionaryService)
+                    + ": "
+                    + HistoryUtils.getCustomChangeValue(forSourceNode ? removed.getTargetRef() : removed.getSourceRef(),
+                    nodeService)
                     + " -> —";
         } else {
             return "Something went wrong... Contact the administrator.";

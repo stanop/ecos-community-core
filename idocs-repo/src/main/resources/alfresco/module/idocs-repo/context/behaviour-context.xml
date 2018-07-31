@@ -517,6 +517,23 @@
         <property name="dictionaryService" ref="DictionaryService"/>
     </bean>
 
+    <bean id="history.historicalAssocsBehaviour" class="ru.citeck.ecos.behavior.history.HistoricalAssocsBehaviour" init-method="init" abstract="true">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="historyService" ref="historyService"/>
+        <property name="dictionaryService" ref="DictionaryService"/>
+    </bean>
+
+    <bean id="idocs.historyAssocsBehaviour" parent="history.historicalAssocsBehaviour">
+        <property name="allowedAssocs">
+            <list>
+                <value>assoc:associatedWith</value>
+            </list>
+        </property>
+        <property name="enableHistoryOnAddAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteAssocs" value="true"/>
+    </bean>
+
     <bean id="copyNodeIgnoreAttributesBehaviour.history" class="ru.citeck.ecos.behavior.common.EcosCopyBehaviourCallback">
         <property name="className" value="{http://www.citeck.ru/model/history/1.0}eventContainedAspect" />
         <property name="ignoredAttributes">
