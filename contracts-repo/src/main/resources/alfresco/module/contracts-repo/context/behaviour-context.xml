@@ -381,8 +381,6 @@
 				<value>cm:content</value>
 				<value>idocs:legalEntity</value>
 				<value>idocs:documentStatus</value>
-				<value>contracts:closingDocumentAgreement</value>
-				<value>contracts:closingDocumentPayment</value>
 				<value>contracts:closingDocumentOriginalLocation</value>
 				<value>contracts:closingDocumentSigner</value>
 				<value>contracts:contractor</value>
@@ -399,6 +397,17 @@
 		<property name="enableHistoryOnDeleteAssocs" value="true"/>
 		<property name="enableHistoryOnAddChildAssocs" value="true"/>
 		<property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+	</bean>
+
+	<bean id="contracts.historyAssocsBehaviour" parent="history.historicalAssocsBehaviour">
+		<property name="allowedAssocs">
+			<list>
+				<value>contracts:closingDocumentPayment</value>
+				<value>contracts:closingDocumentAgreement</value>
+			</list>
+		</property>
+		<property name="enableHistoryOnAddAssocs" value="true"/>
+		<property name="enableHistoryOnDeleteAssocs" value="true"/>
 	</bean>
 
 </beans>

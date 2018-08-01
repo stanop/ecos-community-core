@@ -517,6 +517,23 @@
         <property name="dictionaryService" ref="DictionaryService"/>
     </bean>
 
+    <bean id="history.historicalAssocsBehaviour" class="ru.citeck.ecos.behavior.history.HistoricalAssocsBehaviour" init-method="init" abstract="true">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="historyService" ref="historyService"/>
+        <property name="dictionaryService" ref="DictionaryService"/>
+    </bean>
+
+    <bean id="idocs.historyAssocsBehaviour" parent="history.historicalAssocsBehaviour">
+        <property name="allowedAssocs">
+            <list>
+                <value>assoc:associatedWith</value>
+            </list>
+        </property>
+        <property name="enableHistoryOnAddAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteAssocs" value="true"/>
+    </bean>
+
     <bean id="copyNodeIgnoreAttributesBehaviour.history" class="ru.citeck.ecos.behavior.common.EcosCopyBehaviourCallback">
         <property name="className" value="{http://www.citeck.ru/model/history/1.0}eventContainedAspect" />
         <property name="ignoredAttributes">
@@ -849,6 +866,32 @@
                 <value>ecos:documentNumber</value>
                 <value>ecos:documentDate</value>
                 <value>ecos:documentAmount</value>
+                <value>idocs:documentStatus</value>
+                <value>idocs:note</value>
+                <value>idocs:legalEntity</value>
+                <value>idocs:contractor</value>
+                <value>idocs:currencyDocument</value>
+                <value>tk:kind</value>
+                <value>dms:updateContent</value>
+            </list>
+        </property>
+        <property name="enableHistoryOnUpdateProps" value="true"/>
+        <property name="enableHistoryOnAddAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteAssocs" value="true"/>
+        <property name="enableHistoryOnAddChildAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+    </bean>
+
+    <bean id="ecos.case.historyBehaviour" parent="history.historicalPropertiesBehaviour">
+        <property name="className" value="ecos:case"/>
+        <property name="allowedProperties">
+            <list>
+                <value>cm:content</value>
+                <value>cm:name</value>
+                <value>ecos:documentNumber</value>
+                <value>ecos:documentDate</value>
+                <value>ecos:documentAmount</value>
+                <value>ecos:responsible</value>
                 <value>idocs:documentStatus</value>
                 <value>idocs:note</value>
                 <value>idocs:legalEntity</value>
