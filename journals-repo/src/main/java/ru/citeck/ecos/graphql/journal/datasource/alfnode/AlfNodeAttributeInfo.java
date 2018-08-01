@@ -4,12 +4,12 @@ import lombok.Getter;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeInfoGql;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlfNodeAttributeInfo implements JournalAttributeInfoGql {
+public class AlfNodeAttributeInfo implements JGqlAttributeInfo {
 
     private String name;
 

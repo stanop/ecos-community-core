@@ -3,12 +3,12 @@ package ru.citeck.ecos.graphql.journal.datasource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.journal.JournalGqlPageInfo;
-import ru.citeck.ecos.graphql.journal.JournalGqlPageInfoInput;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeGql;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeInfoGql;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
-import ru.citeck.ecos.graphql.journal.record.JournalRecordsConnection;
+import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
+import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
+import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 
 import javax.sql.DataSource;
 import java.sql.ResultSetMetaData;
@@ -21,10 +21,10 @@ public class DbJournalDataSource implements JournalDataSource {
     private String sqlQueryTemplate;
 
     @Override
-    public JournalRecordsConnection getRecords(GqlContext context,
-                                               String query,
-                                               String language,
-                                               JournalGqlPageInfoInput pageInfo) {
+    public JGqlRecordsConnection getRecords(GqlContext context,
+                                            String query,
+                                            String language,
+                                            JGqlPageInfoInput pageInfo) {
 
         MapSqlParameterSource namedParameters = new MapSqlParameterSource();
         namedParameters.addValue("skipCount", pageInfo.getSkipCount());
@@ -32,7 +32,7 @@ public class DbJournalDataSource implements JournalDataSource {
 
         String sqlQuery = sqlFromTemplate(sqlQueryTemplate, query, language);
 
-        List<JournalAttributeValueGql> records = template.query(sqlQuery, namedParameters, (resultSet, i) -> {
+        List<JGqlAttributeValue> records = template.query(sqlQuery, namedParameters, (resultSet, i) -> {
             ResultSetMetaData metaData = resultSet.getMetaData();
             Map<String, String> attributes = new HashMap<>();
             for (int columnIdx = 1; columnIdx < metaData.getColumnCount(); columnIdx++) {
@@ -41,9 +41,9 @@ public class DbJournalDataSource implements JournalDataSource {
             return new RecordValue("" + hashCode() + pageInfo.getSkipCount() + i, attributes);
         });
 
-        JournalRecordsConnection connection = new JournalRecordsConnection();
+        JGqlRecordsConnection connection = new JGqlRecordsConnection();
 
-        JournalGqlPageInfo outPageInfo = new JournalGqlPageInfo();
+        JGqlPageInfo outPageInfo = new JGqlPageInfo();
         outPageInfo.setHasNextPage(true);
         outPageInfo.setMaxItems(pageInfo.getMaxItems());
         outPageInfo.setSkipCount(pageInfo.getSkipCount());
@@ -60,7 +60,7 @@ public class DbJournalDataSource implements JournalDataSource {
     }
 
     @Override
-    public Optional<JournalAttributeInfoGql> getAttributeInfo(String attributeName) {
+    public Optional<JGqlAttributeInfo> getAttributeInfo(String attributeName) {
         return Optional.empty();
     }
 
@@ -72,7 +72,7 @@ public class DbJournalDataSource implements JournalDataSource {
         this.sqlQueryTemplate = sqlQueryTemplate;
     }
 
-    private class RecordValue implements JournalAttributeValueGql {
+    private class RecordValue implements JGqlAttributeValue {
 
         private String id;
         private Map<String, String> attributes;
@@ -93,12 +93,12 @@ public class DbJournalDataSource implements JournalDataSource {
         }
 
         @Override
-        public Optional<JournalAttributeGql> attr(String name) {
+        public Optional<JGqlAttribute> attr(String name) {
             return Optional.of(new Attribute(name, attributes.get(name)));
         }
     }
 
-    private class Attribute implements JournalAttributeGql {
+    private class Attribute implements JGqlAttribute {
 
         private String name;
         private String value;
@@ -114,12 +114,12 @@ public class DbJournalDataSource implements JournalDataSource {
         }
 
         @Override
-        public List<JournalAttributeValueGql> val() {
+        public List<JGqlAttributeValue> val() {
             return Collections.singletonList(new AttrValue(value));
         }
     }
 
-    private class AttrValue implements JournalAttributeValueGql {
+    private class AttrValue implements JGqlAttributeValue {
 
         private String val;
 
@@ -138,7 +138,7 @@ public class DbJournalDataSource implements JournalDataSource {
         }
 
         @Override
-        public Optional<JournalAttributeGql> attr(String name) {
+        public Optional<JGqlAttribute> attr(String name) {
             return Optional.empty();
         }
     }

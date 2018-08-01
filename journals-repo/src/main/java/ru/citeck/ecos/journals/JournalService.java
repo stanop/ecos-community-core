@@ -18,11 +18,14 @@
  */
 package ru.citeck.ecos.journals;
 
+import graphql.ExecutionResult;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.invariants.InvariantDefinition;
-import ru.citeck.ecos.invariants.InvariantPriority;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
+import ru.citeck.ecos.journals.records.JournalRecords;
+import ru.citeck.ecos.journals.records.RecordsResult;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -30,11 +33,13 @@ import java.util.List;
 
 public interface JournalService {
     
-    public static final String JOURNALS_CONTAINER = "journals";
+    String JOURNALS_CONTAINER = "journals";
 
     void deployJournalTypes(InputStream inputStream);
-    
+
     JournalType getJournalType(String id);
+
+    JournalType needJournalType(String journalId);
     
     Collection<JournalType> getAllJournalTypes();
 
@@ -45,4 +50,19 @@ public interface JournalService {
     void registerCriterionInvariantsProvider(CriterionInvariantsProvider provider);
 
     NodeRef getJournalRef(String id);
+
+    RecordsResult getRecords(String journalId,
+                             String query,
+                             String language,
+                             JGqlPageInfoInput pageInfo);
+
+    JournalRecords getRecordsLazy(String journalId,
+                                  String query,
+                                  String language,
+                                  JGqlPageInfoInput pageInfo);
+
+    ExecutionResult getRecordsWithData(String journalId,
+                                       String query,
+                                       String language,
+                                       JGqlPageInfoInput pageInfo);
 }

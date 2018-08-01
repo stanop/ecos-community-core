@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.Unmarshaller;
 
+import graphql.ExecutionResult;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -33,8 +34,12 @@ import org.alfresco.service.namespace.NamespacePrefixResolver;
 
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.invariants.*;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
+import ru.citeck.ecos.journals.records.JournalRecords;
+import ru.citeck.ecos.journals.records.JournalRecordsDAO;
+import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
@@ -52,11 +57,16 @@ class JournalServiceImpl implements JournalService {
     private NodeService nodeService;
     private ServiceRegistry serviceRegistry;
     private SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry;
+    private JournalRecordsDAO recordsDAO;
 
     private LazyNodeRef journalsRoot;
     private Map<String, JournalType> journalTypes = new ConcurrentHashMap<>();
 
-    private List<CriterionInvariantsProvider> criterionInvariantsProviders = Collections.synchronizedList(new ArrayList<>());
+    private List<CriterionInvariantsProvider> criterionInvariantsProviders;
+
+    public JournalServiceImpl() {
+        criterionInvariantsProviders = Collections.synchronizedList(new ArrayList<>());
+    }
 
     @Override
     public void deployJournalTypes(InputStream inputStream) {
@@ -126,6 +136,7 @@ class JournalServiceImpl implements JournalService {
         for (CriterionInvariantsProvider provider : criterionInvariantsProviders) {
             provider.clearCache();
         }
+        recordsDAO.clearCache();
     }
 
     @Override
@@ -159,6 +170,52 @@ class JournalServiceImpl implements JournalService {
         criterionInvariantsProviders.sort(null);
     }
 
+    @Override
+    public RecordsResult getRecords(String journalId,
+                                    String query,
+                                    String language,
+                                    JGqlPageInfoInput pageInfo) {
+        if (pageInfo == null) {
+            pageInfo = JGqlPageInfoInput.DEFAULT;
+        }
+        JournalType journalType = needJournalType(journalId);
+        return recordsDAO.getRecords(journalType, query, language, pageInfo);
+    }
+
+    @Override
+    public JournalRecords getRecordsLazy(String journalId,
+                                         String query,
+                                         String language,
+                                         JGqlPageInfoInput pageInfo) {
+
+        if (pageInfo == null) {
+            pageInfo = JGqlPageInfoInput.DEFAULT;
+        }
+        JournalType journalType = needJournalType(journalId);
+        return new JournalRecords(recordsDAO, journalType, query, language, pageInfo);
+    }
+
+    @Override
+    public ExecutionResult getRecordsWithData(String journalId,
+                                              String query,
+                                              String language,
+                                              JGqlPageInfoInput pageInfo) {
+        if (pageInfo == null) {
+            pageInfo = JGqlPageInfoInput.DEFAULT;
+        }
+        JournalType journalType = needJournalType(journalId);
+        return recordsDAO.getRecordsWithData(journalType, query, language, pageInfo);
+    }
+
+    @Override
+    public JournalType needJournalType(String journalId) {
+        JournalType journalType = getJournalType(journalId);
+        if (journalType == null) {
+            throw new IllegalArgumentException("Journal with id " + journalId + " not found");
+        }
+        return journalType;
+    }
+
     public void setJournalsRoot(LazyNodeRef journalsRoot) {
         this.journalsRoot = journalsRoot;
     }
@@ -170,6 +227,10 @@ class JournalServiceImpl implements JournalService {
 
     public ServiceRegistry getServiceRegistry() {
         return serviceRegistry;
+    }
+
+    public void setRecordsDAO(JournalRecordsDAO recordsDAO) {
+        this.recordsDAO = recordsDAO;
     }
 
     public void setSearchCriteriaSettingsRegistry(SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {

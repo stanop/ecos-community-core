@@ -166,6 +166,12 @@
                             </span>
                         </span>
 
+                        <span class="filtered-menu" data-bind="yuiButton: { type: 'menu', menu: '${toolbarId}-filtered-menu', disabled: actionsOnFiltered().length == 0 }">
+                            <span class="first-child">
+                                <button>${msg("menu.filtered-items")}</button>
+                            </span>
+                        </span>
+
                         <@journals.renderCreateReportMenu id />
 
                         <#if (journalsListId!"") == "global-tasks">
@@ -195,6 +201,18 @@
                                     <li class="yuimenuitem">
                                         <a class="yuimenuitemlabel" data-bind="click: deselectAllRecords">
                                             <span class="onActionDeselectAll">${msg("menu.selected-items.deselect-all")}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div id="${toolbarId}-filtered-menu" class="yui-overlay yuimenu button-menu">
+                            <div class="bd">
+                                <ul data-bind="foreach: actionsOnFiltered" class="first-of-type">
+                                    <li class="yuimenuitem">
+                                        <a class="yuimenuitemlabel" data-bind="click: $root.executeAction.bind($root, $data)">
+                                            <span data-bind="text: label, css: id"></span>
                                         </a>
                                     </li>
                                 </ul>

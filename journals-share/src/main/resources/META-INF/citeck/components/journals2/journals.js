@@ -826,6 +826,7 @@ Column
 Action
     .key('id', s)
     .property('attribute', Attribute)
+    .property('groupType', s)
     .property('func', s)
     .property('label', s)
     .property('isDoclib', b)
@@ -955,6 +956,35 @@ JournalsWidget
     .computed('skipCountId', koutils.numberSerializer('skipCount'))
     .computed('maxItemsId', koutils.numberSerializer('maxItems'))
     .property('records', [ Record ])
+
+    .computed('recordsQuery', function() {
+
+        var journal = this.journal();
+        if (!journal) {
+            return null;
+        }
+        var journalCriteria = journal.criteria();
+        if (!journalCriteria) {
+            return null;
+        }
+        var filter = this.currentFilter();
+        if (!filter) {
+            return null;
+        }
+        var filterCriteria = filter.usableCriteria();
+        if (!filterCriteria) {
+            return null;
+        }
+
+        var query = _.reduce(_.flatten([
+            journalCriteria,
+            filterCriteria
+        ]), function(query, criterion) {
+            return _.extend(query, criterion.query());
+        }, {});
+
+        return JSON.stringify(query);
+    })
 
     // selected records
     .computed('selectedRecords', function() {
@@ -1167,6 +1197,19 @@ JournalsWidget
         return _.compact([ journalOptions.js, journalOptions.css ]);
     })
     .property('multiActions', [ Action ])
+    .computed('actionsOnFiltered', function() {
+
+        var journalType = this.resolve('journal.type');
+
+        if (journalType) {
+            var groupActions = journalType.groupActions();
+            return (groupActions || []).filter(function (action) {
+                return action.groupType() == 'filtered';
+            });
+        }
+
+        return [];
+    })
     .computed('allowedMultiActions', function() {
         var records = this.selectedRecords(),
             doclibMode = _.all(records, function(record) {
@@ -1200,6 +1243,8 @@ JournalsWidget
         var filteredActions = _.filter(actions, function(action) {
             // sync mode check:
             if (action.syncMode() != null) return false;
+
+            if (action.groupType() == 'filtered') return false;
 
             // doclib mode check:
             if (!doclibMode && action.isDoclib()) return false;
@@ -1654,43 +1699,15 @@ JournalsWidget
                 return;
             }
 
-            var journal = this.journal();
-            if(!journal) {
-                logger.debug("Journal is not loaded, deferring search");
-                koutils.subscribeOnce(this.journal, load, this);
+            var recordsQuery = this.recordsQuery();
+            if (!recordsQuery) {
+                logger.debug("Records query is not ready, skipping");
+                koutils.subscribeOnce(this.recordsQuery, load, this);
                 return;
             }
-
-            var journalCriteria = journal.criteria();
-            if(!journal.criteria.loaded()) {
-                logger.debug("Journal criteria are not loaded, deferring search");
-                koutils.subscribeOnce(journal.criteria, load, this);
-                return;
-            }
-
-            var filter = this.currentFilter();
-            if (!filter) {
-                logger.debug("Filter is not loaded, deferring search");
-                koutils.subscribeOnce(this.currentFilter, load, this);
-                return;
-            }
-
-            var filterCriteria = filter.usableCriteria();
-            if(!filter.criteria.loaded()) {
-                logger.debug("Filter criteria are not loaded, deferring search");
-                koutils.subscribeOnce(filter.criteria, load, this);
-                return;
-            }
-
-            var query = _.reduce(_.flatten([
-                journalCriteria,
-                filterCriteria
-            ]), function(query, criterion) {
-                return _.extend(query, criterion.query());
-            }, {});
 
             var queryData = {
-                query: JSON.stringify(query),
+                query: recordsQuery,
                 pageInfo: {
                     sortBy: this.sortByQuery(),
                     skipCount: this.skipCount() || 0,
@@ -1699,7 +1716,7 @@ JournalsWidget
             };
 
             Alfresco.util.Ajax.jsonPost({
-                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journal.type().id(),
+                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + this.journal().type().id(),
                 dataObj: queryData,
                 successCallback: {
                     scope: this,
