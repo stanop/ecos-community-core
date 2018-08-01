@@ -94,7 +94,7 @@ var journalsLib = {
                 isDoclib: false,
                 settings: this.renderOptions(action.getOptions()),
                 actionId: action.getId(),
-                type: action.getType()
+                groupType: action.getType()
             });
         }
         return result;

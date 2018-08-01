@@ -4,8 +4,8 @@ import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.action.group.GroupActionExecutor;
-import ru.citeck.ecos.action.group.GroupActionResult;
+import ru.citeck.ecos.action.group.impl.GroupActionExecutor;
+import ru.citeck.ecos.action.group.ActionStatus;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class CompleteTaskByMirrorExecutor extends GroupActionExecutor {
     }
 
     @Override
-    public Map<NodeRef, GroupActionResult> invokeBatch(List<NodeRef> nodeRefs, Map<String, String> params) {
+    public Map<NodeRef, ActionStatus> invokeBatch(List<NodeRef> nodeRefs, Map<String, String> params) {
         return null;
     }
 

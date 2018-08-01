@@ -1,18 +1,19 @@
 package ru.citeck.ecos.action.group;
 
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.transaction.TransactionService;
+import org.alfresco.util.transaction.TransactionListenerAdapter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.extensions.surf.util.I18NUtil;
+import ru.citeck.ecos.action.group.impl.CustomTxnGroupAction;
+import ru.citeck.ecos.action.group.impl.GroupActionExecutor;
+import ru.citeck.ecos.action.group.impl.GroupActionExecutorFactory;
 import ru.citeck.ecos.repo.RemoteRef;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -20,8 +21,6 @@ import java.util.function.Function;
  * @author Pavel Simonov
  */
 public class GroupActionServiceImpl implements GroupActionService {
-
-    private static final long PROCESS_TIMEOUT_SEC = 60 * 5;
 
     private TransactionService transactionService;
 
@@ -32,89 +31,67 @@ public class GroupActionServiceImpl implements GroupActionService {
         this.transactionService = transactionService;
     }
 
-    @Override
-    public Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs,
-                                                     GroupAction action) {
-
-        Map<RemoteRef, Future<GroupActionResult>> futureResults = new HashMap<>();
-
-        for (RemoteRef ref : nodeRefs) {
-            futureResults.put(ref, action.process(ref));
-        }
-
-        Map<RemoteRef, GroupActionResult> results = new HashMap<>();
-
-        futureResults.forEach((ref, res) -> {
-
-            GroupActionResult result;
-            try {
-                result = res.get(PROCESS_TIMEOUT_SEC, TimeUnit.SECONDS);
-            } catch (TimeoutException e) {
-                throw new RuntimeException("Processing result get timeout exception. " +
-                                           "Time: " + PROCESS_TIMEOUT_SEC + " seconds. " +
-                                           "Node: " + ref, e);
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException("Exception while processing result get. Node: " + ref, e);
-            }
-            results.put(ref, result);
-        });
-
-        return results;
-    }
-
-    @Override
-    public void executeAsync(Iterable<RemoteRef> nodeRefs,
-                             GroupAction action) {
-
-        for (RemoteRef ref : nodeRefs) {
+    private List<ActionResult> executeImpl(Iterable<RemoteRef> nodes, GroupAction action) {
+        for (RemoteRef ref : nodes) {
             action.process(ref);
         }
+        return action.complete();
     }
 
     @Override
-    public Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs,
-                                                     Consumer<RemoteRef> action,
-                                                     GroupActionConfig config) {
+    public List<ActionResult> execute(Iterable<RemoteRef> nodes, GroupAction action) {
 
-        return execute(nodeRefs, new CustomTxnGroupAction(transactionService, action, config));
+        if (action.isAsync()) {
+
+            final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
+            final Locale locale = I18NUtil.getLocale();
+
+            RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
+
+            AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
+                @Override
+                public void afterCommit() {
+                    new Thread(() -> txnHelper.doInTransaction(() -> {
+
+                        AuthenticationUtil.setRunAsUser(currentUser);
+                        I18NUtil.setLocale(locale);
+
+                        return executeImpl(nodes, action);
+
+                    }, false)).start();
+                }
+            });
+
+            return Collections.emptyList();
+
+        } else {
+
+            return executeImpl(nodes, action);
+        }
     }
 
     @Override
-    public void executeAsync(Iterable<RemoteRef> nodeRefs,
-                             Consumer<RemoteRef> action,
-                             GroupActionConfig config) {
-        executeAsync(nodeRefs, new CustomTxnGroupAction(transactionService, action, config));
+    public List<ActionResult> execute(Iterable<RemoteRef> nodes,
+                                      Consumer<RemoteRef> action,
+                                      GroupActionConfig config) {
+
+        return execute(nodes, new CustomTxnGroupAction(transactionService, action, config));
     }
 
     @Override
-    public Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs,
-                                                     Function<RemoteRef, GroupActionResult> action,
-                                                     GroupActionConfig config) {
+    public List<ActionResult> execute(Iterable<RemoteRef> nodes,
+                                      Function<RemoteRef, ActionStatus> action,
+                                      GroupActionConfig config) {
 
-        return execute(nodeRefs, new CustomTxnGroupAction(transactionService, action, config));
+        return execute(nodes, new CustomTxnGroupAction(transactionService, action, config));
     }
 
     @Override
-    public void executeAsync(Iterable<RemoteRef> nodeRefs,
-                             Function<RemoteRef, GroupActionResult> action,
-                             GroupActionConfig config) {
-        executeAsync(nodeRefs, new CustomTxnGroupAction(transactionService, action, config));
-    }
+    public List<ActionResult> execute(Iterable<RemoteRef> nodes,
+                                      String actionId,
+                                      GroupActionConfig config) {
 
-    @Override
-    public Map<RemoteRef, GroupActionResult> execute(Iterable<RemoteRef> nodeRefs,
-                                                     String actionId,
-                                                     GroupActionConfig config) {
-
-        return execute(nodeRefs, getProcessor(actionId, config));
-    }
-
-    @Override
-    public void executeAsync(Iterable<RemoteRef> nodeRefs,
-                             String actionId,
-                             GroupActionConfig config) {
-
-        executeAsync(nodeRefs, getProcessor(actionId, config));
+        return execute(nodes, getProcessor(actionId, config));
     }
 
     private GroupAction getProcessor(String actionId, GroupActionConfig config) {

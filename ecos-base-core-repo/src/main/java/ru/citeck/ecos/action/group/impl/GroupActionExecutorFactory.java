@@ -1,10 +1,10 @@
-package ru.citeck.ecos.action.group;
+package ru.citeck.ecos.action.group.impl;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
+import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.repo.RemoteRef;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,7 +17,8 @@ public class GroupActionExecutorFactory implements GroupActionFactory {
 
     private GroupActionExecutor executor;
 
-    GroupActionExecutorFactory(GroupActionExecutor executor, TransactionService transactionService) {
+    public GroupActionExecutorFactory(GroupActionExecutor executor,
+                                      TransactionService transactionService) {
         this.executor = executor;
         this.transactionService = transactionService;
     }
@@ -57,26 +58,21 @@ public class GroupActionExecutorFactory implements GroupActionFactory {
         }
 
         @Override
-        protected void processNodesInTxn(List<ActionNode> nodes) {
+        protected void processNodesInTxn(List<RemoteRef> nodes, List<ActionResult> output) {
 
-            Map<NodeRef, ActionNode> actionNodesByNodeRef = new HashMap<>();
             List<NodeRef> nodeRefs = nodes.stream()
                     .filter(node -> {
-                        boolean isApplicable = isApplicable(node.getNodeRef());
+                        boolean isApplicable = node.isLocal() && isApplicable(node);
                         if (!isApplicable) {
-                            node.setResult(new GroupActionResult(GroupActionResult.STATUS_SKIPPED));
+                            output.add(new ActionResult(node, ActionStatus.STATUS_SKIPPED));
                         }
                         return isApplicable;
                     })
-                    .map(node -> {
-                                NodeRef nodeRef = node.getNodeRef().getNodeRef();
-                                actionNodesByNodeRef.put(nodeRef, node);
-                                return nodeRef;
-                            }
-                    ).collect(Collectors.toList());
+                    .map(RemoteRef::getNodeRef)
+                    .collect(Collectors.toList());
 
-            Map<NodeRef, GroupActionResult> results = executor.invokeBatch(nodeRefs, config.getParams());
-            actionNodesByNodeRef.forEach((ref, node) -> node.setResult(results.get(ref)));
+            Map<NodeRef, ActionStatus> results = executor.invokeBatch(nodeRefs, config.getParams());
+            results.forEach((ref, res) -> output.add(new ActionResult(new RemoteRef(ref), res)));
         }
     }
 
@@ -92,9 +88,9 @@ public class GroupActionExecutorFactory implements GroupActionFactory {
         }
 
         @Override
-        protected GroupActionResult processImpl(RemoteRef nodeRef) {
+        protected ActionStatus processImpl(RemoteRef nodeRef) {
             executor.invoke(nodeRef.getNodeRef(), config.getParams());
-            return new GroupActionResult(GroupActionResult.STATUS_OK);
+            return new ActionStatus(ActionStatus.STATUS_OK);
         }
     }
 }

@@ -1,9 +1,12 @@
-package ru.citeck.ecos.action.group;
+package ru.citeck.ecos.action.group.impl;
 
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.action.group.ActionResult;
+import ru.citeck.ecos.action.group.ActionStatus;
+import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.ArrayList;
@@ -24,9 +27,9 @@ public abstract class TxnGroupAction extends BaseGroupAction {
     }
 
     @Override
-    protected void processNodesImpl(List<ActionNode> nodes) {
+    protected final void processNodesImpl(List<RemoteRef> nodes, List<ActionResult> output) {
 
-        List<ActionNode> nodesToProcess = new ArrayList<>(nodes);
+        List<RemoteRef> nodesToProcess = new ArrayList<>(nodes);
 
         boolean completed = false;
 
@@ -34,33 +37,40 @@ public abstract class TxnGroupAction extends BaseGroupAction {
 
             try {
 
+                List<ActionResult> txnOutput = new ArrayList<>();
+
                 transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-                    processNodesInTxn(nodesToProcess);
+                    processNodesInTxn(nodesToProcess, txnOutput);
                     return null;
                 }, false, true);
 
+                for (ActionResult result : txnOutput) {
+                    if (output.size() < config.getMaxResults()) {
+                        output.add(result);
+                    }
+                }
                 completed = true;
 
             } catch (TxnException e) {
 
-                GroupActionResult result = new GroupActionResult();
-                result.setStatus(GroupActionResult.STATUS_ERROR);
-                result.setException(e.cause);
+                ActionStatus status = new ActionStatus();
+                status.setKey(ActionStatus.STATUS_ERROR);
+                status.setException(e.cause);
 
-                ActionNode node = nodesToProcess.get(e.nodeIdx);
-                node.setResult(result);
+                RemoteRef node = nodesToProcess.get(e.nodeIdx);
+                output.add(new ActionResult(node, status));
 
-                logger.warn("Exception while process node " + node.getNodeRef(), e.cause);
+                logger.warn("Exception while process node " + node, e.cause);
 
                 nodesToProcess.remove(e.nodeIdx);
 
             } catch (Exception e) {
 
-                GroupActionResult result = new GroupActionResult();
-                result.setStatus(GroupActionResult.STATUS_ERROR);
-                result.setException(e);
+                ActionStatus status = new ActionStatus();
+                status.setKey(ActionStatus.STATUS_ERROR);
+                status.setException(e);
 
-                nodesToProcess.forEach(n -> n.setResult(result));
+                nodesToProcess.forEach(n -> output.add(new ActionResult(n, status)));
                 nodesToProcess.clear();
 
                 logger.warn("Exception while process nodes " + nodesToProcess, e);
@@ -68,14 +78,15 @@ public abstract class TxnGroupAction extends BaseGroupAction {
         }
     }
 
-    protected void processNodesInTxn(List<ActionNode> nodes) {
+    protected void processNodesInTxn(List<RemoteRef> nodes, List<ActionResult> output) {
         for (int idx = 0; idx < nodes.size(); idx++) {
             try {
-                ActionNode node = nodes.get(idx);
-                if (isApplicable(node.getNodeRef())) {
-                    node.process(this::processImpl);
+                RemoteRef node = nodes.get(idx);
+                if (isApplicable(node)) {
+                    ActionStatus status = processImpl(node);
+                    output.add(new ActionResult(node, status));
                 } else {
-                    node.setResult(new GroupActionResult(GroupActionResult.STATUS_SKIPPED));
+                    output.add(new ActionResult(node, ActionStatus.STATUS_SKIPPED));
                 }
             } catch (Exception e) {
                 Throwable retryCause = RetryingTransactionHelper.extractRetryCause(e);
@@ -93,7 +104,7 @@ public abstract class TxnGroupAction extends BaseGroupAction {
     }
 
     @Override
-    protected GroupActionResult processImpl(RemoteRef nodeRef) {
+    protected ActionStatus processImpl(RemoteRef nodeRef) {
         throw new RuntimeException("Method not implemented");
     }
 

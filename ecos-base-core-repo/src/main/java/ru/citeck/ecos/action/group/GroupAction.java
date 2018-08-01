@@ -2,15 +2,16 @@ package ru.citeck.ecos.action.group;
 
 import ru.citeck.ecos.repo.RemoteRef;
 
-import java.util.concurrent.Future;
+import java.util.List;
 
 /**
  * @author Pavel Simonov
  */
-@FunctionalInterface
 public interface GroupAction {
 
-    Future<GroupActionResult> process(RemoteRef nodeRef);
+    void process(RemoteRef nodeRef);
 
-    default void end() {}
+    List<ActionResult> complete();
+
+    boolean isAsync();
 }

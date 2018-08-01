@@ -3,7 +3,11 @@
     var jsonData = jsonUtils.toObject(json),
         nodes = jsonData.nodes,
         actionId = jsonData.actionId,
-        params = jsonData.params;
+        params = jsonData.params,
+        groupType = jsonData.groupType || "selected",
+        query = jsonData.query,
+        language = jsonData.language || null,
+        journalId = jsonData.journalId;
 
     if (!exists("nodes", nodes) ||
         !exists("attributes", params) ||
@@ -11,20 +15,28 @@
         return;
     }
 
-    var statuses = groupActionService.execute(nodes, actionId, params);
-
     var results = [];
+    if (groupType == "selected") {
+        var actionResults = groupActionService.execute(nodes, actionId, { params: params });
+        for (var idx in actionResults) {
+            var result = actionResults[idx];
+            results.push({
+                nodeRef: result.remoteRef.toString(),
+                status: result.status.key,
+                message: result.status.message,
+                url: result.status.url
+            });
+        }
+    } else {
+        var records = journals.getRecordsLazy(journalId, query, language, null);
+        groupActionService.execute(records, actionId, { params: params, async: true});
 
-    var statusNodes = statuses.getNodes();
-
-    for (var idx in statusNodes) {
-        var node = statusNodes[idx];
         results.push({
-            nodeRef: node.nodeRef.toString(),
-            status: statuses.getStatus(node),
-            message: statuses.getMessage(node),
-            url: statuses.getUrl(node)
-        });
+            nodeRef: "",
+            status: "OK",
+            message: msg.get("group-action.filtered.started.title"),
+            url: ""
+        })
     }
 
     model.results = results;

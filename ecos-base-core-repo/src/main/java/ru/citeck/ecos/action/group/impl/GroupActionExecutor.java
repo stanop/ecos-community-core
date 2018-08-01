@@ -1,4 +1,4 @@
-package ru.citeck.ecos.action.group;
+package ru.citeck.ecos.action.group.impl;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -7,6 +7,8 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.action.group.ActionStatus;
+import ru.citeck.ecos.action.group.GroupActionService;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.Map;
  * @author Pavel Simonov
  */
 public abstract class GroupActionExecutor {
+
+    protected static final String[] EMPTY_PARAMS = new String[0];
 
     protected GroupActionService groupActionService;
     protected NamespaceService namespaceService;
@@ -30,13 +34,21 @@ public abstract class GroupActionExecutor {
 
     public abstract String getActionId();
 
-    public abstract void invoke(NodeRef nodeRef, Map<String, String> params);
+    public void invoke(NodeRef nodeRef, Map<String, String> params) {
+        throw new RuntimeException("Not implemented");
+    }
 
-    public abstract Map<NodeRef, GroupActionResult> invokeBatch(List<NodeRef> nodeRefs, Map<String, String> params);
+    public Map<NodeRef, ActionStatus> invokeBatch(List<NodeRef> nodeRefs, Map<String, String> params) {
+        throw new RuntimeException("Not implemented");
+    }
 
-    public abstract boolean isApplicable(NodeRef nodeRef, Map<String, String> params);
+    public boolean isApplicable(NodeRef nodeRef, Map<String, String> params) {
+        return true;
+    }
 
-    public abstract String[] getMandatoryParams();
+    public String[] getMandatoryParams() {
+        return EMPTY_PARAMS;
+    }
 
     @Autowired
     public void setGroupActionService(GroupActionService groupActionService) {

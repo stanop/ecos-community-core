@@ -1,9 +1,8 @@
 package ru.citeck.ecos.action.group;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.repo.jscript.ValueConverter;
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import ru.citeck.ecos.repo.RemoteRef;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
@@ -11,56 +10,66 @@ import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Pavel Simonov
  */
 public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
 
-    private static final String CONFIG_BATCH_SIZE = "batchSize";
-
     private GroupActionService groupActionService;
     private ValueConverter converter = new ValueConverter();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
-    public GroupActionStatusesJS execute(Object nodes, String actionId, Object paramsObj) throws JSONException {
-
-        List<RemoteRef> nodeRefs = toNodeRefList(nodes);
-        Map<String, String> params = toStringMap(paramsObj);
-
-        GroupActionConfig config = new GroupActionConfig();
-        config.setParams(params);
-
-        Map<RemoteRef, GroupActionResult> statuses = groupActionService.execute(nodeRefs, actionId, config);
-
-        return new GroupActionStatusesJS(statuses, getScope(), serviceRegistry);
+    public ActionResult[] execute(Object nodes, String actionId, Object config) {
+        Iterable<RemoteRef> nodeRefs = toIterableNodes(nodes);
+        return toArray(groupActionService.execute(nodeRefs, actionId, parseConfig(config)));
     }
 
-    public void executeAsync(Object nodes, Consumer<RemoteRef> action, Object config) {
+    public ActionResult[] execute(Object nodes, Consumer<RemoteRef> action) {
+        return execute(nodes, action, null);
+    }
 
-        List<RemoteRef> nodeRefs = toNodeRefList(nodes);
-        Map<String, String> configMap = toStringMap(config);
+    public ActionResult[] execute(Object nodes, Consumer<RemoteRef> action, Object config) {
+        Iterable<RemoteRef> nodeRefs = toIterableNodes(nodes);
+        return toArray(groupActionService.execute(nodeRefs, action, parseConfig(config)));
+    }
 
-        GroupActionConfig groupActionConfig = new GroupActionConfig();
-        String batchSize = configMap.get(CONFIG_BATCH_SIZE);
-        if (StringUtils.isNotBlank(batchSize)) {
-            groupActionConfig.setBatchSize(Integer.parseInt(batchSize));
+    private GroupActionConfig parseConfig(Object config) {
+        if (config == null) {
+            return null;
         }
-
-        groupActionService.executeAsync(nodeRefs, action, groupActionConfig);
+        Object configObj = converter.convertValueForJava(config);
+        return objectMapper.convertValue(configObj, GroupActionConfig.class);
     }
 
-    private List<RemoteRef> toNodeRefList(Object array) {
-        Object jArray = converter.convertValueForJava(array);
-        List<RemoteRef> result = new ArrayList<>();
-        if (jArray instanceof List) {
-            for (Object obj : (List) jArray) {
+    private ActionResult[] toArray(List<ActionResult> results) {
+        return results.toArray(new ActionResult[results.size()]);
+    }
+
+    private Iterable<RemoteRef> toIterableNodes(Object nodes) {
+        Object jNodes = converter.convertValueForJava(nodes);
+        List<RemoteRef> result;
+        if (jNodes instanceof List) {
+            result = new ArrayList<>();
+            for (Object obj : (List) jNodes) {
                 result.add(JavaScriptImplUtils.getRemoteNodeRef(obj));
             }
-        } else if (jArray instanceof JSONArray) {
-            JSONArray jsonArray = (JSONArray) jArray;
+        } else if (jNodes instanceof JSONArray) {
+            result = new ArrayList<>();
+            JSONArray jsonArray = (JSONArray) jNodes;
             for (int i = 0; i < jsonArray.length(); i++) {
                 result.add(JavaScriptImplUtils.getRemoteNodeRef(jsonArray.opt(i)));
             }
+        } else if (jNodes instanceof Iterable) {
+            @SuppressWarnings("unchecked")
+            Iterable<RemoteRef> iterableNodes = (Iterable<RemoteRef>) jNodes;
+            result =  StreamSupport.stream(iterableNodes.spliterator(), false)
+                                   .map(JavaScriptImplUtils::getRemoteNodeRef)
+                                   .collect(Collectors.toList());
+        } else {
+            result = Collections.emptyList();
         }
         return result;
     }

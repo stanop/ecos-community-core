@@ -25,11 +25,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.alfresco.service.ServiceRegistry;
 
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.records.JournalRecords;
+import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
 public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
@@ -37,6 +40,7 @@ public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
     private JournalService impl;
     private ServiceRegistry serviceRegistry;
     private NamespaceService namespaceService;
+    private NodeService nodeService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
     private ValueConverter valueConverter = new ValueConverter();
@@ -61,13 +65,21 @@ public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
                                          String language,
                                          Object pageInfo) {
 
+        String resolvedJournalId;
+        if (NodeRef.isNodeRef(journalId)) {
+            NodeRef journalRef = new NodeRef(journalId);
+            resolvedJournalId = (String) nodeService.getProperty(journalRef, JournalsModel.PROP_JOURNAL_TYPE);
+        } else {
+            resolvedJournalId = journalId;
+        }
+
         JGqlPageInfoInput pageInfoInput = null;
         if (pageInfo != null) {
             Object javaPageInfo = valueConverter.convertValueForJava(pageInfo);
             pageInfoInput = objectMapper.convertValue(javaPageInfo, JGqlPageInfoInput.class);
         }
 
-        return impl.getRecordsLazy(journalId, query, language, pageInfoInput);
+        return impl.getRecordsLazy(resolvedJournalId, query, language, pageInfoInput);
     }
 
     public InvariantDefinition[] getCriterionInvariants(String journalId, Object attribute) {
@@ -88,6 +100,7 @@ public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.namespaceService = serviceRegistry.getNamespaceService();
+        this.nodeService = serviceRegistry.getNodeService();
     }
     
 }

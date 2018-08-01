@@ -8,6 +8,8 @@ public class GroupActionConfig {
 
     private Map<String, String> params = Collections.emptyMap();
     private int batchSize = 1;
+    private boolean async = false;
+    private int maxResults = 100;
 
     public GroupActionConfig() {
     }
@@ -32,5 +34,21 @@ public class GroupActionConfig {
 
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
+    }
+
+    public boolean isAsync() {
+        return async;
+    }
+
+    public void setAsync(boolean async) {
+        this.async = async;
+    }
+
+    public int getMaxResults() {
+        return maxResults;
+    }
+
+    public void setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
     }
 }

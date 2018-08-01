@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * @author Pavel Simonov
  */
-public class GroupActionResult {
+public class ActionStatus {
 
     public static final String STATUS_OK = "OK";
     public static final String STATUS_ERROR = "ERROR";
@@ -15,7 +15,7 @@ public class GroupActionResult {
 
     @Getter
     @Setter
-    private String status = STATUS_OK;
+    private String key = STATUS_OK;
     @Getter
     @Setter
     private String message = "";
@@ -26,12 +26,11 @@ public class GroupActionResult {
     @Getter
     private Exception exception;
 
-    public GroupActionResult() {
-
+    public ActionStatus() {
     }
 
-    public GroupActionResult(String status) {
-        this.status = status;
+    public ActionStatus(String statusKey) {
+        this.key = statusKey;
     }
 
     public void setException(Exception e) {
