@@ -74,6 +74,11 @@ public class GroupActionExecutorFactory implements GroupActionFactory {
             Map<NodeRef, ActionStatus> results = executor.invokeBatch(nodeRefs, config.getParams());
             results.forEach((ref, res) -> output.add(new ActionResult(new RemoteRef(ref), res)));
         }
+
+        @Override
+        public String toString() {
+            return "BatchAction[" + executor + "]";
+        }
     }
 
     private class SimpleAction extends TxnGroupAction {
@@ -91,6 +96,11 @@ public class GroupActionExecutorFactory implements GroupActionFactory {
         protected ActionStatus processImpl(RemoteRef nodeRef) {
             executor.invoke(nodeRef.getNodeRef(), config.getParams());
             return new ActionStatus(ActionStatus.STATUS_OK);
+        }
+
+        @Override
+        public String toString() {
+            return "SimpleAction[" + executor + "]";
         }
     }
 }

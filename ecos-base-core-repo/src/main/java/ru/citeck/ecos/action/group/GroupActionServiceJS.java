@@ -1,6 +1,7 @@
 package ru.citeck.ecos.action.group;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Iterables;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,6 +37,15 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
         return toArray(groupActionService.execute(nodeRefs, action, parseConfig(config)));
     }
 
+    public ActionExecution[] getActiveActions() {
+        List<ActionExecution> executions = groupActionService.getActiveActions();
+        return executions.toArray(new ActionExecution[executions.size()]);
+    }
+
+    public void cancelActions() {
+        groupActionService.cancelActions();
+    }
+
     private GroupActionConfig parseConfig(Object config) {
         if (config == null) {
             return null;
@@ -50,28 +60,26 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
 
     private Iterable<RemoteRef> toIterableNodes(Object nodes) {
         Object jNodes = converter.convertValueForJava(nodes);
-        List<RemoteRef> result;
+        List<RemoteRef> resultList;
         if (jNodes instanceof List) {
-            result = new ArrayList<>();
+            resultList = new ArrayList<>();
             for (Object obj : (List) jNodes) {
-                result.add(JavaScriptImplUtils.getRemoteNodeRef(obj));
+                resultList.add(JavaScriptImplUtils.getRemoteNodeRef(obj));
             }
         } else if (jNodes instanceof JSONArray) {
-            result = new ArrayList<>();
+            resultList = new ArrayList<>();
             JSONArray jsonArray = (JSONArray) jNodes;
             for (int i = 0; i < jsonArray.length(); i++) {
-                result.add(JavaScriptImplUtils.getRemoteNodeRef(jsonArray.opt(i)));
+                resultList.add(JavaScriptImplUtils.getRemoteNodeRef(jsonArray.opt(i)));
             }
         } else if (jNodes instanceof Iterable) {
             @SuppressWarnings("unchecked")
             Iterable<RemoteRef> iterableNodes = (Iterable<RemoteRef>) jNodes;
-            result =  StreamSupport.stream(iterableNodes.spliterator(), false)
-                                   .map(JavaScriptImplUtils::getRemoteNodeRef)
-                                   .collect(Collectors.toList());
+            return Iterables.transform(iterableNodes, JavaScriptImplUtils::getRemoteNodeRef);
         } else {
-            result = Collections.emptyList();
+            resultList = Collections.emptyList();
         }
-        return result;
+        return resultList;
     }
 
     private Map<String, String> toStringMap(Object map) {

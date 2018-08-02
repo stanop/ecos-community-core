@@ -60,7 +60,8 @@ public abstract class TxnGroupAction extends BaseGroupAction {
                 RemoteRef node = nodesToProcess.get(e.nodeIdx);
                 output.add(new ActionResult(node, status));
 
-                logger.warn("Exception while process node " + node, e.cause);
+                logger.error("Exception while process node " + node +
+                             " action: " + toString() + " config: " + config, e.cause);
 
                 nodesToProcess.remove(e.nodeIdx);
 
@@ -73,7 +74,8 @@ public abstract class TxnGroupAction extends BaseGroupAction {
                 nodesToProcess.forEach(n -> output.add(new ActionResult(n, status)));
                 nodesToProcess.clear();
 
-                logger.warn("Exception while process nodes " + nodesToProcess, e);
+                logger.error("Exception while process nodes " + nodesToProcess +
+                             " action: " + toString() + " config: " + config, e);
             }
         }
     }

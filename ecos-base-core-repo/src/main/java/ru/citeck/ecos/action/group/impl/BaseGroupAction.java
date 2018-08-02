@@ -17,6 +17,7 @@ public abstract class BaseGroupAction implements GroupAction {
     private final List<ActionResult> output = new ArrayList<>();
 
     protected final GroupActionConfig config;
+    private int errorsCount = 0;
 
     public BaseGroupAction(GroupActionConfig config) {
         this.config = config != null ? config : new GroupActionConfig();
@@ -40,13 +41,31 @@ public abstract class BaseGroupAction implements GroupAction {
     }
 
     @Override
+    public List<ActionResult> cancel() {
+        return output;
+    }
+
+    @Override
     public boolean isAsync() {
         return config.isAsync();
     }
 
     private void processNodes() {
-        processNodesImpl(input, output);
+        List<ActionResult> results = new ArrayList<>();
+        processNodesImpl(input, results);
         input.clear();
+        for (ActionResult result : results) {
+            ActionStatus status = result.getStatus();
+            if (status != null && ActionStatus.STATUS_ERROR.equals(status.getKey())) {
+                errorsCount++;
+            }
+            output.add(result);
+        }
+        int maxErrors = config.getMaxErrors();
+        if (maxErrors > 0 && errorsCount >= maxErrors) {
+            throw new RuntimeException("Group action max errors limit is reached! " +
+                                       "Action: " + toString() + " config: " + config);
+        }
     }
 
     protected void processNodesImpl(List<RemoteRef> nodes, List<ActionResult> output) {
@@ -60,5 +79,24 @@ public abstract class BaseGroupAction implements GroupAction {
 
     protected ActionStatus processImpl(RemoteRef nodeRef) {
         throw new RuntimeException("Method not implemented");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        BaseGroupAction that = (BaseGroupAction) o;
+
+        return Objects.equals(config, that.config);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(config);
     }
 }

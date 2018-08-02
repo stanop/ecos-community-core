@@ -33,6 +33,10 @@ public interface GroupActionService {
                                String actionId,
                                GroupActionConfig config);
 
+    void cancelActions();
+
+    List<ActionExecution> getActiveActions();
+
     void register(GroupActionFactory factory);
 
     void register(GroupActionExecutor executor);

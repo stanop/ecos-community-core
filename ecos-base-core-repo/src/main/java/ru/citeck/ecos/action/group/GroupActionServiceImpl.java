@@ -14,6 +14,7 @@ import ru.citeck.ecos.action.group.impl.GroupActionExecutorFactory;
 import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -22,24 +23,41 @@ import java.util.function.Function;
  */
 public class GroupActionServiceImpl implements GroupActionService {
 
+    private static final String ALREADY_RUNNING_MSG = "The action is already running. " +
+                                                      "You can not start several identical actions!";
+
     private TransactionService transactionService;
 
     private Map<String, GroupActionFactory> processorFactories = new HashMap<>();
 
+    private Set<ActionExecution> activeActions;
+
     @Autowired
     public GroupActionServiceImpl(TransactionService transactionService) {
         this.transactionService = transactionService;
+        activeActions = Collections.newSetFromMap(new ConcurrentHashMap<>());
     }
 
-    private List<ActionResult> executeImpl(Iterable<RemoteRef> nodes, GroupAction action) {
-        for (RemoteRef ref : nodes) {
-            action.process(ref);
+    private List<ActionResult> executeImpl(ActionExecution execution) {
+        if (activeActions.add(execution)) {
+            try {
+                return execution.run();
+            } finally {
+                activeActions.remove(execution);
+            }
+        } else {
+            throw new IllegalStateException(ALREADY_RUNNING_MSG);
         }
-        return action.complete();
     }
 
     @Override
     public List<ActionResult> execute(Iterable<RemoteRef> nodes, GroupAction action) {
+
+        ActionExecution execution = new ActionExecution(nodes, action);
+
+        if (activeActions.contains(execution)) {
+            throw new IllegalStateException(ALREADY_RUNNING_MSG);
+        }
 
         if (action.isAsync()) {
 
@@ -56,7 +74,7 @@ public class GroupActionServiceImpl implements GroupActionService {
                         AuthenticationUtil.setRunAsUser(currentUser);
                         I18NUtil.setLocale(locale);
 
-                        return executeImpl(nodes, action);
+                        return executeImpl(execution);
 
                     }, false)).start();
                 }
@@ -66,7 +84,7 @@ public class GroupActionServiceImpl implements GroupActionService {
 
         } else {
 
-            return executeImpl(nodes, action);
+            return executeImpl(execution);
         }
     }
 
@@ -116,6 +134,19 @@ public class GroupActionServiceImpl implements GroupActionService {
         if (!missing.isEmpty()) {
             throw new IllegalStateException("Mandatory parameters are missing: " + String.join(", ", missing));
         }
+    }
+
+    @Override
+    public void cancelActions() {
+        for (ActionExecution execution : activeActions) {
+            execution.cancel();
+        }
+        activeActions.clear();
+    }
+
+    @Override
+    public List<ActionExecution> getActiveActions() {
+        return new ArrayList<>(activeActions);
     }
 
     @Override

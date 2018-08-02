@@ -40,6 +40,28 @@ public class JournalRecords implements Iterable<RemoteRef> {
         return new RecordsIterator();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        JournalRecords that = (JournalRecords) o;
+
+        return Objects.equals(query, that.query) &&
+               Objects.equals(language, that.language) &&
+               Objects.equals(journalType, that.journalType) &&
+               Objects.equals(pageInfo, that.pageInfo);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(query, language, journalType, pageInfo);
+    }
+
     private class RecordsIterator implements Iterator<RemoteRef> {
 
         private int currentIdx = 0;

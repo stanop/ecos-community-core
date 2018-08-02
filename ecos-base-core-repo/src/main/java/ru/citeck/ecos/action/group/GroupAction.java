@@ -13,5 +13,7 @@ public interface GroupAction {
 
     List<ActionResult> complete();
 
+    List<ActionResult> cancel();
+
     boolean isAsync();
 }

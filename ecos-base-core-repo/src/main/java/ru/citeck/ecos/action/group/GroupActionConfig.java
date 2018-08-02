@@ -3,6 +3,7 @@ package ru.citeck.ecos.action.group;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class GroupActionConfig {
 
@@ -10,6 +11,7 @@ public class GroupActionConfig {
     private int batchSize = 1;
     private boolean async = false;
     private int maxResults = 100;
+    private int maxErrors = 1000;
 
     public GroupActionConfig() {
     }
@@ -50,5 +52,48 @@ public class GroupActionConfig {
 
     public void setMaxResults(int maxResults) {
         this.maxResults = maxResults;
+    }
+
+    public int getMaxErrors() {
+        return maxErrors;
+    }
+
+    public void setMaxErrors(int maxErrors) {
+        this.maxErrors = maxErrors;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GroupActionConfig that = (GroupActionConfig) o;
+
+        return batchSize == that.batchSize &&
+               async == that.async &&
+               maxResults == that.maxResults &&
+               maxErrors == that.maxErrors &&
+               Objects.equals(params, that.params);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(params);
+        result = 31 * result + batchSize;
+        result = 31 * result + (async ? 1 : 0);
+        result = 31 * result + maxResults;
+        result = 31 * result + maxErrors;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "GroupActionConfig{" +
+                "params=" + params +
+                ", batchSize=" + batchSize +
+                ", async=" + async +
+                ", maxResults=" + maxResults +
+                ", maxErrors=" + maxErrors +
+                '}';
     }
 }
