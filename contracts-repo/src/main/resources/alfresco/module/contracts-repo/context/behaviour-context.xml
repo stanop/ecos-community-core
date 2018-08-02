@@ -314,6 +314,7 @@
 				<value>tk:kind</value>
 				<value>dms:updateContent</value>
 				<value>icase:documents</value>
+				<value>dms:supplementaryFiles</value>
 			</list>
 		</property>
 		<property name="enableHistoryOnUpdateProps" value="true"/>
@@ -365,6 +366,7 @@
 				<value>pas:containsProductsAndServices</value>
 				<value>tk:kind</value>
 				<value>dms:updateContent</value>
+				<value>dms:supplementaryFiles</value>
 			</list>
 		</property>
 		<property name="enableHistoryOnUpdateProps" value="true"/>
@@ -390,6 +392,7 @@
 				<value>pas:containsProductsAndServices</value>
 				<value>tk:kind</value>
 				<value>dms:updateContent</value>
+				<value>dms:supplementaryFiles</value>
 			</list>
 		</property>
 		<property name="enableHistoryOnUpdateProps" value="true"/>
