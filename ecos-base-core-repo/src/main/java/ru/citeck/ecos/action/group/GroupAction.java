@@ -16,4 +16,6 @@ public interface GroupAction {
     List<ActionResult> cancel();
 
     boolean isAsync();
+
+    long getTimeout();
 }

@@ -50,6 +50,11 @@ public abstract class BaseGroupAction implements GroupAction {
         return config.isAsync();
     }
 
+    @Override
+    public long getTimeout() {
+        return config.getTimeout();
+    }
+
     private void processNodes() {
         List<ActionResult> results = new ArrayList<>();
         processNodesImpl(input, results);
@@ -81,6 +86,14 @@ public abstract class BaseGroupAction implements GroupAction {
         throw new RuntimeException("Method not implemented");
     }
 
+    public GroupActionConfig getConfig() {
+         return config;
+    }
+
+    public int getErrorsCount() {
+        return errorsCount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -98,5 +111,11 @@ public abstract class BaseGroupAction implements GroupAction {
     @Override
     public int hashCode() {
         return Objects.hashCode(config);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "@" + Integer.toHexString(hashCode()) +
+                " config: " + config + " errors: " + errorsCount;
     }
 }

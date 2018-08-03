@@ -53,7 +53,8 @@ public class GroupActionServiceImpl implements GroupActionService {
     @Override
     public List<ActionResult> execute(Iterable<RemoteRef> nodes, GroupAction action) {
 
-        ActionExecution execution = new ActionExecution(nodes, action);
+        String author = AuthenticationUtil.getFullyAuthenticatedUser();
+        ActionExecution execution = new ActionExecution(nodes, action, author);
 
         if (activeActions.contains(execution)) {
             throw new IllegalStateException(ALREADY_RUNNING_MSG);

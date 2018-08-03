@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class GroupActionConfig {
 
@@ -12,6 +13,7 @@ public class GroupActionConfig {
     private boolean async = false;
     private int maxResults = 100;
     private int maxErrors = 1000;
+    private long timeout = TimeUnit.HOURS.toMillis(5);
 
     public GroupActionConfig() {
     }
@@ -62,6 +64,14 @@ public class GroupActionConfig {
         this.maxErrors = maxErrors;
     }
 
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,21 +79,12 @@ public class GroupActionConfig {
 
         GroupActionConfig that = (GroupActionConfig) o;
 
-        return batchSize == that.batchSize &&
-               async == that.async &&
-               maxResults == that.maxResults &&
-               maxErrors == that.maxErrors &&
-               Objects.equals(params, that.params);
+        return Objects.equals(params, that.params);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(params);
-        result = 31 * result + batchSize;
-        result = 31 * result + (async ? 1 : 0);
-        result = 31 * result + maxResults;
-        result = 31 * result + maxErrors;
-        return result;
+        return Objects.hashCode(params);
     }
 
     @Override
@@ -94,6 +95,7 @@ public class GroupActionConfig {
                 ", async=" + async +
                 ", maxResults=" + maxResults +
                 ", maxErrors=" + maxErrors +
+                ", timeout=" + timeout +
                 '}';
     }
 }
