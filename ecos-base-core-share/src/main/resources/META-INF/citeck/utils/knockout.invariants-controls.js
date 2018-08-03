@@ -1390,21 +1390,12 @@ ko.bindingHandlers.journalControl = {
                         criteriaListShow(!criteriaListShow());
                     },
                     applyCriteria: function (data, event) {
-                        var criteriaList = [],
-                            selectedCriteria = selectedFilterCriteria();
+                        var selectedCriteria = selectedFilterCriteria();
 
-                        if (selectedCriteria.length == 0) {
+                        if (!selectedCriteria.length) {
                             criteria(optionsFilter && optionsFilter() ? optionsFilter() : []);
                         } else {
-                            for (var i in selectedCriteria) {
-                                if (selectedCriteria[i].value() && selectedCriteria[i].predicateValue() && selectedCriteria[i].name()) {
-                                    criteriaList.push({
-                                        attribute: selectedCriteria[i].name(),
-                                        predicate: selectedCriteria[i].predicateValue(),
-                                        value: selectedCriteria[i].value()
-                                    })
-                                }
-                            }
+                            var criteriaList = getCriteriaList(selectedCriteria);
 
                             // add filters, which by default are not in the journal
                             if (optionsFilter && optionsFilter() && optionsFilter().length) {
@@ -2100,6 +2091,15 @@ ko.components.register("select2", {
 
             if (this.criteria().length) {
                 this.criteria().forEach(function(criterion) {
+                    if (criterion.predicate.indexOf("string") != -1) {
+                        if (criterion.allowMultipleFilterValue) {
+                            criterion.value = _.map(criterion.value, function(item) {
+                                return item.toLowerCase();
+                            });
+                        } else {
+                            criterion.value = criterion.value.toLowerCase();
+                        }
+                    }
                     preparedOptions = _.filter(preparedOptions, function(option) {
                         var attributeComputed = self.optionFilter ? self.optionFilter(option, criterion.attribute) : option.impl().attribute(criterion.attribute),
                             attributeValue = self.optionFilter ? attributeComputed() : attributeComputed.value();
@@ -2107,7 +2107,6 @@ ko.components.register("select2", {
                         if (attributeValue != null) {
                             if (criterion.predicate.indexOf("string") != -1) {
                                 attributeValue = attributeValue.toLowerCase();
-                                criterion.value = criterion.value.toLowerCase();
                             }
 
                             switch (criterion.predicate) {
@@ -2117,8 +2116,18 @@ ko.components.register("select2", {
                                     return attributeValue === false;
 
                                 case "string-starts-with":
+                                    if (criterion.allowMultipleFilterValue) {
+                                        return _.some(criterion.value, function(item) {
+                                            return attributeValue.startsWith(item);
+                                        });
+                                    }
                                     return attributeValue.startsWith(criterion.value);
                                 case "string-ends-with":
+                                    if (criterion.allowMultipleFilterValue) {
+                                        return _.some(criterion.value, function(item) {
+                                            return attributeValue.endsWith(item);
+                                        });
+                                    }
                                     return attributeValue.endsWith(criterion.value);
 
                                 case "date-greater-or-equal":
@@ -2134,6 +2143,7 @@ ko.components.register("select2", {
                                     return attributeValue > Number(criterion.value);
                                 case "number-greater-or-equal":
                                     return attributeValue >= Number(criterion.value);
+
                                 case "assoc-contains":
                                     return attributeValue.nodeRef.indexOf(criterion.value) != -1;
                                 case "assoc-not-contains":
@@ -2141,16 +2151,36 @@ ko.components.register("select2", {
                             }
 
                             if (criterion.predicate.indexOf("not-equals") != -1) {
+                                if (criterion.allowMultipleFilterValue) {
+                                    return _.every(criterion.value, function(item) {
+                                        return attributeValue != item;
+                                    });
+                                }
                                 return attributeValue != criterion.value;
                             } else if (criterion.predicate.indexOf("equals") != -1) {
+                                if (criterion.allowMultipleFilterValue) {
+                                    return _.some(criterion.value, function(item) {
+                                        return attributeValue == item;
+                                    });
+                                }
                                 return attributeValue == criterion.value;
                             } else if (criterion.predicate.indexOf("not-empty") != -1) {
                                 return !_.isEmpty(attributeValue);
                             } else if (criterion.predicate.indexOf("empty") != -1) {
                                 return _.isEmpty(attributeValue);
                             } else if (criterion.predicate.indexOf("not-contains") != -1) {
+                                if (criterion.allowMultipleFilterValue) {
+                                    return _.some(criterion.value, function(item) {
+                                        return attributeValue.indexOf(item) == -1;
+                                    });
+                                }
                                 return attributeValue.indexOf(criterion.value) == -1;
                             } else if (criterion.predicate.indexOf("contains") != -1) {
+                                if (criterion.allowMultipleFilterValue) {
+                                    return _.some(criterion.value, function(item) {
+                                        return attributeValue.indexOf(item) != -1;
+                                    });
+                                }
                                 return attributeValue.indexOf(criterion.value) != -1;
                             } else if (criterion.predicate.indexOf("not-empty") != -1) {
                                 return !_.isEmpty(attributeValue);
@@ -2581,13 +2611,7 @@ ko.components.register("select2", {
                             self.criteria([]);
                             return;
                         }
-
-                        self.criteria(_.map(_.filter(self.selectedFilterCriteria(), function(c) {
-                            if (c.predicateValue() && c.predicateValue().indexOf("empty") != -1) return c.predicateValue() && c.name();
-                            return c.value() && c.predicateValue() && c.name();
-                        }), function(c) {
-                            return { attribute: c.name(), predicate: c.predicateValue(), value: c.value() };
-                        }));
+                        self.criteria(getCriteriaList(self.selectedFilterCriteria(), true));
                     },
                     addFilterCriterion: function(data, event) {
                         self._criteriaListShow(!self._criteriaListShow());
@@ -3309,6 +3333,60 @@ ko.bindingHandlers.orgstructControl = {
 // ----------------
 // PRIVATE FUNCTION
 // ----------------
+
+function getCriteriaList(selectedFilterCriteria, isSelect2) {
+    var filteredCriteria = _.filter(selectedFilterCriteria, function(criteria) { //criteria chosen by the user
+        if (criteria.predicateValue() && criteria.predicateValue().indexOf("empty") != -1) {
+            return criteria.predicateValue() && criteria.name();
+        }
+        return criteria.value() && criteria.predicateValue() && criteria.name();
+    });
+
+    var criteriaList = [];
+
+    _.each(filteredCriteria, function(criteria) {
+        var criteriaValue                     = criteria.value(),
+            predicateValue                    = criteria.predicateValue(),
+            criteriaName                      = criteria.name(),
+            separator                         = criteria.separator(),
+            allowableMultipleFilterPredicates = criteria.allowableMultipleFilterPredicates();
+
+        if (criteriaValue &&
+            criteria.allowMultipleFilterValue() &&
+            criteriaValue.indexOf(separator) != -1 &&
+            allowableMultipleFilterPredicates.indexOf(predicateValue) != -1) {
+
+            var values = _.uniq(_.map((criteriaValue.split(separator)).filter(Boolean), function (value) {
+                return trim(value);
+            }));
+
+            if (isSelect2) {
+                criteriaList.push({
+                    attribute: criteriaName,
+                    predicate: predicateValue,
+                    allowMultipleFilterValue: true,
+                    value: values
+                });
+            } else {
+                _.each(values, function(value) {
+                    criteriaList.push({
+                        attribute: criteriaName,
+                        predicate: predicateValue,
+                        value: value
+                    });
+                });
+            }
+
+        } else {
+            criteriaList.push({
+                attribute: criteriaName,
+                predicate: predicateValue,
+                value: criteriaValue
+            });
+        }
+    });
+    return criteriaList;
+}
 
 function clearUnselectedElements(tree) {
     $("table.unselectable.selected", tree.getEl())
