@@ -38,24 +38,14 @@ public class JGqlPageInfoInput extends HashMap<String, Object> {
     public JGqlPageInfoInput(
             @GraphQLName(PROP_AFTER_ID) String afterId,
             @GraphQLName(PROP_MAX_ITEMS) Integer maxItems,
-            @GraphQLName(PROP_SORT_BY) List<JGqlSortBy> sortBy
+            @GraphQLName(PROP_SORT_BY) List<JGqlSortBy> sortBy,
+            @GraphQLName(PROP_SKIP_COUNT) Integer skipCount
     ) {
-        super(3);
+        super(4);
 
         setAfterId(afterId);
         setMaxItems(maxItems);
         setSortBy(sortBy);
-    }
-
-    public JGqlPageInfoInput(
-            @GraphQLName(PROP_SKIP_COUNT) Integer skipCount,
-            @GraphQLName(PROP_MAX_ITEMS) Integer maxItems,
-            @GraphQLName(PROP_SORT_BY) List<JGqlSortBy> sortBy
-    ) {
-        super(3);
-
-        setSortBy(sortBy);
-        setMaxItems(maxItems);
         setSkipCount(skipCount);
     }
 
@@ -126,15 +116,7 @@ public class JGqlPageInfoInput extends HashMap<String, Object> {
                 }
             }
 
-            JGqlPageInfoInput result;
-
-            if (afterId != null) {
-                result = new JGqlPageInfoInput(afterId, maxItems, sortBy);
-            } else {
-                result = new JGqlPageInfoInput(skipCount, maxItems, sortBy);
-            }
-
-            return result;
+            return new JGqlPageInfoInput(afterId, maxItems, sortBy, skipCount);
         }
 
         private String asText(JsonNode node) {
