@@ -37,11 +37,13 @@ public abstract class BaseGroupAction implements GroupAction {
         if (input.size() > 0) {
             processNodes();
         }
+        onComplete();
         return output;
     }
 
     @Override
     public List<ActionResult> cancel() {
+        onCancel();
         return output;
     }
 
@@ -68,9 +70,14 @@ public abstract class BaseGroupAction implements GroupAction {
         }
         int maxErrors = config.getMaxErrors();
         if (maxErrors > 0 && errorsCount >= maxErrors) {
-            throw new RuntimeException("Group action max errors limit is reached! " +
-                                       "Action: " + toString() + " config: " + config);
+            throw new RuntimeException("Group action max errors limit is reached! " + toString());
         }
+    }
+
+    protected void onComplete() {
+    }
+
+    protected void onCancel() {
     }
 
     protected void processNodesImpl(List<RemoteRef> nodes, List<ActionResult> output) {
