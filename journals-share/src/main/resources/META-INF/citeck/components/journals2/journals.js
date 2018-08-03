@@ -169,6 +169,9 @@ CreateVariant
         .shortcut('datatype', 'attribute._info.datatype')
         .shortcut('journalType', 'attribute._info.journalType')
         .shortcut('title', 'attribute._info.customDisplayName')
+        .shortcut('separator', 'attribute._info.separator')
+        .shortcut('allowMultipleFilterValue', 'attribute._info.allowMultipleFilterValue') // multiple value, using separator
+        .shortcut('allowableMultipleFilterPredicates', 'attribute._info.allowableMultipleFilterPredicates')
         .shortcut('name', 'field.name')
 
         /*====== Value ======*/
@@ -441,12 +444,33 @@ CreateVariant
             return this._id;
         })
         .computed('query', function() {
-            var id = this.id(),
-                result = {};
+            var id                                = this.id(),
+                name                              = this.name(),
+                textValue                         = this.textValue(),
+                result                            = {},
+                separator                         = this.separator(),
+                predicateId                       = this.resolve('predicate.id'),
+                allowableMultipleFilterPredicates = this.allowableMultipleFilterPredicates();
 
-            result['field_' + id] = this.name();
-            result['predicate_' + id] = this.resolve('predicate.id');
-            result['value_' + id] = this.textValue();
+            if (textValue &&
+                this.allowMultipleFilterValue() &&
+                textValue.indexOf(separator) != -1 &&
+                allowableMultipleFilterPredicates.indexOf(predicateId) != -1) {
+
+                var values = _.uniq((textValue.split(separator)).filter(Boolean));
+
+                _.each(values, function(value) {
+                    var criteriaId = criteriaCounter++;
+                    result['field_' + criteriaId] = name;
+                    result['predicate_' + criteriaId] = predicateId;
+                    result['value_' + criteriaId] = value.trim();
+                });
+                return result;
+            }
+
+            result['field_' + id] = name;
+            result['predicate_' + id] = predicateId;
+            result['value_' + id] = textValue;
             return result;
         })
         .init(function() {
@@ -683,6 +707,8 @@ AttributeInfo
     .property('journalType', JournalType)
     .property('attribute', Attribute)
 
+    .shortcut('separator', 'attribute.settings.separator', ';')
+
     .method('customDisplayName', function() {
         var optionLabel = null;
         if (this.attribute() && this.attribute().settings()) {
@@ -692,6 +718,20 @@ AttributeInfo
             return Alfresco.util.message(optionLabel);
         }
         return this.displayName();
+    })
+    .method('allowMultipleFilterValue', function() {
+        return this.resolve('attribute.settings.allowMultipleFilterValue') == 'true';
+    })
+    .method('allowableMultipleFilterPredicates', function() {
+        var allowableMultipleFilterPredicates = ["string-equals", "string-not-equals"];
+
+        if (this.resolve('attribute.settings.allowableMultipleFilterPredicates')) {
+            allowableMultipleFilterPredicates = _.map(this.resolve('attribute.settings.allowableMultipleFilterPredicates').split(','), function (item) {
+                return item.trim();
+            });
+        }
+
+        return allowableMultipleFilterPredicates;
     })
     ;
 
