@@ -17,7 +17,8 @@ import java.util.List;
 @JsonDeserialize(using = JGqlPageInfoInput.JsonDeserializer.class)
 public class JGqlPageInfoInput extends HashMap<String, Object> {
 
-    public static final JGqlPageInfoInput DEFAULT = new JGqlPageInfoInput(0, 100, Collections.emptyList());
+    public static final JGqlPageInfoInput DEFAULT = new JGqlPageInfoInput(null, 100,
+                                                                          Collections.emptyList(), 0);
 
     private static final String PROP_SKIP_COUNT = "skipCount";
     private static final String PROP_AFTER_ID = "afterId";
