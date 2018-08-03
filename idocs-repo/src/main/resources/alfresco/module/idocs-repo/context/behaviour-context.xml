@@ -899,6 +899,7 @@
                 <value>idocs:currencyDocument</value>
                 <value>tk:kind</value>
                 <value>dms:updateContent</value>
+                <value>icase:documents</value>
             </list>
         </property>
         <property name="enableHistoryOnUpdateProps" value="true"/>

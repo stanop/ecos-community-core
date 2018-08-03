@@ -93,6 +93,7 @@
                 <value>meet:participants</value>
                 <value>meet:plannedReporters</value>
                 <value>dms:supplementaryFiles</value>
+                <value>icase:documents</value>
             </list>
         </property>
         <property name="enableHistoryOnUpdateProps" value="true"/>
