@@ -74,7 +74,7 @@ public class JournalRecords implements Iterable<RemoteRef> {
         private void takeNextRecords() {
             currentIdx = 0;
             JGqlPageInfoInput recordsPageInfo;
-            recordsPageInfo = new JGqlPageInfoInput(lastId, SEARCH_MAX_ITEMS, pageInfo.getSortBy());
+            recordsPageInfo = new JGqlPageInfoInput(lastId, SEARCH_MAX_ITEMS, pageInfo.getSortBy(), 0);
             records = recordsDAO.getRecords(journalType, query, language, recordsPageInfo);
             if (records.records.size() > 0) {
                 String newLastId = records.records.get(records.records.size() - 1).toString();
