@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Execute custom javascript</shortname>
+    <description>Execute custom javascript</description>
+    <url>/ru/citeck/utils/execute-script</url>
+    <format default="json"/>
+    <transaction>required</transaction>
+    <authentication>admin</authentication>
+</webscript>
