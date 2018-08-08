@@ -30,7 +30,9 @@ import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -285,23 +287,22 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             Object value = requestParams.get(key);
             csvResult.append((value != null ? value.toString() : "") + DELIMITER);
         }
+        csvResult.append("\n");
         /** Create file */
         String currentDate = dateFormat.format(new Date());
         File csvFile = new File(properties.getProperty(CSV_RESULT_FOLDER, DEFAULT_RESULT_CSV_FOLDER)
                 + HISTORY_RECORD_FILE_NAME + currentDate + ".csv");
-        PrintWriter printWriter = null;
         try {
-            csvFile.createNewFile();
-            printWriter = new PrintWriter(csvFile);
-            printWriter.print(csvResult.toString());
-            printWriter.flush();
+            Files.write(
+                    Paths.get(csvFile.toURI()),
+                    csvResult.toString().getBytes(),
+                    StandardOpenOption.APPEND,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.SYNC
+            );
         } catch (IOException e) {
             logger.error(e);
             throw new RuntimeException(e);
-        } finally {
-            if (printWriter != null) {
-                printWriter.close();
-            }
         }
     }
 
