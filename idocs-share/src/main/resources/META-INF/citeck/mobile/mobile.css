@@ -397,7 +397,7 @@
 
 /* CARD */
 
-.mobile #bd > .yui-gc > .yui-u {
+.mobile #bd .yui-gc .yui-u {
     width: 100% !important;
     margin: 0;
     float: none;
