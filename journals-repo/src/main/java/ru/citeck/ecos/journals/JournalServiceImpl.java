@@ -189,7 +189,7 @@ class JournalServiceImpl implements JournalService {
                                          JGqlPageInfoInput pageInfo) {
 
         if (pageInfo == null) {
-            pageInfo = JGqlPageInfoInput.DEFAULT;
+            pageInfo = new JGqlPageInfoInput(null, 0, Collections.emptyList(), 0);
         }
         JournalType journalType = needJournalType(journalId);
         return new JournalRecords(recordsDAO, journalType, query, language, pageInfo);
