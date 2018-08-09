@@ -111,7 +111,7 @@
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.association.contracts_agreementCurrency.title</param>
                 </region>
-                <region name="input" template="select" />
+                <region name="input" template="autocomplete"/>
             </field>
             <field prop="contracts:agreementAmount">
                 <region name="label" template="label">
@@ -374,9 +374,7 @@
                 <region name="label" template="label">
                     <param name="key">payments_paymentsModel.association.payments_currency.title</param>
                 </region>
-                <region name="input" template="select" >
-                    <param name="alwaysSingle">true</param>
-                </region>
+                <region name="input" template="autocomplete"/>
             </field>
             <field prop="payments:paymentAmount">
                 <region name="label" template="label">
@@ -540,7 +538,7 @@
         </view>
         <view>
             <field assoc="contracts:closingDocumentCurrency">
-                <region name="input" template="select" />
+                <region name="input" template="autocomplete"/>
             </field>
         </view>
         <field prop="dms:updateContent">
@@ -628,7 +626,7 @@
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.association.contracts_agreementCurrency.title</param>
                 </region>
-                <region name="input" template="select" />
+                <region name="input" template="autocomplete"/>
             </field>
             <field prop="contracts:agreementAmount">
                 <region name="label" template="label">
