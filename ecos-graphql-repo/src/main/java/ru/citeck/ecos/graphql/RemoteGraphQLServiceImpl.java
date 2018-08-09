@@ -137,9 +137,11 @@ public class RemoteGraphQLServiceImpl implements GraphQLService {
             /** Errors */
             ArrayList<CiteckGraphQLException> errorsList = new ArrayList<>();
             ArrayNode errors = (ArrayNode) resultNode.get("errors");
-            for (JsonNode node : errors) {
-                Map<String, Object> errorMap = objectMapper.readValue(node.toString(), Map.class);
-                errorsList.add(parseError(errorMap));
+            if (errors != null) {
+                for (JsonNode node : errors) {
+                    Map<String, Object> errorMap = objectMapper.readValue(node.toString(), Map.class);
+                    errorsList.add(parseError(errorMap));
+                }
             }
             return new ExecutionResultImpl(data, errorsList);
         } catch (IOException e) {
