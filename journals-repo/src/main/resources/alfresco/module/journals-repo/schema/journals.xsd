@@ -50,6 +50,7 @@
 
     <xs:complexType name="journal">
         <xs:sequence>
+            <xs:element name="graphQLService" type="xs:string" minOccurs="0" />
             <xs:element name="datasource" type="xs:string" minOccurs="0" />
             <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="group-actions" minOccurs="0">

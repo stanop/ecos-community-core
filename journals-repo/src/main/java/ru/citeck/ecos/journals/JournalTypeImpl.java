@@ -38,9 +38,11 @@ import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 class JournalTypeImpl implements JournalType {
 
     private static final String DATASOURCE_DEFAULT = "ecos.journals.datasource.AlfNodes";
+    private static final String GRAPHQL_SERVICE_DEFAULT = "alfGraphQLServiceImpl";
 
     private final String id;
     private final String datasource;
+    private final String graphQLService;
 
     private final Map<String, String> options;
     private final List<QName> attributes;
@@ -69,6 +71,9 @@ class JournalTypeImpl implements JournalType {
 
         String datasource = journal.getDatasource();
         this.datasource = StringUtils.isNotBlank(datasource) ? datasource : DATASOURCE_DEFAULT;
+
+        String graphQLService = journal.getGraphQLService();
+        this.graphQLService = StringUtils.isNotBlank(graphQLService) ? graphQLService : GRAPHQL_SERVICE_DEFAULT;
 
         batchEdit = new HashMap<>();
         criterion = new HashMap<>();
@@ -268,6 +273,11 @@ class JournalTypeImpl implements JournalType {
             }
         }
         return result;
+    }
+
+    @Override
+    public String getGraphQLService() {
+        return graphQLService;
     }
 
     @Override

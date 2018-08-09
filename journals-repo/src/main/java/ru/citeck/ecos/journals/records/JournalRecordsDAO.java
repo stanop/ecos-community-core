@@ -8,13 +8,13 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.journals.JournalType;
+import ru.citeck.ecos.providers.ApplicationContextProvider;
 import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.*;
@@ -34,7 +34,6 @@ public class JournalRecordsDAO {
             "['\"]\\s*?(\\S+?:\\S+?\\s*?(,\\s*?\\S+?:\\S+?\\s*?)*?)['\"]"
     );
 
-    private GraphQLService graphQLService;
     private ServiceRegistry serviceRegistry;
     private NamespaceService namespaceService;
 
@@ -112,6 +111,9 @@ public class JournalRecordsDAO {
                                          String query,
                                          String language,
                                          JGqlPageInfoInput pageInfo) {
+
+        String graphQLServiceBeanId = journalType.getGraphQLService();
+        GraphQLService graphQLService = (GraphQLService) ApplicationContextProvider.getBean(graphQLServiceBeanId);
 
         String datasource = journalType.getDataSource();
         String validLanguage = StringUtils.isNotBlank(language) ? language : CriteriaAlfNodesSearch.LANGUAGE;
@@ -239,12 +241,6 @@ public class JournalRecordsDAO {
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.namespaceService = serviceRegistry.getNamespaceService();
-    }
-
-    @Autowired
-    @Qualifier("alfGraphQLServiceImpl")
-    public void setGQLService(GraphQLService graphQLService) {
-        this.graphQLService = graphQLService;
     }
 
     public void setRecordsBaseQuery(String recordsBaseQuery) {

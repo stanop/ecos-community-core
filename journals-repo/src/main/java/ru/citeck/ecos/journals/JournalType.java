@@ -25,6 +25,8 @@ import org.alfresco.service.namespace.QName;
 
 public interface JournalType {
 
+    String getGraphQLService();
+
     String getDataSource();
 
     String getId();

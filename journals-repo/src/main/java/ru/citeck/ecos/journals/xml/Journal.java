@@ -62,6 +62,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "journal", propOrder = {
+    "graphQLService",
     "datasource",
     "option",
     "groupActions",
@@ -69,6 +70,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class Journal {
 
+    protected String graphQLService;
     protected String datasource;
     protected List<Option> option;
     @XmlElement(name = "group-actions")
@@ -77,6 +79,30 @@ public class Journal {
     protected Headers headers;
     @XmlAttribute(name = "id", required = true)
     protected String id;
+
+    /**
+     * Gets the value of the graphQLService property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getGraphQLService() {
+        return graphQLService;
+    }
+
+    /**
+     * Sets the value of the datasource property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setGraphQLService(String value) {
+        this.graphQLService = value;
+    }
 
     /**
      * Gets the value of the datasource property.
