@@ -40,7 +40,7 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
         <field assoc="pas:currency">
-            <region name="input" template="select"/>
+            <region name="input" template="autocomplete"/>
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
     </view>
@@ -70,7 +70,7 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
         <field assoc="pas:currency">
-            <region name="input" template="select"/>
+            <region name="input" template="autocomplete"/>
         </field>
     </view>
 
