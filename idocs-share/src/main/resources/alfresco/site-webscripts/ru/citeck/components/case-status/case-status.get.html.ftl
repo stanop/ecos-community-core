@@ -1,7 +1,7 @@
 <#assign id=args.htmlid?js_string>
 
 <script type="text/javascript">
-    require(['citeck/components/case-status/case-status'], function () {
+    require(['citeck/components/case-status/case-status-old'], function () {
         new Citeck.widget.CaseStatus("${id}").setOptions({
             nodeRef: "${nodeRef}",
             isPendingUpdate: ${isPendingUpdate?string},

@@ -26,11 +26,15 @@ public interface CardletModel {
 	public static final String NAMESPACE = "http://www.citeck.ru/model/cardlet/1.0";
 	
 	public static final QName TYPE_CARDLET = QName.createQName(NAMESPACE, "cardlet");
+
+	public static final QName PROP_ID = QName.createQName(NAMESPACE, "id");
 	public static final QName PROP_CARD_MODE = QName.createQName(NAMESPACE, "cardMode");
 	public static final QName PROP_REGION_ID = QName.createQName(NAMESPACE, "regionId");
 	public static final QName PROP_REGION_COLUMN = QName.createQName(NAMESPACE, "regionColumn");
 	public static final QName PROP_REGION_POSITION = QName.createQName(NAMESPACE, "regionPosition");
-	
+	public static final QName PROP_AVAILABLE_IN_MOBILE = QName.createQName(NAMESPACE, "availableInMobile");
+	public static final QName PROP_POSITION_INDEX_IN_MOBILE = QName.createQName(NAMESPACE, "positionIndexInMobile");
+
 	public static final QName TYPE_CARD_MODE = QName.createQName(NAMESPACE, "cardMode");
 	public static final QName PROP_CARD_MODE_ID = QName.createQName(NAMESPACE, "cardModeId");
 	public static final QName PROP_CARD_MODE_ORDER = QName.createQName(NAMESPACE, "cardModeOrder");

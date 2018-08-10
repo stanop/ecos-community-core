@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<card-mode xmlns="http://www.citeck.ru/cardlets/1.0">
+    <id>documents</id>
+    <title>
+        <value locale="ru_RU">Документы</value>
+        <value locale="en_US">Documents</value>
+    </title>
+    <description>Документы</description>
+    <order>zz</order>
+    <condition>true</condition>
+</card-mode>

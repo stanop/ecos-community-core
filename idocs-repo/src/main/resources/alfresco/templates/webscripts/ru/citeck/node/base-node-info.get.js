@@ -14,7 +14,7 @@ function main() {
                 Read: node.hasPermission('Read'),
                 Write: node.hasPermission('Write')
             },
-            modified: node.properties['cm:modified'],
+            modified: node.properties['cm:modified'].getTime(),
             pendingUpdate: updateUtil.isPendingUpdate(node.nodeRef)
         }
 

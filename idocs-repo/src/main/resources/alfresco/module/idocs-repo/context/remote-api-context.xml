@@ -420,4 +420,9 @@
         <property name="nodeService" ref="nodeService" />
     </bean>
 
+    <bean id="webscript.ru.citeck.cardlets.cardlets.get"
+          class="ru.citeck.ecos.webscripts.cardlet.CardletsGet"
+          parent="webscript">
+    </bean>
+
 </beans>

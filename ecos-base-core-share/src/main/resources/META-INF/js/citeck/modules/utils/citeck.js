@@ -141,7 +141,9 @@ define([
             }
         };
 
-        fetch(url + "?" + $.param(args), {
+        let fullUrl = url + (args ? '?' + $.param(args) : '');
+
+        fetch(fullUrl, {
             credentials: 'include'
         }).then(response => {
             return response.text();
