@@ -162,7 +162,7 @@ require(['js/citeck/modules/utils/citeck', 'xstyle!citeck/mobile/mobile.css'], f
             };
 
             if (isMobile) {
-                $("#bd .yui-gc .cardlet[data-available-in-mobile=false]").hide(500);
+                $("#bd .yui-gc .cardlet[data-available-in-mobile=false]").hide();
                 moveCardlets(isMobile);
             } else {
                 moveCardlets(isMobile);
