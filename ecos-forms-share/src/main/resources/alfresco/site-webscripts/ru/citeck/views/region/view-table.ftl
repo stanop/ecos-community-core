@@ -10,6 +10,8 @@
 <#assign showDialogAfterDuplicate = params.showDialogAfterDuplicate!"false" />
 <#if params.needPullForDuplicate??>
     <#assign needPullForDuplicate = params.needPullForDuplicate?replace("\\s+", "", "rm") />
+<#else>
+    <#assign needPullForDuplicate = "" />
 </#if>
 <#assign cloneParent = params.cloneParent!"false" />
 
@@ -25,7 +27,9 @@
         * downloadActionInViewMode - enable additional actions column in view mode with download button.
         * actionIsFirstColumn - moving action column to left
         * duplicateButton - add duplicate button
-        * showAfterDuplicateButtonClicked - show duplicated item in dialog after duplicate was added.
+        * showDialogAfterDuplicate - show item in dialog after duplicateButton was clicked [optional] (only for duplicateButton=true)
+        * needPullForDuplicate - pull attributes to duplicated item ("cm:name,tk:type") [optional] (only for duplicateButton=true)
+        * cloneParent - parent noderef will be writen to duplicated item [optional] (only for duplicateButton=true)
 -->
 
 <#-- TODO:
@@ -195,7 +199,7 @@
                     data-bind="click: Citeck.forms.duplicateValue.bind(null, $data, $parents[1],
                         {
                             showDialogAfterDuplicate: ${showDialogAfterDuplicate} || false,
-                            needPullForDuplicate: '${needPullForDuplicate}',
+                            needPullForDuplicate: '${needPullForDuplicate}' || '',
                             baseRef: $parents[1].resolve('node.impl.nodeRef') || '',
                             rootAttributeName: <#if globalAttributeName??>'${globalAttributeName}'<#else>null</#if>,
                             cloneParent: ${cloneParent} || false
