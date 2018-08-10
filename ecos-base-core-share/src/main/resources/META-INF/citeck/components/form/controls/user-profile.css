@@ -268,7 +268,7 @@
     }
 
     .userprofile .members-bar-links .link {
-        padding-top: 10px;
+        padding: 5px;
     }
 
     body {
@@ -277,8 +277,6 @@
 
     .user-profile.node-view.static {
         padding: 0 0 15px 0 !important;
-        margin-right: -15px;
-        margin-left: -15px;
     }
 
     .user-profile.node-view.static > .ecos-form.view-form {

@@ -5,7 +5,7 @@
 
 <@markup id="html">
 
- <div id="graphiql" style="height: 800px;">Loading...</div>
+ <div id="graphiql">Loading...</div>
 
  <script>
 
