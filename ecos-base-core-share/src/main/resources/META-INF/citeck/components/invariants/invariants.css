@@ -1263,7 +1263,7 @@
   cursor: default;
 }
 
-.orgstruct-tree .ygtvcontent .ygtvlabel {
+#Share .orgstruct-tree .ygtvcontent .ygtvlabel {
   display: block;
   cursor: default;
   margin: 0;
