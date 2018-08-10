@@ -62,7 +62,7 @@ function CardletsBody(props) {
     let cardlets = props.cardlets;
 
     return <div>
-        {cardlets['all']['top']}
+        {createCardlets(cardlets['all']['top'])}
         <div id="card-details-tabs" className="header-tabs">
             {modes.map(mode => {
                 return <CardletsModeTabView key={`card-mode-link-${mode.id}`} {...mode} />
@@ -137,7 +137,8 @@ const cardletsBodyMapProps = state => {
         return {
             ...mode,
             isActive: mode.id === state.currentCardMode,
-            loaded: isCardletsLoaded(cardlets[mode.id])
+            loaded: isCardletsLoaded(cardlets[mode.id]),
+            visited: state.visitedCardModes[mode.id]
         }
     });
 
@@ -186,12 +187,15 @@ function CardletsModeBody (props) {
         className += " hidden";
     }
 
-    let cardlets = props.cardlets || {};
+    let cardlets = props.visited ? (props.cardlets || {}) : {
+        top: [],
+        left: [],
+        right: [],
+        bottom: []
+    };
 
     let contentClass = props.loaded ? 'active' : 'not-active';
     let loadingClass = props.loaded ? 'not-active' : 'active';
-
-    let createCardlets = cardlets => (cardlets || []).map(data => <CardletView {...data} />);
 
     return <div id={`card-mode-${props.id}`} className={className}>
         <div className={`card-details-mode-body ${loadingClass} loading-overlay`}>
@@ -272,5 +276,6 @@ const cardletMapDispatch = (dispatch, ownProps) => {
 };
 
 const CardletView = connect(cardletMapProps, cardletMapDispatch)(Cardlet);
+const createCardlets = cardlets => (cardlets || []).map(data => <CardletView {...data} />);
 
 /*=========CARDLET==========*/

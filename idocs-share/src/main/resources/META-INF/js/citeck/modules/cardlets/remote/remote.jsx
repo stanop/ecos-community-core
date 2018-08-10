@@ -11,17 +11,17 @@ const RemoteCardlet = function (props) {
 
     props.onInitialized();
 
-    return <div dangerouslySetInnerHTML={{__html: props.text}} />;
+    return <div dangerouslySetInnerHTML={{__html: props.htmlText}} />;
 };
 
-function updateControl(state = {}, url, data) {
+function updateControl(state = {}, remoteId, data) {
     let remoteControls = state.remoteControls || {};
-    let currentData = remoteControls[url] || {};
+    let currentData = remoteControls[remoteId] || {};
     return {
         ...state,
         remoteControls: {
             ...remoteControls,
-            [url]: {
+            [remoteId]: {
                 ...currentData,
                 ...data
             }
@@ -32,14 +32,14 @@ function updateControl(state = {}, url, data) {
 export const reducers = {
 
     [REQUEST_REMOTE_CONTROL]: function(state = {}, action) {
-        return updateControl(state, action.url, {
+        return updateControl(state, action.remoteId, {
             isFetching: true
         });
     },
     [RECEIVE_REMOTE_HTML]: function (state = {}, action) {
-        return updateControl(state, action.url, {
+        return updateControl(state, action.remoteId, {
             isFetching: false,
-            text: action.text
+            htmlText: action.htmlText
         });
     },
     [REMOTE_CONTROL_LOADED]: function (state = {}, action) {
@@ -49,14 +49,11 @@ export const reducers = {
 
 const mapStateToProps = (state = {}, ownProps) => {
 
-    let reqParams = Object.assign({}, ownProps.props);
-    let remoteUrl = reqParams.remoteUrl;
-    delete reqParams.remoteUrl;
-
-    let fullUrl = remoteUrl + '?' + $.param(reqParams);
+    let controls = state.remoteControls || {};
+    let htmlText = (controls[ownProps.props.remoteId] || {}).htmlText || '';
 
     return {
-        fullUrl
+        htmlText
     }
 };
 
@@ -67,40 +64,43 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
             let reqParams = Object.assign({}, ownProps.props);
             let remoteUrl = reqParams.remoteUrl;
+            let remoteId = reqParams.remoteId;
+
             delete reqParams.remoteUrl;
+            delete reqParams.remoteId;
 
             let fullUrl = remoteUrl + '?' + $.param(reqParams);
 
             let state = getState();
-            if ((state.remoteControls || {})[fullUrl]) {
+            if ((state.remoteControls || {})[remoteId]) {
                 return;
             }
 
             dispatch({
                 type: REQUEST_REMOTE_CONTROL,
-                url: fullUrl
+                remoteId
             });
 
             CiteckUtils.loadHtml(
                 fullUrl, null,
-                text => {
+                htmlText => {
                     dispatch({
                         type: RECEIVE_REMOTE_HTML,
-                        url: fullUrl,
-                        text
+                        remoteId,
+                        htmlText
                     })
                 },
                 function () {
                     dispatch({
                         type: REMOTE_CONTROL_LOADED,
-                        url: fullUrl
+                        remoteId
                     });
                     ownProps.onLoaded();
                 },
                 function () {
                     dispatch({
                         type: REMOTE_CONTROL_ERROR,
-                        url: fullUrl
+                        remoteId
                     });
                     ownProps.onLoaded();
                 }

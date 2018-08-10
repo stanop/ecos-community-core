@@ -13,10 +13,11 @@ import {
 let reducersStore = {
 
     [SET_CARD_MODE]: function (state = {}, action) {
+        let visitedModes = state.visitedCardModes || {};
         return {
             ...state,
             visitedCardModes: {
-                ...state.visitedModes,
+                ...visitedModes,
                 [action.cardMode]: true
             },
             currentCardMode: action.cardMode
@@ -77,6 +78,7 @@ let reducersStore = {
     [REQUEST_NODE_BASE_INFO]: function (state = {}, action) {
         let nodes = state.nodes || {};
         let nodeInfo = nodes[action.nodeRef] || {};
+        let baseInfo = nodeInfo.baseInfo || {};
         return {
             ...state,
             nodes: {
@@ -84,6 +86,7 @@ let reducersStore = {
                 [action.nodeRef]: {
                     ...nodeInfo,
                     baseInfo: {
+                        ...baseInfo,
                         isFetching: true
                     }
                 }

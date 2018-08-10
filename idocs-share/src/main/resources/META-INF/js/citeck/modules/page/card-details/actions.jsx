@@ -53,7 +53,11 @@ export function fetchNodeBaseInfo(nodeRef) {
 
     return (dispatch, getState) => {
 
-        let info = (getState().nodeBaseInfo || {})[nodeRef] || {};
+        let getCurrentInfo = function () {
+            return ((getState().nodes || {})[nodeRef] || {}).baseInfo || {};
+        };
+
+        let info = getCurrentInfo();
 
         if (info.isFetching) {
             return Promise.resolve();
@@ -72,6 +76,18 @@ export function fetchNodeBaseInfo(nodeRef) {
                     nodeRef: nodeRef,
                     data: json
                 });
+
+                if (json.pendingUpdate) {
+                    setTimeout(() => {
+                        dispatch(fetchNodeBaseInfo(nodeRef)).then(() => {
+                            info = getCurrentInfo();
+                            if (!info.pendingUpdate) {
+                                //dispatch(fetchCardlets(nodeRef));
+                                //YAHOO.Bubbling.fire('metadataRefresh');
+                            }
+                        })
+                    }, 2000);
+                }
             })
     }
 }
@@ -85,7 +101,7 @@ export function fetchCardlets(nodeRef) {
             nodeRef: nodeRef
         });
 
-        return fetch("/share/proxy/alfresco/citeck/card/cardlets?nodeRef=" + nodeRef, {
+        return fetch("/share/proxy/alfresco/citeck/card/cardlets?mode=all&nodeRef=" + nodeRef, {
             credentials: 'include'
         }).then(response => {
             return response.json();

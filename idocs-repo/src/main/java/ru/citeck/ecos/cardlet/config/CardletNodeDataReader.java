@@ -46,8 +46,16 @@ public class CardletNodeDataReader implements NodeDataReader<Cardlet> {
 
         Control control = factory.createControl();
         control.setUrl(REMOTE_CONTROL_URL);
-        control.getProp().add(createProp("regionId", regionId));
+
         control.getProp().add(createProp("remoteUrl", SURF_REGION_URL));
+        control.getProp().add(createProp("remoteId", String.valueOf(props.get(ContentModel.PROP_NODE_UUID))));
+
+        control.getProp().add(createProp("regionId", regionId));
+        control.getProp().add(createProp("htmlid", String.valueOf(props.get(ContentModel.PROP_NODE_DBID))));
+        control.getProp().add(createProp("pageid", "card-details"));
+        control.getProp().add(createProp("theme", "${state.pageArgs.theme}"));
+        control.getProp().add(createProp("nodeRef", "${state.pageArgs.nodeRef}"));
+        control.getProp().add(createProp("scope", "page"));
 
         return control;
     }
