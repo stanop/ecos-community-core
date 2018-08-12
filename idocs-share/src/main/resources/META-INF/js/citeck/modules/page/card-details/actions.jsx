@@ -82,8 +82,8 @@ export function fetchNodeBaseInfo(nodeRef) {
                         dispatch(fetchNodeBaseInfo(nodeRef)).then(() => {
                             info = getCurrentInfo();
                             if (!info.pendingUpdate) {
-                                //dispatch(fetchCardlets(nodeRef));
-                                //YAHOO.Bubbling.fire('metadataRefresh');
+                                dispatch(fetchCardlets(nodeRef));
+                                YAHOO.Bubbling.fire('metadataRefresh');
                             }
                         })
                     }, 2000);

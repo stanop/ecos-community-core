@@ -243,7 +243,7 @@ const cardletMapProps = (state, ownProps) => {
     let convertedProps = {};
 
     for (let prop in props) {
-        convertedProps[prop] = props[prop].replace(evalExpRegexp, function (match, expr) {
+        convertedProps[prop] = props[prop].replace(evalExpRegexp, (match, expr) => {
             try {
                 return eval(expr);
             } catch (e) {
@@ -265,7 +265,7 @@ const cardletMapProps = (state, ownProps) => {
         control: control,
         props: convertedProps,
         nodeRef: nodeRef,
-        modified: state.nodes[nodeRef].baseInfo.modified
+        nodeInfo: state.nodes[nodeRef].baseInfo
     };
 };
 

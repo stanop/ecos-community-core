@@ -32,17 +32,21 @@ let reducersStore = {
     },
 
     [REQUEST_CARDLETS]: function (state = {}, action) {
+        let dataBefore = state.cardletsData || {};
         return {
             ...state,
             cardletsData: {
+                ...dataBefore,
                 isFetching: true
             }
         };
     },
     [RECEIVE_CARDLETS]: function (state = {}, action) {
+        let dataBefore = state.cardletsData || {};
         return {
             ...state,
             cardletsData: {
+                ...dataBefore,
                 isFetching: false,
                 receivedAt: action.receivedAt,
                 cardlets: action.data.cardlets,
@@ -96,15 +100,19 @@ let reducersStore = {
     [RECEIVE_NODE_BASE_INFO]: function (state = {}, action) {
         let nodes = state.nodes || {};
         let nodeInfo = nodes[action.nodeRef] || {};
-        return {
-            ...state,
-            nodes: {
-                ...nodes,
-                [action.nodeRef]: {
-                    ...nodeInfo,
-                    baseInfo: action.data
+        if (nodeInfo.modified !== action.data.modified) {
+            return {
+                ...state,
+                nodes: {
+                    ...nodes,
+                    [action.nodeRef]: {
+                        ...nodeInfo,
+                        baseInfo: action.data
+                    }
                 }
             }
+        } else {
+            return state;
         }
     },
     [CARDLET_LOADED]: function (state = {}, action) {

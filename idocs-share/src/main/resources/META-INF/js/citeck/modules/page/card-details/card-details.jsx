@@ -57,6 +57,10 @@ export function renderPage (elementId, props) {
             store.dispatch(setCardMode(getCurrentCardMode(), registerReducers));
         };
 
+        YAHOO.Bubbling.on('metadataRefresh', () => {
+            store.dispatch(fetchNodeBaseInfo(props.pageArgs.nodeRef));
+        });
+
         ReactDOM.render(React.createElement(CardDetailsRoot, props), document.getElementById(elementId));
     });
 }

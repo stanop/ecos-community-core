@@ -63,11 +63,19 @@ const mapStateToProps = (state, ownProps) => {
 
     let nodeRef = ownProps.nodeRef;
 
-    let caseStatuses = state ? state.caseStatuses : null;
-    let caseStatus = caseStatuses ? caseStatuses[nodeRef] : {
-        isFetching: true,
-        modified: ownProps.modified
-    };
+    let caseStatus;
+    if (ownProps.nodeInfo.pendingUpdate) {
+        caseStatus = {
+            isFetching: true,
+            modified: ownProps.nodeInfo.modified
+        }
+    } else {
+        let caseStatuses = state ? state.caseStatuses : null;
+        caseStatus = caseStatuses ? caseStatuses[nodeRef] : {
+            isFetching: true,
+            modified: ownProps.nodeInfo.modified,
+        };
+    }
 
     return {
         nodeRef: nodeRef,
@@ -89,14 +97,14 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
             let modifiedInStore = statusState.modified || 0;
 
-            if (modifiedInStore === ownProps.modified) {
+            if (modifiedInStore === ownProps.nodeInfo.modified) {
                 return;
             }
 
             dispatch({
                 type: REQUEST_CASE_STATUS,
                 nodeRef,
-                modified: ownProps.modified
+                modified: ownProps.nodeInfo.modified
             });
 
             return fetch('/share/proxy/alfresco/citeck/case/status?nodeRef=' + nodeRef, {
