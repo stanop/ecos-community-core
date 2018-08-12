@@ -11,7 +11,11 @@ export const RECEIVE_CONTROL = 'RECEIVE_CONTROLLER';
 export const REQUEST_NODE_BASE_INFO = 'REQUEST_NODE_BASE_INFO';
 export const RECEIVE_NODE_BASE_INFO = 'RECEIVE_NODE_BASE_INFO';
 
-export const CARDLET_LOADED = 'CARDLET_LOADED';
+export const REQUEST_CARDLET_DATA = 'REQUEST_CARDLET_DATA';
+export const RECEIVE_CARDLET_DATA = 'RECEIVE_CARDLET_DATA';
+export const RECEIVE_ERR_CARDLET_DATA = 'RECEIVE_ERR_CARDLET_DATA';
+
+export const CARD_MODE_LOADED = 'CARD_MODE_LOADED';
 
 export function setCardMode(cardMode, registerReducers) {
 
@@ -21,18 +25,6 @@ export function setCardMode(cardMode, registerReducers) {
 
         if (state.currentCardMode === cardMode) {
             return;
-        }
-
-        let visitedBefore = ((state.visitedCardModes || {})[cardMode]) === true;
-
-        if (!visitedBefore) {
-            let cardlets = state.cardletsData.cardlets;
-            for (let c of cardlets) {
-                let cardletMode = c.cardMode || "default";
-                if (cardletMode === cardMode) {
-                    dispatch(fetchCardletControl(c.control, registerReducers));
-                }
-            }
         }
 
         dispatch({
@@ -92,6 +84,78 @@ export function fetchNodeBaseInfo(nodeRef) {
     }
 }
 
+export function fetchCardletData(cardlet) {
+
+    return (dispatch, getState) => {
+
+        let state = getState();
+        let control = (state.controls || {})[cardlet.control.url];
+
+        if (!control) {
+
+            dispatch({
+                type: REQUEST_CONTROL,
+                control
+            });
+
+            require([cardlet.control.url], function(data) {
+                let controlClass = data.default;
+                dispatch({
+                    type: RECEIVE_CONTROL,
+                    controlClass,
+                    control
+                });
+            });
+
+            control = (state.controls || {})[cardlet.control.url];
+        }
+
+        if (control.isFetching) {
+            require([cardlet.control.url], function () {
+                dispatch(fetchCardletData(cardlet));
+            });
+            return;
+        }
+
+        let controlClass = control.controlClass;
+
+        let cardletsFetchedData = state.cardletsFetchedData || {};
+        let cardletData = cardletsFetchedData[cardlet.id] || {};
+        let nodeState = state.nodes[state.pageArgs.nodeRef] || {};
+
+        let fetchKey = controlClass.constructor.getFetchKey(nodeState, cardletData);
+
+        if (fetchKey != null) {
+
+            if (cardletData.fetchKey !== fetchKey) {
+
+                dispatch({
+                    type: REQUEST_CARDLET_DATA,
+                    cardlet,
+                    fetchKey
+                });
+
+                controlClass.constructor.fetchData(nodeState, cardletData, data => {
+                    dispatch({
+                        type: RECEIVE_CARDLET_DATA,
+                        fetchKey,
+                        cardlet,
+                        data
+                    })
+                }, error => {
+                    console.error(error);
+                    dispatch({
+                        type: RECEIVE_ERR_CARDLET_DATA,
+                        fetchKey,
+                        cardlet,
+                        error
+                    })
+                })
+            }
+        }
+    }
+}
+
 export function fetchCardlets(nodeRef) {
 
     return dispatch => {
@@ -112,44 +176,5 @@ export function fetchCardlets(nodeRef) {
                 data: json
             });
         });
-    }
-}
-
-export function fetchCardletControl(control, registerReducers) {
-
-    return (dispatch, getState) => {
-
-        let state = getState();
-        let existing = (state.controls || {})[control.url];
-
-        if (existing) {
-            return Promise.resolve();
-        }
-
-        dispatch({
-            type: REQUEST_CONTROL,
-            control
-        });
-
-        return new Promise((resolve, reject) => {
-            require([control.url], function(data) {
-                if (data.reducers) {
-                    registerReducers(data.reducers);
-                }
-                dispatch({
-                    type: RECEIVE_CONTROL,
-                    data,
-                    control
-                });
-                resolve(data);
-            });
-        });
-    }
-}
-
-export function cardletLoaded(cardletId) {
-    return {
-        type: CARDLET_LOADED,
-        cardletId
     }
 }

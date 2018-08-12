@@ -53,6 +53,9 @@ export function renderPage (elementId, props) {
 
     Promise.all([cardletsPromise, nodeBaseInfoPromise]).then(() => {
 
+        console.log("[" + new Date() + "] card-details start loading");
+        window.__CARD_DETAILS_START = new Date().getTime();
+
         window.onpopstate = function() {
             store.dispatch(setCardMode(getCurrentCardMode(), registerReducers));
         };

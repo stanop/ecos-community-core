@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 
 import {
     setCardMode,
-    cardletLoaded
+    fetchCardletData
 } from "./actions";
 
 export default function CardDetails(props) {
@@ -82,6 +82,8 @@ const cardletsBodyMapProps = state => {
         'all': {'top': []}
     };
 
+    let loadingState = (state.cardletsData || {}).loadingState || {};
+
     for (let cardlet of state.cardletsData.cardlets) {
         if (cardlet.id === 'card-modes') {
             continue;
@@ -98,33 +100,19 @@ const cardletsBodyMapProps = state => {
                 top: [],
                 left: [],
                 right: [],
-                bottom: []
+                bottom: [],
+                pendingLoading: []
             };
             cardlets[mode] = columns;
         }
         let column = columns[cardlet.column];
         if (column) {
+            if (!loadingState[cardlet.id]) {
+                columns.pendingLoading.push(cardlet);
+            }
             column.push(cardlet);
         }
     }
-
-    let loadingState = (state.cardletsData || {}).loadingState || {};
-
-    let isCardletsLoaded = function (modeCardlets) {
-        if (!modeCardlets) {
-            return true;
-        }
-        for (let columnId in modeCardlets) {
-            if (modeCardlets.hasOwnProperty(columnId)) {
-                for (let cardlet of modeCardlets[columnId]) {
-                    if (!loadingState[cardlet.id]) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    };
 
     let modes = [
         {
@@ -137,13 +125,12 @@ const cardletsBodyMapProps = state => {
         return {
             ...mode,
             isActive: mode.id === state.currentCardMode,
-            loaded: isCardletsLoaded(cardlets[mode.id]),
             visited: state.visitedCardModes[mode.id]
         }
     });
 
     return {
-        cardlets: cardlets,
+        cardlets,
         modes
     };
 };
@@ -187,15 +174,23 @@ function CardletsModeBody (props) {
         className += " hidden";
     }
 
-    let cardlets = props.visited ? (props.cardlets || {}) : {
+    let loaded = props.cardlets.pendingLoading.length > 0;
+
+    if (props.isActive && !loaded) {
+        for (let cardlet of props.cardlets.pendingLoading) {
+            props.fetchCardletData(cardlet);
+        }
+    }
+
+    let cardlets = props.visited && loaded ? (props.cardlets || {}) : {
         top: [],
         left: [],
         right: [],
         bottom: []
     };
 
-    let contentClass = props.loaded ? 'active' : 'not-active';
-    let loadingClass = props.loaded ? 'not-active' : 'active';
+    let contentClass = loaded ? 'active' : 'not-active';
+    let loadingClass = loaded ? 'not-active' : 'active';
 
     return <div id={`card-mode-${props.id}`} className={className}>
         <div className={`card-details-mode-body ${loadingClass} loading-overlay`}>
@@ -218,7 +213,15 @@ function CardletsModeBody (props) {
     </div>
 }
 
-const CardletsModeBodyView = CardletsModeBody;
+/*dispatch(fetchCardletData(c.control, registerReducers));*/
+const CardletsModeBodyView = connect(
+    (state, ownProps) => ownProps,
+    (dispatch) => {
+        return {
+            fetchCardletData: (cardlet) => dispatch(fetchCardletData(cardlet))
+        }
+    }
+)(CardletsModeBody);
 
 /*====CARDLETS_MODE_BODY====*/
 
@@ -239,7 +242,7 @@ const cardletMapProps = (state, ownProps) => {
 
     let nodeRef = state.pageArgs.nodeRef;
 
-    let props = (ownProps || {}).control.props || {};
+    let props = ownProps.control.props || {};
     let convertedProps = {};
 
     for (let prop in props) {
@@ -253,29 +256,20 @@ const cardletMapProps = (state, ownProps) => {
         });
     }
 
-    let controlData = (state.controls || {})[ownProps.control.url];
+    let controlData = state.controls[ownProps.control.url];
     let control;
-    if (controlData && controlData.data) {
-        control = controlData.data.control;
-    } else {
-        control = "div";
-    }
+    control = controlData.controlClass;
 
-    return {
+    return control.constructor.mapStateToProps({
         control: control,
         props: convertedProps,
         nodeRef: nodeRef,
+        data: state.cardletsFetchedData[cardlet.id],
         nodeInfo: state.nodes[nodeRef].baseInfo
-    };
+    });
 };
 
-const cardletMapDispatch = (dispatch, ownProps) => {
-    return {
-        onLoaded: () => dispatch(cardletLoaded(ownProps.id))
-    }
-};
-
-const CardletView = connect(cardletMapProps, cardletMapDispatch)(Cardlet);
+const CardletView = connect(cardletMapProps)(Cardlet);
 const createCardlets = cardlets => (cardlets || []).map(data => <CardletView {...data} />);
 
 /*=========CARDLET==========*/
