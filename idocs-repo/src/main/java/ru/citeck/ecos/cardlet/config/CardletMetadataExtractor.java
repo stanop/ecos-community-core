@@ -23,7 +23,7 @@ public class CardletMetadataExtractor implements MetadataExtractor<Cardlet> {
         metadata.put(CardletModel.PROP_REGION_POSITION, cardlet.getPosition().getOrder());
         metadata.put(CardletModel.PROP_REGION_COLUMN, cardlet.getPosition().getColumn().value());
         metadata.put(CardletModel.PROP_CARD_MODE, cardlet.getPosition().getCardMode());
-        metadata.put(CardletModel.PROP_REGION_ID, cardlet.getId());
+        metadata.put(CardletModel.PROP_REGION_ID, cardlet.getRegionId());
 
         String authorities = cardlet.getAuthorities();
         if (StringUtils.isNotBlank(authorities)) {

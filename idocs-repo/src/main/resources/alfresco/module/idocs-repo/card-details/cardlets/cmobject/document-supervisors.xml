@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
-    <id>document-supervisors</id>
+    <id>common-document-supervisors</id>
+    <regionId>document-supervisors</regionId>
     <allowed-type>{http://www.alfresco.org/model/content/1.0}cmobject</allowed-type>
     <position>
         <column>right</column>
@@ -11,7 +12,7 @@
         <prop name="header">cardlet.document-supervisors.header</prop>
         <prop name="nodeRef">${nodeRef}</prop>
         <prop name="contentType">cm:person</prop>
-        <prop name="childrenUrl">Alfresco.constants.PROXY_URI + "citeck/assocs?nodeRef={nodeRef}&amp;assocTypes=ds:supervisors&amp;addAssocs=false"</prop>
+        <prop name="childrenUrl">Alfresco.constants.PROXY_URI + "citeck/assocs?nodeRef=${nodeRef}&amp;assocTypes=ds:supervisors&amp;addAssocs=false"</prop>
         <prop name="responseSchema">
             { resultsList: 'targets', fields: [
             {key: 'nodeRef'},

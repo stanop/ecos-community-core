@@ -36,6 +36,7 @@ public class CardletNodeDataReader implements NodeDataReader<Cardlet> {
         cardlet.setCondition((String) props.get(CardletModel.PROP_CONDITION));
         cardlet.setControl(createControl(props));
         cardlet.setId((String) props.get(CardletModel.PROP_REGION_ID));
+        cardlet.setRegionId((String) props.get(CardletModel.PROP_REGION_ID));
 
         return cardlet;
     }
@@ -50,7 +51,6 @@ public class CardletNodeDataReader implements NodeDataReader<Cardlet> {
         control.getProp().add(createProp("remoteUrl", SURF_REGION_URL));
 
         control.getProp().add(createProp("regionId", regionId));
-        control.getProp().add(createProp("htmlid", String.valueOf(props.get(ContentModel.PROP_NODE_DBID))));
         control.getProp().add(createProp("pageid", "card-details"));
         control.getProp().add(createProp("theme", "${state.pageArgs.theme}"));
         control.getProp().add(createProp("nodeRef", "${state.pageArgs.nodeRef}"));

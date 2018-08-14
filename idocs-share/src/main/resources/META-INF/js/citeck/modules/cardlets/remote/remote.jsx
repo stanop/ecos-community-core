@@ -11,16 +11,19 @@ export default class RemoteCardlet extends NodeCardlet {
 
     static fetchData(ownProps, onSuccess, onFailure) {
 
+        let htmlid = "cardlet-remote-" + ownProps.id;
+
         let reqParams = Object.assign({}, ownProps.controlProps);
         let remoteUrl = reqParams.remoteUrl;
 
         delete reqParams.remoteUrl;
-        delete reqParams.remoteId;
+        reqParams.htmlid = htmlid;
 
         let fullUrl = remoteUrl + '?' + $.param(reqParams);
 
         let data = {
-            id: ownProps.id
+            id: ownProps.id,
+            htmlid
         };
 
         CiteckUtils.loadHtml({
@@ -48,8 +51,8 @@ export default class RemoteCardlet extends NodeCardlet {
 
     render() {
         let html = this.props.data.htmlText;
-        let htmlId = "cardlet-remote-" + this.props.data.id;
-        return <div id={htmlId} dangerouslySetInnerHTML={{__html: html}} />;
+        let htmlid = this.props.data.htmlid;
+        return <div id={htmlid + '-container'} dangerouslySetInnerHTML={{__html: html}} />;
     }
 };
 

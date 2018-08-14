@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
     <id>current-tasks</id>
+    <regionId>current-tasks</regionId>
     <allowed-type>{http://www.alfresco.org/model/content/1.0}cmobject</allowed-type>
     <position>
         <column>right</column>
@@ -9,7 +10,7 @@
     </position>
     <control url="js/citeck/modules/cardlets/document-children/document-children">
         <prop name="header">cardlet.current-tasks.header</prop>
-        <prop name="childrenUrl">Alfresco.constants.PROXY_URI + "/citeck/tasks-active/document?nodeRef={nodeRef}"
+        <prop name="childrenUrl">Alfresco.constants.PROXY_URI + "/citeck/tasks-active/document?nodeRef=${nodeRef}"
         </prop>
         <prop name="columns">[{key: 'attributes["wfm:taskType"].shortQName', label: Alfresco.util.message("cardlet.current-tasks.task.title"), formatter: Citeck.format.taskTitle()},
             {key: 'attributes["wfm:actors"][0].nodeRef', label: Alfresco.util.message("cardlet.current-tasks.assignee.title"), formatter: Citeck.format.userOrGroup()},

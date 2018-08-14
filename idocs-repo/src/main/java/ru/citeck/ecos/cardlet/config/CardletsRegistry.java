@@ -32,7 +32,7 @@ public class CardletsRegistry implements RepoContentDAO<Cardlet> {
             for (ContentData<Cardlet> cardletData : typeCardlets) {
                 if (cardletData.getData().isPresent()) {
                     Cardlet cardlet = cardletData.getData().get();
-                    String id = cardlet.getId();
+                    String id = cardlet.getRegionId();
                     cardlets.putIfAbsent(id, cardlet);
                 }
             }
@@ -70,6 +70,7 @@ public class CardletsRegistry implements RepoContentDAO<Cardlet> {
 
             Map<QName, Serializable> idKey = new HashMap<>();
             idKey.put(CardletModel.PROP_ID, cardletId);
+            idKey.put(CardletModel.PROP_ALLOWED_TYPE, keys.get(CardletModel.PROP_ALLOWED_TYPE));
             result = repoContentDAO.getContentData(idKey, ignoreWithoutData);
 
             if (result.isEmpty()) {

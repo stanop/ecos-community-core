@@ -36,6 +36,9 @@
         </property>
 	</bean>
 
+    <bean id="ru.citeck.ecos.cardlet.config.CardletMetadataExtractor"
+          class="ru.citeck.ecos.cardlet.config.CardletMetadataExtractor" />
+
 	<bean id="ecos.cardlets.contentDeployer" class="ru.citeck.ecos.content.deploy.ContentDeployer">
 		<property name="artifactType" value="cardlets-content-deployer" />
 		<property name="repoContentDAO" ref="ecos.cardlets.cardletsRegistry" />
@@ -47,9 +50,7 @@
                 <value>{http://www.citeck.ru/model/cardlet/1.0}allowedType</value>
 			</set>
 		</property>
-		<property name="metadataExtractor">
-			<bean class="ru.citeck.ecos.cardlet.config.CardletMetadataExtractor" />
-		</property>
+		<property name="metadataExtractor" ref="ru.citeck.ecos.cardlet.config.CardletMetadataExtractor"/>
 		<property name="locations">
 			<bean factory-bean="resourceResolver" factory-method="getResources">
 				<constructor-arg>

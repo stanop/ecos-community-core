@@ -23,6 +23,7 @@ public class ContentData<T> {
 
     private NodeRef nodeRef;
     private T data;
+    private boolean hasContent = false;
 
     private long lastModified;
     private RepoContentDAOImpl<T> registry;
@@ -51,7 +52,7 @@ public class ContentData<T> {
      */
     public void changeData(Consumer<T> consumer) {
 
-        if (data != null) {
+        if (data != null && hasContent) {
 
             synchronized (this) {
 
@@ -73,7 +74,8 @@ public class ContentData<T> {
             return false;
         }
 
-        if (!updateFromContent() && !updateFromNode()) {
+        hasContent = updateFromContent();
+        if (!hasContent && !updateFromNode()) {
             //content doesn't exists
             data = null;
             lastModified = 0;
