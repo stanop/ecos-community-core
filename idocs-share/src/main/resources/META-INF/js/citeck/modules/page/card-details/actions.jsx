@@ -59,8 +59,9 @@ export function fetchNodeBaseInfo(nodeRef) {
             nodeRef: nodeRef
         });
 
-        return fetch("/share/proxy/alfresco/citeck/node/base-info?nodeRef=" + nodeRef)
-            .then(response => response.json())
+        return fetch("/share/proxy/alfresco/citeck/node/base-info?nodeRef=" + nodeRef, {
+                credentials: 'include'
+            }).then(response => response.json())
             .then(json => {
                 dispatch({
                     type: RECEIVE_NODE_BASE_INFO,
