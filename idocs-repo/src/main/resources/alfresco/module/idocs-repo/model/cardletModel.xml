@@ -31,6 +31,10 @@
 			<parent>dl:dataListItem</parent>
 			<properties>
 
+				<property name="cardlet:id">
+					<type>d:text</type>
+				</property>
+
 				<!-- parameters for mobile version -->
 				<property name="cardlet:availableInMobile">
 					<title>Available in mobile version</title>

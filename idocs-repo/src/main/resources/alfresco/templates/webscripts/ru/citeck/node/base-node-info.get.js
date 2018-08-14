@@ -14,7 +14,7 @@ function main() {
                 Read: node.hasPermission('Read'),
                 Write: node.hasPermission('Write')
             },
-            modified: node.properties['cm:modified'],
+            modified: utils.toISO8601(node.properties['cm:modified']),
             pendingUpdate: updateUtil.isPendingUpdate(node.nodeRef)
         }
 

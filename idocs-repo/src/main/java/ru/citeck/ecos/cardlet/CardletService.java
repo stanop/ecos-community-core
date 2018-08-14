@@ -21,11 +21,12 @@ package ru.citeck.ecos.cardlet;
 import java.util.List;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import ru.citeck.ecos.cardlet.xml.Cardlet;
 
 public interface CardletService {
 
-	public static final String DEFAULT_MODE = "";
-	public static final String ALL_MODES = "all";
+	String DEFAULT_MODE = "";
+	String ALL_MODES = "all";
 
 	/**
 	 * Query card modes for specified object and current user.
@@ -33,16 +34,15 @@ public interface CardletService {
 	 * @param nodeRef nodeRef of object
 	 * @return list of card mode nodeRefs
 	 */
-	public List<NodeRef> queryCardModes(NodeRef nodeRef);
+	List<NodeRef> queryCardModes(NodeRef nodeRef);
 	
 	/**
 	 * Query cardlets for specified object, default card mode and current user.
 	 * 
 	 * @param nodeRef nodeRef of object
-	 * @param cardMode card mode
 	 * @return list of cardlet nodeRefs
 	 */
-	public List<NodeRef> queryCardlets(NodeRef nodeRef);
+	List<Cardlet> queryCardlets(NodeRef nodeRef);
 	
 	/**
 	 * Query cardlets for specified object, specified card mode and current user.
@@ -53,6 +53,6 @@ public interface CardletService {
 	 * @param cardMode name of card mode
 	 * @return list of cardlet nodeRefs
 	 */
-	public List<NodeRef> queryCardlets(NodeRef nodeRef, String cardMode);
+	List<Cardlet> queryCardlets(NodeRef nodeRef, String cardMode);
 
 }

@@ -34,14 +34,21 @@ public class XmlContentDAO<T> implements ContentDAO<T> {
 
     @Override
     public T read(InputStream stream) {
+
         try {
+
             JAXBContext jaxbContext = JAXBContext.newInstance(rootPackage);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             unmarshaller.setSchema(getSchema());
-            JAXBElement jaxbElement = (JAXBElement) unmarshaller.unmarshal(stream);
+
+            Object result = unmarshaller.unmarshal(stream);
+            if (result instanceof JAXBElement) {
+                result = ((JAXBElement) result).getValue();
+            }
             @SuppressWarnings("unchecked")
-            T result = (T) jaxbElement.getValue();
-            return result;
+            T readResult = (T) result;
+            return readResult;
+
         } catch (Exception e) {
             throw new IllegalArgumentException("Can not parse stream", e);
         }

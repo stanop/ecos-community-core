@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
+    <id>common-supplementary-files</id>
+    <regionId>supplementary-files</regionId>
+    <allowed-type>{http://www.citeck.ru/model/content/dms/1.0}hasSupplementaryFiles</allowed-type>
+    <position>
+        <column>right</column>
+        <order>ba5</order>
+        <mobile-order>5</mobile-order>
+    </position>
+    <control url="js/citeck/modules/cardlets/document-children/document-children">
+        <prop name="destination">${nodeRef}</prop>
+        <prop name="header">header.supplementary-files</prop>
+        <prop name="contentType">cm:content</prop>
+        <prop name="assocType">dms:supplementaryFiles</prop>
+        <prop name="childrenUrl">Alfresco.constants.PROXY_URI +
+            "citeck/node/child-assocs?nodeRef=${nodeRef}&amp;assocType=dms:supplementaryFiles"
+        </prop>
+        <prop name="columns">[{key: 'attributes["cm:name"]', label: Alfresco.util.message("doclist.header.name")},
+            {key: 'attributes["cm:content"].size', label: Alfresco.util.message("doclist.header.size"),
+            formatter: Citeck.format.contentFileSize('attributes["cm:content"].size')},
+            {key: 'actions', label: Alfresco.util.message("doclist.header.actions"), formatter:
+            Citeck.format.actions('supplementary-files', 'nodeRef')}]</prop>
+        <prop name="responseSchema">{resultsList: 'nodes', fields: [{key: 'nodeRef'}, {key: 'attributes["cm:name"]'},
+            {key: 'attributes["cm:content"].size'}, {key: 'attributes["cm:content"].size'}]}
+        </prop>
+        <prop name="buttonsInHeader">onPanelButtonUpload</prop>
+        <prop name="twisterKey">supplementary-files</prop>
+    </control>
+</cardlet>

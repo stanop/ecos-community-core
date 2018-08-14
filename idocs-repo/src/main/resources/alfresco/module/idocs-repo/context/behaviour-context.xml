@@ -842,6 +842,18 @@
           class="ru.citeck.ecos.cmmn.behaviour.CaseTemplateContentSyncBehaviour">
     </bean>
 
+    <bean id="ru.citeck.ecos.behavior.cardlet.CardletMetadataSyncBehaviour"
+          class="ru.citeck.ecos.behavior.cardlet.CardletMetadataSyncBehaviour">
+        <property name="contentToPropsFields">
+            <list>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}id</value>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}regionId</value>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}cardMode</value>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}allowedType</value>
+            </list>
+        </property>
+    </bean>
+
     <bean id="ru.citeck.ecos.disablingPersonBehaviour" class="ru.citeck.ecos.behavior.authority.DisablingPersonBehaviour"
           init-method="init">
         <property name="policyComponent" ref="policyComponent"/>

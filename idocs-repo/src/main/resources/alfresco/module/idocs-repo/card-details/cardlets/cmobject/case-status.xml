@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
+    <id>case-status</id>
+    <regionId>case-status</regionId>
+    <allowed-type>{http://www.alfresco.org/model/content/1.0}cmobject</allowed-type>
+    <position>
+        <column>right</column>
+        <order>a31</order>
+        <mobile-order>-1</mobile-order>
+    </position>
+    <control url="js/citeck/modules/cardlets/case-status/case-status" />
+</cardlet>
