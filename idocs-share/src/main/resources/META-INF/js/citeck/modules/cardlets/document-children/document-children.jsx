@@ -1,16 +1,6 @@
 import React from 'react';
 import NodeCardlet from '../node-cardlet';
 
-import 'citeck/components/orgstruct/form-dialogs';
-import 'citeck/components/document-children/button-commands'
-import 'citeck/components/dynamic-tree/error-manager';
-import 'citeck/components/dynamic-tree/hierarchy-model';
-import 'citeck/components/dynamic-tree/cell-formatters';
-import 'citeck/components/dynamic-tree/dynamic-table';
-import 'citeck/components/dynamic-tree/action-renderer';
-import 'citeck/components/document-children/document-children';
-import 'citeck/components/document-children/button-panel';
-
 import {utils as CiteckUtils} from 'js/citeck/modules/utils/citeck';
 
 import 'xstyle!citeck/components/dynamic-tree/dynamic-table.css';
@@ -34,10 +24,21 @@ export default class DocumentChildren extends NodeCardlet {
             'modules/documentlibrary/doclib-actions',
             'components/documentlibrary/actions'], function () {
 
-            onSuccess({
-                controlProps: ownProps.controlProps,
-                htmlId: htmlId,
-                nodeRef: ownProps.nodeRef
+            require(['citeck/components/dynamic-tree/error-manager',
+                'citeck/components/dynamic-tree/hierarchy-model',
+                'citeck/components/dynamic-tree/cell-formatters',
+                'citeck/components/dynamic-tree/dynamic-table',
+                'citeck/components/dynamic-tree/action-renderer',
+                'citeck/components/document-children/document-children',
+                'citeck/components/document-children/button-panel',
+                'citeck/components/document-children/button-commands',
+                'citeck/components/orgstruct/form-dialogs'], function() {
+
+                onSuccess({
+                    controlProps: ownProps.controlProps,
+                    htmlId: htmlId,
+                    nodeRef: ownProps.nodeRef
+                });
             });
         });
     }
