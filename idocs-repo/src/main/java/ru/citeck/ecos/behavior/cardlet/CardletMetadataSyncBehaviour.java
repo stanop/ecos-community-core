@@ -91,7 +91,7 @@ public class CardletMetadataSyncBehaviour extends AbstractBehaviour {
                     } else if (CardletModel.PROP_POSITION_INDEX_IN_MOBILE.equals(field)) {
                         data.getPosition().setMobileOrder(integerOr(value, -1));
                     } else if (CardletModel.PROP_REGION_COLUMN.equals(field)) {
-                        data.getPosition().setColumn(ColumnType.valueOf(stringOrNull(value)));
+                        data.getPosition().setColumn(ColumnType.fromValue(stringOrNull(value)));
                     } else if (CardletModel.PROP_REGION_ID.equals(field)) {
                         data.setRegionId(stringOrNull(value));
                     } else if (CardletModel.PROP_REGION_POSITION.equals(field)) {
