@@ -1,4 +1,3 @@
-
 export const SET_PAGE_ARGS = 'SET_PAGE_ARGS';
 export const SET_CARD_MODE = 'SET_CARD_MODE';
 
@@ -84,74 +83,75 @@ export function fetchNodeBaseInfo(nodeRef) {
     }
 }
 
-export function fetchCardletData(cardlet) {
+export function fetchCardletData(cardletProps) {
 
     return (dispatch, getState) => {
 
         let state = getState();
-        let control = (state.controls || {})[cardlet.control.url];
+        let control = (state.controls || {})[cardletProps.control.url];
 
         if (!control) {
 
             dispatch({
                 type: REQUEST_CONTROL,
-                control
+                control: cardletProps.control
             });
 
-            require([cardlet.control.url], function(data) {
+            require([cardletProps.control.url], function(data) {
                 let controlClass = data.default;
                 dispatch({
                     type: RECEIVE_CONTROL,
                     controlClass,
-                    control
+                    control: cardletProps.control
                 });
             });
 
-            control = (state.controls || {})[cardlet.control.url];
+            state = getState();
+            control = state.controls[cardletProps.control.url];
         }
+
+        let fetchData = (controlClass) => {
+
+            let fetchKey = controlClass.prototype.constructor.getFetchKey(cardletProps);
+            state = getState();
+            let cardletState = (state.cardletsState || {})[cardletProps.id] || {};
+
+            if (fetchKey != null) {
+
+                if (fetchKey !== cardletState.fetchKey) {
+
+                    dispatch({
+                        type: REQUEST_CARDLET_DATA,
+                        cardletProps,
+                        fetchKey
+                    });
+
+                    controlClass.prototype.constructor.fetchData(cardletProps, data => {
+                        dispatch({
+                            type: RECEIVE_CARDLET_DATA,
+                            fetchKey,
+                            cardletProps,
+                            data
+                        })
+                    }, error => {
+                        console.error(error);
+                        dispatch({
+                            type: RECEIVE_ERR_CARDLET_DATA,
+                            fetchKey,
+                            cardletProps,
+                            error
+                        })
+                    })
+                }
+            }
+        };
 
         if (control.isFetching) {
-            require([cardlet.control.url], function () {
-                dispatch(fetchCardletData(cardlet));
+            require([cardletProps.control.url], function (data) {
+                fetchData(data.default);
             });
-            return;
-        }
-
-        let controlClass = control.controlClass;
-
-        let cardletsFetchedData = state.cardletsFetchedData || {};
-        let cardletData = cardletsFetchedData[cardlet.id] || {};
-        let nodeState = state.nodes[state.pageArgs.nodeRef] || {};
-
-        let fetchKey = controlClass.constructor.getFetchKey(nodeState, cardletData);
-
-        if (fetchKey != null) {
-
-            if (cardletData.fetchKey !== fetchKey) {
-
-                dispatch({
-                    type: REQUEST_CARDLET_DATA,
-                    cardlet,
-                    fetchKey
-                });
-
-                controlClass.constructor.fetchData(nodeState, cardletData, data => {
-                    dispatch({
-                        type: RECEIVE_CARDLET_DATA,
-                        fetchKey,
-                        cardlet,
-                        data
-                    })
-                }, error => {
-                    console.error(error);
-                    dispatch({
-                        type: RECEIVE_ERR_CARDLET_DATA,
-                        fetchKey,
-                        cardlet,
-                        error
-                    })
-                })
-            }
+        } else {
+            fetchData(control.controlClass);
         }
     }
 }

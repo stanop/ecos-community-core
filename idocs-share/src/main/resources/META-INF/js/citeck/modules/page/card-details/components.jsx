@@ -1,4 +1,5 @@
 import React from "react";
+import {utils as CiteckUtils} from 'js/citeck/modules/utils/citeck';
 
 import SurfRegion from "../../surf/surf-region";
 import ShareFooter from "../../footer/share-footer";
@@ -9,7 +10,7 @@ import {
     fetchCardletData
 } from "./actions";
 
-export default function CardDetails(props) {
+function CardDetailsImpl(props) {
 
     let pageArgs = props.pageArgs;
 
@@ -22,30 +23,35 @@ export default function CardDetails(props) {
         }}/>
     };
 
+    let headerComponent = <div />;
+    let uploadersComponents = [];
+
+    if (props.anyCardModeLoaded) {
+
+        headerComponent = <SurfRegion args={{
+            regionId: "share-header",
+            scope: "global",
+            chromeless: "true",
+            pageid: "card-details",
+            site: pageArgs.site,
+            theme: pageArgs.theme,
+            cacheAge: 300,
+            userName: props.userName
+        }} />;
+
+        uploadersComponents = [
+            createUploaderRegion('dnd-upload'),
+            createUploaderRegion('file-upload')
+        ];
+    }
+
     return <div>
             <div key="card-details-body" className="sticky-wrapper">
                 <div id="doc3">
-                    <div id="alf-hd">
-                        <SurfRegion args={{
-                            regionId: "share-header",
-                            scope: "global",
-                            chromeless: "true",
-                            pageid: "card-details",
-                            site: pageArgs.site,
-                            theme: pageArgs.theme,
-                            cacheAge: 300,
-                            userName: props.userName
-                        }} />
-                    </div>
+                    <div id="alf-hd">{headerComponent}</div>
                     <div id="bd">
                         <CardletsBodyView {...props} />
-                        {[
-                            createUploaderRegion('html-upload'),
-                            createUploaderRegion('flash-upload'),
-                            createUploaderRegion('dnd-upload'),
-                            createUploaderRegion('archive-and-download'),
-                            createUploaderRegion('file-upload')
-                        ]}
+                        {uploadersComponents}
                     </div>
                 </div>
                 <div className="sticky-push" />
@@ -54,6 +60,15 @@ export default function CardDetails(props) {
         </div>;
 }
 
+const CardDetails = connect((state, ownProps) => {
+    return {
+        ...ownProps,
+        anyCardModeLoaded: !!((state.modesLoadingState || {})['any'])
+    }
+})(CardDetailsImpl);
+
+export default CardDetails;
+
 /*======CARDLETS_BODY=======*/
 
 function CardletsBody(props) {
@@ -61,7 +76,7 @@ function CardletsBody(props) {
     let modes = props.modes;
     let cardlets = props.cardlets;
 
-    return <div>
+    return <div className="cardlets-body">
         {createCardlets(cardlets['all']['top'])}
         <div id="card-details-tabs" className="header-tabs">
             {modes.map(mode => {
@@ -70,7 +85,9 @@ function CardletsBody(props) {
         </div>
         <div>
             {modes.map(mode => {
-                return <CardletsModeBodyView key={`card-mode-body-${mode.id}`} {...mode} cardlets={cardlets[mode.id]} />
+                return <CardletsModeBodyView key={`card-mode-body-${mode.id}`}
+                                             {...mode}
+                                             cardlets={cardlets[mode.id]} />
             })}
         </div>
     </div>;
@@ -82,37 +99,29 @@ const cardletsBodyMapProps = state => {
         'all': {'top': []}
     };
 
-    let loadingState = (state.cardletsData || {}).loadingState || {};
-
     for (let cardlet of state.cardletsData.cardlets) {
         if (cardlet.id === 'card-modes') {
             continue;
         }
-        let mode;
-        if (cardlet.column !== 'top' || cardlet.order > 'm5') {
-            mode = cardlet.cardMode || 'default';
-        } else {
-            mode = 'all'
-        }
+        let mode = cardlet.cardMode;
         let columns = cardlets[mode];
         if (!columns) {
             columns = {
                 top: [],
                 left: [],
                 right: [],
-                bottom: [],
-                pendingLoading: []
+                bottom: []
             };
             cardlets[mode] = columns;
         }
         let column = columns[cardlet.column];
         if (column) {
-            if (!loadingState[cardlet.id]) {
-                columns.pendingLoading.push(cardlet);
-            }
             column.push(cardlet);
         }
     }
+
+    let modesLoadingState = state.modesLoadingState || {};
+    let visitedCardModes = state.visitedCardModes || {};
 
     let modes = [
         {
@@ -125,7 +134,8 @@ const cardletsBodyMapProps = state => {
         return {
             ...mode,
             isActive: mode.id === state.currentCardMode,
-            visited: state.visitedCardModes[mode.id]
+            visited: !!visitedCardModes[mode.id],
+            loaded: !!modesLoadingState[mode.id]
         }
     });
 
@@ -158,7 +168,10 @@ const CardletsModeTabView = connect(
     (state, ownProps) => ownProps,
     (dispatch, ownProps) => {
         return {
-            onClick: () => dispatch(setCardMode(ownProps.id))
+            onClick: () => {
+                CiteckUtils.setURLParameter("mode", ownProps.id);
+                dispatch(setCardMode(ownProps.id))
+            }
         }
     }
 )(CardletsModeTab);
@@ -174,23 +187,15 @@ function CardletsModeBody (props) {
         className += " hidden";
     }
 
-    let loaded = props.cardlets.pendingLoading.length > 0;
-
-    if (props.isActive && !loaded) {
-        for (let cardlet of props.cardlets.pendingLoading) {
-            props.fetchCardletData(cardlet);
-        }
-    }
-
-    let cardlets = props.visited && loaded ? (props.cardlets || {}) : {
+    let cardlets = props.visited ? (props.cardlets || {}) : {
         top: [],
         left: [],
         right: [],
         bottom: []
     };
 
-    let contentClass = loaded ? 'active' : 'not-active';
-    let loadingClass = loaded ? 'not-active' : 'active';
+    let contentClass = props.loaded ? 'active' : 'not-active';
+    let loadingClass = props.loaded ? 'not-active' : 'active';
 
     return <div id={`card-mode-${props.id}`} className={className}>
         <div className={`card-details-mode-body ${loadingClass} loading-overlay`}>
@@ -213,28 +218,28 @@ function CardletsModeBody (props) {
     </div>
 }
 
-/*dispatch(fetchCardletData(c.control, registerReducers));*/
-const CardletsModeBodyView = connect(
-    (state, ownProps) => ownProps,
-    (dispatch) => {
-        return {
-            fetchCardletData: (cardlet) => dispatch(fetchCardletData(cardlet))
-        }
-    }
-)(CardletsModeBody);
+const CardletsModeBodyView = CardletsModeBody;
 
 /*====CARDLETS_MODE_BODY====*/
 
 /*=========CARDLET==========*/
 
-function Cardlet(props) {
+const Cardlet = function (props) {
 
-    return <div className='cardlet'
-                data-available-in-mobile={ props.mobileOrder > -1 }
-                data-position-index-in-mobile={ props.mobileOrder }>
-        <props.control {...props} />
-    </div>;
-}
+    props.fetchData(props);
+
+    let loaded = props.modeLoaded && props.cardletState.data && props.controlClass;
+
+    if (!loaded) {
+        return <div/>
+    } else {
+        return <div className='cardlet'
+                    data-available-in-mobile={props.mobileOrder > -1}
+                    data-position-index-in-mobile={props.mobileOrder}>
+            <props.controlClass {...props.cardletState} />
+        </div>;
+    }
+};
 
 const evalExpRegexp = /\${((?:(?!\${)[\S\s])+?)}/g;
 
@@ -242,11 +247,11 @@ const cardletMapProps = (state, ownProps) => {
 
     let nodeRef = state.pageArgs.nodeRef;
 
-    let props = ownProps.control.props || {};
-    let convertedProps = {};
+    let rawProps = ownProps.control.props || {};
+    let controlProps = {};
 
-    for (let prop in props) {
-        convertedProps[prop] = props[prop].replace(evalExpRegexp, (match, expr) => {
+    for (let prop in rawProps) {
+        controlProps[prop] = rawProps[prop].replace(evalExpRegexp, (match, expr) => {
             try {
                 return eval(expr);
             } catch (e) {
@@ -255,21 +260,28 @@ const cardletMapProps = (state, ownProps) => {
             }
         });
     }
+    let modesLoadingState = state.modesLoadingState || {};
+    let cardletState = (state.cardletsState || {})[ownProps.id] || {};
+    let controlClass = ((state.controls || {})[ownProps.control.url] || {}).controlClass;
 
-    let controlData = state.controls[ownProps.control.url];
-    let control;
-    control = controlData.controlClass;
-
-    return control.constructor.mapStateToProps({
-        control: control,
-        props: convertedProps,
-        nodeRef: nodeRef,
-        data: state.cardletsFetchedData[cardlet.id],
+    return {
+        ...ownProps,
+        modeLoaded: ownProps.cardMode == 'all' || !!modesLoadingState[ownProps.cardMode],
+        cardletState,
+        controlProps,
+        controlClass,
+        nodeRef,
         nodeInfo: state.nodes[nodeRef].baseInfo
-    });
+    };
 };
 
-const CardletView = connect(cardletMapProps)(Cardlet);
+const cardletMapDispatch = (dispatch) => {
+    return {
+        fetchData: (props) => dispatch(fetchCardletData(props))
+    }
+};
+
+const CardletView = connect(cardletMapProps, cardletMapDispatch)(Cardlet);
 const createCardlets = cardlets => (cardlets || []).map(data => <CardletView {...data} />);
 
 /*=========CARDLET==========*/

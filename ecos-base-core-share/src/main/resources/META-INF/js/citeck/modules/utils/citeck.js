@@ -105,21 +105,76 @@ define([
     // -----
 
     Citeck.utils.requireInOrder = function (dependencies, callback) {
-        let scope = this;
-        let orderedRequire = function (dependencies, idx, modules) {
-            if (idx >= dependencies.length) {
-                callback.apply(scope, modules);
-            } else {
-                require([dependencies[idx]], function (module) {
-                    modules.push(module);
-                    orderedRequire(dependencies, idx + 1, modules);
-                });
-            }
-        };
-        orderedRequire(dependencies, 0, []);
+
+        return new Promise((resolve, reject) => {
+
+            let scope = this;
+            let orderedRequire = function (dependencies, idx, modules) {
+                if (idx >= dependencies.length) {
+                    if (callback) {
+                        callback.apply(scope, modules);
+                    }
+                    resolve(modules);
+                } else {
+                    require([dependencies[idx]], function (module) {
+                        modules.push(module);
+                        orderedRequire(dependencies, idx + 1, modules);
+                    });
+                }
+            };
+            orderedRequire(dependencies, 0, []);
+        });
     };
 
-    Citeck.utils.loadHtml = function (url, args, destination, successCallback, failureCallback) {
+    Citeck.utils.loadHtml = function (url, args, htmlDest, successCallback, failureCallback) {
+
+        let config;
+        if (_.isObject(arguments[0])) {
+            config = arguments[0];
+        } else {
+            config = {
+                url: url,
+                args: args,
+                htmlDest: htmlDest,
+                jsDest: null,
+                jsInlineDest: null,
+                cssDest: null,
+                onSuccess: successCallback,
+                onFailure: failureCallback
+            }
+        }
+
+        if (!config.jsInlineDest) {
+            config.jsInlineDest = function (scripts) {
+                for (let i = 0; i < scripts.length; i++) {
+                    try {
+                        eval(scripts[i]);
+                    } catch (e) {
+                        console.error("Exception while eval scripts from loadHtml with config", config, e);
+                        throw e
+                    }
+                }
+            };
+        }
+
+        if (!config.jsDest) {
+            config.jsDest = function (scripts) {
+                return Citeck.utils.requireInOrder(scripts);
+            }
+        }
+
+        if (!config.cssDest) {
+            config.cssDest = function (cssData) {
+                require(cssData);
+            }
+        }
+
+        if (!_.isFunction(config.htmlDest)) {
+            let targetId = config.htmlDest;
+            config.htmlDest = function(text) {
+                $(targetId).html(text);
+            }
+        }
 
         let invokeCallback = function (callback, param) {
             let scope = null;
@@ -141,9 +196,9 @@ define([
             }
         };
 
-        let fullUrl = url + (args ? '?' + $.param(args) : '');
+        let fullUrl = config.url + (config.args ? '?' + $.param(config.args) : '');
 
-        fetch(fullUrl, {
+        return fetch(fullUrl, {
             credentials: 'include'
         }).then(response => {
             return response.text();
@@ -152,7 +207,11 @@ define([
             let scriptSrcRegexp = /<script type="text\/javascript" src="\/share\/res\/(\S+)_[^_]+?\.js"><\/script>/g;
             let jsDependencies = [];
             text = text.replace(scriptSrcRegexp, function (match, jsSrc) {
-                let excludedSources = ["jquery/jquery", "js/citeck/lib/polyfill/babel-polyfill", "js/citeck/lib/polyfill/fetch"];
+                let excludedSources = [
+                    "jquery/jquery",
+                    "js/citeck/lib/polyfill/babel-polyfill",
+                    "js/citeck/lib/polyfill/fetch"
+                ];
                 if (excludedSources.indexOf(jsSrc) == -1) {
                     jsDependencies.push(jsSrc);
                 }
@@ -173,32 +232,27 @@ define([
                 return '';
             });
 
-            require(cssDependencies);
-
             try {
-                if (_.isFunction(destination)) {
-                    destination(text)
+                config.cssDest(cssDependencies);
+                config.htmlDest(text);
+                let promise = config.jsDest(jsDependencies);
+                if (promise) {
+                    promise.then(() => {
+                        config.jsInlineDest(inlineScripts);
+                        invokeCallback(config.onSuccess);
+                    })
                 } else {
-                    $(destination).html(text);
+                    config.jsInlineDest(inlineScripts);
+                    invokeCallback(config.onSuccess);
                 }
-            } catch (e) {
-                console.error("Exception while set html from url: " + url + " with args: ", args, e);
-                throw e
+            } catch(e) {
+                console.error("Error while process html data for config", config, e);
+                throw e;
             }
 
-            Citeck.utils.requireInOrder(jsDependencies, function () {
-                for (let i = 0; i < inlineScripts.length; i++) {
-                    try {
-                        eval(inlineScripts[i]);
-                    } catch (e) {
-                        console.error("Exception while eval scripts from url: " + url + " with args: ", args, e);
-                        throw e
-                    }
-                }
-                invokeCallback(successCallback);
-            });
         }).catch(function (response) {
-            invokeCallback(failureCallback, response);
+            console.error("Fetch error while load html for config", config, response);
+            invokeCallback(config.onFailure, response);
         });
     };
 

@@ -1,18 +1,19 @@
-import { React } from 'react';
+import React from 'react';
 
 export default class NodeCardlet extends React.Component {
 
-    static getFetchKey(nodeState, ownProps) {
-        if (nodeState.baseInfo.pendingUpdate) {
+    static getFetchKey(ownProps) {
+        if (ownProps.nodeInfo.pendingUpdate) {
             return null;
         } else {
-            return nodeState.baseInfo.modified;
+            return ownProps.nodeInfo.modified;
         }
     }
 
-    static fetchData(nodeState, ownProps, onSuccess, onFailure) {
-        if (this.constructor.getFetchUrl) {
-            let url = this.constructor.getFetchUrl(nodeState, ownProps);
+    static fetchData(ownProps, onSuccess, onFailure) {
+        let getFetchUrl = this.prototype.constructor.getFetchUrl;
+        if (getFetchUrl) {
+            let url = getFetchUrl(ownProps);
             fetch(url, { credentials: 'include' })
                 .then(response => { return response.json();})
                 .then(onSuccess)

@@ -7,8 +7,5 @@
         <order>a31</order>
         <mobile-order>-1</mobile-order>
     </position>
-    <control url="js/citeck/modules/cardlets/case-status/case-status">
-        <prop name="nodeRef">${state.pageArgs.nodeRef}</prop>
-    </control>
-    <condition>true</condition>
+    <control url="js/citeck/modules/cardlets/case-status/case-status" />
 </cardlet>

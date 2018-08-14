@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
+    <id>document-supervisors</id>
+    <allowed-type>{http://www.alfresco.org/model/content/1.0}cmobject</allowed-type>
+    <position>
+        <column>right</column>
+        <order>b4</order>
+        <mobile-order>-1</mobile-order>
+    </position>
+    <control url="js/citeck/modules/cardlets/document-children/document-children">
+        <prop name="header">cardlet.document-supervisors.header</prop>
+        <prop name="nodeRef">${nodeRef}</prop>
+        <prop name="contentType">cm:person</prop>
+        <prop name="childrenUrl">Alfresco.constants.PROXY_URI + "citeck/assocs?nodeRef={nodeRef}&amp;assocTypes=ds:supervisors&amp;addAssocs=false"</prop>
+        <prop name="responseSchema">
+            { resultsList: 'targets', fields: [
+            {key: 'nodeRef'},
+            {key: 'attributes["cm:firstName"]'},
+            {key: 'attributes["cm:lastName"]'},
+            {key: 'attributes["cm:userName"]'}
+            ] }
+        </prop>
+        <prop name="columns">
+            [
+            {key: 'attributes["cm:firstName"]', label: Alfresco.util.message("cardlet.document-supervisors.name")},
+            {key: 'attributes["cm:lastName"]', label: Alfresco.util.message("cardlet.document-supervisors.surname")},
+            {key: 'actions', label: '', formatter: Citeck.format.userAssocActions('{nodeRef}', 'ds:supervisors') }
+            ]
+        </prop>
+        <prop name="buttonsInHeader">onPanelButtonAssocsAdd</prop>
+        <prop name="destination">${nodeRef}</prop>
+        <prop name="noElementsMsg">Нет контролеров</prop>
+        <prop name="assocType">ds:supervisors</prop>
+        <prop name="itemTitleProperties">cm:firstName,cm:lastName</prop>
+        <prop name="itemSearchProperties">cm:firstName,cm:lastName</prop>
+        <prop name="itemTitle">[[cm_firstName]] [[cm_lastName]]</prop>
+        <prop name="twisterKey">document-supervisors</prop>
+    </control>
+</cardlet>

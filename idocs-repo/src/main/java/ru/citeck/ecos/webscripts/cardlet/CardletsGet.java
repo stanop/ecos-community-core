@@ -73,10 +73,18 @@ public class CardletsGet extends AbstractWebScript {
         public RespCardlet(Cardlet cardlet) {
             id = cardlet.getId();
             String mode = cardlet.getPosition().getCardMode();
-            cardMode = StringUtils.isNotBlank(mode) ? mode : DEFAULT_MODE;
-            order = cardlet.getPosition().getOrder();
-            mobileOrder = cardlet.getPosition().getMobileOrder().intValue();
             column = cardlet.getPosition().getColumn().value();
+            order = cardlet.getPosition().getOrder();
+
+            boolean isTop = ColumnType.TOP.equals(cardlet.getPosition().getColumn());
+            boolean afterM5 = order.compareTo("m5") > 0;
+            if (!isTop || afterM5) {
+                cardMode = StringUtils.isNotBlank(mode) ? mode : DEFAULT_MODE;
+            } else {
+                cardMode = "all";
+            }
+
+            mobileOrder = cardlet.getPosition().getMobileOrder().intValue();
             control = new RespControl(cardlet.getControl());
         }
     }

@@ -76,7 +76,7 @@ let reducersStore = {
                 ...controls,
                 [action.control.url]: {
                     isFetching: false,
-                    data: action.data
+                    controlClass: action.controlClass
                 }
             }
         };
@@ -118,114 +118,93 @@ let reducersStore = {
         }
     },
     [REQUEST_CARDLET_DATA]: function (state = {}, action) {
-        let cardletsFetchedData = state.cardletsFetchedData || {};
-        let cardletData = cardletsFetchedData[action.cardlet.id] || {};
+        let cardletsState = state.cardletsState || {};
+        let cardletData = cardletsState[action.cardletProps.id] || {};
         return {
             ...state,
-            cardletsFetchedData: {
-                ...cardletsFetchedData,
-                [action.cardlet.id]: {
+            cardletsState: {
+                ...cardletsState,
+                [action.cardletProps.id]: {
                     ...cardletData,
+                    fetchKey: action.fetchKey,
                     isFetching: true
                 }
             }
         }
     },
     [RECEIVE_CARDLET_DATA]: function (state = {}, action) {
-        let cardletsFetchedData = state.cardletsFetchedData || {};
-        let cardletData = cardletsFetchedData[action.cardlet.id] || {};
+        let cardletsState = state.cardletsState || {};
+        let cardletData = cardletsState[action.cardletProps.id] || {};
         return {
             ...state,
-            cardletsFetchedData: {
-                ...cardletsFetchedData,
-                [action.cardlet.id]: {
+            cardletsState: {
+                ...cardletsState,
+                [action.cardletProps.id]: {
                     ...cardletData,
                     isFetching: false,
+                    fetchKey: action.fetchKey,
                     data: action.data
                 }
             },
-            cardModesLoading: updateModesLoading(state, state.cardModesLoading, action.cardlet)
+            ...onCardletLoaded(state, action.cardletProps)
         }
     },
     [RECEIVE_ERR_CARDLET_DATA]: function (state = {}, action) {
-        let cardletsFetchedData = state.cardletsFetchedData || {};
-        let cardletData = cardletsFetchedData[action.cardlet.id] || {};
+        let cardletsState = state.cardletsState || {};
+        let cardletData = cardletsState[action.cardletProps.id] || {};
         return {
             ...state,
-            cardletsFetchedData: {
-                ...cardletsFetchedData,
-                [action.cardlet.id]: {
+            cardletsState: {
+                ...cardletsState,
+                [action.cardletProps.id]: {
                     ...cardletData,
                     isFetching: false,
+                    fetchKey: action.fetchKey,
                     error: action.error
                 }
             },
-            cardModesLoading: updateModesLoading(state, state.cardModesLoading, action.cardlet)
+            ...onCardletLoaded(state, action.cardletProps)
         }
     }
-    /*[CARDLET_LOADED]: function (state = {}, action) {
-        let cardletsData = state.cardletsData || {};
-        let loadingState = cardletsData.loadingState || {};
-        if (loadingState[action.cardletId]) {
-            return state;
-        } else {
-            let date = new Date();
-            console.log("[" + date + "] cardlet " + action.cardletId + " loaded after " + (window.__CARD_DETAILS_START - date.getTime()) + " ms.");
-            return {
-                ...state,
-                cardletsData: {
-                    ...cardletsData,
-                    loadingState: {
-                        ...loadingState,
-                        [action.cardletId]: true
-                    }
-                }
-            }
-        }
-    }*/
 };
 
-function updateCardletLoadingState(cardletsLoadingState = {}, modesLoading = {}, cardlet) {
-    if (!modesLoading[cardlet.cardMode]) {
-        let cardletsLoadingState = Object.assign({}, cardletsLoadingState);
-        let isModeLoaded = function (modeId) {
-            let cardlets = state.cardletsData.cardlets;
-            for (let cardlet of cardlets) {
-                if (cardlet.cardMode === modeId) {
-                    if (!cardletsLoadingState[cardlet.id]) {
-                        return false;
+function onCardletLoaded(state, cardlet) {
+
+    let cardletsLoadingState = state.cardletsLoadingState || {};
+    let modesLoadingState = state.modesLoadingState || {};
+
+    if (!cardletsLoadingState[cardlet.id]) {
+
+        cardletsLoadingState = Object.assign({}, cardletsLoadingState);
+        cardletsLoadingState[cardlet.id] = true;
+
+        if (!modesLoadingState[cardlet.cardMode]) {
+
+            let isModeLoaded = function (modeId) {
+                let cardlets = state.cardletsData.cardlets;
+                for (let cardlet of cardlets) {
+                    if (cardlet.cardMode === modeId) {
+                        if (!cardletsLoadingState[cardlet.id]) {
+                            return false;
+                        }
                     }
                 }
-            }
-            return true;
-        };
-        if (isModeLoaded(cardlet.cardMode)) {
-            return {
-                ...modesLoading,
-                [cardlet.cardMode]: true
+                return true;
             };
-        }
-    }
-    return modesLoading;
-}
 
-/*
-function getModesLoadedState(cardletsData = {}) {
-    let cardletsLoadingState = cardletsData.loadingState || {};
-    let isCardModeLoaded = (modeId) => {
-        let cardlets = cartdletsData.cardlets;
-        for (var i = 0; i < cardlets.length; i++) {
-            if (!cardletsLoadingState[cardlets[i].id]) {
-                return false;
+            if (isModeLoaded(cardlet.cardMode)) {
+                modesLoadingState = Object.assign({}, modesLoadingState);
+                modesLoadingState[cardlet.cardMode] = true;
+                modesLoadingState['any'] = true;
             }
         }
-    };
-    let result = {};
-    for (let mode of cardletsData.cardModes) {
-        result[mode.id] = isCardModeLoaded(mode.id);
     }
-    return result;
-}*/
+
+    return {
+        cardletsLoadingState,
+        modesLoadingState
+    };
+}
 
 export const rootReducer = function (state = {}, action) {
     let reducer = reducersStore[action.type];
