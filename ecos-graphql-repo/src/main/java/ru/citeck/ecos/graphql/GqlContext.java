@@ -35,7 +35,7 @@ public class GqlContext {
     @Getter
     private final MessageService messageService;
 
-    GqlContext(ServiceRegistry serviceRegistry) {
+    public GqlContext(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.namespaceService = serviceRegistry.getNamespaceService();

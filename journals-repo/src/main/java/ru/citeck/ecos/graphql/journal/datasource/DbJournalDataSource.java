@@ -9,6 +9,8 @@ import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
+import ru.citeck.ecos.journals.records.RecordsResult;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import javax.sql.DataSource;
 import java.sql.ResultSetMetaData;
@@ -57,6 +59,20 @@ public class DbJournalDataSource implements JournalDataSource {
 
     protected String sqlFromTemplate(String sqlQueryTemplate, String query, String language) {
         return sqlQueryTemplate;
+    }
+
+    @Override
+    public RecordsResult getIds(GqlContext context,
+                                String query,
+                                String language,
+                                JGqlPageInfoInput pageInfo) {
+        return null;
+    }
+
+    @Override
+    public List<JGqlAttributeValue> getMetadata(GqlContext context,
+                                             List<RemoteRef> remoteRefList) {
+        return null;
     }
 
     @Override

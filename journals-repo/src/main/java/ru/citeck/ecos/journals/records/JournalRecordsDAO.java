@@ -9,8 +9,11 @@ import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
+import ru.citeck.ecos.graphql.MetadataExecutionResult;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
+import ru.citeck.ecos.graphql.journal.JGqlRecordsInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
@@ -29,6 +32,9 @@ public class JournalRecordsDAO {
     private static final String GQL_PARAM_LANGUAGE = "language";
     private static final String GQL_PARAM_PAGE_INFO = "pageInfo";
     private static final String GQL_PARAM_DATASOURCE = "datasource";
+    private static final String GQL_PARAM_REMOTE_REFS = "remoteRefs";
+
+    private static final Integer DEFAULT_PAGE_SIZE = 10;
 
     private static final Pattern FORMATTER_ATTRIBUTES_PATTERN = Pattern.compile(
             "['\"]\\s*?(\\S+?:\\S+?\\s*?(,\\s*?\\S+?:\\S+?\\s*?)*?)['\"]"
@@ -43,7 +49,10 @@ public class JournalRecordsDAO {
     private String recordsListPath;
     private String hasNextPagePath;
     private String totalCountPath;
+    private String skipCountPath;
+    private String maxItemsPath;
 
+    private String recordsMetadataBaseQuery;
     private String recordsBaseQuery;
     private String gqlRecordsIdQuery;
 
@@ -54,10 +63,21 @@ public class JournalRecordsDAO {
                                               String language,
                                               JGqlPageInfoInput pageInfo) {
 
-        String gqlQuery = gqlQueryWithDataByJournalId.computeIfAbsent(journalType.getId(),
-                                                                      id -> generateGqlQueryWithData(journalType));
+        JournalDataSource dataSource = getDataSourceInstance(journalType);
 
-        return executeQuery(journalType, gqlQuery, query, language, pageInfo);
+        if (dataSource.isSupportsSplitLoading()) {
+            GqlContext gqlContext = new GqlContext(serviceRegistry);
+            RecordsResult idSearchResult = dataSource.getIds(gqlContext, query, language, pageInfo);
+            String gqlQuery = gqlQueryWithDataByJournalId.computeIfAbsent(journalType.getId(),
+                    id -> generateGqlQueryWithData(journalType, recordsMetadataBaseQuery));
+            return queryMetadata(journalType, gqlQuery, idSearchResult);
+
+        } else {
+            String gqlQuery = gqlQueryWithDataByJournalId.computeIfAbsent(journalType.getId(),
+                    id -> generateGqlQueryWithData(journalType, recordsBaseQuery));
+
+            return executeQuery(journalType, gqlQuery, query, language, pageInfo);
+        }
     }
 
     public RecordsResult getRecords(JournalType journalType,
@@ -65,11 +85,19 @@ public class JournalRecordsDAO {
                                     String language,
                                     JGqlPageInfoInput pageInfo) {
 
+        JournalDataSource dataSource = getDataSourceInstance(journalType);
+        if (dataSource.isSupportsSplitLoading()) {
+            GqlContext gqlContext = new GqlContext(serviceRegistry);
+            return dataSource.getIds(gqlContext, query, language, pageInfo);
+        }
+
         ExecutionResult result = executeQuery(journalType, gqlRecordsIdQuery, query, language, pageInfo);
 
         List<Map<String, String>> recordsData = null;
         Boolean hasNextPage = null;
         Long totalCount = null;
+        Integer skipCount = null;
+        Integer maxItems = null;
 
         if (result.getData() != null) {
             try {
@@ -85,6 +113,16 @@ public class JournalRecordsDAO {
                 if (totalCountObj instanceof Long) {
                     totalCount = (Long) totalCountObj;
                 }
+
+                Object skipCountObj = propertyUtilsBean.getProperty(result.getData(), skipCountPath);
+                if (skipCountObj instanceof Integer) {
+                    skipCount = (Integer) skipCountObj;
+                }
+
+                Object maxItemsObj = propertyUtilsBean.getProperty(result.getData(), maxItemsPath);
+                if (maxItemsObj instanceof Integer) {
+                    maxItems = (Integer) maxItemsObj;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -99,12 +137,18 @@ public class JournalRecordsDAO {
         if (totalCount == null) {
             totalCount = (long) recordsData.size();
         }
+        if (skipCount == null) {
+            skipCount = 0;
+        }
+        if (maxItems == null) {
+            maxItems = DEFAULT_PAGE_SIZE;
+        }
 
         List<RemoteRef> records = recordsData.stream()
                 .map(entry -> new RemoteRef(entry.get("id")))
                 .collect(Collectors.toList());
 
-        return new RecordsResult(records, hasNextPage, totalCount);
+        return new RecordsResult(records, hasNextPage, totalCount, skipCount, maxItems);
     }
 
     private ExecutionResult executeQuery(JournalType journalType,
@@ -125,10 +169,41 @@ public class JournalRecordsDAO {
         return graphQLService.execute(gqlQuery, params);
     }
 
-    private String generateGqlQueryWithData(JournalType journalType) {
+    private ExecutionResult queryMetadata(JournalType journalType,
+                                          String gqlQuery,
+                                          RecordsResult idSearchResult) {
+
+        List<String> recordIds = new ArrayList<>(idSearchResult.records.size());
+        idSearchResult.records.forEach(item -> recordIds.add(item.toString()));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put(GQL_PARAM_DATASOURCE, journalType.getDataSource());
+        params.put(GQL_PARAM_REMOTE_REFS, new JGqlRecordsInput(recordIds));
+
+        ExecutionResult graphQlResult = graphQLService.execute(gqlQuery, params);
+        Map<String, Object> paginationData = constructPaginationDataMap(idSearchResult);
+        return new MetadataExecutionResult(graphQlResult, paginationData);
+    }
+
+    private Map<String, Object> constructPaginationDataMap(RecordsResult recordsResult) {
+        Map<String, Object> paginationData = new HashMap<>();
+        paginationData.put(MetadataExecutionResult.PAGINATION_MAX_ITEMS_KEY, recordsResult.maxItems);
+        paginationData.put(MetadataExecutionResult.PAGINATION_SKIP_COUNT_KEY, recordsResult.skipCount);
+        paginationData.put(MetadataExecutionResult.PAGINATION_TOTAL_COUNT_KEY, recordsResult.totalCount);
+        paginationData.put(MetadataExecutionResult.PAGINATION_HAS_NEXT_PAGE_KEY, recordsResult.hasNext);
+        return paginationData;
+    }
+
+    private JournalDataSource getDataSourceInstance(JournalType journalType) {
+        String dataSourceBeanId = journalType.getDataSource();
+        QName dataSourceQname = QName.createQName(null, dataSourceBeanId);
+        return (JournalDataSource) serviceRegistry.getService(dataSourceQname);
+    }
+
+    private String generateGqlQueryWithData(JournalType journalType, String baseQuery) {
 
         StringBuilder schemaBuilder = new StringBuilder();
-        schemaBuilder.append(recordsBaseQuery).append(" ");
+        schemaBuilder.append(baseQuery).append(" ");
 
         schemaBuilder.append("fragment recordsFields on JGqlAttributeValue {");
         schemaBuilder.append("id\n");
@@ -252,6 +327,10 @@ public class JournalRecordsDAO {
         this.gqlRecordsIdQuery = recordsBaseQuery + "\nfragment recordsFields on JGqlAttributeValue { id }";
     }
 
+    public void setRecordsMetadataBaseQuery(String recordsMetadataBaseQuery) {
+        this.recordsMetadataBaseQuery = recordsMetadataBaseQuery;
+    }
+
     public void setRecordsListPath(String recordsListPath) {
         this.recordsListPath = recordsListPath;
     }
@@ -262,5 +341,13 @@ public class JournalRecordsDAO {
 
     public void setTotalCountPath(String totalCountPath) {
         this.totalCountPath = totalCountPath;
+    }
+
+    public void setSkipCountPath(String skipCountPath) {
+        this.skipCountPath = skipCountPath;
+    }
+
+    public void setMaxItemsPath(String maxItemsPath) {
+        this.maxItemsPath = maxItemsPath;
     }
 }

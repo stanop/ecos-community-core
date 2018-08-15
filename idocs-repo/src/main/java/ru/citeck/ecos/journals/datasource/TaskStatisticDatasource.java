@@ -22,7 +22,9 @@ import ru.citeck.ecos.graphql.journal.record.attribute.JGqlAttributeMapValue;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.history.HistoryEventType;
+import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.repo.RemoteRef;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.CriteriaTriplet;
 import ru.citeck.ecos.search.SearchCriteria;
@@ -174,6 +176,20 @@ public class TaskStatisticDatasource implements JournalDataSource {
 
         return connection;
 
+    }
+
+    @Override
+    public RecordsResult getIds(GqlContext context,
+                                String query,
+                                String language,
+                                JGqlPageInfoInput pageInfo) {
+        return null;
+    }
+
+    @Override
+    public List<JGqlAttributeValue> getMetadata(GqlContext context,
+                                             List<RemoteRef> remoteRefList) {
+        return null;
     }
 
     private Map<String, Object> getRecord(GqlAlfNode startEvent,
