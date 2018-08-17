@@ -12,13 +12,15 @@ export default class CaseStatus extends NodeCardlet {
     render() {
 
         let props = this.props;
-        let status = this.props.data;
+        let data = this.props.data;
 
-        let loadingClass = props.isFetching !== false ? 'loading' : '';
+        let isLoading = props.isFetching || data.nodePendingUpdate;
+
+        let loadingClass = isLoading !== false ? 'loading' : '';
 
         let statusName = "";
-        if (!props.isFetching) {
-            statusName = status.statusName || 'Без статуса';
+        if (!isLoading) {
+            statusName = data.statusName || 'Без статуса';
         }
 
         return <div id="cardlet-case-status" className="case-status document-details-panel">
