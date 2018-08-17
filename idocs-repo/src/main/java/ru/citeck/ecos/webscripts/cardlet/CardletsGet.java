@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.cardlet.CardletService;
+import ru.citeck.ecos.cardlet.CardletsWithModes;
 import ru.citeck.ecos.cardlet.xml.*;
 import ru.citeck.ecos.model.CardletModel;
 
@@ -22,7 +23,6 @@ import java.util.stream.Collectors;
 public class CardletsGet extends AbstractWebScript {
 
     //========PARAMS========
-    private static final String PARAM_MODE_ID = "mode";
     private static final String PARAM_NODEREF = "nodeRef";
     //=======/PARAMS========
 
@@ -39,13 +39,11 @@ public class CardletsGet extends AbstractWebScript {
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
         NodeRef nodeRef = new NodeRef(req.getParameter(PARAM_NODEREF));
-        String mode = req.getParameter(PARAM_MODE_ID);
 
-        List<Cardlet> cardlets = cardletService.queryCardlets(nodeRef, mode);
-        List<NodeRef> cardModes = cardletService.queryCardModes(nodeRef);
+        CardletsWithModes cardlets = cardletService.queryCardletsWithModes(nodeRef);
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
-        objectMapper.writeValue(res.getOutputStream(), new Response(cardlets, cardModes));
+        objectMapper.writeValue(res.getOutputStream(), new Response(cardlets));
 
         res.setStatus(Status.STATUS_OK);
     }
@@ -55,9 +53,17 @@ public class CardletsGet extends AbstractWebScript {
         public List<RespCardMode> cardModes;
         public List<RespCardlet> cardlets;
 
-        public Response(List<Cardlet> cardlets, List<NodeRef> cardModes) {
-            this.cardModes = cardModes.stream().map(RespCardMode::new).collect(Collectors.toList());
-            this.cardlets = cardlets.stream().map(RespCardlet::new).collect(Collectors.toList());
+        public Response(CardletsWithModes cardlets) {
+            this.cardModes = cardlets
+                    .getModes()
+                    .stream()
+                    .map(RespCardMode::new)
+                    .collect(Collectors.toList());
+            this.cardlets = cardlets
+                    .getCardlets()
+                    .stream()
+                    .map(RespCardlet::new)
+                    .collect(Collectors.toList());
         }
     }
 

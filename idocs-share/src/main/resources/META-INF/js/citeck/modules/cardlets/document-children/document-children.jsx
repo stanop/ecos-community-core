@@ -15,7 +15,7 @@ export default class DocumentChildren extends NodeCardlet {
 
     static fetchData(ownProps, onSuccess, onFailure) {
 
-        let htmlId = 'cardlet-' + ownProps.id + "-document-children";
+        let htmlId = 'card-details-cardlet_' + ownProps.id + "_document-children";
 
         CiteckUtils.requireInOrder([
             'lib/grouped-datatable',

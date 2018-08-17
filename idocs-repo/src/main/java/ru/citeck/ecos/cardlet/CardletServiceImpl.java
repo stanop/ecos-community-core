@@ -20,6 +20,7 @@ package ru.citeck.ecos.cardlet;
 
 import org.alfresco.repo.model.Repository;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -36,8 +37,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.cardlet.config.CardletsRegistry;
 import ru.citeck.ecos.cardlet.xml.Cardlet;
+import ru.citeck.ecos.cardlet.xml.ColumnType;
 import ru.citeck.ecos.model.CardletModel;
-import ru.citeck.ecos.utils.DictionaryUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -64,9 +65,37 @@ import java.util.stream.Collectors;
 
     @Override
     public List<Cardlet> queryCardlets(NodeRef nodeRef, String cardMode) {
+        List<QName> types = getAllNodeTypes(nodeRef);
+        Collection<String> authorities = getAllUserAuthorities();
+        Map<String, Object> conditionModel = buildConditionModel(nodeRef);
+        return queryCardletsImpl(types, authorities, cardMode, conditionModel);
+    }
+
+    @Override
+    public List<NodeRef> queryCardModes(NodeRef nodeRef) {
+        List<QName> types = getAllNodeTypes(nodeRef);
+        Collection<String> authorities = getAllUserAuthorities();
+        Map<String, Object> conditionModel = buildConditionModel(nodeRef);
+        return queryCardModesImpl(types, authorities, conditionModel);
+    }
+
+    @Override
+    public CardletsWithModes queryCardletsWithModes(NodeRef nodeRef) {
 
         List<QName> types = getAllNodeTypes(nodeRef);
         Collection<String> authorities = getAllUserAuthorities();
+        Map<String, Object> conditionModel = buildConditionModel(nodeRef);
+
+        return new CardletsWithModes(
+                queryCardletsImpl(types, authorities, ALL_MODES, conditionModel),
+                queryCardModesImpl(types, authorities, conditionModel)
+        );
+    }
+
+    private List<Cardlet> queryCardletsImpl(List<QName> types,
+                                            Collection<String> authorities,
+                                            String cardMode,
+                                            Map<String, Object> conditionModel) {
 
         if (cardMode == null) {
             cardMode = DEFAULT_MODE;
@@ -75,20 +104,20 @@ import java.util.stream.Collectors;
         }
 
         List<Cardlet> cardlets = cardletsRegistry.getCardlets(types, authorities, cardMode);
-        Map<String, Object> conditionModel = buildConditionModel(nodeRef);
 
         return cardlets.stream()
-                .filter(c -> conditionAllows(c.getCondition(), conditionModel))
-                .sorted(Comparator.comparing(c -> c.getPosition().getOrder()))
+                .filter(c ->
+                    !ColumnType.DISABLED.equals(c.getPosition().getColumn()) &&
+                    conditionAllows(c.getCondition(), conditionModel)
+                ).sorted(Comparator.comparing(c -> c.getPosition().getOrder()))
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<NodeRef> queryCardModes(NodeRef nodeRef) {
-        List<QName> types = getAllNodeTypes(nodeRef);
-        Collection<String> authorities = getAllUserAuthorities();
+    private List<NodeRef> queryCardModesImpl(List<QName> types,
+                                             Collection<String> authorities,
+                                             Map<String, Object> conditionModel) {
+
         Comparator<NodeRef> precedenceComparator = new ScopedObjectsPrecedenceComparator(types);
-        Map<String, Object> conditionModel = buildConditionModel(nodeRef);
 
         // get all card modes
         List<NodeRef> cardModes = queryCardModes(types, authorities);
@@ -160,7 +189,15 @@ import java.util.stream.Collectors;
     }
 
     private List<QName> getAllNodeTypes(NodeRef nodeRef) {
-        return DictionaryUtils.getAllNodeClassNames(nodeRef, nodeService, dictionaryService);
+        List<QName> nodeTypes = new ArrayList<>();
+        QName baseType = nodeService.getType(nodeRef);
+        ClassDefinition typeDef = dictionaryService.getClass(baseType);
+        while (typeDef != null) {
+            nodeTypes.add(typeDef.getName());
+            typeDef = typeDef.getParentClassDefinition();
+        }
+        nodeTypes.addAll(nodeService.getAspects(nodeRef));
+        return nodeTypes;
     }
 
     private Collection<String> getAllUserAuthorities() {

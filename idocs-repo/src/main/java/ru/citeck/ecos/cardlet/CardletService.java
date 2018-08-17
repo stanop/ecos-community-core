@@ -35,7 +35,7 @@ public interface CardletService {
 	 * @return list of card mode nodeRefs
 	 */
 	List<NodeRef> queryCardModes(NodeRef nodeRef);
-	
+
 	/**
 	 * Query cardlets for specified object, default card mode and current user.
 	 * 
@@ -43,7 +43,12 @@ public interface CardletService {
 	 * @return list of cardlet nodeRefs
 	 */
 	List<Cardlet> queryCardlets(NodeRef nodeRef);
-	
+
+	/**
+	 * Query modes data and cardlets for all modes
+	 */
+	CardletsWithModes queryCardletsWithModes(NodeRef nodeRef);
+
 	/**
 	 * Query cardlets for specified object, specified card mode and current user.
 	 * In cardMode param user can pass null, it means default card mode, 
