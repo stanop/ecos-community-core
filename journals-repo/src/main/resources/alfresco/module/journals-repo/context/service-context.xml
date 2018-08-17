@@ -49,6 +49,8 @@
         <property name="recordsListPath" value="journalRecords.records" />
         <property name="totalCountPath" value="journalRecords.totalCount" />
         <property name="hasNextPagePath" value="journalRecords.pageInfo.hasNextPage" />
+        <property name="skipCountPath" value="journalRecords.pageInfo.skipCount" />
+        <property name="maxItemsPath" value="journalRecords.pageInfo.maxItems" />
     </bean>
 
 </beans>

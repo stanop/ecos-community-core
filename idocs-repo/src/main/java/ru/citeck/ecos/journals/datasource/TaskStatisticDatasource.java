@@ -1,6 +1,7 @@
 package ru.citeck.ecos.journals.datasource;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import graphql.ExecutionResult;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceException;
@@ -22,6 +23,7 @@ import ru.citeck.ecos.graphql.journal.record.attribute.JGqlAttributeMapValue;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.history.HistoryEventType;
+import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.repo.RemoteRef;
@@ -179,16 +181,23 @@ public class TaskStatisticDatasource implements JournalDataSource {
     }
 
     @Override
-    public RecordsResult getIds(GqlContext context,
-                                String query,
-                                String language,
-                                JGqlPageInfoInput pageInfo) {
+    public RecordsResult queryIds(GqlContext context,
+                                  String query,
+                                  String language,
+                                  JGqlPageInfoInput pageInfo) {
         return null;
     }
 
     @Override
-    public List<JGqlAttributeValue> getMetadata(GqlContext context,
-                                             List<RemoteRef> remoteRefList) {
+    public List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
+                                                      List<RemoteRef> remoteRefList) {
+        return null;
+    }
+
+    @Override
+    public ExecutionResult queryMetadata(JournalType journalType,
+                                         String gqlQuery,
+                                         List<RemoteRef> remoteRefList) {
         return null;
     }
 

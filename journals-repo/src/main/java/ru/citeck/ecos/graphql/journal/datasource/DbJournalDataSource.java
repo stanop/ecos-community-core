@@ -1,5 +1,6 @@
 package ru.citeck.ecos.graphql.journal.datasource;
 
+import graphql.ExecutionResult;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import ru.citeck.ecos.graphql.GqlContext;
@@ -9,6 +10,7 @@ import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
+import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.repo.RemoteRef;
 
@@ -62,16 +64,23 @@ public class DbJournalDataSource implements JournalDataSource {
     }
 
     @Override
-    public RecordsResult getIds(GqlContext context,
-                                String query,
-                                String language,
-                                JGqlPageInfoInput pageInfo) {
+    public RecordsResult queryIds(GqlContext context,
+                                  String query,
+                                  String language,
+                                  JGqlPageInfoInput pageInfo) {
         return null;
     }
 
     @Override
-    public List<JGqlAttributeValue> getMetadata(GqlContext context,
-                                             List<RemoteRef> remoteRefList) {
+    public List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
+                                                      List<RemoteRef> remoteRefList) {
+        return null;
+    }
+
+    @Override
+    public ExecutionResult queryMetadata(JournalType journalType,
+                                         String gqlQuery,
+                                         List<RemoteRef> remoteRefList) {
         return null;
     }
 

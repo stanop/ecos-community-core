@@ -54,7 +54,7 @@ public class JGqlQueryDefinition {
         return dataSource.map(source -> {
             List<RemoteRef> remoteRefs = new ArrayList<>(remoteIds.getRemoteRefs().size());
             remoteIds.getRemoteRefs().forEach(item -> remoteRefs.add(new RemoteRef(item)));
-            return source.getMetadata(context, remoteRefs);
+            return source.convertToGqlValue(context, remoteRefs);
         });
     }
 

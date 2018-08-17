@@ -9,11 +9,11 @@ import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import ru.citeck.ecos.graphql.AlfGraphQLServiceImpl;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.MetadataExecutionResult;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
-import ru.citeck.ecos.graphql.journal.JGqlRecordsInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
@@ -27,12 +27,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class JournalRecordsDAO {
-
-    private static final String GQL_PARAM_QUERY = "query";
-    private static final String GQL_PARAM_LANGUAGE = "language";
-    private static final String GQL_PARAM_PAGE_INFO = "pageInfo";
-    private static final String GQL_PARAM_DATASOURCE = "datasource";
-    private static final String GQL_PARAM_REMOTE_REFS = "remoteRefs";
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
@@ -67,11 +61,14 @@ public class JournalRecordsDAO {
 
         if (dataSource.isSupportsSplitLoading()) {
             GqlContext gqlContext = new GqlContext(serviceRegistry);
-            RecordsResult idSearchResult = dataSource.getIds(gqlContext, query, language, pageInfo);
+            RecordsResult recordsResult = dataSource.queryIds(gqlContext, query, language, pageInfo);
+
             String gqlQuery = gqlQueryWithDataByJournalId.computeIfAbsent(journalType.getId(),
                     id -> generateGqlQueryWithData(journalType, recordsMetadataBaseQuery));
-            return queryMetadata(journalType, gqlQuery, idSearchResult);
+            ExecutionResult metadata = dataSource.queryMetadata(journalType, gqlQuery, recordsResult.records);
 
+            Map<String, Object> paginationData = constructPaginationDataMap(recordsResult);
+            return new MetadataExecutionResult(metadata, paginationData);
         } else {
             String gqlQuery = gqlQueryWithDataByJournalId.computeIfAbsent(journalType.getId(),
                     id -> generateGqlQueryWithData(journalType, recordsBaseQuery));
@@ -88,7 +85,7 @@ public class JournalRecordsDAO {
         JournalDataSource dataSource = getDataSourceInstance(journalType);
         if (dataSource.isSupportsSplitLoading()) {
             GqlContext gqlContext = new GqlContext(serviceRegistry);
-            return dataSource.getIds(gqlContext, query, language, pageInfo);
+            return dataSource.queryIds(gqlContext, query, language, pageInfo);
         }
 
         ExecutionResult result = executeQuery(journalType, gqlRecordsIdQuery, query, language, pageInfo);
@@ -161,28 +158,12 @@ public class JournalRecordsDAO {
         String validLanguage = StringUtils.isNotBlank(language) ? language : CriteriaAlfNodesSearch.LANGUAGE;
 
         Map<String, Object> params = new HashMap<>();
-        params.put(GQL_PARAM_QUERY, query);
-        params.put(GQL_PARAM_LANGUAGE, validLanguage);
-        params.put(GQL_PARAM_PAGE_INFO, pageInfo);
-        params.put(GQL_PARAM_DATASOURCE, datasource);
+        params.put(AlfGraphQLServiceImpl.GQL_PARAM_QUERY, query);
+        params.put(AlfGraphQLServiceImpl.GQL_PARAM_LANGUAGE, validLanguage);
+        params.put(AlfGraphQLServiceImpl.GQL_PARAM_PAGE_INFO, pageInfo);
+        params.put(AlfGraphQLServiceImpl.GQL_PARAM_DATASOURCE, datasource);
 
         return graphQLService.execute(gqlQuery, params);
-    }
-
-    private ExecutionResult queryMetadata(JournalType journalType,
-                                          String gqlQuery,
-                                          RecordsResult idSearchResult) {
-
-        List<String> recordIds = new ArrayList<>(idSearchResult.records.size());
-        idSearchResult.records.forEach(item -> recordIds.add(item.toString()));
-
-        Map<String, Object> params = new HashMap<>();
-        params.put(GQL_PARAM_DATASOURCE, journalType.getDataSource());
-        params.put(GQL_PARAM_REMOTE_REFS, new JGqlRecordsInput(recordIds));
-
-        ExecutionResult graphQlResult = graphQLService.execute(gqlQuery, params);
-        Map<String, Object> paginationData = constructPaginationDataMap(idSearchResult);
-        return new MetadataExecutionResult(graphQlResult, paginationData);
     }
 
     private Map<String, Object> constructPaginationDataMap(RecordsResult recordsResult) {

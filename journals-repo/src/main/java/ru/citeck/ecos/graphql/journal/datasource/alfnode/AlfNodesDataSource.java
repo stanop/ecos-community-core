@@ -1,14 +1,18 @@
 package ru.citeck.ecos.graphql.journal.datasource.alfnode;
 
 import com.google.common.collect.Lists;
+import graphql.ExecutionResult;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.graphql.AlfGraphQLServiceImpl;
 import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
+import ru.citeck.ecos.graphql.journal.JGqlRecordsInput;
 import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.AlfNodesSearch;
 import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
@@ -16,6 +20,7 @@ import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.journal.record.RecordsUtils;
+import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.repo.RemoteRef;
 
@@ -25,12 +30,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AlfNodesDataSource implements JournalDataSource {
 
     private static final QName RECORDS_UTILS_QNAME = QName.createQName(null, "recordsUtils");
+    private static final QName GRAPHQL_SERVICE_QNAME = QName.createQName(null, "alfGraphQLServiceImpl");
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
     private DictionaryService dictionaryService;
     private NamespaceService namespaceService;
     private RecordsUtils recordsUtils;
+    private GraphQLService graphQLService;
 
     private Map<String, AlfNodesSearch> nodesSearchByLang = new ConcurrentHashMap<>();
 
@@ -39,6 +46,7 @@ public class AlfNodesDataSource implements JournalDataSource {
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.dictionaryService = serviceRegistry.getDictionaryService();
         recordsUtils = (RecordsUtils) serviceRegistry.getService(RECORDS_UTILS_QNAME);
+        graphQLService = (GraphQLService) serviceRegistry.getService(GRAPHQL_SERVICE_QNAME);
     }
 
     @Override
@@ -57,10 +65,10 @@ public class AlfNodesDataSource implements JournalDataSource {
     }
 
     @Override
-    public RecordsResult getIds(GqlContext context,
-                                String query,
-                                String language,
-                                JGqlPageInfoInput pageInfo) {
+    public RecordsResult queryIds(GqlContext context,
+                                  String query,
+                                  String language,
+                                  JGqlPageInfoInput pageInfo) {
 
         String validLanguage = StringUtils.isNotBlank(language) ? language : CriteriaAlfNodesSearch.LANGUAGE;
         JGqlRecordsConnection searchResult = getRecords(context, query, validLanguage, pageInfo);
@@ -103,9 +111,23 @@ public class AlfNodesDataSource implements JournalDataSource {
     }
 
     @Override
-    public List<JGqlAttributeValue> getMetadata(GqlContext context,
-                                                List<RemoteRef> remoteRefList) {
+    public List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
+                                                      List<RemoteRef> remoteRefList) {
         return recordsUtils.wrapRefsToLocalValue(context, remoteRefList);
+    }
+
+    @Override
+    public ExecutionResult queryMetadata(JournalType journalType,
+                                         String gqlQuery,
+                                         List<RemoteRef> remoteRefList) {
+        List<String> recordIds = new ArrayList<>(remoteRefList.size());
+        remoteRefList.forEach(item -> recordIds.add(item.toString()));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put(AlfGraphQLServiceImpl.GQL_PARAM_DATASOURCE, journalType.getDataSource());
+        params.put(AlfGraphQLServiceImpl.GQL_PARAM_REMOTE_REFS, new JGqlRecordsInput(recordIds));
+
+        return graphQLService.execute(gqlQuery, params);
     }
 
     @Override
