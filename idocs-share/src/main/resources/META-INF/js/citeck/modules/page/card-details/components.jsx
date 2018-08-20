@@ -51,6 +51,8 @@ function CardDetailsImpl(props) {
                     <div id="alf-hd">{headerComponent}</div>
                     <div id="bd">
                         <CardletsBodyView {...props} />
+                    </div>
+                    <div id="card-details-uploaders">
                         {uploadersComponents}
                     </div>
                 </div>

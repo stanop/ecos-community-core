@@ -75,9 +75,11 @@ public class CardletsGet extends AbstractWebScript {
         public final String order;
         public final RespControl control;
         public final String cardMode;
+        public final String regionId;
 
         public RespCardlet(Cardlet cardlet) {
             id = cardlet.getId();
+            regionId = cardlet.getRegionId();
             String mode = cardlet.getPosition().getCardMode();
             column = cardlet.getPosition().getColumn().value();
             order = cardlet.getPosition().getOrder();

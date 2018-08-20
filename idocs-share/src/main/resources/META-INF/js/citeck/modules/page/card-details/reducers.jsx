@@ -183,7 +183,7 @@ function onCardletLoaded(state, cardlet) {
             let isModeLoaded = function (modeId) {
                 let cardlets = state.cardletsData.cardlets;
                 for (let cardlet of cardlets) {
-                    if (cardlet.cardMode === modeId) {
+                    if (cardlet.cardMode === modeId && cardlet.regionId !== 'node-view') {//todo: fix node-view loading time
                         if (!cardletsLoadingState[cardlet.id]) {
                             return false;
                         }
