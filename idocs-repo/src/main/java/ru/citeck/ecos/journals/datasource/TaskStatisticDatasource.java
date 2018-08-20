@@ -1,7 +1,6 @@
 package ru.citeck.ecos.journals.datasource;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
-import graphql.ExecutionResult;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceException;
@@ -10,6 +9,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
@@ -20,6 +20,7 @@ import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.record.attribute.JGqlAttributeMapValue;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.history.HistoryEventType;
@@ -45,12 +46,15 @@ import java.util.stream.Collectors;
  */
 public class TaskStatisticDatasource implements JournalDataSource {
 
+    private static final QName GRAPHQL_SERVICE_QNAME = QName.createQName(null, "alfGraphQLServiceImpl");
+
     private static final Log logger = LogFactory.getLog(TaskStatisticDatasource.class);
 
     private SearchService searchService;
     private NamespaceService namespaceService;
     private SearchCriteriaParser criteriaParser;
     private AssociationIndexPropertyRegistry assocsPropsRegistry;
+    private GraphQLService graphQLService;
 
     @Autowired
     public TaskStatisticDatasource(ServiceRegistry serviceRegistry,
@@ -60,6 +64,7 @@ public class TaskStatisticDatasource implements JournalDataSource {
         this.searchService = serviceRegistry.getSearchService();
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.assocsPropsRegistry = assocsPropsRegistry;
+        this.graphQLService = (GraphQLService) serviceRegistry.getService(GRAPHQL_SERVICE_QNAME);
     }
 
     @Override
@@ -181,6 +186,16 @@ public class TaskStatisticDatasource implements JournalDataSource {
     }
 
     @Override
+    public GraphQLService getGraphQLService() {
+        return graphQLService;
+    }
+
+    @Override
+    public String getRemoteDataSourceBeanName() {
+        return null;
+    }
+
+    @Override
     public RecordsResult queryIds(GqlContext context,
                                   String query,
                                   String language,
@@ -195,9 +210,9 @@ public class TaskStatisticDatasource implements JournalDataSource {
     }
 
     @Override
-    public ExecutionResult queryMetadata(JournalType journalType,
-                                         String gqlQuery,
-                                         List<RemoteRef> remoteRefList) {
+    public JournalData queryMetadata(JournalType journalType,
+                                     String gqlQuery,
+                                     RecordsResult recordsResult) {
         return null;
     }
 

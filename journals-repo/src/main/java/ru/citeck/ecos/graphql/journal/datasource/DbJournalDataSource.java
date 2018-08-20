@@ -1,15 +1,16 @@
 package ru.citeck.ecos.graphql.journal.datasource;
 
-import graphql.ExecutionResult;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.repo.RemoteRef;
@@ -59,6 +60,16 @@ public class DbJournalDataSource implements JournalDataSource {
         return connection;
     }
 
+    @Override
+    public GraphQLService getGraphQLService() {
+        return null;
+    }
+
+    @Override
+    public String getRemoteDataSourceBeanName() {
+        return null;
+    }
+
     protected String sqlFromTemplate(String sqlQueryTemplate, String query, String language) {
         return sqlQueryTemplate;
     }
@@ -78,9 +89,9 @@ public class DbJournalDataSource implements JournalDataSource {
     }
 
     @Override
-    public ExecutionResult queryMetadata(JournalType journalType,
-                                         String gqlQuery,
-                                         List<RemoteRef> remoteRefList) {
+    public JournalData queryMetadata(JournalType journalType,
+                                     String gqlQuery,
+                                     RecordsResult recordsResult) {
         return null;
     }
 

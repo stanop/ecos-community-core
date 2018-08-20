@@ -1,15 +1,17 @@
-package ru.citeck.ecos.graphql.journal.record;
+package ru.citeck.ecos.graphql.journal.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JournalData {
 
     private Data data;
-    private Map<String, Object> errors;
-    private Map<String, Object> extensions;
+    private Object errors;
+    private Map<Object, Object> extensions;
 
     public Data getData() {
         return data;
@@ -19,19 +21,19 @@ public class JournalData {
         this.data = data;
     }
 
-    public Map<String, Object> getErrors() {
+    public Object getErrors() {
         return errors;
     }
 
-    public void setErrors(Map<String, Object> errors) {
+    public void setErrors(Object errors) {
         this.errors = errors;
     }
 
-    public Map<String, Object> getExtensions() {
+    public Map<Object, Object> getExtensions() {
         return extensions;
     }
 
-    public void setExtensions(Map<String, Object> extensions) {
+    public void setExtensions(Map<Object, Object> extensions) {
         this.extensions = extensions;
     }
 
@@ -54,15 +56,15 @@ public class JournalData {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JournalRecords {
 
-        private Map<String, Object> records;
+        private List<LinkedHashMap> records;
         private long totalCount;
         private PageInfo pageInfo;
 
-        public Map<String, Object> getRecords() {
+        public List<LinkedHashMap> getRecords() {
             return records;
         }
 
-        public void setRecords(Map<String, Object> records) {
+        public void setRecords(List<LinkedHashMap> records) {
             this.records = records;
         }
 

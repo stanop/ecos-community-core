@@ -4,11 +4,17 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.ExecutionResult;
 import org.alfresco.repo.content.MimetypeMap;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.QName;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.graphql.AlfGraphQLServiceImpl;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlRecordsInput;
+import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
+import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverter;
+import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverterFactory;
 import ru.citeck.ecos.repo.RemoteRef;
 
 import java.io.IOException;
@@ -21,6 +27,9 @@ public class GetRecordsMetadataPost extends AbstractWebScript {
 
     private ObjectMapper objectMapper = new ObjectMapper();
     private GraphQLService graphQLService;
+    private ServiceRegistry serviceRegistry;
+
+    private ResponseConverterFactory responseConverterFactory = new ResponseConverterFactory();
 
     public GetRecordsMetadataPost() {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -29,9 +38,29 @@ public class GetRecordsMetadataPost extends AbstractWebScript {
     @Override
     public void execute(WebScriptRequest webScriptRequest, WebScriptResponse webScriptResponse) throws IOException {
         Request request = parseRequest(webScriptRequest);
+
         ExecutionResult executionResult = executeQuery(request.gqlQuery, request.datasource, request.remoteRefs);
-        objectMapper.writeValue(webScriptResponse.getOutputStream(), executionResult);
+
+        JournalDataSource dataSource = findJournalDataSource(request.datasource);
+        ResponseConverter converter = responseConverterFactory.getConverter(dataSource);
+        JournalData journalData = converter.convert(executionResult, request.additionalData);
+
+        webScriptResponse.setContentEncoding("UTF-8");
+        webScriptResponse.setContentType("application/json;charset=UTF-8");
+        objectMapper.writeValue(webScriptResponse.getOutputStream(), journalData);
         webScriptResponse.setStatus(Status.STATUS_OK);
+    }
+
+    private JournalDataSource findJournalDataSource(String datasource) {
+        QName datasourceQname = QName.createQName(null, datasource);
+        JournalDataSource dataSource;
+        try {
+            dataSource = (JournalDataSource) serviceRegistry.getService(datasourceQname);
+        } catch (Exception e) {
+            throw new WebScriptException(Status.STATUS_BAD_REQUEST,
+                    "Error while finding datasource: " + datasource + ". Error: " + e.getMessage(), e);
+        }
+        return dataSource;
     }
 
     private ExecutionResult executeQuery(String gqlQuery, String datasource, List<RemoteRef> remoteRefs) {
@@ -70,9 +99,15 @@ public class GetRecordsMetadataPost extends AbstractWebScript {
         public String datasource;
         public String gqlQuery;
         public List<RemoteRef> remoteRefs;
+        public Map<String, Object> additionalData;
     }
 
     public void setGraphQLService(GraphQLService graphQLService) {
         this.graphQLService = graphQLService;
     }
+
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+    }
+
 }

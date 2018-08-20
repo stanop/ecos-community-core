@@ -20,6 +20,10 @@ import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.journal.record.RecordsUtils;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
+import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverter;
+import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverterFactory;
+import ru.citeck.ecos.graphql.journal.response.converter.impl.SplitLoadingResponseConverter;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.repo.RemoteRef;
@@ -39,6 +43,7 @@ public class AlfNodesDataSource implements JournalDataSource {
     private RecordsUtils recordsUtils;
     private GraphQLService graphQLService;
 
+    private ResponseConverterFactory responseConverterFactory = new ResponseConverterFactory();
     private Map<String, AlfNodesSearch> nodesSearchByLang = new ConcurrentHashMap<>();
 
     @Autowired
@@ -62,6 +67,16 @@ public class AlfNodesDataSource implements JournalDataSource {
         }
 
         return alfNodesSearch.query(context, query, pageInfo);
+    }
+
+    @Override
+    public GraphQLService getGraphQLService() {
+        return graphQLService;
+    }
+
+    @Override
+    public String getRemoteDataSourceBeanName() {
+        return null;
     }
 
     @Override
@@ -117,17 +132,29 @@ public class AlfNodesDataSource implements JournalDataSource {
     }
 
     @Override
-    public ExecutionResult queryMetadata(JournalType journalType,
-                                         String gqlQuery,
-                                         List<RemoteRef> remoteRefList) {
-        List<String> recordIds = new ArrayList<>(remoteRefList.size());
-        remoteRefList.forEach(item -> recordIds.add(item.toString()));
+    public JournalData queryMetadata(JournalType journalType,
+                                     String gqlQuery,
+                                     RecordsResult recordsResult) {
+        List<String> recordIds = new ArrayList<>(recordsResult.records.size());
+        recordsResult.records.forEach(item -> recordIds.add(item.toString()));
 
         Map<String, Object> params = new HashMap<>();
         params.put(AlfGraphQLServiceImpl.GQL_PARAM_DATASOURCE, journalType.getDataSource());
         params.put(AlfGraphQLServiceImpl.GQL_PARAM_REMOTE_REFS, new JGqlRecordsInput(recordIds));
 
-        return graphQLService.execute(gqlQuery, params);
+        ExecutionResult executionResult = graphQLService.execute(gqlQuery, params);
+        ResponseConverter converter = responseConverterFactory.getConverter(this);
+        Map<String, Object> additionalData = constructPaginationDataMap(recordsResult);
+        return converter.convert(executionResult, additionalData);
+    }
+
+    private Map<String, Object> constructPaginationDataMap(RecordsResult recordsResult) {
+        Map<String, Object> paginationData = new HashMap<>();
+        paginationData.put(SplitLoadingResponseConverter.PAGINATION_MAX_ITEMS_KEY, recordsResult.maxItems);
+        paginationData.put(SplitLoadingResponseConverter.PAGINATION_SKIP_COUNT_KEY, recordsResult.skipCount);
+        paginationData.put(SplitLoadingResponseConverter.PAGINATION_TOTAL_COUNT_KEY, recordsResult.totalCount);
+        paginationData.put(SplitLoadingResponseConverter.PAGINATION_HAS_NEXT_PAGE_KEY, recordsResult.hasNext);
+        return paginationData;
     }
 
     @Override

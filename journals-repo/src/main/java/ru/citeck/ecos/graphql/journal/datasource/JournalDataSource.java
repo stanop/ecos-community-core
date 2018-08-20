@@ -1,11 +1,12 @@
 package ru.citeck.ecos.graphql.journal.datasource;
 
-import graphql.ExecutionResult;
 import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.repo.RemoteRef;
@@ -21,6 +22,10 @@ public interface JournalDataSource {
                                      String language,
                                      JGqlPageInfoInput pageInfo);
 
+    GraphQLService getGraphQLService();
+
+    String getRemoteDataSourceBeanName();
+
     RecordsResult queryIds(GqlContext context,
                            String query,
                            String language,
@@ -29,9 +34,9 @@ public interface JournalDataSource {
     List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
                                                List<RemoteRef> remoteRefList);
 
-    ExecutionResult queryMetadata(JournalType journalType,
-                                  String gqlQuery,
-                                  List<RemoteRef> remoteRefList);
+    JournalData queryMetadata(JournalType journalType,
+                              String gqlQuery,
+                              RecordsResult recordsResult);
 
     default boolean isSupportsSplitLoading() {
         return false;

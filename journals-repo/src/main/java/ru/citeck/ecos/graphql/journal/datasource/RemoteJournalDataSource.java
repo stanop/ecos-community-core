@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import graphql.ExecutionResult;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -20,21 +19,22 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.GqlExecutionResult;
+import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
+import ru.citeck.ecos.graphql.journal.response.converter.impl.SplitLoadingResponseConverter;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.records.RecordsResult;
+import ru.citeck.ecos.providers.ApplicationContextProvider;
 import ru.citeck.ecos.repo.RemoteRef;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class RemoteJournalDataSource implements JournalDataSource {
 
@@ -42,8 +42,9 @@ public class RemoteJournalDataSource implements JournalDataSource {
 
     private static final String REMOTE_GET_ID_METHOD = "/ecos/journals/remote/getId";
     private static final String REMOTE_GET_METADATA_METHOD = "/ecos/journals/remote/getMetadata";
-
     private static final String DEFAULT_REMOTE_DATASOURCE = "ecos.journals.datasource.AlfNodes";
+
+    private GraphQLService graphQLService;
 
     private String username;
     private String password;
@@ -81,6 +82,20 @@ public class RemoteJournalDataSource implements JournalDataSource {
     }
 
     @Override
+    public GraphQLService getGraphQLService() {
+        return graphQLService;
+    }
+
+    @Override
+    public String getRemoteDataSourceBeanName() {
+        if (StringUtils.isNotBlank(remoteDataSourceBeanName)) {
+            return remoteDataSourceBeanName;
+        } else {
+            return DEFAULT_REMOTE_DATASOURCE;
+        }
+    }
+
+    @Override
     public RecordsResult queryIds(GqlContext context,
                                   String query,
                                   String language,
@@ -104,15 +119,15 @@ public class RemoteJournalDataSource implements JournalDataSource {
     }
 
     @Override
-    public ExecutionResult queryMetadata(JournalType journalType,
-                                         String gqlQuery,
-                                         List<RemoteRef> remoteRefList) {
+    public JournalData queryMetadata(JournalType journalType,
+                                     String gqlQuery,
+                                     RecordsResult recordsResult) {
         try {
-            String postData = prepareDataForGettingMetadata(gqlQuery, remoteRefList);
+            String postData = prepareDataForGettingMetadata(gqlQuery, recordsResult);
             URI url = URIBuilder.fromUri(serverHost + REMOTE_GET_METADATA_METHOD).build();
             String responseDataString = postDataToRemote(url, postData);
-            ExecutionResult responseData = objectMapper.readValue(responseDataString, GqlExecutionResult.class); //TODO указать в кого конкретно сериализовать.
-            return appendServerIdToRefs(responseData);
+            JournalData journalData = objectMapper.readValue(responseDataString, JournalData.class);
+            return appendServerIdToRefs(journalData);
         } catch (IOException e) {
             logger.error(e);
         }
@@ -121,12 +136,23 @@ public class RemoteJournalDataSource implements JournalDataSource {
 
     @Override
     public Optional<JGqlAttributeInfo> getAttributeInfo(String attributeName) {
-        return Optional.empty();
+        String beanName = getRemoteDataSourceBeanName();
+        JournalDataSource datasource = (JournalDataSource) ApplicationContextProvider.getBean(beanName);
+        return datasource.getAttributeInfo(attributeName);
+    }
+
+    @Override
+    public List<String> getDefaultAttributes() {
+        String beanName = getRemoteDataSourceBeanName();
+        JournalDataSource datasource = (JournalDataSource) ApplicationContextProvider.getBean(beanName);
+        return datasource.getDefaultAttributes();
     }
 
     @Override
     public boolean isSupportsSplitLoading() {
-        return true;
+        String beanName = getRemoteDataSourceBeanName();
+        JournalDataSource datasource = (JournalDataSource) ApplicationContextProvider.getBean(beanName);
+        return datasource.isSupportsSplitLoading();
     }
 
     private RecordsResult appendServerIdToRefs(RecordsResult prev) {
@@ -148,28 +174,34 @@ public class RemoteJournalDataSource implements JournalDataSource {
     private String prepareDataForGettingIds(String query, String language, JGqlPageInfoInput pageInfo)
             throws JsonProcessingException {
         GetIdsRequest requestData = new GetIdsRequest(query, language, pageInfo);
-        if (StringUtils.isNotBlank(remoteDataSourceBeanName)) {
-            requestData.datasource = remoteDataSourceBeanName;
-        } else {
-            requestData.datasource = DEFAULT_REMOTE_DATASOURCE;
-        }
+        requestData.datasource = getRemoteDataSourceBeanName();
         return objectMapper.writeValueAsString(requestData);
     }
 
-    private ExecutionResult appendServerIdToRefs(ExecutionResult responseData) {
-        return responseData; //TODO: сделать добавление id сервера к нодам, когда буду знать структуру того, что сюда приходит.
+    private JournalData appendServerIdToRefs(JournalData journalData) {
+        List<LinkedHashMap> records = journalData.getData().getJournalRecords().getRecords();
+        for (LinkedHashMap map : records) {
+            String id = (String) map.get("id");
+            RemoteRef remoteRef = new RemoteRef(serverId, id);
+            map.put("id", remoteRef.toString());
+        }
+        return journalData;
     }
 
-    private String prepareDataForGettingMetadata(String gqlQuery,
-                                                 List<RemoteRef> remoteRefList) throws JsonProcessingException {
+    private String prepareDataForGettingMetadata(String gqlQuery, RecordsResult recordsResult)
+            throws JsonProcessingException {
         GetMetadataRequest requestData = new GetMetadataRequest();
-        requestData.remoteRefs = remoteRefList;
+        requestData.remoteRefs = recordsResult.records;
         requestData.gqlQuery = gqlQuery;
-        if (StringUtils.isNotBlank(remoteDataSourceBeanName)) {
-            requestData.datasource = remoteDataSourceBeanName;
-        } else {
-            requestData.datasource = DEFAULT_REMOTE_DATASOURCE;
-        }
+        requestData.datasource = getRemoteDataSourceBeanName();
+
+        Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put(SplitLoadingResponseConverter.PAGINATION_TOTAL_COUNT_KEY, recordsResult.totalCount);
+        additionalData.put(SplitLoadingResponseConverter.PAGINATION_SKIP_COUNT_KEY, recordsResult.skipCount);
+        additionalData.put(SplitLoadingResponseConverter.PAGINATION_MAX_ITEMS_KEY, recordsResult.maxItems);
+        additionalData.put(SplitLoadingResponseConverter.PAGINATION_HAS_NEXT_PAGE_KEY, recordsResult.hasNext);
+        requestData.additionalData = additionalData;
+
         return objectMapper.writeValueAsString(requestData);
     }
 
@@ -200,6 +232,10 @@ public class RemoteJournalDataSource implements JournalDataSource {
         this.remoteDataSourceBeanName = remoteDataSourceBeanName;
     }
 
+    public void setGraphQLService(GraphQLService graphQLService) {
+        this.graphQLService = graphQLService;
+    }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private static class GetIdsRequest {
         public String query;
@@ -221,6 +257,7 @@ public class RemoteJournalDataSource implements JournalDataSource {
         public String datasource;
         public String gqlQuery;
         public List<RemoteRef> remoteRefs;
+        public Map<String, Object> additionalData;
     }
 
 }

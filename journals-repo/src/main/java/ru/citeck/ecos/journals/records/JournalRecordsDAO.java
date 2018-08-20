@@ -8,15 +8,16 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.graphql.AlfGraphQLServiceImpl;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
-import ru.citeck.ecos.graphql.MetadataExecutionResult;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
+import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverter;
+import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverterFactory;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.repo.RemoteRef;
 
@@ -34,7 +35,6 @@ public class JournalRecordsDAO {
             "['\"]\\s*?(\\S+?:\\S+?\\s*?(,\\s*?\\S+?:\\S+?\\s*?)*?)['\"]"
     );
 
-    private GraphQLService graphQLService;
     private ServiceRegistry serviceRegistry;
     private NamespaceService namespaceService;
 
@@ -51,8 +51,9 @@ public class JournalRecordsDAO {
     private String gqlRecordsIdQuery;
 
     private PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();
+    private ResponseConverterFactory responseConverterFactory = new ResponseConverterFactory();
 
-    public ExecutionResult getRecordsWithData(JournalType journalType,
+    public JournalData getRecordsWithData(JournalType journalType,
                                               String query,
                                               String language,
                                               JGqlPageInfoInput pageInfo) {
@@ -65,15 +66,14 @@ public class JournalRecordsDAO {
 
             String gqlQuery = gqlQueryWithDataByJournalId.computeIfAbsent(journalType.getId(),
                     id -> generateGqlQueryWithData(journalType, recordsMetadataBaseQuery));
-            ExecutionResult metadata = dataSource.queryMetadata(journalType, gqlQuery, recordsResult.records);
-
-            Map<String, Object> paginationData = constructPaginationDataMap(recordsResult);
-            return new MetadataExecutionResult(metadata, paginationData);
+            return dataSource.queryMetadata(journalType, gqlQuery, recordsResult);
         } else {
             String gqlQuery = gqlQueryWithDataByJournalId.computeIfAbsent(journalType.getId(),
                     id -> generateGqlQueryWithData(journalType, recordsBaseQuery));
 
-            return executeQuery(journalType, gqlQuery, query, language, pageInfo);
+            ExecutionResult result = executeQuery(journalType, gqlQuery, query, language, pageInfo, dataSource);
+            ResponseConverter responseConverter = responseConverterFactory.getConverter(dataSource);
+            return responseConverter.convert(result, null);
         }
     }
 
@@ -88,7 +88,7 @@ public class JournalRecordsDAO {
             return dataSource.queryIds(gqlContext, query, language, pageInfo);
         }
 
-        ExecutionResult result = executeQuery(journalType, gqlRecordsIdQuery, query, language, pageInfo);
+        ExecutionResult result = executeQuery(journalType, gqlRecordsIdQuery, query, language, pageInfo, dataSource);
 
         List<Map<String, String>> recordsData = null;
         Boolean hasNextPage = null;
@@ -152,27 +152,27 @@ public class JournalRecordsDAO {
                                          String gqlQuery,
                                          String query,
                                          String language,
-                                         JGqlPageInfoInput pageInfo) {
+                                         JGqlPageInfoInput pageInfo,
+                                         JournalDataSource dataSource) {
 
-        String datasource = journalType.getDataSource();
+        GraphQLService graphQLService = dataSource.getGraphQLService();
+
+        String datasourceBeanName;
+        if (dataSource.getRemoteDataSourceBeanName() != null) {
+            datasourceBeanName = dataSource.getRemoteDataSourceBeanName();
+        } else {
+            datasourceBeanName = journalType.getDataSource();
+        }
+
         String validLanguage = StringUtils.isNotBlank(language) ? language : CriteriaAlfNodesSearch.LANGUAGE;
 
         Map<String, Object> params = new HashMap<>();
         params.put(AlfGraphQLServiceImpl.GQL_PARAM_QUERY, query);
         params.put(AlfGraphQLServiceImpl.GQL_PARAM_LANGUAGE, validLanguage);
         params.put(AlfGraphQLServiceImpl.GQL_PARAM_PAGE_INFO, pageInfo);
-        params.put(AlfGraphQLServiceImpl.GQL_PARAM_DATASOURCE, datasource);
+        params.put(AlfGraphQLServiceImpl.GQL_PARAM_DATASOURCE, datasourceBeanName);
 
         return graphQLService.execute(gqlQuery, params);
-    }
-
-    private Map<String, Object> constructPaginationDataMap(RecordsResult recordsResult) {
-        Map<String, Object> paginationData = new HashMap<>();
-        paginationData.put(MetadataExecutionResult.PAGINATION_MAX_ITEMS_KEY, recordsResult.maxItems);
-        paginationData.put(MetadataExecutionResult.PAGINATION_SKIP_COUNT_KEY, recordsResult.skipCount);
-        paginationData.put(MetadataExecutionResult.PAGINATION_TOTAL_COUNT_KEY, recordsResult.totalCount);
-        paginationData.put(MetadataExecutionResult.PAGINATION_HAS_NEXT_PAGE_KEY, recordsResult.hasNext);
-        return paginationData;
     }
 
     private JournalDataSource getDataSourceInstance(JournalType journalType) {
@@ -295,12 +295,6 @@ public class JournalRecordsDAO {
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.namespaceService = serviceRegistry.getNamespaceService();
-    }
-
-    @Autowired
-    @Qualifier("alfGraphQLServiceImpl")
-    public void setGQLService(GraphQLService graphQLService) {
-        this.graphQLService = graphQLService;
     }
 
     public void setRecordsBaseQuery(String recordsBaseQuery) {

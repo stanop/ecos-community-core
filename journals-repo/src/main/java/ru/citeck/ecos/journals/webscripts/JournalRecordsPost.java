@@ -5,6 +5,7 @@ import graphql.ExecutionResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.journals.JournalService;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class JournalRecordsPost extends AbstractWebScript {
         String journalId = req.getParameter(PARAM_JOURNAL_ID);
 
         RequestBody request = objectMapper.readValue(req.getContent().getContent(), RequestBody.class);
-        ExecutionResult result = journalService.getRecordsWithData(
+        JournalData result = journalService.getRecordsWithData(
                 journalId,
                 request.query,
                 request.language,
@@ -40,7 +41,7 @@ public class JournalRecordsPost extends AbstractWebScript {
         );
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
-        objectMapper.writeValue(res.getOutputStream(), result.toSpecification());
+        objectMapper.writeValue(res.getOutputStream(), result);
 
         res.setStatus(Status.STATUS_OK);
     }

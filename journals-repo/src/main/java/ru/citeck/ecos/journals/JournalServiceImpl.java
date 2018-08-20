@@ -35,6 +35,7 @@ import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.invariants.*;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
 import ru.citeck.ecos.journals.records.JournalRecords;
@@ -196,10 +197,10 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public ExecutionResult getRecordsWithData(String journalId,
-                                              String query,
-                                              String language,
-                                              JGqlPageInfoInput pageInfo) {
+    public JournalData getRecordsWithData(String journalId,
+                                          String query,
+                                          String language,
+                                          JGqlPageInfoInput pageInfo) {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }
