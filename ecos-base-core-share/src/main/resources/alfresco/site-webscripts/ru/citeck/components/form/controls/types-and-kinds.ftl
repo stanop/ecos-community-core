@@ -12,13 +12,15 @@
             <span class="viewmode-value"></span>
         </div>
         <script type="text/javascript">
-            new Citeck.widget.TypesAndKindsView("types-and-kinds-field").setOptions({
+            require(['citeck/components/form/controls/types-and-kinds'], function () {
+                new Citeck.widget.TypesAndKindsView("types-and-kinds-field").setOptions({
                     preType: <#if form.data[typeFieldId]??>"${form.data[typeFieldId]?js_string}"<#else>null</#if>,
                     preKind: <#if form.data[kindFieldId]??>"${form.data[kindFieldId]?js_string}"<#else>null</#if>,
 
-                    // hidden fields (hidden: "type", "kind", "both")
+                        // hidden fields (hidden: "type", "kind", "both")
                     hidden: <#if field.control.params.hidden??>"${field.control.params.hidden?js_string}"<#else>null</#if>
-            }).setMessages(${messages});
+                }).setMessages(${messages});
+            });
         </script>
     <#else>
         <div class="first-select-control select-control">
@@ -57,38 +59,41 @@
             </select>
         </div>
         <script type="text/javascript">
-            new Citeck.widget.TypesAndKinds("types-and-kinds-field").setOptions({
-                // root node (rootNode: "nodeRef")
-                rootNode: <#if field.control.params.rootNode??>"${field.control.params.rootNode?js_string}"<#else>null</#if>,
+            require(['citeck/components/form/controls/types-and-kinds'], function () {
 
-                // hidden fields (hidden: "type", "kind", "both")
-                hidden: <#if field.control.params.hidden??>"${field.control.params.hidden?js_string}"<#else>null</#if>,
+                new Citeck.widget.TypesAndKinds("types-and-kinds-field").setOptions({
+                    // root node (rootNode: "nodeRef")
+                    rootNode: <#if field.control.params.rootNode??>"${field.control.params.rootNode?js_string}"<#else>null</#if>,
 
-                // mandatory fields. (mandatory: "type", "kind", "both")
-                mandatory: <#if field.control.params.mandatory??>"${field.control.params.mandatory?js_string}"<#else>null</#if>,
+                    // hidden fields (hidden: "type", "kind", "both")
+                    hidden: <#if field.control.params.hidden??>"${field.control.params.hidden?js_string}"<#else>null</#if>,
 
-                // include blank before options (blank: "type", "kind", "both")
-                blank: <#if field.control.params.blank??>"${field.control.params.blank?js_string}"<#else>null</#if>,
+                    // mandatory fields. (mandatory: "type", "kind", "both")
+                    mandatory: <#if field.control.params.mandatory??>"${field.control.params.mandatory?js_string}"<#else>null</#if>,
 
-                // lock element of type (fixedTypeOption: "nodeRef")
-                fixedTypeOption: <#if field.control.params.fixedTypeOption??>"${field.control.params.fixedTypeOption?js_string}"<#else>null</#if>,
+                    // include blank before options (blank: "type", "kind", "both")
+                    blank: <#if field.control.params.blank??>"${field.control.params.blank?js_string}"<#else>null</#if>,
 
-                // lock element of kind(fixedKindOption: "nodeRef")
-                fixedKindOption: <#if field.control.params.fixedKindOption??>"${field.control.params.fixedKindOption?js_string}"<#else>null</#if>,
+                    // lock element of type (fixedTypeOption: "nodeRef")
+                    fixedTypeOption: <#if field.control.params.fixedTypeOption??>"${field.control.params.fixedTypeOption?js_string}"<#else>null</#if>,
 
-                // list of types (onlyTypes: "noderef,noderef...")
-                onlyTypes: <#if field.control.params.onlyTypes??>"${field.control.params.onlyTypes?js_string}"<#else>null</#if>,
+                    // lock element of kind(fixedKindOption: "nodeRef")
+                    fixedKindOption: <#if field.control.params.fixedKindOption??>"${field.control.params.fixedKindOption?js_string}"<#else>null</#if>,
 
-                // list of kinds (onlyKind: "noderef,noderef...")
-                onlyKinds: <#if field.control.params.onlyKinds??>"${field.control.params.onlyKinds?js_string}"<#else>null</#if>,
+                    // list of types (onlyTypes: "noderef,noderef...")
+                    onlyTypes: <#if field.control.params.onlyTypes??>"${field.control.params.onlyTypes?js_string}"<#else>null</#if>,
 
-                // recurse search and view (recurse: "true" or "false")
-                recurse: <#if field.control.params.recurse??>"${field.control.params.recurse?js_string}"<#else>null</#if>,
+                    // list of kinds (onlyKind: "noderef,noderef...")
+                    onlyKinds: <#if field.control.params.onlyKinds??>"${field.control.params.onlyKinds?js_string}"<#else>null</#if>,
 
-                // For Edit Form
-                preType: <#if form.data[typeFieldId]??>"${form.data[typeFieldId]?js_string}"<#else>null</#if>,
-                preKind: <#if form.data[kindFieldId]??>"${form.data[kindFieldId]?js_string}"<#else>null</#if>
-            }).setMessages(${messages});
+                    // recurse search and view (recurse: "true" or "false")
+                    recurse: <#if field.control.params.recurse??>"${field.control.params.recurse?js_string}"<#else>null</#if>,
+
+                    // For Edit Form
+                    preType: <#if form.data[typeFieldId]??>"${form.data[typeFieldId]?js_string}"<#else>null</#if>,
+                    preKind: <#if form.data[kindFieldId]??>"${form.data[kindFieldId]?js_string}"<#else>null</#if>
+                }).setMessages(${messages});
+            });
         </script>
     </#if>
 </div>

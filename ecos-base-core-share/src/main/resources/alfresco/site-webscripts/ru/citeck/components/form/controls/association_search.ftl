@@ -217,6 +217,8 @@
         </#if>
     </#if>
 
+require(['citeck/components/form/citeck-object-finder'], function() {
+
     function getFilter() {
         var contractorType = '${field.control.params.contractorType!""}';
         return  'name!_!!_!contractorType!_!' + contractorType + '!_!';
@@ -272,4 +274,5 @@
     }).setMessages(
         ${messages}
     );
+});
 </#macro>

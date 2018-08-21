@@ -25,6 +25,8 @@
  */
 (function()
 {
+    require(['xstyle!citeck/components/form/citeck-object-finder.css']);
+
     /**
      * YUI Library aliases
      */

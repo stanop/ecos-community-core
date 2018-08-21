@@ -13,7 +13,7 @@
 <#assign params = field.control.params />
 <#assign valueField = params.valueFieldName!"name" />
 
-(function() {
+require(['citeck/components/form/select'], function() {
 	var select = new Alfresco.SelectControl("${fieldHtmlId}").setOptions({
 		optionsUrl: "/share/proxy/alfresco/api/classesWithFullQname?cf=type",
 		mode: "${form.mode}",
@@ -27,7 +27,7 @@
 		<#if params.requestParam??>requestParam: "${params.requestParam}",</#if>
 		<#if params.resultsList??>resultsList: "${params.resultsList}",</#if>
 	}).setMessages(${messages});
-})();
+});
 //]]></script>
 
 <@selectFieldHTML "${fieldHtmlId}" field/>
