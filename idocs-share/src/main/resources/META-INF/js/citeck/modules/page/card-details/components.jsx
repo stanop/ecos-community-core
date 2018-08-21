@@ -45,21 +45,23 @@ function CardDetailsImpl(props) {
         ];
     }
 
-    return <div>
+    return (
+        <div id='card-details-container'>
             <div key="card-details-body" className="sticky-wrapper">
                 <div id="doc3">
                     <div id="alf-hd">{headerComponent}</div>
                     <div id="bd">
                         <CardletsBodyView {...props} />
                     </div>
-                    <div id="card-details-uploaders">
+                    <div id="card-details-uploaders" style={{display: 'none'}}>
                         {uploadersComponents}
                     </div>
                 </div>
                 <div className="sticky-push" />
             </div>
             <ShareFooter key="card-details-footer" className="sticky-footer" theme={pageArgs.theme} />
-        </div>;
+        </div>
+    );
 }
 
 const CardDetails = connect((state, ownProps) => {
@@ -248,12 +250,18 @@ const evalExpRegexp = /\${((?:(?!\${)[\S\s])+?)}/g;
 const cardletMapProps = (state, ownProps) => {
 
     let nodeRef = state.pageArgs.nodeRef;
+    let theme = state.pageArgs.theme;
 
     let rawProps = ownProps.control.props || {};
     let controlProps = {};
 
     for (let prop in rawProps) {
         controlProps[prop] = rawProps[prop].replace(evalExpRegexp, (match, expr) => {
+            if (expr === 'nodeRef') {
+                return nodeRef;
+            } else if (expr === 'theme') {
+                return theme;
+            }
             try {
                 return eval(expr);
             } catch (e) {

@@ -7,6 +7,7 @@
     <#assign el=args.htmlid?js_string>
     <#assign pickerId = el + "-picker">
 
+<div style="display: none">
 <div id="${pickerId}" class="assocs-picker yui-panel yui-module yui-overlay dynamic-tree-picker" style="visibility: hidden; width: 100%;">
     <div id="${pickerId}-head" class="hd" style="cursor: move;">${msg("create-button.label")}</div>
     <div id="${pickerId}-body" class="bd">
@@ -56,6 +57,7 @@
         </div>
         <form name="frm_${pickerId}"></form>
     </div>
+</div>
 </div>
 
 <div id="${el}" class="document-assocs document-details-panel">

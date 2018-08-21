@@ -52,8 +52,8 @@ public class CardletNodeDataReader implements NodeDataReader<Cardlet> {
 
         control.getProp().add(createProp("regionId", regionId));
         control.getProp().add(createProp("pageid", "card-details"));
-        control.getProp().add(createProp("theme", "${state.pageArgs.theme}"));
-        control.getProp().add(createProp("nodeRef", "${state.pageArgs.nodeRef}"));
+        control.getProp().add(createProp("theme", "${theme}"));
+        control.getProp().add(createProp("nodeRef", "${nodeRef}"));
         control.getProp().add(createProp("scope", "page"));
 
         return control;
