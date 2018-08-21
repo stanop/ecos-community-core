@@ -28,6 +28,7 @@ var logger = Alfresco.logger,
         noneActionGroupId = "none",
         buttonsActionGroupId = "buttons",
         defaultActionGroupId = "injournal",
+        defaultActionFormatter = null,
         customRecordLoader = ko.observable(),
         BulkLoader = Citeck.utils.BulkLoader,
         journalsListIdRegexp = new RegExp('^([^-]+)(-(.+))?-([^-]+)$'),
@@ -1052,6 +1053,7 @@ JournalsWidget
 
     // datatable interface: fields, columns, records
     .shortcut('actionGroupId', 'journal.type.options.actionGroupId', defaultActionGroupId)
+    .shortcut('actionFormatter', 'journal.type.options.actionFormatter', defaultActionFormatter)
     .computed('columns', function() {
         var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'),
                 recordUrl = this.recordUrl(), linkSupplied = recordUrl == null,
@@ -1132,7 +1134,14 @@ JournalsWidget
         // init action column. Not for mobile version
         if (!Citeck.mobile.isMobileDevice() && !Citeck.mobile.hasTouchEvent()) {
             var actionGroupId = this.actionGroupId();
-            if(actionGroupId == buttonsActionGroupId) {
+            var actionFormatter = this.actionFormatter();
+            if (actionFormatter) {
+                columns.unshift(new ActionsColumn({
+                    id: 'actions',
+                    label: this.msg("column.actions"),
+                    formatter: formatters.jsActionsFormatter(actionFormatter)
+                }));
+            } else if(actionGroupId == buttonsActionGroupId) {
                 columns.unshift(new ActionsColumn({
                     id: 'actions',
                     label: this.msg("column.actions"),
