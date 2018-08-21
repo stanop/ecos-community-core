@@ -1,7 +1,7 @@
 <#assign controlId = fieldHtmlId + "-cntrl">
 
 <script type="text/javascript">//<![CDATA[
-    (function() {
+    require(['citeck/components/form/controls/number-richsearch'], function() {
         var numberRichSearch = new Citeck.NumberRichSearch("${fieldHtmlId}").setOptions({
             multipleSelectMode: ${field.endpointMany?string},
             field: "${field.name}",
@@ -20,7 +20,7 @@
         }).setMessages(
             ${messages}
         );
-    })();
+    });
 //]]></script>
 
 

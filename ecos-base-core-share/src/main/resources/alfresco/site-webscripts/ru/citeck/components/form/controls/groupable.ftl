@@ -14,7 +14,7 @@
 </#if>
 
 <script type="text/javascript">//<![CDATA[
-(function()
+require(['citeck/components/form/controls/groupable'], function()
 {
 	new Citeck.widget.Groupable("${fieldHtmlId}").setOptions({
 		itemsFieldId: "${targetField}",
@@ -27,7 +27,7 @@
 	}).setMessages(
 		${messages}
 	);
-})();
+});
 //]]></script>
 
 <#-- for view mode we render target hidden field, because value is read from it -->

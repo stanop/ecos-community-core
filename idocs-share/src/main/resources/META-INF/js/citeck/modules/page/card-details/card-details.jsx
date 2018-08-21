@@ -7,6 +7,7 @@ import CardDetails from './components';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'js/citeck/lib/redux-thunk';
+import 'js/citeck/modules/utils/yui-panel-lazy-patch';
 
 import {
     rootReducer,
@@ -20,6 +21,7 @@ import {
     fetchNodeBaseInfo
 } from "./actions";
 
+require("xstyle!js/aikau/1.0.63/alfresco/core/css/Core.css");
 require("xstyle!citeck/components/card/card-details.css");
 
 const DEFAULT_CARD_MODE = "default";
@@ -53,7 +55,6 @@ export function renderPage (elementId, props) {
 
     Promise.all([cardletsPromise, nodeBaseInfoPromise]).then(() => {
 
-        console.log("[" + new Date() + "] card-details start loading");
         window.__CARD_DETAILS_START = new Date().getTime();
 
         window.onpopstate = function() {

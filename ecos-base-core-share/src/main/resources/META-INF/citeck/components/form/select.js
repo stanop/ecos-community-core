@@ -22,6 +22,8 @@
  */
 require(['js/citeck/modules/utils/citeck'], (function() {
 
+	require(['xstyle!citeck/components/form/select.css']);
+
 	var Dom = YAHOO.util.Dom;
 
 	Alfresco.SelectControl = function Alfresco_SelectControl(htmlId) {

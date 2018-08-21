@@ -1,6 +1,6 @@
 
 <script type="text/javascript">//<![CDATA[
-(function () {
+require(['citeck/components/form/controls/js-variable-value'], function () {
 
     new Citeck.JSVariableField("${fieldHtmlId}").setOptions({
     <#if field.control.params.variableName??>
@@ -9,7 +9,7 @@
         formMode: "${form.mode}"
     });
 
-})();
+});
 //]]></script>
 
 

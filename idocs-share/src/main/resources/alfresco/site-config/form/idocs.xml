@@ -1,13 +1,5 @@
 <alfresco-config>
 
-    <config>
-        <forms>
-            <dependencies>
-                <js src="/citeck/components/form/date-picker-custom.js"/>
-            </dependencies>
-        </forms>
-    </config>
-
     <config evaluator="node-type" condition="idocs:powerOfAttorney">
         <forms>
             <form>

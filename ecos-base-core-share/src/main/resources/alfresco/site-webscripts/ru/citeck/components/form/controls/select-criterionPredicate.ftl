@@ -9,7 +9,7 @@
 
 -->
 
-(function() {
+require(['citeck/components/form/select'], function() {
 
     // Definition the QName
     var qnameFull = null;
@@ -63,7 +63,7 @@
         failureCallback: {},
         execScripts: true
     });
-})();
+});
 //]]></script>
 
 <@selectFieldHTML "${fieldHtmlId}" field/>

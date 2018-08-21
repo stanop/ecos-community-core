@@ -17,7 +17,9 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 define(['lib/knockout', 'citeck/utils/knockout.utils'], function(ko, koutils) {
-	
+
+require(['xstyle!citeck/components/form/controls/passports.css']);
+
 var logger = Alfresco.logger,
 	PopupManager = Alfresco.util.PopupManager,
 	lazyLoad = Citeck.utils.lazyLoad,

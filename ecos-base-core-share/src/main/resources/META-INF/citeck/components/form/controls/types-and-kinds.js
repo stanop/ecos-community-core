@@ -18,6 +18,8 @@
  */
 (function() {
 
+    require(['xstyle!citeck/components/form/controls/types-and-kinds.css']);
+
     if(typeof Citeck == "undefined") Citeck = {};
     if(typeof Citeck.widget == "undefined") Citeck.widget = {};
 

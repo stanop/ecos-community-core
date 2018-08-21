@@ -56,7 +56,7 @@
 </#if>
 
 <script type="text/javascript">//<![CDATA[
-(function() {
+require(['citeck/components/form/controls/select-richsearch'], function() {
     new Citeck.SelectRichSearch("${fieldHtmlId}").setOptions({
         field: "${field.name}",
     <#if field.mandatory??>
@@ -93,7 +93,7 @@
         }).setMessages(${messages});
     }
 
-})();
+});
 //]]></script>
 
 <#assign is_property = field.type == "property" />

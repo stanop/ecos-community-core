@@ -5,21 +5,22 @@
 <script type="text/javascript">//<![CDATA[
 
 (function() {
-    var selectWithEdit = new Alfresco.SelectWithEditControl("${fieldHtmlId}").setOptions({
-        optionsUrl: "${params.optionsUrl}",
-        mode: "${form.mode}",
-        <#if field.value??>originalValue: "${field.value?js_string}",</#if>
-        <#if params.selectedItem??>selectedItem: "${params.selectedItem}",</#if>
-        <#if params.responseType??>responseType: ${params.responseType},</#if>
-        <#if params.responseSchema??>responseSchema: ${params.responseSchema},</#if>
-        <#if params.requestParam??>requestParam: "${params.requestParam}",</#if>
-        <#if params.titleField??>titleField: "${params.titleField}",</#if>
-        <#if params.valueField??>valueField: "${params.valueField}",</#if>
-        <#if params.resultsList??>resultsList: "${params.resultsList}",</#if>
-    }).setMessages(${messages});
+    require(['citeck/components/form/selectWithEdit'], function () {
+        var selectWithEdit = new Alfresco.SelectWithEditControl("${fieldHtmlId}").setOptions({
+            optionsUrl: "${params.optionsUrl}",
+            mode: "${form.mode}",
+            <#if field.value??>originalValue: "${field.value?js_string}",</#if>
+            <#if params.selectedItem??>selectedItem: "${params.selectedItem}",</#if>
+            <#if params.responseType??>responseType: ${params.responseType},</#if>
+            <#if params.responseSchema??>responseSchema: ${params.responseSchema},</#if>
+            <#if params.requestParam??>requestParam: "${params.requestParam}",</#if>
+            <#if params.titleField??>titleField: "${params.titleField}",</#if>
+            <#if params.valueField??>valueField: "${params.valueField}",</#if>
+            <#if params.resultsList??>resultsList: "${params.resultsList}",</#if>
+        }).setMessages(${messages});
 
-    Citeck.forms.displayConditional("other-editbox-field", "${field.id}_select == 'other'", ["${fieldHtmlId}-select"]);
-
+        Citeck.forms.displayConditional("other-editbox-field", "${field.id}_select == 'other'", ["${fieldHtmlId}-select"]);
+    });
 })();
 
 //]]></script>

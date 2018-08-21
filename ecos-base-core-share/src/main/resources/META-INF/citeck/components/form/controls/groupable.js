@@ -18,6 +18,8 @@
  */
 (function() {
 
+require(['xstyle!citeck/components/form/controls/groupable.css']);
+
 Citeck = typeof Citeck != "undefined" ? Citeck : {};
 Citeck.util = Citeck.util || {};
 Citeck.widget = Citeck.widget || {};
