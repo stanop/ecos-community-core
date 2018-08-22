@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
+import ru.citeck.ecos.model.ConfirmWorkflowModel;
 import ru.citeck.ecos.workflow.listeners.AbstractTaskListener;
 import ru.citeck.ecos.workflow.listeners.ListenerUtils;
 
@@ -14,14 +15,13 @@ import java.util.Objects;
 /**
  * @author Andrey Platunov on 25.04.2018
  */
-public class SetLastConfirmOutcomeToOrdersListener extends AbstractTaskListener {
-
-    private QName TYPE_CONFIRM_TASK = QName.createQName("http://www.citeck.ru/model/workflow/confirm/1.0", "confirmTask");
+public class SetLastTasksOutcomeToOrdersListener extends AbstractTaskListener {
 
     private NodeService nodeService;
     private NamespaceService namespaceService;
 
-    private QName fieldToSet;
+    private QName fieldToSetConfirmOutcome;
+    private QName fieldToSetCorrectOutcome;
     private QName requiredDocType;
 
     @Override
@@ -37,15 +37,18 @@ public class SetLastConfirmOutcomeToOrdersListener extends AbstractTaskListener 
             return;
         }
 
-        QName taskQName = QName.createQName(delegateTask.getFormKey(), namespaceService);
-        if (!Objects.equals(taskQName, TYPE_CONFIRM_TASK)) {
+        String currentTaskOutcome = (String) delegateTask.getVariable("bpm_outcome");
+        if (StringUtils.isBlank(currentTaskOutcome)) {
             return;
         }
 
-        String currentTaskOutcome = (String) delegateTask.getVariable("bpm_outcome");
+        QName taskQName = QName.createQName(delegateTask.getFormKey(), namespaceService);
+        if (Objects.equals(taskQName, ConfirmWorkflowModel.TYPE_CONFIRM_TASK)) {
+            nodeService.setProperty(document, fieldToSetConfirmOutcome, currentTaskOutcome);
+        }
 
-        if (StringUtils.isNotEmpty(currentTaskOutcome)) {
-            nodeService.setProperty(document, fieldToSet, currentTaskOutcome);
+        if (Objects.equals(taskQName, ConfirmWorkflowModel.TYPE_CORRECT_TASK)) {
+            nodeService.setProperty(document, fieldToSetCorrectOutcome, currentTaskOutcome);
         }
     }
 
@@ -57,8 +60,12 @@ public class SetLastConfirmOutcomeToOrdersListener extends AbstractTaskListener 
         this.namespaceService = namespaceService;
     }
 
-    public void setFieldToSet(QName fieldToSet) {
-        this.fieldToSet = fieldToSet;
+    public void setFieldToSetConfirmOutcome(QName fieldToSetConfirmOutcome) {
+        this.fieldToSetConfirmOutcome = fieldToSetConfirmOutcome;
+    }
+
+    public void setFieldToSetCorrectOutcome(QName fieldToSetCorrectOutcome) {
+        this.fieldToSetCorrectOutcome = fieldToSetCorrectOutcome;
     }
 
     public void setRequiredDocType(QName requiredDocType) {

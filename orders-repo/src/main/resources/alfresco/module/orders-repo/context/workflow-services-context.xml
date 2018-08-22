@@ -50,10 +50,11 @@
     </bean>
 
     <bean id="orders.setLastConfirmOutcomeToOrdersListener"
-          class="ru.citeck.ecos.workflow.listener.SetLastConfirmOutcomeToOrdersListener">
+          class="ru.citeck.ecos.workflow.listener.SetLastTasksOutcomeToOrdersListener">
         <property name="nodeService" ref="nodeService"/>
         <property name="namespaceService" ref="namespaceService"/>
-        <property name="fieldToSet" value="orders:lastConfirmOutcome"/>
+        <property name="fieldToSetConfirmOutcome" value="orders:lastConfirmOutcome"/>
+        <property name="fieldToSetCorrectOutcome" value="orders:lastCorrectOutcome"/>
         <property name="requiredDocType" value="orders:internal"/>
     </bean>
 
