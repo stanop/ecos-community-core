@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <cmmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cmmndi="http://www.omg.org/spec/CMMN/20151109/CMMNDI" xmlns:di="http://www.omg.org/spec/CMMN/20151109/DI" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cmmn="http://www.omg.org/spec/CMMN/20151109/MODEL" xmlns:dc="http://www.omg.org/spec/CMMN/20151109/DC" targetNamespace="http://www.citeck.ru/ecos/case/cmmn/1.0">
-    <cmmn:case xmlns:ns8="http://www.citeck.ru/ecos/case/cmmn/1.0" name="24eb9179-a44a-4204-8a58-ef723a16f26e" id="id-1" ns8:caseEcosKind="workspace-SpacesStore-orders-cat-internal-order" ns8:elementTypes="case-tasks,documents,completeness-levels,subcases,events,case-roles" ns8:caseEcosType="workspace-SpacesStore-orders-cat-doctype-internal">
+    <cmmn:case xmlns:ns8="http://www.citeck.ru/ecos/case/cmmn/1.0" name="24eb9179-a44a-4204-8a58-ef723a16f26e" id="id-1" ns8:elementTypes="case-tasks,documents,completeness-levels,subcases,events,case-roles" ns8:caseEcosType="workspace-SpacesStore-orders-cat-doctype-internal">
         <cmmn:casePlanModel autoComplete="true" name="Case plan model" id="id-8" ns8:completnessLevels="workspace-SpacesStore-cl-scan-documents">
             <cmmn:planItem definitionRef="id-9" id="id-10">
                 <cmmn:entryCriterion sentryRef="id-17" id="id-18"/>
