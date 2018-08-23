@@ -1,114 +1,113 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React from "react";
+import NodeCardlet from '../node-cardlet';
 
-//require('xstyle!./case-status.css');
+import 'xstyle!./node-header.css';
 
-const REQUEST_NODE_HEADER_INFO = "REQUEST_NODE_HEADER_INFO";
-const RECEIVE_NODE_HEADER_INFO = "RECEIVE_NODE_HEADER_INFO";
+export default class NodeHeader extends NodeCardlet {
 
-const NodeHeader = function (props) {
-
-    if (props.info.modified != props.nodeModified) {
-        CaseStatus.fetchData();
+    static fetchData(ownProps, onSuccess, onFailure) {
+        let nodeInfo = ownProps.nodeInfo;
+        onSuccess({
+            htmlid: ownProps.regionId + '-node-header',
+            displayName: nodeInfo.displayName,
+            fileExtension: nodeInfo.fileExtension,
+            version: nodeInfo.version,
+            modifier: nodeInfo.modifier,
+            modified: nodeInfo.modified,
+            nodeRef: ownProps.nodeRef,
+            likes: nodeInfo.likes,
+            isFavourite: nodeInfo.isFavourite,
+            qshare: nodeInfo.qshare,
+            commentsCount: nodeInfo.commentsCount,
+            nodeType: nodeInfo.nodeType
+        });
     }
 
-    props.onLoaded();
+    static getModifiedInfo(modifier, modified) {
 
-    return <div id="cardlet-case-status" className="case-status document-details-panel">
-        <h2 className="alfresco-twister">
-            <div className="status-line-el">Статус:</div>
-            <div className={`panel-body case-status-name ${loadingClass} status-line-el`}>{statusName}</div>
-        </h2>
-    </div>;
-};
+        let modifierUri = `/share/page/user/${modifier.userName}/profile`;
 
-function updateNodeHeaderState(state = {}, nodeRef, stateUpdate) {
-    let nodesHeaderInfo = state.nodesHeaderInfo || {};
-    let nodeHeaderInfo = nodesHeaderInfo[nodeRef];
-    return {
-        ...state,
-        nodesHeaderInfo: {
-            ...nodesHeaderInfo,
-            [nodeRef]: {
-                ...nodeHeaderInfo,
-                ...stateUpdate
-            }
+        let dateFormat = Alfresco.util.message("date-format.default");
+        let modifiedDate = Alfresco.util.fromISO8601(modified);
+        let formattedModified = Alfresco.util.formatDate(modifiedDate, dateFormat);
+
+        let modifiedByUserText = Alfresco.util.message('cardlet.node-header.modified-by-user');
+        let modifiedOnText = Alfresco.util.message('cardlet.node-header.modified-on');
+
+        return (
+            <span className="item-modifier">
+                {modifiedByUserText} <a href={modifierUri}>{modifier.displayName}</a>
+                {" " + modifiedOnText + " " + formattedModified}
+            </span>
+        )
+    }
+
+    componentDidMount() {
+
+        let data = this.props.data;
+
+        new Alfresco.Like(data.htmlid + '-like').setOptions({
+            nodeRef: data.nodeRef,
+            /*siteId: null,*/
+            type: 'document',
+            displayName: data.displayName
+        }).display(data.likes.isLiked, data.likes.totalLikes);
+
+        new Alfresco.Favourite(data.htmlid + '-favourite').setOptions({
+            nodeRef: data.nodeRef,
+            type: 'document'
+        }).display(data.isFavourite);
+
+        new Alfresco.QuickShare(data.htmlid + '-quickshare').setOptions({
+            nodeRef: data.nodeRef,
+            displayName: data.displayName
+        }).display(data.qshare.sharedId, data.qshare.sharedBy);
+    }
+
+    render() {
+
+        let msg = Alfresco.util.message;
+        let data = this.props.data;
+
+        let extensionImg;
+        if (data.fileExtension) {
+            extensionImg = <img src={`/share/res/components/images/filetypes/${data.fileExtension}-file-48.png`}
+                                onError="this.src='/share/res/components/images/filetypes/generic-file-48.png'"
+                                title={data.displayName} className="node-thumbnail" width="48"/>
+        } else {
+            extensionImg = <div/>
         }
+
+        let onComment = () => {
+            YAHOO.Bubbling.fire('commentNode', data.nodeRef);
+        };
+
+        return (
+            <div>
+                <div className="node-header">
+                    <div className="node-info">
+                        {extensionImg}
+                        <h1 className="thin dark">
+                            {data.displayName}<span id={`${data.htmlid}-document-version`}
+                                                    className="document-version">{data.version}</span>
+                        </h1>
+                        <div>
+                            {NodeHeader.getModifiedInfo(data.modifier, data.modified)}
+                            <span id={`${data.htmlid}-favourite`} className="item item-separator"/>
+                            <span id={`${data.htmlid}-like`} className="item item-separator"/>
+                            <span className="item item-separator item-social">
+                                <a name="@commentNode" rel={data.nodeRef}
+                                   className={`theme-color-1 comment ${data.htmlid}`}
+                                   title={msg('comment.document.tip')} tabIndex="0"
+                                   onClick={onComment}>{msg('comment.document.label')}</a>
+                            </span>
+                            <span id={`${data.htmlid}-quickshare`} className="item item-separator"/>
+                        </div>
+                    </div>
+                    <div className='node-action'/>
+                    <div className='clear'/>
+                </div>
+            </div>
+        );
     }
 }
-
-export const reducers = {
-    [REQUEST_NODE_HEADER_INFO]: (state, action) => {
-        return updateNodeHeaderState(state, action.nodeRef, {
-            isFetching: true,
-            modified: action.modified
-        });
-    },
-    [RECEIVE_NODE_HEADER_INFO]: (state = {}, action) => {
-        return updateNodeHeaderState(state, action.nodeRef, {
-            isFetching: false,
-            data: action.data
-        });
-    }
-};
-
-const mapStateToProps = (state, ownProps) => {
-    let nodeRef = ownProps.nodeRef;
-    let info = (state.nodesHeaderInfo || {})[nodeRef] || {};
-    let currentModified = state.nodeInfo.modified;
-    return {
-        info: info,
-        nodeModified: currentModified
-    }
-};
-
-const mapDispatchToProps = (dispatch, ownProps) => {
-
-    return {
-
-        fetchData: () => dispatch((dispatch, getState) => {
-
-            let nodeRef = ownProps.nodeRef;
-
-            let state = getState();
-
-            let currentModified = ownProps.nodeInfo.modified;
-            let nodeData = state.nodes[nodeRef];
-            /*if (nodeData.headerInfo )*//*if (nodeData.headerInfo )*/
-
-
-
-            let statuses = state.caseStatuses || {};
-            let statusState = statuses[nodeRef] || {};
-
-            let modifiedInStore = statusState.modified || 0;
-
-            if (modifiedInStore === ownProps.nodeInfo.modified) {
-                return;
-            }
-
-            dispatch({
-                type: REQUEST_CASE_STATUS,
-                nodeRef,
-                modified: ownProps.nodeInfo.modified
-            });
-
-            return fetch('/share/proxy/alfresco/citeck/case/status?nodeRef=' + nodeRef, {
-                credentials: 'include'
-            }).then(response => {
-                return response.json();
-            }).then(data => {
-                dispatch({
-                    type: RECEIVE_CASE_STATUS,
-                    nodeRef,
-                    data
-                });
-            });
-        })
-    }
-};
-
-export const control = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(CaseStatus);

@@ -281,7 +281,7 @@ const cardletMapProps = (state, ownProps) => {
         controlProps,
         controlClass,
         nodeRef,
-        nodeInfo: state.nodes[nodeRef].baseInfo
+        nodeInfo: state.nodes[nodeRef]
     };
 };
 

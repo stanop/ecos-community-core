@@ -1,5 +1,33 @@
+html {
+    overflow-y: scroll;
+}
+body {
+    font-family: Open Sans, Arial, Helvetica, sans-serif;
+    color: #333333;
+    margin: 0;
+}
+.alfresco-share {
+    font: 13px/1.231 Open Sans, arial, helvetica, clean, sans-serif;
+}
+.clear-both {
+    clear: both;
+}
+.share-hidden {
+    display: none;
+}
+.undo-share-margin {
+    margin: 0 -10px;
+}
+.hidden {
+    display: none !important;
+}
+/* See AKU-707: Hide the "X" on input fields on IE11 */
+input::-ms-clear {
+    display: none;
+}
+
 .document-metadata-header .alfresco-twister-actions {
-  display: none;
+    display: none;
 }
 
 .avatar {
@@ -7,14 +35,14 @@
 }
 
 .yui-u.first .document-details-panel {
-  background-color: transparent;
+    background-color: transparent;
 }
 
-.yui-g  .yui-gb:not(.plain) > div.yui-u.first,
+.yui-g .yui-gb:not(.plain) > div.yui-u.first,
 .yui-gb .yui-gb:not(.plain) > div.yui-u.first,
 .yui-gc .yui-gb:not(.plain) > div.yui-u.first,
-.yui-gd .yui-gb:not(.plain) > div.yui-u.first { 
-  width: 32%; 
+.yui-gd .yui-gb:not(.plain) > div.yui-u.first {
+    width: 32%;
 }
 
 #card-details-root,

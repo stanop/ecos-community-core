@@ -5,8 +5,8 @@ import {
     RECEIVE_CARDLETS,
     REQUEST_CONTROL,
     RECEIVE_CONTROL,
-    REQUEST_NODE_BASE_INFO,
-    RECEIVE_NODE_BASE_INFO,
+    REQUEST_NODE_INFO,
+    RECEIVE_NODE_INFO,
     REQUEST_CARDLET_DATA,
     RECEIVE_CARDLET_DATA,
     RECEIVE_ERR_CARDLET_DATA
@@ -81,40 +81,33 @@ let reducersStore = {
             }
         };
     },
-    [REQUEST_NODE_BASE_INFO]: function (state = {}, action) {
+    [REQUEST_NODE_INFO]: function (state = {}, action) {
         let nodes = state.nodes || {};
         let nodeInfo = nodes[action.nodeRef] || {};
-        let baseInfo = nodeInfo.baseInfo || {};
         return {
             ...state,
             nodes: {
                 ...nodes,
                 [action.nodeRef]: {
                     ...nodeInfo,
-                    baseInfo: {
-                        ...baseInfo,
-                        isFetching: true
-                    }
+                    isFetching: true
                 }
             }
         }
     },
-    [RECEIVE_NODE_BASE_INFO]: function (state = {}, action) {
+    [RECEIVE_NODE_INFO]: function (state = {}, action) {
         let nodes = state.nodes || {};
         let nodeInfo = nodes[action.nodeRef] || {};
-        if (nodeInfo.modified !== action.data.modified) {
-            return {
-                ...state,
-                nodes: {
-                    ...nodes,
-                    [action.nodeRef]: {
-                        ...nodeInfo,
-                        baseInfo: action.data
-                    }
+        return {
+            ...state,
+            nodes: {
+                ...nodes,
+                [action.nodeRef]: {
+                    ...nodeInfo,
+                    ...action.data,
+                    isFetching: false
                 }
             }
-        } else {
-            return state;
         }
     },
     [REQUEST_CARDLET_DATA]: function (state = {}, action) {

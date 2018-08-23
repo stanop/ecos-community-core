@@ -38,6 +38,7 @@
     <bean id="ru.citeck.ecos.share.template.CiteckUtilsTemplate" parent="baseTemplateExtension" class="ru.citeck.ecos.share.template.CiteckUtilsTemplate">
         <property name="extensionName" value="citeckUtils" />
         <property name="modulePackageManager" ref="modulepackagemanager" />
+        <property name="aikauModuleResource" value="META-INF/maven/org.alfresco/aikau/pom.properties" />
     </bean>
 
     <!--====================================-->
