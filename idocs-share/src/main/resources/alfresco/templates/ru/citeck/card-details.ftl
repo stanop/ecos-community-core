@@ -70,6 +70,31 @@
                 window.location.href = "/share";
             </script>
         </#if>
+
+        <style type="text/css">
+            <#assign aikauVers = citeckUtils.getAikauVersion() />
+            @font-face {
+                font-family: 'Open Sans';
+                font-style: normal;
+                font-weight: 400;
+                src: url(/share/res/js/aikau/${aikauVers}/alfresco/core/css/opensans.woff) format('woff');
+            }
+            @font-face {
+                font-family: 'Open Sans Bold';
+                font-style: normal;
+                font-weight: 600;
+                src: url(/share/res/js/aikau/${aikauVers}/alfresco/core/css/opensansbold.woff) format('woff');
+            }
+            @font-face {
+                font-family: 'Open Sans Condensed';
+                font-style: normal;
+                font-weight: 300;
+                src: url(/share/res/js/aikau/${aikauVers}/alfresco/core/css/opensanscondensed.woff) format('woff');
+            }
+            .alfresco-share .alfresco-header-SearchBox .alfresco-header-SearchBox-clear {
+                background-image: url(/share/res/js/aikau/${aikauVers}/alfresco/css/images/Delete.PNG);
+            }
+        </style>
     </head>
 
     <body id="Share" class="yui-skin-${theme} alfresco-share ${type!} claro">
@@ -82,7 +107,8 @@
 
             <#assign pageArgsMap = ((page.url.templateArgs!{}) + (page.url.args!{}) + {
                 "pageid": "card-details",
-                "theme": "${theme!}"
+                "theme": "${theme!}",
+                "aikauVersion": "${aikauVers!}"
             }) />
 
             <@relocateJavaScript/>

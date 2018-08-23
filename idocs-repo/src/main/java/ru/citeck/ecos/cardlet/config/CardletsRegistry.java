@@ -78,6 +78,8 @@ public class CardletsRegistry implements RepoContentDAO<Cardlet> {
                 keys.forEach((k, v) -> {
                     if (!CardletModel.PROP_ID.equals(k)) {
                         keysWithoutId.put(k, v);
+                    } else {
+                        keysWithoutId.put(k, null);
                     }
                 });
                 result = repoContentDAO.getContentData(keysWithoutId, ignoreWithoutData);

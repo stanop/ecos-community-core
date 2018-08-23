@@ -18,11 +18,10 @@ import {
     setCardMode,
     setPageArgs,
     fetchCardlets,
-    fetchNodeBaseInfo
+    fetchNodeInfo
 } from "./actions";
 
-require("xstyle!js/aikau/1.0.63/alfresco/core/css/Core.css");
-require("xstyle!citeck/components/card/card-details.css");
+require("xstyle!./card-details.css");
 
 const DEFAULT_CARD_MODE = "default";
 
@@ -47,7 +46,7 @@ export function renderPage (elementId, props) {
 
     store.dispatch(setPageArgs(props.pageArgs));
 
-    let nodeBaseInfoPromise = store.dispatch(fetchNodeBaseInfo(props.pageArgs.nodeRef));
+    let nodeBaseInfoPromise = store.dispatch(fetchNodeInfo(props.pageArgs.nodeRef));
     let cardletsPromise = store.dispatch(fetchCardlets(props.pageArgs.nodeRef))
                                .then(() => {
                                    store.dispatch(setCardMode(getCurrentCardMode(), registerReducers));
@@ -62,7 +61,7 @@ export function renderPage (elementId, props) {
         };
 
         YAHOO.Bubbling.on('metadataRefresh', () => {
-            store.dispatch(fetchNodeBaseInfo(props.pageArgs.nodeRef));
+            store.dispatch(fetchNodeInfo(props.pageArgs.nodeRef));
         });
 
         ReactDOM.render(React.createElement(CardDetailsRoot, props), document.getElementById(elementId));

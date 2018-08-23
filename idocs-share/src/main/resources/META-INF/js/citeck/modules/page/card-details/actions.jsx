@@ -7,8 +7,8 @@ export const RECEIVE_CARDLETS = 'RECEIVE_CARDLETS';
 export const REQUEST_CONTROL = 'REQUEST_CONTROLLER';
 export const RECEIVE_CONTROL = 'RECEIVE_CONTROLLER';
 
-export const REQUEST_NODE_BASE_INFO = 'REQUEST_NODE_BASE_INFO';
-export const RECEIVE_NODE_BASE_INFO = 'RECEIVE_NODE_BASE_INFO';
+export const REQUEST_NODE_INFO = 'REQUEST_NODE_BASE_INFO';
+export const RECEIVE_NODE_INFO = 'RECEIVE_NODE_BASE_INFO';
 
 export const REQUEST_CARDLET_DATA = 'REQUEST_CARDLET_DATA';
 export const RECEIVE_CARDLET_DATA = 'RECEIVE_CARDLET_DATA';
@@ -40,12 +40,12 @@ export function setPageArgs(pageArgs) {
     }
 }
 
-export function fetchNodeBaseInfo(nodeRef) {
+export function fetchNodeInfo(nodeRef, infoType = 'full') {
 
     return (dispatch, getState) => {
 
         let getCurrentInfo = function () {
-            return ((getState().nodes || {})[nodeRef] || {}).baseInfo || {};
+            return (getState().nodes || {})[nodeRef] || {};
         };
 
         let info = getCurrentInfo();
@@ -55,27 +55,35 @@ export function fetchNodeBaseInfo(nodeRef) {
         }
 
         dispatch({
-            type: REQUEST_NODE_BASE_INFO,
+            type: REQUEST_NODE_INFO,
             nodeRef: nodeRef
         });
 
-        return fetch("/share/proxy/alfresco/citeck/node/base-info?nodeRef=" + nodeRef, {
+        return fetch("/share/proxy/alfresco/citeck/node/info?nodeRef=" + nodeRef + '&infoType=' + infoType, {
                 credentials: 'include'
             }).then(response => response.json())
             .then(json => {
                 dispatch({
-                    type: RECEIVE_NODE_BASE_INFO,
+                    type: RECEIVE_NODE_INFO,
                     nodeRef: nodeRef,
                     data: json
                 });
 
                 if (json.pendingUpdate) {
                     setTimeout(() => {
-                        dispatch(fetchNodeBaseInfo(nodeRef)).then(() => {
+                        //check only pending update
+                        dispatch(fetchNodeInfo(nodeRef, 'pendingUpdate')).then(() => {
                             info = getCurrentInfo();
                             if (!info.pendingUpdate) {
-                                dispatch(fetchCardlets(nodeRef));
-                                YAHOO.Bubbling.fire('metadataRefresh');
+                                // 'pending update' is false. load full node info
+                                dispatch(fetchNodeInfo(nodeRef)).then(() => {
+                                    info = getCurrentInfo();
+                                    // if node is not pending update fetch cardlets and update existing
+                                    if (!info.pendingUpdate) {
+                                        dispatch(fetchCardlets(nodeRef));
+                                        YAHOO.Bubbling.fire('metadataRefresh');
+                                    }
+                                });
                             }
                         })
                     }, 2000);

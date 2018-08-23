@@ -196,6 +196,11 @@
 		<property name="authorityService" ref="authorityService" />
 	</bean>
 
+    <bean id="webscript.ru.citeck.node.node-info.get"
+          class="ru.citeck.ecos.webscripts.node.NodeInfoGet"
+          parent="webscript">
+    </bean>
+
 	<bean id="webscript.ru.citeck.security.checkBelongsUserToGroup.get"
 	      class="ru.citeck.ecos.webscripts.authority.CheckBelongsUserToGroup"
 	      parent="webscript">
