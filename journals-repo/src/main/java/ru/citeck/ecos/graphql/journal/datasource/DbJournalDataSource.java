@@ -25,6 +25,8 @@ public class DbJournalDataSource implements JournalDataSource {
 
     private String sqlQueryTemplate;
 
+    private GraphQLService graphQLService;
+
     @Override
     public JGqlRecordsConnection getRecords(GqlContext context,
                                             String query,
@@ -62,7 +64,7 @@ public class DbJournalDataSource implements JournalDataSource {
 
     @Override
     public GraphQLService getGraphQLService() {
-        return null;
+        return graphQLService;
     }
 
     @Override
@@ -114,6 +116,10 @@ public class DbJournalDataSource implements JournalDataSource {
 
     public void setSqlQueryTemplate(String sqlQueryTemplate) {
         this.sqlQueryTemplate = sqlQueryTemplate;
+    }
+
+    public void setGraphQLService(GraphQLService graphQLService) {
+        this.graphQLService = graphQLService;
     }
 
     private class RecordValue implements JGqlAttributeValue {
