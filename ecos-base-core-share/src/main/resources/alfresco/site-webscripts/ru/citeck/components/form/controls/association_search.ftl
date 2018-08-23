@@ -13,9 +13,9 @@
     <#assign currentValue = field.value!"" />
 </#if>    
 
-
 <script type="text/javascript">//<![CDATA[
-(function () {
+require(['citeck/components/form/citeck-object-finder'], function() {
+
     <@renderPickerJS field "picker" />
 
     var resolveDestFolder='';
@@ -92,7 +92,7 @@
     <#if form.mode == "create">
         picker.selectItems("${field.value}");
     </#if>
-    })();
+    });
 
 //]]></script>
 
@@ -217,8 +217,6 @@
         </#if>
     </#if>
 
-require(['citeck/components/form/citeck-object-finder'], function() {
-
     function getFilter() {
         var contractorType = '${field.control.params.contractorType!""}';
         return  'name!_!!_!contractorType!_!' + contractorType + '!_!';
@@ -274,5 +272,5 @@ require(['citeck/components/form/citeck-object-finder'], function() {
     }).setMessages(
         ${messages}
     );
-});
+
 </#macro>
