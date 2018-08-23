@@ -26,12 +26,6 @@ public class AlfGraphQLServiceImpl implements GraphQLService {
     private static final String GRAPHQL_BASE_PACKAGE = "ru.citeck.ecos";
     private static final String QUERY_TYPE = "Query";
 
-    public static final String GQL_PARAM_QUERY = "query";
-    public static final String GQL_PARAM_LANGUAGE = "language";
-    public static final String GQL_PARAM_PAGE_INFO = "pageInfo";
-    public static final String GQL_PARAM_DATASOURCE = "datasource";
-    public static final String GQL_PARAM_REMOTE_REFS = "remoteRefs";
-
     @Autowired
     private ServiceRegistry serviceRegistry;
 

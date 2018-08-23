@@ -51,6 +51,15 @@
         <property name="hasNextPagePath" value="journalRecords.pageInfo.hasNextPage" />
         <property name="skipCountPath" value="journalRecords.pageInfo.skipCount" />
         <property name="maxItemsPath" value="journalRecords.pageInfo.maxItems" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="gqlQueryGenerator" ref="journals.gqlQueryGenerator" />
+        <property name="gqlQueryExecutor" ref="journals.gqlQueryExecutor"/>
     </bean>
+
+    <bean id="journals.gqlQueryGenerator" class="ru.citeck.ecos.journals.records.GqlQueryGenerator">
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="journals.gqlQueryExecutor" class="ru.citeck.ecos.journals.records.GqlQueryExecutor"/>
 
 </beans>

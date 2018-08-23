@@ -18,25 +18,18 @@
  */
 package ru.citeck.ecos.journals;
 
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.xml.bind.Unmarshaller;
-
-import graphql.ExecutionResult;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
-
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.response.JournalData;
-import ru.citeck.ecos.invariants.*;
+import ru.citeck.ecos.invariants.Feature;
+import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
 import ru.citeck.ecos.journals.records.JournalRecords;
 import ru.citeck.ecos.journals.records.JournalRecordsDAO;
@@ -49,6 +42,11 @@ import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.NamespacePrefixResolverMapImpl;
 import ru.citeck.ecos.utils.XMLUtils;
+
+import javax.xml.bind.Unmarshaller;
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 class JournalServiceImpl implements JournalService {
 

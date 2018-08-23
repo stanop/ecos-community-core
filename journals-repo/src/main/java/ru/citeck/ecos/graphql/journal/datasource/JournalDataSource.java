@@ -34,9 +34,18 @@ public interface JournalDataSource {
     List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
                                                List<RemoteRef> remoteRefList);
 
-    JournalData queryMetadata(JournalType journalType,
+    JournalData queryMetadata(String dataSourceBeanName,
                               String gqlQuery,
                               RecordsResult recordsResult);
+
+    JournalData queryFromMultipleSources(JournalType journalType,
+                                         String query,
+                                         String language,
+                                         JGqlPageInfoInput pageInfo);
+
+    default boolean isMultiDataSource() {
+        return false;
+    }
 
     default boolean isSupportsSplitLoading() {
         return false;

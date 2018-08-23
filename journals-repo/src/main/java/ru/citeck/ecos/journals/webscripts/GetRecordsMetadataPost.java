@@ -8,13 +8,13 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.springframework.extensions.webscripts.*;
-import ru.citeck.ecos.graphql.AlfGraphQLServiceImpl;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlRecordsInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverter;
 import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverterFactory;
+import ru.citeck.ecos.journals.records.GqlQueryExecutor;
 import ru.citeck.ecos.repo.RemoteRef;
 
 import java.io.IOException;
@@ -71,8 +71,8 @@ public class GetRecordsMetadataPost extends AbstractWebScript {
         });
 
         Map<String, Object> params = new HashMap<>();
-        params.put(AlfGraphQLServiceImpl.GQL_PARAM_DATASOURCE, datasource);
-        params.put(AlfGraphQLServiceImpl.GQL_PARAM_REMOTE_REFS, new JGqlRecordsInput(recordIds));
+        params.put(GqlQueryExecutor.GQL_PARAM_DATASOURCE, datasource);
+        params.put(GqlQueryExecutor.GQL_PARAM_REMOTE_REFS, new JGqlRecordsInput(recordIds));
 
         return graphQLService.execute(gqlQuery, params);
     }

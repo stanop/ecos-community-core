@@ -119,7 +119,7 @@ public class RemoteJournalDataSource implements JournalDataSource {
     }
 
     @Override
-    public JournalData queryMetadata(JournalType journalType,
+    public JournalData queryMetadata(String dataSourceBeanName,
                                      String gqlQuery,
                                      RecordsResult recordsResult) {
         try {
@@ -131,6 +131,14 @@ public class RemoteJournalDataSource implements JournalDataSource {
         } catch (IOException e) {
             logger.error(e);
         }
+        return null;
+    }
+
+    @Override
+    public JournalData queryFromMultipleSources(JournalType journalType,
+                                                String query,
+                                                String language,
+                                                JGqlPageInfoInput pageInfo) {
         return null;
     }
 
@@ -182,8 +190,10 @@ public class RemoteJournalDataSource implements JournalDataSource {
         List<LinkedHashMap> records = journalData.getData().getJournalRecords().getRecords();
         for (LinkedHashMap map : records) {
             String id = (String) map.get("id");
-            RemoteRef remoteRef = new RemoteRef(serverId, id);
-            map.put("id", remoteRef.toString());
+            if (id != null) {
+                RemoteRef remoteRef = new RemoteRef(serverId, id);
+                map.put("id", remoteRef.toString());
+            }
         }
         return journalData;
     }

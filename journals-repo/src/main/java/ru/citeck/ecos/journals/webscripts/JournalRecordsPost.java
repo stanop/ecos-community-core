@@ -1,7 +1,6 @@
 package ru.citeck.ecos.journals.webscripts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import graphql.ExecutionResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
