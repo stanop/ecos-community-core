@@ -9,4 +9,5 @@
         <mobile-order>-1</mobile-order>
     </position>
     <control url="js/citeck/modules/cardlets/case-status/case-status" />
+    <condition>document.hasAspect("icase:case") || document.hasAspect("idocs:hasDocumentStatus")</condition>
 </cardlet>
