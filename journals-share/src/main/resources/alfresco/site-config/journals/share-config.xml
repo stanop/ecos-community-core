@@ -16,6 +16,7 @@
                 <js src="/citeck/components/form/constraints.js" />
                 <js src="/components/form/date-range.js" />
                 <css src="/citeck/components/form/setselect.css" />
+                <js src="/citeck/components/form/multipart-form-support.js" />
             </dependencies>
         </forms>
     </config>
