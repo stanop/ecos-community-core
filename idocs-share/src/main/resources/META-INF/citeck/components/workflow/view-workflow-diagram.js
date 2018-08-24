@@ -113,7 +113,7 @@ if (typeof Citeck == "undefined" || !Citeck) {
           console.log("onViewWorkflowDiagramClick");
          if (this.workflow.diagramUrl)
          {
-            showLightbox({ src: Alfresco.constants.PROXY_URI + this.workflow.diagramUrl });
+             Alfresco.Lightbox.show({ src: Alfresco.constants.PROXY_URI + this.workflow.diagramUrl });
          }
       },
 	  
