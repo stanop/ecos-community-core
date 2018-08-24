@@ -1,12 +1,17 @@
 #flowable-modeler iframe {
     width: 100%;
-    min-height: 450px;
-    height: 89vh;
+    height: 100%;
+    min-height: 900px;
     border: none;
 }
 
 #flowable-modeler {
     padding-left: 5px;
-    min-height: 450px;
-    height: 89vh;
+    min-height: 900px;
+    height: 100%;
+}
+
+#doc3,
+#bd {
+    height: 100%;
 }
