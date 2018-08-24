@@ -96,6 +96,19 @@ define(['dojo/_base/declare',
                 }
                 header += '</span>';
 
+                var mmenuConfig = {
+                    "searchfield": {
+                        "clear": true
+                    }
+                };
+                var contentRoot = $('#page-content-root');
+                if (contentRoot.length) {
+                    mmenuConfig['offCanvas'] = {
+                        pageSelector: "#page-content-root"
+                    };
+                    contentRoot.css('width', '100%');
+                }
+
                 $('#menu').mmenu({
                     "slidingSubmenus": false,
                     "extensions": [
@@ -143,11 +156,13 @@ define(['dojo/_base/declare',
                             ]
                         }
                     ]
-                }, {
-                    "searchfield": {
-                        "clear": true
-                    }
-                });
+                }, mmenuConfig);
+
+                if (contentRoot.length) {
+                    setTimeout(function() {
+                        contentRoot.css('width', '');
+                    }, 50);
+                }
             },
             postCreate: function header_citeckMainSlideMenu__postCreate() {
                 var self = this;
@@ -167,9 +182,12 @@ define(['dojo/_base/declare',
                         });
 
                         if (this.documentURI.indexOf("faceted-search") == -1){
-                            $('.mm-page.mm-slideout').contents().appendTo($('body'));
-                            $('body .sticky-wrapper:first').appendTo($('.mm-page.mm-slideout'));
-                            $('body .sticky-footer:first').appendTo($('.mm-page.mm-slideout'));
+                           var contentRoot = $('#page-content-root');
+                           if (contentRoot.length == 0) {
+                               $('.mm-page.mm-slideout').contents().appendTo($('body'));
+                               $('body .sticky-wrapper:first').appendTo($('.mm-page.mm-slideout'));
+                               $('body .sticky-footer:first').appendTo($('.mm-page.mm-slideout'));
+                           }
                         }
 
                         if (!self.isMobile) {
