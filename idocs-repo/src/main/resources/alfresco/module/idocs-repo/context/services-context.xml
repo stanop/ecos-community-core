@@ -451,7 +451,6 @@
 
 	<bean id="historyGetService" class="ru.citeck.ecos.history.impl.HistoryGetServiceImpl">
 		<property name="nodeService" ref="NodeService"/>
-		<property name="personService" ref="PersonService"/>
 	</bean>
 
     <bean id="historyServiceJS" class="ru.citeck.ecos.history.HistoryServiceJS" parent="baseJavaScriptExtension">
