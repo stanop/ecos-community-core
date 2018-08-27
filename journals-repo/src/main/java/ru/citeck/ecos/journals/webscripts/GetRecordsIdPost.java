@@ -28,7 +28,12 @@ public class GetRecordsIdPost extends AbstractWebScript {
         Request request = parseRequest(webScriptRequest);
         JournalDataSource dataSource = findJournalDataSource(request.datasource);
         GqlContext gqlContext = new GqlContext(serviceRegistry);
-        RecordsResult ids = dataSource.queryIds(gqlContext, request.query, request.language, request.jGqlPageInfoInput);
+        RecordsResult ids = null;
+        try {
+            ids = dataSource.queryIds(gqlContext, request.query, request.language, request.jGqlPageInfoInput);
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
         objectMapper.writeValue(webScriptResponse.getOutputStream(), ids);
         webScriptResponse.setStatus(Status.STATUS_OK);
     }

@@ -42,20 +42,18 @@ public class JournalRecordsDAO {
     public JournalData getRecordsWithData(JournalType journalType,
                                           String query,
                                           String language,
-                                          JGqlPageInfoInput pageInfo) {
+                                          JGqlPageInfoInput pageInfo) throws Exception {
 
         JournalDataSource dataSource = getDataSourceInstance(journalType);
-        if (dataSource.isMultiDataSource()) {
-            return dataSource.queryFromMultipleSources(journalType, query, language, pageInfo);
-        } else if (dataSource.isSupportsSplitLoading()) {
+        if (dataSource.isSupportsSplitLoading()) {
             GqlContext gqlContext = new GqlContext(serviceRegistry);
             RecordsResult recordsResult = dataSource.queryIds(gqlContext, query, language, pageInfo);
             String gqlQuery = gqlQueryGenerator.generate(journalType, recordsMetadataBaseQuery, dataSource);
-            return dataSource.queryMetadata(journalType.getDataSource(), gqlQuery, recordsResult);
+            return dataSource.queryMetadata(gqlQuery, journalType.getDataSource(), recordsResult);
         } else {
             String gqlQuery = gqlQueryGenerator.generate(journalType, recordsBaseQuery, dataSource);
             ExecutionResult result = gqlQueryExecutor.executeQuery(journalType, gqlQuery,
-                    query, language, pageInfo, null, dataSource);
+                    query, language, pageInfo, dataSource);
             ResponseConverter responseConverter = responseConverterFactory.getConverter(dataSource);
             return responseConverter.convert(result, Collections.emptyMap());
         }
@@ -69,11 +67,15 @@ public class JournalRecordsDAO {
         JournalDataSource dataSource = getDataSourceInstance(journalType);
         if (dataSource.isSupportsSplitLoading()) {
             GqlContext gqlContext = new GqlContext(serviceRegistry);
-            return dataSource.queryIds(gqlContext, query, language, pageInfo);
+            try {
+                return dataSource.queryIds(gqlContext, query, language, pageInfo);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         ExecutionResult result = gqlQueryExecutor.executeQuery(journalType, gqlRecordsIdQuery,
-                query, language, pageInfo, null, dataSource);
+                query, language, pageInfo, dataSource);
 
         List<Map<String, String>> recordsData = null;
         Boolean hasNextPage = null;

@@ -3,7 +3,6 @@ package ru.citeck.ecos.graphql.journal.datasource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
@@ -11,7 +10,6 @@ import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.journal.response.JournalData;
-import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.repo.RemoteRef;
 
@@ -24,8 +22,6 @@ public class DbJournalDataSource implements JournalDataSource {
     private NamedParameterJdbcTemplate template;
 
     private String sqlQueryTemplate;
-
-    private GraphQLService graphQLService;
 
     @Override
     public JGqlRecordsConnection getRecords(GqlContext context,
@@ -63,12 +59,7 @@ public class DbJournalDataSource implements JournalDataSource {
     }
 
     @Override
-    public GraphQLService getGraphQLService() {
-        return graphQLService;
-    }
-
-    @Override
-    public String getRemoteDataSourceBeanName() {
+    public String getServerId() {
         return null;
     }
 
@@ -91,17 +82,9 @@ public class DbJournalDataSource implements JournalDataSource {
     }
 
     @Override
-    public JournalData queryMetadata(String dataSourceBeanName,
-                                     String gqlQuery,
+    public JournalData queryMetadata(String gqlQuery,
+                                     String dataSourceBeanName,
                                      RecordsResult recordsResult) {
-        return null;
-    }
-
-    @Override
-    public JournalData queryFromMultipleSources(JournalType journalType,
-                                                String query,
-                                                String language,
-                                                JGqlPageInfoInput pageInfo) {
         return null;
     }
 
@@ -116,10 +99,6 @@ public class DbJournalDataSource implements JournalDataSource {
 
     public void setSqlQueryTemplate(String sqlQueryTemplate) {
         this.sqlQueryTemplate = sqlQueryTemplate;
-    }
-
-    public void setGraphQLService(GraphQLService graphQLService) {
-        this.graphQLService = graphQLService;
     }
 
     private class RecordValue implements JGqlAttributeValue {

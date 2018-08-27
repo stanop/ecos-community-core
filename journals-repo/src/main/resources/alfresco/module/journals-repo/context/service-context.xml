@@ -60,6 +60,8 @@
         <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 
-    <bean id="journals.gqlQueryExecutor" class="ru.citeck.ecos.journals.records.GqlQueryExecutor"/>
+    <bean id="journals.gqlQueryExecutor" class="ru.citeck.ecos.journals.records.GqlQueryExecutor">
+        <property name="graphQLService" ref="alfGraphQLServiceImpl"/>
+    </bean>
 
 </beans>

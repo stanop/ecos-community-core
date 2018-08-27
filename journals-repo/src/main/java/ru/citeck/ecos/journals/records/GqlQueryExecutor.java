@@ -1,10 +1,11 @@
 package ru.citeck.ecos.journals.records;
 
 import graphql.ExecutionResult;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
+import ru.citeck.ecos.graphql.journal.datasource.RemoteJournalDataSource;
 import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.journals.JournalType;
 
@@ -19,24 +20,23 @@ public class GqlQueryExecutor {
     public static final String GQL_PARAM_DATASOURCE = "datasource";
     public static final String GQL_PARAM_REMOTE_REFS = "remoteRefs";
 
+    private GraphQLService graphQLService;
+
     public ExecutionResult executeQuery(JournalType journalType,
                                         String gqlQuery,
                                         String query,
                                         String language,
                                         JGqlPageInfoInput pageInfo,
-                                        String forciblyDataSourceName,
                                         JournalDataSource dataSource) {
 
-        GraphQLService graphQLService = dataSource.getGraphQLService();
-
         String datasourceBeanName;
-        if (dataSource.getRemoteDataSourceBeanName() != null) {
-            datasourceBeanName = dataSource.getRemoteDataSourceBeanName();
-        } else if (StringUtils.isNotBlank(forciblyDataSourceName)) {
-            datasourceBeanName = forciblyDataSourceName;
+        if (StringUtils.isNotBlank(dataSource.getServerId())) {
+            RemoteJournalDataSource remoteJournalDataSource = (RemoteJournalDataSource) dataSource;
+            datasourceBeanName = remoteJournalDataSource.getRemoteDataSourceBeanName();
         } else {
             datasourceBeanName = journalType.getDataSource();
         }
+
         String validLanguage = StringUtils.isNotBlank(language) ? language : CriteriaAlfNodesSearch.LANGUAGE;
 
         Map<String, Object> params = new HashMap<>();
@@ -46,5 +46,9 @@ public class GqlQueryExecutor {
         params.put(GQL_PARAM_DATASOURCE, datasourceBeanName);
 
         return graphQLService.execute(gqlQuery, params);
+    }
+
+    public void setGraphQLService(GraphQLService graphQLService) {
+        this.graphQLService = graphQLService;
     }
 }

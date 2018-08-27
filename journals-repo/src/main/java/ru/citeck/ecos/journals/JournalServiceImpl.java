@@ -198,7 +198,7 @@ class JournalServiceImpl implements JournalService {
     public JournalData getRecordsWithData(String journalId,
                                           String query,
                                           String language,
-                                          JGqlPageInfoInput pageInfo) {
+                                          JGqlPageInfoInput pageInfo) throws Exception {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }

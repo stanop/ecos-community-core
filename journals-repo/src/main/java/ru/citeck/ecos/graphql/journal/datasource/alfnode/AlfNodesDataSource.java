@@ -23,7 +23,6 @@ import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverter;
 import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverterFactory;
 import ru.citeck.ecos.graphql.journal.response.converter.impl.SplitLoadingResponseConverter;
-import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.records.GqlQueryExecutor;
 import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.repo.RemoteRef;
@@ -70,12 +69,7 @@ public class AlfNodesDataSource implements JournalDataSource {
     }
 
     @Override
-    public GraphQLService getGraphQLService() {
-        return graphQLService;
-    }
-
-    @Override
-    public String getRemoteDataSourceBeanName() {
+    public String getServerId() {
         return null;
     }
 
@@ -132,8 +126,8 @@ public class AlfNodesDataSource implements JournalDataSource {
     }
 
     @Override
-    public JournalData queryMetadata(String dataSourceBeanName,
-                                     String gqlQuery,
+    public JournalData queryMetadata(String gqlQuery,
+                                     String dataSourceBeanName,
                                      RecordsResult recordsResult) {
         List<String> recordIds = new ArrayList<>(recordsResult.records.size());
         recordsResult.records.forEach(item -> recordIds.add(item.toString()));
@@ -146,14 +140,6 @@ public class AlfNodesDataSource implements JournalDataSource {
         ResponseConverter converter = responseConverterFactory.getConverter(this);
         Map<String, Object> additionalData = constructPaginationDataMap(recordsResult);
         return converter.convert(executionResult, additionalData);
-    }
-
-    @Override
-    public JournalData queryFromMultipleSources(JournalType journalType,
-                                                String query,
-                                                String language,
-                                                JGqlPageInfoInput pageInfo) {
-        return null;
     }
 
     private Map<String, Object> constructPaginationDataMap(RecordsResult recordsResult) {

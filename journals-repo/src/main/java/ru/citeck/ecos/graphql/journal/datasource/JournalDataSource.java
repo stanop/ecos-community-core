@@ -1,13 +1,11 @@
 package ru.citeck.ecos.graphql.journal.datasource;
 
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.journal.response.JournalData;
-import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.repo.RemoteRef;
 
@@ -22,30 +20,19 @@ public interface JournalDataSource {
                                      String language,
                                      JGqlPageInfoInput pageInfo);
 
-    GraphQLService getGraphQLService();
-
-    String getRemoteDataSourceBeanName();
+    String getServerId();
 
     RecordsResult queryIds(GqlContext context,
                            String query,
                            String language,
-                           JGqlPageInfoInput pageInfo);
+                           JGqlPageInfoInput pageInfo) throws Exception;
 
     List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
                                                List<RemoteRef> remoteRefList);
 
-    JournalData queryMetadata(String dataSourceBeanName,
-                              String gqlQuery,
-                              RecordsResult recordsResult);
-
-    JournalData queryFromMultipleSources(JournalType journalType,
-                                         String query,
-                                         String language,
-                                         JGqlPageInfoInput pageInfo);
-
-    default boolean isMultiDataSource() {
-        return false;
-    }
+    JournalData queryMetadata(String gqlQuery,
+                              String dataSourceBeanName,
+                              RecordsResult recordsResult) throws Exception;
 
     default boolean isSupportsSplitLoading() {
         return false;

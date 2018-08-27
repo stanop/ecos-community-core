@@ -19,14 +19,12 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.graphql.journal.response.converter.impl.SplitLoadingResponseConverter;
-import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.providers.ApplicationContextProvider;
 import ru.citeck.ecos.repo.RemoteRef;
@@ -40,11 +38,9 @@ public class RemoteJournalDataSource implements JournalDataSource {
 
     private static Log logger = LogFactory.getLog(RemoteJournalDataSource.class);
 
-    private static final String REMOTE_GET_ID_METHOD = "/ecos/journals/remote/getId";
-    private static final String REMOTE_GET_METADATA_METHOD = "/ecos/journals/remote/getMetadata";
+    private static final String REMOTE_GET_ID_METHOD = "/ecos/journals/getId";
+    private static final String REMOTE_GET_METADATA_METHOD = "/ecos/journals/getMetadata";
     private static final String DEFAULT_REMOTE_DATASOURCE = "ecos.journals.datasource.AlfNodes";
-
-    private GraphQLService graphQLService;
 
     private String username;
     private String password;
@@ -82,17 +78,8 @@ public class RemoteJournalDataSource implements JournalDataSource {
     }
 
     @Override
-    public GraphQLService getGraphQLService() {
-        return graphQLService;
-    }
-
-    @Override
-    public String getRemoteDataSourceBeanName() {
-        if (StringUtils.isNotBlank(remoteDataSourceBeanName)) {
-            return remoteDataSourceBeanName;
-        } else {
-            return DEFAULT_REMOTE_DATASOURCE;
-        }
+    public String getServerId() {
+        return serverId;
     }
 
     @Override
@@ -119,8 +106,8 @@ public class RemoteJournalDataSource implements JournalDataSource {
     }
 
     @Override
-    public JournalData queryMetadata(String dataSourceBeanName,
-                                     String gqlQuery,
+    public JournalData queryMetadata(String gqlQuery,
+                                     String dataSourceBeanName,
                                      RecordsResult recordsResult) {
         try {
             String postData = prepareDataForGettingMetadata(gqlQuery, recordsResult);
@@ -131,14 +118,6 @@ public class RemoteJournalDataSource implements JournalDataSource {
         } catch (IOException e) {
             logger.error(e);
         }
-        return null;
-    }
-
-    @Override
-    public JournalData queryFromMultipleSources(JournalType journalType,
-                                                String query,
-                                                String language,
-                                                JGqlPageInfoInput pageInfo) {
         return null;
     }
 
@@ -222,6 +201,14 @@ public class RemoteJournalDataSource implements JournalDataSource {
         return restTemplate.postForObject(url, requestEntity, String.class);
     }
 
+    public String getRemoteDataSourceBeanName() {
+        if (StringUtils.isNotBlank(remoteDataSourceBeanName)) {
+            return remoteDataSourceBeanName;
+        } else {
+            return DEFAULT_REMOTE_DATASOURCE;
+        }
+    }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -240,10 +227,6 @@ public class RemoteJournalDataSource implements JournalDataSource {
 
     public void setRemoteDataSourceBeanName(String remoteDataSourceBeanName) {
         this.remoteDataSourceBeanName = remoteDataSourceBeanName;
-    }
-
-    public void setGraphQLService(GraphQLService graphQLService) {
-        this.graphQLService = graphQLService;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
