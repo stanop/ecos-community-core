@@ -14,7 +14,7 @@ import java.util.*;
 public abstract class BaseGroupAction implements GroupAction {
 
     private final List<RemoteRef> input = new ArrayList<>();
-    protected final List<ActionResult> output = new ArrayList<>();
+    private final List<ActionResult> output = new ArrayList<>();
 
     protected final GroupActionConfig config;
     private int errorsCount = 0;
