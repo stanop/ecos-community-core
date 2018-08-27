@@ -327,6 +327,7 @@
                 <aspect>idocs:diadocInfo</aspect>
                 <aspect>idocs:contractorType</aspect>
                 <aspect>idocs:hasBankAccount</aspect>
+                <aspect>idocs:doNotSendContractsToEdiAspect</aspect>
             </mandatory-aspects>
         </type>
 
@@ -1378,6 +1379,17 @@
                     <title>Comment</title>
                     <type>d:text</type>
                     <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:doNotSendContractsToEdiAspect">
+            <properties>
+                <property name="idocs:doNotSendContractToEdiFlag">
+                    <title>Do not send contract through EDI</title>
+                    <type>d:boolean</type>
+                    <mandatory>false</mandatory>
+                    <default>false</default>
                 </property>
             </properties>
         </aspect>

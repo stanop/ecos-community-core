@@ -75,6 +75,9 @@
             <field prop="idocs:nameInGenitiveCase"/>
             <field prop="idocs:diadocBoxId"/>
         </view>
+        <view>
+            <field prop="idocs:doNotSendContractToEdiFlag"/>
+        </view>
     </view>
 
     <view id="contractor-bankDetailsTab">
