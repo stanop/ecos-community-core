@@ -29,14 +29,26 @@
         }
     } else {
         var records = journals.getRecordsLazy(journalId, query, language, null);
-        groupActionService.execute(records, actionId, { params: params, async: true});
+        var actionResults = groupActionService.execute(records, actionId, { params: params, async: true});
 
-        results.push({
-            nodeRef: "",
-            status: "OK",
-            message: msg.get("group-action.filtered.started.title"),
-            url: ""
-        })
+        if (actionResults && actionResults.length > 0) {
+            for (var idx in actionResults) {
+                var result = actionResults[idx];
+                results.push({
+                    nodeRef: result.remoteRef.toString(),
+                    status: result.status.key,
+                    message: result.status.message,
+                    url: result.status.url
+                });
+            }
+        } else {
+            results.push({
+                nodeRef: "",
+                status: "OK",
+                message: msg.get("group-action.filtered.started.title"),
+                url: ""
+            })
+        }
     }
 
     model.results = results;
