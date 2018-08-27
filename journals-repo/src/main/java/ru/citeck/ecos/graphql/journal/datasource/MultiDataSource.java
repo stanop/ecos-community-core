@@ -136,8 +136,10 @@ public class MultiDataSource implements JournalDataSource {
                         dataSourceBeanName));
             }
             RecordsResult nextRecordsResult = buildRecordsResultForCurrentServer(dataSource, recordsResult);
-            JournalData nextJournalData = dataSource.queryMetadata(gqlQuery, dataSourceName, nextRecordsResult);
-            concatenatedJournalData = concatenateJournalData(concatenatedJournalData, nextJournalData);
+            if (nextRecordsResult.records.size() > 0) {
+                JournalData nextJournalData = dataSource.queryMetadata(gqlQuery, dataSourceName, nextRecordsResult);
+                concatenatedJournalData = concatenateJournalData(concatenatedJournalData, nextJournalData);
+            }
         }
         return concatenatedJournalData;
     }
