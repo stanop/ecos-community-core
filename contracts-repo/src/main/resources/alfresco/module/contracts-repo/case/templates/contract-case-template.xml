@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <cmmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cmmndi="http://www.omg.org/spec/CMMN/20151109/CMMNDI" xmlns:di="http://www.omg.org/spec/CMMN/20151109/DI" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cmmn="http://www.omg.org/spec/CMMN/20151109/MODEL" xmlns:dc="http://www.omg.org/spec/CMMN/20151109/DC" targetNamespace="http://www.citeck.ru/ecos/case/cmmn/1.0">
-    <cmmn:case xmlns:ns8="http://www.citeck.ru/ecos/case/cmmn/1.0" name="406447c6-94e2-4cd0-9d93-a2f5fe7333d0" id="id-1" ns8:elementTypes="case-tasks,supplementary-files,documents,completeness-levels,subcases,events,case-roles" ns8:caseEcosType="workspace-SpacesStore-contracts-cat-doctype-contract">
+    <cmmn:case xmlns:ns8="http://www.citeck.ru/ecos/case/cmmn/1.0" name="fc336ecb-ed4c-47ca-a40b-18902d3b0824" id="id-1" ns8:elementTypes="case-tasks,supplementary-files,documents,completeness-levels,subcases,events,case-roles" ns8:caseEcosType="workspace-SpacesStore-contracts-cat-doctype-contract">
         <cmmn:casePlanModel autoComplete="true" name="Case plan model" id="id-12" ns8:completnessLevels="workspace-SpacesStore-cl-counterparty-docs,workspace-SpacesStore-cl-scan-documents">
             <cmmn:planItem definitionRef="id-13" id="id-14">
                 <cmmn:entryCriterion sentryRef="id-21" id="id-22"/>
@@ -105,9 +105,10 @@
             </cmmn:planItem>
             <cmmn:planItem definitionRef="id-371" id="id-372"/>
             <cmmn:planItem definitionRef="id-242" id="id-373">
-                <cmmn:entryCriterion sentryRef="id-375" id="id-376"/>
-                <cmmn:exitCriterion sentryRef="id-378" id="id-379"/>
+                <cmmn:entryCriterion sentryRef="id-376" id="id-377"/>
+                <cmmn:exitCriterion sentryRef="id-379" id="id-380"/>
             </cmmn:planItem>
+            <cmmn:planItem definitionRef="id-375" id="id-381" ns8:entrySentry="id-383" ns8:exitSentry=""/>
             <cmmn:sentry id="id-21" ns8:originalEvent="case-created">
                 <cmmn:planItemOnPart id="id-20" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/icaseEvent/1.0}caseCreated" ns8:title="Кейс создан">
                     <cmmn:standardEvent>create</cmmn:standardEvent>
@@ -1377,13 +1378,13 @@ isEdiConterpartyDocumentReceived()&lt;/value&gt;
                     <cmmn:standardEvent>complete</cmmn:standardEvent>
                 </cmmn:planItemOnPart>
             </cmmn:sentry>
-            <cmmn:sentry id="id-375" ns8:originalEvent="activity-stopped">
-                <cmmn:planItemOnPart sourceRef="id-195" id="id-374" ns8:sourceId="id-194" ns8:title="Подписание входящего договора компанией" ns8:nodeType="{http://www.citeck.ru/model/icaseEvent/1.0}activityStoppedEvent">
-                    <cmmn:standardEvent>complete</cmmn:standardEvent>
+            <cmmn:sentry id="id-376" ns8:originalEvent="activity-stopped">
+                <cmmn:planItemOnPart sourceRef="id-381" id="id-374" ns8:sourceId="id-375" ns8:title="Таймер ожидания подтверждения подписания" ns8:nodeType="{http://www.citeck.ru/model/icaseEvent/1.0}activityStoppedEvent">
+                    <cmmn:standardEvent>occur</cmmn:standardEvent>
                 </cmmn:planItemOnPart>
             </cmmn:sentry>
-            <cmmn:sentry id="id-378" ns8:originalEvent="case-properties-changed">
-                <cmmn:planItemOnPart id="id-377" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/icaseEvent/1.0}casePropertiesChanged">
+            <cmmn:sentry id="id-379" ns8:originalEvent="case-properties-changed">
+                <cmmn:planItemOnPart id="id-378" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/icaseEvent/1.0}casePropertiesChanged">
                     <cmmn:standardEvent>resume</cmmn:standardEvent>
                 </cmmn:planItemOnPart>
                 <cmmn:ifPart>
@@ -1411,6 +1412,11 @@ isEdiConterpartyDocumentReceived()&lt;/value&gt;
 &lt;/conditionsList&gt;
 ]]&gt;</cmmn:condition>
                 </cmmn:ifPart>
+            </cmmn:sentry>
+            <cmmn:sentry id="id-383" ns8:originalEvent="activity-stopped">
+                <cmmn:planItemOnPart sourceRef="id-195" id="id-382" ns8:sourceId="id-194" ns8:title="Подписание входящего договора компанией" ns8:nodeType="{http://www.citeck.ru/model/icaseEvent/1.0}activityStoppedEvent">
+                    <cmmn:standardEvent>complete</cmmn:standardEvent>
+                </cmmn:planItemOnPart>
             </cmmn:sentry>
             <cmmn:stage xmlns:ns9="http://www.citeck.ru/model/activity/1.0" xmlns:ns10="http://www.citeck.ru/model/lifecycle/1.0" autoComplete="false" name="941d4a8a-1dd5-4cdb-9024-1229aa157abc" id="id-13" ns9:actualEndDate="" ns9:manualStopped="true" ns9:manualStarted="false" ns9:index="0" ns9:plannedEndDate="" ns8:startCompletnessLevels="" ns10:state="Not started" ns9:typeVersion="" ns9:plannedStartDate="" ns9:repeatable="true" ns9:actualStartDate="" ns8:stopCompletnessLevels="" ns8:title="Инициализация кейса">
                 <cmmn:planItem definitionRef="id-15" id="id-16">
@@ -1949,6 +1955,7 @@ confirmUtils.canCancelDecision()&lt;/value&gt;
             </cmmn:stage>
             <cmmn:task xmlns:ns9="http://www.citeck.ru/model/action/1.0" xmlns:ns10="http://www.citeck.ru/model/activity/1.0" xmlns:ns11="http://www.citeck.ru/model/grant-permission/1.0" xmlns:ns12="http://www.citeck.ru/model/lifecycle/1.0" isBlocking="false" name="4bd1f11f-a004-410a-adf2-2f3f99db9e7b" id="id-371" ns9:execute-script.script="&lt;import resource=&quot;classpath:alfresco/module/contracts-repo/script/contract-cm-handlers.js&quot;&gt;&#xA;resetCase();" ns10:actualEndDate="" ns10:manualStopped="false" ns10:manualStarted="true" ns11:inherits="true" ns10:index="20" ns8:startCompletnessLevels="" ns12:state="Not started" ns10:typeVersion="" ns10:repeatable="true" ns10:actualStartDate="" ns11:owner="admin" ns8:stopCompletnessLevels="" ns8:nodeType="{http://www.citeck.ru/model/action/1.0}execute-script" ns8:title="Reset activities, remove documents, events and workflows"/>
             <cmmn:stage xmlns:ns9="http://www.citeck.ru/model/activity/1.0" xmlns:ns10="http://www.citeck.ru/model/invariants/1.0" xmlns:ns11="http://www.citeck.ru/model/attribute/1.0" xmlns:ns12="http://www.citeck.ru/model/lifecycle/1.0" autoComplete="false" name="13088f57-1db4-49d3-a125-b6054507fd11" id="id-242" ns9:manualStopped="true" ns10:isDraft="false" ns9:manualStarted="true" ns9:index="21" ns9:autoEvents="false" ns8:startCompletnessLevels="" ns11:isDocument="false" ns12:state="Not started" ns10:canReturnToDraft="false" ns9:typeVersion="1" ns8:caseStatus="signing" ns9:repeatable="true" ns11:isContainer="false" ns8:stopCompletnessLevels="" ns8:title="Ожидание подтверждения подписания"/>
+            <cmmn:timerEventListener xmlns:ns9="http://www.citeck.ru/model/case/timer/1.0" xmlns:ns10="http://www.citeck.ru/model/activity/1.0" xmlns:ns11="http://www.citeck.ru/model/invariants/1.0" xmlns:ns12="http://www.citeck.ru/model/attribute/1.0" xmlns:ns13="http://www.citeck.ru/model/lifecycle/1.0" name="942d0a93-a057-4181-ae30-734378609507" id="id-375" ns9:timerExpression="(function() {&#xA;var date = new Date()&#xA;date.setMinutes(date.getMinutes() + 10);&#xA;return date;&#xA;})()" ns10:manualStopped="false" ns9:datePrecision="MINUTE" ns11:isDraft="false" ns10:manualStarted="false" ns10:index="999999" ns10:autoEvents="false" ns9:expressionType="SCRIPT" ns12:isDocument="false" ns13:state="Not started" ns11:canReturnToDraft="false" ns10:typeVersion="1" ns10:repeatable="true" ns12:isContainer="false" ns8:nodeType="{http://www.citeck.ru/model/case/timer/1.0}timer" ns8:title="Таймер ожидания подтверждения подписания"/>
         </cmmn:casePlanModel>
         <cmmn:caseRoles>
             <cmmn:role name="Согласующие" id="id-2" ns8:roleVarName="confirmers" ns8:referenceRoleAssoc="confirmers" ns8:roleAssignees="" ns8:roleScript="&lt;import resource=&quot;classpath:alfresco/module/contracts-repo/script/contract-cm-roles.js&quot;&gt;&#xA;roles.getAssignees()" ns8:isReferenceRole="false" ns8:nodeType="{http://www.citeck.ru/model/icaseRole/1.0}scriptRole"/>
