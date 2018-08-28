@@ -72,8 +72,8 @@ export default class NodeHeader extends NodeCardlet {
         let extensionImg;
         if (data.fileExtension) {
             extensionImg = <img src={`/share/res/components/images/filetypes/${data.fileExtension}-file-48.png`}
-                                onError="this.src='/share/res/components/images/filetypes/generic-file-48.png'"
-                                title={data.displayName} className="node-thumbnail" width="48"/>
+                                onError={(e) => { e.target.src='/share/res/components/images/filetypes/generic-file-48.png' }}
+                                className="node-thumbnail" width="48"/>
         } else {
             extensionImg = <div/>
         }

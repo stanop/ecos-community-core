@@ -11,6 +11,8 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.preference.PreferenceService;
 import org.alfresco.service.cmr.rating.RatingService;
+import org.alfresco.service.cmr.repository.ContentService;
+import org.alfresco.service.cmr.repository.MimetypeService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AccessStatus;
@@ -60,6 +62,7 @@ public class NodeInfoGet extends AbstractWebScript {
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
     private PreferenceService preferenceService;
+    private MimetypeService mimetypeService;
 
     private Map<String, Method> fillMethods = new HashMap<>();
 
@@ -164,8 +167,13 @@ public class NodeInfoGet extends AbstractWebScript {
     }
 
     private String fillFileExtension(RequestContext context) {
-        String name = (String) context.getProps().get(ContentModel.PROP_NAME);
-        return name == null ? "" : FilenameUtils.getExtension(name);
+        String extension = "";
+        if (dictionaryService.isSubClass(context.getType(), ContentModel.TYPE_CONTENT)) {
+            String name = (String) context.getProps().get(ContentModel.PROP_NAME);
+            String mimetype = mimetypeService.guessMimetype(name);
+            extension = mimetypeService.getExtension(mimetype);
+        }
+        return extension;
     }
 
     private String fillDisplayName(RequestContext context) {
@@ -284,6 +292,7 @@ public class NodeInfoGet extends AbstractWebScript {
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.ratingService = serviceRegistry.getRatingService();
         this.dictionaryService = serviceRegistry.getDictionaryService();
+        this.mimetypeService = serviceRegistry.getMimetypeService();
     }
 
     private class RequestContext {
