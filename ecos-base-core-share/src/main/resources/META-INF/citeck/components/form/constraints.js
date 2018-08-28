@@ -240,7 +240,9 @@
                                         },
                                         {
                                             baseRef: params.baseRef,
-                                            rootAttributeName: params.rootAttributeName
+                                            rootAttributeName: params.rootAttributeName,
+                                            parentRuntime: params.parentRuntime,
+                                            virtualParent: params.virtualParent
                                         }
                                     );
                                 } else {
