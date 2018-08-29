@@ -17,8 +17,10 @@ import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.constants.DocumentHistoryConstants;
 import ru.citeck.ecos.history.HistoryRemoteService;
+import ru.citeck.ecos.history.filter.Criteria;
 import ru.citeck.ecos.history.impl.HistoryGetService;
 import ru.citeck.ecos.model.IdocsModel;
+import ru.citeck.ecos.spring.registry.MappingRegistry;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -42,6 +44,7 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
      */
     private static final String PARAM_DOCUMENT_NODE_REF = "nodeRef";
     private static final String PARAM_EVENTS = "events";
+    private static final String PARAM_FILTER = "filter";
 
     /**
      * Global properties
@@ -63,6 +66,8 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
 
     @Autowired
     private ServiceRegistry serviceRegistry;
+
+    private MappingRegistry<String, Criteria> filterRegistry;
 
     /**
      * Execute implementation
@@ -96,6 +101,18 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         } else {
             historyRecordMaps = historyGetService.getHistoryEventsByDocumentRef(documentRef);
         }
+
+        String filterParam = req.getParameter(PARAM_FILTER);
+        if (StringUtils.isNotBlank(filterParam)) {
+            Criteria filterCriteria = filterRegistry.getMapping().get(filterParam);
+            if (filterCriteria == null) {
+                status.setCode(Status.STATUS_BAD_REQUEST, "Filter with id: " + filterParam + " not found");
+                return null;
+            }
+
+            historyRecordMaps = filterCriteria.meetCriteria(historyRecordMaps);
+        }
+
         Map<String, Object> result = new HashMap<>();
         result.put("jsonResult", createJsonResponse(historyRecordMaps, includeEvents));
         return result;
@@ -243,5 +260,9 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
 
     public void setHistoryGetService(HistoryGetService historyGetService) {
         this.historyGetService = historyGetService;
+    }
+
+    public void setFilterRegistry(MappingRegistry<String, Criteria> filterRegistry) {
+        this.filterRegistry = filterRegistry;
     }
 }
