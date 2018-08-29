@@ -459,6 +459,8 @@
         <property name="namespaceService" ref="namespaceService"/>
     </bean>
 
+    <bean id="historyFilter.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
+
     <bean id="VersionsCommentFormEditFilter" class="ru.citeck.ecos.template.VersionsCommentFormFilter" parent="baseFormFilter">
         <property name="filterRegistry" ref="nodeFilterRegistry" />
         <property name="nodeService" ref="NodeService" />
