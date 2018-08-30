@@ -10,7 +10,7 @@ import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
-import ru.citeck.ecos.journals.records.RecordsResult;
+import ru.citeck.ecos.journals.records.JournalRecordsResult;
 
 import java.io.IOException;
 
@@ -28,7 +28,7 @@ public class GetRecordsIdPost extends AbstractWebScript {
         Request request = parseRequest(webScriptRequest);
         JournalDataSource dataSource = findJournalDataSource(request.datasource);
         GqlContext gqlContext = new GqlContext(serviceRegistry);
-        RecordsResult ids = null;
+        JournalRecordsResult ids = null;
         try {
             ids = dataSource.queryIds(gqlContext, request.query, request.language, request.jGqlPageInfoInput);
         } catch (Exception e) {

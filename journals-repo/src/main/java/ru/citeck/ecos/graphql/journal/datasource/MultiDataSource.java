@@ -1,22 +1,22 @@
 package ru.citeck.ecos.graphql.journal.datasource;
 
-import org.apache.commons.lang3.StringUtils;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.JGqlSortBy;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.journal.response.JournalData;
-import ru.citeck.ecos.journals.records.RecordsResult;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.journals.records.JournalRecordsResult;
 import ru.citeck.ecos.providers.ApplicationContextProvider;
-import ru.citeck.ecos.repo.RemoteRef;
+import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.RecordRef;
 
 import java.util.*;
 
-public class MultiDataSource implements JournalDataSource {
+public class MultiDataSource /*implements JournalDataSource*/ {
 
-    private static final String DATASOURCE_NOT_SUPPORT_SPLIT_LOADING_ERROR_MESSAGE_PATTERN = "MultiDataSource can " +
+    /*private static final String DATASOURCE_NOT_SUPPORT_SPLIT_LOADING_ERROR_MESSAGE_PATTERN = "MultiDataSource can " +
             "works only with datasources that supports split loading. Problematic datasource is %s";
 
     private List<String> journalDataSources;
@@ -35,11 +35,12 @@ public class MultiDataSource implements JournalDataSource {
     }
 
     @Override
-    public RecordsResult queryIds(GqlContext context,
-                                  String query,
-                                  String language,
-                                  JGqlPageInfoInput pageInfo) throws Exception {
-        RecordsResult concatenatedRecordsResult = null;
+    public JournalRecordsResult queryIds(GqlContext context,
+                                         String query,
+                                         String language,
+                                         JGqlPageInfoInput pageInfo) throws Exception {
+
+        JournalRecordsResult concatenatedRecordsResult = null;
         for (String dataSourceBeanName : journalDataSources) {
             JournalDataSource dataSource = findDataSource(dataSourceBeanName);
             if (!dataSource.isSupportsSplitLoading()) {
@@ -48,15 +49,15 @@ public class MultiDataSource implements JournalDataSource {
                         dataSourceBeanName));
             }
             JGqlPageInfoInput nextPageInfo = constructPageInfoForNextSearch(concatenatedRecordsResult, pageInfo);
-            RecordsResult nextRecordsResult = dataSource.queryIds(context, query, language, nextPageInfo);
+            JournalRecordsResult nextRecordsResult = dataSource.queryIds(context, query, language, nextPageInfo);
             concatenatedRecordsResult = concatenateRecordsResult(concatenatedRecordsResult, nextRecordsResult);
         }
         return concatenatedRecordsResult;
     }
 
-    private RecordsResult concatenateRecordsResult(RecordsResult concatenatedRecordsResult, RecordsResult nextRecordsResult) {
+    private JournalRecordsResult concatenateRecordsResult(JournalRecordsResult concatenatedRecordsResult, JournalRecordsResult nextRecordsResult) {
         if (concatenatedRecordsResult == null && nextRecordsResult == null) {
-            return new RecordsResult(Collections.emptyList(), false, 0, 0, 10);
+            return new JournalRecordsResult(Collections.emptyList(), false, 0, 0, 10);
         }
 
         if (concatenatedRecordsResult == null) {
@@ -71,14 +72,14 @@ public class MultiDataSource implements JournalDataSource {
         int maxItems = concatenatedRecordsResult.maxItems;
         int skipCount = concatenatedRecordsResult.skipCount;
         boolean hasNext = totalCount > (maxItems + skipCount);
-        List<RemoteRef> records = concatenateRecordItems(
+        List<RecordRef> records = concatenateRecordItems(
                 concatenatedRecordsResult.records, nextRecordsResult.records, maxItems);
 
-        return new RecordsResult(records, hasNext, totalCount, skipCount, maxItems);
+        return new JournalRecordsResult(records, hasNext, totalCount, skipCount, maxItems);
     }
 
-    private List<RemoteRef> concatenateRecordItems(List<RemoteRef> concatenatedRecords,
-                                                   List<RemoteRef> nextRecords,
+    private List<RecordRef> concatenateRecordItems(List<RecordRef> concatenatedRecords,
+                                                   List<RecordRef> nextRecords,
                                                    int maxItems) {
         if (isNullOrEmpty(concatenatedRecords) && isNullOrEmpty(nextRecords)) {
             return Collections.emptyList();
@@ -96,8 +97,8 @@ public class MultiDataSource implements JournalDataSource {
             return concatenatedRecords;
         }
 
-        List<RemoteRef> result = new ArrayList<>(concatenatedRecords);
-        for (RemoteRef remoteRef : nextRecords) {
+        List<RecordRef> result = new ArrayList<>(concatenatedRecords);
+        for (RecordRef remoteRef : nextRecords) {
             if (result.size() >= maxItems) {
                 return result;
             }
@@ -111,15 +112,15 @@ public class MultiDataSource implements JournalDataSource {
         return collection == null || collection.isEmpty();
     }
 
-    private long sumTotalCount(RecordsResult concatenatedRecordsResult, RecordsResult nextRecordsResult) {
+    private long sumTotalCount(JournalRecordsResult concatenatedRecordsResult, JournalRecordsResult nextRecordsResult) {
         long concatenatedTotalCount = concatenatedRecordsResult.totalCount;
         long nextTotalCount = nextRecordsResult.totalCount;
         return concatenatedTotalCount + nextTotalCount;
     }
 
     @Override
-    public List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
-                                                      List<RemoteRef> remoteRefList) {
+    public List<MetaValue> convertToGqlValue(GqlContext context,
+                                             List<RecordRef> remoteRefList) {
         return null;
     }
 
@@ -149,28 +150,7 @@ public class MultiDataSource implements JournalDataSource {
         return true;
     }
 
-    private RecordsResult buildRecordsResultForCurrentServer(JournalDataSource dataSource,
-                                                             RecordsResult recordsResult) {
-        String serverId = dataSource.getServerId();
-        if (StringUtils.isBlank(serverId)) {
-            serverId = "";
-        }
-        long totalCount = recordsResult.totalCount;
-        int maxItems = recordsResult.maxItems;
-        int skipCount = recordsResult.skipCount;
-        boolean hasNext = recordsResult.hasNext;
-        List<RemoteRef> records = new ArrayList<>();
-
-        for (RemoteRef remoteRef : recordsResult.records) {
-            if (serverId.equals(remoteRef.getServerId())) {
-                records.add(remoteRef);
-            }
-        }
-
-        return new RecordsResult(records, hasNext, totalCount, skipCount, maxItems);
-    }
-
-    private JGqlPageInfoInput constructPageInfoForNextSearch(RecordsResult concatenatedRecordsResult,
+    private JGqlPageInfoInput constructPageInfoForNextSearch(JournalRecordsResult concatenatedRecordsResult,
                                                              JGqlPageInfoInput pageInfoInput) {
         if (concatenatedRecordsResult == null) {
             return pageInfoInput;
@@ -333,5 +313,5 @@ public class MultiDataSource implements JournalDataSource {
 
     public void setJournalDataSources(List<String> journalDataSources) {
         this.journalDataSources = journalDataSources;
-    }
+    }*/
 }

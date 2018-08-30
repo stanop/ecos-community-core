@@ -1,12 +1,12 @@
-package ru.citeck.ecos.graphql.journal.datasource.alfnode;
+package ru.citeck.ecos.graphql.meta.alfnode;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
-import ru.citeck.ecos.graphql.journal.record.attribute.JGqlReflectionAttributeGql;
+import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
+import ru.citeck.ecos.graphql.meta.attribute.MetaReflectionAttribute;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
@@ -14,7 +14,7 @@ import ru.citeck.ecos.graphql.node.GqlQName;
 import java.util.Date;
 import java.util.Optional;
 
-public class AlfNodeAttributeValue implements JGqlAttributeValue {
+public class AlfNodeAttributeValue implements MetaValue {
 
     private Object rawValue;
     private GqlAlfNode alfNode;
@@ -52,12 +52,12 @@ public class AlfNodeAttributeValue implements JGqlAttributeValue {
     }
 
     @Override
-    public Optional<JGqlAttribute> attr(String name) {
+    public Optional<MetaAttribute> att(String name) {
         if (alfNode != null) {
             Attribute attribute = alfNode.attribute(name);
             return Optional.of(new AlfNodeAttribute(attribute, context));
         } else if (qName != null) {
-            return Optional.of(new JGqlReflectionAttributeGql(qName, name));
+            return Optional.of(new MetaReflectionAttribute(qName, name));
         }
         return Optional.empty();
     }

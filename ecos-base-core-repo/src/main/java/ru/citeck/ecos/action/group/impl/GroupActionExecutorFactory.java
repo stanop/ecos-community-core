@@ -2,14 +2,17 @@ package ru.citeck.ecos.action.group.impl;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
+import org.alfresco.util.Pair;
 import ru.citeck.ecos.action.group.*;
-import ru.citeck.ecos.repo.RemoteRef;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class GroupActionExecutorFactory implements GroupActionFactory {
+public class GroupActionExecutorFactory implements GroupActionFactory<RecordRef> {
 
     private static final String BATCH_PARAM_KEY = "evaluateBatch";
 
@@ -24,7 +27,7 @@ public class GroupActionExecutorFactory implements GroupActionFactory {
     }
 
     @Override
-    public GroupAction createAction(GroupActionConfig config) {
+    public GroupAction<RecordRef> createAction(GroupActionConfig config) {
         GroupActionConfig actionConfig = config;
         boolean isBatch = Boolean.TRUE.toString().equals(config.getParams().get(BATCH_PARAM_KEY));
         if (isBatch) {
@@ -46,33 +49,43 @@ public class GroupActionExecutorFactory implements GroupActionFactory {
         return executor.getMandatoryParams();
     }
 
-    private class BatchAction extends TxnGroupAction {
+    private Optional<NodeRef> getNodeRef(RecordRef recordRef) {
+        if (recordRef.getSourceId().isEmpty() ||
+                AlfNodesRecordsDAO.ID.equals(recordRef.getSourceId())) {
+            return Optional.of(new NodeRef(recordRef.getId()));
+        }
+        return Optional.empty();
+    }
+
+    private class BatchAction extends TxnGroupAction<RecordRef> {
 
         BatchAction(GroupActionConfig config) {
             super(transactionService, config);
         }
 
         @Override
-        protected boolean isApplicable(RemoteRef nodeRef) {
-            return executor.isApplicable(nodeRef.getNodeRef(), config.getParams());
+        protected boolean isApplicable(RecordRef recordRef) {
+            return true;
         }
 
         @Override
-        protected void processNodesInTxn(List<RemoteRef> nodes, List<ActionResult> output) {
+        protected void processNodesInTxn(List<RecordRef> nodes, List<ActionResult<RecordRef>> output) {
 
             List<NodeRef> nodeRefs = nodes.stream()
-                    .filter(node -> {
-                        boolean isApplicable = node.isLocal() && isApplicable(node);
+                    .map(node -> new Pair<>(node, getNodeRef(node)))
+                    .filter(nodePair -> {
+                        NodeRef nodeRef = nodePair.getSecond().orElse(null);
+                        boolean isApplicable = nodeRef != null && executor.isApplicable(nodeRef, config.getParams());
                         if (!isApplicable) {
-                            output.add(new ActionResult(node, ActionStatus.STATUS_SKIPPED));
+                            output.add(new ActionResult<>(nodePair.getFirst(), ActionStatus.STATUS_SKIPPED));
                         }
                         return isApplicable;
                     })
-                    .map(RemoteRef::getNodeRef)
+                    .map(p -> p.getSecond().get())
                     .collect(Collectors.toList());
 
             Map<NodeRef, ActionStatus> results = executor.invokeBatch(nodeRefs, config.getParams());
-            results.forEach((ref, res) -> output.add(new ActionResult(new RemoteRef(ref), res)));
+            results.forEach((ref, res) -> output.add(new ActionResult<>(new RecordRef(ref.toString()), res)));
         }
 
         @Override
@@ -81,20 +94,23 @@ public class GroupActionExecutorFactory implements GroupActionFactory {
         }
     }
 
-    private class SimpleAction extends TxnGroupAction {
+
+    private class SimpleAction extends TxnGroupAction<RecordRef> {
 
         SimpleAction(GroupActionConfig config) {
             super(transactionService, config);
         }
 
         @Override
-        protected boolean isApplicable(RemoteRef nodeRef) {
-            return executor.isApplicable(nodeRef.getNodeRef(), config.getParams());
+        protected boolean isApplicable(RecordRef recordRef) {
+            Optional<NodeRef> nodeRef = getNodeRef(recordRef);
+            return nodeRef.isPresent() && executor.isApplicable(nodeRef.get(), config.getParams());
         }
 
         @Override
-        protected ActionStatus processImpl(RemoteRef nodeRef) {
-            executor.invoke(nodeRef.getNodeRef(), config.getParams());
+        protected ActionStatus processImpl(RecordRef recordRef) {
+            Optional<NodeRef> nodeRef = getNodeRef(recordRef);
+            nodeRef.ifPresent(nodeRef1 -> executor.invoke(nodeRef1, config.getParams()));
             return new ActionStatus(ActionStatus.STATUS_OK);
         }
 

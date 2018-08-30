@@ -1,19 +1,17 @@
 package ru.citeck.ecos.action.group;
 
-import ru.citeck.ecos.repo.RemoteRef;
-
 import java.util.List;
 
 /**
  * @author Pavel Simonov
  */
-public interface GroupAction {
+public interface GroupAction<T> {
 
-    void process(RemoteRef nodeRef);
+    void process(T nodeId);
 
-    List<ActionResult> complete();
+    List<ActionResult<T>> complete();
 
-    List<ActionResult> cancel();
+    List<ActionResult<T>> cancel();
 
     boolean isAsync();
 

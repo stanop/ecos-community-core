@@ -1,11 +1,12 @@
-package ru.citeck.ecos.graphql.journal.record;
+package ru.citeck.ecos.graphql.meta.value;
 
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
+import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
 
 import java.util.Optional;
 
-public interface JGqlAttributeValue {
+public interface MetaValue {
 
     @GraphQLField
     String id();
@@ -14,5 +15,5 @@ public interface JGqlAttributeValue {
     String str();
 
     @GraphQLField
-    Optional<JGqlAttribute> attr(@GraphQLName("name") String name);
+    Optional<MetaAttribute> att(@GraphQLName("name") String name);
 }

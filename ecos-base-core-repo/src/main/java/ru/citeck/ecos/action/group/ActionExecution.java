@@ -1,15 +1,13 @@
 package ru.citeck.ecos.action.group;
 
-import ru.citeck.ecos.repo.RemoteRef;
-
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ActionExecution {
+public class ActionExecution<T> {
 
-    private Iterable<RemoteRef> nodes;
-    private GroupAction action;
+    private Iterable<T> nodes;
+    private GroupAction<T> action;
 
     private boolean cancelled = false;
     private AtomicBoolean started = new AtomicBoolean();
@@ -18,13 +16,13 @@ public class ActionExecution {
     private long timeoutTime;
     private String author;
 
-    ActionExecution(Iterable<RemoteRef> nodes, GroupAction action, String author) {
+    ActionExecution(Iterable<T> nodes, GroupAction<T> action, String author) {
         this.nodes = nodes;
         this.action = action;
         this.author = author;
     }
 
-    List<ActionResult> run() {
+    List<ActionResult<T>> run() {
 
         startedTime = System.currentTimeMillis();
         long timeout = action.getTimeout();
@@ -34,7 +32,7 @@ public class ActionExecution {
             throw new IllegalStateException("Execution already started! " + toString());
         }
 
-        for (RemoteRef ref : nodes) {
+        for (T ref : nodes) {
             action.process(ref);
             if (cancelled) {
                 break;
@@ -78,7 +76,7 @@ public class ActionExecution {
         return started.get();
     }
 
-    public GroupAction getAction() {
+    public GroupAction<T> getAction() {
         return action;
     }
 

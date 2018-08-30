@@ -6,7 +6,7 @@ import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.datasource.RemoteJournalDataSource;
-import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.CriteriaAlfNodesSearch;
+import ru.citeck.ecos.records.source.alfnode.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.journals.JournalType;
 
 import java.util.HashMap;

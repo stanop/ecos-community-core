@@ -1,14 +1,14 @@
-package ru.citeck.ecos.graphql.journal.datasource.alfnode;
+package ru.citeck.ecos.graphql.meta.alfnode;
 
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
+import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.Attribute;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AlfNodeAttribute implements JGqlAttribute {
+public class AlfNodeAttribute implements MetaAttribute {
 
     private String name;
     private Attribute attribute;
@@ -33,7 +33,7 @@ public class AlfNodeAttribute implements JGqlAttribute {
     }
 
     @Override
-    public List<JGqlAttributeValue> val() {
+    public List<MetaValue> val() {
         if (values == null) {
             values = attribute.getValues();
         }

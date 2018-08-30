@@ -35,7 +35,7 @@
             for (var idx in actionResults) {
                 var result = actionResults[idx];
                 results.push({
-                    nodeRef: result.remoteRef.toString(),
+                    nodeRef: result.nodeId.toString(),
                     status: result.status.key,
                     message: result.status.message,
                     url: result.status.url

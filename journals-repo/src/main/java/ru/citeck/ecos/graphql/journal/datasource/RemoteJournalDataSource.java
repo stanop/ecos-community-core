@@ -21,13 +21,13 @@ import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.graphql.journal.response.converter.impl.SplitLoadingResponseConverter;
-import ru.citeck.ecos.journals.records.RecordsResult;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.journals.records.JournalRecordsResult;
 import ru.citeck.ecos.providers.ApplicationContextProvider;
-import ru.citeck.ecos.repo.RemoteRef;
+import ru.citeck.ecos.records.RecordRef;
 
 import java.io.IOException;
 import java.net.URI;
@@ -83,16 +83,16 @@ public class RemoteJournalDataSource implements JournalDataSource {
     }
 
     @Override
-    public RecordsResult queryIds(GqlContext context,
-                                  String query,
-                                  String language,
-                                  JGqlPageInfoInput pageInfo) {
+    public JournalRecordsResult queryIds(GqlContext context,
+                                         String query,
+                                         String language,
+                                         JGqlPageInfoInput pageInfo) {
         try {
             String postData = prepareDataForGettingIds(query, language, pageInfo);
             URI url = URIBuilder.fromUri(serverHost + REMOTE_GET_ID_METHOD).build();
             String responseDataString = postDataToRemote(url, postData);
-            RecordsResult responseData = objectMapper.readValue(responseDataString, RecordsResult.class);
-            return appendServerIdToRefs(responseData);
+            JournalRecordsResult responseData = objectMapper.readValue(responseDataString, JournalRecordsResult.class);
+            return responseData;
         } catch (IOException e) {
             logger.error(e);
         }
@@ -100,15 +100,15 @@ public class RemoteJournalDataSource implements JournalDataSource {
     }
 
     @Override
-    public List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
-                                                      List<RemoteRef> remoteRefList) {
+    public List<MetaValue> convertToGqlValue(GqlContext context,
+                                             List<RecordRef> remoteRefList) {
         return null;
     }
 
     @Override
     public JournalData queryMetadata(String gqlQuery,
                                      String dataSourceBeanName,
-                                     RecordsResult recordsResult) {
+                                     JournalRecordsResult recordsResult) {
         try {
             String postData = prepareDataForGettingMetadata(gqlQuery, recordsResult);
             URI url = URIBuilder.fromUri(serverHost + REMOTE_GET_METADATA_METHOD).build();
@@ -142,21 +142,21 @@ public class RemoteJournalDataSource implements JournalDataSource {
         return datasource.isSupportsSplitLoading();
     }
 
-    private RecordsResult appendServerIdToRefs(RecordsResult prev) {
+    /*private JournalRecordsResult appendServerIdToRefs(JournalRecordsResult prev) {
         if (prev == null || prev.records == null) {
             return prev;
         }
 
-        List<RemoteRef> remoteRefList = new ArrayList<>(prev.records.size());
+        List<RecordRef> remoteRefList = new ArrayList<>(prev.records.size());
         prev.records.forEach(remoteRef -> {
             if (remoteRef.isRemote()) {
                 remoteRefList.add(remoteRef);
             } else {
-                remoteRefList.add(new RemoteRef(serverId, remoteRef.toString()));
+                remoteRefList.add(new RecordRef(serverId, remoteRef.toString()));
             }
         });
-        return new RecordsResult(remoteRefList, prev.hasNext, prev.totalCount, prev.skipCount, prev.maxItems);
-    }
+        return new JournalRecordsResult(remoteRefList, prev.hasNext, prev.totalCount, prev.skipCount, prev.maxItems);
+    }*/
 
     private String prepareDataForGettingIds(String query, String language, JGqlPageInfoInput pageInfo)
             throws JsonProcessingException {
@@ -166,18 +166,18 @@ public class RemoteJournalDataSource implements JournalDataSource {
     }
 
     private JournalData appendServerIdToRefs(JournalData journalData) {
-        List<LinkedHashMap> records = journalData.getData().getJournalRecords().getRecords();
+        /*List<LinkedHashMap> records = journalData.getData().getJournalRecords().getRecords();
         for (LinkedHashMap map : records) {
             String id = (String) map.get("id");
             if (id != null) {
-                RemoteRef remoteRef = new RemoteRef(serverId, id);
+                RecordRef remoteRef = new RecordRef(serverId, id);
                 map.put("id", remoteRef.toString());
             }
-        }
+        }*/
         return journalData;
     }
 
-    private String prepareDataForGettingMetadata(String gqlQuery, RecordsResult recordsResult)
+    private String prepareDataForGettingMetadata(String gqlQuery, JournalRecordsResult recordsResult)
             throws JsonProcessingException {
         GetMetadataRequest requestData = new GetMetadataRequest();
         requestData.remoteRefs = recordsResult.records;
@@ -249,7 +249,7 @@ public class RemoteJournalDataSource implements JournalDataSource {
     private static class GetMetadataRequest {
         public String datasource;
         public String gqlQuery;
-        public List<RemoteRef> remoteRefs;
+        public List<RecordRef> remoteRefs;
         public Map<String, Object> additionalData;
     }
 

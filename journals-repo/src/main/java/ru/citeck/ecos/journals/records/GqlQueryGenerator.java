@@ -19,25 +19,22 @@ public class GqlQueryGenerator {
     private static final Pattern FORMATTER_ATTRIBUTES_PATTERN = Pattern.compile(
             "['\"]\\s*?(\\S+?:\\S+?\\s*?(,\\s*?\\S+?:\\S+?\\s*?)*?)['\"]"
     );
+    private static final String RECORD_FIELDS_PLACEHOLDER = "__RECORD_FIELDS__";
 
     private ServiceRegistry serviceRegistry;
     private NamespaceService namespaceService;
 
     private ConcurrentHashMap<String, String> gqlQueryWithDataByJournalId = new ConcurrentHashMap<>();
 
-
     public String generate(JournalType journalType, String baseQuery, JournalDataSource dataSource) {
         return gqlQueryWithDataByJournalId.computeIfAbsent(journalType.getId(),
                 id -> generateGqlQueryWithData(journalType, baseQuery, dataSource));
     }
 
-
     private String generateGqlQueryWithData(JournalType journalType, String baseQuery, JournalDataSource dataSource) {
 
         StringBuilder schemaBuilder = new StringBuilder();
-        schemaBuilder.append(baseQuery).append(" ");
 
-        schemaBuilder.append("fragment recordsFields on JGqlAttributeValue {");
         schemaBuilder.append("id\n");
 
         int attrCounter = 0;
@@ -54,7 +51,7 @@ public class GqlQueryGenerator {
 
             schemaBuilder.append("a")
                     .append(attrCounter++)
-                    .append(":attr(name:\"")
+                    .append(":att(name:\"")
                     .append(prefixedKey)
                     .append("\"){");
 
@@ -64,9 +61,7 @@ public class GqlQueryGenerator {
             schemaBuilder.append("}");
         }
 
-        schemaBuilder.append("}");
-
-        return schemaBuilder.toString();
+        return baseQuery.replaceFirst(RECORD_FIELDS_PLACEHOLDER, schemaBuilder.toString());
     }
 
 
@@ -106,7 +101,7 @@ public class GqlQueryGenerator {
         for (String attrName : attributesToLoad) {
             schemaBuilder.append("a")
                     .append(attrCounter++)
-                    .append(":attr(name:\"")
+                    .append(":att(name:\"")
                     .append(attrName).append("\")")
                     .append("{name val{str}}")
                     .append(",");

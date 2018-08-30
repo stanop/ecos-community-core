@@ -1,24 +1,22 @@
 package ru.citeck.ecos.action.group;
 
-import ru.citeck.ecos.repo.RemoteRef;
+public class ActionResult<T> {
 
-public class ActionResult {
-
-    private final RemoteRef remoteRef;
+    private final T nodeId;
     private final ActionStatus status;
 
-    public ActionResult(RemoteRef remoteRef, String statusId) {
-        this.remoteRef = remoteRef;
+    public ActionResult(T nodeId, String statusId) {
+        this.nodeId = nodeId;
         this.status = new ActionStatus(statusId);
     }
 
-    public ActionResult(RemoteRef remoteRef, ActionStatus status) {
-        this.remoteRef = remoteRef;
+    public ActionResult(T nodeId, ActionStatus status) {
+        this.nodeId = nodeId;
         this.status = status;
     }
 
-    public RemoteRef getRemoteRef() {
-        return remoteRef;
+    public T getNodeId() {
+        return nodeId;
     }
 
     public ActionStatus getStatus() {

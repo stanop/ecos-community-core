@@ -8,12 +8,15 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.journal.datasource.alfnode.AlfNodeRecord;
-import ru.citeck.ecos.repo.RemoteRef;
+import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeRecord;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
+import ru.citeck.ecos.records.RecordRef;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 @Component
 public class RecordsUtils {
@@ -25,49 +28,63 @@ public class RecordsUtils {
         this.nodeService = serviceRegistry.getNodeService();
     }
 
-    public List<JGqlAttributeValue> wrapToAttValue(GqlContext context, Iterable<NodeRef> nodeRefs) {
+    public List<MetaValue> wrapRecords(GqlContext context, Iterable<ru.citeck.ecos.records.RecordRef> recordRefs) {
+        return wrapNodeRefs(context, recordRefs, recordRef -> {
+            if (AlfNodesRecordsDAO.ID.equals(recordRef.getSourceId())) {
+                return new NodeRef(recordRef.getId());
+            }
+            return null;
+        });
+    }
 
-        if (nodeRefs == null) {
+    public List<MetaValue> wrapNodeRefs(GqlContext context, Iterable<NodeRef> nodeRefs) {
+        return wrapNodeRefs(context, nodeRefs, n -> n);
+    }
+
+    private <T> List<MetaValue> wrapNodeRefs(GqlContext context,
+                                                      Iterable<T> records,
+                                                      Function<T, NodeRef> converter) {
+        if (records == null) {
             return Collections.emptyList();
         }
 
-        List<JGqlAttributeValue> records = new ArrayList<>();
+        List<MetaValue> result = new ArrayList<>();
 
-        for (NodeRef nodeRef : nodeRefs) {
-            context.getNode(nodeRef)
-                    .ifPresent(n -> records.add(new AlfNodeRecord(n, context)));
+        for (T record : records) {
+            context.getNode(converter.apply(record))
+                    .ifPresent(n -> result.add(new AlfNodeRecord(n, context)));
         }
 
-        return records;
+        return result;
     }
 
-    public List<JGqlAttributeValue> wrapRefsToLocalValue(GqlContext context, Iterable<RemoteRef> remoteRefs) {
+    public List<MetaValue> wrapRefsToLocalValue(GqlContext context, Iterable<RecordRef> remoteRefs) {
         if (remoteRefs == null) {
             return Collections.emptyList();
         }
 
-        List<JGqlAttributeValue> records = new ArrayList<>();
+        List<MetaValue> records = new ArrayList<>();
 
-        remoteRefs.forEach(item -> {
+        /*remoteRefs.forEach(item -> {
             if (item.isLocal()) {
                 context.getNode(item.getNodeRef())
                         .ifPresent(nodeRef -> records.add(new AlfNodeRecord(nodeRef, context)));
             }
-        });
+        });*/
 
         return records;
     }
 
     public Long getRecordDbId(String recordId) {
         if (StringUtils.isNotBlank(recordId)) {
-            RemoteRef ref = new RemoteRef(recordId);
-            if (ref.isLocal()) {
+            RecordRef ref = new RecordRef(recordId);
+            /*if (ref.isLocal()) {
                 return (Long) nodeService.getProperty(ref.getNodeRef(), ContentModel.PROP_NODE_DBID);
             } else {
                 throw new IllegalArgumentException("Record ID is not local! recordId: " + recordId);
-            }
+            }*/
         } else {
-            return -1L;
         }
+        return -1L;
     }
 }

@@ -1,9 +1,9 @@
-package ru.citeck.ecos.graphql.journal.record.attribute;
+package ru.citeck.ecos.graphql.meta.attribute;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
+import ru.citeck.ecos.graphql.meta.value.MetaExplicitValue;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,14 +11,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class JGqlReflectionAttributeGql implements JGqlAttribute {
+public class MetaReflectionAttribute implements MetaAttribute {
 
-    private static final Log logger = LogFactory.getLog(JGqlReflectionAttributeGql.class);
+    private static final Log logger = LogFactory.getLog(MetaReflectionAttribute.class);
 
     private Object object;
     private String method;
 
-    public JGqlReflectionAttributeGql(Object object, String method) {
+    public MetaReflectionAttribute(Object object, String method) {
         if (object instanceof Optional) {
             this.object = ((Optional<?>) object).orElse(null);
         } else {
@@ -33,14 +33,14 @@ public class JGqlReflectionAttributeGql implements JGqlAttribute {
     }
 
     @Override
-    public List<JGqlAttributeValue> val() {
+    public List<MetaValue> val() {
         if (object == null || method == null) {
             return Collections.emptyList();
         }
         Class<?> clazz = object.getClass();
         try {
             Method method = clazz.getMethod(this.method);
-            JGqlAttributeValue value = new JGqlAttributeExplicitValue(method.invoke(object));
+            MetaValue value = new MetaExplicitValue(method.invoke(object));
             return Collections.singletonList(value);
         } catch (NoSuchMethodException e) {
             logger.error("Method " + method + " not found in " + clazz.getName(), e);

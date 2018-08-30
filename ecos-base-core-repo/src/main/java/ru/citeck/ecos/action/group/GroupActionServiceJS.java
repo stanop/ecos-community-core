@@ -5,7 +5,7 @@ import com.google.common.collect.Iterables;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import ru.citeck.ecos.repo.RemoteRef;
+import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
@@ -21,22 +21,22 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
     private ValueConverter converter = new ValueConverter();
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public ActionResult[] execute(Object nodes, String actionId, Object config) {
-        Iterable<RemoteRef> nodeRefs = toIterableNodes(nodes);
+    public ActionResult<RecordRef>[] execute(Object nodes, String actionId, Object config) {
+        Iterable<RecordRef> nodeRefs = toIterableNodes(nodes);
         return toArray(groupActionService.execute(nodeRefs, actionId, parseConfig(config)));
     }
 
-    public ActionResult[] execute(Object nodes, Consumer<RemoteRef> action) {
+    public ActionResult<RecordRef>[] execute(Object nodes, Consumer<RecordRef> action) {
         return execute(nodes, action, null);
     }
 
-    public ActionResult[] execute(Object nodes, Consumer<RemoteRef> action, Object config) {
-        Iterable<RemoteRef> nodeRefs = toIterableNodes(nodes);
+    public ActionResult<RecordRef>[] execute(Object nodes, Consumer<RecordRef> action, Object config) {
+        Iterable<RecordRef> nodeRefs = toIterableNodes(nodes);
         return toArray(groupActionService.execute(nodeRefs, action, parseConfig(config)));
     }
 
-    public ActionExecution[] getActiveActions() {
-        List<ActionExecution> executions = groupActionService.getActiveActions();
+    public ActionExecution<?>[] getActiveActions() {
+        List<ActionExecution<?>> executions = groupActionService.getActiveActions();
         return executions.toArray(new ActionExecution[executions.size()]);
     }
 
@@ -52,28 +52,30 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
         return objectMapper.convertValue(configObj, GroupActionConfig.class);
     }
 
-    private ActionResult[] toArray(List<ActionResult> results) {
-        return results.toArray(new ActionResult[results.size()]);
+    private <T> ActionResult<T>[] toArray(List<ActionResult<T>> results) {
+        @SuppressWarnings("unchecked")
+        ActionResult<T>[] result = new ActionResult[results.size()];
+        return results.toArray(result);
     }
 
-    private Iterable<RemoteRef> toIterableNodes(Object nodes) {
+    private Iterable<RecordRef> toIterableNodes(Object nodes) {
         Object jNodes = converter.convertValueForJava(nodes);
-        List<RemoteRef> resultList;
+        List<RecordRef> resultList;
         if (jNodes instanceof List) {
             resultList = new ArrayList<>();
             for (Object obj : (List) jNodes) {
-                resultList.add(JavaScriptImplUtils.getRemoteNodeRef(obj));
+                resultList.add(JavaScriptImplUtils.getRecordRef(obj));
             }
         } else if (jNodes instanceof JSONArray) {
             resultList = new ArrayList<>();
             JSONArray jsonArray = (JSONArray) jNodes;
             for (int i = 0; i < jsonArray.length(); i++) {
-                resultList.add(JavaScriptImplUtils.getRemoteNodeRef(jsonArray.opt(i)));
+                resultList.add(JavaScriptImplUtils.getRecordRef(jsonArray.opt(i)));
             }
         } else if (jNodes instanceof Iterable) {
             @SuppressWarnings("unchecked")
-            Iterable<RemoteRef> iterableNodes = (Iterable<RemoteRef>) jNodes;
-            return Iterables.transform(iterableNodes, JavaScriptImplUtils::getRemoteNodeRef);
+            Iterable<ru.citeck.ecos.records.RecordRef> iterableNodes = (Iterable<ru.citeck.ecos.records.RecordRef>) jNodes;
+            return Iterables.transform(iterableNodes, JavaScriptImplUtils::getRecordRef);
         } else {
             resultList = Collections.emptyList();
         }

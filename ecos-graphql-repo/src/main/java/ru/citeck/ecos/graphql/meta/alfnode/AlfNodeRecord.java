@@ -1,14 +1,14 @@
-package ru.citeck.ecos.graphql.journal.datasource.alfnode;
+package ru.citeck.ecos.graphql.meta.alfnode;
 
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
+import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 
 import java.util.Collections;
 import java.util.Optional;
 
-public class AlfNodeRecord implements JGqlAttributeValue {
+public class AlfNodeRecord implements MetaValue {
 
     public static final String ATTR_ASPECTS = "attr:aspects";
     public static final String ATTR_IS_DOCUMENT = "attr:isDocument";
@@ -33,7 +33,7 @@ public class AlfNodeRecord implements JGqlAttributeValue {
     }
 
     @Override
-    public Optional<JGqlAttribute> attr(String name) {
+    public Optional<MetaAttribute> att(String name) {
         AlfNodeAttribute attribute;
         if (ATTR_ASPECTS.equals(name)) {
             attribute = new AlfNodeAttribute(name, node.aspects(), context);
