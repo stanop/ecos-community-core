@@ -8,13 +8,13 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.group.GroupAction;
 import ru.citeck.ecos.action.group.GroupActionConfig;
+import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.MetaProvider;
 import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeRecord;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.records.AttributeInfo;
-import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
 import ru.citeck.ecos.records.query.DaoRecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
@@ -31,6 +31,7 @@ public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
     public static final String META_BASE_QUERY = "record(source:\"" + ID + "\",id:\"%s\")";
 
     private NodeService nodeService;
+    private GroupActionService groupActionService;
 
     private Map<String, AlfNodesSearch> searchByLanguage = new ConcurrentHashMap<>();
 
@@ -38,9 +39,11 @@ public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
 
     @Autowired
     public AlfNodesRecordsDAO(RecordsService recordsService,
-                              ServiceRegistry serviceRegistry) {
+                              ServiceRegistry serviceRegistry,
+                              GroupActionService groupActionService) {
         super(ID);
         this.nodeService = serviceRegistry.getNodeService();
+        this.groupActionService = groupActionService;
         recordsService.register(this);
     }
 
@@ -86,8 +89,8 @@ public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
     }
 
     @Override
-    public GroupAction<RecordRef> createAction(GroupActionConfig config) {
-        return null;
+    public GroupAction<String> createAction(String actionId, GroupActionConfig config) {
+        return groupActionService.createAction(actionId, config);
     }
 
     public void register(AlfNodesSearch alfNodesSearch) {

@@ -109,10 +109,11 @@ public class GroupActionServiceImpl implements GroupActionService {
                                              String actionId,
                                              GroupActionConfig config) {
 
-        return execute(nodes, getProcessor(actionId, config));
+        return execute(nodes, createAction(actionId, config));
     }
 
-    private <T> GroupAction<T> getProcessor(String actionId, GroupActionConfig config) {
+    @Override
+    public <T> GroupAction<T> createAction(String actionId, GroupActionConfig config) {
 
         @SuppressWarnings("unchecked")
         GroupActionFactory<T> factory = (GroupActionFactory<T>) processorFactories.get(actionId);

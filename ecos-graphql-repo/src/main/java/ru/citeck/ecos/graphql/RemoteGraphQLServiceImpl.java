@@ -41,7 +41,7 @@ public class RemoteGraphQLServiceImpl implements GraphQLService {
      * Constants
      */
     private static final String DEFAULT_REMOTE_GRAPHQL_SERVICE_HOST = "http://localhost:8080/alfresco/service";
-    private static final String REMOTE_GRAPHQL_METHOD = "/ecos/graphql";
+    private static final String REMOTE_GRAPHQL_METHOD = "/citeck/ecos/graphql";
 
     /**
      * Object mapper

@@ -22,6 +22,27 @@ public class MetaProvider {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    public GqlQuery createQuery(String queryBase, Collection<String> ids, String schema) {
+
+        Map<String, String> keysMapping = new HashMap<>();
+
+        StringBuilder query = new StringBuilder("{");
+        int idx = 0;
+        for (String id : ids) {
+            String key = "a" + idx++;
+            keysMapping.put(key, id);
+            query.append(key)
+                    .append(":")
+                    .append(String.format(queryBase, id))
+                    .append("{...meta}\n");
+        }
+        query.append("}");
+
+        query.append("fragment meta on MetaValue {").append(schema).append("}");
+
+        return new GqlQuery(query.toString(), keysMapping);
+    }
+
     public Map<String, ObjectNode> queryMeta(String queryBase, Collection<String> ids, String schema) {
 
         Map<String, String> idKeys = new HashMap<>();
@@ -73,5 +94,16 @@ public class MetaProvider {
 
     public void setGraphQLService(GraphQLService graphQLService) {
         this.graphQLService = graphQLService;
+    }
+
+    public static class GqlQuery {
+
+        final String query;
+        final Map<String, String> keysMapping;
+
+        public GqlQuery(String query, Map<String, String> keysMapping) {
+            this.query = query;
+            this.keysMapping = keysMapping;
+        }
     }
 }

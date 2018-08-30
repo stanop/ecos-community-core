@@ -32,6 +32,8 @@ public interface GroupActionService {
                                       String actionId,
                                       GroupActionConfig config);
 
+    <T> GroupAction<T> createAction(String actionId, GroupActionConfig config);
+
     void cancelActions();
 
     List<ActionExecution<?>> getActiveActions();

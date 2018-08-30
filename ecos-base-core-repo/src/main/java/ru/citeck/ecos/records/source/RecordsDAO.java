@@ -25,7 +25,7 @@ public interface RecordsDAO {
 
     Optional<MetaValue> getMetaValue(GqlContext context, String id);
 
-    GroupAction<String> createAction(GroupActionConfig config);
+    GroupAction<String> createAction(String actionId, GroupActionConfig config);
 
     String getId();
 }

@@ -27,6 +27,7 @@ public class GraphQLWebscript extends AbstractWebScript {
         Request request = parseJSON(req);
         ExecutionResult result = graphQLService.execute(request.query, request.variables);
 
+        res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getOutputStream(), result.toSpecification());
         res.setStatus(Status.STATUS_OK);
     }
@@ -50,7 +51,7 @@ public class GraphQLWebscript extends AbstractWebScript {
         }
     }
 
-    private static class Request {
+    public static class Request {
         public String query;
         public Map<String, Object> variables;
     }
