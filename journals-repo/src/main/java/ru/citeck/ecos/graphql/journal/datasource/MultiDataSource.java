@@ -248,7 +248,7 @@ public class MultiDataSource /*implements JournalDataSource*/ {
 
         List<LinkedHashMap> records = concatenateRecords(concatenatedJournalRecords.getRecords(),
                 newJournalRecords.getRecords(), pageInfo.getMaxItems());
-        result.setRecords(records);
+        result.setRecordsDao(records);
 
         return result;
     }

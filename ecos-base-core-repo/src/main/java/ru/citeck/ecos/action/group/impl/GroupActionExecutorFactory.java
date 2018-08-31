@@ -50,8 +50,7 @@ public class GroupActionExecutorFactory implements GroupActionFactory<RecordRef>
     }
 
     private Optional<NodeRef> getNodeRef(RecordRef recordRef) {
-        if (recordRef.getSourceId().isEmpty() ||
-                AlfNodesRecordsDAO.ID.equals(recordRef.getSourceId())) {
+        if (recordRef.getSourceId().isEmpty()) {
             return Optional.of(new NodeRef(recordRef.getId()));
         }
         return Optional.empty();

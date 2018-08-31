@@ -10,14 +10,14 @@ import org.springframework.extensions.webscripts.*;
 import java.io.IOException;
 import java.util.Map;
 
-public class GraphQLWebscript extends AbstractWebScript {
+public class GraphQLPost extends AbstractWebScript {
 
     @Autowired
-    private AlfGraphQLServiceImpl graphQLService;
+    private GraphQLServiceImpl graphQLService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public GraphQLWebscript() {
+    public GraphQLPost() {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 

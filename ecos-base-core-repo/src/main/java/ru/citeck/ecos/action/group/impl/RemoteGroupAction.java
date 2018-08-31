@@ -1,7 +1,5 @@
 package ru.citeck.ecos.action.group.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -11,26 +9,22 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 
 import java.util.List;
 
-public class RemoteAlfGroupAction extends BaseGroupAction<String> {
+public class RemoteGroupAction extends BaseGroupAction<String> {
 
-    private static final String GROUP_ACTION_URL = "api/journals/group-action";
+    private final RestTemplate restTemplate;
 
-    private RestTemplate restTemplate;
+    private final String targetAction;
+    private final GroupActionConfig targetConfig;
 
-    private String targetAction;
-    private GroupActionConfig targetConfig;
+    private final String groupActionUrl;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
-    private final String url;
-
-    public RemoteAlfGroupAction(GroupActionConfig config,
-                                String serviceUrl,
-                                String targetAction,
-                                GroupActionConfig targetConfig,
-                                RestTemplate restTemplate) {
+    public RemoteGroupAction(GroupActionConfig config,
+                             RestTemplate restTemplate,
+                             String groupActionUrl,
+                             String targetAction,
+                             GroupActionConfig targetConfig) {
         super(config);
-        this.url = serviceUrl + GROUP_ACTION_URL;
+        this.groupActionUrl = groupActionUrl;
         this.restTemplate = restTemplate;
         this.targetAction = targetAction;
         this.targetConfig = targetConfig;
@@ -48,16 +42,17 @@ public class RemoteAlfGroupAction extends BaseGroupAction<String> {
         ActionData data = new ActionData();
         data.actionId = targetAction;
         data.config = targetConfig;
+        data.records = nodes;
 
-        try {
+        /*try {
             map.add("payload", objectMapper.writeValueAsString(data));
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Data can't be converted to json", e);
-        }
+        }*/
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+        HttpEntity<ActionData> request = new HttpEntity<>(data, headers);
 
-        ResponseEntity<Response> result = restTemplate.exchange(url,
+        ResponseEntity<Response> result = restTemplate.exchange(groupActionUrl,
                                                                 HttpMethod.POST,
                                                                 request,
                                                                 Response.class);
@@ -67,6 +62,7 @@ public class RemoteAlfGroupAction extends BaseGroupAction<String> {
     private static class ActionData {
         public String actionId;
         public GroupActionConfig config;
+        public List<String> records;
     }
 
     private static class Response {

@@ -416,15 +416,4 @@
         <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 
-    <!-- Records -->
-
-    <bean id="ecos.records.AlfNodeRecordsDAO"
-          class="ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO">
-        <property name="metaProvider">
-            <bean class="ru.citeck.ecos.graphql.meta.MetaProvider">
-                <property name="graphQLService" ref="alfGraphQLServiceImpl" />
-            </bean>
-        </property>
-    </bean>
-
 </beans>

@@ -1,21 +1,23 @@
 package ru.citeck.ecos.records.source.alfnode;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import graphql.ExecutionResult;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.GroupAction;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.MetaProvider;
+import ru.citeck.ecos.graphql.GraphQLService;
+import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
 import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeRecord;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.records.AttributeInfo;
-import ru.citeck.ecos.records.RecordsService;
 import ru.citeck.ecos.records.query.DaoRecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
@@ -25,26 +27,29 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
 
-    public static final String ID = "AlfrescoNode";
+    public static final String ID = "";
     public static final String META_BASE_QUERY = "record(source:\"" + ID + "\",id:\"%s\")";
 
     private NodeService nodeService;
     private GroupActionService groupActionService;
+    private GqlMetaUtils gqlMetaUtils;
+    private GraphQLService graphQLService;
 
     private Map<String, AlfNodesSearch> searchByLanguage = new ConcurrentHashMap<>();
 
-    private MetaProvider metaProvider;
-
     @Autowired
-    public AlfNodesRecordsDAO(RecordsService recordsService,
+    public AlfNodesRecordsDAO(GroupActionService groupActionService,
                               ServiceRegistry serviceRegistry,
-                              GroupActionService groupActionService) {
+                              GraphQLService graphQLService,
+                              GqlMetaUtils gqlMetaUtils) {
         super(ID);
         this.nodeService = serviceRegistry.getNodeService();
         this.groupActionService = groupActionService;
-        recordsService.register(this);
+        this.gqlMetaUtils = gqlMetaUtils;
+        this.graphQLService = graphQLService;
     }
 
     @Override
@@ -74,12 +79,16 @@ public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
 
     @Override
     public Map<String, ObjectNode> queryMeta(Collection<String> records, String gqlSchema) {
-        return metaProvider.queryMeta(META_BASE_QUERY, records, gqlSchema);
+        GqlMetaUtils.GqlQuery query = gqlMetaUtils.createQuery(META_BASE_QUERY, records, gqlSchema);
+        ExecutionResult executionResult = graphQLService.execute(query.getQuery());
+        return gqlMetaUtils.convertMeta(query, executionResult);
     }
 
     @Override
     public <V> Map<String, V> queryMeta(Collection<String> records, Class<V> metaClass) {
-        return metaProvider.queryMeta(META_BASE_QUERY, records, metaClass);
+        GqlMetaUtils.GqlQuery query = gqlMetaUtils.createQuery(META_BASE_QUERY, records, metaClass);
+        ExecutionResult executionResult = graphQLService.execute(query.getQuery());
+        return gqlMetaUtils.convertMeta(query, executionResult, metaClass);
     }
 
     @Override
@@ -95,9 +104,5 @@ public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
 
     public void register(AlfNodesSearch alfNodesSearch) {
         searchByLanguage.put(alfNodesSearch.getLanguage(), alfNodesSearch);
-    }
-
-    public void setMetaProvider(MetaProvider metaProvider) {
-        this.metaProvider = metaProvider;
     }
 }

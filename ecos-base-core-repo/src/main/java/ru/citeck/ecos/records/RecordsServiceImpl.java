@@ -15,7 +15,6 @@ import ru.citeck.ecos.records.query.DaoRecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.source.RecordsDAO;
-import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,8 +23,6 @@ import java.util.function.BiFunction;
 @Service
 public class RecordsServiceImpl implements RecordsService {
 
-    private static final String SOURCE_ID_DEFAULT = AlfNodesRecordsDAO.ID;
-
     private Map<String, RecordsDAO> sources = new ConcurrentHashMap<>();
 
     @Autowired
@@ -33,7 +30,7 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public RecordsResult getRecords(RecordsQuery query) {
-        return getRecords(SOURCE_ID_DEFAULT, query);
+        return getRecords("", query);
     }
 
     @Override
@@ -80,7 +77,7 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public List<ActionResult<RecordRef>> executeAction(RecordsQuery query, String actionId, GroupActionConfig config) {
-        return executeAction(SOURCE_ID_DEFAULT, query, actionId, config);
+        return executeAction("", query, actionId, config);
     }
 
     @Override
@@ -121,20 +118,13 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     private RecordRef createRecord(String source, String id) {
-        if (SOURCE_ID_DEFAULT.equals(source)) {
-            return new RecordRef("", id);
-        } else {
-            return new RecordRef(source, id);
-        }
+        return new RecordRef(source, id);
     }
 
     private Map<String, Set<String>> groupBySource(Collection<RecordRef> records) {
         Map<String, Set<String>> result = new HashMap<>();
         for (RecordRef record : records) {
             String sourceId = record.getSourceId();
-            if (StringUtils.isBlank(sourceId)) {
-                sourceId = SOURCE_ID_DEFAULT;
-            }
             String recordId = record.getId();
             result.computeIfAbsent(sourceId, key -> new HashSet<>()).add(recordId);
         }
@@ -142,9 +132,6 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     private RecordsDAO getSource(String sourceId) {
-        if (StringUtils.isBlank(sourceId)) {
-            sourceId = SOURCE_ID_DEFAULT;
-        }
         RecordsDAO source = sources.get(sourceId);
         if (source == null) {
             throw new IllegalArgumentException("Records source is not found! Id: " + sourceId);

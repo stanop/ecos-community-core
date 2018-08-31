@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.alfresco.util.Pair;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -13,7 +12,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-@Component
 public class ConvertersProvider {
 
     private LoadingCache<Class<? extends MetaConverter<?>>, Optional<MetaConverter<?>>> customConverters;
