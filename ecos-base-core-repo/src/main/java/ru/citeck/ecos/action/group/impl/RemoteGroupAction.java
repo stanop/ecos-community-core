@@ -1,11 +1,10 @@
 package ru.citeck.ecos.action.group.impl;
 
 import org.springframework.http.*;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.GroupActionConfig;
+import ru.citeck.ecos.action.group.GroupActionPost;
 
 import java.util.List;
 
@@ -35,37 +34,21 @@ public class RemoteGroupAction extends BaseGroupAction<String> {
 
         HttpHeaders headers = new HttpHeaders();
 
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-
-        ActionData data = new ActionData();
+        GroupActionPost.ActionData data = new GroupActionPost.ActionData();
         data.actionId = targetAction;
         data.config = targetConfig;
         data.records = nodes;
 
-        /*try {
-            map.add("payload", objectMapper.writeValueAsString(data));
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Data can't be converted to json", e);
-        }*/
+        HttpEntity<GroupActionPost.ActionData> request = new HttpEntity<>(data, headers);
 
-        HttpEntity<ActionData> request = new HttpEntity<>(data, headers);
-
-        ResponseEntity<Response> result = restTemplate.exchange(groupActionUrl,
+        ResponseEntity<GroupActionPost.Response> result = restTemplate.exchange(groupActionUrl,
                                                                 HttpMethod.POST,
                                                                 request,
-                                                                Response.class);
+                                                                GroupActionPost.Response.class);
         output.addAll(result.getBody().results);
     }
 
-    private static class ActionData {
-        public String actionId;
-        public GroupActionConfig config;
-        public List<String> records;
-    }
 
-    private static class Response {
-        public List<ActionResult<String>> results;
-    }
 }

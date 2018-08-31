@@ -1,6 +1,6 @@
 package ru.citeck.ecos.records.source;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import ru.citeck.ecos.action.group.GroupAction;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.graphql.GqlContext;
@@ -17,7 +17,7 @@ public interface RecordsDAO {
 
     DaoRecordsResult queryRecords(RecordsQuery query);
 
-    Map<String, ObjectNode> queryMeta(Collection<String> records, String gqlSchema);
+    Map<String, JsonNode> queryMeta(Collection<String> records, String gqlSchema);
 
     <V> Map<String, V> queryMeta(Collection<String> records, Class<V> metaClass);
 

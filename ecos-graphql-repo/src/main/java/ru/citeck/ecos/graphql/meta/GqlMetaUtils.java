@@ -8,58 +8,49 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.meta.converter.ConvertersProvider;
 import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
 
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
 public class GqlMetaUtils {
 
+    private static final String META_KEY = "meta";
+    private static final String QUERY_TEMPLATE = "{" + META_KEY + ":%s{%s}}";
+
     private ConvertersProvider convertersProvider = new ConvertersProvider();
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public GqlQuery createQuery(String queryBase, Collection<String> ids, String schema) {
-
-        Map<String, String> keysMapping = new HashMap<>();
-
-        StringBuilder query = new StringBuilder("{");
-        int idx = 0;
-        for (String id : ids) {
-            String key = "a" + idx++;
-            keysMapping.put(key, id);
-            query.append(key)
-                    .append(":")
-                    .append(String.format(queryBase, id))
-                    .append("{...meta}\n");
-        }
-        query.append("}");
-
-        query.append("fragment meta on MetaValue {").append(schema).append("}");
-
-        return new GqlQuery(query.toString(), keysMapping);
+    public String createQuery(String queryBase, List<String> ids, String schema) {
+        String baseWithId = String.format(queryBase, String.join("\",\"", ids));
+        return String.format(QUERY_TEMPLATE, baseWithId, schema);
     }
 
-    public GqlQuery createQuery(String queryBase, Collection<String> ids, Class<?> metaClass) {
+    public String createQuery(String queryBase, List<String> ids, Class<?> metaClass) {
         MetaConverter<?> converter = convertersProvider.getConverter(metaClass);
         String schema = converter.appendQuery(new StringBuilder()).toString();
         return createQuery(queryBase, ids, schema);
     }
 
-    public Map<String, ObjectNode> convertMeta(GqlQuery query, ExecutionResult executionResult) {
+    public Map<String, JsonNode> convertMeta(List<String> ids, ExecutionResult executionResult) {
 
         JsonNode jsonNode = objectMapper.valueToTree(executionResult.getData());
 
-        Map<String, ObjectNode> result = new HashMap<>();
-        query.keysMapping.forEach((key, id) -> result.put(id, (ObjectNode) jsonNode.get(key)));
+        Map<String, JsonNode> result = new HashMap<>();
+        JsonNode meta = jsonNode.get(META_KEY);
+
+        for (int i = 0; i < meta.size(); i++) {
+            result.put(ids.get(i), meta.get(i));
+        }
 
         return result;
     }
 
-    public <V> Map<String, V> convertMeta(GqlQuery query, ExecutionResult executionResult, Class<V> metaClass) {
+    public <V> Map<String, V> convertMeta(List<String> ids, ExecutionResult executionResult, Class<V> metaClass) {
 
         MetaConverter<V> converter = convertersProvider.getConverter(metaClass);
 
-        Map<String, ObjectNode> meta = convertMeta(query, executionResult);
+        Map<String, JsonNode> meta = convertMeta(ids, executionResult);
         Map<String, V> result = new HashMap<>();
 
         meta.forEach((id, value) -> {
@@ -72,20 +63,5 @@ public class GqlMetaUtils {
         });
 
         return result;
-    }
-
-    public static class GqlQuery {
-
-        private final String query;
-        private final Map<String, String> keysMapping;
-
-        GqlQuery(String query, Map<String, String> keysMapping) {
-            this.query = query;
-            this.keysMapping = keysMapping;
-        }
-
-        public String getQuery() {
-            return query;
-        }
     }
 }

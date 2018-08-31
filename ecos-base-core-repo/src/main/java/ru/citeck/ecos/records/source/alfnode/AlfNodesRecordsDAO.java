@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records.source.alfnode;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import graphql.ExecutionResult;
 import org.alfresco.model.ContentModel;
@@ -22,16 +23,14 @@ import ru.citeck.ecos.records.query.DaoRecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
 
     public static final String ID = "";
-    public static final String META_BASE_QUERY = "record(source:\"" + ID + "\",id:\"%s\")";
+    public static final String META_BASE_QUERY = "records(source:\"" + ID + "\",refs:[\"%s\"])";
 
     private NodeService nodeService;
     private GroupActionService groupActionService;
@@ -78,17 +77,19 @@ public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
     }
 
     @Override
-    public Map<String, ObjectNode> queryMeta(Collection<String> records, String gqlSchema) {
-        GqlMetaUtils.GqlQuery query = gqlMetaUtils.createQuery(META_BASE_QUERY, records, gqlSchema);
-        ExecutionResult executionResult = graphQLService.execute(query.getQuery());
-        return gqlMetaUtils.convertMeta(query, executionResult);
+    public Map<String, JsonNode> queryMeta(Collection<String> records, String gqlSchema) {
+        List<String> recordsRefs = new ArrayList<>(records);
+        String query = gqlMetaUtils.createQuery(META_BASE_QUERY, recordsRefs, gqlSchema);
+        ExecutionResult executionResult = graphQLService.execute(query);
+        return gqlMetaUtils.convertMeta(recordsRefs, executionResult);
     }
 
     @Override
     public <V> Map<String, V> queryMeta(Collection<String> records, Class<V> metaClass) {
-        GqlMetaUtils.GqlQuery query = gqlMetaUtils.createQuery(META_BASE_QUERY, records, metaClass);
-        ExecutionResult executionResult = graphQLService.execute(query.getQuery());
-        return gqlMetaUtils.convertMeta(query, executionResult, metaClass);
+        List<String> recordsRefs = new ArrayList<>(records);
+        String query = gqlMetaUtils.createQuery(META_BASE_QUERY, recordsRefs, metaClass);
+        ExecutionResult executionResult = graphQLService.execute(query);
+        return gqlMetaUtils.convertMeta(recordsRefs, executionResult, metaClass);
     }
 
     @Override

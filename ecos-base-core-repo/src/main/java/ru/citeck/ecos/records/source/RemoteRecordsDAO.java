@@ -2,6 +2,7 @@ package ru.citeck.ecos.records.source;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import graphql.ExecutionResult;
@@ -29,11 +30,10 @@ import ru.citeck.ecos.records.AttributeInfo;
 import ru.citeck.ecos.records.query.DaoRecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 
+import javax.annotation.PostConstruct;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class RemoteRecordsDAO extends AbstractRecordsDAO {
 
@@ -55,8 +55,11 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
 
     public RemoteRecordsDAO(String id) {
         super(id);
+        metaBaseQuery = "records(source:\"\",refs:[\"%s\"])";
+    }
 
-        metaBaseQuery = "record(source:\"" + id + "\",id:\"%s\")";
+    @PostConstruct
+    public void init() {
 
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
             this.restTemplate = new RestTemplate(createSecureTransport(username, password));
@@ -90,23 +93,25 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
     }
 
     @Override
-    public Map<String, ObjectNode> queryMeta(Collection<String> records, String gqlSchema) {
-        GqlMetaUtils.GqlQuery query = metaUtils.createQuery(metaBaseQuery, records, gqlSchema);
+    public Map<String, JsonNode> queryMeta(Collection<String> records, String gqlSchema) {
+        List<String> recordsRefs = new ArrayList<>(records);
+        String query = metaUtils.createQuery(metaBaseQuery, recordsRefs, gqlSchema);
         ExecutionResult executionResult = graphQLService.execute(restTemplate,
                                                                 serverHost + GRAPHQL_METHOD,
-                                                                 query.getQuery(),
+                                                                 query,
                                                                  null);
-        return metaUtils.convertMeta(query, executionResult);
+        return metaUtils.convertMeta(recordsRefs, executionResult);
     }
 
     @Override
     public <V> Map<String, V> queryMeta(Collection<String> records, Class<V> metaClass) {
-        GqlMetaUtils.GqlQuery query = metaUtils.createQuery(metaBaseQuery, records, metaClass);
+        List<String> recordsRefs = new ArrayList<>(records);
+        String query = metaUtils.createQuery(metaBaseQuery, recordsRefs, metaClass);
         ExecutionResult executionResult = graphQLService.execute(restTemplate,
                                                                  serverHost + GRAPHQL_METHOD,
-                                                                 query.getQuery(),
+                                                                 query,
                                                                  null);
-        return metaUtils.convertMeta(query, executionResult, metaClass);
+        return metaUtils.convertMeta(recordsRefs, executionResult, metaClass);
     }
 
     @Override
@@ -116,7 +121,7 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
 
     @Override
     public Optional<MetaValue> getMetaValue(GqlContext context, String id) {
-        throw new RuntimeException("Not supported");
+        throw new RuntimeException("getMetaValue is not supported for remote recordsDAO");
     }
 
     @Override

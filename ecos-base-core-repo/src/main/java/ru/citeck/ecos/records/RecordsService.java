@@ -1,6 +1,6 @@
 package ru.citeck.ecos.records;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.GroupAction;
 import ru.citeck.ecos.action.group.GroupActionConfig;
@@ -23,7 +23,7 @@ public interface RecordsService {
 
     <T> Map<RecordRef, T> getMeta(Collection<RecordRef> records, Class<T> dataClass);
 
-    Map<RecordRef, ObjectNode> getMeta(Collection<RecordRef> records, String query);
+    Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String query);
 
     Optional<MetaValue> getMetaValue(GqlContext context, String source, String id);
 

@@ -53,7 +53,7 @@
     </bean>
 
     <bean id="journals.gqlQueryExecutor" class="ru.citeck.ecos.journals.records.GqlQueryExecutor">
-        <property name="graphQLService" ref="alfGraphQLServiceImpl"/>
+        <property name="graphQLService" ref="graphQLServiceImpl"/>
     </bean>
 
 </beans>

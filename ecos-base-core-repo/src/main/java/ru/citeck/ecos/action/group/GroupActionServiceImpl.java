@@ -1,11 +1,12 @@
 package ru.citeck.ecos.action.group;
 
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.transaction.TransactionListenerAdapter;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.group.impl.CustomTxnGroupAction;
@@ -126,10 +127,10 @@ public class GroupActionServiceImpl implements GroupActionService {
         return factory.createAction(config);
     }
 
-    private void checkParams(Map<String, String> params, String[] mandatoryParams) {
+    private void checkParams(ObjectNode params, String[] mandatoryParams) {
         List<String> missing = new ArrayList<>(mandatoryParams.length);
         for (String param : mandatoryParams) {
-            if (!params.containsKey(param) || StringUtils.isBlank(params.get(param))) {
+            if (!params.has(param) || params.get(param) instanceof NullNode) {
                 missing.add(param);
             }
         }

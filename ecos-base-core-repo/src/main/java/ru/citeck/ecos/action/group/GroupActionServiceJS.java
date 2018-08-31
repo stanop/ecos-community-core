@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Iterables;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
@@ -17,13 +16,14 @@ import java.util.function.Consumer;
  */
 public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
 
+    private static ValueConverter converter = new ValueConverter();
+    private static ObjectMapper objectMapper = new ObjectMapper();
+
     private GroupActionService groupActionService;
-    private ValueConverter converter = new ValueConverter();
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     public ActionResult<RecordRef>[] execute(Object nodes, String actionId, Object config) {
         Iterable<RecordRef> nodeRefs = toIterableNodes(nodes);
-        return toArray(groupActionService.execute(nodeRefs, actionId, parseConfig(config)));
+        return toArray(groupActionService.execute(nodeRefs, actionId, convertConfig(config, GroupActionConfig.class)));
     }
 
     public ActionResult<RecordRef>[] execute(Object nodes, Consumer<RecordRef> action) {
@@ -32,7 +32,7 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
 
     public ActionResult<RecordRef>[] execute(Object nodes, Consumer<RecordRef> action, Object config) {
         Iterable<RecordRef> nodeRefs = toIterableNodes(nodes);
-        return toArray(groupActionService.execute(nodeRefs, action, parseConfig(config)));
+        return toArray(groupActionService.execute(nodeRefs, action, convertConfig(config, GroupActionConfig.class)));
     }
 
     public ActionExecution<?>[] getActiveActions() {
@@ -44,21 +44,21 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
         groupActionService.cancelActions();
     }
 
-    private GroupActionConfig parseConfig(Object config) {
+    public static <T> T convertConfig(Object config, Class<T> type) {
         if (config == null) {
             return null;
         }
         Object configObj = converter.convertValueForJava(config);
-        return objectMapper.convertValue(configObj, GroupActionConfig.class);
+        return objectMapper.convertValue(configObj, type);
     }
 
-    private <T> ActionResult<T>[] toArray(List<ActionResult<T>> results) {
+    public static <T> ActionResult<T>[] toArray(List<ActionResult<T>> results) {
         @SuppressWarnings("unchecked")
         ActionResult<T>[] result = new ActionResult[results.size()];
         return results.toArray(result);
     }
 
-    private Iterable<RecordRef> toIterableNodes(Object nodes) {
+    public static Iterable<RecordRef> toIterableNodes(Object nodes) {
         Object jNodes = converter.convertValueForJava(nodes);
         List<RecordRef> resultList;
         if (jNodes instanceof List) {
@@ -80,25 +80,6 @@ public class GroupActionServiceJS extends AlfrescoScopableProcessorExtension {
             resultList = Collections.emptyList();
         }
         return resultList;
-    }
-
-    private Map<String, String> toStringMap(Object map) {
-        Map<String, String> result = new HashMap<>();
-        Object jMap = converter.convertValueForJava(map);
-        if (jMap instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, String> jStringMap = (Map<String, String>) map;
-            result.putAll(jStringMap);
-        } else if (jMap instanceof JSONObject) {
-            JSONObject jsonObject = (JSONObject) jMap;
-            Iterator keys = jsonObject.keys();
-            while (keys.hasNext()) {
-                String key = (String) keys.next();
-                String value = jsonObject.optString(key);
-                result.put(key, value);
-            }
-        }
-        return result;
     }
 
     public void setGroupActionService(GroupActionService groupActionService) {

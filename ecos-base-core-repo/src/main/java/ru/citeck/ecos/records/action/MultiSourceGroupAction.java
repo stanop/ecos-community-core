@@ -5,27 +5,28 @@ import ru.citeck.ecos.action.group.GroupAction;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.impl.BaseGroupAction;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.RecordsService;
+import ru.citeck.ecos.records.source.RecordsDAO;
 
 import java.util.*;
+import java.util.function.Function;
 
-public class RecordsGroupAction extends BaseGroupAction<RecordRef> {
-
-    private RecordsService recordsService;
+public class MultiSourceGroupAction extends BaseGroupAction<RecordRef> {
 
     private Map<String, GroupAction<String>> sourceActions = new HashMap<>();
 
     private GroupActionConfig originalConfig;
     private String originalActionId;
 
-    public RecordsGroupAction(GroupActionConfig config,
-                              GroupActionConfig originalConfig,
-                              String originalActionId,
-                              RecordsService recordsService) {
+    private Function<String, RecordsDAO> getDaoBySource;
+
+    public MultiSourceGroupAction(GroupActionConfig config,
+                                  GroupActionConfig originalConfig,
+                                  String originalActionId,
+                                  Function<String, RecordsDAO> getDaoBySource) {
         super(config);
-        this.recordsService = recordsService;
         this.originalConfig = originalConfig;
         this.originalActionId = originalActionId;
+        this.getDaoBySource = getDaoBySource;
     }
 
     @Override
@@ -41,7 +42,8 @@ public class RecordsGroupAction extends BaseGroupAction<RecordRef> {
     }
 
     private void processRecord(RecordRef recordRef) {
-        GroupAction<String> action = sourceActions.computeIfAbsent(recordRef.getId(), this::createSourceAction);
+        String sourceId = recordRef.getSourceId();
+        GroupAction<String> action = sourceActions.computeIfAbsent(sourceId, this::createSourceAction);
         action.process(recordRef.getId());
     }
 
@@ -50,11 +52,13 @@ public class RecordsGroupAction extends BaseGroupAction<RecordRef> {
                             String sourceId) {
 
         for (ActionResult<String> result : results) {
-            output.add(new ActionResult<>(new RecordRef(sourceId, result.getNodeId()), result.getStatus()));
+            RecordRef recordId = new RecordRef(sourceId, result.getNodeId());
+            output.add(new ActionResult<>(recordId, result.getStatus()));
         }
     }
 
     private GroupAction<String> createSourceAction(String sourceId) {
-        return recordsService.createAction(sourceId, originalActionId, originalConfig);
+        RecordsDAO source = getDaoBySource.apply(sourceId);
+        return source.createAction(originalActionId, originalConfig);
     }
 }

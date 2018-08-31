@@ -12,6 +12,7 @@ import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.RecordsInput;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +46,7 @@ public class JGqlQueryDefinition {
     public static List<MetaValue> journalRecordsMetadata(
             DataFetchingEnvironment env,
             @GraphQLName("datasource") String datasource,
-            @GraphQLName("remoteRefs") JGqlRecordsInput remoteIds) {
+            @GraphQLName("remoteRefs") RecordsInput remoteIds) {
 
         GqlContext context = env.getContext();
         Optional<JournalDataSource> dataSource = dataSources.computeIfAbsent(datasource, source -> {
@@ -54,8 +55,8 @@ public class JGqlQueryDefinition {
 
         if (dataSource.isPresent()) {
             JournalDataSource source = dataSource.get();
-            List<RecordRef> remoteRefs = new ArrayList<>(remoteIds.getRemoteRefs().size());
-            remoteIds.getRemoteRefs().forEach(item -> remoteRefs.add(new RecordRef(item)));
+            List<RecordRef> remoteRefs = new ArrayList<>(remoteIds.getRefs().size());
+            remoteIds.getRefs().forEach(item -> remoteRefs.add(new RecordRef(item)));
             return source.convertToGqlValue(context, remoteRefs);
         }
 

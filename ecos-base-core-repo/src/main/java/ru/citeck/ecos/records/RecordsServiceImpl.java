@@ -1,7 +1,6 @@
 package ru.citeck.ecos.records;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.group.ActionResult;
@@ -10,7 +9,7 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.records.action.RecordsGroupAction;
+import ru.citeck.ecos.records.action.MultiSourceGroupAction;
 import ru.citeck.ecos.records.query.DaoRecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
@@ -46,7 +45,7 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public Map<RecordRef, ObjectNode> getMeta(Collection<RecordRef> records, String gqlQuery) {
+    public Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String gqlQuery) {
         return getMeta(records, (source, recs) -> source.queryMeta(recs, gqlQuery));
     }
 
@@ -98,7 +97,7 @@ public class RecordsServiceImpl implements RecordsService {
         recActConfig.setBatchSize(30);
         recActConfig.setAsync(config.isAsync());
 
-        GroupAction<RecordRef> action = new RecordsGroupAction(recActConfig, config, actionId, this);
+        GroupAction<RecordRef> action = new MultiSourceGroupAction(recActConfig, config, actionId, this::getSource);
         return groupActionService.execute(records, action);
     }
 

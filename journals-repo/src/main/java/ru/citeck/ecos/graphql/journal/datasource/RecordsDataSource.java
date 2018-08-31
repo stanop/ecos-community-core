@@ -1,5 +1,6 @@
 package ru.citeck.ecos.graphql.journal.datasource;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.apache.commons.lang3.StringUtils;
@@ -111,10 +112,17 @@ public class RecordsDataSource implements JournalDataSource {
                                      String dataSourceBeanName,
                                      JournalRecordsResult recordsResult) {
 
-        Map<RecordRef, ObjectNode> meta = recordsService.getMeta(recordsResult.records, gqlQuery);
+        Map<RecordRef, JsonNode> meta = recordsService.getMeta(recordsResult.records, gqlQuery);
 
         JournalData.JournalRecords journalRecords = new JournalData.JournalRecords();
-        journalRecords.setRecords(new ArrayList<>(meta.values()));
+        List<Object> records = new ArrayList<>();
+        meta.forEach((recordRef, data) -> {
+            if (data instanceof ObjectNode) {
+                ((ObjectNode) data).put("id", recordRef.toString());
+            }
+            records.add(data);
+        });
+        journalRecords.setRecords(records);
 
         JournalData.PageInfo pageInfo = new JournalData.PageInfo();
         pageInfo.setHasNextPage(recordsResult.hasNext);
@@ -135,5 +143,9 @@ public class RecordsDataSource implements JournalDataSource {
     @Override
     public Optional<JGqlAttributeInfo> getAttributeInfo(String attributeName) {
         return Optional.empty();
+    }
+
+    public String getSourceId() {
+        return sourceId;
     }
 }
