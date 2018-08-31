@@ -7,7 +7,6 @@ import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.List;
 /**
  * @author Pavel Simonov
  */
-public abstract class TxnGroupAction extends BaseGroupAction {
+public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
 
     private static final Log logger = LogFactory.getLog(TxnGroupAction.class);
 
@@ -27,9 +26,9 @@ public abstract class TxnGroupAction extends BaseGroupAction {
     }
 
     @Override
-    protected final void processNodesImpl(List<RemoteRef> nodes, List<ActionResult> output) {
+    protected final void processNodesImpl(List<T> nodes, List<ActionResult<T>> output) {
 
-        List<RemoteRef> nodesToProcess = new ArrayList<>(nodes);
+        List<T> nodesToProcess = new ArrayList<>(nodes);
 
         boolean completed = false;
 
@@ -37,14 +36,14 @@ public abstract class TxnGroupAction extends BaseGroupAction {
 
             try {
 
-                List<ActionResult> txnOutput = new ArrayList<>();
+                List<ActionResult<T>> txnOutput = new ArrayList<>();
 
                 transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
                     processNodesInTxn(nodesToProcess, txnOutput);
                     return null;
                 }, false, true);
 
-                for (ActionResult result : txnOutput) {
+                for (ActionResult<T> result : txnOutput) {
                     if (output.size() < config.getMaxResults()) {
                         output.add(result);
                     }
@@ -57,8 +56,8 @@ public abstract class TxnGroupAction extends BaseGroupAction {
                 status.setKey(ActionStatus.STATUS_ERROR);
                 status.setException(e.cause);
 
-                RemoteRef node = nodesToProcess.get(e.nodeIdx);
-                output.add(new ActionResult(node, status));
+                T node = nodesToProcess.get(e.nodeIdx);
+                output.add(new ActionResult<>(node, status));
 
                 logger.error("Exception while process node " + node +
                              " action: " + toString() + " config: " + config, e.cause);
@@ -71,7 +70,7 @@ public abstract class TxnGroupAction extends BaseGroupAction {
                 status.setKey(ActionStatus.STATUS_ERROR);
                 status.setException(e);
 
-                nodesToProcess.forEach(n -> output.add(new ActionResult(n, status)));
+                nodesToProcess.forEach(n -> output.add(new ActionResult<>(n, status)));
                 nodesToProcess.clear();
 
                 logger.error("Exception while process nodes " + nodesToProcess +
@@ -80,15 +79,15 @@ public abstract class TxnGroupAction extends BaseGroupAction {
         }
     }
 
-    protected void processNodesInTxn(List<RemoteRef> nodes, List<ActionResult> output) {
+    protected void processNodesInTxn(List<T> nodes, List<ActionResult<T>> output) {
         for (int idx = 0; idx < nodes.size(); idx++) {
             try {
-                RemoteRef node = nodes.get(idx);
+                T node = nodes.get(idx);
                 if (isApplicable(node)) {
                     ActionStatus status = processImpl(node);
-                    output.add(new ActionResult(node, status));
+                    output.add(new ActionResult<>(node, status));
                 } else {
-                    output.add(new ActionResult(node, ActionStatus.STATUS_SKIPPED));
+                    output.add(new ActionResult<>(node, ActionStatus.STATUS_SKIPPED));
                 }
             } catch (Exception e) {
                 Throwable retryCause = RetryingTransactionHelper.extractRetryCause(e);
@@ -101,12 +100,12 @@ public abstract class TxnGroupAction extends BaseGroupAction {
         }
     }
 
-    protected boolean isApplicable(RemoteRef nodeRef) {
+    protected boolean isApplicable(T nodeId) {
         return true;
     }
 
     @Override
-    protected ActionStatus processImpl(RemoteRef nodeRef) {
+    protected ActionStatus processImpl(T nodeRef) {
         throw new RuntimeException("Method not implemented");
     }
 

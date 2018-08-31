@@ -3,7 +3,7 @@
 <beans>
 
     <bean id="webscript.ru.citeck.ecos.graphql.post" parent="webscript"
-          class="ru.citeck.ecos.graphql.GraphQLWebscript">
+          class="ru.citeck.ecos.graphql.GraphQLPost">
     </bean>
 
 </beans>
