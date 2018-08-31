@@ -7,6 +7,7 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionPost;
 
 import java.util.List;
+import java.util.Objects;
 
 public class RemoteGroupAction extends BaseGroupAction<String> {
 
@@ -50,5 +51,31 @@ public class RemoteGroupAction extends BaseGroupAction<String> {
         output.addAll(result.getBody().results);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
 
+        RemoteGroupAction that = (RemoteGroupAction) o;
+
+        return Objects.equals(targetAction, that.targetAction) &&
+               Objects.equals(targetConfig, that.targetConfig) &&
+               Objects.equals(groupActionUrl, that.groupActionUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(targetAction);
+        result = 31 * result + Objects.hashCode(targetConfig);
+        result = 31 * result + Objects.hashCode(groupActionUrl);
+        return result;
+    }
 }

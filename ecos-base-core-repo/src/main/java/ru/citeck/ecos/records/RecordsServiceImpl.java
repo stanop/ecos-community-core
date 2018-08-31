@@ -36,7 +36,7 @@ public class RecordsServiceImpl implements RecordsService {
     public RecordsResult getRecords(String sourceId, RecordsQuery query) {
         RecordsDAO source = getSource(sourceId);
         DaoRecordsResult result = source.queryRecords(query);
-        return new RecordsResult(result, (id) -> createRecord(source.getId(), id));
+        return new RecordsResult(result, id -> new RecordRef(source.getId(), id));
     }
 
     @Override
@@ -110,14 +110,10 @@ public class RecordsServiceImpl implements RecordsService {
         groupBySource(records).forEach((sourceId, sourceRecords) -> {
             RecordsDAO source = getSource(sourceId);
             Map<String, T> recordsMeta = getMeta.apply(source, sourceRecords);
-            recordsMeta.forEach((k, v) -> result.put(createRecord(source.getId(), k), v));
+            recordsMeta.forEach((k, v) -> result.put(new RecordRef(source.getId(), k), v));
         });
 
         return result;
-    }
-
-    private RecordRef createRecord(String source, String id) {
-        return new RecordRef(source, id);
     }
 
     private Map<String, Set<String>> groupBySource(Collection<RecordRef> records) {

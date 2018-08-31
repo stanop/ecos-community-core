@@ -31,6 +31,8 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
     @Override
     public DaoRecordsResult queryRecords(RecordsQuery query) {
 
+        DaoRecordsResult result = new DaoRecordsResult(query);
+
         RecordsQuery localQuery = new RecordsQuery(query);
 
         int sourceIdx = 0;
@@ -44,8 +46,6 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
             localQuery.setAfterId(afterRecordRef.getId());
         }
 
-        DaoRecordsResult result = new DaoRecordsResult(query);
-
         while (sourceIdx < recordsDao.size() && result.getRecords().size() < query.getMaxItems()) {
 
             localQuery.setMaxItems(query.getMaxItems() - result.getRecords().size());
@@ -58,6 +58,18 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
             daoRecords.setRecords(recordsWithSource);
 
             result.merge(daoRecords);
+
+            if (++sourceIdx < recordsDao.size()) {
+
+                result.setHasMore(true);
+
+                if (localQuery.isAfterIdMode()) {
+                    localQuery.setAfterId(null);
+                } else {
+                    long skip = localQuery.getSkipCount() - daoRecords.getTotalCount();
+                    localQuery.setSkipCount((int) Math.max(skip, 0));
+                }
+            }
         }
         return result;
     }
@@ -96,7 +108,7 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
                                          BiFunction<RecordsDAO, Collection<String>, Map<String, V>> metaFunc) {
         Map<String, V> result = new HashMap<>();
         groupBySource(records).forEach((source, sourceRecords) -> {
-            Map<String, V> sourceMeta = metaFunc.apply(getSource(source), records);
+            Map<String, V> sourceMeta = metaFunc.apply(getSource(source), sourceRecords);
             sourceMeta.forEach((record, meta) -> result.put(new RecordRef(source, record).toString(), meta));
         });
         return result;

@@ -62,7 +62,7 @@ public class IterableRecords implements Iterable<RecordRef> {
             currentIdx = 0;
 
             RecordsQuery query = new RecordsQuery(recordsQuery);
-            query.setAfterId(lastId.getId());
+            query.setAfterId(lastId != null ? lastId.getId() : null);
             query.setMaxItems(SEARCH_MAX_ITEMS);
 
             records = recordsService.getRecords(sourceId, query).getRecords();

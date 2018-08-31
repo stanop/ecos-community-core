@@ -35,7 +35,7 @@
 
         actionResults = recordsService.executeAction(getRecordsSource(journalId), {
             query: query,
-            language: language
+            language: language || "criteria"
         }, actionId, {
             params: params,
             async: true

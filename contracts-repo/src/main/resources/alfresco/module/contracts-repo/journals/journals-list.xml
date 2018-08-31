@@ -11,18 +11,12 @@
     </imports>
 
     <journal id="contract-agreements">
-        <datasource>testJournalSource</datasource>
         <option name="type">contracts:agreement</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
         <option name="formId">filters</option>
         <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
-        <group-actions>
-            <action id="TEST_ACTION" title="Пробуем новый сервис действий">
-                <param name="actionId">TEST_ACTION</param>
-            </action>
-        </group-actions>
         <headers>
             <header key="cm:created" default="true" />
             <header key="cm:name" default="false" />

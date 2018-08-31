@@ -1,7 +1,9 @@
 package ru.citeck.ecos.action.group;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActionResult<T> {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,

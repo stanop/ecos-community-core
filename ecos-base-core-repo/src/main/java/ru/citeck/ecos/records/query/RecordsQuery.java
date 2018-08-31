@@ -3,6 +3,7 @@ package ru.citeck.ecos.records.query;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.SearchService;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +14,7 @@ public class RecordsQuery {
 
     private int skipCount;
     private int maxItems;
-    private List<SortBy> sortBy;
+    private List<SortBy> sortBy = Collections.emptyList();
     private String afterId;
     private boolean afterIdMode = false;
     private QueryConsistency consistency;
@@ -25,6 +26,7 @@ public class RecordsQuery {
 
     public RecordsQuery(RecordsQuery other) {
         this.skipCount = other.skipCount;
+        this.sortBy = new ArrayList<>(other.sortBy);
         this.maxItems = other.maxItems;
         this.afterId = other.afterId;
         this.afterIdMode = other.afterIdMode;
