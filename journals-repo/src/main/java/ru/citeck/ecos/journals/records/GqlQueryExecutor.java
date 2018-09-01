@@ -5,7 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
-import ru.citeck.ecos.records.source.alfnode.CriteriaAlfNodesSearch;
+import ru.citeck.ecos.graphql.journal.datasource.RemoteJournalDataSource;
+import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.journals.JournalType;
 
 import java.util.HashMap;
@@ -28,7 +29,13 @@ public class GqlQueryExecutor {
                                         JGqlPageInfoInput pageInfo,
                                         JournalDataSource dataSource) {
 
-        String datasourceBeanName = journalType.getDataSource();
+        String datasourceBeanName;
+        if (StringUtils.isNotBlank(dataSource.getServerId())) {
+            RemoteJournalDataSource remoteJournalDataSource = (RemoteJournalDataSource) dataSource;
+            datasourceBeanName = remoteJournalDataSource.getRemoteDataSourceBeanName();
+        } else {
+            datasourceBeanName = journalType.getDataSource();
+        }
 
         String validLanguage = StringUtils.isNotBlank(language) ? language : CriteriaAlfNodesSearch.LANGUAGE;
 

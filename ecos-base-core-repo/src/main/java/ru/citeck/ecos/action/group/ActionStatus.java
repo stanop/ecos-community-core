@@ -1,6 +1,5 @@
 package ru.citeck.ecos.action.group;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
@@ -8,7 +7,6 @@ import org.apache.commons.lang.StringUtils;
 /**
  * @author Pavel Simonov
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActionStatus {
 
     public static final String STATUS_OK = "OK";
@@ -36,9 +34,6 @@ public class ActionStatus {
     }
 
     public void setException(Exception e) {
-        if (e == null) {
-            return;
-        }
         this.exception = e;
         if (StringUtils.isBlank(message)) {
             this.message = e.getMessage();

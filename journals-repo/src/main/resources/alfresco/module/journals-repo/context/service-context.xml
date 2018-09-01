@@ -26,7 +26,7 @@
             <value>
                 query getJournalRecords($datasource: String, $query: String, $language: String, $pageInfo: InputJGqlPageInfoInput) {
                     journalRecords(datasource: $datasource, query: $query, language: $language, pageInfo: $pageInfo) {
-                        records {__RECORD_FIELDS__}
+                        records {...recordsFields}
                         totalCount
                         pageInfo {
                             hasNextPage
@@ -37,7 +37,15 @@
                 }
             </value>
         </property>
-        <property name="recordsMetadataBaseQuery" value="__RECORD_FIELDS__"/>
+        <property name="recordsMetadataBaseQuery">
+            <value>
+                query getJournalRecordsMetadata($datasource: String, $remoteRefs: InputJGqlRecordsInput) {
+                    journalRecordsMetadata(datasource: $datasource, remoteRefs: $remoteRefs) {
+                        ...recordsFields
+                    }
+                }
+            </value>
+        </property>
         <property name="recordsListPath" value="journalRecords.records" />
         <property name="totalCountPath" value="journalRecords.totalCount" />
         <property name="hasNextPagePath" value="journalRecords.pageInfo.hasNextPage" />
@@ -53,7 +61,7 @@
     </bean>
 
     <bean id="journals.gqlQueryExecutor" class="ru.citeck.ecos.journals.records.GqlQueryExecutor">
-        <property name="graphQLService" ref="graphQLServiceImpl"/>
+        <property name="graphQLService" ref="alfGraphQLServiceImpl"/>
     </bean>
 
 </beans>

@@ -35,7 +35,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ScriptableObject;
-import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.repo.RemoteRef;
 
 public class JavaScriptImplUtils {
 
@@ -202,21 +202,21 @@ public class JavaScriptImplUtils {
         return qnames;
     }
 
-    public static RecordRef getRecordRef(Object object) {
+    public static RemoteRef getRemoteNodeRef(Object object) {
         if (object == null) {
             return null;
         }
-        if (object instanceof RecordRef) {
-            return (RecordRef) object;
+        if (object instanceof RemoteRef) {
+            return (RemoteRef) object;
         }
         if (object instanceof NodeRef) {
-            return new RecordRef((NodeRef) object);
+            return new RemoteRef((NodeRef) object);
         }
         if (object instanceof String) {
-            return new RecordRef((String) object);
+            return new RemoteRef((String) object);
         }
         if (object instanceof ScriptNode) {
-            return new RecordRef(((ScriptNode) object).getNodeRef());
+            return new RemoteRef(((ScriptNode) object).getNodeRef());
         }
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to RemoteNodeRef");
     }

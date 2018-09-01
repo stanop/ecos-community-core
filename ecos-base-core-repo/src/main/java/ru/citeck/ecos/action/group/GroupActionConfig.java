@@ -1,14 +1,14 @@
 package ru.citeck.ecos.action.group;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class GroupActionConfig {
 
-    private ObjectNode params;
+    private Map<String, String> params = Collections.emptyMap();
     private int batchSize = 1;
     private boolean async = false;
     private int maxResults = 100;
@@ -19,18 +19,16 @@ public class GroupActionConfig {
     }
 
     public GroupActionConfig(GroupActionConfig other) {
-        this.params = other.getParams().deepCopy();
+        this.params = new HashMap<>();
+        this.params.putAll(other.params);
         this.batchSize = other.batchSize;
     }
 
-    public ObjectNode getParams() {
-        if (params == null) {
-            params = JsonNodeFactory.instance.objectNode();
-        }
+    public Map<String, String> getParams() {
         return params;
     }
 
-    public void setParams(ObjectNode params) {
+    public void setParams(Map<String, String> params) {
         this.params = params;
     }
 

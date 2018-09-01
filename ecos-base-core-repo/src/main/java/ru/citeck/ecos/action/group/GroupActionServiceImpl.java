@@ -1,17 +1,17 @@
 package ru.citeck.ecos.action.group;
 
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.transaction.TransactionListenerAdapter;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.group.impl.CustomTxnGroupAction;
 import ru.citeck.ecos.action.group.impl.GroupActionExecutor;
 import ru.citeck.ecos.action.group.impl.GroupActionExecutorFactory;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,9 +28,9 @@ public class GroupActionServiceImpl implements GroupActionService {
 
     private TransactionService transactionService;
 
-    private Map<String, GroupActionFactory<?>> processorFactories = new HashMap<>();
+    private Map<String, GroupActionFactory> processorFactories = new HashMap<>();
 
-    private Set<ActionExecution<?>> activeActions;
+    private Set<ActionExecution> activeActions;
 
     @Autowired
     public GroupActionServiceImpl(TransactionService transactionService) {
@@ -38,7 +38,7 @@ public class GroupActionServiceImpl implements GroupActionService {
         activeActions = Collections.newSetFromMap(new ConcurrentHashMap<>());
     }
 
-    private <T> List<ActionResult<T>> executeImpl(ActionExecution<T> execution) {
+    private List<ActionResult> executeImpl(ActionExecution execution) {
         if (activeActions.add(execution)) {
             try {
                 return execution.run();
@@ -51,10 +51,10 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public <T> List<ActionResult<T>> execute(Iterable<T> nodes, GroupAction<T> action) {
+    public List<ActionResult> execute(Iterable<RemoteRef> nodes, GroupAction action) {
 
         String author = AuthenticationUtil.getFullyAuthenticatedUser();
-        ActionExecution<T> execution = new ActionExecution<>(nodes, action, author);
+        ActionExecution execution = new ActionExecution(nodes, action, author);
 
         if (activeActions.contains(execution)) {
             throw new IllegalStateException(ALREADY_RUNNING_MSG);
@@ -90,34 +90,32 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public <T> List<ActionResult<T>> execute(Iterable<T> nodes,
-                                             Consumer<T> action,
-                                             GroupActionConfig config) {
+    public List<ActionResult> execute(Iterable<RemoteRef> nodes,
+                                      Consumer<RemoteRef> action,
+                                      GroupActionConfig config) {
 
-        return execute(nodes, new CustomTxnGroupAction<>(transactionService, action, config));
+        return execute(nodes, new CustomTxnGroupAction(transactionService, action, config));
     }
 
     @Override
-    public <T> List<ActionResult<T>> execute(Iterable<T> nodes,
-                                             Function<T, ActionStatus> action,
-                                             GroupActionConfig config) {
+    public List<ActionResult> execute(Iterable<RemoteRef> nodes,
+                                      Function<RemoteRef, ActionStatus> action,
+                                      GroupActionConfig config) {
 
-        return execute(nodes, new CustomTxnGroupAction<>(transactionService, action, config));
+        return execute(nodes, new CustomTxnGroupAction(transactionService, action, config));
     }
 
     @Override
-    public <T> List<ActionResult<T>> execute(Iterable<T> nodes,
-                                             String actionId,
-                                             GroupActionConfig config) {
+    public List<ActionResult> execute(Iterable<RemoteRef> nodes,
+                                      String actionId,
+                                      GroupActionConfig config) {
 
-        return execute(nodes, createAction(actionId, config));
+        return execute(nodes, getProcessor(actionId, config));
     }
 
-    @Override
-    public <T> GroupAction<T> createAction(String actionId, GroupActionConfig config) {
+    private GroupAction getProcessor(String actionId, GroupActionConfig config) {
 
-        @SuppressWarnings("unchecked")
-        GroupActionFactory<T> factory = (GroupActionFactory<T>) processorFactories.get(actionId);
+        GroupActionFactory factory = processorFactories.get(actionId);
         if (factory == null) {
             throw new IllegalArgumentException("Action not found: '" + actionId + "'");
         }
@@ -127,15 +125,10 @@ public class GroupActionServiceImpl implements GroupActionService {
         return factory.createAction(config);
     }
 
-    @Override
-    public <T> Class<T> getActionType(String actionId) {
-        return (Class<T>) processorFactories.get(actionId).getActionType();
-    }
-
-    private void checkParams(ObjectNode params, String[] mandatoryParams) {
+    private void checkParams(Map<String, String> params, String[] mandatoryParams) {
         List<String> missing = new ArrayList<>(mandatoryParams.length);
         for (String param : mandatoryParams) {
-            if (!params.has(param) || params.get(param) instanceof NullNode) {
+            if (!params.containsKey(param) || StringUtils.isBlank(params.get(param))) {
                 missing.add(param);
             }
         }
@@ -153,7 +146,7 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public List<ActionExecution<?>> getActiveActions() {
+    public List<ActionExecution> getActiveActions() {
         return new ArrayList<>(activeActions);
     }
 

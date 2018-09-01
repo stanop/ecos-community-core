@@ -1,14 +1,15 @@
 package ru.citeck.ecos.action.group.impl;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
 import ru.citeck.ecos.action.group.*;
+import ru.citeck.ecos.repo.RemoteRef;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-public class GroupActionExecutorFactory extends NodeRefActionFactory {
+public class GroupActionExecutorFactory implements GroupActionFactory {
 
     private static final String BATCH_PARAM_KEY = "evaluateBatch";
 
@@ -23,7 +24,7 @@ public class GroupActionExecutorFactory extends NodeRefActionFactory {
     }
 
     @Override
-    protected GroupAction<NodeRef> createNodeRefAction(GroupActionConfig config) {
+    public GroupAction createAction(GroupActionConfig config) {
         GroupActionConfig actionConfig = config;
         boolean isBatch = Boolean.TRUE.toString().equals(config.getParams().get(BATCH_PARAM_KEY));
         if (isBatch) {
@@ -45,45 +46,33 @@ public class GroupActionExecutorFactory extends NodeRefActionFactory {
         return executor.getMandatoryParams();
     }
 
-    private Map<String, String> getPlainParams(ObjectNode node) {
-        Map<String, String> plainParams = new HashMap<>();
-        Iterator<String> names = node.fieldNames();
-        while (names.hasNext()) {
-            String name = names.next();
-            plainParams.put(name, node.get(name).asText());
-        }
-        return plainParams;
-    }
-
-    private class BatchAction extends TxnGroupAction<NodeRef> {
-
-        Map<String, String> plainParams;
+    private class BatchAction extends TxnGroupAction {
 
         BatchAction(GroupActionConfig config) {
             super(transactionService, config);
-            plainParams = getPlainParams(config.getParams());
         }
 
         @Override
-        protected boolean isApplicable(NodeRef recordRef) {
-            return executor.isApplicable(recordRef, plainParams);
+        protected boolean isApplicable(RemoteRef nodeRef) {
+            return executor.isApplicable(nodeRef.getNodeRef(), config.getParams());
         }
 
         @Override
-        protected void processNodesInTxn(List<NodeRef> nodes, List<ActionResult<NodeRef>> output) {
+        protected void processNodesInTxn(List<RemoteRef> nodes, List<ActionResult> output) {
 
             List<NodeRef> nodeRefs = nodes.stream()
-                    .filter(nodeRef -> {
-                        boolean isApplicable = nodeRef != null && executor.isApplicable(nodeRef, plainParams);
-                        if (!isApplicable(nodeRef)) {
-                            output.add(new ActionResult<>(nodeRef, ActionStatus.STATUS_SKIPPED));
+                    .filter(node -> {
+                        boolean isApplicable = node.isLocal() && isApplicable(node);
+                        if (!isApplicable) {
+                            output.add(new ActionResult(node, ActionStatus.STATUS_SKIPPED));
                         }
                         return isApplicable;
                     })
+                    .map(RemoteRef::getNodeRef)
                     .collect(Collectors.toList());
 
-            Map<NodeRef, ActionStatus> results = executor.invokeBatch(nodeRefs, plainParams);
-            results.forEach((ref, res) -> output.add(new ActionResult<>(ref, res)));
+            Map<NodeRef, ActionStatus> results = executor.invokeBatch(nodeRefs, config.getParams());
+            results.forEach((ref, res) -> output.add(new ActionResult(new RemoteRef(ref), res)));
         }
 
         @Override
@@ -92,23 +81,20 @@ public class GroupActionExecutorFactory extends NodeRefActionFactory {
         }
     }
 
-    private class SimpleAction extends TxnGroupAction<NodeRef> {
-
-        private Map<String, String> plainParams;
+    private class SimpleAction extends TxnGroupAction {
 
         SimpleAction(GroupActionConfig config) {
             super(transactionService, config);
-            plainParams = getPlainParams(config.getParams());
         }
 
         @Override
-        protected boolean isApplicable(NodeRef nodeRef) {
-            return executor.isApplicable(nodeRef, plainParams);
+        protected boolean isApplicable(RemoteRef nodeRef) {
+            return executor.isApplicable(nodeRef.getNodeRef(), config.getParams());
         }
 
         @Override
-        protected ActionStatus processImpl(NodeRef nodeRef) {
-            executor.invoke(nodeRef, plainParams);
+        protected ActionStatus processImpl(RemoteRef nodeRef) {
+            executor.invoke(nodeRef.getNodeRef(), config.getParams());
             return new ActionStatus(ActionStatus.STATUS_OK);
         }
 

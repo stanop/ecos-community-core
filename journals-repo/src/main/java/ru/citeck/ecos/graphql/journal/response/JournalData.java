@@ -2,6 +2,7 @@ package ru.citeck.ecos.graphql.journal.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,15 +56,15 @@ public class JournalData {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JournalRecords {
 
-        private List<?> records;
+        private List<LinkedHashMap> records;
         private long totalCount;
         private PageInfo pageInfo;
 
-        public List<?> getRecords() {
+        public List<LinkedHashMap> getRecords() {
             return records;
         }
 
-        public void setRecords(List<?> records) {
+        public void setRecords(List<LinkedHashMap> records) {
             this.records = records;
         }
 
