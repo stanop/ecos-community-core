@@ -2,7 +2,7 @@ package ru.citeck.ecos.journals.records;
 
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.journals.JournalType;
-import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * @author Pavel Simonov
  */
-public class JournalRecords implements Iterable<RecordRef> {
+public class JournalRecords implements Iterable<RemoteRef> {
 
     private static final int SEARCH_MAX_ITEMS = 100;
 
@@ -36,7 +36,7 @@ public class JournalRecords implements Iterable<RecordRef> {
     }
 
     @Override
-    public Iterator<RecordRef> iterator() {
+    public Iterator<RemoteRef> iterator() {
         return new RecordsIterator();
     }
 
@@ -62,10 +62,10 @@ public class JournalRecords implements Iterable<RecordRef> {
         return Objects.hash(query, language, journalType, pageInfo);
     }
 
-    private class RecordsIterator implements Iterator<RecordRef> {
+    private class RecordsIterator implements Iterator<RemoteRef> {
 
         private int currentIdx = 0;
-        private JournalRecordsResult records;
+        private RecordsResult records;
         private String lastId = "";
         private boolean stopped = false;
 
@@ -99,7 +99,7 @@ public class JournalRecords implements Iterable<RecordRef> {
         }
 
         @Override
-        public RecordRef next() {
+        public RemoteRef next() {
             int maxItems = pageInfo.getMaxItems();
             if (stopped || (maxItems > 0 && processedCount >= maxItems)) {
                 throw new NoSuchElementException();

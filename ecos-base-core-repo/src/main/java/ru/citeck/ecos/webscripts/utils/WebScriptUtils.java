@@ -29,6 +29,7 @@ import org.json.simple.JSONValue;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptException;
 import org.springframework.extensions.webscripts.WebScriptRequest;
+import ru.citeck.ecos.graphql.GraphQLWebscript;
 
 public class WebScriptUtils {
 

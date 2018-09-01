@@ -108,8 +108,5 @@ public class JournalTypeJS {
     public String getFieldsSchema() {
         return impl.getFieldsSchema();
     }
-
-    public String getDataSource() {
-        return impl.getDataSource();
-    }
+    
 }

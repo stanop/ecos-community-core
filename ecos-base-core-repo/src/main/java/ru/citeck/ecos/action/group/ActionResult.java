@@ -1,43 +1,27 @@
 package ru.citeck.ecos.action.group;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import ru.citeck.ecos.repo.RemoteRef;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ActionResult<T> {
+public class ActionResult {
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,
-                  include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
-                  property = "dataType")
-    private T data;
-    private ActionStatus status;
+    private final RemoteRef remoteRef;
+    private final ActionStatus status;
 
-    public ActionResult() {
-    }
-
-    public ActionResult(T data, String statusId) {
-        this.data = data;
+    public ActionResult(RemoteRef remoteRef, String statusId) {
+        this.remoteRef = remoteRef;
         this.status = new ActionStatus(statusId);
     }
 
-    public ActionResult(T data, ActionStatus status) {
-        this.data = data;
+    public ActionResult(RemoteRef remoteRef, ActionStatus status) {
+        this.remoteRef = remoteRef;
         this.status = status;
     }
 
-    public void setData(T data) {
-        this.data = data;
-    }
-
-    public T getData() {
-        return data;
+    public RemoteRef getRemoteRef() {
+        return remoteRef;
     }
 
     public ActionStatus getStatus() {
         return status;
-    }
-
-    public void setStatus(ActionStatus actionStatus) {
-        status = actionStatus;
     }
 }

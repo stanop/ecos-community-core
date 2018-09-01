@@ -4,16 +4,17 @@ import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupAction;
 import ru.citeck.ecos.action.group.GroupActionConfig;
+import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.*;
 
 /**
  * @author Pavel Simonov
  */
-public abstract class BaseGroupAction<T> implements GroupAction<T> {
+public abstract class BaseGroupAction implements GroupAction {
 
-    private final List<T> input = new ArrayList<>();
-    private final List<ActionResult<T>> output = new ArrayList<>();
+    private final List<RemoteRef> input = new ArrayList<>();
+    private final List<ActionResult> output = new ArrayList<>();
 
     protected final GroupActionConfig config;
     private int errorsCount = 0;
@@ -23,7 +24,7 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
     }
 
     @Override
-    public final void process(T remoteRef) {
+    public final void process(RemoteRef remoteRef) {
         input.add(remoteRef);
         int batchSize = config.getBatchSize();
         if (batchSize > 0 && input.size() >= batchSize) {
@@ -32,17 +33,17 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
     }
 
     @Override
-    public final List<ActionResult<T>> complete() {
+    public final List<ActionResult> complete() {
         if (input.size() > 0) {
             processNodes();
         }
-        onComplete(output);
+        onComplete();
         return output;
     }
 
     @Override
-    public List<ActionResult<T>> cancel() {
-        onCancel(output);
+    public List<ActionResult> cancel() {
+        onCancel();
         return output;
     }
 
@@ -57,10 +58,10 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
     }
 
     private void processNodes() {
-        List<ActionResult<T>> results = new ArrayList<>();
+        List<ActionResult> results = new ArrayList<>();
         processNodesImpl(input, results);
         input.clear();
-        for (ActionResult<T> result : results) {
+        for (ActionResult result : results) {
             ActionStatus status = result.getStatus();
             if (status != null && ActionStatus.STATUS_ERROR.equals(status.getKey())) {
                 errorsCount++;
@@ -73,22 +74,22 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
         }
     }
 
-    protected void onComplete(List<ActionResult<T>> output) {
+    protected void onComplete() {
     }
 
-    protected void onCancel(List<ActionResult<T>> output) {
+    protected void onCancel() {
     }
 
-    protected void processNodesImpl(List<T> nodes, List<ActionResult<T>> output) {
-        for (T node : nodes) {
+    protected void processNodesImpl(List<RemoteRef> nodes, List<ActionResult> output) {
+        for (RemoteRef node : nodes) {
             ActionStatus status = processImpl(node);
             if (output.size() < config.getMaxResults()) {
-                output.add(new ActionResult<>(node, status));
+                output.add(new ActionResult(node, status));
             }
         }
     }
 
-    protected ActionStatus processImpl(T nodeRef) {
+    protected ActionStatus processImpl(RemoteRef nodeRef) {
         throw new RuntimeException("Method not implemented");
     }
 
