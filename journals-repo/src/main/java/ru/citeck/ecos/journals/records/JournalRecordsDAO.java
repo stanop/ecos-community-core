@@ -11,7 +11,7 @@ import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverter;
 import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverterFactory;
 import ru.citeck.ecos.journals.JournalType;
-import ru.citeck.ecos.repo.RemoteRef;
+import ru.citeck.ecos.records.RecordRef;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,12 +42,12 @@ public class JournalRecordsDAO {
     public JournalData getRecordsWithData(JournalType journalType,
                                           String query,
                                           String language,
-                                          JGqlPageInfoInput pageInfo) throws Exception {
+                                          JGqlPageInfoInput pageInfo) {
 
         JournalDataSource dataSource = getDataSourceInstance(journalType);
         if (dataSource.isSupportsSplitLoading()) {
             GqlContext gqlContext = new GqlContext(serviceRegistry);
-            RecordsResult recordsResult = dataSource.queryIds(gqlContext, query, language, pageInfo);
+            JournalRecordsResult recordsResult = dataSource.queryIds(gqlContext, query, language, pageInfo);
             String gqlQuery = gqlQueryGenerator.generate(journalType, recordsMetadataBaseQuery, dataSource);
             return dataSource.queryMetadata(gqlQuery, journalType.getDataSource(), recordsResult);
         } else {
@@ -59,7 +59,7 @@ public class JournalRecordsDAO {
         }
     }
 
-    public RecordsResult getRecords(JournalType journalType,
+    public JournalRecordsResult getRecords(JournalType journalType,
                                     String query,
                                     String language,
                                     JGqlPageInfoInput pageInfo) {
@@ -128,11 +128,11 @@ public class JournalRecordsDAO {
             maxItems = DEFAULT_PAGE_SIZE;
         }
 
-        List<RemoteRef> records = recordsData.stream()
-                .map(entry -> new RemoteRef(entry.get("id")))
+        List<RecordRef> records = recordsData.stream()
+                .map(entry -> new RecordRef(entry.get("id")))
                 .collect(Collectors.toList());
 
-        return new RecordsResult(records, hasNextPage, totalCount, skipCount, maxItems);
+        return new JournalRecordsResult(records, hasNextPage, totalCount, skipCount, maxItems);
     }
 
     private JournalDataSource getDataSourceInstance(JournalType journalType) {
@@ -159,7 +159,7 @@ public class JournalRecordsDAO {
 
     public void setRecordsBaseQuery(String recordsBaseQuery) {
         this.recordsBaseQuery = recordsBaseQuery;
-        this.gqlRecordsIdQuery = recordsBaseQuery + "\nfragment recordsFields on JGqlAttributeValue { id }";
+        this.gqlRecordsIdQuery = recordsBaseQuery + "\nfragment recordsFields on MetaValue { id }";
     }
 
     public void setRecordsMetadataBaseQuery(String recordsMetadataBaseQuery) {

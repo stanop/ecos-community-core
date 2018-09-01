@@ -9,11 +9,13 @@ import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLQueryDefinition;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
-import ru.citeck.ecos.repo.RemoteRef;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.RecordsInput;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,21 +43,24 @@ public class JGqlQueryDefinition {
     }
 
     @GraphQLField
-    public static Optional<List<JGqlAttributeValue>> journalRecordsMetadata(
+    public static List<MetaValue> journalRecordsMetadata(
             DataFetchingEnvironment env,
             @GraphQLName("datasource") String datasource,
-            @GraphQLName("remoteRefs") JGqlRecordsInput remoteIds) {
+            @GraphQLName("remoteRefs") RecordsInput remoteIds) {
 
         GqlContext context = env.getContext();
         Optional<JournalDataSource> dataSource = dataSources.computeIfAbsent(datasource, source -> {
             return getJournalDataSource(context, source);
         });
 
-        return dataSource.map(source -> {
-            List<RemoteRef> remoteRefs = new ArrayList<>(remoteIds.getRemoteRefs().size());
-            remoteIds.getRemoteRefs().forEach(item -> remoteRefs.add(new RemoteRef(item)));
+        if (dataSource.isPresent()) {
+            JournalDataSource source = dataSource.get();
+            List<RecordRef> remoteRefs = new ArrayList<>(remoteIds.getRefs().size());
+            remoteIds.getRefs().forEach(item -> remoteRefs.add(new RecordRef(item)));
             return source.convertToGqlValue(context, remoteRefs);
-        });
+        }
+
+        return Collections.emptyList();
     }
 
     private static Optional<JournalDataSource> getJournalDataSource(GqlContext context, String source) {

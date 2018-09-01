@@ -3,11 +3,11 @@ package ru.citeck.ecos.graphql.journal.datasource;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.journal.response.JournalData;
-import ru.citeck.ecos.journals.records.RecordsResult;
-import ru.citeck.ecos.repo.RemoteRef;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.journals.records.JournalRecordsResult;
+import ru.citeck.ecos.records.RecordRef;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,17 +22,17 @@ public interface JournalDataSource {
 
     String getServerId();
 
-    RecordsResult queryIds(GqlContext context,
-                           String query,
-                           String language,
-                           JGqlPageInfoInput pageInfo) throws Exception;
+    JournalRecordsResult queryIds(GqlContext context,
+                                  String query,
+                                  String language,
+                                  JGqlPageInfoInput pageInfo);
 
-    List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
-                                               List<RemoteRef> remoteRefList);
+    List<MetaValue> convertToGqlValue(GqlContext context,
+                                      List<RecordRef> remoteRefList);
 
     JournalData queryMetadata(String gqlQuery,
                               String dataSourceBeanName,
-                              RecordsResult recordsResult) throws Exception;
+                              JournalRecordsResult recordsResult);
 
     default boolean isSupportsSplitLoading() {
         return false;

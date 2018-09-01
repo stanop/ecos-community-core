@@ -36,17 +36,13 @@ public class JournalRecordsPost extends AbstractWebScript {
         String journalId = req.getParameter(PARAM_JOURNAL_ID);
 
         RequestBody request = objectMapper.readValue(req.getContent().getContent(), RequestBody.class);
-        JournalData result;
-        try {
-            result = journalService.getRecordsWithData(
-                    journalId,
-                    request.query,
-                    request.language,
-                    request.pageInfo
-            );
-        } catch (Exception e) {
-            throw new IOException(e);
-        }
+
+        JournalData result = journalService.getRecordsWithData(
+                journalId,
+                request.query,
+                request.language,
+                request.pageInfo
+        );
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getOutputStream(), result);
