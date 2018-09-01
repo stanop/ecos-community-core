@@ -4,12 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.group.ActionResult;
-import ru.citeck.ecos.action.group.GroupAction;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.records.action.MultiSourceGroupAction;
 import ru.citeck.ecos.records.query.DaoRecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
@@ -70,35 +68,42 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public GroupAction<String> createAction(String source, String actionId, GroupActionConfig config) {
-        return getSource(source).createAction(actionId, config);
-    }
-
-    @Override
     public List<ActionResult<RecordRef>> executeAction(RecordsQuery query, String actionId, GroupActionConfig config) {
         return executeAction("", query, actionId, config);
     }
 
     @Override
     public List<ActionResult<RecordRef>> executeAction(String source,
-                                                       RecordsQuery query,
-                                                       String actionId,
-                                                       GroupActionConfig config) {
-
+                                                   RecordsQuery query,
+                                                   String actionId,
+                                                   GroupActionConfig config) {
         return executeAction(new IterableRecords(this, source, query), actionId, config);
     }
 
     @Override
     public List<ActionResult<RecordRef>> executeAction(Iterable<RecordRef> records,
-                                                       String actionId,
-                                                       GroupActionConfig config) {
+                                                   String actionId,
+                                                   GroupActionConfig config) {
 
-        GroupActionConfig recActConfig = new GroupActionConfig();
-        recActConfig.setBatchSize(30);
-        recActConfig.setAsync(config.isAsync());
+        Class<?> actionType = groupActionService.getActionType(actionId);
 
-        GroupAction<RecordRef> action = new MultiSourceGroupAction(recActConfig, config, actionId, this::getSource);
-        return groupActionService.execute(records, action);
+        if (RecordRef.class.isAssignableFrom(actionType)) {
+            return groupActionService.execute(records, actionId, config);
+        } else {
+            IterableRecordsMeta recordsWithMeta = new IterableRecordsMeta<>(records, this, actionType);
+            List<ActionResult<?>> actionResult = groupActionService.execute(recordsWithMeta, actionId, config);
+
+            List<ActionResult<RecordRef>> results = new ArrayList<>();
+            actionResult.forEach(r -> {
+                @SuppressWarnings("unchecked")
+                RecordRef recordRef = recordsWithMeta.getRecordRef(r.getData());
+                if (recordRef != null) {
+                    results.add(new ActionResult<>(recordRef, r.getStatus()));
+                }
+            });
+
+            return results;
+        }
     }
 
     private <T> Map<RecordRef, T> getMeta(Collection<RecordRef> records,
@@ -107,22 +112,12 @@ public class RecordsServiceImpl implements RecordsService {
 
         Map<RecordRef, T> result = new HashMap<>();
 
-        groupBySource(records).forEach((sourceId, sourceRecords) -> {
+        RecordsUtils.groupRefBySource(records).forEach((sourceId, sourceRecords) -> {
             RecordsDAO source = getSource(sourceId);
             Map<String, T> recordsMeta = getMeta.apply(source, sourceRecords);
             recordsMeta.forEach((k, v) -> result.put(new RecordRef(source.getId(), k), v));
         });
 
-        return result;
-    }
-
-    private Map<String, Set<String>> groupBySource(Collection<RecordRef> records) {
-        Map<String, Set<String>> result = new HashMap<>();
-        for (RecordRef record : records) {
-            String sourceId = record.getSourceId();
-            String recordId = record.getId();
-            result.computeIfAbsent(sourceId, key -> new HashSet<>()).add(recordId);
-        }
         return result;
     }
 

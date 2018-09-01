@@ -57,7 +57,7 @@ public class FieldConverter<T> extends MetaConverter<Object> {
     @Override
     public Object convert(JsonNode data) throws ReflectiveOperationException {
 
-        JsonNode value = data.get(attName);
+        JsonNode value = data.get(fieldName);
 
         if (value != null) {
             value = value.get(META_VAL_FIELD);

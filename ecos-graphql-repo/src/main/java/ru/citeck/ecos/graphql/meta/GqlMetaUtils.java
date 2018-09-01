@@ -2,7 +2,6 @@ package ru.citeck.ecos.graphql.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import graphql.ExecutionResult;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.meta.converter.ConvertersProvider;
@@ -63,5 +62,20 @@ public class GqlMetaUtils {
         });
 
         return result;
+    }
+
+    public String createQuery(Class<?> dataClass) {
+        MetaConverter<?> converter = convertersProvider.getConverter(dataClass);
+        return converter.appendQuery(new StringBuilder()).toString();
+    }
+
+    public <T> T convertData(JsonNode node, Class<T> dataClass) {
+        MetaConverter<T> converter = convertersProvider.getConverter(dataClass);
+        try {
+            return converter.convert(node);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

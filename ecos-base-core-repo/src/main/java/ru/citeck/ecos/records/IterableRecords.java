@@ -2,26 +2,23 @@ package ru.citeck.ecos.records;
 
 import ru.citeck.ecos.records.query.RecordsQuery;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 public class IterableRecords implements Iterable<RecordRef> {
 
     private static final int SEARCH_MAX_ITEMS = 100;
 
     private final String sourceId;
-    private final RecordsService recordsService;
     private final RecordsQuery recordsQuery;
+    private final RecordsService recordsService;
 
     public IterableRecords(RecordsService recordsService,
                            String sourceId,
                            RecordsQuery recordsQuery) {
 
         this.sourceId = sourceId;
-        this.recordsService = recordsService;
         this.recordsQuery = recordsQuery;
+        this.recordsService = recordsService;
     }
 
     @Override
@@ -66,6 +63,7 @@ public class IterableRecords implements Iterable<RecordRef> {
             query.setMaxItems(SEARCH_MAX_ITEMS);
 
             records = recordsService.getRecords(sourceId, query).getRecords();
+
             if (records.size() > 0) {
                 RecordRef newLastId = records.get(records.size() - 1);
                 if (!Objects.equals(newLastId, lastId)) {

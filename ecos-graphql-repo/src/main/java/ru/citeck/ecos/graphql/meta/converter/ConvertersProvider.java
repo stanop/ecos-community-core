@@ -33,6 +33,7 @@ public class ConvertersProvider {
 
         register(DateConverter.class);
         register(StringConverter.class);
+        register(NodeRefConverter.class);
     }
 
     public <T> MetaConverter<T> getConverter(Class<T> clazz) {

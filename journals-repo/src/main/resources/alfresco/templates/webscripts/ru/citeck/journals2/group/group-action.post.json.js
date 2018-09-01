@@ -25,7 +25,7 @@
         for (var idx in actionResults) {
             var result = actionResults[idx];
             results.push({
-                nodeRef: result.nodeId.toString(),
+                nodeRef: result.data.toString(),
                 status: result.status.key,
                 message: result.status.message,
                 url: result.status.url
@@ -45,7 +45,7 @@
             for (var idx in actionResults) {
                 var result = actionResults[idx];
                 results.push({
-                    nodeRef: result.nodeId.toString(),
+                    nodeRef: result.data.toString(),
                     status: result.status.key,
                     message: result.status.message,
                     url: result.status.url

@@ -54,7 +54,7 @@ public class ConvertGroupAction<Internal, Output> implements GroupAction<Output>
     private List<ActionResult<Output>> convertToOut(List<ActionResult<Internal>> internal) {
         return internalAction.cancel()
                 .stream()
-                .map(r -> new ActionResult<>(toOut.apply(r.getNodeId()), r.getStatus()))
+                .map(r -> new ActionResult<>(toOut.apply(r.getData()), r.getStatus()))
                 .collect(Collectors.toList());
     }
 

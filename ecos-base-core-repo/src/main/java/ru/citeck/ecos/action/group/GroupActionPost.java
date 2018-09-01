@@ -1,5 +1,7 @@
 package ru.citeck.ecos.action.group;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
@@ -18,7 +20,8 @@ public class GroupActionPost extends AbstractWebScript {
         ActionData actionData = objectMapper.readValue(req.getContent().getContent(), ActionData.class);
 
         Response response = new Response();
-        response.results = groupActionService.execute(actionData.records,
+
+        response.results = groupActionService.execute(actionData.nodes,
                                                       actionData.actionId,
                                                       actionData.config);
 
@@ -32,13 +35,18 @@ public class GroupActionPost extends AbstractWebScript {
         this.groupActionService = groupActionService;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ActionData {
         public String actionId;
         public GroupActionConfig config;
-        public List<String> records;
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,
+                      include = JsonTypeInfo.As.WRAPPER_OBJECT)
+        public List<?> nodes;
     }
 
-    public static class Response {
-        public List<ActionResult<String>> results;
+    public static class Response<T> {
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,
+                      include = JsonTypeInfo.As.WRAPPER_OBJECT)
+        public List<ActionResult<T>> results;
     }
 }

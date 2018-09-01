@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import graphql.ExecutionResult;
+import org.apache.commons.collections.ArrayStack;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -13,15 +13,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.web.client.RestTemplate;
-import ru.citeck.ecos.action.group.GroupAction;
+import ru.citeck.ecos.action.group.ActionResult;
+import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.action.group.impl.RemoteGroupAction;
+import ru.citeck.ecos.action.group.GroupActionPost;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
@@ -53,6 +55,8 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
     private GraphQLService graphQLService;
     private GqlMetaUtils metaUtils;
 
+    private boolean enabled = true;
+
     public RemoteRecordsDAO(String id) {
         super(id);
         metaBaseQuery = "records(source:\"\",refs:[\"%s\"])";
@@ -60,6 +64,10 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
 
     @PostConstruct
     public void init() {
+
+        if (!enabled) {
+            return;
+        }
 
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
             this.restTemplate = new RestTemplate(createSecureTransport(username, password));
@@ -83,10 +91,12 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
 
     @Override
     public DaoRecordsResult queryRecords(RecordsQuery query) {
+        if (!enabled) {
+            return new DaoRecordsResult(query);
+        }
         try {
             String postData = objectMapper.writeValueAsString(query);
-            URI uri = URIBuilder.fromUri(serverHost + RECORDS_METHOD).build();
-            return postRequest(uri, postData, DaoRecordsResult.class);
+            return postRequest(serverHost + RECORDS_METHOD, postData, DaoRecordsResult.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -124,19 +134,31 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
         throw new RuntimeException("getMetaValue is not supported for remote recordsDAO");
     }
 
-    @Override
-    public GroupAction<String> createAction(String actionId, GroupActionConfig config) {
-        GroupActionConfig remoteActionConfig = new GroupActionConfig();
-        remoteActionConfig.setBatchSize(20);
-        String groupActionUrl = serverHost + GROUP_ACTION_METHOD;
-        return new RemoteGroupAction(remoteActionConfig, restTemplate, groupActionUrl, actionId, config);
+    public <T> List<ActionResult<T>> execute(List<T> records, String actionId, GroupActionConfig config) {
+
+        if (!enabled) {
+            List<ActionResult<T>> results = new ArrayList<>();
+            records.forEach(r -> results.add(new ActionResult<>(r, ActionStatus.STATUS_SKIPPED)));
+            return results;
+        }
+
+        GroupActionPost.ActionData actionData = new GroupActionPost.ActionData();
+        actionData.nodes = records;
+        actionData.actionId = actionId;
+        actionData.config = config;
+
+        String uri = serverHost + GROUP_ACTION_METHOD;
+        GroupActionPost.Response<T> response = postRequest(uri, actionData, GroupActionPost.Response.class);
+
+        return response.results;
     }
 
-    private <I, O> O postRequest(URI url, I postData, Class<O> responseType) {
+    private <I, O> O postRequest(String strUrl, I postData, Class<O> responseType) {
+        URI uri = URIBuilder.fromUri(strUrl).build();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<I> requestEntity = new HttpEntity<>(postData, headers);
-        return restTemplate.postForObject(url, requestEntity, responseType);
+        return restTemplate.postForObject(uri, requestEntity, responseType);
     }
 
     public void setUsername(String username) {
@@ -151,6 +173,10 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
         this.serverHost = serverHost;
     }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @Autowired
     public void setGraphQLService(GraphQLService graphQLService) {
         this.graphQLService = graphQLService;
@@ -159,5 +185,9 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
     @Autowired
     public void setMetaUtils(GqlMetaUtils metaUtils) {
         this.metaUtils = metaUtils;
+    }
+
+    public RestTemplate getRestTemplate() {
+        return restTemplate;
     }
 }

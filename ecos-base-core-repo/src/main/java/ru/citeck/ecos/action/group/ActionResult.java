@@ -8,29 +8,29 @@ public class ActionResult<T> {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,
                   include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
-                  property = "idType")
-    private T nodeId;
+                  property = "dataType")
+    private T data;
     private ActionStatus status;
 
     public ActionResult() {
     }
 
-    public ActionResult(T nodeId, String statusId) {
-        this.nodeId = nodeId;
+    public ActionResult(T data, String statusId) {
+        this.data = data;
         this.status = new ActionStatus(statusId);
     }
 
-    public ActionResult(T nodeId, ActionStatus status) {
-        this.nodeId = nodeId;
+    public ActionResult(T data, ActionStatus status) {
+        this.data = data;
         this.status = status;
     }
 
-    public void setNodeId(T nodeId) {
-        this.nodeId = nodeId;
+    public void setData(T data) {
+        this.data = data;
     }
 
-    public T getNodeId() {
-        return nodeId;
+    public T getData() {
+        return data;
     }
 
     public ActionStatus getStatus() {
