@@ -127,6 +127,11 @@ public class GroupActionServiceImpl implements GroupActionService {
         return factory.createAction(config);
     }
 
+    @Override
+    public <T> Class<T> getActionType(String actionId) {
+        return (Class<T>) processorFactories.get(actionId).getActionType();
+    }
+
     private void checkParams(ObjectNode params, String[] mandatoryParams) {
         List<String> missing = new ArrayList<>(mandatoryParams.length);
         for (String param : mandatoryParams) {

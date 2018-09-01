@@ -1,8 +1,6 @@
 package ru.citeck.ecos.records.source;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import ru.citeck.ecos.action.group.GroupAction;
-import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.AttributeInfo;
@@ -24,8 +22,6 @@ public interface RecordsDAO {
     Optional<AttributeInfo> getAttributeInfo(String name);
 
     Optional<MetaValue> getMetaValue(GqlContext context, String id);
-
-    GroupAction<String> createAction(String actionId, GroupActionConfig config);
 
     String getId();
 }

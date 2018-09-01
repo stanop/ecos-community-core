@@ -2,13 +2,10 @@ package ru.citeck.ecos.records.source;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang.StringUtils;
-import ru.citeck.ecos.action.group.GroupAction;
-import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.action.group.impl.ConvertGroupAction;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.action.MultiSourceGroupAction;
+import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.query.DaoRecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 
@@ -90,38 +87,13 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
         return getSource(recordRef.getSourceId()).getMetaValue(context, recordRef.getId());
     }
 
-    @Override
-    public GroupAction<String> createAction(String actionId, GroupActionConfig config) {
-
-        GroupActionConfig recActConfig = new GroupActionConfig();
-        recActConfig.setBatchSize(30);
-
-        GroupAction<RecordRef> recordAction = new MultiSourceGroupAction(recActConfig,
-                                                                         config,
-                                                                         actionId,
-                                                                         this::getSource);
-
-        return new ConvertGroupAction<>(recordAction, Object::toString, RecordRef::new);
-    }
-
     private <V> Map<String, V> queryMeta(Collection<String> records,
                                          BiFunction<RecordsDAO, Collection<String>, Map<String, V>> metaFunc) {
         Map<String, V> result = new HashMap<>();
-        groupBySource(records).forEach((source, sourceRecords) -> {
+        RecordsUtils.groupStrBySource(records).forEach((source, sourceRecords) -> {
             Map<String, V> sourceMeta = metaFunc.apply(getSource(source), sourceRecords);
             sourceMeta.forEach((record, meta) -> result.put(new RecordRef(source, record).toString(), meta));
         });
-        return result;
-    }
-
-    private Map<String, Set<String>> groupBySource(Collection<String> records) {
-        Map<String, Set<String>> result = new HashMap<>();
-        for (String record : records) {
-            RecordRef ref = new RecordRef(record);
-            String sourceId = ref.getSourceId();
-            String recordId = ref.getId();
-            result.computeIfAbsent(sourceId, key -> new HashSet<>()).add(recordId);
-        }
         return result;
     }
 

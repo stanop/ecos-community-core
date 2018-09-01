@@ -14,4 +14,6 @@ public interface GroupActionFactory<T> {
     default String[] getMandatoryParams() {
         return EMPTY_STR_ARR;
     }
+
+    Class<T> getActionType();
 }

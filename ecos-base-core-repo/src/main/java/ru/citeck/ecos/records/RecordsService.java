@@ -35,8 +35,6 @@ public interface RecordsService {
 
     /*actions*/
 
-    GroupAction<String> createAction(String source, String actionId, GroupActionConfig config);
-
     List<ActionResult<RecordRef>> executeAction(RecordsQuery query,
                                                 String actionId,
                                                 GroupActionConfig config);

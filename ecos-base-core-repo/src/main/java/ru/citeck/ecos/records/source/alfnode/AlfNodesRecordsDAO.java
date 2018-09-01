@@ -1,7 +1,6 @@
 package ru.citeck.ecos.records.source.alfnode;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import graphql.ExecutionResult;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
@@ -9,9 +8,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.action.group.GroupAction;
-import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
@@ -33,20 +29,17 @@ public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
     public static final String META_BASE_QUERY = "records(source:\"" + ID + "\",refs:[\"%s\"])";
 
     private NodeService nodeService;
-    private GroupActionService groupActionService;
     private GqlMetaUtils gqlMetaUtils;
     private GraphQLService graphQLService;
 
     private Map<String, AlfNodesSearch> searchByLanguage = new ConcurrentHashMap<>();
 
     @Autowired
-    public AlfNodesRecordsDAO(GroupActionService groupActionService,
-                              ServiceRegistry serviceRegistry,
+    public AlfNodesRecordsDAO(ServiceRegistry serviceRegistry,
                               GraphQLService graphQLService,
                               GqlMetaUtils gqlMetaUtils) {
         super(ID);
         this.nodeService = serviceRegistry.getNodeService();
-        this.groupActionService = groupActionService;
         this.gqlMetaUtils = gqlMetaUtils;
         this.graphQLService = graphQLService;
     }
@@ -96,11 +89,6 @@ public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
     public Optional<MetaValue> getMetaValue(GqlContext context, String id) {
         Optional<GqlAlfNode> node = context.getNode(id);
         return node.map(gqlAlfNode -> new AlfNodeRecord(gqlAlfNode, context));
-    }
-
-    @Override
-    public GroupAction<String> createAction(String actionId, GroupActionConfig config) {
-        return groupActionService.createAction(actionId, config);
     }
 
     public void register(AlfNodesSearch alfNodesSearch) {
