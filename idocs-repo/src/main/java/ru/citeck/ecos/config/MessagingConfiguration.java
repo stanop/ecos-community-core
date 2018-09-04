@@ -68,8 +68,8 @@ public class MessagingConfiguration {
      * Connection factory bean
      * @return Connection factory or null (in case of absence "rabbitmq.server.host" global property)
      */
-    @Bean(name = "rabbitConnectionFactory")
-    public CachingConnectionFactory cachingConnectionFactory() {
+    @Bean(name = "historyRabbitConnectionFactory")
+    public CachingConnectionFactory historyRabbitConnectionFactory() {
         if (properties.getProperty(RABBIT_MQ_HOST) != null) {
             CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
             connectionFactory.setHost(properties.getProperty(RABBIT_MQ_HOST));
@@ -87,8 +87,8 @@ public class MessagingConfiguration {
      * @param connectionFactory Connection factory
      * @return Rabbit template or null (in case of absence connection factory)
      */
-    @Bean(name = "rabbitTemplate")
-    public RabbitTemplate rabbitTemplate(CachingConnectionFactory connectionFactory) {
+    @Bean(name = "historyRabbitTemplate")
+    public RabbitTemplate historyRabbitTemplate(CachingConnectionFactory connectionFactory) {
         if (connectionFactory != null) {
             return new RabbitTemplate(connectionFactory);
         } else {
