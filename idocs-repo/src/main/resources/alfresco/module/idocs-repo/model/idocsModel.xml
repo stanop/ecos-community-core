@@ -336,7 +336,6 @@
                 <aspect>idocs:communicationInfo</aspect>
                 <aspect>idocs:diadocInfo</aspect>
                 <aspect>idocs:contractorType</aspect>
-                <aspect>idocs:hasContractorKind</aspect>
                 <aspect>idocs:hasBankAccount</aspect>
                 <aspect>idocs:doNotSendContractsToEdiAspect</aspect>
             </mandatory-aspects>
