@@ -105,9 +105,11 @@ function doNotSendContractToEdiFlag() {
 function isEdiConterpartyDocumentReceived() {
     var caseDocuments = document.childAssocs['icase:documents'] != null ? document.childAssocs['icase:documents'] : null;
     for each (var attachment in caseDocuments) {
+        var status = attachment.properties['sam:packageAttachmentStatus'];
         if (attachment.properties['sam:messageId'] != null && attachment.properties['sam:messageId'] !== ""
         && attachment.properties['tk:kind'] != null && attachment.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/kind-d-counterparty-documents'
         && attachment.properties['tk:type'] && attachment.properties['tk:type'].nodeRef == 'workspace://SpacesStore/category-document-type'
+            && ['BUYER_TITLE_SIGNED', 'SIGNED', 'SIGN_SENT', 'REJECTED', 'REJECTION_SENT', 'DELIVERED', 'DELIVERY_FAILED'].indexOf(status) == -1
         ) {
             return true;
         }
