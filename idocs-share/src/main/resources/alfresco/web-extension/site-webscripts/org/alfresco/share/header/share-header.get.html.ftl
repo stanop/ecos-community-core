@@ -33,9 +33,9 @@
    </@>
 
    <#assign pageArgsMap = ((page.url.templateArgs!{}) + (page.url.args!{}) + {
-                   "pageid": "card-details",
-                   "theme": "${theme!}"
-               }) />
+       "pageid": "card-details",
+       "theme": "${theme!}"
+   }) />
 
    <script type="text/javascript">//<![CDATA[
        var header = document.createElement('div');
@@ -45,37 +45,43 @@
        var request = new XMLHttpRequest();
        request.open('GET', searchUrl, false);  // `false` makes the request synchronous
        request.send(null);
-       if (request.status == 200 && request.responseText) {
-           var data = eval('(' + request.responseText + ')');
-           var isReactMenu = data && data.value == "left";
+       if (request.status === 200 && request.responseText) {
+           var data = JSON.parse(request.responseText);
+           var isReactMenu = data && data.value === "left";
            if (isReactMenu) {
-                var userName = '${user.name}';
-                var userMenuItems = [{id: "HEADER_SITE_DASHBOARD", label:"hh66", url: "site/contract/dashboard",}];
-
-               require(['react',
-                        'react-dom',
-                        'js/citeck/modules/header/share-header'], function(React, ReactDOM, ShareHeader) {
-                            ReactDOM.render(React.createElement(ShareHeader.default, {label: 'test007', userMenuItems: userMenuItems, userName:userName}), document.getElementById('share-header'));
+               require([
+                   'js/citeck/modules/header/index'
+               ], function(ShareHeader) {
+                   ShareHeader.render('share-header', {
+                       userName: "${((user.name)!"")?js_string}",
+                       userFullname: "${((user.fullName)!"")?js_string}",
+                       userNodeRef: "${((user.properties.nodeRef)!"")?js_string}"
+                   });
                });
            } else {
-               require(['react',
-                        'react-dom',
-                        'js/citeck/modules/surf/surf-region'], function(React, ReactDOM, SurfRegion) {
-                            var pageArgs = {
-                                            <#list pageArgsMap?keys as argKey>
-                                                "${argKey}":"${pageArgsMap[argKey]!}"<#if argKey_has_next>,</#if>
-                                            </#list>
-                                        };
-                            var arguments = {regionId: "share-header",
-                                        scope: "global",
-                                        chromeless: "true",
-                                        pageid: "card-details",
-                                        site: pageArgs.site,
-                                        theme: pageArgs.theme,
-                                        cacheAge: 300,
-                                        userName: "${((userName)!"")?js_string}"};
+               require([
+                   'react',
+                   'react-dom',
+                   'js/citeck/modules/surf/surf-region'
+               ], function(React, ReactDOM, SurfRegion) {
+                    var pageArgs = {
+                        <#list pageArgsMap?keys as argKey>
+                            "${argKey}":"${pageArgsMap[argKey]!}"<#if argKey_has_next>,</#if>
+                        </#list>
+                    };
 
-                            ReactDOM.render(React.createElement(SurfRegion.default, {args: arguments}), document.getElementById('share-header'));
+                    var arguments = {
+                        regionId: "share-header",
+                        scope: "global",
+                        chromeless: "true",
+                        pageid: "card-details",
+                        site: pageArgs.site,
+                        theme: pageArgs.theme,
+                        cacheAge: 300,
+                        userName: "${((user.name)!"")?js_string}"
+                    };
+
+                    ReactDOM.render(React.createElement(SurfRegion.default, {args: arguments}), document.getElementById('share-header'));
                });
            }
        }
