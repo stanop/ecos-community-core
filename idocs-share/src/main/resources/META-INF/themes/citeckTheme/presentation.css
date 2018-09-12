@@ -2854,6 +2854,11 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
    border-right: 1px solid #ccc;
 }
 
+#bd #card-mode-documents .card-details-mode-body > .yui-gc:not(.grid) > .yui-u.first {
+    width:100%;
+    border: none;
+}
+
 #bd .yui-gc:not(.grid) > .yui-u .document-details-panel {
    background-color: none;
    padding: 10px 0 0 10px;
@@ -4996,7 +5001,8 @@ body:not(.mobile).yui-skin-citeckTheme #bd .site-document-types {
     padding-left: 15px;
 }
 
-body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="SurfRegion"] > div[id*="case-documents"] {
+body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="SurfRegion"] > div[id*="case-documents"],
+body:not(.mobile).yui-skin-citeckTheme #bd .cardlet #cardlet-remote-case-documents-container {
     box-shadow: inset 15px -1px 10px -15px grey;
     padding-left: 4px;
 }
