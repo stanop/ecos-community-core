@@ -2,62 +2,61 @@ package ru.citeck.ecos.journals.records;
 
 import graphql.ExecutionResult;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import ru.citeck.ecos.graphql.GraphQLService;
+import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
-import ru.citeck.ecos.graphql.journal.datasource.alfnode.search.CriteriaAlfNodesSearch;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
+import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverter;
+import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverterFactory;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.repo.RemoteRef;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class JournalRecordsDAO {
 
-    private static final String GQL_PARAM_QUERY = "query";
-    private static final String GQL_PARAM_LANGUAGE = "language";
-    private static final String GQL_PARAM_PAGE_INFO = "pageInfo";
-    private static final String GQL_PARAM_DATASOURCE = "datasource";
+    private static final Integer DEFAULT_PAGE_SIZE = 10;
 
-    private static final Pattern FORMATTER_ATTRIBUTES_PATTERN = Pattern.compile(
-            "['\"]\\s*?(\\S+?:\\S+?\\s*?(,\\s*?\\S+?:\\S+?\\s*?)*?)['\"]"
-    );
-
-    private GraphQLService graphQLService;
     private ServiceRegistry serviceRegistry;
-    private NamespaceService namespaceService;
-
-    private ConcurrentHashMap<String, String> gqlQueryWithDataByJournalId = new ConcurrentHashMap<>();
+    private GqlQueryGenerator gqlQueryGenerator;
+    private GqlQueryExecutor gqlQueryExecutor;
 
     private String recordsListPath;
     private String hasNextPagePath;
     private String totalCountPath;
+    private String skipCountPath;
+    private String maxItemsPath;
 
+    private String recordsMetadataBaseQuery;
     private String recordsBaseQuery;
     private String gqlRecordsIdQuery;
 
     private PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();
+    private ResponseConverterFactory responseConverterFactory = new ResponseConverterFactory();
 
-    public ExecutionResult getRecordsWithData(JournalType journalType,
-                                              String query,
-                                              String language,
-                                              JGqlPageInfoInput pageInfo) {
+    public JournalData getRecordsWithData(JournalType journalType,
+                                          String query,
+                                          String language,
+                                          JGqlPageInfoInput pageInfo) throws Exception {
 
-        String gqlQuery = gqlQueryWithDataByJournalId.computeIfAbsent(journalType.getId(),
-                                                                      id -> generateGqlQueryWithData(journalType));
-
-        return executeQuery(journalType, gqlQuery, query, language, pageInfo);
+        JournalDataSource dataSource = getDataSourceInstance(journalType);
+        if (dataSource.isSupportsSplitLoading()) {
+            GqlContext gqlContext = new GqlContext(serviceRegistry);
+            RecordsResult recordsResult = dataSource.queryIds(gqlContext, query, language, pageInfo);
+            String gqlQuery = gqlQueryGenerator.generate(journalType, recordsMetadataBaseQuery, dataSource);
+            return dataSource.queryMetadata(gqlQuery, journalType.getDataSource(), recordsResult);
+        } else {
+            String gqlQuery = gqlQueryGenerator.generate(journalType, recordsBaseQuery, dataSource);
+            ExecutionResult result = gqlQueryExecutor.executeQuery(journalType, gqlQuery,
+                    query, language, pageInfo, dataSource);
+            ResponseConverter responseConverter = responseConverterFactory.getConverter(dataSource);
+            return responseConverter.convert(result, Collections.emptyMap());
+        }
     }
 
     public RecordsResult getRecords(JournalType journalType,
@@ -65,11 +64,24 @@ public class JournalRecordsDAO {
                                     String language,
                                     JGqlPageInfoInput pageInfo) {
 
-        ExecutionResult result = executeQuery(journalType, gqlRecordsIdQuery, query, language, pageInfo);
+        JournalDataSource dataSource = getDataSourceInstance(journalType);
+        if (dataSource.isSupportsSplitLoading()) {
+            GqlContext gqlContext = new GqlContext(serviceRegistry);
+            try {
+                return dataSource.queryIds(gqlContext, query, language, pageInfo);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        ExecutionResult result = gqlQueryExecutor.executeQuery(journalType, gqlRecordsIdQuery,
+                query, language, pageInfo, dataSource);
 
         List<Map<String, String>> recordsData = null;
         Boolean hasNextPage = null;
         Long totalCount = null;
+        Integer skipCount = null;
+        Integer maxItems = null;
 
         if (result.getData() != null) {
             try {
@@ -85,6 +97,16 @@ public class JournalRecordsDAO {
                 if (totalCountObj instanceof Long) {
                     totalCount = (Long) totalCountObj;
                 }
+
+                Object skipCountObj = propertyUtilsBean.getProperty(result.getData(), skipCountPath);
+                if (skipCountObj instanceof Integer) {
+                    skipCount = (Integer) skipCountObj;
+                }
+
+                Object maxItemsObj = propertyUtilsBean.getProperty(result.getData(), maxItemsPath);
+                if (maxItemsObj instanceof Integer) {
+                    maxItems = (Integer) maxItemsObj;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -99,157 +121,49 @@ public class JournalRecordsDAO {
         if (totalCount == null) {
             totalCount = (long) recordsData.size();
         }
+        if (skipCount == null) {
+            skipCount = 0;
+        }
+        if (maxItems == null) {
+            maxItems = DEFAULT_PAGE_SIZE;
+        }
 
         List<RemoteRef> records = recordsData.stream()
                 .map(entry -> new RemoteRef(entry.get("id")))
                 .collect(Collectors.toList());
 
-        return new RecordsResult(records, hasNextPage, totalCount);
+        return new RecordsResult(records, hasNextPage, totalCount, skipCount, maxItems);
     }
 
-    private ExecutionResult executeQuery(JournalType journalType,
-                                         String gqlQuery,
-                                         String query,
-                                         String language,
-                                         JGqlPageInfoInput pageInfo) {
-
-        String datasource = journalType.getDataSource();
-        String validLanguage = StringUtils.isNotBlank(language) ? language : CriteriaAlfNodesSearch.LANGUAGE;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put(GQL_PARAM_QUERY, query);
-        params.put(GQL_PARAM_LANGUAGE, validLanguage);
-        params.put(GQL_PARAM_PAGE_INFO, pageInfo);
-        params.put(GQL_PARAM_DATASOURCE, datasource);
-
-        return graphQLService.execute(gqlQuery, params);
-    }
-
-    private String generateGqlQueryWithData(JournalType journalType) {
-
-        StringBuilder schemaBuilder = new StringBuilder();
-        schemaBuilder.append(recordsBaseQuery).append(" ");
-
-        schemaBuilder.append("fragment recordsFields on JGqlAttributeValue {");
-        schemaBuilder.append("id\n");
-
-        int attrCounter = 0;
-
-        QName dataSourceKey = QName.createQName(null, journalType.getDataSource());
-        JournalDataSource dataSource = (JournalDataSource) serviceRegistry.getService(dataSourceKey);
-
-        List<QName> attributes = new ArrayList<>(journalType.getAttributes());
-        for (String defaultAttr : dataSource.getDefaultAttributes()) {
-            attributes.add(QName.resolveToQName(namespaceService, defaultAttr));
-        }
-
-        for (QName attribute : attributes) {
-
-            Map<String, String> attributeOptions = journalType.getAttributeOptions(attribute);
-            String prefixedKey = attribute.toPrefixString(namespaceService);
-
-            schemaBuilder.append("a")
-                    .append(attrCounter++)
-                    .append(":attr(name:\"")
-                    .append(prefixedKey)
-                    .append("\"){");
-
-            JGqlAttributeInfo info = dataSource.getAttributeInfo(prefixedKey).orElse(null);
-            schemaBuilder.append(getAttributeSchema(attributeOptions, info));
-
-            schemaBuilder.append("}");
-        }
-
-        schemaBuilder.append("}");
-
-        return schemaBuilder.toString();
-    }
-
-    private String getAttributeSchema(Map<String, String> attributeOptions, JGqlAttributeInfo info) {
-
-        String schema = attributeOptions.get("attributeSchema");
-        if (StringUtils.isNotBlank(schema)) {
-            return "name,val{" + schema + "}";
-        }
-
-        String formatter = attributeOptions.get("formatter");
-        formatter = formatter != null ? formatter : "";
-
-        StringBuilder schemaBuilder = new StringBuilder("name,val{");
-
-        // attributes
-
-        Set<String> attributesToLoad = new HashSet<>();
-        if (info != null) {
-            attributesToLoad.addAll(info.getDefaultInnerAttributes());
-        }
-
-        Matcher attrMatcher = FORMATTER_ATTRIBUTES_PATTERN.matcher(formatter);
-        if (attrMatcher.find()) {
-            do {
-                String attributes = attrMatcher.group(1);
-                for (String attr : attributes.split(",")) {
-                    attributesToLoad.add(attr.trim());
-                }
-            } while (attrMatcher.find());
-        }
-
-        if (formatter.contains("typeName")) {
-            attributesToLoad.add("classTitle");
-        }
-
-        int attrCounter = 0;
-        for (String attrName : attributesToLoad) {
-            schemaBuilder.append("a")
-                    .append(attrCounter++)
-                    .append(":attr(name:\"")
-                    .append(attrName).append("\")")
-                    .append("{name val{str}}")
-                    .append(",");
-        }
-
-        // inner fields
-        List<String> innerFields = new ArrayList<>();
-
-        QName dataType = info != null ? info.getDataType() : DataTypeDefinition.ANY;
-        boolean isNode = dataType.equals(DataTypeDefinition.NODE_REF);
-        boolean isQName = dataType.equals(DataTypeDefinition.QNAME);
-
-        if (formatter.contains("Link") || formatter.contains("nodeRef")) {
-            innerFields.add("id");
-            innerFields.add("str");
-        } else if (attributesToLoad.isEmpty() || (!isNode && !isQName)) {
-            innerFields.add("str");
-        }
-
-        for (String field : innerFields) {
-            schemaBuilder.append(field).append(",");
-        }
-
-        schemaBuilder.append("}");
-
-        return schemaBuilder.toString();
+    private JournalDataSource getDataSourceInstance(JournalType journalType) {
+        String dataSourceBeanId = journalType.getDataSource();
+        QName dataSourceQname = QName.createQName(null, dataSourceBeanId);
+        return (JournalDataSource) serviceRegistry.getService(dataSourceQname);
     }
 
     public void clearCache() {
-        gqlQueryWithDataByJournalId.clear();
+        gqlQueryGenerator.clearCache();
     }
 
-    @Autowired
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
-        this.namespaceService = serviceRegistry.getNamespaceService();
     }
 
-    @Autowired
-    @Qualifier("alfGraphQLServiceImpl")
-    public void setGQLService(GraphQLService graphQLService) {
-        this.graphQLService = graphQLService;
+    public void setGqlQueryGenerator(GqlQueryGenerator gqlQueryGenerator) {
+        this.gqlQueryGenerator = gqlQueryGenerator;
+    }
+
+    public void setGqlQueryExecutor(GqlQueryExecutor gqlQueryExecutor) {
+        this.gqlQueryExecutor = gqlQueryExecutor;
     }
 
     public void setRecordsBaseQuery(String recordsBaseQuery) {
         this.recordsBaseQuery = recordsBaseQuery;
         this.gqlRecordsIdQuery = recordsBaseQuery + "\nfragment recordsFields on JGqlAttributeValue { id }";
+    }
+
+    public void setRecordsMetadataBaseQuery(String recordsMetadataBaseQuery) {
+        this.recordsMetadataBaseQuery = recordsMetadataBaseQuery;
     }
 
     public void setRecordsListPath(String recordsListPath) {
@@ -262,5 +176,13 @@ public class JournalRecordsDAO {
 
     public void setTotalCountPath(String totalCountPath) {
         this.totalCountPath = totalCountPath;
+    }
+
+    public void setSkipCountPath(String skipCountPath) {
+        this.skipCountPath = skipCountPath;
+    }
+
+    public void setMaxItemsPath(String maxItemsPath) {
+        this.maxItemsPath = maxItemsPath;
     }
 }

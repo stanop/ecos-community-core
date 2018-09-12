@@ -22,6 +22,7 @@ import graphql.ExecutionResult;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
 import ru.citeck.ecos.journals.records.JournalRecords;
@@ -61,8 +62,8 @@ public interface JournalService {
                                   String language,
                                   JGqlPageInfoInput pageInfo);
 
-    ExecutionResult getRecordsWithData(String journalId,
-                                       String query,
-                                       String language,
-                                       JGqlPageInfoInput pageInfo);
+    JournalData getRecordsWithData(String journalId,
+                                   String query,
+                                   String language,
+                                   JGqlPageInfoInput pageInfo) throws Exception;
 }

@@ -37,9 +37,31 @@
                 }
             </value>
         </property>
+        <property name="recordsMetadataBaseQuery">
+            <value>
+                query getJournalRecordsMetadata($datasource: String, $remoteRefs: InputJGqlRecordsInput) {
+                    journalRecordsMetadata(datasource: $datasource, remoteRefs: $remoteRefs) {
+                        ...recordsFields
+                    }
+                }
+            </value>
+        </property>
         <property name="recordsListPath" value="journalRecords.records" />
         <property name="totalCountPath" value="journalRecords.totalCount" />
         <property name="hasNextPagePath" value="journalRecords.pageInfo.hasNextPage" />
+        <property name="skipCountPath" value="journalRecords.pageInfo.skipCount" />
+        <property name="maxItemsPath" value="journalRecords.pageInfo.maxItems" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="gqlQueryGenerator" ref="journals.gqlQueryGenerator" />
+        <property name="gqlQueryExecutor" ref="journals.gqlQueryExecutor"/>
+    </bean>
+
+    <bean id="journals.gqlQueryGenerator" class="ru.citeck.ecos.journals.records.GqlQueryGenerator">
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="journals.gqlQueryExecutor" class="ru.citeck.ecos.journals.records.GqlQueryExecutor">
+        <property name="graphQLService" ref="alfGraphQLServiceImpl"/>
     </bean>
 
 </beans>

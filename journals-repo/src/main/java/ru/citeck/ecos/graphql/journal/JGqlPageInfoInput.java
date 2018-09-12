@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.node.NullNode;
 import graphql.annotations.annotationTypes.GraphQLField;
 import graphql.annotations.annotationTypes.GraphQLName;
 
@@ -121,6 +122,9 @@ public class JGqlPageInfoInput extends HashMap<String, Object> {
         }
 
         private String asText(JsonNode node) {
+            if (node instanceof NullNode) {
+                return null;
+            }
             return node != null ? node.asText() : null;
         }
 

@@ -1,10 +1,14 @@
 package ru.citeck.ecos.repo;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import org.alfresco.service.cmr.repository.NodeRef;
 
 import java.util.Objects;
 
+@JsonIgnoreProperties(value = {"local", "remote", "nodeRef"}, ignoreUnknown = true)
 public class RemoteRef {
 
     private static final String LOCAL_SERVER_ID = "";
@@ -15,6 +19,13 @@ public class RemoteRef {
 
     @Getter(lazy = true)
     private final NodeRef nodeRef = evalNodeRef();
+
+    @JsonCreator
+    public RemoteRef(@JsonProperty("serverId") String serverId,
+                     @JsonProperty("localId") String localId) {
+        this.serverId = serverId;
+        this.localId = localId;
+    }
 
     public RemoteRef(String serverId, NodeRef nodeRef) {
         this.serverId = serverId;
