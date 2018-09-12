@@ -10,4 +10,15 @@
         <property name="cacheAgeSeconds" value="600" />
     </bean>
 
+    <bean id="webscript.ru.citeck.journals2.remote.get-ids.post" parent="webscript"
+          class="ru.citeck.ecos.journals.webscripts.GetRecordsIdPost">
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="webscript.ru.citeck.journals2.remote.get-metadata.post" parent="webscript"
+          class="ru.citeck.ecos.journals.webscripts.GetRecordsMetadataPost">
+        <property name="graphQLService" ref="alfGraphQLServiceImpl" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
 </beans>

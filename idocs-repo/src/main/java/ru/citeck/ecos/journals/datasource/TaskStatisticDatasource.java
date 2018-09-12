@@ -9,6 +9,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
@@ -17,12 +18,14 @@ import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
-import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.record.attribute.JGqlAttributeMapValue;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.history.HistoryEventType;
+import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.repo.RemoteRef;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.CriteriaTriplet;
 import ru.citeck.ecos.search.SearchCriteria;
@@ -174,6 +177,32 @@ public class TaskStatisticDatasource implements JournalDataSource {
 
         return connection;
 
+    }
+
+    @Override
+    public String getServerId() {
+        return null;
+    }
+
+    @Override
+    public RecordsResult queryIds(GqlContext context,
+                                  String query,
+                                  String language,
+                                  JGqlPageInfoInput pageInfo) {
+        return null;
+    }
+
+    @Override
+    public List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
+                                                      List<RemoteRef> remoteRefList) {
+        return null;
+    }
+
+    @Override
+    public JournalData queryMetadata(String gqlQuery,
+                                     String dataSourceBeanName,
+                                     RecordsResult recordsResult) {
+        return null;
     }
 
     private Map<String, Object> getRecord(GqlAlfNode startEvent,

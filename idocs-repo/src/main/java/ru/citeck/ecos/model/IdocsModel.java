@@ -102,6 +102,7 @@ public final class IdocsModel {
     public static final QName ASSOC_SIGNER = QName.createQName(IDOCS_NAMESPACE, "signatory");
     public static final QName ASSOC_CURRENCY_DOCUMENT = QName.createQName(IDOCS_NAMESPACE, "currencyDocument");
     public static final QName ASSOC_INITIATOR = QName.createQName(IDOCS_NAMESPACE, "initiator");
+    public static final QName ASSOC_LEGAL_FORM = QName.createQName(IDOCS_NAMESPACE, "legalForm");
 
     public static final QName ASSOC_CRR_BASE_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrBaseCurrency");
     public static final QName ASSOC_CRR_TARGET_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrTargetCurrency");

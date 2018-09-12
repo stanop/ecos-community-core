@@ -69,6 +69,37 @@ define([
         }
     }
 
+    Citeck.format.jsActionsFormatter = function (json) {
+        return function (elCell, oRecord) {
+            var Button = YAHOO.widget.Button;
+            var record = oRecord._oData;
+            elCell.innerHTML = "";
+
+            var schema = eval(json);
+            if (!schema) {
+                return;
+            }
+
+            for (var i = 0; i < schema.length; i++) {
+                var actionItem = schema[i];
+                var buttonProperties = {};
+                for (var name in actionItem) {
+                    if (name === 'buttonClass' || name === 'container') {
+                        continue;
+                    }
+                    buttonProperties[name] = actionItem[name];
+                }
+                buttonProperties['container'] = elCell;
+                var button = new Button(buttonProperties);
+                if (actionItem['buttonClass']) {
+                    button.addClass(actionItem['buttonClass']);
+                }
+            }
+
+            Dom.addClass(elCell, "actions-cell");
+        }
+    }
+
 	Citeck.widget.ActionRenderer = function() {
 		if (arguments.callee._instance)
 			return arguments.callee._instance;

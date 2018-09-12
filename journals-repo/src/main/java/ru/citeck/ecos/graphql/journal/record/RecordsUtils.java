@@ -41,6 +41,23 @@ public class RecordsUtils {
         return records;
     }
 
+    public List<JGqlAttributeValue> wrapRefsToLocalValue(GqlContext context, Iterable<RemoteRef> remoteRefs) {
+        if (remoteRefs == null) {
+            return Collections.emptyList();
+        }
+
+        List<JGqlAttributeValue> records = new ArrayList<>();
+
+        remoteRefs.forEach(item -> {
+            if (item.isLocal()) {
+                context.getNode(item.getNodeRef())
+                        .ifPresent(nodeRef -> records.add(new AlfNodeRecord(nodeRef, context)));
+            }
+        });
+
+        return records;
+    }
+
     public Long getRecordDbId(String recordId) {
         if (StringUtils.isNotBlank(recordId)) {
             RemoteRef ref = new RemoteRef(recordId);
