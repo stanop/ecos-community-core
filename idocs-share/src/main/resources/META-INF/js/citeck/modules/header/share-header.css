@@ -1,3 +1,65 @@
+/* common */
 .menu-item {
     border: none;
+}
+
+#share-header {
+    min-height: 40px;
+    margin: 0;
+}
+
+.alfresco-layout-LeftAndRight__right:after {
+    content: '.';
+    clear: both;
+    display: block;
+    visibility: hidden;
+    height: 0;
+}
+
+/* dropdown menu toggle */
+.site-dropdown-menu,
+.user-dropdown-menu {
+    display: table;
+}
+
+.site-dropdown-menu__toggle,
+.user-dropdown-menu__toggle {
+    display:table-cell;
+    vertical-align:middle;
+    height: 40px;
+    cursor: pointer;
+    padding: 0 15px;
+}
+
+.site-dropdown-menu__toggle {
+    padding: 0 10px;
+}
+
+.site-dropdown-menu__toggle:after,
+.user-dropdown-menu__toggle:before {
+    content: '▾';
+    font-size: 14px;
+    color: #fff;
+    float: right;
+    height: 100%;
+    display: block;
+    line-height: 40px;
+    margin-left: 5px;
+}
+
+.site-dropdown-menu__toggle:hover,
+.user-dropdown-menu__toggle:hover {
+    background-color: #88a5c3;
+}
+
+.site-dropdown-menu__toggle i,
+.user-dropdown-menu__toggle .user-menu-username {
+    color: #ffffff;
+    line-height: 40px;
+    display: inline-block;
+}
+
+.user-photo-header {
+    float: right;
+    margin-right: 5px;
 }

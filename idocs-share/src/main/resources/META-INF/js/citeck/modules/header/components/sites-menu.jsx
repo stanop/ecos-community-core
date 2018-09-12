@@ -17,9 +17,9 @@ const SitesMenu = ({ items, headerTitle, headerIcon }) => {
 
     return (
         <div id="HEADER_SITE_MENU">
-            <Dropdown pullRight>
-                <CustomToggle bsRole="toggle">
-                    {<i className={"fa " + icon} />}
+            <Dropdown className="site-dropdown-menu" pullLeft>
+                <CustomToggle bsRole="toggle" className="site-dropdown-menu__toggle">
+                    <i className={"fa " + icon} />
                     {headerTitle}
                 </CustomToggle>
                 <Dropdown.Menu>

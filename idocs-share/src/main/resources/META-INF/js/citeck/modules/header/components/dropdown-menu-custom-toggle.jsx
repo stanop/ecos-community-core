@@ -14,10 +14,12 @@ export default class CustomToggle extends React.Component {
     }
 
     render() {
+        const { className } = this.props;
+
         return (
-            <a href="" onClick={this.handleClick}>
+            <div className={className} onClick={this.handleClick}>
                 {this.props.children}
-            </a>
+            </div>
         );
     }
 }
