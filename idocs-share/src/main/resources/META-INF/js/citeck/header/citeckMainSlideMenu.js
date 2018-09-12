@@ -6,7 +6,8 @@ define(['dojo/_base/declare',
         'jquery',
         'jquerymmenu',
         'jqueryscrollbar',
-        'xstyle!/share/res/jquery/css/jquery.mmenu.all.css'],
+        'xstyle!/share/res/jquery/css/jquery.mmenu.all.css',
+        'xstyle!/share/res/js/citeck/modules/utils/citeck.css'],
 
     function(declare, _WidgetBase, _TemplatedMixin, AlfCore, CoreWidgetProcessing, $) {
         return declare([_WidgetBase, _TemplatedMixin, AlfCore], {
