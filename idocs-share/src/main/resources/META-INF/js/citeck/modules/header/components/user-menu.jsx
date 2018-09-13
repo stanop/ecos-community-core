@@ -25,6 +25,7 @@ const UserMenu = ({ userName, userNodeRef, items }) => {
             image={item.image}
             icon={item.icon}
             label={item.label}
+            target={item.target}
         />
     ));
 
@@ -35,7 +36,7 @@ const UserMenu = ({ userName, userNodeRef, items }) => {
                     <span className="user-menu-username">{userName}</span>
                     {userImage}
                 </CustomToggle>
-                <Dropdown.Menu>
+                <Dropdown.Menu className="custom-dropdown-menu">
                     {menuListItems}
                 </Dropdown.Menu>
             </Dropdown>

@@ -3,17 +3,18 @@ import { pure } from 'recompose';
 import { MenuItem, Image } from 'react-bootstrap';
 import "xstyle!js/citeck/modules/header/components/dropdown-menu-item.css";
 
-const DropDownMenuItem = ({id, key, targetUrl, image, icon, label, clickEvent, targetUrlType, targetUrlLocation}) => (
+const DropDownMenuItem = ({id, key, targetUrl, image, icon, label, clickEvent, target}) => (
     <MenuItem
         eventKey={key}
         href={targetUrl}
+        target={target}
         id={id}
-        className="dropdown-menu-item"
-        onClick={eval('(' + clickEvent + ')')}
+        className="custom-dropdown-menu__item"
+        onClick={eval('(' + clickEvent + ')')} // TODO
     >
-        {image && <Image src={image} thumbnail />}
+        {image && <Image src={image} />}
         {icon && <i className={"fa " + icon} />}
-        {label && Alfresco.util.message(label)}
+        {label && window.Alfresco.util.message(label)}
     </MenuItem>
 );
 

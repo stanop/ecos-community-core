@@ -22,7 +22,7 @@ const SitesMenu = ({ items, headerTitle, headerIcon }) => {
                     <i className={"fa " + icon} />
                     {headerTitle}
                 </CustomToggle>
-                <Dropdown.Menu>
+                <Dropdown.Menu className="custom-dropdown-menu">
                     {menuListItems}
                 </Dropdown.Menu>
             </Dropdown>

@@ -19,7 +19,7 @@ const ShareHeader = ({ userName, userFullname, userNodeRef }) => {
                     items={userMenuItems}
                 />
                 <SitesMenu items={siteMenuItems} />
-                <Search className="TestClalalala" />
+                <Search />
             </div>
         </div>
     );
