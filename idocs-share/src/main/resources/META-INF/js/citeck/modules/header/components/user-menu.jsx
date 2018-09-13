@@ -1,22 +1,18 @@
 import React from 'react';
+import { compose, lifecycle, withState } from 'recompose';
 import { Dropdown, Image } from 'react-bootstrap';
 import DropDownMenuItem from 'js/citeck/modules/header/components/dropdown-menu-item';
 import CustomToggle from 'js/citeck/modules/header/components/dropdown-menu-custom-toggle';
+import { getPhotoSize } from 'js/citeck/modules/header/misc/api';
 
-const UserMenu = ({ userName, userNodeRef, items }) => {
-    let userImage = null;
-    if (userNodeRef) {
-        let photoUrl = Alfresco.constants.PROXY_URI + "api/node/content;ecos:photo/" + userNodeRef.replace(":/", "") + "/image.jpg";
-        console.log(photoUrl);
-    }
-
-    // TODO delete
-    const defaultPhoto = 'https://citeck.ecos24.ru/share/proxy/alfresco/api/node/content;ecos:photo/workspace/SpacesStore/b4aa07be-b00a-46f8-9e62-9a7a93b08461/image.jpg';
-    userImage = (
-        <div className="user-photo-header">
-            <div style={{backgroundImage: 'url(' + defaultPhoto + ')'}}></div>
-        </div>
-    );
+const UserMenu = ({ userName, userNodeRef, userPhotoUrl, items }) => {
+    const userImage = userPhotoUrl ? (
+        (
+            <div className="user-photo-header">
+                <div style={{backgroundImage: 'url(' + userPhotoUrl + ')'}}></div>
+            </div>
+        )
+    ) : null;
 
     const menuListItems = items && items.length && items.map((item, key) => (
         <DropDownMenuItem
@@ -44,4 +40,17 @@ const UserMenu = ({ userName, userNodeRef, items }) => {
     )
 };
 
-export default UserMenu;
+const enhance = compose(
+    withState('userPhotoUrl', 'setUserPhotoUrl', ''),
+    lifecycle({
+        componentDidMount() {
+            const { userNodeRef, setUserPhotoUrl } = this.props;
+            if (userNodeRef && getPhotoSize(userNodeRef)) {
+                let photoUrl = Alfresco.constants.PROXY_URI + "api/node/content;ecos:photo/" + userNodeRef.replace(":/", "") + "/image.jpg";
+                setUserPhotoUrl(photoUrl);
+            }
+        }
+    }),
+);
+
+export default enhance(UserMenu);
