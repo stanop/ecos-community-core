@@ -1,6 +1,7 @@
 import React from 'react';
 import { compose, withProps, withState, withHandlers } from 'recompose';
 import SearchDropdown from 'js/citeck/modules/header/components/search-dropdown';
+import { t } from 'js/citeck/modules/header/misc/util';
 import "xstyle!js/citeck/modules/header/components/search.css";
 
 const Search = ({ searchText, onTextChange, onKeyDown, onSearchClearClick, searchPlaceholder, clearButtonTitle }) => (
@@ -36,8 +37,8 @@ const generateSearchTerm = (terms, hiddenSearchTerms) => {
 const enhance = compose(
     withProps(props => {
         return {
-            searchPlaceholder: props.placeholder ? window.Alfresco.util.message(props.placeholder) : window.Alfresco.util.message("Search files, people, sites"),
-            clearButtonTitle: window.Alfresco.util.message("Clear") // TODO set correct message
+            searchPlaceholder: props.placeholder ? t(props.placeholder) : t("Search files, people, sites"),
+            clearButtonTitle: t("Clear") // TODO set correct message
         }
     }),
     withState('searchText', 'updateSearchText', ''),

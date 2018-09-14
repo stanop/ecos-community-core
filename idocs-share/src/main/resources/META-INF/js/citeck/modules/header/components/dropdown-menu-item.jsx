@@ -1,6 +1,7 @@
 import React from "react";
 import { pure } from 'recompose';
 import { MenuItem, Image } from 'react-bootstrap';
+import { t } from 'js/citeck/modules/header/misc/util';
 import "xstyle!js/citeck/modules/header/components/dropdown-menu-item.css";
 
 const DropDownMenuItem = ({id, key, targetUrl, image, icon, label, clickEvent, target}) => (
@@ -14,7 +15,7 @@ const DropDownMenuItem = ({id, key, targetUrl, image, icon, label, clickEvent, t
     >
         {image && <Image src={image} />}
         {icon && <i className={"fa " + icon} />}
-        {label && window.Alfresco.util.message(label)}
+        {label && t(label)}
     </MenuItem>
 );
 

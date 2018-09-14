@@ -87,10 +87,10 @@ export const getUserMenuItems = (userName) => {
 
 export const createCaseMenuItems = [
     {
-        label: "Создать задачу",
+        label: "header.create-workflow.label",
         items: [
-            { label: "Поручение", targetUrl: "#" },
-            { label: "Согласование", targetUrl: "#" },
+            { label: "header.create-workflow-adhoc.label", targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$perform" },
+            { label: "header.create-workflow-confirm.label", targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$confirm" },
         ],
     },
     {
