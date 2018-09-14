@@ -17,22 +17,24 @@
 }
 
 /* dropdown menu toggle */
-.site-dropdown-menu,
-.user-dropdown-menu {
+.custom-dropdown-menu {
     display: table;
 }
 
-.site-dropdown-menu__toggle,
-.user-dropdown-menu__toggle {
+.custom-dropdown-menu__toggle {
     display:table-cell;
     vertical-align:middle;
     height: 40px;
     cursor: pointer;
-    padding: 0 15px;
+    padding: 0 10px;
 }
 
-.site-dropdown-menu__toggle {
-    padding: 0 10px;
+.custom-dropdown-menu__toggle:hover {
+    background-color: #88a5c3;
+}
+
+.user-dropdown-menu__toggle {
+    padding: 0 15px;
 }
 
 .site-dropdown-menu__toggle:after,
@@ -45,11 +47,6 @@
     display: block;
     line-height: 40px;
     margin-left: 5px;
-}
-
-.site-dropdown-menu__toggle:hover,
-.user-dropdown-menu__toggle:hover {
-    background-color: #88a5c3;
 }
 
 .site-dropdown-menu__toggle i,
@@ -65,7 +62,7 @@
 }
 
 /* dropdown menu body */
-.custom-dropdown-menu {
+.custom-dropdown-menu__body {
     border-radius: 0;
     color: #fff;
     background-color: #88a5c3;
@@ -74,32 +71,42 @@
     padding: 6px !important;
 }
 
-.custom-dropdown-menu .custom-dropdown-menu__item a {
+.custom-dropdown-menu__body .custom-dropdown-menu__item a {
     color: #fff;
     font-family: Open Sans, arial, helvetica, clean, sans-serif;
     font-size: 13px;
     line-height: 26px;
     padding: 0 4px;
+    display: block;
+    white-space: nowrap;
 }
 
-.custom-dropdown-menu .custom-dropdown-menu__item a:focus,
-.custom-dropdown-menu .custom-dropdown-menu__item a:hover {
+.custom-dropdown-menu__body .custom-dropdown-menu__item a:focus,
+.custom-dropdown-menu__body .custom-dropdown-menu__item a:hover {
     background-color: #a6c8ec;
     color: #fff;
 }
 
-.custom-dropdown-menu .custom-dropdown-menu__item a:visited {
+.custom-dropdown-menu__body .custom-dropdown-menu__item a:visited {
     color: #fff;
 }
 
-.custom-dropdown-menu .custom-dropdown-menu__item a img {
+.custom-dropdown-menu__body .custom-dropdown-menu__item a img {
     padding: 4px 8px 4px 0;
 }
 
-.custom-dropdown-menu .custom-dropdown-menu__item i.fa {
+.custom-dropdown-menu__body .custom-dropdown-menu__item i.fa {
     padding: 4px 0;
     color: #fff;
     font-size: 16px;
     display: inline-block;
     width: 24px;
+}
+
+.custom-dropdown-menu-group__label {
+    margin: 8px 8px 0 0;
+    font-weight: 900;
+    color: #3c5877;
+    border-bottom: none;
+    white-space: nowrap;
 }

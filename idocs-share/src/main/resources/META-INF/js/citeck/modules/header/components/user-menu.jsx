@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, lifecycle, withState } from 'recompose';
-import { Dropdown, Image } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import DropDownMenuItem from 'js/citeck/modules/header/components/dropdown-menu-item';
 import CustomToggle from 'js/citeck/modules/header/components/dropdown-menu-custom-toggle';
 import { getPhotoSize } from 'js/citeck/modules/header/misc/api';
@@ -27,12 +27,12 @@ const UserMenu = ({ userName, userNodeRef, userPhotoUrl, items }) => {
 
     return (
         <div id='HEADER_USER_MENU'>
-            <Dropdown className="user-dropdown-menu" pullRight>
-                <CustomToggle bsRole="toggle" className="user-dropdown-menu__toggle">
+            <Dropdown className="custom-dropdown-menu" pullRight>
+                <CustomToggle bsRole="toggle" className="user-dropdown-menu__toggle custom-dropdown-menu__toggle">
                     <span className="user-menu-username">{userName}</span>
                     {userImage}
                 </CustomToggle>
-                <Dropdown.Menu className="custom-dropdown-menu">
+                <Dropdown.Menu className="custom-dropdown-menu__body">
                     {menuListItems}
                 </Dropdown.Menu>
             </Dropdown>

@@ -17,12 +17,12 @@ const SitesMenu = ({ items, headerTitle, headerIcon }) => {
 
     return (
         <div id="HEADER_SITE_MENU">
-            <Dropdown className="site-dropdown-menu" pullLeft>
-                <CustomToggle bsRole="toggle" className="site-dropdown-menu__toggle">
+            <Dropdown className="custom-dropdown-menu" pullLeft>
+                <CustomToggle bsRole="toggle" className="site-dropdown-menu__toggle custom-dropdown-menu__toggle">
                     <i className={"fa " + icon} />
                     {headerTitle}
                 </CustomToggle>
-                <Dropdown.Menu className="custom-dropdown-menu">
+                <Dropdown.Menu className="custom-dropdown-menu__body">
                     {menuListItems}
                 </Dropdown.Menu>
             </Dropdown>

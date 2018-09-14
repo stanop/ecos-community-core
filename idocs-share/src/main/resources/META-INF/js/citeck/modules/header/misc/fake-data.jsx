@@ -84,3 +84,33 @@ export const getUserMenuItems = (userName) => {
         }
     ];
 };
+
+export const createCaseMenuItems = [
+    {
+        label: "Создать задачу",
+        items: [
+            { label: "Поручение", targetUrl: "#" },
+            { label: "Согласование", targetUrl: "#" },
+        ],
+    },
+    {
+        label: "HR и кадровые документы",
+        items: [
+            { label: "Документ", targetUrl: "#" },
+        ],
+    },
+    {
+        label: "Knowledge base",
+        items: [
+            { label: "Документ", targetUrl: "#" },
+        ],
+    },
+    {
+        label: "ОРД",
+        items: [
+            { label: "Создать внутренний документ", targetUrl: "#" },
+            { label: "Создать тематику", targetUrl: "#" },
+            { label: "Номенклатура дел", targetUrl: "#" },
+        ],
+    },
+];

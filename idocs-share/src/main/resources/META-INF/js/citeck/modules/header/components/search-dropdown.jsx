@@ -15,10 +15,10 @@ const SearchDropdown = () => {
     return (
         <Fragment>
             <Dropdown className="search-dropdown-menu" pullLeft>
-                <CustomToggle bsRole="toggle" className="search-dropdown-menu-toggle">
+                <CustomToggle bsRole="toggle" className="search-dropdown-menu__toggle">
                     <i className={"fa fa-chevron-circle-down"} />
                 </CustomToggle>
-                <Dropdown.Menu className="custom-dropdown-menu">
+                <Dropdown.Menu className="custom-dropdown-menu__body">
                     {serachDropdownListItems}
                 </Dropdown.Menu>
             </Dropdown>
