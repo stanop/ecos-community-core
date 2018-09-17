@@ -6,7 +6,7 @@ import DropDownMenuItem from './dropdown-menu-item';
 import CustomToggle from './dropdown-menu-custom-toggle';
 import { loadUserMenuPhoto } from '../actions';
 
-const UserMenu = ({ userName, userNodeRef, userPhotoUrl, items }) => {
+const UserMenu = ({ userName, userPhotoUrl, items }) => {
     const userImage = userPhotoUrl ? (
         (
             <div className="user-photo-header">
@@ -51,7 +51,9 @@ const enhance = compose(
 );
 
 const mapStateToProps = (state, ownProps) => ({
-    userPhotoUrl: state.userMenu.userPhoto,
+    userPhotoUrl: state.user.photo,
+    userName: state.user.fullName,
+    userNodeRef: state.user.nodeRef,
 });
 
 export default connect(mapStateToProps)(enhance(UserMenu));

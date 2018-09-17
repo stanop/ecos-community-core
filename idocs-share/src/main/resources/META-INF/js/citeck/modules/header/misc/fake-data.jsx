@@ -84,33 +84,3 @@ export const getUserMenuItems = (userName) => {
         }
     ];
 };
-
-export const createCaseMenuItems = [
-    {
-        label: "header.create-workflow.label",
-        items: [
-            { label: "header.create-workflow-adhoc.label", targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$perform" },
-            { label: "header.create-workflow-confirm.label", targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$confirm" },
-        ],
-    },
-    {
-        label: "HR и кадровые документы",
-        items: [
-            { label: "Документ", targetUrl: "#" },
-        ],
-    },
-    {
-        label: "Knowledge base",
-        items: [
-            { label: "Документ", targetUrl: "#" },
-        ],
-    },
-    {
-        label: "ОРД",
-        items: [
-            { label: "Создать внутренний документ", targetUrl: "#" },
-            { label: "Создать тематику", targetUrl: "#" },
-            { label: "Номенклатура дел", targetUrl: "#" },
-        ],
-    },
-];

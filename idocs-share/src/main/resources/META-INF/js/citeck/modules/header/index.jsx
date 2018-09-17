@@ -7,6 +7,7 @@ import thunk from 'js/citeck/lib/redux-thunk';
 import ShareHeader from './share-header';
 import API from './misc/api';
 import rootReducer from './reducers';
+import { setUserName, setUserFullName, setUserNodeRef } from './actions';
 
 // TODO include polyfills
 
@@ -23,6 +24,10 @@ const store = createStore(rootReducer, {}, composeEnhancers(
 );
 
 export const render = (elementId, props) => {
+    store.dispatch(setUserName(props.userName));
+    store.dispatch(setUserFullName(props.userFullname));
+    store.dispatch(setUserNodeRef(props.userNodeRef));
+
     ReactDOM.render(
         <Provider store={store}>
             <ShareHeader { ...props } />

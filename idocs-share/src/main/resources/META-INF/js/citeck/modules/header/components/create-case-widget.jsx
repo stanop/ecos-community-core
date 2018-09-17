@@ -1,7 +1,10 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { compose, lifecycle } from 'recompose';
 import { Dropdown } from 'react-bootstrap';
 import CustomToggle from './dropdown-menu-custom-toggle';
 import DropDownMenuGroup from './dropdown-menu-group';
+import { loadCreateCaseWidgetItems } from "../actions";
 
 const CreateCaseWidget = ({ items }) => {
     const menuListItems = items && items.length > 0 ? items.map((item, key) => {
@@ -28,4 +31,18 @@ const CreateCaseWidget = ({ items }) => {
     )
 };
 
-export default CreateCaseWidget;
+const enhance = compose(
+    lifecycle({
+        componentDidMount() {
+            const { userName, dispatch } = this.props;
+            dispatch(loadCreateCaseWidgetItems(userName));
+        }
+    }),
+);
+
+const mapStateToProps = (state, ownProps) => ({
+    items: state.caseMenu.items,
+    userName: state.user.name,
+});
+
+export default connect(mapStateToProps)(enhance(CreateCaseWidget));
