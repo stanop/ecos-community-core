@@ -1,7 +1,7 @@
 import React from 'react';
 import { compose, withProps, withState, withHandlers } from 'recompose';
-import SearchDropdown from 'js/citeck/modules/header/components/search-dropdown';
-import { t } from 'js/citeck/modules/header/misc/util';
+import SearchDropdown from './search-dropdown';
+import { t } from '../misc/util';
 import "xstyle!js/citeck/modules/header/components/search.css";
 
 const Search = ({ searchText, onTextChange, onKeyDown, onSearchClearClick, searchPlaceholder, clearButtonTitle }) => (

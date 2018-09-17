@@ -1,10 +1,9 @@
 import React from 'react';
-import CreateCaseWidget from 'js/citeck/modules/header/components/create-case-widget';
-import UserMenu from 'js/citeck/modules/header/components/user-menu';
-import SitesMenu from 'js/citeck/modules/header/components/sites-menu';
-import Search from 'js/citeck/modules/header/components/search';
-import { siteMenuItems, getUserMenuItems, createCaseMenuItems } from 'js/citeck/modules/header/misc/fake-data';
-
+import CreateCaseWidget from './components/create-case-widget';
+import UserMenu from './components/user-menu';
+import SitesMenu from './components/sites-menu';
+import Search from './components/search';
+import { siteMenuItems, getUserMenuItems, createCaseMenuItems } from './misc/fake-data';
 import "xstyle!js/citeck/modules/header/share-header.css";
 
 const ShareHeader = ({ userName, userFullname, userNodeRef }) => {

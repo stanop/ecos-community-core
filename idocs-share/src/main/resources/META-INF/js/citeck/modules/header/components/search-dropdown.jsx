@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import DropDownMenuItem from 'js/citeck/modules/header/components/dropdown-menu-item';
-import CustomToggle from 'js/citeck/modules/header/components/dropdown-menu-custom-toggle';
+import DropDownMenuItem from './dropdown-menu-item';
+import CustomToggle from './dropdown-menu-custom-toggle';
 
 const SearchDropdown = () => {
     const serachDropdownListItems = [

@@ -1,15 +1,16 @@
 import React from 'react';
-import { compose, lifecycle, withState } from 'recompose';
+import { connect } from 'react-redux';
+import { compose, lifecycle } from 'recompose';
 import { Dropdown } from 'react-bootstrap';
-import DropDownMenuItem from 'js/citeck/modules/header/components/dropdown-menu-item';
-import CustomToggle from 'js/citeck/modules/header/components/dropdown-menu-custom-toggle';
-import { getPhotoSize } from 'js/citeck/modules/header/misc/api';
+import DropDownMenuItem from './dropdown-menu-item';
+import CustomToggle from './dropdown-menu-custom-toggle';
+import { loadUserMenuPhoto } from '../actions';
 
 const UserMenu = ({ userName, userNodeRef, userPhotoUrl, items }) => {
     const userImage = userPhotoUrl ? (
         (
             <div className="user-photo-header">
-                <div style={{backgroundImage: 'url(' + userPhotoUrl + ')'}}></div>
+                <div style={{backgroundImage: 'url(' + userPhotoUrl + ')'}} />
             </div>
         )
     ) : null;
@@ -41,16 +42,16 @@ const UserMenu = ({ userName, userNodeRef, userPhotoUrl, items }) => {
 };
 
 const enhance = compose(
-    withState('userPhotoUrl', 'setUserPhotoUrl', ''),
     lifecycle({
         componentDidMount() {
-            const { userNodeRef, setUserPhotoUrl } = this.props;
-            if (userNodeRef && getPhotoSize(userNodeRef)) {
-                let photoUrl = Alfresco.constants.PROXY_URI + "api/node/content;ecos:photo/" + userNodeRef.replace(":/", "") + "/image.jpg";
-                setUserPhotoUrl(photoUrl);
-            }
+            const { userNodeRef, dispatch } = this.props;
+            dispatch(loadUserMenuPhoto(userNodeRef));
         }
     }),
 );
 
-export default enhance(UserMenu);
+const mapStateToProps = (state, ownProps) => ({
+    userPhotoUrl: state.userMenu.userPhoto,
+});
+
+export default connect(mapStateToProps)(enhance(UserMenu));

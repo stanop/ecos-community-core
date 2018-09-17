@@ -1,6 +1,6 @@
 import React from 'react';
-import DropDownMenuItem from 'js/citeck/modules/header/components/dropdown-menu-item';
-import { t } from 'js/citeck/modules/header/misc/util';
+import DropDownMenuItem from './dropdown-menu-item';
+import { t } from '../misc/util';
 
 const DropDownMenuGroup = ({ label, items }) => {
     const groupItems = items && items.length > 0 ? items.map((item, key) => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dropdown } from 'react-bootstrap';
-import CustomToggle from 'js/citeck/modules/header/components/dropdown-menu-custom-toggle';
-import DropDownMenuGroup from 'js/citeck/modules/header/components/dropdown-menu-group';
+import CustomToggle from './dropdown-menu-custom-toggle';
+import DropDownMenuGroup from './dropdown-menu-group';
 
 const CreateCaseWidget = ({ items }) => {
     const menuListItems = items && items.length > 0 ? items.map((item, key) => {
