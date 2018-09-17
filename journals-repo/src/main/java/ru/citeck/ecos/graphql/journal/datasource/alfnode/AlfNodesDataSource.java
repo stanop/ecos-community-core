@@ -22,7 +22,7 @@ public class AlfNodesDataSource extends RecordsDataSource {
     public AlfNodesDataSource(ServiceRegistry serviceRegistry,
                               RecordsService recordsService) {
 
-        super(AlfNodesRecordsDAO.ID);
+        setSourceId(AlfNodesRecordsDAO.ID);
 
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.dictionaryService = serviceRegistry.getDictionaryService();

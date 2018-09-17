@@ -21,10 +21,6 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
     private List<RecordsDAO> recordsDao;
     private Map<String, RecordsDAO> daoBySource = new ConcurrentHashMap<>();
 
-    public MultiRecordsDAO(String id) {
-        super(id);
-    }
-
     @Override
     public DaoRecordsResult queryRecords(RecordsQuery query) {
 

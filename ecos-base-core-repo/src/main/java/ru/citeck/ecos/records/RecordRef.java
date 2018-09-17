@@ -9,8 +9,8 @@ import java.util.Objects;
 
 public class RecordRef {
 
+    public static final String SOURCE_DELIMITER = "@";
     private static final String DEFAULT_SOURCE_ID = "";
-    private static final String SOURCE_DELIMITER = "@";
 
     private final String sourceId;
     private final String id;

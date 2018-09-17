@@ -3,6 +3,7 @@ package ru.citeck.ecos.action.group;
 import ru.citeck.ecos.action.group.impl.GroupActionExecutor;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -34,7 +35,7 @@ public interface GroupActionService {
 
     <T> GroupAction<T> createAction(String actionId, GroupActionConfig config);
 
-    <T> Class<T> getActionType(String actionId);
+    <T> Optional<GroupActionFactory<T>> getActionFactory(String actionId);
 
     void cancelActions();
 

@@ -1,20 +1,17 @@
 package ru.citeck.ecos.records;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Pavel Simonov
  */
-public class IterableRecordsMeta<T> implements Iterable<T> {
+public class IterableRecordsMeta<T> implements Iterable<RecordInfo<T>> {
 
     private static final int META_BATCH_SIZE = 20;
-    private static final int MAX_REFS_MAPPING_SIZE = 100;
 
     private final Iterable<RecordRef> recordRefs;
     private final Class<T> iterableType;
     private final RecordsService recordsService;
-    private final Map<T, RecordRef> refsMapping = new ConcurrentHashMap<>();
 
     public IterableRecordsMeta(Iterable<RecordRef> recordRefs,
                                RecordsService recordsService,
@@ -25,18 +22,14 @@ public class IterableRecordsMeta<T> implements Iterable<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<RecordInfo<T>> iterator() {
         return new MetaIterator(recordRefs.iterator());
     }
 
-    public RecordRef getRecordRef(T data) {
-        return refsMapping.get(data);
-    }
-
-    class MetaIterator implements Iterator<T> {
+    class MetaIterator implements Iterator<RecordInfo<T>> {
 
         private Iterator<RecordRef> records;
-        private List<T> meta;
+        private List<RecordInfo<T>> recordsInfo;
 
         private int currentIdx = 0;
 
@@ -54,26 +47,24 @@ public class IterableRecordsMeta<T> implements Iterable<T> {
             }
             if (recordRefs.size() > 0) {
                 Map<RecordRef, T> metaByRef = recordsService.getMeta(recordRefs, iterableType);
-                if (metaByRef.size() < MAX_REFS_MAPPING_SIZE) {
-                    metaByRef.forEach((k, v) -> refsMapping.put(v, k));
-                }
-                this.meta = new ArrayList<>(metaByRef.values());
+                recordsInfo = new ArrayList<>();
+                metaByRef.forEach((ref, data) -> recordsInfo.add(new RecordInfo<>(ref, data)));
             } else {
-                meta = Collections.emptyList();
+                recordsInfo = Collections.emptyList();
             }
         }
 
         @Override
         public boolean hasNext() {
-            if (meta == null || currentIdx >= meta.size()) {
+            if (recordsInfo == null || currentIdx >= recordsInfo.size()) {
                 takeNextMeta();
             }
-            return currentIdx < meta.size();
+            return currentIdx < recordsInfo.size();
         }
 
         @Override
-        public T next() {
-            return meta.get(currentIdx++);
+        public RecordInfo<T> next() {
+            return recordsInfo.get(currentIdx++);
         }
     }
 }

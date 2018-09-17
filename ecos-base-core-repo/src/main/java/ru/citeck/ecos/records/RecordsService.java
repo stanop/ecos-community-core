@@ -49,4 +49,6 @@ public interface RecordsService {
                                                 GroupActionConfig config);
 
     void register(RecordsDAO recordsSource);
+
+    Optional<RecordsDAO> getRecordsSource(String id);
 }

@@ -10,13 +10,9 @@ import java.util.Optional;
 
 public abstract class AbstractRecordsDAO implements RecordsDAO {
 
-    private final String id;
+    private String id;
 
     protected RecordsService recordsService;
-
-    public AbstractRecordsDAO(String id) {
-        this.id = id;
-    }
 
     @Override
     public Optional<MetaValue> getMetaValue(GqlContext context, String id) {
@@ -31,6 +27,10 @@ public abstract class AbstractRecordsDAO implements RecordsDAO {
     @Override
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Autowired

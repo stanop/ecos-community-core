@@ -15,10 +15,4 @@
         <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 
-    <bean id="webscript.ru.citeck.journals2.remote.get-metadata.post" parent="webscript"
-          class="ru.citeck.ecos.journals.webscripts.GetRecordsMetadataPost">
-        <property name="graphQLService" ref="graphQLServiceImpl" />
-        <property name="serviceRegistry" ref="ServiceRegistry" />
-    </bean>
-
 </beans>

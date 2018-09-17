@@ -128,8 +128,8 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public <T> Class<T> getActionType(String actionId) {
-        return (Class<T>) processorFactories.get(actionId).getActionType();
+    public <T> Optional<GroupActionFactory<T>> getActionFactory(String actionId) {
+        return Optional.ofNullable((GroupActionFactory<T>) processorFactories.get(actionId));
     }
 
     private void checkParams(ObjectNode params, String[] mandatoryParams) {

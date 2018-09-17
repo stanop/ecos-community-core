@@ -1,5 +1,7 @@
 package ru.citeck.ecos.action.group;
 
+import ru.citeck.ecos.action.group.impl.ResultsListener;
+
 import java.util.List;
 
 /**
@@ -16,4 +18,6 @@ public interface GroupAction<T> {
     boolean isAsync();
 
     long getTimeout();
+
+    void addListener(ResultsListener<T> listener);
 }

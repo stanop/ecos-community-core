@@ -1,0 +1,95 @@
+package ru.citeck.ecos.records.actions;
+
+import ru.citeck.ecos.action.group.ActionResult;
+import ru.citeck.ecos.action.group.ActionStatus;
+import ru.citeck.ecos.action.group.GroupActionConfig;
+import ru.citeck.ecos.action.group.GroupActionPost;
+import ru.citeck.ecos.action.group.impl.BaseGroupAction;
+import ru.citeck.ecos.records.RecordInfo;
+import ru.citeck.ecos.remote.RestConnection;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class RemoteGroupAction<T> extends BaseGroupAction<RecordInfo<T>> {
+
+    private final String targetAction;
+    private final GroupActionConfig targetConfig;
+    private final RestConnection restConn;
+
+    private final String groupActionUrl;
+
+    public RemoteGroupAction(GroupActionConfig config,
+                             RestConnection restConn,
+                             String groupActionUrl,
+                             String targetAction,
+                             GroupActionConfig targetConfig) {
+        super(config);
+        this.groupActionUrl = groupActionUrl;
+        this.targetAction = targetAction;
+        this.targetConfig = targetConfig;
+        this.restConn = restConn;
+    }
+
+    @Override
+    protected void processNodesImpl(List<RecordInfo<T>> nodes) {
+
+        Map<String, RecordInfo<T>> infoMapping = new HashMap<>();
+
+        GroupActionPost.ActionData data = new GroupActionPost.ActionData();
+        data.actionId = targetAction;
+        data.config = targetConfig;
+
+        data.nodes = nodes.stream().map(info -> {
+            String id = info.getRef().getId();
+            infoMapping.put(id, info);
+            return id;
+        }).collect(Collectors.toList());
+
+        GroupActionPost.Response<String> response =
+                restConn.jsonPost(groupActionUrl, data, GroupActionPost.Response.class);
+
+        List<ActionResult<RecordInfo<T>>> results = new ArrayList<>();
+
+        if (response != null) {
+            for (ActionResult<String> result : response.results) {
+                RecordInfo<T> info = infoMapping.get(result.getData());
+                results.add(new ActionResult<>(info, result.getStatus()));
+            }
+        } else {
+            ActionStatus status = new ActionStatus(ActionStatus.STATUS_ERROR);
+            status.setMessage("Remote action failed");
+            nodes.forEach(info -> results.add(new ActionResult<>(info, status)));
+        }
+
+        onProcessed(results);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        RemoteGroupAction that = (RemoteGroupAction) o;
+
+        return Objects.equals(targetAction, that.targetAction) &&
+               Objects.equals(targetConfig, that.targetConfig) &&
+               Objects.equals(groupActionUrl, that.groupActionUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(targetAction);
+        result = 31 * result + Objects.hashCode(targetConfig);
+        result = 31 * result + Objects.hashCode(groupActionUrl);
+        return result;
+    }
+}

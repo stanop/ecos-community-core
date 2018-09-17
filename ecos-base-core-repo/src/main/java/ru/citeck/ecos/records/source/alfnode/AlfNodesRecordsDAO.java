@@ -15,6 +15,7 @@ import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeRecord;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.records.AttributeInfo;
+import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.query.DaoRecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
@@ -38,7 +39,7 @@ public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
     public AlfNodesRecordsDAO(ServiceRegistry serviceRegistry,
                               GraphQLService graphQLService,
                               GqlMetaUtils gqlMetaUtils) {
-        super(ID);
+        setId(ID);
         this.nodeService = serviceRegistry.getNodeService();
         this.gqlMetaUtils = gqlMetaUtils;
         this.graphQLService = graphQLService;
@@ -79,6 +80,24 @@ public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
 
     @Override
     public <V> Map<String, V> queryMeta(Collection<String> records, Class<V> metaClass) {
+        if (NodeRef.class.isAssignableFrom(metaClass)) {
+            Map<String, NodeRef> results = new HashMap<>();
+            records.forEach(r -> {
+                String nodeRefStr;
+                int sourceDelimIdx = r.indexOf(RecordRef.SOURCE_DELIMITER);
+                if (sourceDelimIdx > -1) {
+                    nodeRefStr = r.substring(sourceDelimIdx + 1);
+                } else {
+                    nodeRefStr = r;
+                }
+                if (NodeRef.isNodeRef(nodeRefStr)) {
+                    results.put(r, new NodeRef(nodeRefStr));
+                } else {
+                    results.put(r, null);
+                }
+            });
+            return (Map<String, V>) results;
+        }
         List<String> recordsRefs = new ArrayList<>(records);
         String query = gqlMetaUtils.createQuery(META_BASE_QUERY, recordsRefs, metaClass);
         ExecutionResult executionResult = graphQLService.execute(query);

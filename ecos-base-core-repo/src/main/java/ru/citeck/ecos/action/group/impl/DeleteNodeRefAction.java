@@ -7,16 +7,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.action.group.ActionStatus;
-import ru.citeck.ecos.action.group.GroupAction;
-import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.action.group.GroupActionService;
+import ru.citeck.ecos.action.group.*;
+import ru.citeck.ecos.records.RecordInfo;
+import ru.citeck.ecos.records.actions.RecordsActionFactory;
+import ru.citeck.ecos.records.actions.RecordsGroupAction;
 
 /**
  * @author Pavel Simonov
  */
 @Component
-public class DeleteNodeRefAction extends NodeRefActionFactory {
+public class DeleteNodeRefAction extends RecordsActionFactory<NodeRef> {
 
     private static final Log logger = LogFactory.getLog(DeleteNodeRefAction.class);
 
@@ -40,19 +40,19 @@ public class DeleteNodeRefAction extends NodeRefActionFactory {
     }
 
     @Override
-    protected GroupAction<NodeRef> createNodeRefAction(GroupActionConfig config) {
+    protected RecordsGroupAction<NodeRef> createLocalAction(GroupActionConfig config) {
         return new Action(config);
     }
 
-    class Action extends TxnGroupAction<NodeRef> {
+    class Action extends TxnGroupAction<RecordInfo<NodeRef>> implements RecordsGroupAction<NodeRef> {
 
         Action(GroupActionConfig config) {
             super(transactionService, config);
         }
 
         @Override
-        protected ActionStatus processImpl(NodeRef nodeRef) {
-            nodeService.deleteNode(nodeRef);
+        protected ActionStatus processImpl(RecordInfo<NodeRef> nodeRef) {
+            nodeService.deleteNode(nodeRef.getData());
             return new ActionStatus(ActionStatus.STATUS_OK);
         }
     }

@@ -31,10 +31,6 @@ public class RecordsDataSource implements JournalDataSource {
 
     private String sourceId = AlfNodesRecordsDAO.ID;
 
-    public RecordsDataSource(String sourceId) {
-        this.sourceId = sourceId;
-    }
-
     @Override
     public JGqlRecordsConnection getRecords(GqlContext context,
                                             String query,
@@ -143,6 +139,10 @@ public class RecordsDataSource implements JournalDataSource {
     @Override
     public Optional<JGqlAttributeInfo> getAttributeInfo(String attributeName) {
         return Optional.empty();
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
     }
 
     public String getSourceId() {

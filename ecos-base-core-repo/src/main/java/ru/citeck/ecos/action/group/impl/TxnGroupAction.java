@@ -26,29 +26,25 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
     }
 
     @Override
-    protected final void processNodesImpl(List<T> nodes, List<ActionResult<T>> output) {
+    protected final void processNodesImpl(List<T> nodes) {
 
         List<T> nodesToProcess = new ArrayList<>(nodes);
 
-        boolean completed = false;
+        List<ActionResult<T>> transactionResults = new ArrayList<>();
 
-        while (!completed && nodesToProcess.size() > 0) {
+        while (nodesToProcess.size() > 0) {
 
             try {
 
-                List<ActionResult<T>> txnOutput = new ArrayList<>();
+                transactionService.getRetryingTransactionHelper()
+                                  .doInTransaction(() -> {
 
-                transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-                    processNodesInTxn(nodesToProcess, txnOutput);
+                    List<ActionResult<T>> txnOutput = processNodesInTxn(nodesToProcess);
+                    transactionResults.addAll(txnOutput);
+                    nodesToProcess.clear();
                     return null;
-                }, false, true);
 
-                for (ActionResult<T> result : txnOutput) {
-                    if (output.size() < config.getMaxResults()) {
-                        output.add(result);
-                    }
-                }
-                completed = true;
+                }, false, true);
 
             } catch (TxnException e) {
 
@@ -57,7 +53,7 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
                 status.setException(e.cause);
 
                 T node = nodesToProcess.get(e.nodeIdx);
-                output.add(new ActionResult<>(node, status));
+                transactionResults.add(new ActionResult<>(node, status));
 
                 logger.error("Exception while process node " + node +
                              " action: " + toString() + " config: " + config, e.cause);
@@ -70,16 +66,21 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
                 status.setKey(ActionStatus.STATUS_ERROR);
                 status.setException(e);
 
-                nodesToProcess.forEach(n -> output.add(new ActionResult<>(n, status)));
+                nodesToProcess.forEach(n -> transactionResults.add(new ActionResult<>(n, status)));
                 nodesToProcess.clear();
 
                 logger.error("Exception while process nodes " + nodesToProcess +
                              " action: " + toString() + " config: " + config, e);
             }
         }
+
+        onProcessed(transactionResults);
     }
 
-    protected void processNodesInTxn(List<T> nodes, List<ActionResult<T>> output) {
+    protected List<ActionResult<T>> processNodesInTxn(List<T> nodes) {
+
+        List<ActionResult<T>> output = new ArrayList<>();
+
         for (int idx = 0; idx < nodes.size(); idx++) {
             try {
                 T node = nodes.get(idx);
@@ -98,6 +99,8 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
                 }
             }
         }
+
+        return output;
     }
 
     protected boolean isApplicable(T nodeId) {

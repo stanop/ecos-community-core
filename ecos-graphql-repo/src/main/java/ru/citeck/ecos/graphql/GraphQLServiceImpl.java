@@ -16,12 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.graphql.exceptions.CiteckGraphQLException;
+import ru.citeck.ecos.remote.RestConnection;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -98,21 +95,20 @@ public class GraphQLServiceImpl implements GraphQLService {
     }
 
     @Override
-    public ExecutionResult execute(RestTemplate template, String uri, String query, Map<String, Object> variables) {
+    public ExecutionResult execute(RestConnection restConn,
+                                   String url,
+                                   String query,
+                                   Map<String, Object> variables) {
 
         if (variables == null) {
             variables = Collections.emptyMap();
         }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         GraphQLPost.Request request = new GraphQLPost.Request();
         request.query = query;
         request.variables = variables;
 
-        HttpEntity<GraphQLPost.Request> requestEntity = new HttpEntity<>(request, headers);
-        return parseRawResult(template.postForObject(uri, requestEntity, ObjectNode.class));
+        return parseRawResult(restConn.jsonPost(url, request, ObjectNode.class));
     }
 
     private ExecutionResult parseRawResult(ObjectNode resultNode) {
