@@ -101,6 +101,16 @@
             </parameter>
         </constraint>
 
+        <constraint name="idocs:constraint:contractorKind" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>legal-entity</value>
+                    <value>individual</value>
+                    <value>public-body</value>
+                </list>
+            </parameter>
+        </constraint>
+
         <constraint name="idocs:constraint:attachmentStateOptions" type="LIST">
             <parameter name="allowedValues">
                 <list>
@@ -1296,6 +1306,19 @@
                     <multiple>true</multiple>
                     <constraints>
                         <constraint ref="idocs:constraint:contractorType" />
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasContractorKind">
+            <title>Contractor kind</title>
+            <properties>
+                <property name="idocs:contractorKind">
+                    <title>Contractor kind</title>
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="idocs:constraint:contractorKind" />
                     </constraints>
                 </property>
             </properties>
