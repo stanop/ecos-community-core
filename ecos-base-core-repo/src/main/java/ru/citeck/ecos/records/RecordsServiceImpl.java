@@ -14,11 +14,13 @@ import ru.citeck.ecos.records.query.DaoRecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.source.RecordsDAO;
+import ru.citeck.ecos.records.source.RecordsDAODelegate;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @Service
 public class RecordsServiceImpl implements RecordsService {
@@ -37,7 +39,13 @@ public class RecordsServiceImpl implements RecordsService {
     public RecordsResult getRecords(String sourceId, RecordsQuery query) {
         RecordsDAO source = needRecordsSource(sourceId);
         DaoRecordsResult result = source.queryRecords(query);
-        return new RecordsResult(result, id -> new RecordRef(source.getId(), id));
+        Function<String, RecordRef> refMapping;
+        if (source instanceof RecordsDAODelegate) {
+            refMapping = RecordRef::new;
+        } else {
+            refMapping = id -> new RecordRef(source.getId(), id);
+        }
+        return new RecordsResult(result, refMapping);
     }
 
     @Override

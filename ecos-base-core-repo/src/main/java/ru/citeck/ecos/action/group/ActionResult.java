@@ -40,4 +40,12 @@ public class ActionResult<T> {
     public void setStatus(ActionStatus actionStatus) {
         status = actionStatus;
     }
+
+    @Override
+    public String toString() {
+        return "ActionResult{" +
+                "data=" + data +
+                ", status=" + status +
+                '}';
+    }
 }

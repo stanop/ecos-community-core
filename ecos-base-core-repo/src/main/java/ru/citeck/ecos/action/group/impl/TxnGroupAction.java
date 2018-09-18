@@ -36,15 +36,11 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
 
             try {
 
-                transactionService.getRetryingTransactionHelper()
-                                  .doInTransaction(() -> {
-
-                    List<ActionResult<T>> txnOutput = processNodesInTxn(nodesToProcess);
-                    transactionResults.addAll(txnOutput);
-                    nodesToProcess.clear();
-                    return null;
-
-                }, false, true);
+                RetryingTransactionHelper tHelper = transactionService.getRetryingTransactionHelper();
+                List<ActionResult<T>> txnOutput = tHelper.doInTransaction(() -> processNodesInTxn(nodesToProcess),
+                                                                          false, true);
+                transactionResults.addAll(txnOutput);
+                nodesToProcess.clear();
 
             } catch (TxnException e) {
 

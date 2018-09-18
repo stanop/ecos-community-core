@@ -1,5 +1,6 @@
 package ru.citeck.ecos.action.group.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
@@ -28,9 +29,9 @@ public class GroupActionExecutorFactory extends RecordsActionFactory<NodeRef> {
 
     @Override
     protected RecordsGroupAction<NodeRef> createLocalAction(GroupActionConfig config) {
-        GroupActionConfig actionConfig = config;
-        String batchParam = config.getParams().get(BATCH_PARAM_KEY).asText();
-        boolean isBatch = Boolean.TRUE.toString().equals(batchParam);
+        GroupActionConfig actionConfig = new GroupActionConfig(config);
+        JsonNode batchParamNode = config.getParams().get(BATCH_PARAM_KEY);
+        boolean isBatch = batchParamNode != null && Boolean.TRUE.toString().equals(batchParamNode.asText());
         if (isBatch) {
             actionConfig = new GroupActionConfig(actionConfig);
             actionConfig.setBatchSize(0);

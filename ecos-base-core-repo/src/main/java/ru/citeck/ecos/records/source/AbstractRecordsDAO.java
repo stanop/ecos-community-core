@@ -6,6 +6,7 @@ import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.AttributeInfo;
 import ru.citeck.ecos.records.RecordsService;
 
+import javax.annotation.PostConstruct;
 import java.util.Optional;
 
 public abstract class AbstractRecordsDAO implements RecordsDAO {
@@ -13,6 +14,11 @@ public abstract class AbstractRecordsDAO implements RecordsDAO {
     private String id;
 
     protected RecordsService recordsService;
+
+    @PostConstruct
+    public final void registerDAO() {
+        recordsService.register(this);
+    }
 
     @Override
     public Optional<MetaValue> getMetaValue(GqlContext context, String id) {
@@ -36,6 +42,5 @@ public abstract class AbstractRecordsDAO implements RecordsDAO {
     @Autowired
     public void setRecordsService(RecordsService recordsService) {
         this.recordsService = recordsService;
-        recordsService.register(this);
     }
 }

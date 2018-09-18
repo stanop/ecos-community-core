@@ -54,9 +54,12 @@ public class AlfNodesRecordsDAO extends AbstractRecordsDAO {
         }
         Long afterIdValue = null;
         if (query.isAfterIdMode()) {
-            String afterId = query.getAfterId();
+            RecordRef afterId = query.getAfterId();
             if (afterId != null) {
-                NodeRef afterIdNodeRef = new NodeRef(afterId);
+                if (!ID.equals(afterId.getSourceId())) {
+                    return new DaoRecordsResult(query);
+                }
+                NodeRef afterIdNodeRef = new NodeRef(afterId.getId());
                 afterIdValue = (Long) nodeService.getProperty(afterIdNodeRef, ContentModel.PROP_NODE_DBID);
             } else {
                 afterIdValue = 0L;

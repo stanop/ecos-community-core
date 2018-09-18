@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.ExecutionResult;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
@@ -15,10 +17,11 @@ import ru.citeck.ecos.records.query.DaoRecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.remote.RestConnection;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 public class RemoteRecordsDAO extends AbstractRecordsDAO {
+
+    private static final Log logger = LogFactory.getLog(RemoteRecordsDAO.class);
 
     private String metaBaseQuery;
 
@@ -36,26 +39,28 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
     private String remoteSourceId = "";
 
     public RemoteRecordsDAO() {
-        metaBaseQuery = "records(source:\"" + remoteSourceId + "\",refs:[\"%s\"])";
-    }
 
-    @PostConstruct
-    public void init() {
+        metaBaseQuery = "records(source:\"" + remoteSourceId + "\",refs:[\"%s\"])";
+
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @Override
     public DaoRecordsResult queryRecords(RecordsQuery query) {
-        if (!enabled) {
-            return new DaoRecordsResult(query);
+        if (enabled) {
+            try {
+                String postData = objectMapper.writeValueAsString(query);
+                DaoRecordsResult result = restConnection.jsonPost(recordsMethod, postData, DaoRecordsResult.class);
+                if (result != null) {
+                    return result;
+                }
+            } catch (JsonProcessingException e) {
+                logger.error(e);
+            }
         }
-        try {
-            String postData = objectMapper.writeValueAsString(query);
-            return restConnection.jsonPost(recordsMethod, postData, DaoRecordsResult.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        logger.error("queryRecords will return nothing");
+        return new DaoRecordsResult(query);
     }
 
     @Override

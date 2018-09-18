@@ -44,4 +44,13 @@ public class ActionStatus {
             this.message = e.getMessage();
         }
     }
+
+    @Override
+    public String toString() {
+        return "ActionStatus{" +
+                "key='" + key + '\'' +
+                ", message='" + message + '\'' +
+                ", url='" + url +
+                "\'}";
+    }
 }

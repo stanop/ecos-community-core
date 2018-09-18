@@ -3,9 +3,10 @@ package ru.citeck.ecos.records.actions;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.action.group.GroupActionPost;
 import ru.citeck.ecos.action.group.impl.BaseGroupAction;
 import ru.citeck.ecos.records.RecordInfo;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.RecordsGroupActionPost;
 import ru.citeck.ecos.remote.RestConnection;
 
 import java.util.*;
@@ -34,25 +35,25 @@ public class RemoteGroupAction<T> extends BaseGroupAction<RecordInfo<T>> {
     @Override
     protected void processNodesImpl(List<RecordInfo<T>> nodes) {
 
-        Map<String, RecordInfo<T>> infoMapping = new HashMap<>();
+        Map<RecordRef, RecordInfo<T>> infoMapping = new HashMap<>();
 
-        GroupActionPost.ActionData data = new GroupActionPost.ActionData();
+        RecordsGroupActionPost.ActionData data = new RecordsGroupActionPost.ActionData();
         data.actionId = targetAction;
         data.config = targetConfig;
 
         data.nodes = nodes.stream().map(info -> {
-            String id = info.getRef().getId();
+            RecordRef id = new RecordRef(info.getRef().getId());
             infoMapping.put(id, info);
             return id;
         }).collect(Collectors.toList());
 
-        GroupActionPost.Response<String> response =
-                restConn.jsonPost(groupActionUrl, data, GroupActionPost.Response.class);
+        RecordsGroupActionPost.Response response =
+                restConn.jsonPost(groupActionUrl, data, RecordsGroupActionPost.Response.class);
 
         List<ActionResult<RecordInfo<T>>> results = new ArrayList<>();
 
         if (response != null) {
-            for (ActionResult<String> result : response.results) {
+            for (ActionResult<RecordRef> result : response.results) {
                 RecordInfo<T> info = infoMapping.get(result.getData());
                 results.add(new ActionResult<>(info, result.getStatus()));
             }
