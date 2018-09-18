@@ -1,4 +1,4 @@
-<#include "/org/alfresco/components/form/controls/common/editorparams.inc.ftl" />
+<#include "/ru/citeck/components/form/controls/common/editorparams.inc.ftl" />
 
 <#if field.control.params.rows??><#assign rows=field.control.params.rows><#else><#assign rows=8></#if>
 <#if field.control.params.columns??><#assign columns=field.control.params.columns><#else><#assign columns=60></#if>
