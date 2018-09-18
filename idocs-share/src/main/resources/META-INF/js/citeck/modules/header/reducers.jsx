@@ -1,5 +1,12 @@
 import { combineReducers } from 'redux';
-import {CREATE_CASE_WIDGET_SET_ITEMS, USER_SET_PHOTO, USER_SET_NAME, USER_SET_FULLNAME, USER_SET_NODE_REF} from './actions';
+import {
+    CREATE_CASE_WIDGET_SET_ITEMS,
+    USER_SET_PHOTO,
+    USER_SET_NAME,
+    USER_SET_FULLNAME,
+    USER_SET_NODE_REF,
+    SITE_MENU_SET_CURRENT_SITE_NAME
+} from './actions';
 
 /* caseMenuReducer */
 const caseMenuInitialState = {
@@ -63,8 +70,30 @@ function userReducer(state = userInitialState, action) {
 }
 
 
+/* siteMenuReducer */
+const siteMenuInitialState = {
+    name: '',
+};
+
+Object.freeze(siteMenuInitialState);
+
+function siteMenuReducer(state = siteMenuInitialState, action) {
+    switch (action.type) {
+        case SITE_MENU_SET_CURRENT_SITE_NAME:
+            return {
+                ...state,
+                name: action.payload
+            };
+
+        default:
+            return state;
+    }
+}
+
+
 /* root reducer */
 export default combineReducers({
     caseMenu: caseMenuReducer,
-    user: userReducer,
+    siteMenu: siteMenuReducer,
+    user: userReducer
 });

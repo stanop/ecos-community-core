@@ -18,7 +18,7 @@ const ShareHeader = ({ userName }) => {
                 <UserMenu
                     items={userMenuItems}
                 />
-                <SitesMenu items={siteMenuItems} />
+                <SitesMenu />
                 <Search />
             </div>
         </div>

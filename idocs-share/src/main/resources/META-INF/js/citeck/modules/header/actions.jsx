@@ -5,6 +5,8 @@ export const USER_SET_FULLNAME = 'USER_SET_FULLNAME';
 export const USER_SET_NODE_REF = 'USER_SET_NODE_REF';
 export const USER_SET_PHOTO = 'USER_SET_PHOTO';
 
+export const SITE_MENU_SET_CURRENT_SITE_NAME = 'SITE_MENU_SET_CURRENT_SITE_NAME';
+
 
 export function setCreateCaseWidgetItems(payload) {
     return {
@@ -32,10 +34,19 @@ export function loadCreateCaseWidgetItems(username) {
             let menuItems = [];
             menuItems.push(
                 {
+                    id: "HEADER_CREATE_WORKFLOW",
                     label: "header.create-workflow.label",
                     items: [
-                        { label: "header.create-workflow-adhoc.label", targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$perform" },
-                        { label: "header.create-workflow-confirm.label", targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$confirm" },
+                        {
+                            id: "HEADER_CREATE_WORKFLOW_ADHOC",
+                            label: "header.create-workflow-adhoc.label",
+                            targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$perform"
+                        },
+                        {
+                            id: "HEADER_CREATE_WORKFLOW_CONFIRM",
+                            label: "header.create-workflow-confirm.label",
+                            targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$confirm"
+                        },
                     ],
                 },
             );
@@ -44,11 +55,14 @@ export function loadCreateCaseWidgetItems(username) {
                 let createVariants = [];
                 for (let variant of variants[i]) {
                     createVariants.push({
+                        id: "HEADER_" + ((allSites[i].shortName + "_" + variant.type).replace(/\-/g, "_")).toUpperCase(),
                         label: variant.title,
                         targetUrl: "/share/page/node-create?type=" + variant.type + "&viewId=" + variant.formId + "&destination=" + variant.destination
                     });
                 }
+                const siteId = "HEADER_" + (allSites[i].shortName.replace(/\-/g, "_")).toUpperCase();
                 menuItems.push({
+                    id: siteId,
                     label: allSites[i].title,
                     items: createVariants
                 });
@@ -92,9 +106,33 @@ export function setUserPhoto(payload) {
 
 export function loadUserMenuPhoto(userNodeRef) {
     return (dispatch, getState, api) => {
-        if (userNodeRef && api.getPhotoSize(userNodeRef)) {
-            let photoUrl = window.Alfresco.constants.PROXY_URI + "api/node/content;ecos:photo/" + userNodeRef.replace(":/", "") + "/image.jpg";
-            dispatch(setUserPhoto(photoUrl));
+        if (!userNodeRef) {
+            return;
         }
+
+        api.getPhotoSize(userNodeRef).then(size => {
+            if (size > 0) {
+                let photoUrl = window.Alfresco.constants.PROXY_URI + "api/node/content;ecos:photo/" + userNodeRef.replace(":/", "") + "/image.jpg";
+                dispatch(setUserPhoto(photoUrl));
+            }
+        });
+    }
+}
+
+
+
+export function setCurrentSiteName(payload) {
+    return {
+        type: SITE_MENU_SET_CURRENT_SITE_NAME,
+        payload
+    }
+}
+
+export function loadSiteData(sitename, username) {
+    return (dispatch, getState, api) => {
+        // TODO !!!
+        api.getSiteData(sitename, username).then(result => {
+            console.log('result', result);
+        });
     }
 }

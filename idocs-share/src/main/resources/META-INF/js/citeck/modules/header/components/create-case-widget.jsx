@@ -13,6 +13,7 @@ const CreateCaseWidget = ({ items }) => {
                 key={key}
                 label={item.label}
                 items={item.items}
+                id={item.id}
             />
         );
     }) : null;

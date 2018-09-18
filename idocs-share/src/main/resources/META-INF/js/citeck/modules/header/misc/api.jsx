@@ -48,4 +48,9 @@ export default class {
         const url = "/api/journals/create-variants/site/" + encodeURIComponent(sitename);
         return this.getJSON(url).then(resp => resp.createVariants).catch(() => []);
     };
+
+    getSiteData = (sitename, username) => {
+        const url = "/api/sites/" + sitename + "/memberships/" + encodeURIComponent(username);
+        return this.getJSON(url).catch(() => {});
+    };
 }
