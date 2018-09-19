@@ -5,7 +5,7 @@
     <allowed-type>{http://www.alfresco.org/model/content/1.0}cmobject</allowed-type>
     <position>
         <column>left</column>
-        <order>h3</order>
+        <order>a1</order>
         <mobile-order>2</mobile-order>
     </position>
     <control url="js/citeck/modules/cardlets/document-children/document-children">
