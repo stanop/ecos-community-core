@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * @author Pavel Simonov
  */
-public abstract class BaseGroupAction<T> implements GroupAction<T>, ResultsListener<T> {
+public abstract class BaseGroupAction<T> implements GroupAction<T> {
 
     private final List<T> input = new ArrayList<>();
     private final List<ActionResult<T>> output = new ArrayList<>();

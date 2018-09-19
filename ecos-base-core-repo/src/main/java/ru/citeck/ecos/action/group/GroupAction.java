@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Pavel Simonov
  */
-public interface GroupAction<T> {
+public interface GroupAction<T> extends ResultsListener<T> {
 
     void process(T nodeId);
 
@@ -20,4 +20,6 @@ public interface GroupAction<T> {
     long getTimeout();
 
     void addListener(ResultsListener<T> listener);
+
+    default void onProcessed(List<ActionResult<T>> results) {}
 }

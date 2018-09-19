@@ -15,28 +15,30 @@ import java.util.stream.Collectors;
 
 public abstract class RecordsActionFactory<T> implements GroupActionFactory<RecordInfo<T>> {
 
-    private static final String DEFAULT_GROUP_ACTION_METHOD = "alfresco/service/citeck/ecos/records-group-action";
-
-    private String groupActionMethod = DEFAULT_GROUP_ACTION_METHOD;
+    public static final String DEFAULT_GROUP_ACTION_METHOD = "alfresco/service/citeck/ecos/records-group-action";
 
     private RecordsService recordsService;
 
     @Override
     public final GroupAction<RecordInfo<T>> createAction(GroupActionConfig config) {
-        RecordsGroupAction<T> localAction = createLocalAction(config);
+        GroupAction<RecordInfo<T>> localAction = createLocalAction(config);
         return new Action(localAction, config);
     }
 
-    protected abstract RecordsGroupAction<T> createLocalAction(GroupActionConfig config);
+    protected abstract GroupAction<RecordInfo<T>> createLocalAction(GroupActionConfig config);
+
+    protected GroupAction<RecordInfo<T>> createRemoteAction(GroupActionConfig config, RestConnection restConn) {
+        return null;
+    }
 
     class Action implements GroupAction<RecordInfo<T>> {
 
         private GroupActionConfig localConfig;
-        private RecordsGroupAction<T> localAction;
+        private GroupAction<RecordInfo<T>> localAction;
 
         private Map<String, Optional<GroupAction<RecordInfo<T>>>> actionsBySource = new ConcurrentHashMap<>();
 
-        public Action(RecordsGroupAction<T> localAction, GroupActionConfig localConfig) {
+        public Action(GroupAction<RecordInfo<T>> localAction, GroupActionConfig localConfig) {
             this.localConfig = localConfig;
             this.localAction = localAction;
         }
@@ -60,14 +62,15 @@ public abstract class RecordsActionFactory<T> implements GroupActionFactory<Reco
                 }
 
                 if (withoutMetadata.size() > 0) {
-                    onError(withoutMetadata, "Record metadata not found");
+                    setStatus(withoutMetadata, "Record metadata not found");
                 }
             } else {
-                onError(Collections.singletonList(node), "Records source " + sourceId + " not found!");
+                setStatus(Collections.singletonList(node),
+                        "Records source " + sourceId + " is not exists or not supported!");
             }
         }
 
-        private void onError(List<RecordInfo<T>> nodes, String message) {
+        private void setStatus(List<RecordInfo<T>> nodes, String message) {
             ActionStatus status = new ActionStatus(ActionStatus.STATUS_ERROR);
             status.setMessage(message);
             localAction.onProcessed(nodes.stream()
@@ -110,22 +113,10 @@ public abstract class RecordsActionFactory<T> implements GroupActionFactory<Reco
             if (recordsDAO.isPresent()) {
                 if (recordsDAO.get() instanceof RemoteRecordsDAO) {
 
-                    GroupActionConfig remoteActionConfig = new GroupActionConfig();
-                    remoteActionConfig.setBatchSize(localAction.getRemoteBatchSize());
-
-                    GroupActionConfig targetConfig = new GroupActionConfig(localConfig);
-                    targetConfig.setAsync(false);
-
                     RemoteRecordsDAO remoteDAO = (RemoteRecordsDAO) recordsDAO.get();
                     RestConnection restConn = remoteDAO.getRestConnection();
 
-                    GroupAction<RecordInfo<T>> action = new RemoteGroupAction<>(remoteActionConfig,
-                                                                                restConn,
-                                                                                groupActionMethod,
-                                                                                getActionId(),
-                                                                                targetConfig);
-                    action.addListener(localAction);
-                    return Optional.of(action);
+                    return Optional.ofNullable(createRemoteAction(localConfig, restConn));
                 } else {
                     return Optional.of(localAction);
                 }
@@ -162,10 +153,6 @@ public abstract class RecordsActionFactory<T> implements GroupActionFactory<Reco
     @Autowired
     public void setRecordsService(RecordsService recordsService) {
         this.recordsService = recordsService;
-    }
-
-    public void setGroupActionMethod(String groupActionMethod) {
-        this.groupActionMethod = groupActionMethod;
     }
 }
 

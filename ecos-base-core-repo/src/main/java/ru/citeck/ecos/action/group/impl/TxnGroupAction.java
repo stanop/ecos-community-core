@@ -73,6 +73,18 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
         onProcessed(transactionResults);
     }
 
+    @Override
+    public final void onProcessed(List<ActionResult<T>> actionResults) {
+        super.onProcessed(actionResults);
+        transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
+            onProcessedInTxn(actionResults);
+            return null;
+        });
+    }
+
+    protected void onProcessedInTxn(List<ActionResult<T>> results) {
+    }
+
     protected List<ActionResult<T>> processNodesInTxn(List<T> nodes) {
 
         List<ActionResult<T>> output = new ArrayList<>();
