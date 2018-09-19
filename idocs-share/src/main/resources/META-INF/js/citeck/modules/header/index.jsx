@@ -7,7 +7,14 @@ import thunk from 'js/citeck/lib/redux-thunk';
 import ShareHeader from './share-header';
 import API from './misc/api';
 import rootReducer from './reducers';
-import { setUserName, setUserFullName, setUserNodeRef, setCurrentSiteName } from './actions';
+import {
+    setUserName,
+    setUserFullName,
+    setUserNodeRef,
+    setUserIsAdmin,
+    setUserIsAvailable,
+    setCurrentSiteId
+} from './actions';
 
 // TODO include polyfills
 
@@ -27,7 +34,10 @@ export const render = (elementId, props) => {
     store.dispatch(setUserName(props.userName));
     store.dispatch(setUserFullName(props.userFullname));
     store.dispatch(setUserNodeRef(props.userNodeRef));
-    store.dispatch(setCurrentSiteName(props.site));
+    store.dispatch(setUserIsAdmin(props.userIsAdmin === "true"));
+    store.dispatch(setUserIsAvailable(props.userIsAvailable === "true"));
+
+    store.dispatch(setCurrentSiteId(props.site));
 
     ReactDOM.render(
         <Provider store={store}>

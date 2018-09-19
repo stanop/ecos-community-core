@@ -7,8 +7,11 @@ const SearchDropdown = () => {
     const serachDropdownListItems = [
         <DropDownMenuItem
             key={0}
-            targetUrl="/share/page/site/hr/advsearch"
-            label="Расширенный поиск..." // TODO get from messages
+            data={{
+                id: 'HEADER_SEARCH_BOX_ADVANCED_SEARCH',
+                label: "Расширенный поиск...", // TODO get label from properties message
+                targetUrl: "/share/page/site/hr/advsearch"
+            }}
         />
     ];
 

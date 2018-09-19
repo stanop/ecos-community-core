@@ -7,12 +7,7 @@ const DropDownMenuGroup = ({ id, label, items }) => {
         return (
             <DropDownMenuItem
                 key={key}
-                id={item.id}
-                targetUrl={item.targetUrl}
-                image={item.image}
-                icon={item.icon}
-                label={item.label}
-                target={item.target}
+                data={item}
             />
         );
     }) : null;

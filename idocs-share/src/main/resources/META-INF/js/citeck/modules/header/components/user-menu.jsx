@@ -1,12 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose, lifecycle } from 'recompose';
+import { compose, lifecycle, withState } from 'recompose';
 import { Dropdown } from 'react-bootstrap';
 import DropDownMenuItem from './dropdown-menu-item';
 import CustomToggle from './dropdown-menu-custom-toggle';
 import { loadUserMenuPhoto } from '../actions';
+import { makeUserMenuItems } from '../misc/util';
 
-const UserMenu = ({ userName, userPhotoUrl, items }) => {
+const UserMenu = ({ userFullName, userPhotoUrl, items }) => {
     const userImage = userPhotoUrl ? (
         (
             <div className="user-photo-header">
@@ -18,11 +19,7 @@ const UserMenu = ({ userName, userPhotoUrl, items }) => {
     const menuListItems = items && items.length && items.map((item, key) => (
         <DropDownMenuItem
             key={key}
-            targetUrl={item.targetUrl}
-            image={item.image}
-            icon={item.icon}
-            label={item.label}
-            target={item.target}
+            data={item}
         />
     ));
 
@@ -30,7 +27,7 @@ const UserMenu = ({ userName, userPhotoUrl, items }) => {
         <div id='HEADER_USER_MENU'>
             <Dropdown className="custom-dropdown-menu" pullRight>
                 <CustomToggle bsRole="toggle" className="user-dropdown-menu__toggle custom-dropdown-menu__toggle">
-                    <span className="user-menu-username">{userName}</span>
+                    <span className="user-menu-username">{userFullName}</span>
                     {userImage}
                 </CustomToggle>
                 <Dropdown.Menu className="custom-dropdown-menu__body">
@@ -42,18 +39,24 @@ const UserMenu = ({ userName, userPhotoUrl, items }) => {
 };
 
 const enhance = compose(
+    withState("items", "setItems", []),
     lifecycle({
         componentDidMount() {
-            const { userNodeRef, dispatch } = this.props;
+            const { userNodeRef, userName, userIsAvailable, dispatch, setItems } = this.props;
             dispatch(loadUserMenuPhoto(userNodeRef));
+
+            const userMenuItems = makeUserMenuItems(userName, userIsAvailable);
+            setItems(userMenuItems);
         }
     }),
 );
 
 const mapStateToProps = (state, ownProps) => ({
     userPhotoUrl: state.user.photo,
-    userName: state.user.fullName,
+    userName: state.user.name,
+    userFullName: state.user.fullName,
     userNodeRef: state.user.nodeRef,
+    userIsAvailable: state.user.isAvailable,
 });
 
 export default connect(mapStateToProps)(enhance(UserMenu));

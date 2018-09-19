@@ -49,8 +49,13 @@ export default class {
         return this.getJSON(url).then(resp => resp.createVariants).catch(() => []);
     };
 
-    getSiteData = (sitename, username) => {
-        const url = "/api/sites/" + sitename + "/memberships/" + encodeURIComponent(username);
+    getSiteData = (siteId) => {
+        const url = "/api/sites/" + siteId;
+        return this.getJSON(url).catch(() => {});
+    };
+
+    getSiteUserMembership = (siteId, username) => {
+        const url = "/api/sites/" + siteId + "/memberships/" + encodeURIComponent(username);
         return this.getJSON(url).catch(() => {});
     };
 }

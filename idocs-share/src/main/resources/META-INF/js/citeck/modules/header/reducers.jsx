@@ -1,11 +1,15 @@
 import { combineReducers } from 'redux';
 import {
     CREATE_CASE_WIDGET_SET_ITEMS,
+
     USER_SET_PHOTO,
     USER_SET_NAME,
     USER_SET_FULLNAME,
     USER_SET_NODE_REF,
-    SITE_MENU_SET_CURRENT_SITE_NAME
+    USER_SET_IS_ADMIN,
+
+    SITE_MENU_SET_CURRENT_SITE_ID,
+    SITE_MENU_SET_CURRENT_SITE_DATA, USER_SET_IS_AVAILABLE
 } from './actions';
 
 /* caseMenuReducer */
@@ -34,6 +38,8 @@ const userInitialState = {
     fullName: '',
     nodeRef: '',
     photo: '',
+    isAdmin: false,
+    isAvailable: false
 };
 
 Object.freeze(userInitialState);
@@ -64,6 +70,18 @@ function userReducer(state = userInitialState, action) {
                 photo: action.payload
             };
 
+        case USER_SET_IS_ADMIN:
+            return {
+                ...state,
+                isAdmin: action.payload
+            };
+
+        case USER_SET_IS_AVAILABLE:
+            return {
+                ...state,
+                isAvailable: action.payload
+            };
+
         default:
             return state;
     }
@@ -72,17 +90,34 @@ function userReducer(state = userInitialState, action) {
 
 /* siteMenuReducer */
 const siteMenuInitialState = {
-    name: '',
+    id: '',
+    profile: {
+        title: "",
+        shortName: "",
+        visibility: "PRIVATE",
+    },
+
+    userIsSiteManager: false,
+    userIsMember: false,
+    userIsDirectMember: false,
+
+    items: []
 };
 
 Object.freeze(siteMenuInitialState);
 
 function siteMenuReducer(state = siteMenuInitialState, action) {
     switch (action.type) {
-        case SITE_MENU_SET_CURRENT_SITE_NAME:
+        case SITE_MENU_SET_CURRENT_SITE_ID:
             return {
                 ...state,
-                name: action.payload
+                id: action.payload
+            };
+
+        case SITE_MENU_SET_CURRENT_SITE_DATA:
+            return {
+                ...state,
+                ...action.payload
             };
 
         default:

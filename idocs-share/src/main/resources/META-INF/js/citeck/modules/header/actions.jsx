@@ -1,11 +1,16 @@
+import { makeSiteMenuItems } from './misc/util'
+
 export const CREATE_CASE_WIDGET_SET_ITEMS = 'CREATE_CASE_WIDGET_SET_ITEMS';
 
 export const USER_SET_NAME = 'USER_SET_NAME';
 export const USER_SET_FULLNAME = 'USER_SET_FULLNAME';
 export const USER_SET_NODE_REF = 'USER_SET_NODE_REF';
+export const USER_SET_IS_ADMIN = 'USER_SET_IS_ADMIN';
+export const USER_SET_IS_AVAILABLE = 'USER_SET_IS_AVAILABLE';
 export const USER_SET_PHOTO = 'USER_SET_PHOTO';
 
-export const SITE_MENU_SET_CURRENT_SITE_NAME = 'SITE_MENU_SET_CURRENT_SITE_NAME';
+export const SITE_MENU_SET_CURRENT_SITE_ID = 'SITE_MENU_SET_CURRENT_SITE_ID';
+export const SITE_MENU_SET_CURRENT_SITE_DATA = 'SITE_MENU_SET_CURRENT_SITE_DATA';
 
 
 export function setCreateCaseWidgetItems(payload) {
@@ -97,6 +102,20 @@ export function setUserNodeRef(payload) {
     }
 }
 
+export function setUserIsAdmin(payload) {
+    return {
+        type: USER_SET_IS_ADMIN,
+        payload
+    }
+}
+
+export function setUserIsAvailable(payload) {
+    return {
+        type: USER_SET_IS_AVAILABLE,
+        payload
+    }
+}
+
 export function setUserPhoto(payload) {
     return {
         type: USER_SET_PHOTO,
@@ -121,18 +140,42 @@ export function loadUserMenuPhoto(userNodeRef) {
 
 
 
-export function setCurrentSiteName(payload) {
+export function setCurrentSiteId(payload) {
     return {
-        type: SITE_MENU_SET_CURRENT_SITE_NAME,
+        type: SITE_MENU_SET_CURRENT_SITE_ID,
         payload
     }
 }
 
-export function loadSiteData(sitename, username) {
+export function setCurrentSiteData(payload) {
+    return {
+        type: SITE_MENU_SET_CURRENT_SITE_DATA,
+        payload
+    }
+}
+
+export function loadSiteMenuItems(sitename, username) {
     return (dispatch, getState, api) => {
-        // TODO !!!
-        api.getSiteData(sitename, username).then(result => {
-            console.log('result', result);
+        api.getSiteData(sitename).then(result => {
+            return dispatch(setCurrentSiteData({
+                profile: result
+            }));
+        }).then(() => {
+            return api.getSiteUserMembership(sitename, username).then(result => {
+                return dispatch(setCurrentSiteData({
+                    userIsMember: true,
+                    userIsDirectMember: !(result.isMemberOfGroup),
+                    userIsSiteManager: result.role === "SiteManager"
+                }));
+            });
+        }).then(() => {
+            const state = getState();
+            const user = state.user;
+            const siteData = state.siteMenu;
+
+            return makeSiteMenuItems(user, siteData);
+        }).then(items => {
+            return dispatch(setCurrentSiteData({ items }));
         });
     }
 }

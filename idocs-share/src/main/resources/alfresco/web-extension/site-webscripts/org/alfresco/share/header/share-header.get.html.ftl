@@ -56,6 +56,8 @@
                        userName: "${((user.name)!"")?js_string}",
                        userFullname: "${((user.fullName)!"")?js_string}",
                        userNodeRef: "${((user.properties.nodeRef)!"")?js_string}",
+                       userIsAdmin: "${user.isAdmin?string}",
+                       userIsAvailable: "${((user.properties.available)!"")?string}",
                        site: "${((page.url.templateArgs.site)!"")?js_string}"
                    });
                });
