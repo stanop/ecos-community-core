@@ -19,7 +19,9 @@ export default class NodeHeader extends NodeCardlet {
             isFavourite: nodeInfo.isFavourite,
             qshare: nodeInfo.qshare,
             commentsCount: nodeInfo.commentsCount,
-            nodeType: nodeInfo.nodeType
+            nodeType: nodeInfo.nodeType,
+            nodePath: nodeInfo.nodePath,
+            controlProps: ownProps.controlProps
         });
     }
 
@@ -64,10 +66,42 @@ export default class NodeHeader extends NodeCardlet {
         }).display(data.qshare.sharedId, data.qshare.sharedBy);
     }
 
+    static renderPath(path) {
+
+        let result = [];
+
+        if (path[0].qname != 'app:company_home') {
+            return result;
+        }
+
+        let hrefBase = "/share/page/repository?path=";
+        let href = "";
+        for (let i = 0; i < path.length; i++) {
+            let pathItemClass = "folder-link";
+            let pathItem = path[i];
+            let itemLabel = pathItem.title;
+            if (itemLabel == 'Хранилище') {
+                itemLabel = 'Репозиторий';
+            }
+            if (i !== 0) {
+                result.push(<span className="separator">&gt;</span>);
+                pathItemClass += " folder-open";
+                href += '/' + pathItem.name;
+            }
+            result.push(
+                <span className={pathItemClass}>
+                    <a href={hrefBase + encodeURIComponent(href)} target="_blank">{itemLabel}</a>
+                </span>
+            );
+        }
+        return result;
+    }
+
     render() {
 
         let msg = Alfresco.util.message;
         let data = this.props.data;
+        let controlProps = data.controlProps;
 
         let extensionImg;
         if (data.fileExtension) {
@@ -82,10 +116,22 @@ export default class NodeHeader extends NodeCardlet {
             YAHOO.Bubbling.fire('commentNode', data.nodeRef);
         };
 
+        let pathMarkup;
+        if (controlProps['show-path'] !== "false") {
+            pathMarkup = (
+                <div className="node-path">
+                    { NodeHeader.renderPath(data.nodePath) }
+                </div>
+            );
+        } else {
+            pathMarkup = <div/>;
+        }
+
         return (
             <div>
                 <div className="node-header">
                     <div className="node-info">
+                        {pathMarkup}
                         {extensionImg}
                         <h1 className="thin dark">
                             {data.displayName}<span id={`${data.htmlid}-document-version`}
