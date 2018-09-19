@@ -76,7 +76,12 @@ public class RestConnection {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<I> requestEntity = new HttpEntity<>(postData, headers);
-        return restTemplate.postForObject(uri, requestEntity, responseType);
+        try {
+            return restTemplate.postForObject(uri, requestEntity, responseType);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public RestTemplate getRestTemplate() {

@@ -33,15 +33,20 @@ public class GqlMetaUtils {
 
     public Map<String, JsonNode> convertMeta(List<String> ids, ExecutionResult executionResult) {
 
-        JsonNode jsonNode = objectMapper.valueToTree(executionResult.getData());
-
         Map<String, JsonNode> result = new HashMap<>();
-        JsonNode meta = jsonNode.get(META_KEY);
 
-        for (int i = 0; i < meta.size(); i++) {
-            result.put(ids.get(i), meta.get(i));
+        if (executionResult == null) {
+            for (String id : ids) {
+                result.put(id, null);
+            }
+        } else {
+            JsonNode jsonNode = objectMapper.valueToTree(executionResult.getData());
+            JsonNode meta = jsonNode.get(META_KEY);
+
+            for (int i = 0; i < meta.size(); i++) {
+                result.put(ids.get(i), meta.get(i));
+            }
         }
-
         return result;
     }
 

@@ -91,10 +91,12 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public List<ActionResult<RecordRef>> executeAction(String source,
-                                                   RecordsQuery query,
-                                                   String actionId,
-                                                   GroupActionConfig config) {
-        return executeAction(new IterableRecords(this, source, query), actionId, config);
+                                                       RecordsQuery query,
+                                                       String actionId,
+                                                       GroupActionConfig config) {
+        RecordsQuery iterableQuery = new RecordsQuery(query);
+        iterableQuery.setMaxItems(0);
+        return executeAction(new IterableRecords(this, source, iterableQuery), actionId, config);
     }
 
     @Override

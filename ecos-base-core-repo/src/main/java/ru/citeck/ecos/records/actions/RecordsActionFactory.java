@@ -49,19 +49,7 @@ public abstract class RecordsActionFactory<T, LocalAction extends GroupAction<Re
                     actionsBySource.computeIfAbsent(sourceId, this::getSourceAction);
 
             if (optAction.isPresent()) {
-
-                GroupAction<RecordInfo<T>> action = optAction.get();
-                List<RecordInfo<T>> withoutMetadata = new ArrayList<>();
-
-                if (node.getData() != null) {
-                    action.process(node);
-                } else {
-                    withoutMetadata.add(node);
-                }
-
-                if (withoutMetadata.size() > 0) {
-                    setStatus(withoutMetadata, "Record metadata not found");
-                }
+                optAction.get().process(node);
             } else {
                 setStatus(Collections.singletonList(node),
                         "Records source " + sourceId + " is not exists or not supported!");
