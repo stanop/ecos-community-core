@@ -1,7 +1,11 @@
 package ru.citeck.ecos.action.group;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.POJONode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +36,32 @@ public class GroupActionConfig {
 
     public void setParams(ObjectNode params) {
         this.params = params;
+    }
+
+    public void setParam(String key, String value) {
+        getParams().set(key, TextNode.valueOf(value));
+    }
+
+    public void setPojoParam(String key, Object pojo) {
+        getParams().set(key, JsonNodeFactory.instance.pojoNode(pojo));
+    }
+
+    @JsonIgnore
+    public String getStrParam(String key) {
+        JsonNode jsonNode = getParams().get(key);
+        if (jsonNode instanceof TextNode) {
+            return jsonNode.asText();
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    public <T> T getPojoParam(String key) {
+        JsonNode jsonNode = getParams().get(key);
+        if (jsonNode instanceof POJONode) {
+            return (T) ((POJONode) jsonNode).getPojo();
+        }
+        return null;
     }
 
     public int getBatchSize() {

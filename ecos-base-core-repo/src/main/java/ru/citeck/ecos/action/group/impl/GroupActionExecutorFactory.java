@@ -13,7 +13,7 @@ import ru.citeck.ecos.records.actions.RecordsGroupAction;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GroupActionExecutorFactory extends RecordsActionFactory<NodeRef> {
+public class GroupActionExecutorFactory extends RecordsActionFactory<NodeRef, TxnGroupAction<RecordInfo<NodeRef>>> {
 
     private static final String BATCH_PARAM_KEY = "evaluateBatch";
 
@@ -28,7 +28,7 @@ public class GroupActionExecutorFactory extends RecordsActionFactory<NodeRef> {
     }
 
     @Override
-    protected RecordsGroupAction<NodeRef> createLocalAction(GroupActionConfig config) {
+    protected TxnGroupAction<RecordInfo<NodeRef>> createLocalAction(GroupActionConfig config) {
         GroupActionConfig actionConfig = new GroupActionConfig(config);
         JsonNode batchParamNode = config.getParams().get(BATCH_PARAM_KEY);
         boolean isBatch = batchParamNode != null && Boolean.TRUE.toString().equals(batchParamNode.asText());

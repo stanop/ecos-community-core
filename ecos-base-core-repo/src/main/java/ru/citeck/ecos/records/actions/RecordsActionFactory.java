@@ -13,7 +13,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public abstract class RecordsActionFactory<T> implements GroupActionFactory<RecordInfo<T>> {
+public abstract class RecordsActionFactory<T, LocalAction extends GroupAction<RecordInfo<T>>>
+                                                          implements GroupActionFactory<RecordInfo<T>> {
 
     public static final String DEFAULT_GROUP_ACTION_METHOD = "alfresco/service/citeck/ecos/records-group-action";
 
@@ -21,25 +22,22 @@ public abstract class RecordsActionFactory<T> implements GroupActionFactory<Reco
 
     @Override
     public final GroupAction<RecordInfo<T>> createAction(GroupActionConfig config) {
-        GroupAction<RecordInfo<T>> localAction = createLocalAction(config);
-        return new Action(localAction, config);
+        return new Action(createLocalAction(config));
     }
 
-    protected abstract GroupAction<RecordInfo<T>> createLocalAction(GroupActionConfig config);
+    protected abstract LocalAction createLocalAction(GroupActionConfig config);
 
-    protected GroupAction<RecordInfo<T>> createRemoteAction(GroupActionConfig config, RestConnection restConn) {
+    protected GroupAction<RecordInfo<T>> createRemoteAction(LocalAction localAction, RestConnection restConn) {
         return null;
     }
 
     class Action implements GroupAction<RecordInfo<T>> {
 
-        private GroupActionConfig localConfig;
-        private GroupAction<RecordInfo<T>> localAction;
+        private LocalAction localAction;
 
         private Map<String, Optional<GroupAction<RecordInfo<T>>>> actionsBySource = new ConcurrentHashMap<>();
 
-        public Action(GroupAction<RecordInfo<T>> localAction, GroupActionConfig localConfig) {
-            this.localConfig = localConfig;
+        public Action(LocalAction localAction) {
             this.localAction = localAction;
         }
 
@@ -116,7 +114,7 @@ public abstract class RecordsActionFactory<T> implements GroupActionFactory<Reco
                     RemoteRecordsDAO remoteDAO = (RemoteRecordsDAO) recordsDAO.get();
                     RestConnection restConn = remoteDAO.getRestConnection();
 
-                    return Optional.ofNullable(createRemoteAction(localConfig, restConn));
+                    return Optional.ofNullable(createRemoteAction(localAction, restConn));
                 } else {
                     return Optional.of(localAction);
                 }

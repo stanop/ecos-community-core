@@ -1,6 +1,7 @@
 package ru.citeck.ecos.action.group;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +25,9 @@ public class ActionStatus {
     @Getter
     @Setter
     private String url;
+    @Getter
+    @Setter
+    private JsonNode data;
 
     @Getter
     private Exception exception;

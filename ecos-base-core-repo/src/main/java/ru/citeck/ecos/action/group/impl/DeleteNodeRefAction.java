@@ -18,7 +18,7 @@ import ru.citeck.ecos.remote.RestConnection;
  * @author Pavel Simonov
  */
 @Component
-public class DeleteNodeRefAction extends RecordsActionFactory<NodeRef> {
+public class DeleteNodeRefAction extends RecordsActionFactory<NodeRef, DeleteNodeRefAction.Action> {
 
     private static final Log logger = LogFactory.getLog(DeleteNodeRefAction.class);
 
@@ -42,16 +42,18 @@ public class DeleteNodeRefAction extends RecordsActionFactory<NodeRef> {
     }
 
     @Override
-    protected RecordsGroupAction<NodeRef> createLocalAction(GroupActionConfig config) {
+    protected Action createLocalAction(GroupActionConfig config) {
         return new Action(config);
     }
 
     @Override
-    protected GroupAction<RecordInfo<NodeRef>> createRemoteAction(GroupActionConfig config, RestConnection restConn) {
-        GroupActionConfig remoteConfig = new GroupActionConfig(config);
-        remoteConfig.setAsync(false);
+    protected GroupAction<RecordInfo<NodeRef>> createRemoteAction(Action localAction,
+                                                                  RestConnection restConn) {
+        GroupActionConfig targetConfig = new GroupActionConfig(localAction.getConfig());
+        targetConfig.setAsync(false);
+        GroupActionConfig remoteConfig = new GroupActionConfig(targetConfig);
         remoteConfig.setBatchSize(20);
-        return new RemoteGroupAction<>(remoteConfig, restConn, DEFAULT_GROUP_ACTION_METHOD, ACTION_ID, config);
+        return new RemoteGroupAction<>(remoteConfig, restConn, DEFAULT_GROUP_ACTION_METHOD, ACTION_ID, targetConfig);
     }
 
     class Action extends TxnGroupAction<RecordInfo<NodeRef>> implements RecordsGroupAction<NodeRef> {
