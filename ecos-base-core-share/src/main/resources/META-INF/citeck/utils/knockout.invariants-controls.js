@@ -265,6 +265,10 @@ ko.components.register("number", {
             var self = this;
 
             require(['citeck/utils/knockout.utils'], function(koutils) {
+                var Node = koutils.koclass('invariants.Node');
+                var paramNodeRef = Citeck.utils.getURLParameterByName("nodeRef");
+
+                var cardNode = paramNodeRef ? new Node(paramNodeRef) : null;
 
                 self.buttons = params["buttons"] || [];
                 self.buttons = self.buttons.map(function (button) {
@@ -299,7 +303,15 @@ ko.components.register("number", {
                     }
                 };
                 self.disabled = ko.computed(function() {
-                    return self.attribute.resolve("protected") || self.node.resolve("impl.invalid");
+                    var taskInvalid = self.attribute.resolve("protected") ||
+                        (self.node.resolve("impl.runtime.loaded") && self.node.resolve("impl.invalid"));
+                    if (taskInvalid) {
+                        return true;
+                    }
+                    return cardNode != null ? _.any(cardNode.resolve("impl.attributes"), function(attr) {
+                        return attr.mandatory() && attr.empty() && attr.relevant() && !attr.protected() ||
+                            attr.invalid();
+                    }) : false;
                 });
             });
         },
