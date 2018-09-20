@@ -688,7 +688,7 @@ define([
                         sData = {
                             data: sData,
                             nodeRef: oRecord._oData.nodeRef,
-                            displayName: sData.str
+                            displayName: sData.str || sData.toString()
                         };
                     } else {
                         if (!sData.hasOwnProperty('nodeRef')) {
