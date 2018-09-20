@@ -38,7 +38,8 @@
                 'citeck/components/document-children/document-children',
                 'citeck/components/document-children/button-panel',
                 'citeck/components/document-children/button-commands',
-                'citeck/components/orgstruct/form-dialogs'], function() {
+                'citeck/components/orgstruct/form-dialogs',
+                'citeck/components/dynamic-tree/dynamic-tree-picker'], function() {
 
                 <#if params.buttonsInHeader??>
                     (new Citeck.widget.ButtonPanel("${dcid}-heading-actions")).setOptions({
