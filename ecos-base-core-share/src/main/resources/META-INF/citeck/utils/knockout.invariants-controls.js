@@ -266,16 +266,7 @@ ko.components.register("number", {
 
             require(['citeck/utils/knockout.utils'], function(koutils) {
                 var Node = koutils.koclass('invariants.Node');
-                var paramNodeRef;
-                if (window.location.pathname.indexOf("card-details") != -1) {
-                    location.search
-                        .substr(1)
-                        .split("&")
-                        .forEach(function (item) {
-                            var tmp = item.split("=");
-                            if (tmp[0] === "nodeRef") paramNodeRef = decodeURIComponent(tmp[1]);
-                        });
-                }
+                var paramNodeRef = Citeck.utils.getURLParameterByName("nodeRef");
 
                 var cardNode = paramNodeRef ? new Node(paramNodeRef) : null;
 
@@ -314,10 +305,13 @@ ko.components.register("number", {
                 self.disabled = ko.computed(function() {
                     var taskInvalid = self.attribute.resolve("protected") ||
                         (self.node.resolve("impl.runtime.loaded") && self.node.resolve("impl.invalid"));
-                    var cardNodeInvalid = cardNode != null ? _.any(cardNode.resolve("impl.attributes"), function(attr) {
-                        return attr.mandatory() && attr.empty() && attr.relevant() && !attr.protected() || attr.invalid();
+                    if (taskInvalid) {
+                        return true;
+                    }
+                    return cardNode != null ? _.any(cardNode.resolve("impl.attributes"), function(attr) {
+                        return attr.mandatory() && attr.empty() && attr.relevant() && !attr.protected() ||
+                            attr.invalid();
                     }) : false;
-                    return cardNode == null ? taskInvalid : taskInvalid || cardNodeInvalid;
                 });
             });
         },
