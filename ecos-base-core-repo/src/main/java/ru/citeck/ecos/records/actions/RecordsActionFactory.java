@@ -1,6 +1,9 @@
 package ru.citeck.ecos.records.actions;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.action.group.impl.ResultsListener;
 import ru.citeck.ecos.records.RecordInfo;
@@ -14,9 +17,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public abstract class RecordsActionFactory<T, LocalAction extends GroupAction<RecordInfo<T>>>
-                                                          implements GroupActionFactory<RecordInfo<T>> {
+                                            implements GroupActionFactory<RecordInfo<T>> {
+
+    private static final Log logger = LogFactory.getLog(RecordsActionFactory.class);
 
     public static final String DEFAULT_GROUP_ACTION_METHOD = "alfresco/service/citeck/ecos/records-group-action";
+
+    @Value("${citeck.alfresco.server.id}")
+    private String serverId;
 
     private RecordsService recordsService;
 
@@ -29,6 +37,10 @@ public abstract class RecordsActionFactory<T, LocalAction extends GroupAction<Re
 
     protected GroupAction<RecordInfo<T>> createRemoteAction(LocalAction localAction, RestConnection restConn) {
         return null;
+    }
+
+    protected String getCurrentServerId() {
+        return serverId;
     }
 
     class Action implements GroupAction<RecordInfo<T>> {
@@ -98,6 +110,11 @@ public abstract class RecordsActionFactory<T, LocalAction extends GroupAction<Re
             Optional<RecordsDAO> recordsDAO = recordsService.getRecordsSource(id);
             if (recordsDAO.isPresent()) {
                 if (recordsDAO.get() instanceof RemoteRecordsDAO) {
+
+                    if (getCurrentServerId().isEmpty()) {
+                        logger.error("Server key is a empty string. Remote action is not allowed!");
+                        return Optional.empty();
+                    }
 
                     RemoteRecordsDAO remoteDAO = (RemoteRecordsDAO) recordsDAO.get();
                     RestConnection restConn = remoteDAO.getRestConnection();
