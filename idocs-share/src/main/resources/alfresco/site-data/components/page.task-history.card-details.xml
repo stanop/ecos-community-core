@@ -16,7 +16,7 @@
             {key: 'attributes["event:date"]'}, 
             {key: 'attributes["event:documentVersion"]'},
             {key: 'attributes["event:initiator"][0]'},
-            {key: 'attributes["event:taskPooledActors"][0]'},
+            {key: 'attributes["event:taskPooledActors"]'},
             {key: 'attributes["event:taskType"]'}, 
             {key: 'attributes["event:taskOutcome"]'},
             {key: 'attributes["event:taskComment"]'},

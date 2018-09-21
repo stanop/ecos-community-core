@@ -243,8 +243,15 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(), taskType != null ? taskType.getLocalName() : "");
         entryMap.put(FULL_TASK_TYPE, taskType != null ? taskType.toString() : "");
 
-        ArrayList<NodeRef> attachments = (ArrayList<NodeRef>) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_ATTACHMENTS);
-        entryMap.put(DocumentHistoryConstants.TASK_ATTACHMENTS.getValue(), Optional.ofNullable(attachments).orElse(new ArrayList<>()));
+        ArrayList<NodeRef> attachments = (ArrayList<NodeRef>) nodeService.getProperty(eventRef,
+                HistoryModel.PROP_TASK_ATTACHMENTS);
+        entryMap.put(DocumentHistoryConstants.TASK_ATTACHMENTS.getValue(),
+                Optional.ofNullable(attachments).orElse(new ArrayList<>()));
+
+        ArrayList<NodeRef> pooledActors = (ArrayList<NodeRef>) nodeService.getProperty(eventRef,
+                HistoryModel.PROP_TASK_POOLED_ACTORS);
+        entryMap.put(DocumentHistoryConstants.TASK_POOLED_ACTORS.getValue(),
+                Optional.ofNullable(pooledActors).orElse(new ArrayList<>()));
 
         /* Workflow */
         entryMap.put(WORKFLOW_INSTANCE_ID, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
