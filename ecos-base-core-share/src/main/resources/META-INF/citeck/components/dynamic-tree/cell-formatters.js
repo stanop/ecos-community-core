@@ -338,8 +338,15 @@ define([
                         nodeRefs.push(sData);
                     }
                     for(var i = 0; i < nodeRefs.length; i++) {
+                        var prepareNodeRef = function(data) {
+                            if (data instanceof Object) {
+                                return data.nodeRef;
+                            } else {
+                                return data;
+                            }
+                        };
                         Alfresco.util.Ajax.request({
-                            url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRefs[i],
+                            url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + prepareNodeRef(nodeRefs[i]),
                             successCallback: {
                                 scope: this,
                                 fn: function(response) {

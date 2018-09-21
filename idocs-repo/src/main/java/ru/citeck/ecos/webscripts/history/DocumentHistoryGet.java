@@ -193,7 +193,14 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
                     DocumentHistoryConstants.TASK_ATTACHMENTS.getValue());
             if (attachments != null) {
                 attributesNode.put(DocumentHistoryConstants.TASK_ATTACHMENTS.getKey(),
-                        createAttachmentsNodes(attachments));
+                        transformNodeRefsToArrayNode(attachments));
+            }
+
+            ArrayList<NodeRef> pooledActors = (ArrayList<NodeRef>) historyRecordMap.get(
+                    DocumentHistoryConstants.TASK_POOLED_ACTORS.getValue());
+            if (pooledActors != null) {
+                attributesNode.put(DocumentHistoryConstants.TASK_POOLED_ACTORS.getKey(),
+                        transformNodeRefsToArrayNode(pooledActors));
             }
 
             /* User */
@@ -212,16 +219,16 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         return resultObjectNode.toString();
     }
 
-    private ArrayNode createAttachmentsNodes(ArrayList<NodeRef> attachments) {
+    private ArrayNode transformNodeRefsToArrayNode(ArrayList<NodeRef> nodes) {
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayNode result = objectMapper.createArrayNode();
-        if (attachments == null || attachments.isEmpty()) {
+        if (nodes == null || nodes.isEmpty()) {
             return result;
         }
 
-        for (NodeRef attachment : attachments) {
+        for (NodeRef node : nodes) {
             ObjectNode attachmentNode = objectMapper.createObjectNode();
-            attachmentNode.put("nodeRef", attachment.toString());
+            attachmentNode.put("nodeRef", node.toString());
             result.add(attachmentNode);
         }
 
