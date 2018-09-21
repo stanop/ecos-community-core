@@ -20,6 +20,8 @@
                     }
                     var result = [];
                     if (parent) {
+                        //trigger attribute loading
+                        if (parent.impl) parent.impl().attribute('req:completenessLevels');
                         var levels = parent.assocs["req:completenessLevels"];
                         for (var i in levels) result.push(levels[i]);
                     }
@@ -39,6 +41,8 @@
                     }
                     var result = [];
                     if (parent) {
+                        //trigger attribute loading
+                        if (parent.impl) parent.impl().attribute('req:completenessLevels');
                         var levels = parent.assocs["req:completenessLevels"];
                         for (var i in levels) result.push(levels[i]);
                     }
