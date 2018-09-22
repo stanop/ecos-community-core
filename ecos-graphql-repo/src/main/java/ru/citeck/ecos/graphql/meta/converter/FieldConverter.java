@@ -36,7 +36,7 @@ public class FieldConverter<T> extends MetaConverter<Object> {
             valueClass = (Class<T>) fieldType;
         }
 
-        MetaAttr attrInfo = field.getAnnotation(MetaAttr.class);
+        MetaAtt attrInfo = field.getAnnotation(MetaAtt.class);
 
         if (attrInfo != null) {
             attName = attrInfo.name();

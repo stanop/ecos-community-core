@@ -28,4 +28,12 @@ public class SortBy {
     public boolean isAscending() {
         return ascending;
     }
+
+    @Override
+    public String toString() {
+        return "SortBy{" +
+                "attribute='" + attribute + '\'' +
+                ", ascending=" + ascending +
+                '}';
+    }
 }

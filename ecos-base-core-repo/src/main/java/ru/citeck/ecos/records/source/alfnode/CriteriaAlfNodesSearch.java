@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.query.*;
 import ru.citeck.ecos.search.*;
 
@@ -34,7 +35,7 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
     }
 
     @Override
-    public DaoRecordsResult queryRecords(RecordsQuery query, Long afterDbId) {
+    public RecordsResult queryRecords(RecordsQuery query, Long afterDbId) {
 
         SearchCriteria criteria = criteriaParser.parse(query.getQuery());
         criteria.setSkip(query.getSkipCount());
@@ -63,11 +64,11 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
 
         CriteriaSearchResults criteriaResults = searchService.query(criteria, SearchService.LANGUAGE_FTS_ALFRESCO);
 
-        DaoRecordsResult result = new DaoRecordsResult();
+        RecordsResult result = new RecordsResult();
 
         result.setRecords(criteriaResults.getResults()
                                          .stream()
-                                         .map(Object::toString)
+                                         .map(RecordRef::new)
                                          .collect(Collectors.toList()));
         result.setTotalCount(criteriaResults.getTotalCount());
         result.setHasMore(criteriaResults.hasMore());

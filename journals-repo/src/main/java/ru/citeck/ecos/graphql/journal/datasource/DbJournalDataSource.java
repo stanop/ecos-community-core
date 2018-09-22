@@ -123,16 +123,21 @@ public class DbJournalDataSource implements JournalDataSource {
 
         @Override
         public Optional<MetaAttribute> att(String name) {
-            return Optional.of(new Attribute(name, attributes.get(name)));
+            return Optional.of(new Att(name, attributes.get(name)));
+        }
+
+        @Override
+        public List<MetaAttribute> atts(String filter) {
+            return Collections.emptyList();
         }
     }
 
-    private class Attribute implements MetaAttribute {
+    private class Att implements MetaAttribute {
 
         private String name;
         private String value;
 
-        public Attribute(String name, String value) {
+        public Att(String name, String value) {
             this.name = name;
             this.value = value;
         }
@@ -169,6 +174,11 @@ public class DbJournalDataSource implements JournalDataSource {
         @Override
         public Optional<MetaAttribute> att(String name) {
             return Optional.empty();
+        }
+
+        @Override
+        public List<MetaAttribute> atts(String filter) {
+            return Collections.emptyList();
         }
     }
 }

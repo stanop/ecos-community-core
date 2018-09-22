@@ -1,6 +1,8 @@
 package ru.citeck.ecos.records;
 
+import org.alfresco.util.ParameterCheck;
 import ru.citeck.ecos.records.query.RecordsQuery;
+import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
 
 import java.util.*;
 
@@ -19,6 +21,14 @@ public class IterableRecords implements Iterable<RecordRef> {
         this.sourceId = sourceId;
         this.recordsQuery = recordsQuery;
         this.recordsService = recordsService;
+
+        ParameterCheck.mandatory("recordsService", recordsService);
+        ParameterCheck.mandatory("recordsQuery", recordsQuery);
+        ParameterCheck.mandatory("sourceId", sourceId);
+    }
+
+    public IterableRecords(RecordsQuery recordsQuery, RecordsService recordsService) {
+        this(recordsService, AlfNodesRecordsDAO.ID, recordsQuery);
     }
 
     @Override

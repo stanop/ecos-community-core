@@ -13,7 +13,7 @@ import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
-import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeAttribute;
+import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeAtt;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.journal.response.JournalData;
@@ -261,9 +261,9 @@ public class TaskStatisticDatasource implements JournalDataSource {
         return recordAttributes;
     }
 
-    private AlfNodeAttribute getAssocAttribute(GqlAlfNode node, String key, GqlContext context) {
+    private AlfNodeAtt getAssocAttribute(GqlAlfNode node, String key, GqlContext context) {
         Attribute initiatorAttr = node.attribute(key);
-        return new AlfNodeAttribute(initiatorAttr, context);
+        return new AlfNodeAtt(initiatorAttr, context);
     }
 
     @Override

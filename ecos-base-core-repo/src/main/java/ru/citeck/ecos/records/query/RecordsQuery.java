@@ -135,8 +135,11 @@ public class RecordsQuery {
                 "skipCount=" + skipCount +
                 ", maxItems=" + maxItems +
                 ", sortBy=" + sortBy +
-                ", afterId='" + afterId + '\'' +
+                ", afterId=" + afterId +
+                ", afterIdMode=" + afterIdMode +
                 ", consistency=" + consistency +
+                ", language='" + language + '\'' +
+                ", query='" + query + '\'' +
                 '}';
     }
 }

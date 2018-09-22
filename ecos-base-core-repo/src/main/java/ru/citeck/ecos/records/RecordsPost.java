@@ -16,8 +16,8 @@ public class RecordsPost extends AbstractWebScript {
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
-        RecordsQuery query = objectMapper.readValue(req.getContent().getContent(), RecordsQuery.class);
-        RecordsResult records = recordsService.getRecords(query);
+        Request request = objectMapper.readValue(req.getContent().getContent(), Request.class);
+        RecordsResult records = recordsService.getRecords(request.sourceId, request.query);
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getOutputStream(), records);
@@ -27,5 +27,19 @@ public class RecordsPost extends AbstractWebScript {
     @Autowired
     public void setRecordsService(RecordsService recordsService) {
         this.recordsService = recordsService;
+    }
+
+    public static class Request {
+
+        public RecordsQuery query;
+        public String sourceId = "";
+
+        @Override
+        public String toString() {
+            return "Request{" +
+                    "query=" + query +
+                    ", sourceId='" + sourceId + '\'' +
+                    '}';
+        }
     }
 }

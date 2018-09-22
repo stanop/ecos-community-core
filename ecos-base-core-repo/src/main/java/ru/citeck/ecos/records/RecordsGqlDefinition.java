@@ -18,14 +18,13 @@ public class RecordsGqlDefinition {
 
     @GraphQLField
     public static List<MetaValue> records(DataFetchingEnvironment env,
-                                          @GraphQLName("source") String source,
                                           @GraphQLName("refs") List<String> refs) {
 
         GqlContext context = env.getContext();
         RecordsService recordsService = context.getService(RECORDS_SERVICE_ID);
 
         return refs.stream()
-                   .map(r -> recordsService.getMetaValue(env.getContext(), source, r))
+                   .map(r -> recordsService.getMetaValue(context, new RecordRef(r)))
                    .flatMap( o -> o.map(Stream::of).orElseGet(Stream::empty))
                    .collect(Collectors.toList());
     }

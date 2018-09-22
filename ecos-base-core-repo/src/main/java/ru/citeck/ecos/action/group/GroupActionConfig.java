@@ -41,6 +41,10 @@ public class GroupActionConfig {
         getParams().set(key, TextNode.valueOf(value));
     }
 
+    public void setParam(String key, Boolean value) {
+        getParams().set(key, BooleanNode.valueOf(value));
+    }
+
     public void setPojoParam(String key, Object pojo) {
         getParams().set(key, JsonNodeFactory.instance.pojoNode(pojo));
     }
@@ -48,10 +52,10 @@ public class GroupActionConfig {
     @JsonIgnore
     public String getStrParam(String key) {
         JsonNode jsonNode = getParams().get(key);
-        if (jsonNode instanceof TextNode) {
-            return jsonNode.asText();
+        if (jsonNode == null || jsonNode instanceof NullNode) {
+            return null;
         }
-        return null;
+        return jsonNode.asText();
     }
 
     @JsonIgnore
@@ -66,6 +70,18 @@ public class GroupActionConfig {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public boolean getBoolParam(String key) {
+        return getBoolParam(key, false);
+    }
+
+    public boolean getBoolParam(String key, boolean def) {
+        JsonNode jsonNode = getParams().get(key);
+        if (jsonNode == null || jsonNode instanceof NullNode) {
+            return def;
+        }
+        return jsonNode.asBoolean(def);
     }
 
     public int getBatchSize() {

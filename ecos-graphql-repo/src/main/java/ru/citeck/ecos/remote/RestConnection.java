@@ -109,4 +109,12 @@ public class RestConnection {
             init();
         }
     }
+
+    @Override
+    public String toString() {
+        return "RestConnection{" +
+                "host='" + host + '\'' +
+                ", enabled=" + enabled +
+                '}';
+    }
 }

@@ -43,7 +43,7 @@ public class RecordsDataSource implements JournalDataSource {
 
         result.setRecords(recordsResult.records
                                        .stream()
-                                       .map(r -> recordsService.getMetaValue(context, r.getSourceId(), r.getId()))
+                                       .map(r -> recordsService.getMetaValue(context, r))
                                        .flatMap( o -> o.map(Stream::of).orElseGet(Stream::empty))
                                        .collect(Collectors.toList()));
 

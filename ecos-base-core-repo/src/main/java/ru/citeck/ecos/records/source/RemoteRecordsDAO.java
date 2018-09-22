@@ -12,12 +12,16 @@ import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.records.AttributeInfo;
-import ru.citeck.ecos.records.query.DaoRecordsResult;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.RecordsPost;
+import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.remote.RestConnection;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RemoteRecordsDAO extends AbstractRecordsDAO {
 
@@ -39,49 +43,59 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
     private String remoteSourceId = "";
 
     public RemoteRecordsDAO() {
-
-        metaBaseQuery = "records(source:\"" + remoteSourceId + "\",refs:[\"%s\"])";
-
         objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    @PostConstruct
+    public void init() {
+        metaBaseQuery = "records(refs:[\"%s\"])";
+    }
+
     @Override
-    public DaoRecordsResult queryRecords(RecordsQuery query) {
+    public RecordsResult queryRecords(RecordsQuery query) {
+
+        RecordsPost.Request request = new RecordsPost.Request();
+        request.sourceId = remoteSourceId;
+
         if (enabled) {
             try {
-                String postData = objectMapper.writeValueAsString(query);
-                DaoRecordsResult result = restConnection.jsonPost(recordsMethod, postData, DaoRecordsResult.class);
+
+                RecordRef afterId = query.getAfterId();
+                if (afterId != null) {
+                    request.query = new RecordsQuery(query);
+                    request.query.setAfterId(new RecordRef(afterId.getId()));
+                } else {
+                    request.query = query;
+                }
+
+                String postData = objectMapper.writeValueAsString(request);
+                RecordsResult result = restConnection.jsonPost(recordsMethod, postData, RecordsResult.class);
                 if (result != null) {
-                    return result;
+                    return result.addSourceId(getId());
                 }
             } catch (JsonProcessingException e) {
                 logger.error(e);
             }
         }
-        logger.error("queryRecords will return nothing");
-        return new DaoRecordsResult(query);
+        logger.error("[" + getId() + "] queryRecords will return nothing. " + request);
+        return new RecordsResult(query);
     }
 
     @Override
-    public Map<String, JsonNode> queryMeta(Collection<String> records, String gqlSchema) {
-        List<String> recordsRefs = new ArrayList<>(records);
+    public Map<RecordRef, JsonNode> queryMeta(Collection<RecordRef> records, String gqlSchema) {
+        List<String> recordsRefs = records.stream().map(RecordRef::getId).collect(Collectors.toList());
         String query = metaUtils.createQuery(metaBaseQuery, recordsRefs, gqlSchema);
         ExecutionResult executionResult = graphQLService.execute(restConnection, graphqlMethod, query, null);
-        return metaUtils.convertMeta(recordsRefs, executionResult);
+        return RecordsUtils.convertToRefs(getId(), metaUtils.convertMeta(recordsRefs, executionResult));
     }
 
     @Override
-    public <V> Map<String, V> queryMeta(Collection<String> records, Class<V> metaClass) {
-        List<String> recordsRefs = new ArrayList<>(records);
+    public <V> Map<RecordRef, V> queryMeta(Collection<RecordRef> records, Class<V> metaClass) {
+        List<String> recordsRefs = records.stream().map(RecordRef::getId).collect(Collectors.toList());
         String query = metaUtils.createQuery(metaBaseQuery, recordsRefs, metaClass);
         ExecutionResult executionResult = graphQLService.execute(restConnection, graphqlMethod, query, null);
-        return metaUtils.convertMeta(recordsRefs, executionResult, metaClass);
-    }
-
-    @Override
-    public Optional<AttributeInfo> getAttributeInfo(String name) {
-        return Optional.empty();
+        return RecordsUtils.convertToRefs(getId(), metaUtils.convertMeta(recordsRefs, executionResult, metaClass));
     }
 
     @Override

@@ -8,12 +8,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MetaExplicitAttribute implements MetaAttribute {
+public class MetaExplicitAtt implements MetaAttribute {
 
     private String name;
     private List<MetaValue> values;
 
-    public MetaExplicitAttribute(String name, Object value) {
+    public MetaExplicitAtt(String name, Object value) {
         this.name = name;
         if (value instanceof Collection) {
             values = ((Collection<?>) value).stream()

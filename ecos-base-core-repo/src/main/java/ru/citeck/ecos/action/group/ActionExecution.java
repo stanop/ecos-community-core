@@ -1,10 +1,16 @@
 package ru.citeck.ecos.action.group;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ActionExecution<T> {
+
+    private static final Log logger = LogFactory.getLog(ActionExecution.class);
 
     private Iterable<T> nodes;
     private GroupAction<T> action;
@@ -32,13 +38,19 @@ public class ActionExecution<T> {
             throw new IllegalStateException("Execution already started! " + toString());
         }
 
-        for (T ref : nodes) {
-            action.process(ref);
-            if (cancelled) {
-                break;
-            }
-            if (isTimeoutReached()) {
-                throw new RuntimeException("Action timeout is reached. " + toString());
+        Iterator<T> it = nodes.iterator();
+        boolean hasNext = it.hasNext();
+        while (hasNext) {
+            try {
+                action.process(it.next());
+                if (isTimeoutReached()) {
+                    throw new RuntimeException("Action timeout is reached. " + toString());
+                }
+                hasNext = it.hasNext();
+            } catch (Exception e) {
+                cancelled = true;
+                hasNext = false;
+                logger.error("Error while action executed. Action: " + action, e);
             }
         }
         return cancelled ? action.cancel() : action.complete();

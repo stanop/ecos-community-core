@@ -10,17 +10,14 @@ import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.actions.RecordsActionFactory;
-import ru.citeck.ecos.records.query.DaoRecordsResult;
-import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.source.RecordsDAO;
-import ru.citeck.ecos.records.source.RecordsDAODelegate;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 @Service
 public class RecordsServiceImpl implements RecordsService {
@@ -37,15 +34,7 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public RecordsResult getRecords(String sourceId, RecordsQuery query) {
-        RecordsDAO source = needRecordsSource(sourceId);
-        DaoRecordsResult result = source.queryRecords(query);
-        Function<String, RecordRef> refMapping;
-        if (source instanceof RecordsDAODelegate) {
-            refMapping = RecordRef::new;
-        } else {
-            refMapping = id -> new RecordRef(source.getId(), id);
-        }
-        return new RecordsResult(result, refMapping);
+        return needRecordsSource(sourceId).queryRecords(query);
     }
 
     @Override
@@ -65,23 +54,9 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public Optional<MetaValue> getMetaValue(GqlContext context, String source, String id) {
-        return needRecordsSource(source).getMetaValue(context, id);
-    }
-
-    @Override
     public Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef) {
-        return getMetaValue(context, recordRef.getSourceId(), recordRef.getId());
-    }
-
-    @Override
-    public Optional<AttributeInfo> getAttributeInfo(String source, String name) {
-        return needRecordsSource(source).getAttributeInfo(name);
-    }
-
-    @Override
-    public Optional<AttributeInfo> getAttributeInfo(RecordRef recordRef) {
-        return getAttributeInfo(recordRef.getSourceId(), recordRef.getId());
+        RecordsDAO recordsDAO = needRecordsSource(recordRef.getSourceId());
+        return recordsDAO.getMetaValue(context, recordRef.getId());
     }
 
     @Override
@@ -133,14 +108,13 @@ public class RecordsServiceImpl implements RecordsService {
 
     private <T> Map<RecordRef, T> getMeta(Collection<RecordRef> records,
                                           BiFunction<RecordsDAO,
-                                                     Set<String>, Map<String, T>> getMeta) {
+                                                     Set<RecordRef>, Map<RecordRef, T>> getMeta) {
 
         Map<RecordRef, T> result = new HashMap<>();
 
         RecordsUtils.groupRefBySource(records).forEach((sourceId, sourceRecords) -> {
             RecordsDAO source = needRecordsSource(sourceId);
-            Map<String, T> recordsMeta = getMeta.apply(source, sourceRecords);
-            recordsMeta.forEach((k, v) -> result.put(new RecordRef(source.getId(), k), v));
+            result.putAll(getMeta.apply(source, sourceRecords));
         });
 
         return result;
@@ -148,6 +122,9 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public Optional<RecordsDAO> getRecordsSource(String sourceId) {
+        if (sourceId == null) {
+            sourceId = "";
+        }
         return Optional.ofNullable(sources.get(sourceId));
     }
 

@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.query.*;
 
 import java.util.Arrays;
@@ -45,7 +46,7 @@ public class SearchServiceAlfNodesSearch {
         recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_XPATH));
     }
 
-    private DaoRecordsResult queryRecordsImpl(RecordsQuery recordsQuery, Long afterDbId) {
+    private RecordsResult queryRecordsImpl(RecordsQuery recordsQuery, Long afterDbId) {
 
         String query = recordsQuery.getQuery();
 
@@ -92,10 +93,10 @@ public class SearchServiceAlfNodesSearch {
 
             resultSet = searchService.query(searchParameters);
 
-            DaoRecordsResult result = new DaoRecordsResult();
+            RecordsResult result = new RecordsResult();
             result.setRecords(resultSet.getNodeRefs()
                                        .stream()
-                                       .map(Object::toString)
+                                       .map(RecordRef::new)
                                        .collect(Collectors.toList()));
             result.setQuery(recordsQuery);
             result.setHasMore(resultSet.hasMore());
@@ -121,7 +122,7 @@ public class SearchServiceAlfNodesSearch {
         }
 
         @Override
-        public DaoRecordsResult queryRecords(RecordsQuery query, Long afterDbId) {
+        public RecordsResult queryRecords(RecordsQuery query, Long afterDbId) {
             return queryRecordsImpl(query, afterDbId);
         }
 

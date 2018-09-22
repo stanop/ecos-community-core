@@ -11,14 +11,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class MetaReflectionAttribute implements MetaAttribute {
+public class MetaReflectionAtt implements MetaAttribute {
 
-    private static final Log logger = LogFactory.getLog(MetaReflectionAttribute.class);
+    private static final Log logger = LogFactory.getLog(MetaReflectionAtt.class);
 
     private Object object;
     private String method;
 
-    public MetaReflectionAttribute(Object object, String method) {
+    public MetaReflectionAtt(Object object, String method) {
         if (object instanceof Optional) {
             this.object = ((Optional<?>) object).orElse(null);
         } else {

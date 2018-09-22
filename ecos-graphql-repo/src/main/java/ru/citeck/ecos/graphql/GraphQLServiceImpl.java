@@ -108,7 +108,14 @@ public class GraphQLServiceImpl implements GraphQLService {
         request.query = query;
         request.variables = variables;
 
-        return parseRawResult(restConn.jsonPost(url, request, ObjectNode.class));
+        ObjectNode result = restConn.jsonPost(url, request, ObjectNode.class);
+        if (result == null) {
+            logger.error("connection.jsonPost result is null! " +
+                         "Seems that remote request was failed. Return null. " +
+                         "Connection: " + restConn + " URL: " + url + " Query: " + query + " variables: " + variables);
+            return null;
+        }
+        return parseRawResult(result);
     }
 
     private ExecutionResult parseRawResult(ObjectNode resultNode) {
