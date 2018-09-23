@@ -68,6 +68,11 @@ public abstract class RecordsActionFactory<T, LocalAction extends GroupAction<Re
             }
         }
 
+        @Override
+        public void onError(Throwable error) {
+            localAction.onError(error);
+        }
+
         private void setStatus(List<RecordInfo<T>> nodes, String message) {
             ActionStatus status = new ActionStatus(ActionStatus.STATUS_ERROR);
             status.setMessage(message);

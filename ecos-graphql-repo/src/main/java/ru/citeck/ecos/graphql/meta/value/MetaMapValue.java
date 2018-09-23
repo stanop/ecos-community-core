@@ -8,7 +8,7 @@ import java.util.*;
 public class MetaMapValue implements MetaValue {
 
     private String id;
-    private Map<String, Object> attributes;
+    private Map<String, Object> attributes = Collections.emptyMap();
 
     public MetaMapValue(String id) {
         this.id = id;

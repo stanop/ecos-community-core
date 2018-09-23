@@ -81,10 +81,21 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
             transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
                 onProcessedInTxn(actionResults);
                 return null;
-            });
+            }, false, true);
         } catch (Exception e) {
             throw new RuntimeException(getClass() + " onProcessed error. Results: " + actionResults);
         }
+    }
+
+    @Override
+    public final void onError(Throwable error) {
+        transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
+            onErrorInTxn(error);
+            return null;
+        });
+    }
+
+    protected void onErrorInTxn(Throwable error) {
     }
 
     protected void onProcessedInTxn(List<ActionResult<T>> results) {

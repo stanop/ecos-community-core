@@ -64,6 +64,12 @@ public class GroupActionConfig {
         if (jsonNode == null || jsonNode instanceof NullNode) {
             return null;
         }
+        if (jsonNode instanceof POJONode) {
+            Object pojo = ((POJONode) jsonNode).getPojo();
+            if (pojo != null && clazz.isAssignableFrom(pojo.getClass())) {
+                return (T) pojo;
+            }
+        }
         try {
             return mapper.treeToValue(jsonNode, clazz);
         } catch (JsonProcessingException e) {

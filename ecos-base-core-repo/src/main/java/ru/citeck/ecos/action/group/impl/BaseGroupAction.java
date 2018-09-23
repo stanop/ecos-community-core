@@ -5,6 +5,7 @@ import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupAction;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -46,6 +47,10 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
     public List<ActionResult<T>> cancel() {
         onCancel();
         return output;
+    }
+
+    @Override
+    public void onError(Throwable error) {
     }
 
     @Override

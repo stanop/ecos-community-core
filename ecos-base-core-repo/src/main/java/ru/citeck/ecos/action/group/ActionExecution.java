@@ -3,6 +3,7 @@ package ru.citeck.ecos.action.group;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -30,30 +31,43 @@ public class ActionExecution<T> {
 
     List<ActionResult<T>> run() {
 
-        startedTime = System.currentTimeMillis();
-        long timeout = action.getTimeout();
-        timeoutTime = timeout > 0 ? startedTime + timeout : Long.MAX_VALUE;
+        try {
+            startedTime = System.currentTimeMillis();
+            long timeout = action.getTimeout();
+            timeoutTime = timeout > 0 ? startedTime + timeout : Long.MAX_VALUE;
 
-        if (!started.compareAndSet(false, true)) {
-            throw new IllegalStateException("Execution already started! " + toString());
-        }
+            if (!started.compareAndSet(false, true)) {
+                throw new IllegalStateException("Execution already started! " + toString());
+            }
 
-        Iterator<T> it = nodes.iterator();
-        boolean hasNext = it.hasNext();
-        while (hasNext) {
-            try {
-                action.process(it.next());
-                if (isTimeoutReached()) {
-                    throw new RuntimeException("Action timeout is reached. " + toString());
+            Iterator<T> it = nodes.iterator();
+            boolean hasNext = it.hasNext();
+            while (hasNext) {
+                try {
+                    action.process(it.next());
+                    if (isTimeoutReached()) {
+                        throw new RuntimeException("Action timeout is reached. " + toString());
+                    }
+                    hasNext = it.hasNext();
+                } catch (Exception e) {
+                    cancelled = true;
+                    hasNext = false;
+                    logger.error("Error while action executed. Action: " + action, e);
+                    try {
+                        action.onError(e);
+                    } catch (Exception ex) {
+                        logger.error("Error in error handler. Action: " + action, ex);
+                    }
                 }
-                hasNext = it.hasNext();
-            } catch (Exception e) {
-                cancelled = true;
-                hasNext = false;
-                logger.error("Error while action executed. Action: " + action, e);
+            }
+            return cancelled ? action.cancel() : action.complete();
+        } finally {
+            try {
+                action.close();
+            } catch (IOException e) {
+                //do nothing
             }
         }
-        return cancelled ? action.cancel() : action.complete();
     }
 
     public void cancel() {
