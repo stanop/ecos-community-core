@@ -1338,40 +1338,39 @@ define([
         },
 
         overdueNodeRef: function(propertyName) {
-            return function(elCell, oRecord, oColumn, sData) {
-                if(!sData) {
+            return function (elCell, oRecord, oColumn, sData) {
+                if (!sData) {
                     elCell.innerHTML = "";
                     return;
                 }
-                else
-                {
+                else {
                     Alfresco.util.Ajax.request({
-                        url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + oRecord._oData.nodeRef,
+                        url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + oRecord._oData.nodeRef + "&props="
+                            + propertyName + "&assocs=null&childAssocs=null&children=null",
                         successCallback: {
                             scope: this,
-                            fn: function(response) {
+                            fn: function (response) {
                                 if (response.json && response.json.props) {
                                     propValue = response.json.props[propertyName];
-                                    var now = new Date();
-                                    if(propValue && propValue==true)
-                                    {
-                                            Dom.addClass(elCell.parentElement.parentElement, "yui-overdue-node");
-                                            var currentElement = elCell.parentElement.nextElementSibling;
-                                            while(currentElement!=null)
-                                            {
-                                                if(currentElement.children[0] && currentElement.children[0].children[0] && currentElement.children[0].children[0].localName=="a")
-                                                {
-                                                    for(var i=0; i<currentElement.children[0].children.length; i++)
-                                                    {
-                                                        Dom.addClass(currentElement.children[0].children[i], "yui-overdue-node");
-                                                    }
+                                    if (propValue && propValue == true) {
+                                        Dom.addClass(elCell.parentElement.parentElement, "yui-overdue-node");
+                                        var currentElement = elCell.parentElement.nextElementSibling;
+                                        while (currentElement != null) {
+                                            if (currentElement.children[0] && currentElement.children[0].children[0]
+                                                && currentElement.children[0].children[0].localName == "a") {
+                                                for (var i = 0; i < currentElement.children[0].children.length; i++) {
+                                                    Dom.addClass(currentElement.children[0].children[i], "yui-overdue-node");
                                                 }
-                                                currentElement=currentElement.nextElementSibling;
                                             }
+                                            currentElement = currentElement.nextElementSibling;
+                                        }
                                     }
                                 }
                             }
-                        }, failureCallback: { scope: this, fn: function(response) {} }, execScripts: true
+                        }, failureCallback: {
+                            scope: this, fn: function (response) {
+                            }
+                        }, execScripts: true
                     });
                 }
                 elCell.innerHTML = sData.hasOwnProperty('str') ? sData.str : sData;
