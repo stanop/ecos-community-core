@@ -18,7 +18,7 @@ public class RecordsQuery {
     private List<SortBy> sortBy = Collections.emptyList();
     private RecordRef afterId;
     private boolean afterIdMode = false;
-    private QueryConsistency consistency;
+    private QueryConsistency consistency = QueryConsistency.DEFAULT;
     private String language = SearchService.LANGUAGE_FTS_ALFRESCO;
     private String query;
 

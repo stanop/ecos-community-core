@@ -18,20 +18,20 @@ public interface GroupActionService {
      * Raw group action execution
      * Warning! Transaction splitting is not performed by service. Is is responsibility of GroupAction
      */
-    <T> List<ActionResult<T>> execute(Iterable<T> nodes,
-                                      GroupAction<T> action);
+    <T> ActionResults<T> execute(Iterable<T> nodes,
+                                 GroupAction<T> action);
 
-    <T> List<ActionResult<T>> execute(Iterable<T> nodes,
-                                      Consumer<T> action,
-                                      GroupActionConfig config);
+    <T> ActionResults<T> execute(Iterable<T> nodes,
+                                 Consumer<T> action,
+                                 GroupActionConfig config);
 
-    <T> List<ActionResult<T>> execute(Iterable<T> nodes,
-                                      Function<T, ActionStatus> action,
-                                      GroupActionConfig config);
+    <T> ActionResults<T> execute(Iterable<T> nodes,
+                                 Function<T, ActionStatus> action,
+                                 GroupActionConfig config);
 
-    <T> List<ActionResult<T>> execute(Iterable<T> nodes,
-                                      String actionId,
-                                      GroupActionConfig config);
+    <T> ActionResults<T> execute(Iterable<T> nodes,
+                                 String actionId,
+                                 GroupActionConfig config);
 
     <T> GroupAction<T> createAction(String actionId, GroupActionConfig config);
 

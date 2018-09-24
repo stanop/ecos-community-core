@@ -2,11 +2,11 @@ package ru.citeck.ecos.action.group;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.action.group.impl.ManualCancelException;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ActionExecution<T> {
@@ -16,12 +16,13 @@ public class ActionExecution<T> {
     private Iterable<T> nodes;
     private GroupAction<T> action;
 
-    private boolean cancelled = false;
     private AtomicBoolean started = new AtomicBoolean();
 
     private long startedTime;
     private long timeoutTime;
     private String author;
+
+    private Throwable cancelCause;
 
     ActionExecution(Iterable<T> nodes, GroupAction<T> action, String author) {
         this.nodes = nodes;
@@ -29,7 +30,7 @@ public class ActionExecution<T> {
         this.author = author;
     }
 
-    List<ActionResult<T>> run() {
+    ActionResults<T> run() {
 
         try {
             startedTime = System.currentTimeMillis();
@@ -42,7 +43,7 @@ public class ActionExecution<T> {
 
             Iterator<T> it = nodes.iterator();
             boolean hasNext = it.hasNext();
-            while (hasNext) {
+            while (cancelCause == null && hasNext) {
                 try {
                     action.process(it.next());
                     if (isTimeoutReached()) {
@@ -50,17 +51,11 @@ public class ActionExecution<T> {
                     }
                     hasNext = it.hasNext();
                 } catch (Exception e) {
-                    cancelled = true;
-                    hasNext = false;
+                    cancelCause = e;
                     logger.error("Error while action executed. Action: " + action, e);
-                    try {
-                        action.onError(e);
-                    } catch (Exception ex) {
-                        logger.error("Error in error handler. Action: " + action, ex);
-                    }
                 }
             }
-            return cancelled ? action.cancel() : action.complete();
+            return cancelCause != null ? action.cancel(cancelCause) : action.complete();
         } finally {
             try {
                 action.close();
@@ -71,7 +66,7 @@ public class ActionExecution<T> {
     }
 
     public void cancel() {
-        cancelled = true;
+        cancelCause = new ManualCancelException();
     }
 
     public long getStartedTime() {

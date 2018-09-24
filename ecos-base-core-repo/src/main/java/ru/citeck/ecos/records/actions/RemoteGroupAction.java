@@ -53,7 +53,7 @@ public class RemoteGroupAction<T> extends BaseGroupAction<RecordInfo<T>> {
         List<ActionResult<RecordInfo<T>>> results = new ArrayList<>();
 
         if (response != null) {
-            for (ActionResult<RecordRef> result : response.results) {
+            for (ActionResult<RecordRef> result : response.results.getResults()) {
                 RecordInfo<T> info = infoMapping.get(result.getData());
                 results.add(new ActionResult<>(info, result.getStatus()));
             }

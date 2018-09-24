@@ -68,11 +68,6 @@ public abstract class RecordsActionFactory<T, LocalAction extends GroupAction<Re
             }
         }
 
-        @Override
-        public void onError(Throwable error) {
-            localAction.onError(error);
-        }
-
         private void setStatus(List<RecordInfo<T>> nodes, String message) {
             ActionStatus status = new ActionStatus(ActionStatus.STATUS_ERROR);
             status.setMessage(message);
@@ -82,15 +77,23 @@ public abstract class RecordsActionFactory<T, LocalAction extends GroupAction<Re
         }
 
         @Override
-        public List<ActionResult<RecordInfo<T>>> complete() {
-            actionsBySource.values().forEach(opt -> opt.ifPresent(GroupAction::complete));
+        public ActionResults<RecordInfo<T>> complete() {
+            actionsBySource.values()
+                           .stream()
+                           .filter(a -> a.isPresent() && a.get() != localAction)
+                           .map(Optional::get)
+                           .forEach(GroupAction::complete);
             return localAction.complete();
         }
 
         @Override
-        public List<ActionResult<RecordInfo<T>>> cancel() {
-            actionsBySource.values().forEach(opt -> opt.ifPresent(GroupAction::cancel));
-            return localAction.cancel();
+        public ActionResults<RecordInfo<T>> cancel(Throwable cause) {
+            actionsBySource.values()
+                           .stream()
+                           .filter(a -> a.isPresent() && a.get() != localAction)
+                           .map(Optional::get)
+                           .forEach(a -> a.cancel(cause));
+            return localAction.cancel(cause);
         }
 
         @Override

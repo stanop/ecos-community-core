@@ -6,6 +6,7 @@ import org.alfresco.repo.jscript.ValueConverter;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.group.ActionResult;
+import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
@@ -65,10 +66,10 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
         return resultList;
     }
 
-    private static <T> ActionResult<T>[] toArray(List<ActionResult<T>> results) {
+    private static <T> ActionResult<T>[] toArray(ActionResults<T> results) {
         @SuppressWarnings("unchecked")
-        ActionResult<T>[] result = new ActionResult[results.size()];
-        return results.toArray(result);
+        ActionResult<T>[] result = new ActionResult[results.getResults().size()];
+        return results.getResults().toArray(result);
     }
 
     private static <T> T convertConfig(Object config, Class<T> type) {

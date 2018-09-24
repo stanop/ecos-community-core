@@ -2,14 +2,16 @@ package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
-import ru.citeck.ecos.action.group.ActionResult;
+import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 public class RecordsGroupActionPost extends AbstractWebScript {
@@ -30,13 +32,25 @@ public class RecordsGroupActionPost extends AbstractWebScript {
 
         Response response = new Response();
 
-        response.results = recordsService.executeAction(actionData.nodes,
-                                                        actionData.actionId,
-                                                        actionData.config);
+        try (Writer writer = res.getWriter()) {
+            try {
+                response.results = recordsService.executeAction(actionData.nodes,
+                        actionData.actionId,
+                        actionData.config);
 
-        res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
-        objectMapper.writeValue(res.getOutputStream(), response);
-        res.setStatus(Status.STATUS_OK);
+                res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
+                objectMapper.writeValue(writer, response);
+                res.setStatus(Status.STATUS_OK);
+            } catch (Exception e) {
+                Throwable retryCause = RetryingTransactionHelper.extractRetryCause(e);
+                if (retryCause != null) {
+                    throw e;
+                }
+                logger.error(e);
+                writer.write(e.getMessage());
+                res.setStatus(Status.STATUS_INTERNAL_SERVER_ERROR);
+            }
+        }
     }
 
     @Autowired
@@ -61,6 +75,6 @@ public class RecordsGroupActionPost extends AbstractWebScript {
     }
 
     public static class Response {
-        public List<ActionResult<RecordRef>> results;
+        public ActionResults<RecordRef> results;
     }
 }

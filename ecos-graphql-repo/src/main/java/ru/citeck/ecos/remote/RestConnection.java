@@ -30,6 +30,8 @@ public class RestConnection {
 
     private String host;
 
+    private long timeoutMs = 5 * 1000 * 60;
+
     private boolean enabled = false;
     private boolean initialized = false;
 
@@ -56,6 +58,7 @@ public class RestConnection {
         HttpClient client = new HttpClient();
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
         client.getState().setCredentials(AuthScope.ANY, credentials);
+        client.getParams().setConnectionManagerTimeout(timeoutMs);
         return new CommonsClientHttpRequestFactory(client);
     }
 
@@ -98,6 +101,10 @@ public class RestConnection {
 
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public void setTimeoutMs(long timeoutMs) {
+        this.timeoutMs = timeoutMs;
     }
 
     public void setEnabled(boolean enabled) {

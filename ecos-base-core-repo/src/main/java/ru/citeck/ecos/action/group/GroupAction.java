@@ -13,11 +13,9 @@ public interface GroupAction<T> extends ResultsListener<T>, Closeable {
 
     void process(T nodeId);
 
-    List<ActionResult<T>> complete();
+    ActionResults<T> complete();
 
-    List<ActionResult<T>> cancel();
-
-    void onError(Throwable error);
+    ActionResults<T> cancel(Throwable cause);
 
     boolean isAsync();
 

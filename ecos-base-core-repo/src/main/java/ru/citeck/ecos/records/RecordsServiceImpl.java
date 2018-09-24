@@ -3,10 +3,7 @@ package ru.citeck.ecos.records;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.citeck.ecos.action.group.ActionResult;
-import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.action.group.GroupActionFactory;
-import ru.citeck.ecos.action.group.GroupActionService;
+import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.actions.RecordsActionFactory;
@@ -60,12 +57,12 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public List<ActionResult<RecordRef>> executeAction(RecordsQuery query, String actionId, GroupActionConfig config) {
+    public ActionResults<RecordRef> executeAction(RecordsQuery query, String actionId, GroupActionConfig config) {
         return executeAction("", query, actionId, config);
     }
 
     @Override
-    public List<ActionResult<RecordRef>> executeAction(String source,
+    public ActionResults<RecordRef> executeAction(String source,
                                                        RecordsQuery query,
                                                        String actionId,
                                                        GroupActionConfig config) {
@@ -75,9 +72,9 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public List<ActionResult<RecordRef>> executeAction(Iterable<RecordRef> records,
-                                                       String actionId,
-                                                       GroupActionConfig config) {
+    public ActionResults<RecordRef> executeAction(Iterable<RecordRef> records,
+                                                  String actionId,
+                                                  GroupActionConfig config) {
 
         Optional<GroupActionFactory<Object>> actionFactory = groupActionService.getActionFactory(actionId);
 
@@ -92,13 +89,19 @@ public class RecordsServiceImpl implements RecordsService {
             Class<?> metaType = (Class) type.getActualTypeArguments()[0];
 
             IterableRecordsMeta recordsWithMeta = new IterableRecordsMeta<>(records, this, metaType);
-            List<ActionResult<RecordInfo<?>>> actionResult =
+            ActionResults<RecordInfo<?>> actionResult =
                     groupActionService.execute(recordsWithMeta, actionId, config);
 
             List<ActionResult<RecordRef>> results = new ArrayList<>();
-            actionResult.forEach(r -> results.add(new ActionResult<>(r.getData().getRef(), r.getStatus())));
+            actionResult.getResults().forEach(r ->
+                    results.add(new ActionResult<>(r.getData().getRef(), r.getStatus())));
 
-            return results;
+            ActionResults<RecordRef> result = new ActionResults<>();
+            result.setResults(results);
+            result.setErrorsCount(actionResult.getErrorsCount());
+            result.setProcessedCount(actionResult.getProcessedCount());
+
+            return result;
 
         } else {
 

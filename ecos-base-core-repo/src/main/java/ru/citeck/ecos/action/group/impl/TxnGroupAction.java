@@ -1,6 +1,5 @@
 package ru.citeck.ecos.action.group.impl;
 
-import graphql.ExceptionWhileDataFetching;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.logging.Log;
@@ -85,17 +84,6 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
         } catch (Exception e) {
             throw new RuntimeException(getClass() + " onProcessed error. Results: " + actionResults);
         }
-    }
-
-    @Override
-    public final void onError(Throwable error) {
-        transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
-            onErrorInTxn(error);
-            return null;
-        });
-    }
-
-    protected void onErrorInTxn(Throwable error) {
     }
 
     protected void onProcessedInTxn(List<ActionResult<T>> results) {

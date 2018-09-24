@@ -38,7 +38,7 @@ public class GroupActionServiceImpl implements GroupActionService {
         activeActions = Collections.newSetFromMap(new ConcurrentHashMap<>());
     }
 
-    private <T> List<ActionResult<T>> executeImpl(ActionExecution<T> execution) {
+    private <T> ActionResults<T> executeImpl(ActionExecution<T> execution) {
         if (activeActions.add(execution)) {
             try {
                 return execution.run();
@@ -51,7 +51,7 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public <T> List<ActionResult<T>> execute(Iterable<T> nodes, GroupAction<T> action) {
+    public <T> ActionResults<T> execute(Iterable<T> nodes, GroupAction<T> action) {
 
         String author = AuthenticationUtil.getFullyAuthenticatedUser();
         ActionExecution<T> execution = new ActionExecution<>(nodes, action, author);
@@ -81,7 +81,7 @@ public class GroupActionServiceImpl implements GroupActionService {
                 }
             });
 
-            return Collections.emptyList();
+            return new ActionResults<>();
 
         } else {
 
@@ -90,7 +90,7 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public <T> List<ActionResult<T>> execute(Iterable<T> nodes,
+    public <T> ActionResults<T> execute(Iterable<T> nodes,
                                              Consumer<T> action,
                                              GroupActionConfig config) {
 
@@ -98,7 +98,7 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public <T> List<ActionResult<T>> execute(Iterable<T> nodes,
+    public <T> ActionResults<T> execute(Iterable<T> nodes,
                                              Function<T, ActionStatus> action,
                                              GroupActionConfig config) {
 
@@ -106,7 +106,7 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public <T> List<ActionResult<T>> execute(Iterable<T> nodes,
+    public <T> ActionResults<T> execute(Iterable<T> nodes,
                                              String actionId,
                                              GroupActionConfig config) {
 

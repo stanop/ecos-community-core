@@ -47,6 +47,6 @@ public class GroupActionPost extends AbstractWebScript {
     public static class Response<T> {
         @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,
                       include = JsonTypeInfo.As.WRAPPER_OBJECT)
-        public List<ActionResult<T>> results;
+        public ActionResults<T> results;
     }
 }

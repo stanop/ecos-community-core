@@ -1,11 +1,7 @@
 package ru.citeck.ecos.action.group.impl;
 
-import ru.citeck.ecos.action.group.ActionResult;
-import ru.citeck.ecos.action.group.ActionStatus;
-import ru.citeck.ecos.action.group.GroupAction;
-import ru.citeck.ecos.action.group.GroupActionConfig;
+import ru.citeck.ecos.action.group.*;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -17,7 +13,9 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
     private final List<ActionResult<T>> output = new ArrayList<>();
 
     protected final GroupActionConfig config;
+
     private int errorsCount = 0;
+    private int processedCount = 0;
 
     private List<ResultsListener<T>> listeners = new ArrayList<>();
 
@@ -35,22 +33,31 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
     }
 
     @Override
-    public final List<ActionResult<T>> complete() {
+    public final ActionResults<T> complete() {
         if (input.size() > 0) {
             processNodes();
         }
         onComplete();
-        return output;
+
+        ActionResults<T> results = new ActionResults<>();
+        results.setResults(output);
+        results.setErrorsCount(errorsCount);
+        results.setProcessedCount(processedCount);
+
+        return results;
     }
 
     @Override
-    public List<ActionResult<T>> cancel() {
-        onCancel();
-        return output;
-    }
+    public ActionResults<T> cancel(Throwable cause) {
+        onCancel(cause);
 
-    @Override
-    public void onError(Throwable error) {
+        ActionResults<T> results = new ActionResults<>();
+        results.setResults(output);
+        results.setErrorsCount(errorsCount);
+        results.setProcessedCount(processedCount);
+        results.setCancelCause(cause);
+
+        return results;
     }
 
     @Override
@@ -84,19 +91,20 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
         }
         int maxErrors = config.getMaxErrors();
         if (maxErrors > 0 && errorsCount >= maxErrors) {
-            throw new RuntimeException("Group action max errors limit is reached! " + toString());
+            throw new ErrorsLimitReachedException("Group action max errors limit is reached! " + toString());
         }
     }
 
     private void processNodes() {
         processNodesImpl(input);
+        processedCount += input.size();
         input.clear();
     }
 
     protected void onComplete() {
     }
 
-    protected void onCancel() {
+    protected void onCancel(Throwable cause) {
     }
 
     protected void processNodesImpl(List<T> nodes) {
