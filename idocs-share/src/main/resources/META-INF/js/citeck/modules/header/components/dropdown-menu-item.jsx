@@ -1,22 +1,18 @@
 import React from "react";
 import { pure } from 'recompose';
-import { MenuItem, Image } from 'react-bootstrap';
+import { MenuItem } from 'react-bootstrap';
 import { t } from 'js/citeck/modules/header/misc/util';
+import handleControl from '../misc/handle-control';
 
 const DropDownMenuItem = ({ key, data }) => {
-    const { id, targetUrl, image, iconClass, label, clickEvent, target, publishTopic, publishPayload } = data;
+    const { id, targetUrl, iconClass, label, target, control } = data;
+    // TODO rid of iconClass
 
     let clickHandler = null;
-    if (clickEvent) {
-        clickHandler = eval('(' + clickEvent + ')');
-    }
-
-    if (publishTopic) {
+    if (control && control.type) {
         clickHandler = function (event, element) {
             event.preventDefault();
-            console.log('publishTopic', publishTopic);
-            console.log('publishPayload', publishPayload);
-            // TODO
+            handleControl(control.type, control.payload);
         };
     }
 
@@ -29,7 +25,6 @@ const DropDownMenuItem = ({ key, data }) => {
             className="custom-dropdown-menu__item"
             onClick={clickHandler}
         >
-            {image && <Image src={image} />}
             {iconClass && <i className={"fa " + iconClass} />}
             {label && t(label)}
         </MenuItem>

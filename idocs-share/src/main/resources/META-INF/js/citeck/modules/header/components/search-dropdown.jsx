@@ -9,7 +9,7 @@ const SearchDropdown = () => {
             key={0}
             data={{
                 id: 'HEADER_SEARCH_BOX_ADVANCED_SEARCH',
-                label: "Расширенный поиск...", // TODO get label from properties message
+                label: "header.advanced-search.label",
                 targetUrl: "/share/page/site/hr/advsearch"
             }}
         />

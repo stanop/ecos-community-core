@@ -14,7 +14,7 @@ const SitesMenu = ({ items, headerTitle, headerIcon }) => {
     const menuListItems = items.map((item, key) => (
         <DropDownMenuItem
             key={key}
-            data={item.config}
+            data={item}
         />
     ));
 

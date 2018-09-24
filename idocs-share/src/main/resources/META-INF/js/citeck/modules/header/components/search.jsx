@@ -37,7 +37,7 @@ const generateSearchTerm = (terms, hiddenSearchTerms) => {
 const enhance = compose(
     withProps(props => {
         return {
-            searchPlaceholder: props.placeholder ? t(props.placeholder) : t("Search files, people, sites"),
+            searchPlaceholder: props.placeholder ? t(props.placeholder) : t('search.label'),
             clearButtonTitle: t("Clear") // TODO set correct message
         }
     }),
