@@ -313,4 +313,7 @@
 		<property name="nodeService" ref="nodeService"/>
 	</bean>
 
+	<bean id="flowableCaseRolesSetListener"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.process.FlowableCaseRolesSetListener"/>
+
 </beans>
