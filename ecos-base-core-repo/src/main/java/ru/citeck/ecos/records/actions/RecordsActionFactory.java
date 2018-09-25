@@ -9,6 +9,7 @@ import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -102,6 +103,13 @@ public abstract class RecordsActionFactory implements GroupActionFactory<RecordR
         protected void onCancel(Throwable cause) {
             if (resultsAction != null) {
                 resultsAction.cancel(cause);
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            if (resultsAction != null) {
+                resultsAction.close();
             }
         }
     }
