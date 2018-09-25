@@ -62,11 +62,11 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
                 status.setKey(ActionStatus.STATUS_ERROR);
                 status.setException(e);
 
-                nodesToProcess.forEach(n -> transactionResults.add(new ActionResult<>(n, status)));
-                nodesToProcess.clear();
-
                 logger.error("Exception while process nodes " + nodesToProcess +
                              " action: " + toString() + " config: " + config, e);
+
+                nodesToProcess.forEach(n -> transactionResults.add(new ActionResult<>(n, status)));
+                nodesToProcess.clear();
             }
         }
 

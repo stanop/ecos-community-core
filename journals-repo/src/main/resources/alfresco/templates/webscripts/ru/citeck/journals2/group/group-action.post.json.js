@@ -22,7 +22,8 @@
 
         records = recordsService.toRecords(nodes);
         actionResults = groupActions.execute(records, {
-            params: params
+            params: params,
+            actionId: actionId
         });
         for (var idx in actionResults) {
             var result = actionResults[idx];
@@ -42,7 +43,8 @@
 
         actionResults = groupActions.execute(records, {
             params: params,
-            async: true
+            async: true,
+            actionId: actionId
         });
 
         if (actionResults && actionResults.length > 0) {
