@@ -337,16 +337,19 @@ define([
                     else {
                         nodeRefs.push(sData);
                     }
-                    for(var i = 0; i < nodeRefs.length; i++) {
-                        var prepareNodeRef = function(data) {
-                            if (data instanceof Object) {
-                                return data.nodeRef;
-                            } else {
-                                return data;
-                            }
-                        };
+
+                    for (var i = 0; i < nodeRefs.length; i++) {
+                        var currentNodeRef = nodeRefs[i];
+                        if (currentNodeRef instanceof Object) {
+                            currentNodeRef = currentNodeRef.nodeRef;
+                        }
+
+                        if (!currentNodeRef) {
+                            continue;
+                        }
+
                         Alfresco.util.Ajax.request({
-                            url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + prepareNodeRef(nodeRefs[i]),
+                            url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + currentNodeRef,
                             successCallback: {
                                 scope: this,
                                 fn: function(response) {
