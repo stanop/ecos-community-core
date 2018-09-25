@@ -21,6 +21,37 @@
         </property>
     </aspect>
 
+    <type name="idocs:contractor">
+        <property name="idocs:contractorKind">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+            <!--contractor-bankDetailsTab - tab.bankDetails-->
+        <property name="idocs:bankTitle">
+            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
+        </property>
+        <property name="idocs:bankTitleEng">
+            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
+        </property>
+        <property name="idocs:bankId">
+            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
+        </property>
+        <property name="idocs:accountNumber">
+            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
+        </property>
+        <property name="idocs:swift">
+            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
+        </property>
+        <property name="idocs:corresponentBankTitle">
+            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
+        </property>
+        <property name="idocs:correspondentBankId">
+            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
+        </property>
+        <property name="idocs:corresponentAccountNumber">
+            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
+        </property>
+    </type>
+
     <type name="idocs:bankAccount">
         <association name="idocs:legalEntity">
             <invariant on="mandatory" language="explicit">true</invariant>
