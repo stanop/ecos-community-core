@@ -411,8 +411,14 @@
     <bean id="ecos-base-core.groupActionServiceJS"
           class="ru.citeck.ecos.action.group.GroupActionServiceJS"
           parent="baseJavaScriptExtension">
-        <property name="extensionName" value="groupActionService" />
-        <property name="groupActionService" ref="ecos-base-core.groupActionService" />
+        <property name="extensionName" value="groupActions" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="ecos-base-core.recordsServiceJS"
+          class="ru.citeck.ecos.records.RecordsServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="recordsService" />
         <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 

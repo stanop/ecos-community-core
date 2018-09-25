@@ -1,30 +1,30 @@
 package ru.citeck.ecos.action.group.impl;
 
-import ru.citeck.ecos.action.group.ActionResult;
-import ru.citeck.ecos.action.group.ActionStatus;
-import ru.citeck.ecos.action.group.GroupAction;
-import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.repo.RemoteRef;
+import ru.citeck.ecos.action.group.*;
 
 import java.util.*;
 
 /**
  * @author Pavel Simonov
  */
-public abstract class BaseGroupAction implements GroupAction {
+public abstract class BaseGroupAction<T> implements GroupAction<T> {
 
-    private final List<RemoteRef> input = new ArrayList<>();
-    private final List<ActionResult> output = new ArrayList<>();
+    private final List<T> input = new ArrayList<>();
+    private final List<ActionResult<T>> output = new ArrayList<>();
 
     protected final GroupActionConfig config;
+
     private int errorsCount = 0;
+    private int processedCount = 0;
+
+    private List<ResultsListener<T>> listeners = new ArrayList<>();
 
     public BaseGroupAction(GroupActionConfig config) {
         this.config = config != null ? config : new GroupActionConfig();
     }
 
     @Override
-    public final void process(RemoteRef remoteRef) {
+    public final void process(T remoteRef) {
         input.add(remoteRef);
         int batchSize = config.getBatchSize();
         if (batchSize > 0 && input.size() >= batchSize) {
@@ -33,18 +33,31 @@ public abstract class BaseGroupAction implements GroupAction {
     }
 
     @Override
-    public final List<ActionResult> complete() {
+    public final ActionResults<T> complete() {
         if (input.size() > 0) {
             processNodes();
         }
         onComplete();
-        return output;
+
+        ActionResults<T> results = new ActionResults<>();
+        results.setResults(output);
+        results.setErrorsCount(errorsCount);
+        results.setProcessedCount(processedCount);
+
+        return results;
     }
 
     @Override
-    public List<ActionResult> cancel() {
-        onCancel();
-        return output;
+    public ActionResults<T> cancel(Throwable cause) {
+        onCancel(cause);
+
+        ActionResults<T> results = new ActionResults<>();
+        results.setResults(output);
+        results.setErrorsCount(errorsCount);
+        results.setProcessedCount(processedCount);
+        results.setCancelCause(cause);
+
+        return results;
     }
 
     @Override
@@ -57,39 +70,53 @@ public abstract class BaseGroupAction implements GroupAction {
         return config.getTimeout();
     }
 
-    private void processNodes() {
-        List<ActionResult> results = new ArrayList<>();
-        processNodesImpl(input, results);
-        input.clear();
-        for (ActionResult result : results) {
+    @Override
+    public void addListener(ResultsListener<T> listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void onProcessed(List<ActionResult<T>> results) {
+
+        listeners.forEach(l -> l.onProcessed(results));
+
+        for (ActionResult<T> result : results) {
             ActionStatus status = result.getStatus();
             if (status != null && ActionStatus.STATUS_ERROR.equals(status.getKey())) {
                 errorsCount++;
             }
-            output.add(result);
+            if (config.getMaxResults() > output.size()) {
+                output.add(result);
+            }
         }
         int maxErrors = config.getMaxErrors();
         if (maxErrors > 0 && errorsCount >= maxErrors) {
-            throw new RuntimeException("Group action max errors limit is reached! " + toString());
+            throw new ErrorsLimitReachedException("Group action max errors limit is reached! " + toString());
         }
+    }
+
+    private void processNodes() {
+        processNodesImpl(input);
+        processedCount += input.size();
+        input.clear();
     }
 
     protected void onComplete() {
     }
 
-    protected void onCancel() {
+    protected void onCancel(Throwable cause) {
     }
 
-    protected void processNodesImpl(List<RemoteRef> nodes, List<ActionResult> output) {
-        for (RemoteRef node : nodes) {
+    protected void processNodesImpl(List<T> nodes) {
+        List<ActionResult<T>> results = new ArrayList<>();
+        for (T node : nodes) {
             ActionStatus status = processImpl(node);
-            if (output.size() < config.getMaxResults()) {
-                output.add(new ActionResult(node, status));
-            }
+            results.add(new ActionResult<>(node, status));
         }
+        onProcessed(results);
     }
 
-    protected ActionStatus processImpl(RemoteRef nodeRef) {
+    protected ActionStatus processImpl(T nodeRef) {
         throw new RuntimeException("Method not implemented");
     }
 
