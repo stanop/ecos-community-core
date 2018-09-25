@@ -2,9 +2,9 @@ package ru.citeck.ecos.records.source;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import graphql.ExecutionResult;
-import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
 import ru.citeck.ecos.records.RecordRef;
@@ -22,6 +22,7 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO {
     protected NodeService nodeService;
     protected GqlMetaUtils gqlMetaUtils;
     protected GraphQLService graphQLService;
+    protected GroupActionService groupActionService;
 
     private String baseQuery;
 
@@ -40,26 +41,15 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO {
 
     @Override
     public <V> Map<RecordRef, V> queryMeta(Collection<RecordRef> records, Class<V> metaClass) {
-        if (NodeRef.class.isAssignableFrom(metaClass)) {
-            Map<RecordRef, NodeRef> results = new HashMap<>();
-            records.forEach(r -> {
-                String nodeRefStr = r.getId();
-                int sourceDelimIdx = nodeRefStr.lastIndexOf(RecordRef.SOURCE_DELIMITER);
-                if (sourceDelimIdx > -1) {
-                    nodeRefStr = nodeRefStr.substring(sourceDelimIdx + 1);
-                }
-                if (NodeRef.isNodeRef(nodeRefStr)) {
-                    results.put(r, new NodeRef(nodeRefStr));
-                } else {
-                    results.put(r, null);
-                }
-            });
-            return (Map<RecordRef, V>) results;
-        }
         List<String> recordsRefs = records.stream().map(Object::toString).collect(Collectors.toList());
         String query = gqlMetaUtils.createQuery(baseQuery, recordsRefs, metaClass);
         ExecutionResult executionResult = graphQLService.execute(query);
         return RecordsUtils.convertToRefs(gqlMetaUtils.convertMeta(recordsRefs, executionResult, metaClass));
+    }
+
+    @Autowired
+    public void setGroupActionService(GroupActionService groupActionService) {
+        this.groupActionService = groupActionService;
     }
 
     @Autowired

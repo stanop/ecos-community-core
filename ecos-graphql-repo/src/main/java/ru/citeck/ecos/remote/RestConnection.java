@@ -1,5 +1,7 @@
 package ru.citeck.ecos.remote;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -11,13 +13,20 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.CommonsClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.web.client.RestTemplate;
+import ru.citeck.ecos.utils.json.mixin.NodeRefMixIn;
+import ru.citeck.ecos.utils.json.mixin.QNameMixIn;
 
 import javax.annotation.PostConstruct;
+import javax.xml.namespace.QName;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RestConnection {
 
@@ -35,6 +44,8 @@ public class RestConnection {
     private boolean enabled = false;
     private boolean initialized = false;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @PostConstruct
     public synchronized void init() {
 
@@ -48,8 +59,18 @@ public class RestConnection {
             this.restTemplate = new RestTemplate();
         }
 
-        StringHttpMessageConverter utfMessageConverter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
-        restTemplate.getMessageConverters().add(utfMessageConverter);
+        objectMapper.addMixInAnnotations(NodeRef.class, NodeRefMixIn.class);
+        objectMapper.addMixInAnnotations(QName.class, QNameMixIn.class);
+
+        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+
+        messageConverters.add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
+
+        MappingJackson2HttpMessageConverter jsonMessageConverter = new MappingJackson2HttpMessageConverter();
+        jsonMessageConverter.setObjectMapper(objectMapper);
+        messageConverters.add(jsonMessageConverter);
+
+        restTemplate.setMessageConverters(messageConverters);
 
         initialized = true;
     }

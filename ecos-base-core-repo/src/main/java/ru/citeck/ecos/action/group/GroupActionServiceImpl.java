@@ -91,45 +91,39 @@ public class GroupActionServiceImpl implements GroupActionService {
 
     @Override
     public <T> ActionResults<T> execute(Iterable<T> nodes,
-                                             Consumer<T> action,
-                                             GroupActionConfig config) {
+                                        Consumer<T> action,
+                                        GroupActionConfig config) {
 
         return execute(nodes, new CustomTxnGroupAction<>(transactionService, action, config));
     }
 
     @Override
     public <T> ActionResults<T> execute(Iterable<T> nodes,
-                                             Function<T, ActionStatus> action,
-                                             GroupActionConfig config) {
+                                        Function<T, ActionStatus> action,
+                                        GroupActionConfig config) {
 
         return execute(nodes, new CustomTxnGroupAction<>(transactionService, action, config));
     }
 
     @Override
     public <T> ActionResults<T> execute(Iterable<T> nodes,
-                                             String actionId,
-                                             GroupActionConfig config) {
+                                        GroupActionConfig config) {
 
-        return execute(nodes, createAction(actionId, config));
+        return execute(nodes, createAction(config));
     }
 
     @Override
-    public <T> GroupAction<T> createAction(String actionId, GroupActionConfig config) {
+    public <T> GroupAction<T> createAction(GroupActionConfig config) {
 
         @SuppressWarnings("unchecked")
-        GroupActionFactory<T> factory = (GroupActionFactory<T>) processorFactories.get(actionId);
+        GroupActionFactory<T> factory = (GroupActionFactory<T>) processorFactories.get(config.getActionId());
         if (factory == null) {
-            throw new IllegalArgumentException("Action not found: '" + actionId + "'");
+            throw new IllegalArgumentException("Action not found: '" + config.getActionId() + "'");
         }
 
         checkParams(config.getParams(), factory.getMandatoryParams());
 
         return factory.createAction(config);
-    }
-
-    @Override
-    public <T> Optional<GroupActionFactory<T>> getActionFactory(String actionId) {
-        return Optional.ofNullable((GroupActionFactory<T>) processorFactories.get(actionId));
     }
 
     private void checkParams(ObjectNode params, String[] mandatoryParams) {
@@ -145,7 +139,7 @@ public class GroupActionServiceImpl implements GroupActionService {
     }
 
     @Override
-    public void cancelActions() {
+    public void cancelAllActions() {
         for (ActionExecution execution : activeActions) {
             execution.cancel();
         }

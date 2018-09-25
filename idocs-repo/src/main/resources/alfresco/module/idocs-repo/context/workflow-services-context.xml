@@ -184,8 +184,8 @@
     <bean id="idocs.workflow.jsonObjectMapper" class="ru.citeck.ecos.workflow.variable.json.JsonObjectMapper" init-method="init">
         <property name="mixIns">
             <map>
-                <entry key="org.alfresco.service.cmr.repository.NodeRef" value="ru.citeck.ecos.workflow.variable.json.mixin.NodeRefMixIn" />
-                <entry key="org.alfresco.service.namespace.QName" value="ru.citeck.ecos.workflow.variable.json.mixin.QNameMixIn" />
+                <entry key="org.alfresco.service.cmr.repository.NodeRef" value="ru.citeck.ecos.utils.json.mixin.NodeRefMixIn" />
+                <entry key="org.alfresco.service.namespace.QName" value="ru.citeck.ecos.utils.json.mixin.QNameMixIn" />
             </map>
         </property>
     </bean>

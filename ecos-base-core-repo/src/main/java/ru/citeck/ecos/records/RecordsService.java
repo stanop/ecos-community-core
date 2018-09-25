@@ -19,30 +19,17 @@ public interface RecordsService {
 
     RecordsResult getRecords(String source, RecordsQuery query);
 
+    Iterable<RecordRef> getIterableRecords(RecordsQuery query);
+
+    Iterable<RecordRef> getIterableRecords(String sourceId, RecordsQuery query);
+
     <T> Map<RecordRef, T> getMeta(Collection<RecordRef> records, Class<T> dataClass);
 
     Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String query);
 
     Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef);
 
-    /*boolean isRemoteRecord(RecordRef record);*/
-
-    /*actions*/
-
-    ActionResults<RecordRef> executeAction(RecordsQuery query,
-                                           String actionId,
-                                           GroupActionConfig config);
-
-    ActionResults<RecordRef> executeAction(String source,
-                                           RecordsQuery query,
-                                           String actionId,
-                                           GroupActionConfig config);
-
-    ActionResults<RecordRef> executeAction(Iterable<RecordRef> records,
-                                           String actionId,
-                                           GroupActionConfig config);
-
-    Optional<RecordsDAO> getRecordsSource(String id);
+    ActionResults<RecordRef> executeAction(Collection<RecordRef> records, GroupActionConfig processConfig);
 
     void register(RecordsDAO recordsSource);
 }

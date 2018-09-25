@@ -3,13 +3,18 @@ package ru.citeck.ecos.records;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
+import ru.citeck.ecos.utils.json.mixin.NodeRefMixIn;
+import ru.citeck.ecos.utils.json.mixin.QNameMixIn;
 
+import javax.annotation.PostConstruct;
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
@@ -20,6 +25,12 @@ public class RecordsGroupActionPost extends AbstractWebScript {
 
     private ObjectMapper objectMapper = new ObjectMapper();
     private RecordsService recordsService;
+
+    @PostConstruct
+    public void init() {
+        objectMapper.addMixInAnnotations(NodeRef.class, NodeRefMixIn.class);
+        objectMapper.addMixInAnnotations(QName.class, QNameMixIn.class);
+    }
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -34,9 +45,7 @@ public class RecordsGroupActionPost extends AbstractWebScript {
 
         try (Writer writer = res.getWriter()) {
             try {
-                response.results = recordsService.executeAction(actionData.nodes,
-                        actionData.actionId,
-                        actionData.config);
+                response.results = recordsService.executeAction(actionData.nodes, actionData.config);
 
                 res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
                 objectMapper.writeValue(writer, response);
@@ -60,14 +69,13 @@ public class RecordsGroupActionPost extends AbstractWebScript {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class ActionData {
-        public String actionId;
+
         public GroupActionConfig config;
         public List<RecordRef> nodes;
 
         @Override
         public String toString() {
             return "ActionData{" +
-                    "actionId='" + actionId + '\'' +
                     ", config=" + config +
                     ", nodes=" + nodes +
                     '}';

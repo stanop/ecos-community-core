@@ -20,6 +20,11 @@ public class RecordRef {
         this.id = id;
     }
 
+    public RecordRef(String sourceId, RecordRef id) {
+        this.sourceId = sourceId;
+        this.id = id.toString();
+    }
+
     @JsonCreator
     public RecordRef(String id) {
         int sourceDelimIdx = id.indexOf(SOURCE_DELIMITER);

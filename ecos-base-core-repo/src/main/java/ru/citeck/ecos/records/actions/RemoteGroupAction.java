@@ -38,7 +38,6 @@ public class RemoteGroupAction<T> extends BaseGroupAction<RecordInfo<T>> {
         Map<RecordRef, RecordInfo<T>> infoMapping = new HashMap<>();
 
         RecordsGroupActionPost.ActionData data = new RecordsGroupActionPost.ActionData();
-        data.actionId = targetAction;
         data.config = targetConfig;
 
         data.nodes = nodes.stream().map(info -> {

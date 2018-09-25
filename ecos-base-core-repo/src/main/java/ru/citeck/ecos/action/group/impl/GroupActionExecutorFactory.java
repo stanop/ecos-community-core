@@ -1,19 +1,15 @@
 package ru.citeck.ecos.action.group.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
 import ru.citeck.ecos.action.group.*;
-import ru.citeck.ecos.records.RecordInfo;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.actions.RecordsActionFactory;
-import ru.citeck.ecos.records.actions.RecordsGroupAction;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GroupActionExecutorFactory extends RecordsActionFactory<NodeRef, TxnGroupAction<RecordInfo<NodeRef>>> {
+public class GroupActionExecutorFactory implements GroupActionFactory<RecordRef> {
 
     private static final String BATCH_PARAM_KEY = "evaluateBatch";
 
@@ -28,10 +24,9 @@ public class GroupActionExecutorFactory extends RecordsActionFactory<NodeRef, Tx
     }
 
     @Override
-    protected TxnGroupAction<RecordInfo<NodeRef>> createLocalAction(GroupActionConfig config) {
+    public GroupAction<RecordRef> createAction(GroupActionConfig config) {
         GroupActionConfig actionConfig = new GroupActionConfig(config);
-        JsonNode batchParamNode = config.getParams().get(BATCH_PARAM_KEY);
-        boolean isBatch = batchParamNode != null && Boolean.TRUE.toString().equals(batchParamNode.asText());
+        boolean isBatch = actionConfig.getBoolParam(BATCH_PARAM_KEY);
         if (isBatch) {
             actionConfig = new GroupActionConfig(actionConfig);
             actionConfig.setBatchSize(0);
@@ -61,8 +56,7 @@ public class GroupActionExecutorFactory extends RecordsActionFactory<NodeRef, Tx
         return plainParams;
     }
 
-    private class BatchAction extends TxnGroupAction<RecordInfo<NodeRef>>
-                              implements RecordsGroupAction<NodeRef> {
+    private class BatchAction extends TxnGroupAction<RecordRef> {
 
         Map<String, String> plainParams;
 
@@ -72,37 +66,39 @@ public class GroupActionExecutorFactory extends RecordsActionFactory<NodeRef, Tx
         }
 
         @Override
-        protected boolean isApplicable(RecordInfo<NodeRef> recordInfo) {
-            return executor.isApplicable(recordInfo.getData(), plainParams);
+        protected boolean isApplicable(RecordRef nodeRef) {
+            return NodeRef.isNodeRef(nodeRef.getId()) &&
+                   executor.isApplicable(new NodeRef(nodeRef.getId()), plainParams);
         }
 
         @Override
-        protected List<ActionResult<RecordInfo<NodeRef>>> processNodesInTxn(List<RecordInfo<NodeRef>> nodes) {
+        protected List<ActionResult<RecordRef>> processNodesInTxn(List<RecordRef> nodes) {
 
-            List<ActionResult<RecordInfo<NodeRef>>> output = new ArrayList<>();
-            Map<NodeRef, RecordInfo<NodeRef>> recordsMapping = new HashMap<>();
+            List<ActionResult<RecordRef>> output = new ArrayList<>();
+            Map<NodeRef, RecordRef> recordsMapping = new HashMap<>();
 
             List<NodeRef> nodeRefs = nodes.stream()
-                    .filter(nodeInfo -> {
-                        if (!isApplicable(nodeInfo)) {
-                            output.add(new ActionResult<>(nodeInfo, ActionStatus.STATUS_SKIPPED));
+                    .filter(recordRef -> {
+                        if (!isApplicable(recordRef)) {
+                            output.add(new ActionResult<>(recordRef, ActionStatus.STATUS_SKIPPED));
                             return false;
                         }
                         return true;
-                    }).map(nodeInfo -> {
-                        recordsMapping.put(nodeInfo.getData(), nodeInfo);
-                        return nodeInfo.getData();
+                    }).map(recordRef -> {
+                        NodeRef nodeRef = new NodeRef(recordRef.getId());
+                        recordsMapping.put(nodeRef, recordRef);
+                        return nodeRef;
                     })
                     .collect(Collectors.toList());
 
             Map<NodeRef, ActionStatus> results = executor.invokeBatch(nodeRefs, plainParams);
 
             results.forEach((ref, res) -> {
-                RecordInfo<NodeRef> info = recordsMapping.get(ref);
-                if (info == null) {
-                    info = new RecordInfo<>(new RecordRef(ref), ref);
+                RecordRef recordRef = recordsMapping.get(ref);
+                if (recordRef == null) {
+                    recordRef = new RecordRef(ref);
                 }
-                output.add(new ActionResult<>(info, res));
+                output.add(new ActionResult<>(recordRef, res));
             });
 
             return output;
@@ -114,8 +110,7 @@ public class GroupActionExecutorFactory extends RecordsActionFactory<NodeRef, Tx
         }
     }
 
-    private class SimpleAction extends TxnGroupAction<RecordInfo<NodeRef>>
-                               implements RecordsGroupAction<NodeRef> {
+    private class SimpleAction extends TxnGroupAction<RecordRef> {
 
         private Map<String, String> plainParams;
 
@@ -125,13 +120,14 @@ public class GroupActionExecutorFactory extends RecordsActionFactory<NodeRef, Tx
         }
 
         @Override
-        protected boolean isApplicable(RecordInfo<NodeRef> nodeInfo) {
-            return executor.isApplicable(nodeInfo.getData(), plainParams);
+        protected boolean isApplicable(RecordRef recordRef) {
+            return NodeRef.isNodeRef(recordRef.getId()) &&
+                    executor.isApplicable(new NodeRef(recordRef.getId()), plainParams);
         }
 
         @Override
-        protected ActionStatus processImpl(RecordInfo<NodeRef> nodeInfo) {
-            executor.invoke(nodeInfo.getData(), plainParams);
+        protected ActionStatus processImpl(RecordRef recordRef) {
+            executor.invoke(new NodeRef(recordRef.getId()), plainParams);
             return new ActionStatus(ActionStatus.STATUS_OK);
         }
 

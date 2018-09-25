@@ -8,7 +8,8 @@
         query = jsonData.query,
         language = jsonData.language || null,
         journalId = jsonData.journalId,
-        actionResults;
+        actionResults,
+        records;
 
     if (!exists("nodes", nodes) ||
         !exists("attributes", params) ||
@@ -19,7 +20,8 @@
     var results = [];
     if (groupType == "selected") {
 
-        actionResults = recordsService.executeAction(nodes, actionId, {
+        records = recordsService.toRecords(nodes);
+        actionResults = groupActions.execute(records, {
             params: params
         });
         for (var idx in actionResults) {
@@ -33,10 +35,12 @@
         }
     } else {
 
-        actionResults = recordsService.executeAction(getRecordsSource(journalId), {
+        records = recordsService.getIterableRecords(getRecordsSource(journalId), {
             query: query,
             language: language || "criteria"
-        }, actionId, {
+        });
+
+        actionResults = groupActions.execute(records, {
             params: params,
             async: true
         });

@@ -1,20 +1,19 @@
 package ru.citeck.ecos.records.source;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import graphql.ExecutionResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.action.group.ActionResult;
+import ru.citeck.ecos.action.group.ActionResults;
+import ru.citeck.ecos.action.group.ActionStatus;
+import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.RecordsPost;
-import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records.*;
 import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.remote.RestConnection;
@@ -35,16 +34,14 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
     private boolean enabled = true;
 
     private RestConnection restConnection;
-    private ObjectMapper objectMapper;
 
     private String recordsMethod = "alfresco/service/citeck/ecos/records";
     private String graphqlMethod = "alfresco/service/citeck/ecos/graphql";
+    private String groupActionMethod = "alfresco/service/citeck/ecos/records-group-action";
 
     private String remoteSourceId = "";
 
     public RemoteRecordsDAO() {
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @PostConstruct
@@ -59,23 +56,18 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
         request.sourceId = remoteSourceId;
 
         if (enabled) {
-            try {
 
-                RecordRef afterId = query.getAfterId();
-                if (afterId != null) {
-                    request.query = new RecordsQuery(query);
-                    request.query.setAfterId(new RecordRef(afterId.getId()));
-                } else {
-                    request.query = query;
-                }
+            RecordRef afterId = query.getAfterId();
+            if (afterId != null) {
+                request.query = new RecordsQuery(query);
+                request.query.setAfterId(new RecordRef(afterId.getId()));
+            } else {
+                request.query = query;
+            }
 
-                String postData = objectMapper.writeValueAsString(request);
-                RecordsResult result = restConnection.jsonPost(recordsMethod, postData, RecordsResult.class);
-                if (result != null) {
-                    return result.addSourceId(getId());
-                }
-            } catch (JsonProcessingException e) {
-                logger.error(e);
+            RecordsResult result = restConnection.jsonPost(recordsMethod, request, RecordsResult.class);
+            if (result != null) {
+                return result.addSourceId(getId());
             }
         }
         logger.error("[" + getId() + "] queryRecords will return nothing. " + request);
@@ -96,6 +88,30 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
         String query = metaUtils.createQuery(metaBaseQuery, recordsRefs, metaClass);
         ExecutionResult executionResult = graphQLService.execute(restConnection, graphqlMethod, query, null);
         return RecordsUtils.convertToRefs(getId(), metaUtils.convertMeta(recordsRefs, executionResult, metaClass));
+    }
+
+    @Override
+    public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {
+
+        RecordsGroupActionPost.ActionData data = new RecordsGroupActionPost.ActionData();
+        data.config = config;
+        data.nodes = RecordsUtils.toLocalRecords(records);
+
+        RecordsGroupActionPost.Response response =
+                restConnection.jsonPost(groupActionMethod, data, RecordsGroupActionPost.Response.class);
+
+        ActionResults<RecordRef> results;
+
+        if (response != null) {
+            results = new ActionResults<>(response.results, r -> new RecordRef(getId(), r));
+        } else {
+            results = new ActionResults<>();
+            ActionStatus status = new ActionStatus(ActionStatus.STATUS_ERROR);
+            status.setMessage("Remote action failed");
+            records.forEach(record -> results.getResults().add(new ActionResult<>(record, status)));
+        }
+
+        return results;
     }
 
     @Override
@@ -127,6 +143,10 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
     @Autowired
     public void setMetaUtils(GqlMetaUtils metaUtils) {
         this.metaUtils = metaUtils;
+    }
+
+    public void setGroupActionMethod(String groupActionMethod) {
+        this.groupActionMethod = groupActionMethod;
     }
 
     public void setRestConnection(RestConnection restConnection) {

@@ -1,7 +1,7 @@
 package ru.citeck.ecos.action.group;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
@@ -16,18 +16,17 @@ public class ActionStatus {
     public static final String STATUS_ERROR = "ERROR";
     public static final String STATUS_SKIPPED = "SKIPPED";
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private String key = STATUS_OK;
-    @Getter
-    @Setter
+    @Getter @Setter
     private String message = "";
-    @Getter
-    @Setter
+    @Getter @Setter
     private String url;
-    @Getter
+
     @Setter
-    private JsonNode data;
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,
+                  include = JsonTypeInfo.As.WRAPPER_OBJECT)
+    private Object data;
 
     @Getter
     private Exception exception;
@@ -37,6 +36,10 @@ public class ActionStatus {
 
     public ActionStatus(String statusKey) {
         this.key = statusKey;
+    }
+
+    public <T> T getData() {
+        return (T) data;
     }
 
     public void setException(Exception e) {

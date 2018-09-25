@@ -1,9 +1,16 @@
 package ru.citeck.ecos.records.source;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.action.group.ActionResult;
+import ru.citeck.ecos.action.group.ActionResults;
+import ru.citeck.ecos.action.group.ActionStatus;
+import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 
@@ -14,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Pavel Simonov
  */
 public class MultiRecordsDAO extends AbstractRecordsDAO {
+
+    private static final Log logger = LogFactory.getLog(MultiRecordsDAO.class);
 
     private List<RecordsDAO> recordsDao;
     private Map<String, RecordsDAO> daoBySource = new ConcurrentHashMap<>();
@@ -60,6 +69,24 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
         }
 
         return result;
+    }
+
+    @Override
+    public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {
+        ActionResults<RecordRef> results = new ActionResults<>();
+        RecordsUtils.groupRefBySource(records).forEach((sourceId, sourceRecs) -> {
+            RecordsDAO recordsDAO = daoBySource.get(sourceId);
+            if (recordsDAO != null) {
+                results.merge(recordsDAO.executeAction(sourceRecs, config));
+            } else {
+                ActionStatus status = new ActionStatus(ActionStatus.STATUS_SKIPPED);
+                status.setMessage("Source id " + sourceId + " is not registered!");
+                for (RecordRef recordRef : sourceRecs) {
+                    results.getResults().add(new ActionResult<>(recordRef, status));
+                }
+            }
+        });
+        return results;
     }
 
     @Override

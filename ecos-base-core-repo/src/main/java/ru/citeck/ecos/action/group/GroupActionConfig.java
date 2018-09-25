@@ -17,6 +17,7 @@ public class GroupActionConfig {
     private int maxResults = 100;
     private int maxErrors = 1000;
     private long timeout = TimeUnit.HOURS.toMillis(5);
+    private String actionId;
 
     public GroupActionConfig() {
     }
@@ -31,6 +32,14 @@ public class GroupActionConfig {
             params = JsonNodeFactory.instance.objectNode();
         }
         return params;
+    }
+
+    public String getActionId() {
+        return actionId;
+    }
+
+    public void setActionId(String actionId) {
+        this.actionId = actionId;
     }
 
     public void setParams(ObjectNode params) {
@@ -132,12 +141,17 @@ public class GroupActionConfig {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         GroupActionConfig that = (GroupActionConfig) o;
 
-        return Objects.equals(params, that.params);
+        return Objects.equals(actionId, that.actionId) &&
+               Objects.equals(params, that.params);
     }
 
     @Override
@@ -149,6 +163,7 @@ public class GroupActionConfig {
     public String toString() {
         return "GroupActionConfig{" +
                 "params=" + params +
+                ", actionId=" + actionId +
                 ", batchSize=" + batchSize +
                 ", async=" + async +
                 ", maxResults=" + maxResults +

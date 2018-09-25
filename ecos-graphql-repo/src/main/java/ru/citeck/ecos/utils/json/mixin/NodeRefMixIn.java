@@ -1,4 +1,4 @@
-package ru.citeck.ecos.workflow.variable.json.mixin;
+package ru.citeck.ecos.utils.json.mixin;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

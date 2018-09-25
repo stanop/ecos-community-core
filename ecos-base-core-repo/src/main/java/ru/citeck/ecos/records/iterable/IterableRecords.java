@@ -1,6 +1,8 @@
-package ru.citeck.ecos.records;
+package ru.citeck.ecos.records.iterable;
 
 import org.alfresco.util.ParameterCheck;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.RecordsService;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
 

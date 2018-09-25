@@ -1,4 +1,8 @@
-package ru.citeck.ecos.records;
+package ru.citeck.ecos.records.iterable;
+
+import ru.citeck.ecos.records.RecordInfo;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.RecordsService;
 
 import java.util.*;
 

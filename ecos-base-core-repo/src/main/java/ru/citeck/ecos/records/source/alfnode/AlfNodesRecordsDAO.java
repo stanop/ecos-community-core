@@ -3,6 +3,8 @@ package ru.citeck.ecos.records.source.alfnode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.action.group.ActionResults;
+import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeRecord;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
@@ -47,6 +49,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO {
             }
         }
         return alfNodesSearch.queryRecords(query, afterIdValue);
+    }
+
+    @Override
+    public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {
+        return groupActionService.execute(records, config);
     }
 
     @Override
