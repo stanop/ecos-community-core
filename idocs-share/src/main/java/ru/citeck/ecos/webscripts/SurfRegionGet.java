@@ -44,6 +44,8 @@ public class SurfRegionGet extends DeclarativeWebScript {
         long cacheAge = NumberUtils.toLong(req.getParameter(ARG_CACHE_AGE));
         if (cacheAge > 0) {
             cache.setMaxAge(cacheAge);
+        } else {
+            cache.setNeverCache(true);
         }
 
         return new HashMap<>();

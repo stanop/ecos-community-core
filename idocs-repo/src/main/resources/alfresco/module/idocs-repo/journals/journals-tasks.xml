@@ -37,7 +37,13 @@
                 </criterion>
             </header>
             <header key="bpm:status" />
-            <header key="bpm:pooledActors" />
+            <header key="bpm:pooledActors">
+                <criterion>
+                    <region name="select" template="orgstruct">
+                        <param name="allowedAuthorityType">USER, GROUP</param>
+                    </region>
+                </criterion>
+            </header>
             <header key="wfm:document" default="true" searchable="false">
                 <option name="formatter">documentLink</option>
             </header>
@@ -79,7 +85,13 @@
                 </criterion>
             </header>
             <header key="bpm:status" default="true" />
-            <header key="bpm:pooledActors" />
+            <header key="bpm:pooledActors">
+                <criterion>
+                    <region name="select" template="orgstruct">
+                        <param name="allowedAuthorityType">USER, GROUP</param>
+                    </region>
+                </criterion>
+            </header>
             <header key="wfm:document" default="true" searchable="false">
                 <option name="formatter">documentLink</option>
             </header>
@@ -113,7 +125,13 @@
             </header>
             <header key="cwf:senderName" default="true" searchable="false" />
             <header key="cwf:sender" visible="false" />
-            <header key="bpm:pooledActors" />
+            <header key="bpm:pooledActors">
+                <criterion>
+                    <region name="select" template="orgstruct">
+                        <param name="allowedAuthorityType">USER, GROUP</param>
+                    </region>
+                </criterion>
+            </header>
             <header key="wfm:document" default="true" searchable="false">
                 <option name="formatter">documentLink</option>
             </header>
@@ -197,7 +215,13 @@
                 </criterion>
             </header>
             <header key="bpm:status" default="true" />
-            <header key="bpm:pooledActors" />
+            <header key="bpm:pooledActors">
+                <criterion>
+                    <region name="select" template="orgstruct">
+                        <param name="allowedAuthorityType">USER, GROUP</param>
+                    </region>
+                </criterion>
+            </header>
             <header key="wfm:document" default="true" searchable="false">
                 <option name="formatter">documentLink</option>
             </header>
@@ -242,7 +266,13 @@
                 </criterion>
             </header>
             <header key="bpm:status" default="true" />
-            <header key="bpm:pooledActors"/>
+            <header key="bpm:pooledActors">
+                <criterion>
+                    <region name="select" template="orgstruct">
+                        <param name="allowedAuthorityType">USER, GROUP</param>
+                    </region>
+                </criterion>
+            </header>
             <header key="wfm:document" default="true" searchable="false">
                 <option name="formatter">documentLink</option>
             </header>

@@ -30,6 +30,8 @@ define([], function () {
             }
         };
 
+        this.originalCreateAction = createPanelImpl;
+
         this.unsubscribeAll = function () {
             if (panelImpl != null) {
                 panelImpl.unsubscribeAll.apply(panelImpl, arguments);
@@ -89,7 +91,7 @@ define([], function () {
     function customCreateYUIPanel(createPanelImpl) {
 
         return function (p_el, p_params, p_custom) {
-            if (!p_custom || !p_custom["render"]) {
+            if ((!p_custom || !p_custom["render"]) && p_el.className !== 'form-container') {
                 return new LazyPanel(createPanelImpl, p_el, p_params, p_custom);
             } else {
                 return createPanelImpl(p_el, p_params, p_custom);

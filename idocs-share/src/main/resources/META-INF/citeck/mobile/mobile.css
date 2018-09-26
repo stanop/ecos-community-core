@@ -541,3 +541,21 @@
     padding-top: 5px;
     margin: 0;
 }
+
+@media (max-width: 375px) {
+    .mobile .yui-module.yui-overlay {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    .mobile .yui-module.yui-overlay {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 320px) {
+    .mobile .yui-module.yui-overlay {
+        font-size: 10px;
+    }
+}

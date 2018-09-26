@@ -15,7 +15,7 @@
             YAHOO.Bubbling.unsubscribe("metadataRefresh", this.doRefresh, this);
             this.refresh('/citeck/components/barcode?nodeRef={nodeRef}&property={property}&barcodeType={barcodeType}' +
                 '&header={header}&width={width}&height={height}&printScale={printScale}&printMargins={printMargins}' +
-                '&rnd={rnd}');
+                '&rnd={rnd}&displayNonPdfVIew={displayNonPdfVIew}');
         }
     }, true);
 

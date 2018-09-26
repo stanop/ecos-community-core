@@ -47,6 +47,9 @@ require(['citeck/components/form/citeck-object-finder'], function() {
             pageMode: false,
 			searchWholeRepo: ${field.control.params.searchWholeRepo!"true"},
         </#if>
+        <#if field.control.params.showSearchBar?? && field.control.params.showSearchBar=="true">
+            showSearchBar: true,
+        </#if>
         <#if field.control.params.showTargetLink??>
             showLinkToTarget: ${field.control.params.showTargetLink},
             <#if page?? && page.url.templateArgs.site??>
@@ -153,9 +156,9 @@ require(['citeck/components/form/citeck-object-finder'], function() {
                     </div>
                 </div>
             </div>
-            <div id="${pickerId}-searchContainer" class="search">
+            <div id="${pickerId}-searchContainer" class="search" style="display: none">
                 <input type="text" class="search-input" name="-" id="${pickerId}-searchText" value="" maxlength="256"/>
-                <span class="search-button"><button
+                <span class="yui-button search-button"><button
                         id="${pickerId}-searchButton">${msg("form.control.object-picker.search")}</button></span>
             </div>
             <div id="${controlId}-mode-selector">

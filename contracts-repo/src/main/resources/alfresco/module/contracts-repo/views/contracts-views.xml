@@ -683,6 +683,7 @@
                 </region>
             </field>
         </view>
+        <field prop="contracts:digiSign" />
         <view id="note" kind="1-column">
             <field prop="idocs:note">
                 <region name="input" template="textarea">

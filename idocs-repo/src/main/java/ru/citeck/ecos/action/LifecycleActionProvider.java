@@ -2,10 +2,8 @@ package ru.citeck.ecos.action;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.extensions.surf.util.I18NUtil;
+import ru.citeck.ecos.action.node.*;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
-import ru.citeck.ecos.action.node.RedirectAction;
-import ru.citeck.ecos.action.node.RequestAction;
-import ru.citeck.ecos.action.node.URLAction;
 import ru.citeck.ecos.lifecycle.LifeCycleDefinition;
 import ru.citeck.ecos.lifecycle.LifeCycleService;
 
@@ -24,6 +22,12 @@ public class LifecycleActionProvider extends NodeActionsProvider {
             "%s"; // formId
 
     private static final String URL_SERVER_ACTION_TEMPLATE = "api/lifecycle/do-transition?nodeRef=%s";
+    private static final String HIDDEN_ACTION_ID = "server-hidden-action";
+
+    private static final String PARAM_FORM_ID = "formId";
+    private static final String PARAM_URL_ID = "urlId";
+    private static final String PARAM_ACTION_NAME = "actionName";
+    private static final String PARAM_WORKFLOW_ID = "workflowId";
 
     private LifeCycleService lifecycleService;
 
@@ -40,15 +44,20 @@ public class LifecycleActionProvider extends NodeActionsProvider {
             Map<String, String> actionParams = event.getEventParams();
             String url;
             URLAction action;
+
+            if (HIDDEN_ACTION_ID.equals(actionParams.get(PARAM_ACTION_NAME))) {
+                continue;
+            }
+
             if ("onStartProcess".equals(eventType)) {
                 action = new RedirectAction();
-                String form = actionParams.get("formId");
-                form = form==null ? "" : "&formId=" + form;
-                url = String.format(URL_REDIRECT_TEMPLATE, nodeRef.toString(), actionParams.get("workflowId"), form);
+                String form = actionParams.get(PARAM_FORM_ID);
+                form = form == null ? "" : "&formId=" + form;
+                url = String.format(URL_REDIRECT_TEMPLATE, nodeRef.toString(), actionParams.get(PARAM_WORKFLOW_ID), form);
             } else if ("userTransition".equals(eventType)) {
-                if (actionParams.get("urlId") != null) {
+                if (actionParams.get(PARAM_URL_ID) != null) {
                     action = new RedirectAction();
-                    url = actionParams.get("urlId").replace("{nodeRef}", nodeRef.toString());
+                    url = actionParams.get(PARAM_URL_ID).replace("{nodeRef}", nodeRef.toString());
                     action.setContext(URLAction.URLContext.URL_SERVICECONTEXT);
                 } else {
                     action = new RequestAction();
@@ -57,7 +66,7 @@ public class LifecycleActionProvider extends NodeActionsProvider {
             } else {
                 throw new RuntimeException("Unsupported lifecycle event type: " + eventType);
             }
-            action.setTitle(getTitle(actionParams.get("actionName")));
+            action.setTitle(getTitle(actionParams.get(PARAM_ACTION_NAME)));
             action.setUrl(url);
             actionDefinitionList.add(action);
         }

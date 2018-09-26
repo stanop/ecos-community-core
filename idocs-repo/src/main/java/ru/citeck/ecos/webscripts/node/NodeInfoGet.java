@@ -11,10 +11,8 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.preference.PreferenceService;
 import org.alfresco.service.cmr.rating.RatingService;
-import org.alfresco.service.cmr.repository.ContentService;
-import org.alfresco.service.cmr.repository.MimetypeService;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.repository.Path;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.cmr.security.PersonService;
@@ -107,6 +105,39 @@ public class NodeInfoGet extends AbstractWebScript {
         objectMapper.writeValue(res.getOutputStream(), response);
 
         res.setStatus(Status.STATUS_OK);
+    }
+
+    private List<PathItem> fillNodePath(RequestContext context) {
+
+        List<PathItem> pathItems = new ArrayList<>();
+
+        AuthenticationUtil.runAsSystem(() -> {
+            ChildAssociationRef parentRef = nodeService.getPrimaryParent(context.nodeRef);
+
+            while (parentRef != null && ContentModel.ASSOC_CONTAINS.equals(parentRef.getTypeQName())) {
+
+                Map<QName, Serializable> props = nodeService.getProperties(parentRef.getParentRef());
+                PathItem item = new PathItem();
+                item.name = (String) props.get(ContentModel.PROP_NAME);
+                item.title = (String) props.get(ContentModel.PROP_TITLE);
+
+                if (StringUtils.isEmpty(item.title)) {
+                    item.title = item.name;
+                }
+
+                parentRef = nodeService.getPrimaryParent(parentRef.getParentRef());
+
+                if (parentRef != null) {
+                    item.qname = parentRef.getQName().toPrefixString(namespaceService);
+                }
+                pathItems.add(item);
+            }
+            return null;
+        });
+
+        Collections.reverse(pathItems);
+
+        return pathItems;
     }
 
     private QShare fillQshare(RequestContext context) {
@@ -332,5 +363,11 @@ public class NodeInfoGet extends AbstractWebScript {
     private static class QShare {
         public String sharedBy;
         public String sharedId;
+    }
+
+    private static class PathItem {
+        public String name;
+        public String title;
+        public String qname;
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
-    <id>common-node-header</id>
+    <id>ecos-document-node-header</id>
     <regionId>node-header</regionId>
-    <allowed-type>{http://www.alfresco.org/model/content/1.0}cmobject</allowed-type>
+    <allowed-type>{http://www.citeck.ru/model/content/ecos/1.0}document</allowed-type>
     <position>
         <card-mode>all</card-mode>
         <column>top</column>
@@ -10,6 +10,6 @@
         <mobile-order>0</mobile-order>
     </position>
     <control url="js/citeck/modules/cardlets/node-header/node-header">
-        <prop name="show-path">false</prop>
+        <prop name="show-path">true</prop>
     </control>
 </cardlet>
