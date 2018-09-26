@@ -70,13 +70,17 @@ public class FlowableCaseRolesSetListener implements GlobalStartExecutionListene
             Set<String> persons = new HashSet<>();
             Set<String> groups = new HashSet<>();
 
-            String roleName = RepoUtils.getProperty(role, ICaseRoleModel.PROP_VARNAME, nodeService);
-            if (roleName.contains(HYPHEN)) {
-                roleName = roleName.replace(HYPHEN, UNDERSCORE);
-                logger.warn("Flowable can't parse variable with '-', replacing to '_' role name: " + roleName);
+            final String originalRoleName = RepoUtils.getProperty(role, ICaseRoleModel.PROP_VARNAME, nodeService);
+            Set<NodeRef> assignees = caseRoleService.getAssignees(document, originalRoleName);
+
+            String variableRoleName = originalRoleName;
+            if (originalRoleName.contains(HYPHEN)) {
+                variableRoleName = originalRoleName.replace(HYPHEN, UNDERSCORE);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Flowable can't parse variable with '-', replacing to '_' role name: " + originalRoleName);
+                }
             }
 
-            Set<NodeRef> assignees = caseRoleService.getAssignees(document, roleName);
             for (NodeRef assignee : assignees) {
                 if (nodeService.exists(assignee)) {
                     QName type = nodeService.getType(assignee);
@@ -90,8 +94,8 @@ public class FlowableCaseRolesSetListener implements GlobalStartExecutionListene
                 }
             }
 
-            final String roleUserKey = String.format(VAR_KEY_ROLE_USERS_PATTERN, roleName);
-            final String roleGroupKey = String.format(VAR_KEY_ROLE_GROUPS_PATTERN, roleName);
+            final String roleUserKey = String.format(VAR_KEY_ROLE_USERS_PATTERN, variableRoleName);
+            final String roleGroupKey = String.format(VAR_KEY_ROLE_GROUPS_PATTERN, variableRoleName);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Set case role persons variable: <" + roleUserKey + "> value: <" + persons + ">");
