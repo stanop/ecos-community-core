@@ -46,6 +46,7 @@ public class UpcomingBirthdaysGet extends AbstractWebScript {
         Integer currentMonthDay = getCurrentMonthDay();
         return FTSQuery.create()
                 .type(ContentModel.TYPE_PERSON).and()
+                .not().aspect(ContentModel.ASPECT_PERSON_DISABLED).and()
                 .range(EcosModel.PROP_BIRTH_MONTH_DAY, currentMonthDay, currentMonthDay + 100)
                 .addSort(EcosModel.PROP_BIRTH_MONTH_DAY, true)
                 .query(searchService);
