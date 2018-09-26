@@ -31,6 +31,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
     private static final String PARENT = "PARENT";
     private static final String TYPE = "TYPE";
     private static final String PATH = "PATH";
+    private static final String ASPECT = "ASPECT";
 
     private static final String RANGE_TEMPLATE = "[%s TO %s]";
     private static final String QUOTES_TEMPLATE = "\"%s\"";
@@ -183,6 +184,12 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
     @Override
     public FTSQuery type(QName typeName) {
         group.addTerm(new SysValueOperator(TYPE, typeName));
+        return this;
+    }
+
+    @Override
+    public FTSQuery aspect(QName aspectName) {
+        group.addTerm(new SysValueOperator(ASPECT, aspectName));
         return this;
     }
 
