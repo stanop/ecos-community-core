@@ -39,11 +39,25 @@ public interface CaseStatusService {
     String getStatus(NodeRef caseRef);
 
     /**
+     * Get case status before
+     *
+     * @return case status before name or null if status doesn't exists in this case
+     */
+    String getStatusBefore(NodeRef caseRef);
+
+    /**
      * Get case status reference
      *
      * @return case status nodeRef or null if status doesn't exists in this case
      */
     NodeRef getStatusRef(NodeRef caseRef);
+
+    /**
+     * Get case status before reference
+     *
+     * @return case status before nodeRef or null if status doesn't exists in this case
+     */
+    NodeRef getStatusBeforeRef(NodeRef caseRef);
 
     /**
      * Get case status reference from primary parent

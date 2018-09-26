@@ -94,8 +94,8 @@ public class FlowableCaseRolesSetListener implements GlobalStartExecutionListene
             final String roleGroupKey = String.format(VAR_KEY_ROLE_GROUPS_PATTERN, roleName);
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Set case role persons variable: " + roleUserKey + " value: " + persons);
-                logger.debug("Set case role groups variable: " + roleGroupKey + " value: " + groups);
+                logger.debug("Set case role persons variable: <" + roleUserKey + "> value: <" + persons + ">");
+                logger.debug("Set case role groups variable: <" + roleGroupKey + "> value: <" + groups + ">");
             }
 
             execution.setVariable(roleUserKey, persons);

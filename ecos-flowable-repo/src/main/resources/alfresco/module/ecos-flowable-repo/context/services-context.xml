@@ -316,4 +316,7 @@
 	<bean id="flowableCaseRolesSetListener"
 		  class="ru.citeck.ecos.flowable.listeners.global.impl.process.FlowableCaseRolesSetListener"/>
 
+	<bean id="flowableCaseStatusSetListener"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.process.FlowableCaseStatusSetListener"/>
+
 </beans>

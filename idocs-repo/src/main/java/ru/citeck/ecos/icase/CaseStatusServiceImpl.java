@@ -85,8 +85,20 @@ public class CaseStatusServiceImpl implements CaseStatusService {
     }
 
     @Override
+    public String getStatusBefore(NodeRef caseRef) {
+        NodeRef statusBeforeRef = getStatusBeforeRef(caseRef);
+        return statusBeforeRef != null ? (String) nodeService.getProperty(statusBeforeRef, ContentModel.PROP_NAME)
+                : null;
+    }
+
+    @Override
     public NodeRef getStatusRef(NodeRef caseRef) {
         return RepoUtils.getFirstTargetAssoc(caseRef, ICaseModel.ASSOC_CASE_STATUS, nodeService);
+    }
+
+    @Override
+    public NodeRef getStatusBeforeRef(NodeRef caseRef) {
+        return RepoUtils.getFirstTargetAssoc(caseRef, ICaseModel.ASSOC_CASE_STATUS_BEFORE, nodeService);
     }
 
     @Override
