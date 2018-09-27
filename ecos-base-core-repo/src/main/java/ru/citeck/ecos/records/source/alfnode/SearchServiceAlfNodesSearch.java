@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records.source.alfnode;
 
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -7,23 +8,23 @@ import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.query.*;
+import ru.citeck.ecos.records.source.alfnode.AlfNodesSearch.AfterIdType;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
 public class SearchServiceAlfNodesSearch {
 
+    private static final Log logger = LogFactory.getLog(SearchServiceAlfNodesSearch.class);
+
     private static final String FROM_DB_ID_FTS_QUERY = "(%s) AND @sys\\:node\\-dbid:[%d TO MAX]";
-    private static final List<String> AFTER_ID_SUPPORT = Arrays.asList(
-            SearchService.LANGUAGE_FTS_ALFRESCO,
-            SearchService.LANGUAGE_LUCENE
-    );
 
     private SearchService searchService;
     private NamespaceService namespaceService;
@@ -36,17 +37,17 @@ public class SearchServiceAlfNodesSearch {
         this.searchService = searchService;
         this.namespaceService = namespaceService;
 
-        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_FTS_ALFRESCO));
-        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_CMIS_ALFRESCO));
-        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_CMIS_STRICT));
-        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_LUCENE));
-        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_SOLR_ALFRESCO));
-        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_SOLR_CMIS));
-        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_SOLR_FTS_ALFRESCO));
+        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_FTS_ALFRESCO, AfterIdType.DB_ID));
+        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_LUCENE, AfterIdType.DB_ID));
+        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_SOLR_ALFRESCO, AfterIdType.DB_ID));
+        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_SOLR_FTS_ALFRESCO, AfterIdType.DB_ID));
+        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_SOLR_CMIS, AfterIdType.CREATED));
+        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_CMIS_ALFRESCO, AfterIdType.CREATED));
+        recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_CMIS_STRICT, AfterIdType.CREATED));
         recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_XPATH));
     }
 
-    private RecordsResult queryRecordsImpl(RecordsQuery recordsQuery, Long afterDbId) {
+    private RecordsResult queryRecordsImpl(RecordsQuery recordsQuery, Long afterDbId, Date afterCreated) {
 
         String query = recordsQuery.getQuery();
 
@@ -59,38 +60,48 @@ public class SearchServiceAlfNodesSearch {
 
         boolean afterIdMode = false;
         String afterIdSortField = "";
+        boolean ignoreQuerySort = false;
 
         if (afterDbId != null) {
 
-            if (AFTER_ID_SUPPORT.contains(recordsQuery.getLanguage())) {
+            query = String.format(FROM_DB_ID_FTS_QUERY, query, afterDbId);
+            afterIdSortField = "@" + ContentModel.PROP_NODE_DBID.toPrefixString(namespaceService);
 
-                query = String.format(FROM_DB_ID_FTS_QUERY, query, afterDbId);
-                afterIdSortField = "@" + ContentModel.PROP_NODE_DBID.toPrefixString(namespaceService);
+            searchParameters.addSort(afterIdSortField, true);
 
-                searchParameters.addSort(afterIdSortField, true);
+            afterIdMode = true;
 
-                afterIdMode = true;
+        } else if (afterCreated != null && recordsQuery.getLanguage().startsWith("cmis-")) {
+
+            query = query.replaceAll("(?i)order by.+", "");
+            if (!query.contains("where") && !query.contains("WHERE")) {
+                query += " where";
             } else {
-                throw new IllegalArgumentException("Page parameter afterId is not supported " +
-                                                   "by language " + recordsQuery.getLanguage() +
-                                                   ". query: " + recordsQuery);
+                query += " and";
             }
+            query += " cmis:creationDate > '" + ISO8601Utils.format(afterCreated) + "' order by cmis:creationDate";
+            ignoreQuerySort = true;
+
         } else {
             searchParameters.setSkipCount(recordsQuery.getSkipCount());
         }
 
         searchParameters.setQuery(query);
 
-        for (SortBy sortBy : recordsQuery.getSortBy()) {
-            String field = "@" + sortBy.getAttribute();
-            if (!afterIdMode || !afterIdSortField.equals(field)) {
-                searchParameters.addSort(field, sortBy.isAscending());
+        if (!ignoreQuerySort) {
+            for (SortBy sortBy : recordsQuery.getSortBy()) {
+                String field = "@" + sortBy.getAttribute();
+                if (!afterIdMode || !afterIdSortField.equals(field)) {
+                    searchParameters.addSort(field, sortBy.isAscending());
+                }
             }
         }
 
         ResultSet resultSet = null;
         try {
-
+            if (logger.isDebugEnabled()) {
+                logger.debug("Execute query with parameters: " + searchParameters);
+            }
             resultSet = searchService.query(searchParameters);
 
             RecordsResult result = new RecordsResult();
@@ -116,14 +127,25 @@ public class SearchServiceAlfNodesSearch {
     private class SearchWithLanguage implements AlfNodesSearch {
 
         private final String language;
+        private final AfterIdType afterIdType;
+
+        SearchWithLanguage(String language, AfterIdType afterIdType) {
+            this.language = language;
+            this.afterIdType = afterIdType;
+        }
 
         SearchWithLanguage(String language) {
-            this.language = language;
+            this(language, null);
         }
 
         @Override
-        public RecordsResult queryRecords(RecordsQuery query, Long afterDbId) {
-            return queryRecordsImpl(query, afterDbId);
+        public RecordsResult queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
+            return queryRecordsImpl(query, afterDbId, afterCreated);
+        }
+
+        @Override
+        public AfterIdType getAfterIdType() {
+            return afterIdType;
         }
 
         @Override

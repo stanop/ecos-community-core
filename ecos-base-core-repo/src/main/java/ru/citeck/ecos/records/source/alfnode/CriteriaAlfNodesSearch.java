@@ -10,6 +10,7 @@ import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.query.*;
 import ru.citeck.ecos.search.*;
 
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Component
@@ -35,7 +36,7 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
     }
 
     @Override
-    public RecordsResult queryRecords(RecordsQuery query, Long afterDbId) {
+    public RecordsResult queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
 
         SearchCriteria criteria = criteriaParser.parse(query.getQuery());
         criteria.setSkip(query.getSkipCount());
@@ -75,6 +76,11 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
         result.setQuery(query);
 
         return result;
+    }
+
+    @Override
+    public AfterIdType getAfterIdType() {
+        return AfterIdType.DB_ID;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records.query;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.SearchService;
 import ru.citeck.ecos.records.RecordRef;
@@ -9,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class RecordsQuery {
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
