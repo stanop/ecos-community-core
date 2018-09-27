@@ -1,18 +1,12 @@
-package ru.citeck.ecos.flowable.listeners.global.impl.process;
+package ru.citeck.ecos.flowable.listeners.global.impl.variables;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.flowable.engine.delegate.DelegateExecution;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.flowable.listeners.global.GlobalEndExecutionListener;
-import ru.citeck.ecos.flowable.listeners.global.GlobalStartExecutionListener;
-import ru.citeck.ecos.flowable.listeners.global.GlobalTakeExecutionListener;
-import ru.citeck.ecos.flowable.utils.FlowableListenerUtils;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
@@ -22,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This class is flowable execution listener, which fills case roles assignees to execution variable.
+ * This class is flowable task/execution, which fills case roles assignees to execution variable.
  * Variables has patterns {@code VAR_KEY_ROLE_USERS_PATTERN} and {@code VAR_KEY_ROLE_GROUPS_PATTERN},
  * while {@code %s} - varName of role.
  * For example: case_role_initiator_users, if role varName = "initiator".
@@ -31,8 +25,7 @@ import java.util.Set;
  *
  * @author Roman Makarskiy
  */
-public class FlowableCaseRolesSetListener implements GlobalStartExecutionListener, GlobalEndExecutionListener,
-        GlobalTakeExecutionListener {
+public class FlowableCaseRolesSetListener extends AbstractFlowableSaveToExecutionListener {
 
     private static final Log logger = LogFactory.getLog(FlowableCaseRolesSetListener.class);
 
@@ -44,25 +37,19 @@ public class FlowableCaseRolesSetListener implements GlobalStartExecutionListene
     @Autowired
     private CaseRoleService caseRoleService;
     @Autowired
-    private NodeService nodeService;
-    @Autowired
     private DictionaryService dictionaryService;
 
     @Override
-    public void notify(DelegateExecution execution) {
-        NodeRef document = FlowableListenerUtils.getDocument(execution, nodeService);
+    public boolean saveIsRequired(NodeRef document) {
         if (document == null || !nodeService.exists(document)) {
-            return;
+            return false;
         }
 
-        if (!nodeService.hasAspect(document, ICaseRoleModel.ASPECT_HAS_ROLES)) {
-            return;
-        }
-
-        saveRolesToExecution(execution, document);
+        return nodeService.hasAspect(document, ICaseRoleModel.ASPECT_HAS_ROLES);
     }
 
-    private void saveRolesToExecution(DelegateExecution execution, NodeRef document) {
+    @Override
+    public void saveToExecution(String executionId, NodeRef document) {
         caseRoleService.updateRoles(document);
 
         List<NodeRef> roles = caseRoleService.getRoles(document);
@@ -98,12 +85,14 @@ public class FlowableCaseRolesSetListener implements GlobalStartExecutionListene
             final String roleGroupKey = String.format(VAR_KEY_ROLE_GROUPS_PATTERN, variableRoleName);
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Set case role persons variable: <" + roleUserKey + "> value: <" + persons + ">");
-                logger.debug("Set case role groups variable: <" + roleGroupKey + "> value: <" + groups + ">");
+                logger.debug("Set case role persons variable: <" + roleUserKey + "> value: <" + persons + ">, " +
+                        "executionId: <" + executionId + ">");
+                logger.debug("Set case role groups variable: <" + roleGroupKey + "> value: <" + groups + ">, " +
+                        "executionId: <" + executionId + ">");
             }
 
-            execution.setVariable(roleUserKey, persons);
-            execution.setVariable(roleGroupKey, groups);
+            setVariable(executionId, roleUserKey, persons);
+            setVariable(executionId, roleGroupKey, groups);
         }
     }
 }
