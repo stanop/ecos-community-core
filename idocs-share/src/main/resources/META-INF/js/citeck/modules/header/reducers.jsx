@@ -7,9 +7,12 @@ import {
     USER_SET_FULLNAME,
     USER_SET_NODE_REF,
     USER_SET_IS_ADMIN,
+    USER_SET_IS_AVAILABLE,
 
     SITE_MENU_SET_CURRENT_SITE_ID,
-    SITE_MENU_SET_CURRENT_SITE_DATA, USER_SET_IS_AVAILABLE
+    SITE_MENU_SET_CURRENT_SITE_DATA,
+
+    USER_MENU_SET_ITEMS
 } from './actions';
 
 /* caseMenuReducer */
@@ -22,6 +25,26 @@ Object.freeze(caseMenuInitialState);
 function caseMenuReducer(state = caseMenuInitialState, action) {
     switch (action.type) {
         case CREATE_CASE_WIDGET_SET_ITEMS:
+            return {
+                ...state,
+                items: action.payload
+            };
+
+        default:
+            return state;
+    }
+}
+
+/* userMenuReducer */
+const userMenuInitialState = {
+    items: [],
+};
+
+Object.freeze(userMenuInitialState);
+
+function userMenuReducer(state = userMenuInitialState, action) {
+    switch (action.type) {
+        case USER_MENU_SET_ITEMS:
             return {
                 ...state,
                 items: action.payload
@@ -130,5 +153,6 @@ function siteMenuReducer(state = siteMenuInitialState, action) {
 export default combineReducers({
     caseMenu: caseMenuReducer,
     siteMenu: siteMenuReducer,
+    userMenu: userMenuReducer,
     user: userReducer
 });

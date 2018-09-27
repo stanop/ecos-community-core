@@ -5,8 +5,7 @@ import { t } from 'js/citeck/modules/header/misc/util';
 import handleControl from '../misc/handle-control';
 
 const DropDownMenuItem = ({ key, data }) => {
-    const { id, targetUrl, iconClass, label, target, control } = data;
-    // TODO rid of iconClass
+    const { id, targetUrl, label, target, control } = data;
 
     let clickHandler = null;
     if (control && control.type) {
@@ -25,7 +24,7 @@ const DropDownMenuItem = ({ key, data }) => {
             className="custom-dropdown-menu__item"
             onClick={clickHandler}
         >
-            {iconClass && <i className={"fa " + iconClass} />}
+            <i className={"fa fa-custom fa-custom__" + id} />
             {label && t(label)}
         </MenuItem>
     )

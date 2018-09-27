@@ -1,13 +1,43 @@
-export function t(message) {
-    if (!message) {
+export function t(messageId, scope = '') {
+    // https://dev.alfresco.com/resource/docs/aikau-jsdoc/Core.js.html
+    if (!messageId) {
         return '';
     }
 
     if (!window.Alfresco) {
-        return message;
+        return messageId;
     }
 
-    return window.Alfresco.util.message(message);
+    if (scope) {
+        return window.Alfresco.util.message(messageId, scope);
+    }
+
+    let msg = messageId;
+    // Check the global message bundle for the message id (this will get overridden if a more specific property is available)...
+    if (typeof window.Alfresco.messages.global === "object") {
+        const globalMsg = window.Alfresco.messages.global[messageId];
+        if (typeof globalMsg === "string") {
+            msg = globalMsg;
+        }
+    }
+
+    // Overwrite with page scope...
+    if (typeof window.Alfresco.messages.pageScope === "object") {
+        const pageScopeMsg = window.Alfresco.messages.pageScope[messageId];
+        if (typeof pageScopeMsg === "string") {
+            msg = pageScopeMsg;
+        }
+    }
+
+    // Overwrite page scope with default scope...
+    if (typeof window.Alfresco.messages.scope[window.Alfresco.messages.defaultScope] === "object") {
+        const scopeMsg = window.Alfresco.messages.scope[window.Alfresco.messages.defaultScope][messageId];
+        if (typeof scopeMsg === "string") {
+            msg = scopeMsg;
+        }
+    }
+
+    return msg;
 }
 
 export function makeSiteMenuItems(user, siteData) {
@@ -27,7 +57,6 @@ export function makeSiteMenuItems(user, siteData) {
             { pageId: 'documentlibrary', title: 'Каталог', pageUrl: 'documentlibrary', },
             { pageId: 'wiki-page', title: 'Журналы', pageUrl: 'journals2/list/main', },
             { pageId: 'blog-postlist', title: 'Управление типами кейсов на сайте', pageUrl: 'site-document-types', },
-            { pageId: 'discussions-topiclist', title: 'discussions-topiclist', pageUrl: 'discussions-topiclist', },
         ];
 
         for (var i=0; i < pages.length; i++) {
@@ -72,7 +101,6 @@ export function makeSiteMenuItems(user, siteData) {
         siteMenuItems.push({
             id: "HEADER_CUSTOMIZE_SITE_DASHBOARD",
             label: "customize_dashboard.label",
-            // iconClass: "alf-cog-icon",
             targetUrl: "/share/page/site/" + siteData.id + "/customise-site-dashboard"
         });
 
@@ -152,13 +180,11 @@ export const makeUserMenuItems = (userName, isAvailable) => {
         {
             id: "HEADER_USER_MENU_MY_PROFILE",
             label: "header.my-profile.label",
-            iconClass: "fa-user",
             targetUrl: "/share/page/user/" + encodeURIComponent(userName) + "/profile"
         },
         {
             id: "HEADER_USER_MENU_AVAILABILITY",
             label: "header." + availability + ".label",
-            iconClass: "fa-user-times", // TODO
             targetUrl: "/share/page/components/deputy/make-available?available=" + (isAvailable === false ? "true" : "false"),
             control: isAvailable === false ? null : {
                 type: "ALF_SHOW_MODAL_MAKE_UNAVAILABLE",
@@ -170,13 +196,11 @@ export const makeUserMenuItems = (userName, isAvailable) => {
         {
             id: "HEADER_USER_MENU_PASSWORD",
             label: "header.change-password.label",
-            iconClass: "fa-key",
             targetUrl: "/share/page/user/" + encodeURIComponent(userName) + "/change-password"
         },
         {
             id: "HEADER_USER_MENU_FEEDBACK",
             label: "header.feedback.label",
-            iconClass: "fa-exclamation-circle",
             targetUrl: "https://www.citeck.ru/feedback",
             targetUrlType: "FULL_PATH",
             target: "_blank"
@@ -184,15 +208,13 @@ export const makeUserMenuItems = (userName, isAvailable) => {
         {
             id: "HEADER_USER_MENU_REPORTISSUE",
             label: "header.reportIssue.label",
-            iconClass: "fa-comment",
             targetUrl: "mailto:support@citeck.ru?subject=Ошибка в работе Citeck EcoS: краткое описание&body=Summary: Короткое описание проблемы (продублировать в теме письма)%0A%0ADescription:%0AПожалуйста, детально опишите возникшую проблему, последовательность действий, которая привела к ней. При необходимости приложите скриншоты.",
             targetUrlType: "FULL_PATH",
             target: "_blank"
         },
         {
-            id: "HEADER_USER_MENU_LOGOUT_my",
+            id: "HEADER_USER_MENU_LOGOUT",
             label: "header.logout.label",
-            iconClass: "fa-times-circle",
             control: {
                 type: "ALF_DOLOGOUT"
             }

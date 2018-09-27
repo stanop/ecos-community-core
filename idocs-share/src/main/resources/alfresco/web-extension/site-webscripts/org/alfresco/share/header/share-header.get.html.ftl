@@ -4,7 +4,6 @@
          <@link href="${url.context}/res${cssFile}" group="header"/>
       </#list>
    </#if>
-   <@link href="${url.context}/res/js/citeck/lib/css/bootstrap.min.css" group="header" />
 </@>
 
 <@markup id="js">
@@ -31,65 +30,26 @@
          Alfresco.constants.DASHLET_RESIZE = ${((page.url.templateArgs.userid!"-") = (user.name!""))?string} && YAHOO.env.ua.mobile === null;
       </#if>
    </@>
+   <#if isSlideMenu>
+        <script type="text/javascript">//<![CDATA[
+        require([
+            'js/citeck/modules/header/index'
+        ], function(ShareHeader) {
+            ShareHeader.render('share-header', {
+                userName: "${((user.name)!"")?js_string}",
+                userFullname: "${((user.fullName)!"")?js_string}",
+                userNodeRef: "${((user.properties.nodeRef)!"")?js_string}",
+                userIsAdmin: "${user.isAdmin?string}",
+                userIsAvailable: "${((user.properties.available)!"")?string}",
+                site: "${((page.url.templateArgs.site)!"")?js_string}"
+            });
+        });
+        //]]></script>
+   <#else>
+      <@processJsonModel group="share"/>
+   </#if>
+</@>
 
-   <#assign pageArgsMap = ((page.url.templateArgs!{}) + (page.url.args!{}) + {
-       "pageid": "card-details",
-       "theme": "${theme!}"
-   }) />
-
-   <script type="text/javascript">//<![CDATA[
-       var header = document.createElement('div');
-       header.id = "share-header";
-       document.getElementById('alf-hd').appendChild(header);
-       var searchUrl = Alfresco.constants.PROXY_URI + "/citeck/ecosConfig/ecos-config-value?configName=default-ui-main-menu";
-       var request = new XMLHttpRequest();
-       request.open('GET', searchUrl, false);  // `false` makes the request synchronous
-       request.send(null);
-       if (request.status === 200 && request.responseText) {
-           var data = JSON.parse(request.responseText);
-           var isReactMenu = data && data.value === "left";
-           if (isReactMenu) {
-               require([
-                   'js/citeck/modules/header/index'
-               ], function(ShareHeader) {
-                   ShareHeader.render('share-header', {
-                       userName: "${((user.name)!"")?js_string}",
-                       userFullname: "${((user.fullName)!"")?js_string}",
-                       userNodeRef: "${((user.properties.nodeRef)!"")?js_string}",
-                       userIsAdmin: "${user.isAdmin?string}",
-                       userIsAvailable: "${((user.properties.available)!"")?string}",
-                       site: "${((page.url.templateArgs.site)!"")?js_string}"
-                   });
-               });
-           } else {
-               require([
-                   'react',
-                   'react-dom',
-                   'js/citeck/modules/surf/surf-region'
-               ], function(React, ReactDOM, SurfRegion) {
-                    var pageArgs = {
-                        <#list pageArgsMap?keys as argKey>
-                            "${argKey}":"${pageArgsMap[argKey]!}"<#if argKey_has_next>,</#if>
-                        </#list>
-                    };
-
-                    var arguments = {
-                        regionId: "share-header",
-                        scope: "global",
-                        chromeless: "true",
-                        pageid: "card-details",
-                        site: pageArgs.site,
-                        theme: pageArgs.theme,
-                        cacheAge: 300,
-                        userName: "${((user.name)!"")?js_string}"
-                    };
-
-                    ReactDOM.render(React.createElement(SurfRegion.default, {args: arguments}), document.getElementById('share-header'));
-               });
-           }
-       }
-   //]]></script>
-   <@inlineScript group="header">
-      <#assign runtimeKey = args.runtimeKey!args.htmlid />
-   </@>
+<@markup id="html">
+   <div id="share-header"></div>
 </@>

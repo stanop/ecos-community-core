@@ -1,4 +1,4 @@
-import { makeSiteMenuItems } from './misc/util'
+import { makeSiteMenuItems, makeUserMenuItems } from './misc/util'
 
 export const CREATE_CASE_WIDGET_SET_ITEMS = 'CREATE_CASE_WIDGET_SET_ITEMS';
 
@@ -12,6 +12,14 @@ export const USER_SET_PHOTO = 'USER_SET_PHOTO';
 export const SITE_MENU_SET_CURRENT_SITE_ID = 'SITE_MENU_SET_CURRENT_SITE_ID';
 export const SITE_MENU_SET_CURRENT_SITE_DATA = 'SITE_MENU_SET_CURRENT_SITE_DATA';
 
+export const USER_MENU_SET_ITEMS = 'USER_MENU_SET_ITEMS';
+
+export function setUserMenuItems(payload) {
+    return {
+        type: USER_MENU_SET_ITEMS,
+        payload
+    }
+}
 
 export function setCreateCaseWidgetItems(payload) {
     return {
@@ -19,67 +27,6 @@ export function setCreateCaseWidgetItems(payload) {
         payload
     }
 }
-
-export function loadCreateCaseWidgetItems(username) {
-    return (dispatch, getState, api) => {
-        let allSites = [];
-        api.getSitesForUser(username).then(sites => {
-            let promises = [];
-            for (let site of sites) {
-                allSites.push(site);
-                promises.push(new Promise((resolve, reject) => {
-                    api.getCreateVariantsForSite(site.shortName).then(variants => {
-                        resolve(variants)
-                    })
-                }))
-            }
-
-            return Promise.all(promises);
-        }).then(variants => {
-            let menuItems = [];
-            menuItems.push(
-                {
-                    id: "HEADER_CREATE_WORKFLOW",
-                    label: "header.create-workflow.label",
-                    items: [
-                        {
-                            id: "HEADER_CREATE_WORKFLOW_ADHOC",
-                            label: "header.create-workflow-adhoc.label",
-                            targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$perform"
-                        },
-                        {
-                            id: "HEADER_CREATE_WORKFLOW_CONFIRM",
-                            label: "header.create-workflow-confirm.label",
-                            targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$confirm"
-                        },
-                    ],
-                },
-            );
-
-            for (let i in allSites) {
-                let createVariants = [];
-                for (let variant of variants[i]) {
-                    createVariants.push({
-                        id: "HEADER_" + ((allSites[i].shortName + "_" + variant.type).replace(/\-/g, "_")).toUpperCase(),
-                        label: variant.title,
-                        targetUrl: "/share/page/node-create?type=" + variant.type + "&viewId=" + variant.formId + "&destination=" + variant.destination
-                    });
-                }
-                const siteId = "HEADER_" + (allSites[i].shortName.replace(/\-/g, "_")).toUpperCase();
-                menuItems.push({
-                    id: siteId,
-                    label: allSites[i].title,
-                    items: createVariants
-                });
-            }
-
-            return menuItems;
-        }).then(items => {
-            dispatch(setCreateCaseWidgetItems(items))
-        });
-    }
-}
-
 
 export function setUserName(payload) {
     return {
@@ -154,14 +101,70 @@ export function setCurrentSiteData(payload) {
     }
 }
 
-export function loadSiteMenuItems(sitename, username) {
+export function loadTopMenuData(siteId, userName, userIsAvailable) {
     return (dispatch, getState, api) => {
-        api.getSiteData(sitename).then(result => {
+        let promises = [];
+
+        let allSites = [];
+        const getCreateCaseMenuDataRequest = api.getSitesForUser(userName).then(sites => {
+            let promises = [];
+            for (let site of sites) {
+                allSites.push(site);
+                promises.push(new Promise((resolve, reject) => {
+                    api.getCreateVariantsForSite(site.shortName).then(variants => {
+                        resolve(variants)
+                    })
+                }))
+            }
+
+            return Promise.all(promises);
+        }).then(variants => {
+            let menuItems = [];
+            menuItems.push(
+                {
+                    id: "HEADER_CREATE_WORKFLOW",
+                    label: "header.create-workflow.label",
+                    items: [
+                        {
+                            id: "HEADER_CREATE_WORKFLOW_ADHOC",
+                            label: "header.create-workflow-adhoc.label",
+                            targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$perform"
+                        },
+                        {
+                            id: "HEADER_CREATE_WORKFLOW_CONFIRM",
+                            label: "header.create-workflow-confirm.label",
+                            targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$confirm"
+                        },
+                    ],
+                },
+            );
+
+            for (let i in allSites) {
+                let createVariants = [];
+                for (let variant of variants[i]) {
+                    createVariants.push({
+                        id: "HEADER_" + ((allSites[i].shortName + "_" + variant.type).replace(/\-/g, "_")).toUpperCase(),
+                        label: variant.title,
+                        targetUrl: "/share/page/node-create?type=" + variant.type + "&viewId=" + variant.formId + "&destination=" + variant.destination
+                    });
+                }
+                const siteId = "HEADER_" + (allSites[i].shortName.replace(/\-/g, "_")).toUpperCase();
+                menuItems.push({
+                    id: siteId,
+                    label: allSites[i].title,
+                    items: createVariants
+                });
+            }
+
+            return menuItems;
+        });
+
+        const getSiteDataRequest = api.getSiteData(siteId).then(result => {
             return dispatch(setCurrentSiteData({
                 profile: result
             }));
         }).then(() => {
-            return api.getSiteUserMembership(sitename, username).then(result => {
+            return api.getSiteUserMembership(siteId, userName).then(result => {
                 return dispatch(setCurrentSiteData({
                     userIsMember: true,
                     userIsDirectMember: !(result.isMemberOfGroup),
@@ -174,8 +177,29 @@ export function loadSiteMenuItems(sitename, username) {
             const siteData = state.siteMenu;
 
             return makeSiteMenuItems(user, siteData);
-        }).then(items => {
-            return dispatch(setCurrentSiteData({ items }));
+        });
+
+        promises.push(getCreateCaseMenuDataRequest, getSiteDataRequest);
+
+        Promise.all(promises).then(([createCaseMenu, siteMenu]) => {
+            return {
+                'createCaseMenu': createCaseMenu,
+                'siteMenu': siteMenu,
+                'userMenu': makeUserMenuItems(userName, userIsAvailable),
+            };
+        }).then(result => {
+            dispatch(setCreateCaseWidgetItems(result.createCaseMenu));
+            dispatch(setCurrentSiteData({ items: result.siteMenu }));
+            dispatch(setUserMenuItems(result.userMenu));
         });
     }
 }
+
+// TODO
+// export function loadTopMenuDataTODO(siteId, userName) {
+//     fetch('someUrl').then(result => {
+//         dispatch(setCreateCaseWidgetItems(result.createCaseMenu));
+//         dispatch(setCurrentSiteData({ items: result.siteMenu }));
+//         dispatch(setUserMenuItems(result.userMenu));
+//     });
+// }

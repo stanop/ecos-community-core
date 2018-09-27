@@ -21,9 +21,34 @@ export default function handleControl(type, payload) {
             break;
 
         case 'ALF_EDIT_SITE':
-            Alfresco.module.getEditSiteInstance().show({
-                shortName: payload.site
+            if (Alfresco && Alfresco.module && typeof Alfresco.module.getEditSiteInstance === "function") {
+                Alfresco.module.getEditSiteInstance().show({
+                    shortName: payload.site
+                });
+            } else {
+                const legacyEditSiteResource = Alfresco.constants.URL_RESCONTEXT + "modules/edit-site" + (Alfresco.constants.DEBUG ? ".js" : "-min.js");
+                require([legacyEditSiteResource], function() {
+                    Alfresco.module.getEditSiteInstance().show({
+                        shortName: payload.site
+                    });
+                });
+            }
+
+            break;
+
+        case 'ALF_DOLOGOUT':
+            fetch(Alfresco.constants.URL_SERVICECONTEXT + "dologout", {
+                method: "POST"
+            }).then(() => {
+                window.location.reload();
             });
+            break;
+
+        case 'ALF_LEAVE_SITE':
+            // TODO
+            // fetch(Alfresco.constants.PROXY_URI + "api/sites/test/memberships/admin", {
+            //     method: "DELETE"
+            // });
             break;
 
         default:

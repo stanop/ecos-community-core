@@ -38,7 +38,7 @@ const enhance = compose(
     withProps(props => {
         return {
             searchPlaceholder: props.placeholder ? t(props.placeholder) : t('search.label'),
-            clearButtonTitle: t("Clear") // TODO set correct message
+            clearButtonTitle: t('search.clear')
         }
     }),
     withState('searchText', 'updateSearchText', ''),

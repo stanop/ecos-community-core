@@ -13,8 +13,12 @@ import {
     setUserNodeRef,
     setUserIsAdmin,
     setUserIsAvailable,
-    setCurrentSiteId
+    setCurrentSiteId,
+    loadTopMenuData,
+    loadUserMenuPhoto
 } from './actions';
+
+import "xstyle!js/citeck/lib/css/bootstrap.min.css";
 
 // TODO include polyfills
 
@@ -36,8 +40,11 @@ export const render = (elementId, props) => {
     store.dispatch(setUserNodeRef(props.userNodeRef));
     store.dispatch(setUserIsAdmin(props.userIsAdmin === "true"));
     store.dispatch(setUserIsAvailable(props.userIsAvailable === "true"));
+    store.dispatch(loadUserMenuPhoto(props.userNodeRef));
 
     store.dispatch(setCurrentSiteId(props.site));
+
+    store.dispatch(loadTopMenuData(props.site, props.userName, props.userIsAvailable === "true"));
 
     ReactDOM.render(
         <Provider store={store}>
