@@ -12,7 +12,6 @@ import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.preference.PreferenceService;
 import org.alfresco.service.cmr.rating.RatingService;
 import org.alfresco.service.cmr.repository.*;
-import org.alfresco.service.cmr.repository.Path;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.cmr.security.PersonService;
@@ -20,8 +19,6 @@ import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -64,7 +61,7 @@ public class NodeInfoGet extends AbstractWebScript {
 
     private Map<String, Method> fillMethods = new HashMap<>();
 
-    private PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();
+    private List<QName> displayByNameClasses = new ArrayList<>();
 
     @PostConstruct
     public void initMethods() {
@@ -208,7 +205,10 @@ public class NodeInfoGet extends AbstractWebScript {
     }
 
     private String fillDisplayName(RequestContext context) {
-        String displayName = (String) context.getProps().get(ContentModel.PROP_TITLE);
+        String displayName = null;
+        if (!displayByNameClasses.contains(context.getType())) {
+            displayName = (String) context.getProps().get(ContentModel.PROP_TITLE);
+        }
         if (StringUtils.isBlank(displayName)) {
             displayName = (String) context.getProps().get(ContentModel.PROP_NAME);
         }
@@ -324,6 +324,10 @@ public class NodeInfoGet extends AbstractWebScript {
         this.ratingService = serviceRegistry.getRatingService();
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.mimetypeService = serviceRegistry.getMimetypeService();
+    }
+
+    public void setDisplayByNameClasses(List<QName> displayByNameClasses) {
+        this.displayByNameClasses = displayByNameClasses;
     }
 
     private class RequestContext {

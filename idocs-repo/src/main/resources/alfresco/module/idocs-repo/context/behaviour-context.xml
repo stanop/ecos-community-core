@@ -616,13 +616,6 @@
 		</property>
 	</bean>
 
-    <bean id="idocs.EcosDocumentTitleGenerationBehaviour" parent="TitleGenerationBehaviour">
-        <property name="className" value="ecos:document"/>
-        <property name="titleTemplate">
-            <value><![CDATA[<#if node.properties['cm:title']?has_content>#{'$'}{node.properties['cm:title']}<#else>#{'$'}{node.properties['cm:name']!"Документ"}</#if>]]></value>
-        </property>
-    </bean>
-
     <bean id="idocs.applicationFileNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="dms:applicationFile"/>
         <property name="nameTemplate" value="${node.properties['dms:applicationFileName']}"/>

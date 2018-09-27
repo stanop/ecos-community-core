@@ -199,6 +199,12 @@
     <bean id="webscript.ru.citeck.node.node-info.get"
           class="ru.citeck.ecos.webscripts.node.NodeInfoGet"
           parent="webscript">
+        <property name="displayByNameClasses">
+            <list>
+                <value>{http://www.citeck.ru/model/content/ecos/1.0}document</value>
+                <value>{http://www.citeck.ru/model/content/ecos/1.0}case</value>
+            </list>
+        </property>
     </bean>
 
 	<bean id="webscript.ru.citeck.security.checkBelongsUserToGroup.get"
