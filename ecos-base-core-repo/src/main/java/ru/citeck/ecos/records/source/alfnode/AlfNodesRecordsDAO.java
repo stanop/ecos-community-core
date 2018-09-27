@@ -2,6 +2,8 @@ package ru.citeck.ecos.records.source.alfnode;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
@@ -20,6 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class AlfNodesRecordsDAO extends LocalRecordsDAO {
 
+    private static final Log logger = LogFactory.getLog(AlfNodesRecordsDAO.class);
+
     public static final String ID = "";
 
     private Map<String, AlfNodesSearch> searchByLanguage = new ConcurrentHashMap<>();
@@ -36,19 +40,47 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO {
                                                " is not supported! Query: " + query);
         }
         Long afterIdValue = null;
+        Date afterCreated = null;
         if (query.isAfterIdMode()) {
+
             RecordRef afterId = query.getAfterId();
+
+            AlfNodesSearch.AfterIdType afterIdType = alfNodesSearch.getAfterIdType();
+
             if (afterId != null) {
                 if (!ID.equals(afterId.getSourceId())) {
                     return new RecordsResult(query);
                 }
                 NodeRef afterIdNodeRef = new NodeRef(afterId.getId());
-                afterIdValue = (Long) nodeService.getProperty(afterIdNodeRef, ContentModel.PROP_NODE_DBID);
+
+                if (afterIdType == null) {
+                    throw new IllegalArgumentException("Page parameter afterId is not supported " +
+                                                       "by language " + query.getLanguage() + ". query: " + query);
+                }
+                switch (afterIdType) {
+                    case DB_ID:
+                        afterIdValue = (Long) nodeService.getProperty(afterIdNodeRef, ContentModel.PROP_NODE_DBID);
+                        break;
+                    case CREATED:
+                        afterCreated = (Date) nodeService.getProperty(afterIdNodeRef, ContentModel.PROP_CREATED);
+                        break;
+                }
             } else {
-                afterIdValue = 0L;
+                switch (afterIdType) {
+                    case DB_ID:
+                        afterIdValue = 0L;
+                        break;
+                    case CREATED:
+                        afterCreated = new Date(0);
+                        break;
+                }
             }
         }
-        return alfNodesSearch.queryRecords(query, afterIdValue);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Query records with query: " + query +
+                         " afterIdValue: " + afterIdValue + " afterCreated: " + afterCreated);
+        }
+        return alfNodesSearch.queryRecords(query, afterIdValue, afterCreated);
     }
 
     @Override
