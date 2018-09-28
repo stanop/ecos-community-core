@@ -425,6 +425,10 @@ define([
     }
 
     function evalCriteriaQuery(criteria, model, pagination) {
+        if (criteria == null || criteria.length == 0) {
+            return null;
+        }
+
         var query = {
             skipCount: 0,
             sortBy: [{attribute: "sys:node-dbid", order: "asc"}]
