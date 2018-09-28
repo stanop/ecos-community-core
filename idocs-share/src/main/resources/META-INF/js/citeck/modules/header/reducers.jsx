@@ -10,9 +10,12 @@ import {
     USER_SET_IS_AVAILABLE,
 
     SITE_MENU_SET_CURRENT_SITE_ID,
-    SITE_MENU_SET_CURRENT_SITE_DATA,
+    SITE_MENU_SET_SITE_MENU_ITEMS,
 
-    USER_MENU_SET_ITEMS
+    USER_MENU_SET_ITEMS,
+
+    SHOW_MODAL,
+    HIDE_MODAL
 } from './actions';
 
 /* caseMenuReducer */
@@ -113,17 +116,7 @@ function userReducer(state = userInitialState, action) {
 
 /* siteMenuReducer */
 const siteMenuInitialState = {
-    id: '',
-    profile: {
-        title: "",
-        shortName: "",
-        visibility: "PRIVATE",
-    },
-
-    userIsSiteManager: false,
-    userIsMember: false,
-    userIsDirectMember: false,
-
+    siteId: '',
     items: []
 };
 
@@ -134,14 +127,57 @@ function siteMenuReducer(state = siteMenuInitialState, action) {
         case SITE_MENU_SET_CURRENT_SITE_ID:
             return {
                 ...state,
-                id: action.payload
+                siteId: action.payload
             };
 
-        case SITE_MENU_SET_CURRENT_SITE_DATA:
+        case SITE_MENU_SET_SITE_MENU_ITEMS:
             return {
                 ...state,
+                items: action.payload
+            };
+
+        default:
+            return state;
+    }
+}
+
+
+/* modalReducer */
+const modalInitialState = {
+    isOpen: false,
+    title: "",
+    content: "",
+    buttons: []
+};
+
+/*
+Button list example:
+buttons: [
+    {
+        label: 'Button label',
+        onClick: () => {
+            ...some actions
+        },
+        bsStyle: "primary",
+        isCloseButton: false
+    },
+    ...other buttons
+]
+ */
+
+Object.freeze(modalInitialState);
+
+function modalReducer(state = modalInitialState, action) {
+    switch (action.type) {
+        case SHOW_MODAL:
+            return {
+                ...state,
+                isOpen: true,
                 ...action.payload
             };
+
+        case HIDE_MODAL:
+            return modalInitialState;
 
         default:
             return state;
@@ -153,6 +189,7 @@ function siteMenuReducer(state = siteMenuInitialState, action) {
 export default combineReducers({
     caseMenu: caseMenuReducer,
     siteMenu: siteMenuReducer,
+    modal: modalReducer,
     userMenu: userMenuReducer,
     user: userReducer
 });

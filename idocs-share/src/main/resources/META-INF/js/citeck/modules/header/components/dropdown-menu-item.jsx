@@ -1,17 +1,22 @@
 import React from "react";
+import { connect } from "react-redux";
 import { pure } from 'recompose';
 import { MenuItem } from 'react-bootstrap';
-import { t } from 'js/citeck/modules/header/misc/util';
+import { t } from '../misc/util';
 import handleControl from '../misc/handle-control';
 
-const DropDownMenuItem = ({ key, data }) => {
+const mapDispatchToProps = dispatch => ({
+    dispatch
+});
+
+const DropDownMenuItem = ({ key, data, dispatch }) => {
     const { id, targetUrl, label, target, control } = data;
 
     let clickHandler = null;
     if (control && control.type) {
-        clickHandler = function (event, element) {
+        clickHandler = event => {
             event.preventDefault();
-            handleControl(control.type, control.payload);
+            handleControl(control.type, control.payload, dispatch);
         };
     }
 
@@ -30,4 +35,4 @@ const DropDownMenuItem = ({ key, data }) => {
     )
 };
 
-export default pure(DropDownMenuItem);
+export default connect(null, mapDispatchToProps)(pure(DropDownMenuItem));

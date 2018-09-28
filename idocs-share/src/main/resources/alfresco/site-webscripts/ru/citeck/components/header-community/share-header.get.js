@@ -50,7 +50,7 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
         { id: "more", url: "console/admin-console/", iconImage: "/share/res/components/images/header/more.png" }
     ];
 
-    model.isSlideMenu = isSlideMenu;
+    model.isReactMenu = isSlideMenu;
 
 // ---------------------
 // General code

@@ -1,5 +1,16 @@
-export default function handleControl(type, payload) {
+import { showModal, hideModal, leaveSiteRequest } from '../actions';
+import { t } from './util'
+
+export default function handleControl(type, payload, dispatch) {
     switch (type) {
+
+        case 'ALF_DOLOGOUT':
+            fetch(Alfresco.constants.URL_SERVICECONTEXT + "dologout", {
+                method: "POST"
+            }).then(() => {
+                window.location.reload();
+            });
+            break;
 
         case 'ALF_SHOW_MODAL_MAKE_UNAVAILABLE':
             return Citeck.forms.dialog("deputy:selfAbsenceEvent", "", {
@@ -36,19 +47,25 @@ export default function handleControl(type, payload) {
 
             break;
 
-        case 'ALF_DOLOGOUT':
-            fetch(Alfresco.constants.URL_SERVICECONTEXT + "dologout", {
-                method: "POST"
-            }).then(() => {
-                window.location.reload();
-            });
-            break;
-
         case 'ALF_LEAVE_SITE':
-            // TODO
-            // fetch(Alfresco.constants.PROXY_URI + "api/sites/test/memberships/admin", {
-            //     method: "DELETE"
-            // });
+            dispatch(showModal({
+                title: t("message.leave", { "0": payload.siteTitle}),
+                content: t("message.leave-site-prompt", { "0": payload.siteTitle}),
+                buttons: [
+                    {
+                        label: t('button.leave-site.confirm-label'),
+                        onClick: () => {
+                            dispatch(leaveSiteRequest(payload));
+                            dispatch(hideModal());
+                        },
+                        bsStyle: "primary"
+                    },
+                    {
+                        label: t('button.leave-site.cancel-label'),
+                        isCloseButton: true
+                    }
+                ]
+            }));
             break;
 
         default:

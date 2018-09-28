@@ -70,6 +70,7 @@
     box-shadow: 0 0 9px 1px rgba(0,0,0,.3);
     border-color: #83a4c6;
     padding: 6px !important;
+    z-index: 10;
 }
 
 .custom-dropdown-menu__body .custom-dropdown-menu__item a {

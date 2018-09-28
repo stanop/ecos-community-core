@@ -1,4 +1,4 @@
-export function t(messageId, scope = '') {
+export function t(messageId, multipleValues, scope = 'global') {
     // https://dev.alfresco.com/resource/docs/aikau-jsdoc/Core.js.html
     if (!messageId) {
         return '';
@@ -8,36 +8,7 @@ export function t(messageId, scope = '') {
         return messageId;
     }
 
-    if (scope) {
-        return window.Alfresco.util.message(messageId, scope);
-    }
-
-    let msg = messageId;
-    // Check the global message bundle for the message id (this will get overridden if a more specific property is available)...
-    if (typeof window.Alfresco.messages.global === "object") {
-        const globalMsg = window.Alfresco.messages.global[messageId];
-        if (typeof globalMsg === "string") {
-            msg = globalMsg;
-        }
-    }
-
-    // Overwrite with page scope...
-    if (typeof window.Alfresco.messages.pageScope === "object") {
-        const pageScopeMsg = window.Alfresco.messages.pageScope[messageId];
-        if (typeof pageScopeMsg === "string") {
-            msg = pageScopeMsg;
-        }
-    }
-
-    // Overwrite page scope with default scope...
-    if (typeof window.Alfresco.messages.scope[window.Alfresco.messages.defaultScope] === "object") {
-        const scopeMsg = window.Alfresco.messages.scope[window.Alfresco.messages.defaultScope][messageId];
-        if (typeof scopeMsg === "string") {
-            msg = scopeMsg;
-        }
-    }
-
-    return msg;
+    return window.Alfresco.util.message(messageId, scope, multipleValues);
 }
 
 export function makeSiteMenuItems(user, siteData) {
@@ -49,7 +20,7 @@ export function makeSiteMenuItems(user, siteData) {
             {
                 id: "HEADER_SITE_DASHBOARD",
                 label: "page.siteDashboard.title",
-                targetUrl: "/share/page/site/" + siteData.id + "/dashboard",
+                targetUrl: "/share/page/site/" + siteData.siteId + "/dashboard",
             }
         ];
 
@@ -60,7 +31,7 @@ export function makeSiteMenuItems(user, siteData) {
         ];
 
         for (var i=0; i < pages.length; i++) {
-            var targetUrl = "/share/page/site/" + siteData.id + "/" + pages[i].pageUrl;
+            var targetUrl = "/share/page/site/" + siteData.siteId + "/" + pages[i].pageUrl;
             siteMenuItems.push({
                 id: "HEADER_SITE_" + pages[i].pageId.toUpperCase(),
                 label: (pages[i].sitePageTitle) ? pages[i].sitePageTitle : pages[i].title,
@@ -71,7 +42,7 @@ export function makeSiteMenuItems(user, siteData) {
         siteMenuItems.push({
             id: "HEADER_SITE_MEMBERS",
             label: "page.siteMembers.title",
-            targetUrl: "/share/page/site/" + siteData.id + "/site-members"
+            targetUrl: "/share/page/site/" + siteData.siteId + "/site-members"
         });
     }
 
@@ -84,7 +55,7 @@ export function makeSiteMenuItems(user, siteData) {
             control: {
                 type: "ALF_BECOME_SITE_MANAGER",
                 payload: {
-                    site: siteData.id,
+                    site: siteData.siteId,
                     siteTitle: siteData.profile.title,
                     user: user.name,
                     userFullName: user.fullName,
@@ -101,7 +72,7 @@ export function makeSiteMenuItems(user, siteData) {
         siteMenuItems.push({
             id: "HEADER_CUSTOMIZE_SITE_DASHBOARD",
             label: "customize_dashboard.label",
-            targetUrl: "/share/page/site/" + siteData.id + "/customise-site-dashboard"
+            targetUrl: "/share/page/site/" + siteData.siteId + "/customise-site-dashboard"
         });
 
         // Add the regular site manager options (edit site, customize site, leave site)
@@ -112,7 +83,7 @@ export function makeSiteMenuItems(user, siteData) {
                 control: {
                     type: "ALF_EDIT_SITE",
                     payload: {
-                        site: siteData.id,
+                        site: siteData.siteId,
                         siteTitle: siteData.profile.title,
                         user: user.name,
                         userFullName: user.fullName
@@ -122,7 +93,7 @@ export function makeSiteMenuItems(user, siteData) {
             {
                 id: "HEADER_CUSTOMIZE_SITE",
                 label: "customize_site.label",
-                targetUrl: "/share/page/site/" + siteData.id + "/customise-site"
+                targetUrl: "/share/page/site/" + siteData.siteId + "/customise-site"
             },
             {
                 id: "HEADER_LEAVE_SITE",
@@ -130,7 +101,7 @@ export function makeSiteMenuItems(user, siteData) {
                 control: {
                     type: "ALF_LEAVE_SITE",
                     payload: {
-                        site: siteData.id,
+                        site: siteData.siteId,
                         siteTitle: siteData.profile.title,
                         user: user.name,
                         userFullName: user.fullName
@@ -146,7 +117,7 @@ export function makeSiteMenuItems(user, siteData) {
             control: {
                 type: "ALF_LEAVE_SITE",
                 payload: {
-                    site: siteData.id,
+                    site: siteData.siteId,
                     siteTitle: siteData.profile.title,
                     user: user.name,
                     userFullName: user.fullName
@@ -161,7 +132,7 @@ export function makeSiteMenuItems(user, siteData) {
             control: {
                 type: (siteData.profile.visibility === "MODERATED" ? "ALF_REQUEST_SITE_MEMBERSHIP" : "ALF_JOIN_SITE"),
                 payload: {
-                    site: siteData.id,
+                    site: siteData.siteId,
                     siteTitle: siteData.profile.title,
                     user: user.name,
                     userFullName: user.fullName
