@@ -21,7 +21,7 @@ public class IterableRecords implements Iterable<RecordRef> {
                            RecordsQuery recordsQuery) {
 
         this.sourceId = sourceId;
-        this.recordsQuery = recordsQuery;
+        this.recordsQuery = new RecordsQuery(recordsQuery);
         this.recordsService = recordsService;
 
         ParameterCheck.mandatory("recordsService", recordsService);
@@ -61,7 +61,7 @@ public class IterableRecords implements Iterable<RecordRef> {
 
         private int currentIdx = 0;
         private List<RecordRef> records;
-        private RecordRef lastId = null;
+        private RecordRef lastId = recordsQuery.getAfterId();
         private boolean stopped = false;
 
         private int processedCount = 0;

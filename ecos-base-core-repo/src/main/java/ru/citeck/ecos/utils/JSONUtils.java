@@ -18,6 +18,12 @@
  */
 package ru.citeck.ecos.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.POJONode;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,27 +36,27 @@ import java.util.Map;
 
 public class JSONUtils {
 
-	public static Object convertJSON(Object obj) {
-		if(obj == null) {
-			return null;
-		}
-		if(obj instanceof org.json.simple.JSONObject) {
-		    return convertJSON((org.json.simple.JSONObject) obj);
-		}
-		if(obj instanceof org.json.simple.JSONArray) {
-		    return convertJSON((org.json.simple.JSONArray) obj);
-		}
-		if(obj instanceof org.json.JSONObject) {
-		    return convertJSON((org.json.JSONObject) obj);
-		}
-		if(obj instanceof org.json.JSONArray) {
-		    return convertJSON((org.json.JSONArray) obj);
-		}
-		if(obj == org.json.JSONObject.NULL) {
-		    return null;
-		}
-		return obj;
-	}
+    public static Object convertJSON(Object obj) {
+        if(obj == null) {
+            return null;
+        }
+        if(obj instanceof org.json.simple.JSONObject) {
+            return convertJSON((org.json.simple.JSONObject) obj);
+        }
+        if(obj instanceof org.json.simple.JSONArray) {
+            return convertJSON((org.json.simple.JSONArray) obj);
+        }
+        if(obj instanceof org.json.JSONObject) {
+            return convertJSON((org.json.JSONObject) obj);
+        }
+        if(obj instanceof org.json.JSONArray) {
+            return convertJSON((org.json.JSONArray) obj);
+        }
+        if(obj == org.json.JSONObject.NULL) {
+            return null;
+        }
+        return obj;
+    }
 
     public static List<Object> convertJSON(org.json.JSONArray jsonArray) {
         List<Object> converted = new ArrayList<Object>(jsonArray.length());
@@ -71,7 +77,7 @@ public class JSONUtils {
     public static List<Object> convertJSON(org.json.simple.JSONArray jsonArray) {
         List<Object> converted = new ArrayList<Object>(jsonArray.size());
         for(Object child : jsonArray) {
-        	converted.add(convertJSON(child));
+            converted.add(convertJSON(child));
         }
         return converted;
     }
@@ -87,46 +93,63 @@ public class JSONUtils {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	public static Object jsonCopy(Object obj) {
-		if(obj instanceof Map) {
-			Map map = (Map) obj;
-			Map copy = new HashMap(map.size());
-			for(Object key : map.keySet()) {
-				copy.put(key, jsonCopy(map.get(key)));
-			}
-			return copy;
-		}
-		if(obj instanceof List) {
-			List list = (List) obj;
-			List copy = new ArrayList(list.size());
-			for(Object child : list) {
-				copy.add(jsonCopy(child));
-			}
-			return copy;
-		}
-		return obj;
-	}
+    public static Object jsonCopy(Object obj) {
+        if(obj instanceof Map) {
+            Map map = (Map) obj;
+            Map copy = new HashMap(map.size());
+            for(Object key : map.keySet()) {
+                copy.put(key, jsonCopy(map.get(key)));
+            }
+            return copy;
+        }
+        if(obj instanceof List) {
+            List list = (List) obj;
+            List copy = new ArrayList(list.size());
+            for(Object child : list) {
+                copy.add(jsonCopy(child));
+            }
+            return copy;
+        }
+        return obj;
+    }
 
-	public static Object parseJSON(String jsonString) {
-		Object jsonObject = org.json.simple.JSONValue.parse(jsonString);
-		return convertJSON(jsonObject);
-	}
+    public static Object parseJSON(String jsonString) {
+        Object jsonObject = org.json.simple.JSONValue.parse(jsonString);
+        return convertJSON(jsonObject);
+    }
 
-	public static Object prepareToSerialize(Object x) {
-		try {
-			ByteArrayOutputStream bout = new ByteArrayOutputStream();
-			ObjectOutputStream out = new ObjectOutputStream(bout);
-			out.writeObject(x);
-			out.close();
-			ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
-			ObjectInputStream in = new ObjectInputStream(bin);
-			Object y = in.readObject();
-			return y;
-		} catch (IOException e) {
-			return null;
-		} catch (ClassNotFoundException e) {
-			return null;
-		}
-	}
-	
+    public static Object prepareToSerialize(Object x) {
+        try {
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bout);
+            out.writeObject(x);
+            out.close();
+            ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
+            ObjectInputStream in = new ObjectInputStream(bin);
+            Object y = in.readObject();
+            return y;
+        } catch (IOException e) {
+            return null;
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    public static <T> T getPojo(JsonNode jsonNode, Class<T> clazz, ObjectMapper mapper) {
+        if (jsonNode == null || jsonNode instanceof NullNode) {
+            return null;
+        }
+        if (jsonNode instanceof POJONode) {
+            Object pojo = ((POJONode) jsonNode).getPojo();
+            if (pojo != null && clazz.isAssignableFrom(pojo.getClass())) {
+                return (T) pojo;
+            }
+        }
+        try {
+            return mapper.treeToValue(jsonNode, clazz);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

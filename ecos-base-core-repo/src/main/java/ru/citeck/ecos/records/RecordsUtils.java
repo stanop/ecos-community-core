@@ -2,6 +2,8 @@ package ru.citeck.ecos.records;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.action.group.ActionResult;
+import ru.citeck.ecos.action.group.ActionStatus;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -10,6 +12,46 @@ import java.util.stream.Collectors;
 
 @Component
 public class RecordsUtils {
+
+    public static <T> List<ActionResult<RecordRef>> processList(List<RecordRef> records,
+                                                                Function<RecordRef, T> toNode,
+                                                                Function<List<T>, Map<T, ActionStatus>> process) {
+        List<ActionResult<RecordRef>> results = new ArrayList<>();
+
+        Map<T, RecordRef> mapping = new HashMap<>();
+
+        List<T> nodes = new ArrayList<T>();
+        for (RecordRef recordRef : records) {
+            T node = toNode.apply(recordRef);
+            if (node == null) {
+                ActionStatus status = new ActionStatus(ActionStatus.STATUS_SKIPPED);
+                status.setMessage(recordRef + " is not a valid node");
+                results.add(new ActionResult<>(recordRef, status));
+                continue;
+            }
+            mapping.put(node, recordRef);
+            nodes.add(node);
+        }
+
+        Map<T, ActionStatus> statuses = process.apply(nodes);
+        statuses.forEach((node, status) -> {
+            results.add(new ActionResult<>(mapping.get(node), status));
+        });
+
+        return results;
+    }
+
+    public static NodeRef toNodeRef(RecordRef recordRef) {
+        String nodeRefStr = recordRef.getId();
+        int sourceDelimIdx = nodeRefStr.lastIndexOf(RecordRef.SOURCE_DELIMITER);
+        if (sourceDelimIdx > -1) {
+            nodeRefStr = nodeRefStr.substring(sourceDelimIdx + 1);
+        }
+        if (NodeRef.isNodeRef(nodeRefStr)) {
+            return new NodeRef(nodeRefStr);
+        }
+        return null;
+    }
 
     public static List<RecordRef> toLocalRecords(Collection<RecordRef> records) {
         return records.stream()

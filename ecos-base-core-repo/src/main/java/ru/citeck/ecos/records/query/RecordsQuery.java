@@ -36,6 +36,7 @@ public class RecordsQuery {
         this.consistency = other.consistency;
         this.language = other.language;
         this.query = other.query;
+
     }
 
     public String getQuery() {

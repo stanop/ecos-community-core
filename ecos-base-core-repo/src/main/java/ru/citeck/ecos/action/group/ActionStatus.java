@@ -1,5 +1,6 @@
 package ru.citeck.ecos.action.group;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
@@ -28,6 +29,7 @@ public class ActionStatus {
                   include = JsonTypeInfo.As.WRAPPER_OBJECT)
     private Object data;
 
+    @JsonIgnore
     @Getter
     private Exception exception;
 
@@ -36,6 +38,59 @@ public class ActionStatus {
 
     public ActionStatus(String statusKey) {
         this.key = statusKey;
+    }
+
+    @JsonIgnore
+    public boolean isOk() {
+        return ActionStatus.STATUS_OK.equals(key);
+    }
+
+    @JsonIgnore
+    public boolean isSkipped() {
+        return ActionStatus.STATUS_SKIPPED.equals(key);
+    }
+
+    @JsonIgnore
+    public boolean isError() {
+        return ActionStatus.STATUS_ERROR.equals(key);
+    }
+
+    @JsonIgnore
+    public static ActionStatus ok() {
+        return new ActionStatus(ActionStatus.STATUS_OK);
+    }
+
+    @JsonIgnore
+    public static ActionStatus ok(Object data) {
+        ActionStatus status = ok();
+        status.setData(data);
+        return status;
+    }
+
+    @JsonIgnore
+    public static ActionStatus ok(String message) {
+        ActionStatus status = ok();
+        status.setMessage(message);
+        return status;
+    }
+
+    @JsonIgnore
+    public static ActionStatus error(Exception e) {
+        ActionStatus status = new ActionStatus(STATUS_ERROR);
+        status.setException(e);
+        return status;
+    }
+
+    @JsonIgnore
+    public static ActionStatus skipped() {
+        return new ActionStatus(STATUS_SKIPPED);
+    }
+
+    @JsonIgnore
+    public static ActionStatus skipped(String message) {
+        ActionStatus status = skipped();
+        status.setMessage(message);
+        return status;
     }
 
     public <T> T getData() {
