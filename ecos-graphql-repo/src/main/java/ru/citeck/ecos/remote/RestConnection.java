@@ -2,6 +2,7 @@ package ru.citeck.ecos.remote;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.QName;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
@@ -22,7 +23,6 @@ import ru.citeck.ecos.utils.json.mixin.NodeRefMixIn;
 import ru.citeck.ecos.utils.json.mixin.QNameMixIn;
 
 import javax.annotation.PostConstruct;
-import javax.xml.namespace.QName;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

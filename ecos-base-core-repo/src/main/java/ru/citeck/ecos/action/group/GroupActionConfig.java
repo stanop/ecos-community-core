@@ -1,10 +1,10 @@
 package ru.citeck.ecos.action.group;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
+import ru.citeck.ecos.utils.JSONUtils;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -69,22 +69,7 @@ public class GroupActionConfig {
 
     @JsonIgnore
     public <T> T getPojoParam(String key, Class<T> clazz, ObjectMapper mapper) {
-        JsonNode jsonNode = getParams().get(key);
-        if (jsonNode == null || jsonNode instanceof NullNode) {
-            return null;
-        }
-        if (jsonNode instanceof POJONode) {
-            Object pojo = ((POJONode) jsonNode).getPojo();
-            if (pojo != null && clazz.isAssignableFrom(pojo.getClass())) {
-                return (T) pojo;
-            }
-        }
-        try {
-            return mapper.treeToValue(jsonNode, clazz);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return JSONUtils.getPojo(getParams().get(key), clazz, mapper);
     }
 
     public boolean getBoolParam(String key) {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import ru.citeck.ecos.utils.json.mixin.NodeRefMixIn;
 import ru.citeck.ecos.utils.json.mixin.QNameMixIn;
 
 import javax.annotation.PostConstruct;
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;

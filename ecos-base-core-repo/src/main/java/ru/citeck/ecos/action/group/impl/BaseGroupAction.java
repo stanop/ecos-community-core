@@ -80,9 +80,17 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
 
         listeners.forEach(l -> l.onProcessed(results));
 
+        Exception lastError = null;
+        String lastErrorMsg = null;
+
         for (ActionResult<T> result : results) {
             ActionStatus status = result.getStatus();
             if (status != null && ActionStatus.STATUS_ERROR.equals(status.getKey())) {
+                lastErrorMsg = status.getMessage();
+                lastError = status.getException();
+                if (lastErrorMsg == null && lastError != null) {
+                    lastErrorMsg = lastError.getMessage();
+                }
                 errorsCount++;
             }
             if (config.getMaxResults() > output.size()) {
@@ -91,7 +99,8 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
         }
         int maxErrors = config.getMaxErrors();
         if (maxErrors > 0 && errorsCount >= maxErrors) {
-            throw new ErrorsLimitReachedException("Group action max errors limit is reached! " + toString());
+            throw new ErrorsLimitReachedException("Group action max errors limit is reached! " +
+                                                  "LastError: " + lastErrorMsg, lastError);
         }
     }
 

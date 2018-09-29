@@ -37,6 +37,8 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public Iterable<RecordRef> getIterableRecords(String sourceId, RecordsQuery query) {
+
+
         return new IterableRecords(this, sourceId, query);
     }
 
@@ -50,16 +52,7 @@ public class RecordsServiceImpl implements RecordsService {
         if (dataClass.isAssignableFrom(NodeRef.class)) {
             Map<RecordRef, T> results = new HashMap<>();
             records.forEach(r -> {
-                String nodeRefStr = r.getId();
-                int sourceDelimIdx = nodeRefStr.lastIndexOf(RecordRef.SOURCE_DELIMITER);
-                if (sourceDelimIdx > -1) {
-                    nodeRefStr = nodeRefStr.substring(sourceDelimIdx + 1);
-                }
-                if (NodeRef.isNodeRef(nodeRefStr)) {
-                    results.put(r, (T) new NodeRef(nodeRefStr));
-                } else {
-                    results.put(r, null);
-                }
+                results.put(r, (T) RecordsUtils.toNodeRef(r));
             });
             return results;
         }

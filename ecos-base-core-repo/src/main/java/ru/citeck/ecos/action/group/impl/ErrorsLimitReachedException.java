@@ -11,4 +11,8 @@ public class ErrorsLimitReachedException extends RuntimeException {
     public ErrorsLimitReachedException(String message) {
         super(message);
     }
+
+    public ErrorsLimitReachedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
