@@ -13,9 +13,13 @@ import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
+import org.alfresco.service.cmr.site.SiteInfo;
+import org.alfresco.service.cmr.site.SiteService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
@@ -34,12 +38,16 @@ import java.util.stream.Collectors;
  */
 public class CreateVariantsGet extends AbstractWebScript {
 
+    private static final Log logger = LogFactory.getLog(CreateVariantsGet.class);
+
     /*=======PARAMS=======*/
     private static final String PARAM_SITE_ID = "site";
     private static final String PARAM_NODETYPE = "nodetype";
     private static final String PARAM_JOURNAL = "journal";
     private static final String PARAM_WRITABLE = "writable";
     /*======/PARAMS=======*/
+
+    private static final String ALL_SITES = "ALL";
 
     private LoadingCache<String, List<CreateVariant>> createVariantsByJournalType;
     private LoadingCache<String, List<CreateVariant>> createVariantsByNodeType;
@@ -49,6 +57,7 @@ public class CreateVariantsGet extends AbstractWebScript {
     private PermissionService permissionService;
     private SearchService searchService;
     private NodeService nodeService;
+    private SiteService siteService;
     private NodeUtils nodeUtils;
 
     private long cacheAgeSeconds = 600;
@@ -86,34 +95,46 @@ public class CreateVariantsGet extends AbstractWebScript {
         String nodeTypeId = templateVars.get(PARAM_NODETYPE);
         String journalId = templateVars.get(PARAM_JOURNAL);
 
-        if(StringUtils.isBlank(siteId) && StringUtils.isBlank(nodeTypeId) && StringUtils.isBlank(journalId)) {
+        if (StringUtils.isBlank(siteId) && StringUtils.isBlank(nodeTypeId) && StringUtils.isBlank(journalId)) {
             throw new RuntimeException("Site or Nodetype or Journal ID should be specified");
         }
 
         String writableStr = req.getParameter(PARAM_WRITABLE);
         Boolean writable = writableStr != null ? Boolean.parseBoolean(writableStr) : null;
 
-        List<CreateVariant> variants;
+        Object response;
 
         MLPropertyInterceptor.setMLAware(true);
 
-        if (StringUtils.isNotBlank(siteId)) {
-            variants = createVariantsBySite.getUnchecked(siteId);
-        } else if (StringUtils.isNotBlank(nodeTypeId)) {
-            variants = createVariantsByNodeType.getUnchecked(nodeTypeId);
-        } else {
-            variants = createVariantsByJournalType.getUnchecked(journalId);
+        try {
+
+            if (StringUtils.isNotBlank(siteId)) {
+                if (ALL_SITES.equals(siteId)) {
+                    List<SiteCreateVariants> createVariants = new ArrayList<>();
+                    for (SiteInfo siteInfo : getUserSites()) {
+                        List<CreateVariant> siteVariants = createVariantsBySite.getUnchecked(siteInfo.getShortName());
+                        if (!siteVariants.isEmpty()) {
+                            createVariants.add(convertSiteVariants(siteInfo, siteVariants, writable));
+                        }
+                    }
+                    response = createVariants;
+                } else {
+                    SiteInfo siteInfo = siteService.getSite(siteId);
+                    response = convertSiteVariants(siteInfo, createVariantsBySite.getUnchecked(siteId), writable);
+                }
+            } else if (StringUtils.isNotBlank(nodeTypeId)) {
+                response = convertSiteVariants(null, createVariantsByNodeType.getUnchecked(nodeTypeId), writable);
+            } else {
+                response = convertSiteVariants(null, createVariantsByJournalType.getUnchecked(journalId), writable);
+            }
+
+        } finally {
+            try {
+                MLPropertyInterceptor.setMLAware(false);
+            } catch (Exception e) {
+                logger.error("Error", e);
+            }
         }
-
-        MLPropertyInterceptor.setMLAware(false);
-
-        Response response = new Response();
-        response.createVariants = variants.stream()
-                                          .filter(v -> hasPermission(v.nodeRef, PermissionService.READ))
-                                          .map(ResponseVariant::new)
-                                          .filter(v -> writable == null || writable.equals(v.canCreate))
-                                          .collect(Collectors.toList());
-        response.siteId = siteId;
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
 
@@ -126,6 +147,26 @@ public class CreateVariantsGet extends AbstractWebScript {
         res.setStatus(Status.STATUS_OK);
     }
 
+    private SiteCreateVariants convertSiteVariants(SiteInfo info, List<CreateVariant> variants, Boolean writable) {
+
+        SiteCreateVariants siteCreateVariants = new SiteCreateVariants();
+        if (info != null) {
+            siteCreateVariants.siteId = info.getShortName();
+            siteCreateVariants.siteTitle = info.getTitle();
+        }
+        siteCreateVariants.createVariants = convertVariants(variants, writable);
+
+        return siteCreateVariants;
+    }
+
+    private List<ResponseVariant> convertVariants(List<CreateVariant> variants, Boolean writable) {
+        return variants.stream()
+                       .filter(v -> hasPermission(v.nodeRef, PermissionService.READ))
+                       .map(ResponseVariant::new)
+                       .filter(v -> writable == null || writable.equals(v.canCreate))
+                       .collect(Collectors.toList());
+    }
+
     private boolean hasPermission(NodeRef nodeRef, String permission) {
         if (nodeRef != null) {
             AccessStatus accessStatus = permissionService.hasPermission(nodeRef, permission);
@@ -136,47 +177,47 @@ public class CreateVariantsGet extends AbstractWebScript {
 
     private List<CreateVariant> getVariantsBySiteId(String siteId) {
         return AuthenticationUtil.runAsSystem(() ->
-            FTSQuery.create()
-                    .type(JournalsModel.TYPE_JOURNALS_LIST).and()
-                    .value(ContentModel.PROP_NAME, "site-" + siteId + "-main")
-                    .transactional()
-                    .query(searchService)
-                    .stream()
-                    .flatMap(listRef -> nodeService.getTargetAssocs(listRef, JournalsModel.ASSOC_JOURNALS).stream())
-                    .flatMap(assocRef -> nodeService.getChildAssocs(assocRef.getTargetRef(),
-                                                                    JournalsModel.ASSOC_CREATE_VARIANTS,
-                                                                    RegexQNamePattern.MATCH_ALL).stream())
-                    .map(variantRef -> createVariantsData.getUnchecked(variantRef.getChildRef()))
-                    .collect(Collectors.toList())
+                FTSQuery.create()
+                        .type(JournalsModel.TYPE_JOURNALS_LIST).and()
+                        .value(ContentModel.PROP_NAME, "site-" + siteId + "-main")
+                        .transactional()
+                        .query(searchService)
+                        .stream()
+                        .flatMap(listRef -> nodeService.getTargetAssocs(listRef, JournalsModel.ASSOC_JOURNALS).stream())
+                        .flatMap(assocRef -> nodeService.getChildAssocs(assocRef.getTargetRef(),
+                                JournalsModel.ASSOC_CREATE_VARIANTS,
+                                RegexQNamePattern.MATCH_ALL).stream())
+                        .map(variantRef -> createVariantsData.getUnchecked(variantRef.getChildRef()))
+                        .collect(Collectors.toList())
         );
     }
 
     private List<CreateVariant> getVariantsByJournalId(String journalId) {
         return AuthenticationUtil.runAsSystem(() ->
-            FTSQuery.create()
-                    .type(JournalsModel.TYPE_JOURNAL).and()
-                    .value(JournalsModel.PROP_JOURNAL_TYPE, journalId)
-                    .transactional()
-                    .query(searchService)
-                    .stream()
-                    .flatMap(journalRef -> nodeService.getChildAssocs(journalRef,
-                                                                      JournalsModel.ASSOC_CREATE_VARIANTS,
-                                                                      RegexQNamePattern.MATCH_ALL).stream())
-                    .map(variantRef -> createVariantsData.getUnchecked(variantRef.getChildRef()))
-                    .collect(Collectors.toList())
+                FTSQuery.create()
+                        .type(JournalsModel.TYPE_JOURNAL).and()
+                        .value(JournalsModel.PROP_JOURNAL_TYPE, journalId)
+                        .transactional()
+                        .query(searchService)
+                        .stream()
+                        .flatMap(journalRef -> nodeService.getChildAssocs(journalRef,
+                                JournalsModel.ASSOC_CREATE_VARIANTS,
+                                RegexQNamePattern.MATCH_ALL).stream())
+                        .map(variantRef -> createVariantsData.getUnchecked(variantRef.getChildRef()))
+                        .collect(Collectors.toList())
         );
     }
 
     private List<CreateVariant> getVariantsByNodeType(String nodeType) {
         return AuthenticationUtil.runAsSystem(() ->
-            FTSQuery.create()
-                    .type(JournalsModel.TYPE_CREATE_VARIANT).and()
-                    .value(JournalsModel.PROP_TYPE, nodeType)
-                    .transactional()
-                    .query(searchService)
-                    .stream()
-                    .map(createVariantsData::getUnchecked)
-                    .collect(Collectors.toList())
+                FTSQuery.create()
+                        .type(JournalsModel.TYPE_CREATE_VARIANT).and()
+                        .value(JournalsModel.PROP_TYPE, nodeType)
+                        .transactional()
+                        .query(searchService)
+                        .stream()
+                        .map(createVariantsData::getUnchecked)
+                        .collect(Collectors.toList())
         );
     }
 
@@ -203,6 +244,16 @@ public class CreateVariantsGet extends AbstractWebScript {
         return result;
     }
 
+    private List<SiteInfo> getUserSites() {
+
+        String userName = AuthenticationUtil.getFullyAuthenticatedUser();
+        if (StringUtils.isNotBlank(userName)) {
+            return siteService.listSites(userName);
+        }
+
+        return Collections.emptyList();
+    }
+
     public void clearCache() {
         createVariantsByJournalType.invalidateAll();
         createVariantsByNodeType.invalidateAll();
@@ -224,6 +275,7 @@ public class CreateVariantsGet extends AbstractWebScript {
         permissionService = serviceRegistry.getPermissionService();
         searchService = serviceRegistry.getSearchService();
         nodeService = serviceRegistry.getNodeService();
+        siteService = serviceRegistry.getSiteService();
     }
 
     @Autowired
@@ -235,8 +287,9 @@ public class CreateVariantsGet extends AbstractWebScript {
         this.cacheAgeSeconds = cacheAgeSeconds;
     }
 
-    public class Response {
+    public class SiteCreateVariants {
         public String siteId;
+        public String siteTitle;
         public List<ResponseVariant> createVariants;
     }
 
