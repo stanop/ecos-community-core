@@ -52,4 +52,10 @@ export const render = (elementId, props) => {
         </Provider>,
         document.getElementById(elementId)
     );
+
+    if (props.slideMenuConfig) {
+        require(['js/citeck/header/citeckMainSlideMenu'], function(CiteckMainSlideMenu) {
+            new CiteckMainSlideMenu(props.slideMenuConfig);
+        });
+    }
 };

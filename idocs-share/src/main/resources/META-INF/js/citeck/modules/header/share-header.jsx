@@ -11,6 +11,11 @@ const ShareHeader = () => {
     return (
         <div id='SHARE_HEADER' className='alfresco-header-Header'>
             <div className="alfresco-layout-LeftAndRight__left">
+                {/* It is just a hack for the old slide menu hamburger rendering */}
+                <div id="HEADER_APP_MENU_BAR">
+                    <div />
+                </div>
+
                 <CreateCaseWidget />
             </div>
             <div className="alfresco-layout-LeftAndRight__right">

@@ -41,7 +41,8 @@
                     userNodeRef: "${((user.properties.nodeRef)!"")?js_string}",
                     userIsAdmin: "${user.isAdmin?string}",
                     userIsAvailable: "${((user.properties.available)!"")?string}",
-                    site: "${((page.url.templateArgs.site)!"")?js_string}"
+                    site: "${((page.url.templateArgs.site)!"")?js_string}",
+                    slideMenuConfig: ${jsonUtils.toJSONString(slideMenuConfig)}
                 });
             });
         //]]></script>

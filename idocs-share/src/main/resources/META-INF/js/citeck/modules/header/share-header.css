@@ -16,6 +16,10 @@
     height: 0;
 }
 
+.menu-mobile-icon {
+    box-sizing: content-box;
+}
+
 /* dropdown menu toggle */
 .custom-dropdown-menu {
     display: table;

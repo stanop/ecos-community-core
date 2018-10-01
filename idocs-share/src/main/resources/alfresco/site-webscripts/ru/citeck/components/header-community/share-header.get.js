@@ -636,17 +636,21 @@ if (isSlideMenu) {
     userMenuBar.config.widgets.push(HEADER_USER_MENU);
 
     // BUILD APP MENU
+    var slideMenuConfig = {
+        id: "HEADER_SLIDE_MENU",
+        isMobile: isMobile,
+        userName: user.name,
+        logoSrc: getHeaderLogoUrl(),
+        logoSrcMobile: getHeaderMobileLogoUrl(),
+        widgets: getWidgets()
+    };
+
+    model.slideMenuConfig = slideMenuConfig;
+
     appMenuBar.config.widgets.push({
         id: "HEADER_SLIDE_MENU",
         name: "js/citeck/header/citeckMainSlideMenu",
-        config: {
-            id: "HEADER_SLIDE_MENU",
-            isMobile: isMobile,
-            userName: user.name,
-            logoSrc: getHeaderLogoUrl(),
-            logoSrcMobile: getHeaderMobileLogoUrl(),
-            widgets: getWidgets()
-        }
+        config: slideMenuConfig
     },
         HEADER_CREATE_CASE);
 
