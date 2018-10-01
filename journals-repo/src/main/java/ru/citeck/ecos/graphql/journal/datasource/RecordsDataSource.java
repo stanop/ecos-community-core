@@ -112,12 +112,13 @@ public class RecordsDataSource implements JournalDataSource {
 
         JournalData.JournalRecords journalRecords = new JournalData.JournalRecords();
         List<Object> records = new ArrayList<>();
-        meta.forEach((recordRef, data) -> {
+        for (RecordRef recordRef : recordsResult.records) {
+            JsonNode data = meta.get(recordRef);
             if (data instanceof ObjectNode) {
                 ((ObjectNode) data).put("id", recordRef.toString());
             }
             records.add(data);
-        });
+        }
         journalRecords.setRecords(records);
 
         JournalData.PageInfo pageInfo = new JournalData.PageInfo();
