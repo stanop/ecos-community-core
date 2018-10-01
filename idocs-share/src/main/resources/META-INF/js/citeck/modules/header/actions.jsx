@@ -139,34 +139,11 @@ export function setCurrentSiteMenuItems(payload) {
 
 
 /* COMMON */
-
-// TODO
-// export function loadTopMenuData(siteId, userName) {
-//     fetch('someUrl').then(result => {
-//         dispatch(setCreateCaseWidgetItems(result.createCaseMenu));
-//         dispatch(setCurrentSiteData({ items: result.siteMenu }));
-//         dispatch(setUserMenuItems(result.userMenu));
-//     });
-// }
-
 export function loadTopMenuData(siteId, userName, userIsAvailable) {
     return (dispatch, getState, api) => {
         let promises = [];
 
-        let allSites = [];
-        const getCreateCaseMenuDataRequest = api.getSitesForUser(userName).then(sites => {
-            let promises = [];
-            for (let site of sites) {
-                allSites.push(site);
-                promises.push(new Promise((resolve, reject) => {
-                    api.getCreateVariantsForSite(site.shortName).then(variants => {
-                        resolve(variants)
-                    })
-                }))
-            }
-
-            return Promise.all(promises);
-        }).then(variants => {
+        const getCreateCaseMenuDataRequest = api.getCreateVariantsForAllSites().then(sites => {
             let menuItems = [];
             menuItems.push(
                 {
@@ -187,19 +164,24 @@ export function loadTopMenuData(siteId, userName, userIsAvailable) {
                 },
             );
 
-            for (let i in allSites) {
+            for (let site of sites) {
                 let createVariants = [];
-                for (let variant of variants[i]) {
+                for (let variant of site.createVariants) {
+                    // variant.isDefault
+                    if (!variant.canCreate) {
+                        continue;
+                    }
                     createVariants.push({
-                        id: "HEADER_" + ((allSites[i].shortName + "_" + variant.type).replace(/\-/g, "_")).toUpperCase(),
+                        id: "HEADER_" + ((site.siteId + "_" + variant.type).replace(/\-/g, "_")).toUpperCase(),
                         label: variant.title,
                         targetUrl: "/share/page/node-create?type=" + variant.type + "&viewId=" + variant.formId + "&destination=" + variant.destination
                     });
                 }
-                const siteId = "HEADER_" + (allSites[i].shortName.replace(/\-/g, "_")).toUpperCase();
+
+                const siteId = "HEADER_" + (site.siteId.replace(/\-/g, "_")).toUpperCase();
                 menuItems.push({
                     id: siteId,
-                    label: allSites[i].title,
+                    label: site.siteTitle,
                     items: createVariants
                 });
             }
