@@ -10,6 +10,7 @@ import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class GqlMetaUtils {
@@ -20,23 +21,23 @@ public class GqlMetaUtils {
     private ConvertersProvider convertersProvider = new ConvertersProvider();
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public String createQuery(String queryBase, List<String> ids, String schema) {
-        String baseWithId = String.format(queryBase, String.join("\",\"", ids));
+    public <K> String createQuery(String queryBase, List<K> ids, String schema) {
+        List<String> strIds = ids.stream().map(Object::toString).collect(Collectors.toList());
+        String baseWithId = String.format(queryBase, String.join("\",\"", strIds));
         return String.format(QUERY_TEMPLATE, baseWithId, schema);
     }
 
-    public String createQuery(String queryBase, List<String> ids, Class<?> metaClass) {
+    public String createSchema(Class<?> metaClass) {
         MetaConverter<?> converter = convertersProvider.getConverter(metaClass);
-        String schema = converter.appendQuery(new StringBuilder()).toString();
-        return createQuery(queryBase, ids, schema);
+        return converter.appendQuery(new StringBuilder()).toString();
     }
 
-    public Map<String, JsonNode> convertMeta(List<String> ids, ExecutionResult executionResult) {
+    public <K> Map<K, JsonNode> convertMeta(List<K> ids, ExecutionResult executionResult) {
 
-        Map<String, JsonNode> result = new HashMap<>();
+        Map<K, JsonNode> result = new HashMap<>();
 
         if (executionResult == null) {
-            for (String id : ids) {
+            for (K id : ids) {
                 result.put(id, null);
             }
         } else {
@@ -50,12 +51,11 @@ public class GqlMetaUtils {
         return result;
     }
 
-    public <V> Map<String, V> convertMeta(List<String> ids, ExecutionResult executionResult, Class<V> metaClass) {
+    public <K, V> Map<K, V> convertMeta(Map<K, JsonNode> meta, Class<V> metaClass) {
 
         MetaConverter<V> converter = convertersProvider.getConverter(metaClass);
 
-        Map<String, JsonNode> meta = convertMeta(ids, executionResult);
-        Map<String, V> result = new HashMap<>();
+        Map<K, V> result = new HashMap<>();
 
         meta.forEach((id, value) -> {
             try {
@@ -69,18 +69,4 @@ public class GqlMetaUtils {
         return result;
     }
 
-    public String createQuery(Class<?> dataClass) {
-        MetaConverter<?> converter = convertersProvider.getConverter(dataClass);
-        return converter.appendQuery(new StringBuilder()).toString();
-    }
-
-    public <T> T convertData(JsonNode node, Class<T> dataClass) {
-        MetaConverter<T> converter = convertersProvider.getConverter(dataClass);
-        try {
-            return converter.convert(node);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

@@ -32,19 +32,11 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO {
     }
 
     @Override
-    public Map<RecordRef, JsonNode> queryMeta(Collection<RecordRef> records, String gqlSchema) {
+    public Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
         List<String> recordsRefs = records.stream().map(Object::toString).collect(Collectors.toList());
         String query = gqlMetaUtils.createQuery(baseQuery, recordsRefs, gqlSchema);
         ExecutionResult executionResult = graphQLService.execute(query);
         return RecordsUtils.convertToRefs(gqlMetaUtils.convertMeta(recordsRefs, executionResult));
-    }
-
-    @Override
-    public <V> Map<RecordRef, V> queryMeta(Collection<RecordRef> records, Class<V> metaClass) {
-        List<String> recordsRefs = records.stream().map(Object::toString).collect(Collectors.toList());
-        String query = gqlMetaUtils.createQuery(baseQuery, recordsRefs, metaClass);
-        ExecutionResult executionResult = graphQLService.execute(query);
-        return RecordsUtils.convertToRefs(gqlMetaUtils.convertMeta(recordsRefs, executionResult, metaClass));
     }
 
     @Autowired

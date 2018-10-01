@@ -68,26 +68,19 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
             RecordsResult result = restConnection.jsonPost(recordsMethod, request, RecordsResult.class);
             if (result != null) {
                 return result.addSourceId(getId());
+            } else {
+                logger.error("[" + getId() + "] queryRecords will return nothing. " + request);
             }
         }
-        logger.error("[" + getId() + "] queryRecords will return nothing. " + request);
         return new RecordsResult(query);
     }
 
     @Override
-    public Map<RecordRef, JsonNode> queryMeta(Collection<RecordRef> records, String gqlSchema) {
+    public Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
         List<String> recordsRefs = records.stream().map(RecordRef::getId).collect(Collectors.toList());
         String query = metaUtils.createQuery(metaBaseQuery, recordsRefs, gqlSchema);
         ExecutionResult executionResult = graphQLService.execute(restConnection, graphqlMethod, query, null);
         return RecordsUtils.convertToRefs(getId(), metaUtils.convertMeta(recordsRefs, executionResult));
-    }
-
-    @Override
-    public <V> Map<RecordRef, V> queryMeta(Collection<RecordRef> records, Class<V> metaClass) {
-        List<String> recordsRefs = records.stream().map(RecordRef::getId).collect(Collectors.toList());
-        String query = metaUtils.createQuery(metaBaseQuery, recordsRefs, metaClass);
-        ExecutionResult executionResult = graphQLService.execute(restConnection, graphqlMethod, query, null);
-        return RecordsUtils.convertToRefs(getId(), metaUtils.convertMeta(recordsRefs, executionResult, metaClass));
     }
 
     @Override
@@ -115,7 +108,7 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
     }
 
     @Override
-    public Optional<MetaValue> getMetaValue(GqlContext context, String id) {
+    public Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef) {
         throw new RuntimeException("getMetaValue is not supported for remote recordsDAO");
     }
 

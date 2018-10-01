@@ -27,7 +27,7 @@ public abstract class AbstractRecordsDAO implements RecordsDAO {
     }
 
     @Override
-    public Optional<MetaValue> getMetaValue(GqlContext context, String id) {
+    public Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef) {
         return Optional.empty();
     }
 

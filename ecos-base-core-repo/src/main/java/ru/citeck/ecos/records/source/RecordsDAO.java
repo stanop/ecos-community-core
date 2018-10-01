@@ -18,11 +18,9 @@ public interface RecordsDAO {
 
     RecordsResult queryRecords(RecordsQuery query);
 
-    Map<RecordRef, JsonNode> queryMeta(Collection<RecordRef> records, String gqlSchema);
+    Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String gqlSchema);
 
-    <V> Map<RecordRef, V> queryMeta(Collection<RecordRef> records, Class<V> metaClass);
-
-    Optional<MetaValue> getMetaValue(GqlContext context, String id);
+    Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef);
 
     ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config);
 

@@ -90,17 +90,12 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
     }
 
     @Override
-    public Map<RecordRef, JsonNode> queryMeta(Collection<RecordRef> records, String gqlSchema) {
+    public Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
         throw new RuntimeException("Is not supported. Use RecordsService instead");
     }
 
     @Override
-    public <V> Map<RecordRef, V> queryMeta(Collection<RecordRef> records, Class<V> metaClass) {
-        throw new RuntimeException("Is not supported. Use RecordsService instead");
-    }
-
-    @Override
-    public Optional<MetaValue> getMetaValue(GqlContext context, String id) {
+    public Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef) {
         throw new RuntimeException("Is not supported. Use RecordsService instead");
     }
 

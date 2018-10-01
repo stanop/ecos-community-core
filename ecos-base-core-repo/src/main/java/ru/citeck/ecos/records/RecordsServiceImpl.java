@@ -2,11 +2,12 @@ package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.records.iterable.IterableRecords;
 import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.source.RecordsDAO;
@@ -19,6 +20,12 @@ import java.util.function.BiFunction;
 public class RecordsServiceImpl implements RecordsService {
 
     private Map<String, RecordsDAO> sources = new ConcurrentHashMap<>();
+    private GqlMetaUtils metaUtils;
+
+    @Autowired
+    public RecordsServiceImpl(GqlMetaUtils metaUtils) {
+        this.metaUtils = metaUtils;
+    }
 
     @Override
     public RecordsResult getRecords(RecordsQuery query) {
@@ -37,37 +44,34 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public Iterable<RecordRef> getIterableRecords(String sourceId, RecordsQuery query) {
-
-
         return new IterableRecords(this, sourceId, query);
     }
 
     @Override
-    public <T> Map<RecordRef, T> getMeta(Collection<RecordRef> records, Class<T> dataClass) {
-        if (dataClass.isAssignableFrom(RecordRef.class)) {
+    public <T> Map<RecordRef, T> getMeta(Collection<RecordRef> records, Class<T> metaClass) {
+        if (metaClass.isAssignableFrom(RecordRef.class)) {
             Map<RecordRef, T> results = new HashMap<>();
             records.forEach(r -> results.put(r, (T) r));
             return results;
         }
-        if (dataClass.isAssignableFrom(NodeRef.class)) {
+        if (metaClass.isAssignableFrom(NodeRef.class)) {
             Map<RecordRef, T> results = new HashMap<>();
-            records.forEach(r -> {
-                results.put(r, (T) RecordsUtils.toNodeRef(r));
-            });
+            records.forEach(r -> results.put(r, (T) RecordsUtils.toNodeRef(r)));
             return results;
         }
-        return getMeta(records, (source, recs) -> source.queryMeta(recs, dataClass));
+        Map<RecordRef, JsonNode> meta = getMeta(records, metaUtils.createSchema(metaClass));
+        return metaUtils.convertMeta(meta, metaClass);
     }
 
     @Override
-    public Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String gqlQuery) {
-        return getMeta(records, (source, recs) -> source.queryMeta(recs, gqlQuery));
+    public Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
+        return getMeta(records, (source, recs) -> source.getMeta(recs, gqlSchema));
     }
 
     @Override
     public Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef) {
-        RecordsDAO recordsDAO = needRecordsSource(recordRef.getSourceId());
-        return recordsDAO.getMetaValue(context, recordRef.getId());
+        Optional<RecordsDAO> recordsDAO = getRecordsSource(recordRef.getSourceId());
+        return recordsDAO.flatMap(dao -> dao.getMetaValue(context, recordRef));
     }
 
     private <T> Map<RecordRef, T> getMeta(Collection<RecordRef> records,

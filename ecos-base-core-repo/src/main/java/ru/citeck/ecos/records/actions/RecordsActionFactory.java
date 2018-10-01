@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records.actions;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Action factory to work with mixed remote/local records
+ */
 public abstract class RecordsActionFactory implements GroupActionFactory<RecordRef> {
 
     private static final Log logger = LogFactory.getLog(RecordsActionFactory.class);
@@ -31,10 +35,24 @@ public abstract class RecordsActionFactory implements GroupActionFactory<RecordR
         return new Action(config);
     }
 
+    /**
+     * Return config for base action with every recordRef
+     * This config will be send to RecordsService and can be executed remotely
+     * Because of that config must contain only data which can be serialized by jackson ObjectMapper
+     *
+     * @see ObjectMapper
+     * @see RecordsService
+     */
     protected abstract GroupActionConfig getRecordsActionConfig(GroupActionConfig baseConfig);
 
+    /**
+     * Create action to process local records
+     */
     protected abstract GroupAction<RecordRef> createRecordsAction(GroupActionConfig config);
 
+    /**
+     * Create local action to process results returned by action from "createRecordsAction"
+     */
     protected GroupAction<ActionResult<RecordRef>> createResultsAction(GroupActionConfig baseConfig,
                                                                        GroupActionConfig recordsActionConfig) {
         return null;

@@ -89,8 +89,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO {
     }
 
     @Override
-    public Optional<MetaValue> getMetaValue(GqlContext context, String id) {
-        Optional<GqlAlfNode> node = context.getNode(id);
+    public Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef) {
+        Optional<GqlAlfNode> node = context.getNode(recordRef.getId());
         return node.map(gqlAlfNode -> new AlfNodeRecord(gqlAlfNode, context));
     }
 
