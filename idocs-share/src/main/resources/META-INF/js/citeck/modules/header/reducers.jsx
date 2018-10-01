@@ -147,6 +147,7 @@ const modalInitialState = {
     isOpen: false,
     title: "",
     content: "",
+    onCloseCallback: null,
     buttons: []
 };
 

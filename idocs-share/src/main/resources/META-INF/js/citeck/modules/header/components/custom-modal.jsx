@@ -27,7 +27,15 @@ class CustomModal extends React.Component {
     }
 
     render() {
-        const { isOpen, title, content, buttons, hideModal } = this.props;
+        const { isOpen, title, content, buttons, onCloseCallback, hideModal } = this.props;
+
+        let onHideCallback = hideModal;
+        if (onCloseCallback) {
+            onHideCallback = () => {
+                onCloseCallback();
+                hideModal();
+            }
+        }
 
         if (!isOpen) {
             return null;
@@ -44,7 +52,7 @@ class CustomModal extends React.Component {
             const buttonList = buttons.map((button, idx) => {
                 let onButtonClick = button.onClick;
                 if (button.isCloseButton) {
-                    onButtonClick = hideModal;
+                    onButtonClick = onHideCallback;
                 }
                 return (
                     <Button
@@ -61,7 +69,7 @@ class CustomModal extends React.Component {
         }
 
         return ReactDOM.createPortal(
-            <Modal show onHide={hideModal}>
+            <Modal show onHide={onHideCallback}>
                 {header}
                 <Modal.Body>{content}</Modal.Body>
                 {footer}

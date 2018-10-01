@@ -210,7 +210,7 @@ export function loadTopMenuData(siteId, userName, userIsAvailable) {
         let getSiteDataRequest = Promise.resolve([]); // temporary hack
         if (siteId) {
             const defaultSiteData = {
-                id: '',
+                siteId,
                 profile: {
                     title: "",
                     shortName: "",
@@ -221,6 +221,9 @@ export function loadTopMenuData(siteId, userName, userIsAvailable) {
                 userIsMember: false,
                 userIsDirectMember: false
             };
+
+            const state = getState();
+            const user = state.user;
 
             getSiteDataRequest = api.getSiteData(siteId).then(profile => {
                 return { ...defaultSiteData, profile };
@@ -234,11 +237,10 @@ export function loadTopMenuData(siteId, userName, userIsAvailable) {
                     }
                 });
             }).then(currentSiteData => {
-                const state = getState();
-                const user = state.user;
-
-                return makeSiteMenuItems(user, { ...currentSiteData, siteId });
-            }).catch(() => []);
+                return makeSiteMenuItems(user, currentSiteData);
+            }).catch(() => {
+                return makeSiteMenuItems(user, defaultSiteData);
+            });
         }
 
         promises.push(getCreateCaseMenuDataRequest, getSiteDataRequest);
@@ -280,6 +282,121 @@ export function leaveSiteRequest({ site, siteTitle, user, userFullName }) {
             }));
 
             window.location.href = Alfresco.constants.URL_PAGECONTEXT + "user/" + encodeURIComponent(user) + "/dashboard";
+        }).catch(err => {
+            console.log('error', err);
+        });
+    }
+}
+
+export function joinSiteRequest({ site, siteTitle, user, userFullName }) {
+    return (dispatch, getState, api) => {
+        const url = Alfresco.constants.PROXY_URI + `api/sites/${encodeURIComponent(site)}/memberships`;
+        const data = {
+            role: "SiteConsumer",
+            person: {
+                userName: user
+            }
+        };
+
+        return fetch(url, {
+            method: "PUT",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(resp => {
+            if (resp.status !== 200) {
+                // TODO
+                console.log('joinSiteRequest err', resp);
+                return;
+            }
+
+            dispatch(showModal({
+                content: t("message.joining", { "0": user, "1": site })
+            }));
+
+            window.location.reload();
+        }).catch(err => {
+            console.log('error', err);
+        });
+    }
+}
+
+export function becomeSiteManagerRequest({ site, siteTitle, user, userFullName }) {
+    return (dispatch, getState, api) => {
+        const url = Alfresco.constants.PROXY_URI + `api/sites/${encodeURIComponent(site)}/memberships`;
+        const data = {
+            role: "SiteManager",
+            person: {
+                userName: user ? user : Alfresco.constants.USERNAME
+            }
+        };
+
+        return fetch(url, {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(resp => {
+            if (resp.status !== 200) {
+                // TODO
+                console.log('becomeSiteManagerRequest err', resp);
+                return;
+            }
+
+            window.location.reload();
+        }).catch(err => {
+            console.log('error', err);
+        });
+    }
+}
+
+export function requestSiteMembership({ site, siteTitle, user, userFullName }) {
+    return (dispatch, getState, api) => {
+        const url = Alfresco.constants.PROXY_URI + `api/sites/${encodeURIComponent(site)}/invitations`;
+        const data = {
+            invitationType: "MODERATED",
+            inviteeRoleName: "SiteConsumer",
+            inviteeUserName: user,
+            inviteeComments: ""
+        };
+
+        return fetch(url, {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(resp => {
+            // console.log('requestSiteMembership resp', resp);
+            if (resp.status !== 200) {
+                const responseMessage = resp.message;
+                const requestPendingMessage = "A request to join this site is in pending"; // NOTE: This is a string-literal in Share's "Site.java" file
+                const failedBecausePending = responseMessage && responseMessage.indexOf(requestPendingMessage) !== -1;
+                const failureMessage = failedBecausePending ? "message.request-join-site-pending-failure" : "message.request-join-site-failure";
+                dispatch(showModal({
+                    content: t(failureMessage)
+                }));
+                return;
+            }
+
+            return dispatch(showModal({
+                title: t("message.request-join-success-title"),
+                content: t("message.request-join-success", {"0": user, "1": siteTitle || site}),
+                onCloseCallback: () => {
+                    window.location.href = Alfresco.constants.URL_PAGECONTEXT + "user/" + encodeURIComponent(user) + "/dashboard";
+                },
+                buttons: [
+                    {
+                        label: t('button.leave-site.confirm-label'),
+                        isCloseButton: true
+                    }
+                ]
+            }));
         }).catch(err => {
             console.log('error', err);
         });

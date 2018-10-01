@@ -1,5 +1,12 @@
-import { showModal, hideModal, leaveSiteRequest } from '../actions';
 import { t } from './util'
+import {
+    showModal,
+    hideModal,
+    leaveSiteRequest,
+    joinSiteRequest,
+    becomeSiteManagerRequest,
+    requestSiteMembership
+} from '../actions';
 
 export default function handleControl(type, payload, dispatch) {
     switch (type) {
@@ -66,6 +73,18 @@ export default function handleControl(type, payload, dispatch) {
                     }
                 ]
             }));
+            break;
+
+        case 'ALF_JOIN_SITE':
+            dispatch(joinSiteRequest(payload));
+            break;
+
+        case 'ALF_BECOME_SITE_MANAGER':
+            dispatch(becomeSiteManagerRequest(payload));
+            break;
+
+        case 'ALF_REQUEST_SITE_MEMBERSHIP':
+            dispatch(requestSiteMembership(payload));
             break;
 
         default:
