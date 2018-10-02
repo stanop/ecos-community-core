@@ -255,11 +255,13 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                                     var messageEl = Dom.get(this.id + "-message");
                                     messageEl.innerHTML = me.msg("assocs-load-error");
                                 },
-                                scope: this
+                                scope: this,
+                                cache: false
                             }
                         );
                     },
-                    scope: this
+                    scope: this,
+                    cache: false
                 }
             );
         },
@@ -344,7 +346,8 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                             me.refreshed = true;
                         }
                     },
-                    scope: me
+                    scope: me,
+                    cache: false
                 }
             );
         },
