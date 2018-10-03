@@ -1,5 +1,4 @@
 (function() {
-
 	var forceUpdate = args.forceUpdate || "false";
 	var mode = args.mode || "diff";
 	if(args.mode != "full" && args.mode != "diff") {
@@ -7,11 +6,8 @@
 		return;
 	}
 	
-	var sync = services.get("Synchronization");
-	var bean = sync.getApplicationContext().getBean("userRegistrySynchronizer");
-
-	bean.synchronize(forceUpdate=="true", mode == "full", true);
+	var sync = services.get("userRegistrySynchronizer");
+	sync.synchronize(forceUpdate=="true", mode == "full");
 	
 	model.code = status.getCode();
-
 })();
