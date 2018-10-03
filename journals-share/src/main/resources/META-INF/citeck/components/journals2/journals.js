@@ -1151,7 +1151,7 @@ JournalsWidget
                 columns.unshift(new ActionsColumn({
                     id: 'actions',
                     label: this.msg("column.actions"),
-                    formatter: formatters.journalActions(this.records())
+                    formatter: formatters.journalActions()
                 }));
             }
         }
@@ -1225,8 +1225,9 @@ JournalsWidget
         }
     })
     .computed('loading', function() {
-        return !this.records.loaded();
+        return !this.recordsLoaded() || this.externalLoading();
     })
+    .property('externalLoading', b, false)
     .property('selectedId', s)
     .shortcut('recordIdField', 'journal.type.options.doubleClickId', 'nodeRef')
     .shortcut('recordUrl', 'journal.type.options.doubleClickLink', null)
@@ -1388,9 +1389,11 @@ JournalsWidget
     })
 
     .method('performSearch', function() {
+        this.recordsLoaded(false);
+        this.records([]);
         this.records.reload();
     })
-
+    .property('recordsLoaded', b, false)
     .property('createReportType', s)
     .property('createReportDownload', b)
     .property('createReportFormId', s)
@@ -1793,7 +1796,8 @@ JournalsWidget
                             skipCount: data.pageInfo.skipCount,
                             maxItems: data.pageInfo.maxItems,
                             totalItems: data.totalCount,
-                            hasMore: data.pageInfo.hasNextPage
+                            hasMore: data.pageInfo.hasNextPage,
+                            recordsLoaded: true
                         });
                     }
                 }
