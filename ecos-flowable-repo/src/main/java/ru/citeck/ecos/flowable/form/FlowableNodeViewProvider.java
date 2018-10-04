@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flowable.engine.TaskService;
@@ -39,6 +40,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     public static final String NS_PREFIX_DEFAULT = "flb";
 
     private static final String OUTCOME_LABEL_KEY_DEFAULT = "flowable.task.button.default-complete.label";
+    private static final String OUTCOME_LABEL_KEY_TEMPLATE = "flowable.form.button.%s.%s.label";
     private static final String OUTCOME_ID_KEY_DEFAULT = "flowable.task.button.default-complete.id";
     private static final String OUTCOME_ACTION_SUBMIT = "submit";
 
@@ -172,9 +174,14 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     private NodeField getOutcomeField(SimpleFormModel formModel) {
 
         List<Outcome> outcomes = new ArrayList<>();
+        String formKey = StringUtils.isNotBlank(formModel.getKey()) ? formModel.getKey() : formModel.getName();
         for (FormOutcome formOutcome : formModel.getOutcomes()) {
             String id = formOutcome.getId() != null ? formOutcome.getId() : formOutcome.getName();
-            outcomes.add(new Outcome(id, formOutcome.getName(), OUTCOME_ACTION_SUBMIT));
+            String outcomeLabel = I18NUtil.getMessage(String.format(OUTCOME_LABEL_KEY_TEMPLATE, formKey, id));
+            if (StringUtils.isBlank(outcomeLabel)) {
+                outcomeLabel = formOutcome.getName();
+            }
+            outcomes.add(new Outcome(id, outcomeLabel, OUTCOME_ACTION_SUBMIT));
         }
 
         if (outcomes.isEmpty()) {

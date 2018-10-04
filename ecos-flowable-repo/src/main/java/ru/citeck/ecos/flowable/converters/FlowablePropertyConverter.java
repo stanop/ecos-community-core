@@ -28,6 +28,7 @@ import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.FlowableHistoryService;
@@ -50,6 +51,7 @@ public class FlowablePropertyConverter {
      */
     private static final String FLOWABLE_ENGINE_NAME = "flowable";
     private static final String FLOWABLE_INITIATOR = "$INITIATOR";
+    private static final String TASK_TITLE_KEY_TEMPLATE = "flowable.task.%s.title";
 
     /**
      * Task service
@@ -501,8 +503,19 @@ public class FlowablePropertyConverter {
 
         }
 
-        if (StringUtils.isNotEmpty(task.getName())) {
-            defaultValues.putIfAbsent(CiteckWorkflowModel.PROP_TASK_TITLE, task.getName());
+        String taskKey = task.getTaskDefinitionKey();
+        String taskTitle = null;
+        if (StringUtils.isNotBlank(taskKey)) {
+            String taskTitleFormat = String.format(TASK_TITLE_KEY_TEMPLATE, taskKey);
+            if (StringUtils.isNotBlank(I18NUtil.getMessage(taskTitleFormat))) {
+                taskTitle = taskTitleFormat;
+            }
+        } else {
+            taskTitle = task.getName();
+        }
+
+        if (StringUtils.isNotBlank(taskTitle)) {
+            defaultValues.putIfAbsent(CiteckWorkflowModel.PROP_TASK_TITLE, taskTitle);
         }
 
         if (defaultValues.size() > 0) {

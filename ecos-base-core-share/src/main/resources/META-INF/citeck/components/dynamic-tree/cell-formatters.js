@@ -1928,7 +1928,7 @@ define([
             var typeName = this.typeName(null);
 
             return function(elCell, oRecord, oColumn, sData) {
-                var title = oRecord.getData('attributes["cwf:taskTitle"]');
+                var title = oRecord.getData('taskTitle');
                 if (title) {
                     elCell.innerHTML = title;
                 } else {
