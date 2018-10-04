@@ -90,14 +90,14 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
 
                 Optional<NodeRef> configInRoot = findConfig(configsRoot, key);
 
-                if (configInRoot.isPresent()) {
+                if (configInRoot.isPresent() && !configInRoot.get().equals(configRef)) {
 
                     Serializable internalValue = nodeService.getProperty(configInRoot.get(), ConfigModel.PROP_VALUE);
                     Serializable externalValue = nodeService.getProperty(configRef, ConfigModel.PROP_VALUE);
 
                     if (!Objects.equals(internalValue, externalValue)) {
                         logger.info("Change config value of " + configInRoot.get() +
-                                " from " + internalValue + " to " + externalValue);
+                                    " from " + internalValue + " to " + externalValue);
 
                         nodeService.setProperty(configInRoot.get(), ConfigModel.PROP_VALUE, externalValue);
                     }
