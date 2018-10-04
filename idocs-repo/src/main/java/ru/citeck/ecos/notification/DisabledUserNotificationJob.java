@@ -2,7 +2,6 @@ package ru.citeck.ecos.notification;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -19,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import ru.citeck.ecos.job.AbstractLockedJob;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * @author Roman.Makarskiy on 10/25/2016.
  */
-public class DisabledUserNotificationJob extends AbstractScheduledLockedJob {
+public class DisabledUserNotificationJob extends AbstractLockedJob {
 
     private static final String PARAM_NODE_SERVICE = "nodeService";
     private static final String PARAM_SEARCH_SERVICE = "searchService";

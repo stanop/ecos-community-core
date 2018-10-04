@@ -2,7 +2,6 @@ package ru.citeck.ecos.workflow.utils;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
-import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -14,11 +13,12 @@ import org.joda.time.DateTime;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import ru.citeck.ecos.job.AbstractLockedJob;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-public class RemoveDetachedJob extends AbstractScheduledLockedJob
+public class RemoveDetachedJob extends AbstractLockedJob
 {
 	private static Log logger = LogFactory.getLog(RemoveDetachedJob.class);
 
