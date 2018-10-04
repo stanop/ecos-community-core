@@ -334,6 +334,10 @@ ko.bindingHandlers.yuiDataTable = {
             $(":checkbox[data-action='select-all']", dt.getTheadEl()).on("change", function(event) {
                 records.forEach(function(record) { record.selected(event.target.checked) });
             });
+
+            if (cfg.loadingProp) {
+                cfg.loadingProp(false);
+            }
         };
 
         valueAccessor.updateReceived = true;
@@ -354,15 +358,9 @@ ko.bindingHandlers.yuiDataTable = {
                 } else {
                     if (valueAccessor.updateImpl) {
                         valueAccessor.updateImpl();
+                        valueAccessor.updateImpl = null;
                     }
                     valueAccessor.timeoutStarted = false;
-                    if (cfg.loadingProp) {
-                        setTimeout(function() {
-                            if (!valueAccessor.timeoutStarted) {
-                                cfg.loadingProp(false);
-                            }
-                        }, 200);
-                    }
                 }
             }, 300);
         }
