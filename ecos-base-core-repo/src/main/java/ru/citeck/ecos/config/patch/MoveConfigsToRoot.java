@@ -99,7 +99,7 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
                         logger.info("Change config value of " + configInRoot.get() +
                                 " from " + internalValue + " to " + externalValue);
 
-                        nodeService.setProperty(configRef, ConfigModel.PROP_VALUE, externalValue);
+                        nodeService.setProperty(configInRoot.get(), ConfigModel.PROP_VALUE, externalValue);
                     }
 
                     logger.info("Delete unnecessary config node: " + configRef +

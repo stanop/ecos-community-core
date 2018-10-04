@@ -328,7 +328,8 @@
     </bean>
 
     <bean id="ecosConfigService" class="ru.citeck.ecos.config.EcosConfigService">
-        <property name="nodeService" ref="nodeService"/>
+        <property name="nodeService" ref="nodeService" />
+        <property name="searchService" ref="searchService" />
     </bean>
 
     <bean id="ecosConfigServiceJS" class="ru.citeck.ecos.config.EcosConfigServiceJs" parent="baseJavaScriptExtension">

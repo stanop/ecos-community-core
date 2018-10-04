@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -14,6 +15,7 @@ import org.alfresco.util.ParameterCheck;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.model.ConfigModel;
+import ru.citeck.ecos.search.ftsquery.FTSQuery;
 
 import java.io.Serializable;
 import java.util.List;
@@ -32,6 +34,7 @@ public class EcosConfigService {
     private static final NodeRef CONFIGS_ROOT = new NodeRef("workspace://SpacesStore/ecos-config-root");
 
     private NodeService nodeService;
+    private SearchService searchService;
 
     private LoadingCache<String, Optional<NodeRef>> configRefByKey;
 
@@ -145,9 +148,20 @@ public class EcosConfigService {
 
     private Optional<NodeRef> findConfigRef(String key) {
         return AuthenticationUtil.runAsSystem(() -> {
-            List<ChildAssociationRef> configs;
-            configs = nodeService.getChildAssocsByPropertyValue(CONFIGS_ROOT, ConfigModel.PROP_KEY, key);
-            return configs.stream().map(ChildAssociationRef::getChildRef).findFirst();
+            try {
+                return FTSQuery.create()
+                               .type(ConfigModel.TYPE_ECOS_CONFIG).and()
+                               .exact(ConfigModel.PROP_KEY, key)
+                               .transactional()
+                               .queryOne(searchService);
+            } catch (Exception e) {
+                if (RetryingTransactionHelper.extractRetryCause(e) != null) {
+                    throw e;
+                }
+                List<ChildAssociationRef> configs;
+                configs = nodeService.getChildAssocsByPropertyValue(CONFIGS_ROOT, ConfigModel.PROP_KEY, key);
+                return configs.stream().map(ChildAssociationRef::getChildRef).findFirst();
+            }
         });
     }
 
@@ -157,6 +171,10 @@ public class EcosConfigService {
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
+    }
+
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
     }
 
     public NodeRef getConfigsRoot() {
