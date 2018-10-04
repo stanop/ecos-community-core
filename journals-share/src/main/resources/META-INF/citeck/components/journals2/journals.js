@@ -1390,7 +1390,6 @@ JournalsWidget
 
     .method('performSearch', function() {
         this.recordsLoaded(false);
-        this.records([]);
         this.records.reload();
     })
     .property('recordsLoaded', b, false)
@@ -1791,13 +1790,16 @@ JournalsWidget
 
                         customRecordLoader(new Citeck.utils.DoclibRecordLoader(self.actionGroupId()));
 
+                        koutils.subscribeOnce(this.records, function() {
+                            this.recordsLoaded(true);
+                        }, this);
+
                         this.model({
                             records: records,
                             skipCount: data.pageInfo.skipCount,
                             maxItems: data.pageInfo.maxItems,
                             totalItems: data.totalCount,
-                            hasMore: data.pageInfo.hasNextPage,
-                            recordsLoaded: true
+                            hasMore: data.pageInfo.hasNextPage
                         });
                     }
                 }

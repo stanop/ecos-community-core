@@ -1347,8 +1347,10 @@ define([
                     return;
                 }
                 else {
-                    var propValue = oRecord._oData[propertyName] ? oRecord._oData[propertyName][0] : false;
-                    if (propValue && propValue == true) {
+                    var propValue = oRecord._oData["attributes['" + propertyName + "']"]
+                        && oRecord._oData["attributes['" + propertyName + "']"][0]
+                        ? oRecord._oData["attributes['" + propertyName + "']"][0].str : false;
+                    if (propValue && propValue === "true") {
                         Dom.addClass(elCell.parentElement.parentElement, "yui-overdue-node");
                         var currentElement = elCell.parentElement.nextElementSibling;
                         while (currentElement != null) {
