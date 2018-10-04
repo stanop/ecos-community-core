@@ -18,7 +18,8 @@
             {key: 'attributes["bpm:description"]'},
             {key: 'attributes["wfm:actors"][0].nodeRef'}, 
             {key: 'attributes["bpm:dueDate"]'},
-            {key: 'attributes["cwf:taskTitle"]'}
+            {key: 'attributes["cwf:taskTitle"]'},
+            {key: 'taskTitle'}
 		]}
         </responseSchema>
         <twisterKey>current-tasks</twisterKey>

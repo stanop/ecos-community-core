@@ -15,7 +15,8 @@
 					</#if>
 						<@search.associationsJSON task.task.associations/>
 				</#if>
-			}
+			},
+            "taskTitle": "${task.title!""}"
         }<#if task_has_next>,</#if>
     </#list>
     ]
