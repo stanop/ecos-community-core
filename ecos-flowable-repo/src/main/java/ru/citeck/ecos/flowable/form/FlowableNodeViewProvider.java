@@ -177,7 +177,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         String formKey = StringUtils.isNotBlank(formModel.getKey()) ? formModel.getKey() : formModel.getName();
         for (FormOutcome formOutcome : formModel.getOutcomes()) {
             String id = formOutcome.getId() != null ? formOutcome.getId() : formOutcome.getName();
-            String outcomeLabel = I18NUtil.getMessage(String.format(OUTCOME_LABEL_KEY_TEMPLATE, formKey,id));
+            String outcomeLabel = I18NUtil.getMessage(String.format(OUTCOME_LABEL_KEY_TEMPLATE, formKey, id));
             if (StringUtils.isBlank(outcomeLabel)) {
                 outcomeLabel = formOutcome.getName();
             }

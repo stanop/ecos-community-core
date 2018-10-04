@@ -180,7 +180,7 @@ public class DocumentTasksGet extends DeclarativeWebScript {
         if (StringUtils.isNotBlank(taskTitleProp)) {
             String taskTitleMessage = I18NUtil.getMessage(taskTitleProp);
             if (StringUtils.isNotBlank(taskTitleMessage)) {
-                taskTitleProp =  taskTitleMessage;
+                taskTitleProp = taskTitleMessage;
             }
         } else {
             taskTitleProp = task.getTitle();
