@@ -88,7 +88,7 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
 
                 String key = (String) nodeService.getProperty(configRef, ConfigModel.PROP_KEY);
 
-                Optional<NodeRef> configInRoot = ecosConfigService.getConfigRef(key);
+                Optional<NodeRef> configInRoot = findConfig(configsRoot, key);
 
                 if (configInRoot.isPresent()) {
 
@@ -142,6 +142,12 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
                     " Total: " + total);
 
         return true;
+    }
+
+    private Optional<NodeRef> findConfig(NodeRef root, String key) {
+        List<ChildAssociationRef> configs;
+        configs = nodeService.getChildAssocsByPropertyValue(root, ConfigModel.PROP_KEY, key);
+        return configs.stream().map(ChildAssociationRef::getChildRef).findFirst();
     }
 
     @Autowired
