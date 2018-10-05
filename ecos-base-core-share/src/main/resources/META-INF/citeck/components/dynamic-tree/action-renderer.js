@@ -74,13 +74,17 @@ define([
                 var record = new Record(nodeRef);
                 var doclib = record.doclib();
 
-                if (doclib) {
-                    renderer.renderActions(doclib, elCell, obj);
-                } else {
-                    koutils.subscribeOnce(record.doclib, function(newValue) {
-                        renderer.renderActions(newValue, elCell, obj);
-                    }, this);
-                }
+                var renderActions = function (record, doclib) {
+                    if (doclib && doclib.nodeRef) {
+                        renderer.renderActions(doclib, elCell, obj);
+                    } else {
+                        koutils.subscribeOnce(record.doclib, function(newValue) {
+                            renderActions(record, newValue);
+                        }, this);
+                    }
+                };
+
+                renderActions(record, doclib);
             }
         }
     };

@@ -382,6 +382,7 @@
         <property name="lastNameProperty" value="org:lastName"/>
         <property name="middleNameProperty" value="org:middleName"/>
         <property name="updateAlways" value="${full-name-behaviour.update-always}"/>
+        <property name="forceUpdate" value="${full-name-behaviour.force-update}"/>
         <property name="separator" value=" "/>
     </bean>
 
