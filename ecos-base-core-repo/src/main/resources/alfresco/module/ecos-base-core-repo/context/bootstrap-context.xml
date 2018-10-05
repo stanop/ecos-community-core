@@ -75,7 +75,7 @@
         <property name="bootstrapScript" value="alfresco/module/${project.artifactId}/bootstrap/scripts/check-and-create-dataLists-folder.js"/>
     </bean>
 
-    <bean id="ecos-base-core.module-component.MoveConfigsToRoot" parent="module.baseComponent"
+    <bean id="ecos-base-core.module-component.MoveConfigsToRoot2" parent="module.baseComponent"
           class="ru.citeck.ecos.config.patch.MoveConfigsToRoot">
         <property name="dependsOn">
             <list>

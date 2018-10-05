@@ -10,6 +10,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.SearchService;
+import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
 import org.alfresco.util.transaction.TransactionListenerAdapter;
 import org.apache.commons.logging.Log;
@@ -90,21 +92,9 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
 
                 Optional<NodeRef> configInRoot = findConfig(configsRoot, key);
 
-                if (configInRoot.isPresent() && !configInRoot.get().equals(configRef)) {
+                if (configInRoot.isPresent()) {
 
-                    Serializable internalValue = nodeService.getProperty(configInRoot.get(), ConfigModel.PROP_VALUE);
-                    Serializable externalValue = nodeService.getProperty(configRef, ConfigModel.PROP_VALUE);
-
-                    if (!Objects.equals(internalValue, externalValue)) {
-                        logger.info("Change config value of " + configInRoot.get() +
-                                    " from " + internalValue + " to " + externalValue);
-
-                        nodeService.setProperty(configInRoot.get(), ConfigModel.PROP_VALUE, externalValue);
-                    }
-
-                    logger.info("Delete unnecessary config node: " + configRef +
-                                " with key " + key + " and value " + externalValue);
-                    nodeService.deleteNode(configRef);
+                    mergeConfigs(configInRoot.get(), configRef);
 
                 } else {
 
@@ -112,23 +102,27 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
                     String name = baseName;
 
                     NodeRef configWithSameName = nodeService.getChildByName(configsRoot,
-                            ContentModel.ASSOC_CONTAINS,
-                            name);
+                                                                            ContentModel.ASSOC_CONTAINS,
+                                                                            name);
                     int idx = 1;
                     while (configWithSameName != null) {
                         name = baseName + " (" + idx + ")";
                         configWithSameName = nodeService.getChildByName(configsRoot,
-                                ContentModel.ASSOC_CONTAINS,
-                                name);
+                                                                        ContentModel.ASSOC_CONTAINS,
+                                                                        name);
                         idx++;
                     }
 
                     if (!baseName.equals(name)) {
-                        nodeService.moveNode(configRef,
-                                configsRoot,
-                                ContentModel.ASSOC_CONTAINS,
-                                parentAssoc.getQName());
+                        nodeService.setProperty(configRef, ContentModel.PROP_NAME, name);
                     }
+
+                    QName assocQName = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
+                                                         QName.createValidLocalName(key));
+                    nodeService.moveNode(configRef,
+                                         configsRoot,
+                                         ContentModel.ASSOC_CONTAINS,
+                                         assocQName);
                 }
                 fixed.incrementAndGet();
             } else {
@@ -142,6 +136,29 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
                     " Total: " + total);
 
         return true;
+    }
+
+    private void mergeConfigs(NodeRef to, NodeRef from) {
+
+        if (to.equals(from)) {
+            return;
+        }
+
+        Serializable toValue = nodeService.getProperty(to, ConfigModel.PROP_VALUE);
+        Serializable fromValue = nodeService.getProperty(from, ConfigModel.PROP_VALUE);
+
+        if (!Objects.equals(toValue, fromValue)) {
+            logger.info("Change config value of " + to +
+                        " from " + toValue + " to " + fromValue);
+
+            nodeService.setProperty(to, ConfigModel.PROP_VALUE, fromValue);
+        }
+
+        Serializable key = nodeService.getProperty(from, ConfigModel.PROP_KEY);
+
+        logger.info("Delete unnecessary config node: " + from +
+                    " with key " + key + " and value " + fromValue);
+        nodeService.deleteNode(from);
     }
 
     private Optional<NodeRef> findConfig(NodeRef root, String key) {
