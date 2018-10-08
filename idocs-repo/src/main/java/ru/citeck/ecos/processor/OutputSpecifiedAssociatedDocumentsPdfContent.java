@@ -24,6 +24,7 @@ import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.model.ClassificationModel;
+import ru.citeck.ecos.pojo.Document;
 import ru.citeck.ecos.processor.pdf.PDFMerge;
 
 import java.io.InputStream;
@@ -73,38 +74,40 @@ public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBu
             return null;
         }
 
-        List<NodeRef> neededDocuments = new ArrayList<>();
+        List<Document> allDocuments = new ArrayList<>();
+
+        childAssocs.forEach(childAssoc -> {
+            NodeRef childNodeRef = childAssoc.getChildRef();
+
+            Map<QName, Serializable> props = nodeService.getProperties(childNodeRef);
+            NodeRef currentType = getNodeRef(props.get(ClassificationModel.PROP_DOCUMENT_TYPE));
+            NodeRef currentKind = getNodeRef(props.get(ClassificationModel.PROP_DOCUMENT_KIND));
+
+            ContentData contentData = (ContentData) props.get(contentPropertyName);
+            String mimeType = contentData.getMimetype();
+
+            ContentReader contentReader = contentService.getReader(childNodeRef, contentPropertyName);
+
+            Document doc = new Document(currentType, currentKind, mimeType, contentReader);
+            allDocuments.add(doc);
+        });
+
+        List<DataBundle> neededDocumentsDataBundles = new ArrayList<>();
 
         types.forEach(type -> {
             kinds.forEach(kind -> {
-                childAssocs.forEach(childAssoc -> {
-                    NodeRef childNodeRef = childAssoc.getChildRef();
-                    Map<QName, Serializable> props = nodeService.getProperties(childNodeRef);
-
-                    NodeRef currentType = getNodeRef(props.get(ClassificationModel.PROP_DOCUMENT_TYPE));
-                    NodeRef currentKind = getNodeRef(props.get(ClassificationModel.PROP_DOCUMENT_KIND));
-                    ContentData contentData = (ContentData) props.get(contentPropertyName);
-
-                    String mimeType = contentData.getMimetype();
-
-                    if (MimetypeMap.MIMETYPE_PDF.equals(mimeType) && currentType.equals(type) && currentKind.equals(kind)) {
-                        neededDocuments.add(childNodeRef);
+                allDocuments.forEach(doc -> {
+                    if (MimetypeMap.MIMETYPE_PDF.equals(doc.getMimeType()) && doc.getType().equals(type) && doc.getKind().equals(kind)) {
+                        DataBundle dataBundle = helper.getDataBundle(doc.getContentReader(), model);
+                        neededDocumentsDataBundles.add(dataBundle);
                     }
                 });
             });
         });
 
-        if (neededDocuments.size() == 0) {
+        if (neededDocumentsDataBundles.size() == 0) {
             return null;
         }
-
-        List<DataBundle> neededDocumentsDataBundles = new ArrayList<>();
-
-        neededDocuments.forEach(neededDocument -> {
-            ContentReader reader = contentService.getReader(neededDocument, contentPropertyName);
-            DataBundle dataBundle = helper.getDataBundle(reader, model);
-            neededDocumentsDataBundles.add(dataBundle);
-        });
 
         DataBundle resultDataBundle = pdfMerge.merge(neededDocumentsDataBundles);
 
