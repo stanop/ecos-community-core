@@ -28,10 +28,7 @@ import ru.citeck.ecos.processor.pdf.PDFMerge;
 
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Output Content is a Data Bundle Generator, that outputs content of specified nodes that associated with specified node.
@@ -45,127 +42,120 @@ import java.util.Map;
  */
 public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBundleLine {
 
-	private ContentService contentService;
-	private NodeService nodeService;
-	private String nodeRef;
-	private QName contentPropertyName = ContentModel.PROP_CONTENT;
+    private ContentService contentService;
+    private NodeService nodeService;
+    private String nodeRef;
+    private QName contentPropertyName = ContentModel.PROP_CONTENT;
 
-	private PDFMerge pdfMerge;
-	private QName childAssocQname;
-	private List<NodeRef> types;
-	private List<NodeRef> kinds;
+    private PDFMerge pdfMerge;
+    private QName childAssocQname;
+    private List<NodeRef> types = Collections.emptyList();
+    private List<NodeRef> kinds = Collections.emptyList();
 
-	@Override
-	public void init() {
+    @Override
+    public void init() {
 		this.contentService = serviceRegistry.getContentService();
-	}
-	
-	@Override
-	public DataBundle process(DataBundle input) {
-		
-		Map<String,Object> model = input.needModel();
-
-		NodeRef document = helper.getExistingNodeRef(evaluateExpression(nodeRef, model));
-		if(document == null) {
-			return null;
-		}
-
-		List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(document, childAssocQname, RegexQNamePattern.MATCH_ALL);
-		if (childAssocs.size() == 0) {
-			return null;
-		}
-
-		List<NodeRef> neededDocuments = new ArrayList<>();
-
-		if (types != null && types.size() > 0) {
-			types.forEach(type -> {
-				if (kinds != null && kinds.size() > 0) {
-					kinds.forEach(kind -> {
-						childAssocs.forEach(childAssoc -> {
-							NodeRef childNodeRef = childAssoc.getChildRef();
-
-							NodeRef currentType = getNodeRef(nodeService.getProperty(childNodeRef, ClassificationModel.PROP_DOCUMENT_TYPE));
-							NodeRef currentKind = getNodeRef(nodeService.getProperty(childNodeRef, ClassificationModel.PROP_DOCUMENT_KIND));
-
-							ContentData contentData = (ContentData) nodeService.getProperty(childNodeRef, ContentModel.PROP_CONTENT);
-							String mimeType = contentData.getMimetype();
-
-							if (MimetypeMap.MIMETYPE_PDF.equals(mimeType) && currentType.equals(type) && currentKind.equals(kind)) {
-								neededDocuments.add(childNodeRef);
-							}
-						});
-					});
-				}
-			});
-		}
-
-		if (neededDocuments.size() == 0) {
-			return null;
-		}
-
-		List<DataBundle> neededDocumentsDataBundles = new ArrayList<>();
-
-		neededDocuments.forEach(neededDocument -> {
-			ContentReader reader = contentService.getReader(neededDocument, contentPropertyName);
-			DataBundle dataBundle = helper.getDataBundle(reader, model);
-			neededDocumentsDataBundles.add(dataBundle);
-		});
-
-		DataBundle resultDataBundle = pdfMerge.merge(neededDocumentsDataBundles);
-
-		InputStream resultInputStream = resultDataBundle.getInputStream();
-		Map<String,Object> resultModel = resultDataBundle.getModel();
-
-		Map<String,Object> modelWithFixedMimeType = new HashMap<>();
-		modelWithFixedMimeType.putAll(resultModel);
-		modelWithFixedMimeType.put(ProcessorConstants.KEY_MIMETYPE, MimetypeMap.MIMETYPE_PDF);
-
-		DataBundle resultWithFixedMimetype = new DataBundle(resultInputStream, modelWithFixedMimeType);
-
-		return resultWithFixedMimetype;
+		this.nodeService = serviceRegistry.getNodeService();
 	}
 
-	private NodeRef getNodeRef(Serializable arg) {
-		return (null != arg) ? (NodeRef)arg : null;
-	}
+    @Override
+    public DataBundle process(DataBundle input) {
 
-	/**
-	 * Set nodeRef.
-	 * It can be specified as expression in the supported format.
-	 * @param nodeRef
-	 */
-	public void setNodeRef(String nodeRef) {
-		this.nodeRef = nodeRef;
-	}
+        Map<String,Object> model = input.needModel();
 
-	/**
-	 * Set content property name.
-	 * If it is not set, cm:content is assumed by default.
-	 * 
-	 * @param contentPropertyName
-	 */
-	public void setContentPropertyName(QName contentPropertyName) {
-		this.contentPropertyName = contentPropertyName;
-	}
+        NodeRef document = helper.getExistingNodeRef(evaluateExpression(nodeRef, model));
+        if(document == null) {
+            return null;
+        }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+        List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(document, childAssocQname, RegexQNamePattern.MATCH_ALL);
+        if (childAssocs.size() == 0) {
+            return null;
+        }
 
-	public void setChildAssocQname(QName childAssocQname) {
-		this.childAssocQname = childAssocQname;
-	}
+        List<NodeRef> neededDocuments = new ArrayList<>();
 
-	public void setPdfMerge(PDFMerge pdfMerge) {
-		this.pdfMerge = pdfMerge;
-	}
+        types.forEach(type -> {
+            kinds.forEach(kind -> {
+                childAssocs.forEach(childAssoc -> {
+                    NodeRef childNodeRef = childAssoc.getChildRef();
+                    Map<QName, Serializable> props = nodeService.getProperties(childNodeRef);
 
-	public void setTypes(List<NodeRef> types) {
-		this.types = types;
-	}
+                    NodeRef currentType = getNodeRef(props.get(ClassificationModel.PROP_DOCUMENT_TYPE));
+                    NodeRef currentKind = getNodeRef(props.get(ClassificationModel.PROP_DOCUMENT_KIND));
+                    ContentData contentData = (ContentData) props.get(contentPropertyName);
 
-	public void setKinds(List<NodeRef> kinds) {
-		this.kinds = kinds;
-	}
+                    String mimeType = contentData.getMimetype();
+
+                    if (MimetypeMap.MIMETYPE_PDF.equals(mimeType) && currentType.equals(type) && currentKind.equals(kind)) {
+                        neededDocuments.add(childNodeRef);
+                    }
+                });
+            });
+        });
+
+        if (neededDocuments.size() == 0) {
+            return null;
+        }
+
+        List<DataBundle> neededDocumentsDataBundles = new ArrayList<>();
+
+        neededDocuments.forEach(neededDocument -> {
+            ContentReader reader = contentService.getReader(neededDocument, contentPropertyName);
+            DataBundle dataBundle = helper.getDataBundle(reader, model);
+            neededDocumentsDataBundles.add(dataBundle);
+        });
+
+        DataBundle resultDataBundle = pdfMerge.merge(neededDocumentsDataBundles);
+
+        InputStream resultInputStream = resultDataBundle.getInputStream();
+        Map<String,Object> resultModel = resultDataBundle.getModel();
+
+        Map<String,Object> modelWithFixedMimeType = new HashMap<>();
+        modelWithFixedMimeType.putAll(resultModel);
+        modelWithFixedMimeType.put(ProcessorConstants.KEY_MIMETYPE, MimetypeMap.MIMETYPE_PDF);
+
+        DataBundle resultWithFixedMimetype = new DataBundle(resultInputStream, modelWithFixedMimeType);
+
+        return resultWithFixedMimetype;
+    }
+
+    private NodeRef getNodeRef(Serializable arg) {
+        return (null != arg) ? (NodeRef)arg : null;
+    }
+
+    /**
+     * Set nodeRef of the parent document.
+     * @param nodeRef
+     */
+    public void setNodeRef(String nodeRef) {
+        this.nodeRef = nodeRef;
+    }
+
+    /**
+     * Set content property name.
+     * If it is not set, cm:content is assumed by default.
+     *
+     * @param contentPropertyName
+     */
+    public void setContentPropertyName(QName contentPropertyName) {
+        this.contentPropertyName = contentPropertyName;
+    }
+
+    public void setChildAssocQname(QName childAssocQname) {
+        this.childAssocQname = childAssocQname;
+    }
+
+    public void setPdfMerge(PDFMerge pdfMerge) {
+        this.pdfMerge = pdfMerge;
+    }
+
+    public void setTypes(List<NodeRef> types) {
+        this.types = types;
+    }
+
+    public void setKinds(List<NodeRef> kinds) {
+        this.kinds = kinds;
+    }
 
 }

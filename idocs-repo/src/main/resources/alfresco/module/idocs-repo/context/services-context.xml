@@ -99,7 +99,6 @@
 	<!-- Outputs content of specified nodes (by 'types' and 'kinds') with PDF mimetype that associated with specified node -->
 	<bean id="OutputContentLineSpecifiedPdfDocuments" name="dbp.specified.associated.pdf.documents.content"
 		  class="ru.citeck.ecos.processor.OutputSpecifiedAssociatedDocumentsPdfContent" parent="AbstractDataBundleLine" abstract="true">
-		<property name="nodeService" ref="NodeService" />
 		<property name="pdfMerge" ref="dbp.merge.pdf" />
 		<property name="childAssocQname" value="icase:documents" />
 	</bean>
