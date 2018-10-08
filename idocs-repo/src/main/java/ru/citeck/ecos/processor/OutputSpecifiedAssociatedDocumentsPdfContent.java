@@ -24,7 +24,6 @@ import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.model.ClassificationModel;
-import ru.citeck.ecos.pojo.Document;
 import ru.citeck.ecos.processor.pdf.PDFMerge;
 
 import java.io.InputStream;
@@ -97,8 +96,8 @@ public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBu
         types.forEach(type -> {
             kinds.forEach(kind -> {
                 allDocuments.forEach(doc -> {
-                    if (MimetypeMap.MIMETYPE_PDF.equals(doc.getMimeType()) && doc.getType().equals(type) && doc.getKind().equals(kind)) {
-                        DataBundle dataBundle = helper.getDataBundle(doc.getContentReader(), model);
+                    if (MimetypeMap.MIMETYPE_PDF.equals(doc.mimeType) && doc.type.equals(type) && doc.kind.equals(kind)) {
+                        DataBundle dataBundle = helper.getDataBundle(doc.contentReader, model);
                         neededDocumentsDataBundles.add(dataBundle);
                     }
                 });
@@ -124,7 +123,7 @@ public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBu
     }
 
     private NodeRef getNodeRef(Serializable arg) {
-        return (null != arg) ? (NodeRef)arg : null;
+        return (null != arg) ? (NodeRef) arg : null;
     }
 
     /**
@@ -161,4 +160,18 @@ public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBu
         this.kinds = kinds;
     }
 
+    private class Document {
+
+        private NodeRef type;
+        private NodeRef kind;
+        private String mimeType;
+        private ContentReader contentReader;
+
+        public Document(NodeRef type, NodeRef kind, String mimeType, ContentReader contentReader) {
+            this.type = type;
+            this.kind = kind;
+            this.mimeType = mimeType;
+            this.contentReader = contentReader;
+        }
+    }
 }
