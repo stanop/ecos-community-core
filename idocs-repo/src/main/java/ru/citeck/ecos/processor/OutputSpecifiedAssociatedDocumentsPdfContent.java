@@ -34,11 +34,10 @@ import java.util.*;
  * Output Content is a Data Bundle Generator, that outputs content of specified nodes that associated with specified node.
  * If node does not exist, null is output.
  * If node does not have content, Data Bundle with null input stream is output.
- * 
+ * <p>
  * Target nodeRef can be specified as expressions, supported by expression evaluator.
- * 
- * @author Alexander Popov
  *
+ * @author Alexander Popov
  */
 public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBundleLine {
 
@@ -54,21 +53,22 @@ public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBu
 
     @Override
     public void init() {
-		this.contentService = serviceRegistry.getContentService();
-		this.nodeService = serviceRegistry.getNodeService();
-	}
+        this.contentService = serviceRegistry.getContentService();
+        this.nodeService = serviceRegistry.getNodeService();
+    }
 
     @Override
     public DataBundle process(DataBundle input) {
 
-        Map<String,Object> model = input.needModel();
+        Map<String, Object> model = input.needModel();
 
         NodeRef document = helper.getExistingNodeRef(evaluateExpression(nodeRef, model));
-        if(document == null) {
+        if (document == null) {
             return null;
         }
 
-        List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(document, childAssocQname, RegexQNamePattern.MATCH_ALL);
+        List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(document, childAssocQname,
+                RegexQNamePattern.MATCH_ALL);
         if (childAssocs.size() == 0) {
             return null;
         }
@@ -96,7 +96,8 @@ public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBu
         types.forEach(type -> {
             kinds.forEach(kind -> {
                 allDocuments.forEach(doc -> {
-                    if (MimetypeMap.MIMETYPE_PDF.equals(doc.mimeType) && doc.type.equals(type) && doc.kind.equals(kind)) {
+                    if (MimetypeMap.MIMETYPE_PDF.equals(doc.mimeType) &&
+                            doc.type.equals(type) && doc.kind.equals(kind)) {
                         DataBundle dataBundle = helper.getDataBundle(doc.contentReader, model);
                         neededDocumentsDataBundles.add(dataBundle);
                     }
@@ -111,9 +112,9 @@ public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBu
         DataBundle resultDataBundle = pdfMerge.merge(neededDocumentsDataBundles);
 
         InputStream resultInputStream = resultDataBundle.getInputStream();
-        Map<String,Object> resultModel = resultDataBundle.getModel();
+        Map<String, Object> resultModel = resultDataBundle.getModel();
 
-        Map<String,Object> modelWithFixedMimeType = new HashMap<>();
+        Map<String, Object> modelWithFixedMimeType = new HashMap<>();
         modelWithFixedMimeType.putAll(resultModel);
         modelWithFixedMimeType.put(ProcessorConstants.KEY_MIMETYPE, MimetypeMap.MIMETYPE_PDF);
 
@@ -128,6 +129,7 @@ public class OutputSpecifiedAssociatedDocumentsPdfContent extends AbstractDataBu
 
     /**
      * Set nodeRef of the parent document.
+     *
      * @param nodeRef
      */
     public void setNodeRef(String nodeRef) {
