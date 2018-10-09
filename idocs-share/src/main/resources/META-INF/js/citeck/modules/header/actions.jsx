@@ -35,45 +35,12 @@ export function setCreateCaseWidgetItems(payload) {
 
 
 /* User */
-export const USER_SET_NAME = 'USER_SET_NAME';
 export const USER_SET_FULLNAME = 'USER_SET_FULLNAME';
-export const USER_SET_NODE_REF = 'USER_SET_NODE_REF';
-export const USER_SET_IS_ADMIN = 'USER_SET_IS_ADMIN';
-export const USER_SET_IS_AVAILABLE = 'USER_SET_IS_AVAILABLE';
 export const USER_SET_PHOTO = 'USER_SET_PHOTO';
-
-
-export function setUserName(payload) {
-    return {
-        type: USER_SET_NAME,
-        payload
-    }
-}
 
 export function setUserFullName(payload) {
     return {
         type: USER_SET_FULLNAME,
-        payload
-    }
-}
-
-export function setUserNodeRef(payload) {
-    return {
-        type: USER_SET_NODE_REF,
-        payload
-    }
-}
-
-export function setUserIsAdmin(payload) {
-    return {
-        type: USER_SET_IS_ADMIN,
-        payload
-    }
-}
-
-export function setUserIsAvailable(payload) {
-    return {
-        type: USER_SET_IS_AVAILABLE,
         payload
     }
 }
@@ -117,15 +84,7 @@ export function loadUserMenuPhoto(userNodeRef) {
 
 
 /* Site menu */
-export const SITE_MENU_SET_CURRENT_SITE_ID = 'SITE_MENU_SET_CURRENT_SITE_ID';
 export const SITE_MENU_SET_SITE_MENU_ITEMS = 'SITE_MENU_SET_SITE_MENU_ITEMS';
-
-export function setCurrentSiteId(payload) {
-    return {
-        type: SITE_MENU_SET_CURRENT_SITE_ID,
-        payload
-    }
-}
 
 export function setCurrentSiteMenuItems(payload) {
     return {

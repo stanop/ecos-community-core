@@ -8,12 +8,7 @@ import ShareHeader from './share-header';
 import API from './misc/api';
 import rootReducer from './reducers';
 import {
-    setUserName,
     setUserFullName,
-    setUserNodeRef,
-    setUserIsAdmin,
-    setUserIsAvailable,
-    setCurrentSiteId,
     loadTopMenuData,
     loadUserMenuPhoto
 } from './actions';
@@ -35,14 +30,8 @@ const store = createStore(rootReducer, {}, composeEnhancers(
 );
 
 export const render = (elementId, props) => {
-    store.dispatch(setUserName(props.userName));
     store.dispatch(setUserFullName(props.userFullname));
-    store.dispatch(setUserNodeRef(props.userNodeRef));
-    store.dispatch(setUserIsAdmin(props.userIsAdmin === "true"));
-    store.dispatch(setUserIsAvailable(props.userIsAvailable === "true"));
     store.dispatch(loadUserMenuPhoto(props.userNodeRef));
-
-    store.dispatch(setCurrentSiteId(props.site));
 
     store.dispatch(loadTopMenuData(
         props.userName,

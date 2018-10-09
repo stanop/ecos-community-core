@@ -3,13 +3,8 @@ import {
     CREATE_CASE_WIDGET_SET_ITEMS,
 
     USER_SET_PHOTO,
-    USER_SET_NAME,
     USER_SET_FULLNAME,
-    USER_SET_NODE_REF,
-    USER_SET_IS_ADMIN,
-    USER_SET_IS_AVAILABLE,
 
-    SITE_MENU_SET_CURRENT_SITE_ID,
     SITE_MENU_SET_SITE_MENU_ITEMS,
 
     USER_MENU_SET_ITEMS,
@@ -60,23 +55,14 @@ function userMenuReducer(state = userMenuInitialState, action) {
 
 /* userReducer */
 const userInitialState = {
-    name: '',
     fullName: '',
-    nodeRef: '',
-    photo: '',
-    isAdmin: false,
-    isAvailable: false
+    photo: ''
 };
 
 Object.freeze(userInitialState);
 
 function userReducer(state = userInitialState, action) {
     switch (action.type) {
-        case USER_SET_NAME:
-            return {
-                ...state,
-                name: action.payload
-            };
 
         case USER_SET_FULLNAME:
             return {
@@ -84,28 +70,10 @@ function userReducer(state = userInitialState, action) {
                 fullName: action.payload
             };
 
-        case USER_SET_NODE_REF:
-            return {
-                ...state,
-                nodeRef: action.payload
-            };
-
         case USER_SET_PHOTO:
             return {
                 ...state,
                 photo: action.payload
-            };
-
-        case USER_SET_IS_ADMIN:
-            return {
-                ...state,
-                isAdmin: action.payload
-            };
-
-        case USER_SET_IS_AVAILABLE:
-            return {
-                ...state,
-                isAvailable: action.payload
             };
 
         default:
@@ -116,7 +84,6 @@ function userReducer(state = userInitialState, action) {
 
 /* siteMenuReducer */
 const siteMenuInitialState = {
-    siteId: '',
     items: []
 };
 
@@ -124,11 +91,6 @@ Object.freeze(siteMenuInitialState);
 
 function siteMenuReducer(state = siteMenuInitialState, action) {
     switch (action.type) {
-        case SITE_MENU_SET_CURRENT_SITE_ID:
-            return {
-                ...state,
-                siteId: action.payload
-            };
 
         case SITE_MENU_SET_SITE_MENU_ITEMS:
             return {
