@@ -42,7 +42,8 @@
                     userIsAdmin: "${user.isAdmin?string}",
                     userIsAvailable: "${((user.properties.available)!"")?string}",
                     site: "${((page.url.templateArgs.site)!"")?js_string}",
-                    slideMenuConfig: ${jsonUtils.toJSONString(slideMenuConfig)}
+                    slideMenuConfig: ${jsonUtils.toJSONString(slideMenuConfig)},
+                    siteMenuItems: ${jsonUtils.toJSONString(siteMenuItems)}
                 });
             });
         //]]></script>

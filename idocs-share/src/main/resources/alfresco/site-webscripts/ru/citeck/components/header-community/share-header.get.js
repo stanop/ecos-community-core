@@ -263,6 +263,8 @@ if (siteMenuItems.length) {
     }];
 }
 
+model.siteMenuItems = siteMenuItems;
+
 
 // DEBUG MENU
 

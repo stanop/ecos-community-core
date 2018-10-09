@@ -44,7 +44,11 @@ export const render = (elementId, props) => {
 
     store.dispatch(setCurrentSiteId(props.site));
 
-    store.dispatch(loadTopMenuData(props.site, props.userName, props.userIsAvailable === "true"));
+    store.dispatch(loadTopMenuData(
+        props.userName,
+        props.userIsAvailable === "true",
+        props.siteMenuItems
+    ));
 
     ReactDOM.render(
         <Provider store={store}>

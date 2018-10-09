@@ -1,4 +1,4 @@
-import { makeSiteMenuItems, makeUserMenuItems, t } from './misc/util'
+import { processMenuItemsFromOldMenu, makeUserMenuItems, t } from './misc/util'
 
 
 /* MODAL */
@@ -139,12 +139,14 @@ export function setCurrentSiteMenuItems(payload) {
 
 
 /* COMMON */
-export function loadTopMenuData(siteId, userName, userIsAvailable) {
+export function loadTopMenuData(userName, userIsAvailable, oldMenuSiteWidgetItems) {
     return (dispatch, getState, api) => {
         let promises = [];
 
         const getCreateCaseMenuDataRequest = api.getCreateVariantsForAllSites().then(sites => {
             let menuItems = [];
+
+            // TODO add it to API response
             menuItems.push(
                 {
                     id: "HEADER_CREATE_WORKFLOW",
@@ -189,48 +191,12 @@ export function loadTopMenuData(siteId, userName, userIsAvailable) {
             return menuItems;
         });
 
-        let getSiteDataRequest = Promise.resolve([]); // temporary hack
-        if (siteId) {
-            const defaultSiteData = {
-                siteId,
-                profile: {
-                    title: "",
-                    shortName: "",
-                    visibility: "PRIVATE",
-                },
+        promises.push(getCreateCaseMenuDataRequest);
 
-                userIsSiteManager: false,
-                userIsMember: false,
-                userIsDirectMember: false
-            };
-
-            const state = getState();
-            const user = state.user;
-
-            getSiteDataRequest = api.getSiteData(siteId).then(profile => {
-                return { ...defaultSiteData, profile };
-            }).then(currentSiteData => {
-                return api.getSiteUserMembership(siteId, userName).then(result => {
-                    return {
-                        ...currentSiteData,
-                        userIsMember: true,
-                        userIsDirectMember: !(result.isMemberOfGroup),
-                        userIsSiteManager: result.role === "SiteManager"
-                    }
-                });
-            }).then(currentSiteData => {
-                return makeSiteMenuItems(user, currentSiteData);
-            }).catch(() => {
-                return makeSiteMenuItems(user, defaultSiteData);
-            });
-        }
-
-        promises.push(getCreateCaseMenuDataRequest, getSiteDataRequest);
-
-        Promise.all(promises).then(([createCaseMenu, siteMenu]) => {
+        Promise.all(promises).then(([createCaseMenu]) => {
             return {
                 'createCaseMenu': createCaseMenu,
-                'siteMenu': siteMenu,
+                'siteMenu': processMenuItemsFromOldMenu(oldMenuSiteWidgetItems),
                 'userMenu': makeUserMenuItems(userName, userIsAvailable),
             };
         }).then(result => {

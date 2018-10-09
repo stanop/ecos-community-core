@@ -161,6 +161,9 @@
 .fa-custom__HEADER_LEAVE_SITE:before {
     content: "\f08b";
 }
+.fa-custom__HEADER_SITE_JOURNALS:before {
+    content: none !important;
+}
 
 /* mobile styles */
 .mobile #alf-hd #SHARE_HEADER {

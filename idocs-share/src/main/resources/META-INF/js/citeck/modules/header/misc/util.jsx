@@ -144,6 +144,38 @@ export function makeSiteMenuItems(user, siteData) {
     return siteMenuItems;
 }
 
+export function processMenuItemsFromOldMenu(oldMenuItems) {
+    let siteMenuItems = [];
+
+    for (let item of oldMenuItems) {
+        if (!item.config) {
+            continue;
+        }
+
+        let newItem = {
+            id: item.id,
+            label: item.config.label,
+        };
+
+        if (item.config.targetUrl) {
+            newItem.targetUrl = "/share/page/" + item.config.targetUrl;
+        }
+
+        if (item.config.publishTopic) {
+            newItem.control = {
+                type: item.config.publishTopic
+            };
+            if (item.config.publishPayload) {
+                newItem.control.payload = item.config.publishPayload;
+            }
+        }
+
+        siteMenuItems.push(newItem);
+    }
+
+    return siteMenuItems;
+}
+
 export const makeUserMenuItems = (userName, isAvailable) => {
     const availability = "make-" + (isAvailable === false ? "" : "not") + "available";
 
