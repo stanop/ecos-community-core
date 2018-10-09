@@ -27,6 +27,8 @@ import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
 import ru.citeck.ecos.flowable.services.impl.ModelMapper;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
+import ru.citeck.ecos.icase.CaseStatusServiceJS;
+import ru.citeck.ecos.icase.completeness.CaseCompletenessServiceJS;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -67,6 +69,10 @@ public class FlowableConfiguration {
     private static final String FLOWABLE_MAIL_SERVER_DEFAULT_FROM = "flowable.mail.server.default.from";
     private static final String FLOWABLE_MAIL_SERVER_USE_TLS = "flowable.mail.server.use.tls";
     private static final String FLOWABLE_MAIL_SERVER_USE_SSL = "flowable.mail.server.use.ssl";
+
+
+    private static final String BEAN_KEY_COMPLETENESS_SERVICE_JS = "caseCompletenessServiceJS";
+    private static final String BEAN_KEY_CASE_STATUS_SERVICE_JS = "caseStatusServiceJS";
 
     /**
      * Application context provider
@@ -155,10 +161,7 @@ public class FlowableConfiguration {
             customMybatisMappers.add(ModelMapper.class);
             engineConfiguration.setCustomMybatisMappers(customMybatisMappers);
 
-            // Beans
-            Map<Object, Object> beans = new HashMap<>();
-            beans.put(FlowableConstants.SERVICE_REGISTRY_BEAN_KEY, descriptorRegistry);
-            engineConfiguration.setBeans(beans);
+            engineConfiguration.setBeans(getEngineBeans(descriptorRegistry));
 
             setMailConfiguration(engineConfiguration);
             // Listeners and handlers
@@ -170,6 +173,21 @@ public class FlowableConfiguration {
         } else {
             return null;
         }
+    }
+
+    private Map<Object, Object> getEngineBeans(ServiceDescriptorRegistry descriptorRegistry) {
+        Map<Object, Object> beans = new HashMap<>();
+
+        CaseCompletenessServiceJS caseCompletenessServiceJS = applicationContext.getBean(BEAN_KEY_COMPLETENESS_SERVICE_JS,
+                CaseCompletenessServiceJS.class);
+        CaseStatusServiceJS caseStatusServiceJS = applicationContext.getBean(BEAN_KEY_CASE_STATUS_SERVICE_JS,
+                CaseStatusServiceJS.class);
+
+        beans.put(FlowableConstants.SERVICE_REGISTRY_BEAN_KEY, descriptorRegistry);
+        beans.put(FlowableConstants.COMPLETENESS_SERVICE_JS_KEY, caseCompletenessServiceJS);
+        beans.put(FlowableConstants.CASE_STATUS_SERVICE_JS_KEY, caseStatusServiceJS);
+
+        return beans;
     }
 
     /**
