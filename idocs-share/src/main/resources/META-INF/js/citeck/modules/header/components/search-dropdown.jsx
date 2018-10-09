@@ -4,7 +4,7 @@ import DropDownMenuItem from './dropdown-menu-item';
 import CustomToggle from './dropdown-menu-custom-toggle';
 
 const SearchDropdown = () => {
-    const serachDropdownListItems = [
+    const searchDropdownListItems = [
         <DropDownMenuItem
             key={0}
             data={{
@@ -22,7 +22,7 @@ const SearchDropdown = () => {
                     <i className={"fa fa-chevron-circle-down"} />
                 </CustomToggle>
                 <Dropdown.Menu className="custom-dropdown-menu__body">
-                    {serachDropdownListItems}
+                    {searchDropdownListItems}
                 </Dropdown.Menu>
             </Dropdown>
         </Fragment>

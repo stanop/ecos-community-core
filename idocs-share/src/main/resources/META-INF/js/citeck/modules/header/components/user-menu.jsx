@@ -13,12 +13,15 @@ const UserMenu = ({ userFullName, userPhotoUrl, items }) => {
         )
     ) : null;
 
-    const menuListItems = items && items.length && items.map((item, key) => (
-        <DropDownMenuItem
-            key={key}
-            data={item}
-        />
-    ));
+    let menuListItems = null;
+    if (Array.isArray(items) && items.length > 0) {
+        menuListItems = items.map((item, key) => (
+            <DropDownMenuItem
+                key={key}
+                data={item}
+            />
+        ));
+    }
 
     return (
         <div id='HEADER_USER_MENU'>

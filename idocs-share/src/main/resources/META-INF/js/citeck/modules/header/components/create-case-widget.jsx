@@ -5,16 +5,19 @@ import CustomToggle from './dropdown-menu-custom-toggle';
 import DropDownMenuGroup from './dropdown-menu-group';
 
 const CreateCaseWidget = ({ items }) => {
-    const menuListItems = items && items.length > 0 ? items.map((item, key) => {
-        return (
-            <DropDownMenuGroup
-                key={key}
-                label={item.label}
-                items={item.items}
-                id={item.id}
-            />
-        );
-    }) : null;
+    let menuListItems = null;
+    if (Array.isArray(items) && items.length > 0) {
+        menuListItems = items.map((item, key) => {
+            return (
+                <DropDownMenuGroup
+                    key={key}
+                    label={item.label}
+                    items={item.items}
+                    id={item.id}
+                />
+            );
+        });
+    }
 
     return (
         <div id='HEADER_CREATE_CASE'>
