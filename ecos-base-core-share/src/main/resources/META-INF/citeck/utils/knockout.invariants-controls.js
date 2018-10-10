@@ -1603,6 +1603,7 @@ CreateObjectButton
     .property('constraint', Function)
     .property('constraintMessage', String)
     .property('source', String)
+    .property('customType', String)
     .property('buttonTitle', String)
     .property('journalType', JournalType)
     .property('parentRuntime', String)
@@ -1618,7 +1619,9 @@ CreateObjectButton
 
         var list = null;
 
-        if (this.source() == 'create-views' && this.nodetype()) {
+        if (this.source() == 'create-custom-type' && this.customType()) {
+            list = new CreateVariantsByView(this.customType());
+        } else if (this.source() == 'create-views' && this.nodetype()) {
             list = new CreateVariantsByView(this.nodetype());
         } else if (this.source() == 'type-create-variants' && this.nodetype()) {
             list = new CreateVariantsByType(this.nodetype());
