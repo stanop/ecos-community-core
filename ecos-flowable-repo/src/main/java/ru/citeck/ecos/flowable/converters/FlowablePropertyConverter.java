@@ -510,7 +510,8 @@ public class FlowablePropertyConverter {
             if (StringUtils.isNotBlank(I18NUtil.getMessage(taskTitleFormat))) {
                 taskTitle = taskTitleFormat;
             }
-        } else {
+        }
+        if (StringUtils.isBlank(taskTitle)) {
             taskTitle = task.getName();
         }
 

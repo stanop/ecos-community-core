@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.flowable.form.model.Option;
 import org.flowable.form.model.OptionFormField;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,8 @@ import ru.citeck.ecos.invariants.*;
 import ru.citeck.ecos.invariants.view.NodeViewRegion;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class DropDownFieldConverter extends FieldConverter<OptionFormField> {
@@ -43,6 +47,25 @@ public class DropDownFieldConverter extends FieldConverter<OptionFormField> {
             String id = option.getId() != null ? option.getId() : option.getName();
             options.add(id);
             optionsTitle.put(id, option.getName());
+        }
+        if (CollectionUtils.isEmpty(options)) {
+            String optionsExpression = field.getOptionsExpression();
+            if (StringUtils.isNotBlank(optionsExpression)) {
+                String optionsExpressionVariable;
+                Pattern pattern = Pattern.compile("^\\$\\{(\\w+)}$");
+                Matcher matcher = pattern.matcher(optionsExpression);
+                if (matcher.find()) {
+                    optionsExpressionVariable = matcher.group(1);
+                    if (StringUtils.isNotBlank(optionsExpressionVariable)) {
+                        if (variables.containsKey(optionsExpressionVariable)) {
+                            Object optionsExpressionValue = variables.get(optionsExpressionVariable);
+                            if (optionsExpressionValue instanceof List) {
+                                options.addAll((Collection<? extends String>) optionsExpressionValue);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         InvariantDefinition invDef;
