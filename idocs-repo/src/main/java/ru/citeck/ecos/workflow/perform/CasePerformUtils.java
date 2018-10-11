@@ -1,7 +1,6 @@
 package ru.citeck.ecos.workflow.perform;
 
 import org.activiti.engine.delegate.VariableScope;
-import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.task.IdentityLink;
 import org.alfresco.model.ContentModel;
@@ -19,15 +18,14 @@ import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.codehaus.jackson.map.ObjectMapper;
 import ru.citeck.ecos.model.CasePerformModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
-import ru.citeck.ecos.workflow.variable.type.NodeRefToNodeRefsMap;
-import ru.citeck.ecos.workflow.variable.type.NodeRefsList;
-import ru.citeck.ecos.workflow.variable.type.StringsList;
-import ru.citeck.ecos.workflow.variable.type.TaskConfigs;
+import ru.citeck.ecos.workflow.variable.type.*;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -37,6 +35,11 @@ import java.util.regex.Pattern;
  * @author Pavel Simonov
  */
 public class CasePerformUtils {
+
+    public static final String PERFORM_STAGES = "performStages";
+
+    public static final String PERFORM_STAGE_IDX = "performStageIdx";
+    public static final String REPEAT_PERFORMING = "repeatPerforming";
 
     public static final String TASK_CONFIGS = "taskConfigs";
     public static final String TASK_CONF_ASSIGNEE = "assignee";
@@ -61,6 +64,7 @@ public class CasePerformUtils {
     public static final String SKIP_PERFORMING = "skipPerforming";
     public static final String PERFORMERS = "performers";
     public static final String PERFORMERS_ROLES_POOL = "performersRolesPool";
+    public static final String ABORT_PROCESS = "abortProcess";
 
     public static final String REASSIGNMENT_KEY = "case-perform-reassignment";
 
@@ -76,17 +80,19 @@ public class CasePerformUtils {
     private Repository repositoryHelper;
     private CaseRoleService caseRoleService;
 
-    boolean isCommentMandatory(ExecutionEntity execution, TaskEntity task) {
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    boolean isCommentMandatory(PerformExecution execution, PerformTask task) {
         return isInSplitString(execution, CasePerformModel.PROP_OUTCOMES_WITH_MANDATORY_COMMENT,
                                   task, CasePerformModel.PROP_PERFORM_OUTCOME);
     }
 
-    boolean isAbortOutcomeReceived(ExecutionEntity execution, TaskEntity task) {
+    boolean isAbortOutcomeReceived(PerformExecution execution, PerformTask task) {
         return isInSplitString(execution, CasePerformModel.PROP_ABORT_OUTCOMES,
                                   task, CasePerformModel.PROP_PERFORM_OUTCOME);
     }
 
-    void saveTaskResult(ExecutionEntity execution, TaskEntity task) {
+    void saveTaskResult(PerformExecution execution, PerformTask task) {
 
         String outcome = (String) task.getVariableLocal(toString(CasePerformModel.PROP_PERFORM_OUTCOME));
         if (outcome == null) return;
@@ -242,7 +248,7 @@ public class CasePerformUtils {
         return Collections.emptySet();
     }
 
-    boolean hasCandidate(TaskEntity task, NodeRef candidate) {
+    boolean hasCandidate(PerformTask task, NodeRef candidate) {
         if (candidate == null) {
             return false;
         }
@@ -258,7 +264,7 @@ public class CasePerformUtils {
         return false;
     }
 
-    NodeRef getFirstGroupCandidate(TaskEntity task) {
+    NodeRef getFirstGroupCandidate(PerformTask task) {
 
         Set<IdentityLink> candidates = task.getCandidates();
 
@@ -271,7 +277,7 @@ public class CasePerformUtils {
         return null;
     }
 
-    void setPerformer(TaskEntity task, final NodeRef performer) {
+    void setPerformer(PerformTask task, final NodeRef performer) {
 
         String performerKey = toString(CasePerformModel.ASSOC_PERFORMER);
         final NodeRef currentPerformer = (NodeRef) task.getVariable(performerKey);
@@ -308,7 +314,7 @@ public class CasePerformUtils {
         reassignment.put(from, to);
     }
 
-    NodeRef getCaseRole(NodeRef performer, ExecutionEntity execution) {
+    NodeRef getCaseRole(NodeRef performer, PerformExecution execution) {
 
         Map<NodeRef, List<NodeRef>> pool = getRolesPool(execution);
 
@@ -322,7 +328,7 @@ public class CasePerformUtils {
         return null;
     }
 
-    List<NodeRef> getTaskRoles(ExecutionEntity execution) {
+    List<NodeRef> getTaskRoles(VariableScope execution) {
 
         List<NodeRef> roles = new ArrayList<>();
 
@@ -344,7 +350,7 @@ public class CasePerformUtils {
         return roles;
     }
 
-    void fillRolesByPerformers(ExecutionEntity execution) {
+    void fillRolesByPerformers(VariableScope execution) {
 
         Map<NodeRef, List<NodeRef>> pool = getRolesPool(execution);
         Collection<NodeRef> performers = getNodeRefsList(execution, CasePerformUtils.PERFORMERS);
@@ -380,6 +386,21 @@ public class CasePerformUtils {
         return result;
     }
 
+    public TaskStages getTaskStages(VariableScope scope) {
+        Object stagesObj = scope.getVariable(PERFORM_STAGES);
+        if (stagesObj instanceof TaskStages) {
+            return (TaskStages) stagesObj;
+        }
+        if (stagesObj instanceof String) {
+            try {
+                return objectMapper.readValue((String) stagesObj, TaskStages.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return new TaskStages();
+    }
+
     public Map<NodeRef, List<NodeRef>> getRolesPool(VariableScope scope) {
         Object result =  scope.getVariable(PERFORMERS_ROLES_POOL);
         if (result == null) {
@@ -410,6 +431,10 @@ public class CasePerformUtils {
 
     public void setCaseRoleService(CaseRoleService caseRoleService) {
         this.caseRoleService = caseRoleService;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
     }
 
     private static class DummyComparator implements Serializable, Comparator<Object> {

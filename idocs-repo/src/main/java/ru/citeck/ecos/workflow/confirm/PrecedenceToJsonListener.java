@@ -20,69 +20,140 @@ package ru.citeck.ecos.workflow.confirm;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.Expression;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import ru.citeck.ecos.workflow.listeners.AbstractExecutionListener;
 
+import java.util.*;
+
 public class PrecedenceToJsonListener extends AbstractExecutionListener {
 
-	private Expression var;
-	private Expression precedence;
+    public static final String FIELD_STAGES = "stages";
+    public static final String FIELD_CONFIRMERS = "confirmers";
+    public static final String FIELD_NODEREF = "nodeRef";
+    public static final String FIELD_DUEDATE = "dueDate";
+    public static final String FIELD_AMOUNT_HOURS = "amountHours";
 
-	@Override
-	protected void notifyImpl(DelegateExecution execution) throws Exception {
-		String variableName = (String) var.getValue(execution);
-		String precedenceLine = (String) precedence.getValue(execution);
-		execution.setVariable(variableName, convertPrecedence(precedenceLine));
-	}
+    private Expression var;
+    private Expression precedence;
 
-	@SuppressWarnings("unchecked")
-	public static JSONObject convertPrecedence(String precedence) {
-		JSONObject result = new JSONObject();
-		JSONArray stages = new JSONArray();
-		result.put("stages", stages);
-		if (precedence != null && precedence.length() != 0) {
-			String[] stageLines = precedence.split("[,]");
-			for (String line : stageLines) {
-				JSONObject stage = new JSONObject();
+    @Override
+    protected void notifyImpl(DelegateExecution execution) throws Exception {
+        String variableName = (String) var.getValue(execution);
+        String precedenceLine = (String) precedence.getValue(execution);
+        execution.setVariable(variableName, convertPrecedence(precedenceLine));
+    }
 
-				// due date is not supported in old format
-				stage.put("dueDate", 0L);
-				JSONArray confirmers = new JSONArray();
-				stage.put("confirmers", confirmers);
-				String[] confirmLines = line.split("[|]");
-				for (String confirmer : confirmLines) {
-					if (confirmer.length() != 0) {
-						JSONObject conf = new JSONObject();
-						String[] splittedStrings = confirmer.split("_");
-						conf.put("nodeRef", splittedStrings[0]);
-						// full name is not supported in old format
-						conf.put("fullName", splittedStrings[0]);
-						// 'can cancel' is not supported in old format
-						conf.put("canCancel", false);
-						if (splittedStrings.length > 1) {
-							conf.put("amountHours", getNumberOfHoursForStage(splittedStrings[1]));
-						}
-						confirmers.add(conf);
-					}
-				}
-				stages.add(stage);
-			}
-		}
-		return result;
-	}
+    @SuppressWarnings("unchecked")
+    public static JSONObject convertPrecedence(String precedence) {
+        JSONObject result = new JSONObject();
+        JSONArray stages = new JSONArray();
+        result.put(FIELD_STAGES, stages);
+        if (precedence != null && precedence.length() != 0) {
+            String[] stageLines = precedence.split("[,]");
+            for (String line : stageLines) {
+                JSONObject stage = new JSONObject();
 
-	private static double getNumberOfHoursForStage(String timeStage) {
-		String time = timeStage.split("/")[0];
-		String timeType = timeStage.split("/")[1];
-		if ("m".equals(timeType)) {
-			return (double)Math.round(Double.parseDouble(time) * 30 * 24 * 1000)/1000;
-		} else if ("d".equals(timeType)) {
-			return (double)Math.round(Double.parseDouble(time) * 24 * 1000)/1000;
-		} else {
-			return Double.parseDouble(time);
-		}
-	}
+                // due date is not supported in old format
+                stage.put(FIELD_DUEDATE, 0L);
+                JSONArray confirmers = new JSONArray();
+                stage.put(FIELD_CONFIRMERS, confirmers);
+                String[] confirmLines = line.split("[|]");
+                for (String confirmer : confirmLines) {
+                    if (confirmer.length() != 0) {
+                        JSONObject conf = new JSONObject();
+                        String[] splittedStrings = confirmer.split("_");
+                        conf.put(FIELD_NODEREF, splittedStrings[0]);
+                        // full name is not supported in old format
+                        conf.put("fullName", splittedStrings[0]);
+                        // 'can cancel' is not supported in old format
+                        conf.put("canCancel", false);
+                        if (splittedStrings.length > 1) {
+                            conf.put(FIELD_AMOUNT_HOURS, getNumberOfHoursForStage(splittedStrings[1]));
+                        }
+                        confirmers.add(conf);
+                    }
+                }
+                stages.add(stage);
+            }
+        }
+        return result;
+    }
 
+    public static List<Stage> getStages(String precedence) {
+
+        List<Stage> stages = new ArrayList<>();
+
+        if (StringUtils.isBlank(precedence)) {
+            return stages;
+        }
+
+        JSONObject parsed = convertPrecedence(precedence);
+        JSONArray precStages = (JSONArray) parsed.get(PrecedenceToJsonListener.FIELD_STAGES);
+
+        if (precStages == null) {
+            return stages;
+        }
+
+        for (Object stageObj : precStages) {
+
+            JSONObject precStage = (JSONObject) stageObj;
+            JSONArray precConfirmers = (JSONArray) precStage.get(PrecedenceToJsonListener.FIELD_CONFIRMERS);
+
+            if (precConfirmers != null) {
+
+                Stage stage = new Stage();
+
+                for (Object confirmerObj : precConfirmers) {
+
+                    JSONObject precConfirmer = (JSONObject) confirmerObj;
+                    String nodeRef = (String) precConfirmer.get(PrecedenceToJsonListener.FIELD_NODEREF);
+                    if (nodeRef != null && NodeRef.isNodeRef(nodeRef)) {
+                        stage.participants.add(new NodeRef(nodeRef));
+                    }
+
+                    Double hours = (Double) precConfirmer.get(FIELD_AMOUNT_HOURS);
+                    if (hours != null && hours > 0) {
+                        stage.hours = hours;
+                    }
+                }
+                stages.add(stage);
+            }
+        }
+
+        return stages;
+    }
+
+    public static Set<NodeRef> getAllConfirmers(String precedence) {
+
+        if (StringUtils.isBlank(precedence)) {
+            return Collections.emptySet();
+        }
+
+        Set<NodeRef> authorities = new HashSet<>();
+        for (Stage stage : getStages(precedence)) {
+            authorities.addAll(stage.participants);
+        }
+        return authorities;
+    }
+
+    private static double getNumberOfHoursForStage(String timeStage) {
+        String time = timeStage.split("/")[0];
+        String timeType = timeStage.split("/")[1];
+        if ("m".equals(timeType)) {
+            return (double)Math.round(Double.parseDouble(time) * 30 * 24 * 1000)/1000;
+        } else if ("d".equals(timeType)) {
+            return (double)Math.round(Double.parseDouble(time) * 24 * 1000)/1000;
+        } else {
+            return Double.parseDouble(time);
+        }
+    }
+
+    public static class Stage {
+        public List<NodeRef> participants = new ArrayList<>();
+        public Double hours;
+    }
 }

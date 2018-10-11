@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.ParameterCheck;
 import ru.citeck.ecos.role.CaseRolePolicies.OnRoleAssigneesChangedPolicy;
 import ru.citeck.ecos.role.CaseRolePolicies.OnCaseRolesAssigneesChangedPolicy;
@@ -212,15 +213,12 @@ public class CaseRoleServiceImpl implements CaseRoleService {
 
     @Override
     public void updateRoles(final NodeRef caseRef) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                Collection<NodeRef> roles = getRoles(caseRef);
-                for (NodeRef roleRef : roles) {
-                    updateRoleImpl(caseRef, roleRef);
-                }
-                return null;
+        AuthenticationUtil.runAsSystem(() -> {
+            Collection<NodeRef> roles = getRoles(caseRef);
+            for (NodeRef roleRef : roles) {
+                updateRoleImpl(caseRef, roleRef);
             }
+            return null;
         });
     }
 
@@ -231,40 +229,37 @@ public class CaseRoleServiceImpl implements CaseRoleService {
 
     @Override
     public void updateRole(final NodeRef roleRef) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                NodeRef caseRef = nodeService.getPrimaryParent(roleRef).getParentRef();
-                updateRoleImpl(caseRef, roleRef);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            NodeRef caseRef = nodeService.getPrimaryParent(roleRef).getParentRef();
+            updateRoleImpl(caseRef, roleRef);
+            return null;
         });
     }
 
     @Override
     public void roleChanged(NodeRef roleRef, NodeRef added, NodeRef removed) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                if (added != null && transactionMapContains(roleRef, added)) {
-                    return null;
-                }
+        AuthenticationUtil.runAsSystem(() -> {
 
-                if (removed != null && transactionMapContains(roleRef, removed)) {
-                    return null;
-                }
-
-                Set<NodeRef> addedSet = added != null ? new HashSet<>(Arrays.asList(added)) : null;
-                Set<NodeRef> removedSet = removed != null ? new HashSet<>(Arrays.asList(removed)) : null;
-                fireAssigneesChangedEvent(roleRef, addedSet, removedSet);
+            if (added != null && transactionMapContains(roleRef, added)) {
                 return null;
             }
+
+            if (removed != null && transactionMapContains(roleRef, removed)) {
+                return null;
+            }
+
+            Set<NodeRef> addedSet = added != null ? new HashSet<>(Arrays.asList(added)) : null;
+            Set<NodeRef> removedSet = removed != null ? new HashSet<>(Arrays.asList(removed)) : null;
+            fireAssigneesChangedEvent(roleRef, addedSet, removedSet);
+            return null;
         });
     }
 
-    @Override
-    public void register(RoleDAO roleDAO) {
-        rolesDAOByType.put(roleDAO.getRoleType(), roleDAO);
+    @Autowired
+    public void register(List<RoleDAO> rolesDAO) {
+        for (RoleDAO dao : rolesDAO) {
+            rolesDAOByType.put(dao.getRoleType(), dao);
+        }
     }
 
     @Override
@@ -472,8 +467,7 @@ public class CaseRoleServiceImpl implements CaseRoleService {
     }
 
     private void addToTransactionMap(NodeRef roleRef, Collection<NodeRef> newAuthorities) {
-        Map<NodeRef, Collection<NodeRef>> transactionMap = TransactionalResourceHelper.
-                <NodeRef, Collection<NodeRef>>getMap(ROLE_TO_NOT_FIRE_TXN_KEY);
+        Map<NodeRef, Collection<NodeRef>> transactionMap = TransactionalResourceHelper.getMap(ROLE_TO_NOT_FIRE_TXN_KEY);
         Collection<NodeRef> authorities = transactionMap.get(roleRef);
         if (authorities != null) {
             authorities.addAll(newAuthorities);
@@ -483,8 +477,7 @@ public class CaseRoleServiceImpl implements CaseRoleService {
     }
 
     private void clearTransactionMap() {
-        Map<NodeRef, Collection<NodeRef>> transactionMap = TransactionalResourceHelper.
-                <NodeRef, Collection<NodeRef>>getMap(ROLE_TO_NOT_FIRE_TXN_KEY);
+        Map<NodeRef, Collection<NodeRef>> transactionMap = TransactionalResourceHelper.getMap(ROLE_TO_NOT_FIRE_TXN_KEY);
         transactionMap.clear();
     }
 

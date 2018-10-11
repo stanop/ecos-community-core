@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.flowable.engine.*;
 import org.flowable.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.flowable.engine.parse.BpmnParseHandler;
+import org.flowable.variable.api.types.VariableType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -27,6 +28,8 @@ import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
 import ru.citeck.ecos.flowable.services.impl.ModelMapper;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
+import ru.citeck.ecos.flowable.variable.FlowableEcosPojoTypeHandler;
+import ru.citeck.ecos.workflow.variable.handler.EcosPojoTypeHandler;
 import ru.citeck.ecos.icase.CaseStatusServiceJS;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessServiceJS;
 
@@ -150,6 +153,8 @@ public class FlowableConfiguration {
      */
     @Bean(name = "flowableEngineConfiguration")
     public ProcessEngineConfiguration flowableEngineConfiguration(@Qualifier("flowableDataSource") DataSource dataSource,
+                                                                  @Qualifier("workflow.variable.EcosPojoTypeHandler")
+                                                                  EcosPojoTypeHandler<?> ecosPojoTypeHandler,
                                                                   ServiceDescriptorRegistry descriptorRegistry) {
         if (dataSource != null) {
             StandaloneProcessEngineConfiguration engineConfiguration = new StandaloneProcessEngineConfiguration();
@@ -169,6 +174,12 @@ public class FlowableConfiguration {
             parseHandlers.add(new ProcessBpmnParseHandler());
             parseHandlers.add(new UserTaskBpmnParseHandler());
             engineConfiguration.setPreBpmnParseHandlers(parseHandlers);
+
+            List<VariableType> types = engineConfiguration.getCustomPreVariableTypes();
+            types = types != null ? new ArrayList<>(types) : new ArrayList<>();
+            types.add(new FlowableEcosPojoTypeHandler(ecosPojoTypeHandler));
+            engineConfiguration.setCustomPreVariableTypes(types);
+
             return engineConfiguration;
         } else {
             return null;
