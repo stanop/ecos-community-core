@@ -32,7 +32,7 @@ public class FlowableAddConsiderableVersion implements TaskListener {
     private NodeService nodeService;
 
     private void initServices() {
-        ServiceRegistry services = ApplicationContextProvider.getBean(ServiceDescriptorRegistry.class);;
+        ServiceRegistry services = ApplicationContextProvider.getBean(ServiceDescriptorRegistry.class);
         confirmService = (ConfirmService) services.getService(CiteckServices.CONFIRM_SERVICE);
         namespaceService = services.getNamespaceService();
         nodeService = services.getNodeService();
@@ -41,7 +41,7 @@ public class FlowableAddConsiderableVersion implements TaskListener {
 
     @Override
     public void notify(DelegateTask delegateTask) {
-        if(delegateTask.getAssignee() == null) {
+        if (delegateTask.getAssignee() == null) {
             return;
         }
 
@@ -49,12 +49,12 @@ public class FlowableAddConsiderableVersion implements TaskListener {
         WorkflowQNameConverter qNameConverter = new WorkflowQNameConverter(namespaceService);
         NodeRef packageRef = ((ScriptNode) delegateTask
                 .getVariable(qNameConverter.mapQNameToName(WorkflowModel.ASSOC_PACKAGE))).getNodeRef();
-        Set<QName> includeQNames = new HashSet<QName>();
+        Set<QName> includeQNames = new HashSet<>();
         includeQNames.add(WorkflowModel.ASSOC_PACKAGE_CONTAINS);
         includeQNames.add(ContentModel.ASSOC_CONTAINS);
         List<ChildAssociationRef> documentRefs = nodeService.getChildAssocs(packageRef);
         for (ChildAssociationRef documentRef : documentRefs) {
-            if(!includeQNames.contains(documentRef.getTypeQName()) || documentRef.getChildRef() == null) {
+            if (!includeQNames.contains(documentRef.getTypeQName()) || documentRef.getChildRef() == null) {
                 continue;
             }
             try {
