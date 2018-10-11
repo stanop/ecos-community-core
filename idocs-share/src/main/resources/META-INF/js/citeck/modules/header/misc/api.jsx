@@ -1,3 +1,5 @@
+import { generateSearchTerm } from '../misc/util';
+
 // TODO include polyfills
 
 // const catchError = err => console.error(err);
@@ -61,6 +63,21 @@ export default class {
 
     getSiteUserMembership = (siteId, username) => {
         const url = "api/sites/" + siteId + "/memberships/" + encodeURIComponent(username);
+        return this.getJSON(url).catch(() => {});
+    };
+
+    getLiveSearchDocuments = (terms, startIndex) => {
+        const url = "slingshot/live-search-docs?t=" + generateSearchTerm(terms) + "&maxResults=5&startIndex=" + startIndex;
+        return this.getJSON(url).catch(() => {});
+    };
+
+    getLiveSearchSites = terms => {
+        const url = "slingshot/live-search-sites?t=" + generateSearchTerm(terms) + "&maxResults=5";
+        return this.getJSON(url).catch(() => {});
+    };
+
+    getLiveSearchPeople = terms => {
+        const url = "slingshot/live-search-people?t=" + generateSearchTerm(terms) + "&maxResults=5";
         return this.getJSON(url).catch(() => {});
     };
 }

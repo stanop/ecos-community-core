@@ -10,7 +10,9 @@ import {
     USER_MENU_SET_ITEMS,
 
     SHOW_MODAL,
-    HIDE_MODAL
+    HIDE_MODAL,
+
+    AUTOCOMPLETE_VISIBILITY_TOGGLE, AUTOCOMPLETE_UPDATE_RESULTS
 } from './actions';
 
 /* caseMenuReducer */
@@ -148,11 +150,60 @@ function modalReducer(state = modalInitialState, action) {
 }
 
 
+/* searchAutocompleteReducer */
+const searchAutocompleteInitialState = {
+    isVisible: false,
+    documents: {
+        hasMoreRecords: false,
+        items: [],
+    },
+    sites: {
+        items: [],
+    },
+    people: {
+        items: [],
+    },
+};
+
+Object.freeze(searchAutocompleteInitialState);
+
+function searchAutocompleteReducer(state = searchAutocompleteInitialState, action) {
+    const payload = action.payload;
+
+    switch (action.type) {
+        case AUTOCOMPLETE_VISIBILITY_TOGGLE:
+            return {
+                ...state,
+                isVisible: action.payload
+            };
+
+        case AUTOCOMPLETE_UPDATE_RESULTS:
+            return {
+                ...state,
+                documents: {
+                    hasMoreRecords: payload.documents.hasMoreRecords,
+                    items: payload.documents.items,
+                },
+                sites: {
+                    items: payload.sites.items,
+                },
+                people: {
+                    items: payload.people.items,
+                },
+            };
+
+        default:
+            return state;
+    }
+}
+
+
 /* root reducer */
 export default combineReducers({
     caseMenu: caseMenuReducer,
     siteMenu: siteMenuReducer,
     modal: modalReducer,
+    searchAutocomplete: searchAutocompleteReducer,
     userMenu: userMenuReducer,
     user: userReducer
 });

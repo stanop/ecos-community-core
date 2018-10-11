@@ -20,6 +20,49 @@ export function hideModal() {
 /* ---------------- */
 
 
+/* Search autocomplete */
+export const AUTOCOMPLETE_VISIBILITY_TOGGLE = 'AUTOCOMPLETE_VISIBILITY_TOGGLE';
+export const AUTOCOMPLETE_UPDATE_RESULTS = 'AUTOCOMPLETE_UPDATE_RESULTS';
+
+export function toggleAutocompleteVisibility(payload) {
+    return {
+        type: AUTOCOMPLETE_VISIBILITY_TOGGLE,
+        payload
+    }
+}
+
+export function updateAutocompleteResults(payload) {
+    return {
+        type: AUTOCOMPLETE_UPDATE_RESULTS,
+        payload
+    }
+}
+
+export function fetchAutocomplete(payload) {
+    return (dispatch, getState, api) => {
+        if (payload.length < 2) {
+            dispatch(updateAutocompleteResults({
+                documents: { items: [], hasMoreRecords: false },
+                sites: { items: [] },
+                people: { items: [] },
+            }));
+            return;
+        }
+
+        let promises = [
+            api.getLiveSearchDocuments(payload, 0),
+            api.getLiveSearchSites(payload),
+            api.getLiveSearchPeople(payload),
+        ];
+
+        Promise.all(promises).then(([documents, sites, people]) => {
+            dispatch(updateAutocompleteResults({ documents, sites, people }));
+        });
+    };
+}
+/* ---------------- */
+
+
 
 /* Create case menu */
 export const CREATE_CASE_WIDGET_SET_ITEMS = 'CREATE_CASE_WIDGET_SET_ITEMS';
