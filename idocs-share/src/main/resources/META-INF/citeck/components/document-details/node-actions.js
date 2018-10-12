@@ -860,6 +860,14 @@ define([
                 });
             },
 
+            _triggerEditOnlineAos: function NodeActions__triggerEditOnlineAos() {
+                var me = this;
+                var args = arguments;
+                require(['js/officelauncher'], function () {
+                    Alfresco.doclib.Actions.prototype._triggerEditOnlineAos.apply(me, args);
+                });
+            },
+
             /**
              * Refresh component in response to metadataRefresh event
              *
