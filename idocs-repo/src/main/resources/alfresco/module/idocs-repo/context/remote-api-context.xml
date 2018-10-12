@@ -423,6 +423,10 @@
         <property name="serviceRegistry" ref="ServiceRegistry"/>
         <property name="authenticationService" ref="authenticationService"/>
     </bean>
+    
+    <bean id="webscript.ru.citeck.case-activity.flat-case-activities.get"
+          class="ru.citeck.ecos.webscripts.cases.FlatCaseActivitiesGet" parent="webscript">
+    </bean>
 
     <bean id="webscript.ru.citeck.orgstruct.v2.children.get" class="ru.citeck.ecos.webscripts.orgstruct.ChildrenGet" parent="webscript" />
 
