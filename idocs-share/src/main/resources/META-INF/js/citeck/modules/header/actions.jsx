@@ -20,25 +20,73 @@ export function hideModal() {
 /* ---------------- */
 
 
-/* Search autocomplete */
-export const AUTOCOMPLETE_VISIBILITY_TOGGLE = 'AUTOCOMPLETE_VISIBILITY_TOGGLE';
-export const AUTOCOMPLETE_UPDATE_RESULTS = 'AUTOCOMPLETE_UPDATE_RESULTS';
+/* Search */
+export const SEARCH_AUTOCOMPLETE_VISIBILITY_TOGGLE = 'SEARCH_AUTOCOMPLETE_VISIBILITY_TOGGLE';
+export const SEARCH_AUTOCOMPLETE_UPDATE_RESULTS = 'SEARCH_AUTOCOMPLETE_UPDATE_RESULTS';
+export const SEARCH_AUTOCOMPLETE_UPDATE_DOCUMENTS_RESULTS = 'SEARCH_AUTOCOMPLETE_UPDATE_DOCUMENTS_RESULTS';
+export const SEARCH_SET_LAST_SEARCH_INDEX = 'SEARCH_SET_LAST_SEARCH_INDEX';
+
+export function setLastSearchIndex(payload) {
+    return {
+        type: SEARCH_SET_LAST_SEARCH_INDEX,
+        payload
+    }
+}
+
+export function getSearchTextFromHistory(isDesc, successCallback) {
+    return (dispatch, getState, api) => {
+        if (!("localStorage" in window && window.localStorage !== null)) {
+            return null;
+        }
+
+        const searchPhrases = JSON.parse(localStorage.getItem("ALF_SEARCHBOX_HISTORY"));
+
+        const state = getState();
+        let lastSearchIndex = state.search.lastSearchIndex;
+
+        if (isDesc) {
+            // Up Arrow press
+            if (lastSearchIndex === 0 || lastSearchIndex === null) {
+                lastSearchIndex = searchPhrases.length - 1;
+            } else {
+                lastSearchIndex--;
+            }
+        } else {
+            // Down Arrow press
+            if (lastSearchIndex === searchPhrases.length - 1 || lastSearchIndex === null) {
+                lastSearchIndex = 0;
+            } else  {
+                lastSearchIndex++;
+            }
+        }
+
+        dispatch(setLastSearchIndex(lastSearchIndex));
+        typeof successCallback === 'function' && successCallback(searchPhrases[lastSearchIndex]);
+    };
+}
 
 export function toggleAutocompleteVisibility(payload) {
     return {
-        type: AUTOCOMPLETE_VISIBILITY_TOGGLE,
+        type: SEARCH_AUTOCOMPLETE_VISIBILITY_TOGGLE,
         payload
     }
 }
 
 export function updateAutocompleteResults(payload) {
     return {
-        type: AUTOCOMPLETE_UPDATE_RESULTS,
+        type: SEARCH_AUTOCOMPLETE_UPDATE_RESULTS,
         payload
     }
 }
 
-export function fetchAutocomplete(payload) {
+export function updateAutocompleteDocumentsResults(payload) {
+    return {
+        type: SEARCH_AUTOCOMPLETE_UPDATE_DOCUMENTS_RESULTS,
+        payload
+    }
+}
+
+export function fetchAutocompleteItems(payload, successCallback) {
     return (dispatch, getState, api) => {
         if (payload.length < 2) {
             dispatch(updateAutocompleteResults({
@@ -57,6 +105,18 @@ export function fetchAutocomplete(payload) {
 
         Promise.all(promises).then(([documents, sites, people]) => {
             dispatch(updateAutocompleteResults({ documents, sites, people }));
+            typeof successCallback === 'function' && successCallback();
+        });
+    };
+}
+
+export function fetchMoreAutocompleteDocuments(payload) {
+    return (dispatch, getState, api) => {
+        const state = getState();
+        const documentsQty = state.search.autocomplete.documents.items.length;
+
+        api.getLiveSearchDocuments(payload, documentsQty).then(documents => {
+            dispatch(updateAutocompleteDocumentsResults(documents));
         });
     };
 }

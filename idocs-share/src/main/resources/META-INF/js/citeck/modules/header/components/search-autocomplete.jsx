@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import { connect } from "react-redux";
+import React from 'react';
+import { connect } from 'react-redux';
 import { t } from '../misc/util';
 import SearchAutocompleteItem, {
     SEARCH_AUTOCOMPLETE_TYPE_DOCUMENTS,
@@ -8,13 +8,13 @@ import SearchAutocompleteItem, {
 } from './search-autocomplete-item';
 
 const mapStateToProps = state => ({
-    isVisible: state.searchAutocomplete.isVisible,
-    documents: state.searchAutocomplete.documents,
-    sites: state.searchAutocomplete.sites,
-    people: state.searchAutocomplete.people,
+    isVisible: state.search.autocomplete.isVisible,
+    documents: state.search.autocomplete.documents,
+    sites: state.search.autocomplete.sites,
+    people: state.search.autocomplete.people,
 });
 
-const SearchAutocomplete = ({ isVisible, documents, sites, people }) => {
+const SearchAutocomplete = ({ isVisible, documents, sites, people, fetchMoreDocuments }) => {
     const totalResults = documents.items.length + sites.items.length + people.items.length;
     if (totalResults < 1 || !isVisible) {
         return null;
@@ -24,7 +24,7 @@ const SearchAutocomplete = ({ isVisible, documents, sites, people }) => {
     if (documents.items.length > 0) {
         const moreButtom = documents.hasMoreRecords ? (
             <p className='autocomplete-section__more'>
-                <a href="#" onClick={() => {}}>
+                <a href='#' onClick={fetchMoreDocuments}>
                     {t('search.more')}
                 </a>
             </p>

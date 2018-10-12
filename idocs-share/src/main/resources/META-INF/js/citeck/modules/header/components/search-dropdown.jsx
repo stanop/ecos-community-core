@@ -9,19 +9,19 @@ const SearchDropdown = () => {
             key={0}
             data={{
                 id: 'HEADER_SEARCH_BOX_ADVANCED_SEARCH',
-                label: "header.advanced-search.label",
-                targetUrl: "/share/page/site/hr/advsearch"
+                label: 'header.advanced-search.label',
+                targetUrl: '/share/page/site/hr/advsearch'
             }}
         />
     ];
 
     return (
         <Fragment>
-            <Dropdown className="search-dropdown-menu" pullLeft>
-                <CustomToggle bsRole="toggle" className="search-dropdown-menu__toggle">
-                    <i className={"fa fa-chevron-circle-down"} />
+            <Dropdown className='search-dropdown-menu' pullLeft>
+                <CustomToggle bsRole='toggle' className='search-dropdown-menu__toggle'>
+                    <i className={'fa fa-chevron-circle-down'} />
                 </CustomToggle>
-                <Dropdown.Menu className="custom-dropdown-menu__body">
+                <Dropdown.Menu className='custom-dropdown-menu__body'>
                     {searchDropdownListItems}
                 </Dropdown.Menu>
             </Dropdown>

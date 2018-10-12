@@ -12,7 +12,10 @@ import {
     SHOW_MODAL,
     HIDE_MODAL,
 
-    AUTOCOMPLETE_VISIBILITY_TOGGLE, AUTOCOMPLETE_UPDATE_RESULTS
+    SEARCH_AUTOCOMPLETE_VISIBILITY_TOGGLE,
+    SEARCH_AUTOCOMPLETE_UPDATE_RESULTS,
+    SEARCH_AUTOCOMPLETE_UPDATE_DOCUMENTS_RESULTS,
+    SEARCH_SET_LAST_SEARCH_INDEX
 } from './actions';
 
 /* caseMenuReducer */
@@ -150,46 +153,73 @@ function modalReducer(state = modalInitialState, action) {
 }
 
 
-/* searchAutocompleteReducer */
-const searchAutocompleteInitialState = {
-    isVisible: false,
-    documents: {
-        hasMoreRecords: false,
-        items: [],
-    },
-    sites: {
-        items: [],
-    },
-    people: {
-        items: [],
+/* searchReducer */
+const searchInitialState = {
+    lastSearchIndex: null,
+    autocomplete: {
+        isVisible: false,
+        documents: {
+            hasMoreRecords: false,
+            items: [],
+        },
+        sites: {
+            items: [],
+        },
+        people: {
+            items: [],
+        },
     },
 };
 
-Object.freeze(searchAutocompleteInitialState);
+Object.freeze(searchInitialState);
 
-function searchAutocompleteReducer(state = searchAutocompleteInitialState, action) {
+function searchReducer(state = searchInitialState, action) {
     const payload = action.payload;
 
     switch (action.type) {
-        case AUTOCOMPLETE_VISIBILITY_TOGGLE:
+        case SEARCH_AUTOCOMPLETE_VISIBILITY_TOGGLE:
             return {
                 ...state,
-                isVisible: action.payload
+                autocomplete: {
+                    ...state.autocomplete,
+                    isVisible: action.payload
+                },
             };
 
-        case AUTOCOMPLETE_UPDATE_RESULTS:
+        case SEARCH_AUTOCOMPLETE_UPDATE_RESULTS:
             return {
                 ...state,
-                documents: {
-                    hasMoreRecords: payload.documents.hasMoreRecords,
-                    items: payload.documents.items,
+                autocomplete: {
+                    ...state.autocomplete,
+                    documents: {
+                        hasMoreRecords: payload.documents.hasMoreRecords,
+                        items: payload.documents.items,
+                    },
+                    sites: {
+                        items: payload.sites.items,
+                    },
+                    people: {
+                        items: payload.people.items,
+                    },
                 },
-                sites: {
-                    items: payload.sites.items,
+            };
+
+        case SEARCH_AUTOCOMPLETE_UPDATE_DOCUMENTS_RESULTS:
+            return {
+                ...state,
+                autocomplete: {
+                    ...state.autocomplete,
+                    documents: {
+                        hasMoreRecords: payload.hasMoreRecords,
+                        items: state.autocomplete.documents.items.concat(payload.items),
+                    },
                 },
-                people: {
-                    items: payload.people.items,
-                },
+            };
+
+        case SEARCH_SET_LAST_SEARCH_INDEX:
+            return {
+                ...state,
+                lastSearchIndex: payload,
             };
 
         default:
@@ -203,7 +233,7 @@ export default combineReducers({
     caseMenu: caseMenuReducer,
     siteMenu: siteMenuReducer,
     modal: modalReducer,
-    searchAutocomplete: searchAutocompleteReducer,
+    search: searchReducer,
     userMenu: userMenuReducer,
     user: userReducer
 });
