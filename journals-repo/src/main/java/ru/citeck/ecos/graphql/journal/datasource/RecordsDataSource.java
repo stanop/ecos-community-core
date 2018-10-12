@@ -84,14 +84,15 @@ public class RecordsDataSource implements JournalDataSource {
                 .collect(Collectors.toList()));
         recordsQuery.setSkipCount(pageInfo.getSkipCount());
         recordsQuery.setConsistency(QueryConsistency.EVENTUAL);
+        recordsQuery.setSourceId(sourceId);
 
-        RecordsResult records = recordsService.getRecords(sourceId, recordsQuery);
+        RecordsResult records = recordsService.getRecords(recordsQuery);
 
         return new JournalRecordsResult(records.getRecords(),
                                         records.hasMore(),
                                         records.getTotalCount(),
-                                        records.getQuery().getSkipCount(),
-                                        records.getQuery().getMaxItems());
+                                        recordsQuery.getSkipCount(),
+                                        recordsQuery.getMaxItems());
     }
 
     @Override

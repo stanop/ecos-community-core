@@ -35,22 +35,10 @@ public interface RecordsService {
     RecordsResult getRecords(RecordsQuery query);
 
     /**
-     * Query records from specified source
-     * @return list of RecordRef and page info
-     */
-    RecordsResult getRecords(String source, RecordsQuery query);
-
-    /**
      * Get Iterable with records which fit the query from default source.
      * This method can be used to process all records in system without search limits
      */
     Iterable<RecordRef> getIterableRecords(RecordsQuery query);
-
-    /**
-     * Get Iterable with records which fit the query from specified source.
-     * This method can be used to process all records in system without search limits
-     */
-    Iterable<RecordRef> getIterableRecords(String sourceId, RecordsQuery query);
 
     /**
      * Get metadata for specified records.

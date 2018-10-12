@@ -15,6 +15,7 @@ public class RecordsQuery {
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
+    private String sourceId = "";
     private int skipCount;
     private int maxItems;
     private List<SortBy> sortBy = Collections.emptyList();
@@ -28,6 +29,7 @@ public class RecordsQuery {
     }
 
     public RecordsQuery(RecordsQuery other) {
+        this.sourceId = other.sourceId;
         this.skipCount = other.skipCount;
         this.sortBy = new ArrayList<>(other.sortBy);
         this.maxItems = other.maxItems;
@@ -37,6 +39,14 @@ public class RecordsQuery {
         this.language = other.language;
         this.query = other.query;
 
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
     }
 
     public String getQuery() {
@@ -115,7 +125,8 @@ public class RecordsQuery {
 
         RecordsQuery that = (RecordsQuery) o;
 
-        return Objects.equals(skipCount, that.skipCount) &&
+        return Objects.equals(sourceId, that.sourceId) &&
+               Objects.equals(skipCount, that.skipCount) &&
                Objects.equals(maxItems, that.maxItems) &&
                Objects.equals(sortBy, that.sortBy) &&
                Objects.equals(afterId, that.afterId) &&
@@ -129,20 +140,22 @@ public class RecordsQuery {
         result = 31 * result + Objects.hashCode(sortBy);
         result = 31 * result + Objects.hashCode(afterId);
         result = 31 * result + Objects.hashCode(consistency);
+        result = 31 * result + Objects.hashCode(sourceId);
         return result;
     }
 
     @Override
     public String toString() {
         return "RecordsQuery{" +
-                "skipCount=" + skipCount +
-                ", maxItems=" + maxItems +
-                ", sortBy=" + sortBy +
-                ", afterId=" + afterId +
-                ", afterIdMode=" + afterIdMode +
-                ", consistency=" + consistency +
-                ", language='" + language + '\'' +
-                ", query='" + query + '\'' +
+                "\"sourceId\":\"" + sourceId + "\"," +
+                "\"skipCount\":\"" + skipCount + "\"," +
+                "\"maxItems\":\"" + maxItems + "\"," +
+                "\"sortBy\":\"" + sortBy + "\"," +
+                "\"afterId\":\"" + afterId + "\"," +
+                "\"afterIdMode\":\"" + afterIdMode + "\"," +
+                "\"consistency\":\"" + consistency + "\"," +
+                "\"language\":\"" + language + '\'' + "\"," +
+                "\"query\":\"" + query + "\"," +
                 '}';
     }
 }

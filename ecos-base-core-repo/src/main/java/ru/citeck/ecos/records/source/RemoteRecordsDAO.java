@@ -53,16 +53,14 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
     public RecordsResult queryRecords(RecordsQuery query) {
 
         RecordsPost.Request request = new RecordsPost.Request();
-        request.sourceId = remoteSourceId;
 
         if (enabled) {
 
             RecordRef afterId = query.getAfterId();
+            request.query = new RecordsQuery(query);
+            request.query.setSourceId(remoteSourceId);
             if (afterId != null) {
-                request.query = new RecordsQuery(query);
                 request.query.setAfterId(new RecordRef(afterId.getId()));
-            } else {
-                request.query = query;
             }
 
             RecordsResult result = restConnection.jsonPost(recordsMethod, request, RecordsResult.class);
@@ -72,7 +70,7 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
                 logger.error("[" + getId() + "] queryRecords will return nothing. " + request);
             }
         }
-        return new RecordsResult(query);
+        return new RecordsResult();
     }
 
     @Override
@@ -99,8 +97,7 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
             results = new ActionResults<>(response.results, r -> new RecordRef(getId(), r));
         } else {
             results = new ActionResults<>();
-            ActionStatus status = new ActionStatus(ActionStatus.STATUS_ERROR);
-            status.setMessage("Remote action failed");
+            ActionStatus status = ActionStatus.error(new RuntimeException("Remote action failed"));
             records.forEach(record -> results.getResults().add(new ActionResult<>(record, status)));
         }
 

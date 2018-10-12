@@ -2,7 +2,6 @@ package ru.citeck.ecos.records;
 
 import org.alfresco.util.ParameterCheck;
 import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
 
 import java.util.*;
 
@@ -10,25 +9,17 @@ public class IterableRecords implements Iterable<RecordRef> {
 
     private static final int SEARCH_MAX_ITEMS = 100;
 
-    private final String sourceId;
     private final RecordsQuery recordsQuery;
     private final RecordsService recordsService;
 
     public IterableRecords(RecordsService recordsService,
-                           String sourceId,
                            RecordsQuery recordsQuery) {
 
-        this.sourceId = sourceId;
         this.recordsQuery = new RecordsQuery(recordsQuery);
         this.recordsService = recordsService;
 
         ParameterCheck.mandatory("recordsService", recordsService);
         ParameterCheck.mandatory("recordsQuery", recordsQuery);
-        ParameterCheck.mandatory("sourceId", sourceId);
-    }
-
-    public IterableRecords(RecordsQuery recordsQuery, RecordsService recordsService) {
-        this(recordsService, AlfNodesRecordsDAO.ID, recordsQuery);
     }
 
     @Override
@@ -72,7 +63,7 @@ public class IterableRecords implements Iterable<RecordRef> {
             query.setAfterId(lastId);
             query.setMaxItems(SEARCH_MAX_ITEMS);
 
-            records = recordsService.getRecords(sourceId, query).getRecords();
+            records = recordsService.getRecords(query).getRecords();
 
             if (records.size() > 0) {
                 RecordRef newLastId = records.get(records.size() - 1);

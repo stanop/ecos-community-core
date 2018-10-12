@@ -30,7 +30,7 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
     @Override
     public RecordsResult queryRecords(RecordsQuery query) {
 
-        RecordsResult result = new RecordsResult(query);
+        RecordsResult result = new RecordsResult();
 
         RecordsQuery localQuery = new RecordsQuery(query);
 

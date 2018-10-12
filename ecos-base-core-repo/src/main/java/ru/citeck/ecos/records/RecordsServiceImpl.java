@@ -29,22 +29,12 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public RecordsResult getRecords(RecordsQuery query) {
-        return getRecords("", query);
-    }
-
-    @Override
-    public RecordsResult getRecords(String sourceId, RecordsQuery query) {
-        return needRecordsSource(sourceId).queryRecords(query);
+        return needRecordsSource(query.getSourceId()).queryRecords(query);
     }
 
     @Override
     public Iterable<RecordRef> getIterableRecords(RecordsQuery query) {
-        return getIterableRecords("", query);
-    }
-
-    @Override
-    public Iterable<RecordRef> getIterableRecords(String sourceId, RecordsQuery query) {
-        return new IterableRecords(this, sourceId, query);
+        return new IterableRecords(this, query);
     }
 
     @Override
@@ -75,8 +65,8 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     private <T> Map<RecordRef, T> getMeta(Collection<RecordRef> records,
-                                          BiFunction<RecordsDAO,
-                                                     List<RecordRef>, Map<RecordRef, T>> getMeta) {
+                                          BiFunction<RecordsDAO, List<RecordRef>,
+                                                     Map<RecordRef, T>> getMeta) {
 
         Map<RecordRef, T> result = new HashMap<>();
 

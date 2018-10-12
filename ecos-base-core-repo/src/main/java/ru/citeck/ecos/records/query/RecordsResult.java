@@ -1,14 +1,15 @@
 package ru.citeck.ecos.records.query;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ru.citeck.ecos.records.RecordRef;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class RecordsResult {
 
-    private RecordsQuery query;
     private List<RecordRef> records = Collections.emptyList();
     private boolean hasMore = false;
     private long totalCount = 0;
@@ -16,12 +17,7 @@ public class RecordsResult {
     public RecordsResult() {
     }
 
-    public RecordsResult(RecordsQuery recordsQuery) {
-        this.query = recordsQuery;
-    }
-
     public RecordsResult(RecordsResult other) {
-        query = other.query;
         records = new ArrayList<>(other.getRecords());
         hasMore = other.hasMore;
         totalCount = other.totalCount;
@@ -45,14 +41,6 @@ public class RecordsResult {
 
         hasMore = other.hasMore();
         totalCount += other.getTotalCount();
-    }
-
-    public RecordsQuery getQuery() {
-        return query;
-    }
-
-    public void setQuery(RecordsQuery query) {
-        this.query = query;
     }
 
     public List<RecordRef> getRecords() {

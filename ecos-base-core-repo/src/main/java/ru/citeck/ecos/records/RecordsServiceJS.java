@@ -37,11 +37,6 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
         return recordsService.getIterableRecords(convertedQuery);
     }
 
-    public Iterable<RecordRef> getIterableRecords(String sourceId, Object recordsQuery) {
-        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
-        return recordsService.getIterableRecords(sourceId, convertedQuery);
-    }
-
     public Collection<RecordRef> toRecords(Object nodes) {
         Object jNodes = converter.convertValueForJava(nodes);
         final List<RecordRef> resultList = new ArrayList<>();

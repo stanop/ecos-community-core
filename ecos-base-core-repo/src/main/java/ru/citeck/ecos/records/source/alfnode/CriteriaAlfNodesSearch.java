@@ -73,7 +73,6 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
                                          .collect(Collectors.toList()));
         result.setTotalCount(criteriaResults.getTotalCount());
         result.setHasMore(criteriaResults.hasMore());
-        result.setQuery(query);
 
         return result;
     }

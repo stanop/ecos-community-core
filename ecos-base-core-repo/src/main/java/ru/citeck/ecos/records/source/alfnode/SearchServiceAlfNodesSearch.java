@@ -109,7 +109,6 @@ public class SearchServiceAlfNodesSearch {
                                        .stream()
                                        .map(RecordRef::new)
                                        .collect(Collectors.toList()));
-            result.setQuery(recordsQuery);
             result.setHasMore(resultSet.hasMore());
             result.setTotalCount(resultSet.getNumberFound());
 

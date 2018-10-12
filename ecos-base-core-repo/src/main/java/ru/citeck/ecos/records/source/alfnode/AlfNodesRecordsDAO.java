@@ -49,7 +49,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO {
 
             if (afterId != null) {
                 if (!ID.equals(afterId.getSourceId())) {
-                    return new RecordsResult(query);
+                    return new RecordsResult();
                 }
                 NodeRef afterIdNodeRef = new NodeRef(afterId.getId());
 
