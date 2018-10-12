@@ -282,7 +282,15 @@ export function processMenuItemsFromOldMenu(oldMenuItems) {
         };
 
         if (item.config.targetUrl) {
-            newItem.targetUrl = "/share/page/" + item.config.targetUrl;
+            if (item.config.targetUrlType && item.config.targetUrlType === 'FULL_PATH') {
+                newItem.targetUrl = item.config.targetUrl;
+            } else {
+                newItem.targetUrl = '/share/page/' + item.config.targetUrl;
+            }
+
+            if (item.config.targetUrlLocation && item.config.targetUrlLocation === 'NEW') {
+                newItem.target = '_blank';
+            }
         }
 
         if (item.config.publishTopic) {
@@ -300,10 +308,12 @@ export function processMenuItemsFromOldMenu(oldMenuItems) {
     return siteMenuItems;
 }
 
-export const makeUserMenuItems = (userName, isAvailable) => {
+export const makeUserMenuItems = (userName, isAvailable, isMutable, isExternalAuthentication) => {
     const availability = "make-" + (isAvailable === false ? "" : "not") + "available";
 
-    return [
+    let userMenuItems = [];
+
+    userMenuItems.push(
         {
             id: "HEADER_USER_MENU_MY_PROFILE",
             label: "header.my-profile.label",
@@ -319,12 +329,20 @@ export const makeUserMenuItems = (userName, isAvailable) => {
                     targetUrl: "/share/page/components/deputy/make-available?available=" + (isAvailable === false ? "true" : "false"),
                 }
             }
-        },
-        {
-            id: "HEADER_USER_MENU_PASSWORD",
-            label: "header.change-password.label",
-            targetUrl: "/share/page/user/" + encodeURIComponent(userName) + "/change-password"
-        },
+        }
+    );
+
+    if (isMutable) {
+        userMenuItems.push(
+            {
+                id: "HEADER_USER_MENU_PASSWORD",
+                label: "header.change-password.label",
+                targetUrl: "/share/page/user/" + encodeURIComponent(userName) + "/change-password"
+            },
+        );
+    }
+
+    userMenuItems.push(
         {
             id: "HEADER_USER_MENU_FEEDBACK",
             label: "header.feedback.label",
@@ -338,13 +356,20 @@ export const makeUserMenuItems = (userName, isAvailable) => {
             targetUrl: "mailto:support@citeck.ru?subject=Ошибка в работе Citeck EcoS: краткое описание&body=Summary: Короткое описание проблемы (продублировать в теме письма)%0A%0ADescription:%0AПожалуйста, детально опишите возникшую проблему, последовательность действий, которая привела к ней. При необходимости приложите скриншоты.",
             targetUrlType: "FULL_PATH",
             target: "_blank"
-        },
-        {
-            id: "HEADER_USER_MENU_LOGOUT",
-            label: "header.logout.label",
-            control: {
-                type: "ALF_DOLOGOUT"
-            }
         }
-    ];
+    );
+
+    if (!isExternalAuthentication) {
+        userMenuItems.push(
+            {
+                id: "HEADER_USER_MENU_LOGOUT",
+                label: "header.logout.label",
+                control: {
+                    type: "ALF_DOLOGOUT"
+                }
+            }
+        );
+    }
+
+    return userMenuItems;
 };

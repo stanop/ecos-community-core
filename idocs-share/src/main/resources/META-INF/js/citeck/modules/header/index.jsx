@@ -36,6 +36,8 @@ export const render = (elementId, props) => {
     store.dispatch(loadTopMenuData(
         props.userName,
         props.userIsAvailable === "true",
+        props.userIsMutable === "true",
+        props.isExternalAuthentication === "true",
         props.siteMenuItems
     ));
 

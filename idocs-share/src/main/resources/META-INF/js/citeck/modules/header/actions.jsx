@@ -201,7 +201,7 @@ export function setCurrentSiteMenuItems(payload) {
 
 
 /* COMMON */
-export function loadTopMenuData(userName, userIsAvailable, oldMenuSiteWidgetItems) {
+export function loadTopMenuData(userName, isUserAvailable, isUserMutable, isExternalAuthentication, oldMenuSiteWidgetItems) {
     return (dispatch, getState, api) => {
         let promises = [];
 
@@ -259,7 +259,7 @@ export function loadTopMenuData(userName, userIsAvailable, oldMenuSiteWidgetItem
             return {
                 'createCaseMenu': createCaseMenu,
                 'siteMenu': processMenuItemsFromOldMenu(oldMenuSiteWidgetItems),
-                'userMenu': makeUserMenuItems(userName, userIsAvailable),
+                'userMenu': makeUserMenuItems(userName, isUserAvailable, isUserMutable, isExternalAuthentication),
             };
         }).then(result => {
             dispatch(setCreateCaseWidgetItems(result.createCaseMenu));
