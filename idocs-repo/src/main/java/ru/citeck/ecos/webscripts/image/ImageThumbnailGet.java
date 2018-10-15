@@ -4,6 +4,7 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.web.scripts.content.ContentStreamer;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.TempFileProvider;
 import org.apache.commons.lang.StringUtils;
@@ -19,7 +20,8 @@ import java.util.*;
 
 public class ImageThumbnailGet extends AbstractWebScript {
 
-    private static final String PARAM_IMAGE_REF = "imageRef";
+    private static final String PARAM_NODE_REF = "nodeRef";
+    private static final String PARAM_PROPERTY = "property";
     private static final String PARAM_WIDTH = "width";
     private static final String PARAM_HEIGHT = "height";
     private static final String PARAM_CACHED = "cached";
@@ -32,17 +34,18 @@ public class ImageThumbnailGet extends AbstractWebScript {
     private ContentService contentService;
     private ContentStreamer contentStreamer;
     private MimetypeService mimetypeService;
+    private NamespaceService namespaceService;
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
-        String imageRefStr = req.getParameter(PARAM_IMAGE_REF);
-        if (StringUtils.isBlank(imageRefStr) || !NodeRef.isNodeRef(imageRefStr)) {
-            String msg = PARAM_IMAGE_REF + " has incorrect value: " + imageRefStr;
+        String nodeRefStr = req.getParameter(PARAM_NODE_REF);
+        if (StringUtils.isBlank(nodeRefStr) || !NodeRef.isNodeRef(nodeRefStr)) {
+            String msg = PARAM_NODE_REF + " has incorrect value: " + nodeRefStr;
             throw new WebScriptException(HttpServletResponse.SC_BAD_REQUEST, msg);
         }
 
-        NodeRef imageRef = new NodeRef(imageRefStr);
+        NodeRef nodeRef = new NodeRef(nodeRefStr);
         String widthStr = req.getParameter(PARAM_WIDTH);
         String heightStr = req.getParameter(PARAM_HEIGHT);
 
@@ -50,8 +53,14 @@ public class ImageThumbnailGet extends AbstractWebScript {
         int height = StringUtils.isNotBlank(heightStr) ? Integer.parseInt(heightStr) : -1;
         boolean stretch = "true".equals(req.getParameter(PARAM_STRETCH));
 
-        ContentReader reader = contentService.getReader(imageRef, ContentModel.PROP_CONTENT);
-        File tempFile = getTempFile(imageRef, reader, width, height, stretch);
+        QName contentProperty = ContentModel.PROP_CONTENT;
+        String contentPropertyStr = req.getParameter(PARAM_PROPERTY);
+        if (StringUtils.isNotBlank(contentPropertyStr)) {
+            contentProperty = QName.resolveToQName(namespaceService, contentPropertyStr);
+        }
+
+        ContentReader reader = contentService.getReader(nodeRef, contentProperty);
+        File tempFile = getTempFile(nodeRef, reader, width, height, stretch);
 
         long tempLastModified = tempFile.lastModified();
         if (!tempFile.exists() || tempLastModified < reader.getLastModified()) {
@@ -60,7 +69,7 @@ public class ImageThumbnailGet extends AbstractWebScript {
             tempFile.setLastModified(System.currentTimeMillis());
         }
 
-        Map<QName, Serializable> imageProps = nodeService.getProperties(imageRef);
+        Map<QName, Serializable> imageProps = nodeService.getProperties(nodeRef);
         String imageName = (String) imageProps.get(ContentModel.PROP_NAME);
         boolean attach = "true".equals(req.getParameter(PARAM_ATTACH));
 
@@ -119,6 +128,7 @@ public class ImageThumbnailGet extends AbstractWebScript {
         nodeService = serviceRegistry.getNodeService();
         contentService = serviceRegistry.getContentService();
         mimetypeService = serviceRegistry.getMimetypeService();
+        namespaceService = serviceRegistry.getNamespaceService();
     }
 
     @Autowired
