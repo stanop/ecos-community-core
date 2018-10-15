@@ -39,7 +39,7 @@ class Search extends React.Component {
 
         switch (e.key) {
             case 'Enter':
-                let url = searchPageUrl || 'dp/ws/faceted-search#searchTerm=' + generateSearchTerm(searchText, hiddenSearchTerms) + '&scope=repo';
+                let url = searchPageUrl || 'hdp/ws/faceted-search#searchTerm=' + generateSearchTerm(searchText, hiddenSearchTerms) + '&scope=repo';
                 window.location = window.Alfresco.constants.URL_PAGECONTEXT + url;
                 break;
             case 'ArrowUp':
