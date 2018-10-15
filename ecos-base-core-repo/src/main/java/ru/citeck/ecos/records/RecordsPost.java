@@ -38,7 +38,9 @@ public class RecordsPost extends AbstractWebScript {
                 RecordsMetaResult metaResult = new RecordsMetaResult();
                 metaResult.setHasMore(records.hasMore());
                 metaResult.setTotalCount(records.getTotalCount());
+
                 metaResult.setMeta(recordsService.getMeta(records.getRecords(), request.schema));
+
                 records = metaResult;
             }
 

@@ -1,6 +1,6 @@
 package ru.citeck.ecos.records.source;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.action.group.ActionResult;
@@ -90,7 +90,7 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
     }
 
     @Override
-    public Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
+    public List<ObjectNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
         throw new RuntimeException("Is not supported. Use RecordsService instead");
     }
 

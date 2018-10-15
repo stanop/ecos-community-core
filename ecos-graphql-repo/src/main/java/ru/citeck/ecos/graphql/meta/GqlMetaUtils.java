@@ -2,14 +2,15 @@ package ru.citeck.ecos.graphql.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import graphql.ExecutionResult;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.meta.converter.ConvertersProvider;
 import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,41 +33,37 @@ public class GqlMetaUtils {
         return converter.appendQuery(new StringBuilder()).toString();
     }
 
-    public <K> Map<K, JsonNode> convertMeta(List<K> ids, ExecutionResult executionResult) {
+    public <K> List<ObjectNode> convertMeta(List<K> ids, ExecutionResult executionResult) {
 
-        Map<K, JsonNode> result = new HashMap<>();
+        List<ObjectNode> result = new ArrayList<>();
 
         if (executionResult == null) {
-            for (K id : ids) {
-                result.put(id, null);
+            for (K ignored : ids) {
+                result.add(null);
             }
         } else {
             JsonNode jsonNode = objectMapper.valueToTree(executionResult.getData());
             JsonNode meta = jsonNode.get(META_KEY);
 
             for (int i = 0; i < meta.size(); i++) {
-                result.put(ids.get(i), meta.get(i));
+                JsonNode metaNode = meta.get(i);
+                result.add(metaNode instanceof NullNode ? null : (ObjectNode) metaNode);
             }
         }
         return result;
     }
 
-    public <K, V> Map<K, V> convertMeta(Map<K, JsonNode> meta, Class<V> metaClass) {
+    public <V> List<V> convertMeta(List<ObjectNode> meta, Class<V> metaClass) {
 
         MetaConverter<V> converter = convertersProvider.getConverter(metaClass);
 
-        Map<K, V> result = new HashMap<>();
-
-        meta.forEach((id, value) -> {
+        return meta.stream().map(m -> {
             try {
-                result.put(id, converter.convert(value));
+                return converter.convert(m);
             } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
-                result.put(id, null);
+                throw new RuntimeException("Meta receiving error", e);
             }
-        });
-
-        return result;
+        }).collect(Collectors.toList());
     }
 
 }

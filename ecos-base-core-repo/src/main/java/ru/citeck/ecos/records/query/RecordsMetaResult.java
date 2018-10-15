@@ -1,13 +1,12 @@
 package ru.citeck.ecos.records.query;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import ru.citeck.ecos.records.RecordRef;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.util.Map;
+import java.util.List;
 
 public class RecordsMetaResult extends RecordsResult {
 
-    private Map<RecordRef, JsonNode> meta;
+    private List<ObjectNode> meta;
 
     public RecordsMetaResult() {}
 
@@ -20,11 +19,11 @@ public class RecordsMetaResult extends RecordsResult {
         this.meta = other.meta;
     }
 
-    public Map<RecordRef, JsonNode> getMeta() {
+    public List<ObjectNode> getMeta() {
         return meta;
     }
 
-    public void setMeta(Map<RecordRef, JsonNode> meta) {
+    public void setMeta(List<ObjectNode> meta) {
         this.meta = meta;
     }
 }

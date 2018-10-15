@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
@@ -15,6 +16,7 @@ import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.source.RecordsDAO;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -50,7 +52,7 @@ public interface RecordsService {
      * @see MetaConverter
      * @see MetaAtt
      */
-    <T> Map<RecordRef, T> getMeta(Collection<RecordRef> records, Class<T> metaClass);
+    <T> List<T> getMeta(Collection<RecordRef> records, Class<T> metaClass);
 
     /**
      * Get metadata for specified records
@@ -58,7 +60,7 @@ public interface RecordsService {
      * @param gqlSchema schema for MetaValue
      * @see MetaValue
      */
-    Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String gqlSchema);
+    List<ObjectNode> getMeta(Collection<RecordRef> records, String gqlSchema);
 
     /**
      * Get MetaValue by record. Executed in GraphQL execution context

@@ -1,6 +1,5 @@
 package ru.citeck.ecos.graphql.journal.datasource;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.apache.commons.lang3.StringUtils;
@@ -109,18 +108,11 @@ public class RecordsDataSource implements JournalDataSource {
                                      String dataSourceBeanName,
                                      JournalRecordsResult recordsResult) {
 
-        Map<RecordRef, JsonNode> meta = recordsService.getMeta(recordsResult.records, gqlQuery);
 
         JournalData.JournalRecords journalRecords = new JournalData.JournalRecords();
-        List<Object> records = new ArrayList<>();
-        for (RecordRef recordRef : recordsResult.records) {
-            JsonNode data = meta.get(recordRef);
-            if (data instanceof ObjectNode) {
-                ((ObjectNode) data).put("id", recordRef.toString());
-            }
-            records.add(data);
-        }
-        journalRecords.setRecords(records);
+
+        List<ObjectNode> meta = recordsService.getMeta(recordsResult.records, gqlQuery);
+        journalRecords.setRecords(meta);
 
         JournalData.PageInfo pageInfo = new JournalData.PageInfo();
         pageInfo.setHasNextPage(recordsResult.hasNext);

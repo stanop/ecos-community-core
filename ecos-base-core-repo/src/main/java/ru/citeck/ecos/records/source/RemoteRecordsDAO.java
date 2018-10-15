@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records.source;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import graphql.ExecutionResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -74,11 +75,13 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
     }
 
     @Override
-    public Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
+    public List<ObjectNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
         List<String> recordsRefs = records.stream().map(RecordRef::getId).collect(Collectors.toList());
         String query = metaUtils.createQuery(metaBaseQuery, recordsRefs, gqlSchema);
         ExecutionResult executionResult = graphQLService.execute(restConnection, graphqlMethod, query, null);
-        return RecordsUtils.convertToRefs(getId(), metaUtils.convertMeta(recordsRefs, executionResult));
+
+        List<ObjectNode> meta = metaUtils.convertMeta(recordsRefs, executionResult);
+        return RecordsUtils.convertToRefs(getId(), meta);
     }
 
     @Override

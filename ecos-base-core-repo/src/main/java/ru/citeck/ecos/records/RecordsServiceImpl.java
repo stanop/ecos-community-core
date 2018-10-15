@@ -1,6 +1,6 @@
 package ru.citeck.ecos.records;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +15,7 @@ import ru.citeck.ecos.records.source.RecordsDAO;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 @Service
 public class RecordsServiceImpl implements RecordsService {
@@ -38,23 +39,21 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public <T> Map<RecordRef, T> getMeta(Collection<RecordRef> records, Class<T> metaClass) {
+    public <T> List<T> getMeta(Collection<RecordRef> records, Class<T> metaClass) {
         if (metaClass.isAssignableFrom(RecordRef.class)) {
-            Map<RecordRef, T> results = new HashMap<>();
-            records.forEach(r -> results.put(r, (T) r));
-            return results;
+            return new ArrayList<>((Collection<T>) records);
         }
         if (metaClass.isAssignableFrom(NodeRef.class)) {
-            Map<RecordRef, T> results = new HashMap<>();
-            records.forEach(r -> results.put(r, (T) RecordsUtils.toNodeRef(r)));
-            return results;
+            return (List<T>) records.stream()
+                                    .map(RecordsUtils::toNodeRef)
+                                    .collect(Collectors.toList());
         }
-        Map<RecordRef, JsonNode> meta = getMeta(records, metaUtils.createSchema(metaClass));
+        List<ObjectNode> meta = getMeta(records, metaUtils.createSchema(metaClass));
         return metaUtils.convertMeta(meta, metaClass);
     }
 
     @Override
-    public Map<RecordRef, JsonNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
+    public List<ObjectNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
         return getMeta(records, (source, recs) -> source.getMeta(recs, gqlSchema));
     }
 
@@ -64,15 +63,14 @@ public class RecordsServiceImpl implements RecordsService {
         return recordsDAO.flatMap(dao -> dao.getMetaValue(context, recordRef));
     }
 
-    private <T> Map<RecordRef, T> getMeta(Collection<RecordRef> records,
-                                          BiFunction<RecordsDAO, List<RecordRef>,
-                                                     Map<RecordRef, T>> getMeta) {
+    private <T> List<T> getMeta(Collection<RecordRef> records,
+                                          BiFunction<RecordsDAO, List<RecordRef>, List<T>> getMeta) {
 
-        Map<RecordRef, T> result = new HashMap<>();
+        List<T> result = new ArrayList<>();
 
         RecordsUtils.groupRefBySource(records).forEach((sourceId, sourceRecords) -> {
             RecordsDAO source = needRecordsSource(sourceId);
-            result.putAll(getMeta.apply(source, sourceRecords));
+            result.addAll(getMeta.apply(source, sourceRecords));
         });
 
         return result;

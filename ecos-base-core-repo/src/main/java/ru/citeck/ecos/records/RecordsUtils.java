@@ -1,6 +1,10 @@
 package ru.citeck.ecos.records;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionStatus;
@@ -20,7 +24,7 @@ public class RecordsUtils {
 
         Map<T, RecordRef> mapping = new HashMap<>();
 
-        List<T> nodes = new ArrayList<T>();
+        List<T> nodes = new ArrayList<>();
         for (RecordRef recordRef : records) {
             T node = toNode.apply(recordRef);
             if (node == null) {
@@ -108,6 +112,22 @@ public class RecordsUtils {
         Map<RecordRef, V> result = new HashMap<>();
         data.forEach((id, recMeta) -> result.put(new RecordRef(sourceId, id), recMeta));
         return result;
+    }
+
+    public static  List<ObjectNode> convertToRefs(String sourceId, List<ObjectNode> data) {
+        if (StringUtils.isBlank(sourceId)) {
+            return data;
+        }
+        return data.stream().map(n -> {
+            ObjectNode node;
+            if (n.has("id")) {
+                node = n.deepCopy();
+                node.set("id", TextNode.valueOf(new RecordRef(sourceId, n.get("id").asText()).toString()));
+            } else {
+                node = n;
+            }
+            return node;
+        }).collect(Collectors.toList());
     }
 
     private static <I, O> Map<String, List<O>> groupBySource(Collection<I> records,
