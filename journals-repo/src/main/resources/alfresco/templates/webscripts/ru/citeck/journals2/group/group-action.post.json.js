@@ -36,7 +36,7 @@
         }
     } else {
 
-        records = recordsService.getIterableRecords(getRecordsSource(journalId), {
+        records = recordsService.getIterableRecords({
             query: query,
             language: language || "criteria"
         });
