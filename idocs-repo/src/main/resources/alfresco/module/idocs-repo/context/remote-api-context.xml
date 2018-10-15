@@ -441,5 +441,9 @@
           class="ru.citeck.ecos.webscripts.cardlet.CardletsGet"
           parent="webscript">
     </bean>
+    
+    <bean id="webscript.ru.citeck.image.image-thumbnail.get"
+          class="ru.citeck.ecos.webscripts.image.ImageThumbnailGet"
+          parent="webscript" />
 
 </beans>
