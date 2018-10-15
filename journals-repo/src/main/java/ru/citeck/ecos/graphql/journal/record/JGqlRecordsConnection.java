@@ -2,22 +2,23 @@ package ru.citeck.ecos.graphql.journal.record;
 
 import graphql.annotations.annotationTypes.GraphQLField;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
 
 import java.util.Collections;
 import java.util.List;
 
 public class JGqlRecordsConnection {
 
-    private List<JGqlAttributeValue> records = Collections.emptyList();
+    private List<MetaValue> records = Collections.emptyList();
     private JGqlPageInfo pageInfo = new JGqlPageInfo();
     private long totalCount = 0;
 
     @GraphQLField
-    public List<JGqlAttributeValue> records() {
+    public List<MetaValue> records() {
         return records;
     }
 
-    public void setRecords(List<JGqlAttributeValue> records) {
+    public void setRecords(List<MetaValue> records) {
         this.records = records;
     }
 

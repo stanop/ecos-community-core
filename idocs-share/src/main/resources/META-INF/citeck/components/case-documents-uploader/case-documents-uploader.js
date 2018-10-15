@@ -666,7 +666,8 @@ define([], function() {
                     var allowCreateKind = false;
                     for (var t in types) {
                         if (types[t].nodeRef == value) {
-                            allowCreateKind = types[t].permissions.createKind == "true";
+                            var perms = types[t].permissions || { createKind: "true" };
+                            allowCreateKind = perms.createKind == "true";
                         }
                     }
 
@@ -730,7 +731,7 @@ define([], function() {
             // type create button click event handler
             me.typeCreateButton.on("click", function() {
                 Citeck.forms.dialog("cm:category", "type-kind", function(node) {
-                    var subscription = node.impl().attributes.subscribe(function(newValue) {
+                    var subscription = node.impl().attribute('cm:name').value.subscribe(function() {
                         if (node.name && node.nodeRef){
                             me.typeButtonMenu.getMenu().addItem({
                                 text: node.name,
@@ -741,7 +742,7 @@ define([], function() {
                             me.data.documentTypes.push({
                                 nodeRef: node.nodeRef,
                                 name: node.name
-                            })
+                            });
                            
                             subscription.dispose();
                         } 
@@ -814,13 +815,18 @@ define([], function() {
 
             me.kindCreateButton.setStyle("margin-left", "15px");
 
+            var getMenuSelectedValue = function (menu) {
+                var item = menu.get("selectedMenuItem");
+                return item.value || item;
+            };
+
             // kind create button click event handler
             me.kindCreateButton.on("click", function() {
                 Citeck.forms.dialog("cm:category", "type-kind", function(node) {
-                    var subscription = node.impl().attributes.subscribe(function(newValue) {
+                    var subscription = node.impl().attribute('cm:name').value.subscribe(function() {
                         if (node.name && node.nodeRef){
-                            var caseNodeRef = me.caseButtonMenu.get("selectedMenuItem").value.split('_')[0],
-                                typeNodeRef = me.typeButtonMenu.get("selectedMenuItem").value;
+                            var caseNodeRef = getMenuSelectedValue(me.caseButtonMenu).split('_')[0],
+                                typeNodeRef = getMenuSelectedValue(me.typeButtonMenu);
 
                             for (var c in me.data.containerKinds) {
                                 if (me.data.containerKinds[c].nodeRef == caseNodeRef) {
@@ -836,13 +842,17 @@ define([], function() {
                                 name: node.name,
                                 nodeRef: node.nodeRef,
                                 type: typeNodeRef
-                            })
-                            
-                            me.kindButtonMenu.getMenu().addItem({
+                            });
+
+                            var kindMenu = me.kindButtonMenu.getMenu();
+
+                            kindMenu.addItem({
                                 text: node.name,
                                 value: node.nodeRef,
                                 onclick: { fn: onKindMenuItemClick }
                             });
+
+                            kindMenu.render();
 
                             // simulate click
                             // onTypeMenuItemClick(null, null, me.typeButtonMenu.get("selectedMenuItem"));
@@ -852,7 +862,7 @@ define([], function() {
                     });
                 },
                 { 
-                    destination: me.typeButtonMenu.get("selectedMenuItem").value, 
+                    destination: getMenuSelectedValue(me.typeButtonMenu),
                     destinationAssoc: "cm:subcategories" 
                 })
             });

@@ -17,10 +17,11 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 define([
+	'citeck/utils/knockout.utils',
 	'citeck/components/dynamic-tree/error-manager',
 	'components/documentlibrary/actions',
     'modules/documentlibrary/doclib-actions'
-], function() {
+], function(koutils) {
 
 	/**
 	 * It is a renderer of actions.
@@ -34,15 +35,18 @@ define([
 	Citeck = typeof Citeck != "undefined" ? Citeck : {};
 	Citeck.widget = Citeck.widget || {};
 	Citeck.format = Citeck.format || {};
-	
+
 	var Dom = YAHOO.util.Dom;
-	
+    var globalActionRenderer;
+    var Record = koutils.koclass('Record');
+
 	/**
 	 * It is a formatter of doclib actions.
 	 * @param actionGroup - action group
 	 * @param nodeRefField - name of field, which contains node reference in the action response
 	 */
 	Citeck.format.actions = function(actionGroup, nodeRefField, obj) {
+
 		return function(elCell, oRecord, oColumn, oData) {
 			var renderer = new Citeck.widget.ActionRenderer(),
 				requester = new Citeck.widget.ActionRequester(),
@@ -54,20 +58,36 @@ define([
 				});
 			}
 		}
-	}
+	};
 
 	//formatter for injournal's actions
-    Citeck.format.journalActions = function(records, nodeRefField, obj) {
+    Citeck.format.journalActions = function(nodeRefField, obj) {
         return function(elCell, oRecord) {
-            var renderer = new Citeck.widget.ActionRenderer(),
+
+            var renderer = globalActionRenderer,
                 nodeRef = oRecord.getData(nodeRefField || "nodeRef");
-            if (nodeRef && records) {
+
+            if (nodeRef) {
+
                 Dom.addClass(elCell, "actions-cell loading");
-                var node = _.find(records, function(item){return item.nodeRef && item.nodeRef() == nodeRef});
-                if (node && node.doclib && node.doclib()) renderer.renderActions(node.doclib(), elCell, obj);
+
+                var record = new Record(nodeRef);
+                var doclib = record.doclib();
+
+                var renderActions = function (record, doclib) {
+                    if (doclib && doclib.nodeRef) {
+                        renderer.renderActions(doclib, elCell, obj);
+                    } else {
+                        koutils.subscribeOnce(record.doclib, function(newValue) {
+                            renderActions(record, newValue);
+                        }, this);
+                    }
+                };
+
+                renderActions(record, doclib);
             }
         }
-    }
+    };
 
     Citeck.format.jsActionsFormatter = function (json) {
         return function (elCell, oRecord) {
@@ -301,8 +321,8 @@ define([
 
 	});
 
-	new Citeck.widget.ActionRenderer();
-	new Citeck.widget.ActionRequester();
+    globalActionRenderer = new Citeck.widget.ActionRenderer();
+    new Citeck.widget.ActionRequester();
 
     return Citeck.widget.ActionRenderer;
 });

@@ -20,11 +20,11 @@ package ru.citeck.ecos.lifecycle;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import ru.citeck.ecos.job.AbstractLockedJob;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ import java.util.List;
  * @author: Alexander Nemerov
  * @date: 22.04.2014
  */
-public class LifeCycleDocumentChecker extends AbstractScheduledLockedJob {
+public class LifeCycleDocumentChecker extends AbstractLockedJob {
 
     private static final String PARAM_LIFECYCLE_SERVICE = "lifeCycleService";
 

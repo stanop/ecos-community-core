@@ -13,68 +13,70 @@
 <#assign autoShow = args.autoShow!"true" />
 
 <script type="text/javascript">//<![CDATA[
-	var picker = new Citeck.widget.DynamicTreePicker("${id}-picker");
-	var model = {
-		formats: {
-			"item": {
-				name: "{${itemKey}}",
-				keys: [ "selected-{selected}", "${itemType}" ]
-			},
-			"selected-items": {
-				name: "selected-items",
-				keys: [ "selected-items" ],
-			},
-		},
-		item: {
-			"": {
-				"format": "item",
-				"get": <#if (itemURL??) && itemURL != "">${itemURL}<#else>""</#if>,
-				"resultsList": "${itemURLresults}",
-			},
-		},
-		children: {
-			"root": {
-				"format": "item",
-				"get": <#if (rootURL??) && rootURL != "">${rootURL}<#else>""</#if>,
-				"resultsList": "${rootURLresults}",
-			},
-			"search": {
-				"format": "item",
-				"get": <#if (searchURL??) && searchURL != "">${searchURL}<#else>""</#if>,
-				"resultsList": "${searchURLresults}",
-			},
-			"selected-items": {
-				"format": "item",
-			},
-		},
-		titles: {
-			"root": "{title}",
-			"${itemType}": "${itemTitle?js_string}"
-		},
-	};
-	picker.setOptions({
-		<#if args.preloadSearchQuery??>
-			preloadSearchQuery: "${args.preloadSearchQuery}",
-		</#if>
-		<#if args.preloadSearchQueryEveryTime??>
-			preloadSearchQueryEveryTime: ${args.preloadSearchQueryEveryTime},
-		</#if>
+require(['citeck/components/dynamic-tree/dynamic-tree-picker'], function() {
+    var picker = new Citeck.widget.DynamicTreePicker("${id}-picker");
+    var model = {
+        formats: {
+            "item": {
+                name: "{${itemKey}}",
+                keys: ["selected-{selected}", "${itemType}"]
+            },
+            "selected-items": {
+                name: "selected-items",
+                keys: ["selected-items"],
+            },
+        },
+        item: {
+            "": {
+                "format": "item",
+            "get": <#if (itemURL??) && itemURL != "">${itemURL}<#else>""</#if>,
+                "resultsList": "${itemURLresults}",
+            },
+        },
+        children: {
+            "root": {
+                "format": "item",
+            "get": <#if (rootURL??) && rootURL != "">${rootURL}<#else>""</#if>,
+                "resultsList": "${rootURLresults}",
+            },
+            "search": {
+                "format": "item",
+            "get": <#if (searchURL??) && searchURL != "">${searchURL}<#else>""</#if>,
+                "resultsList": "${searchURLresults}",
+            },
+            "selected-items": {
+                "format": "item",
+            },
+        },
+        titles: {
+            "root": "{title}",
+            "${itemType}": "${itemTitle?js_string}"
+        },
+    };
+    picker.setOptions({
+	<#if args.preloadSearchQuery??>
+        preloadSearchQuery: "${args.preloadSearchQuery}",
+	</#if>
+	<#if args.preloadSearchQueryEveryTime??>
+        preloadSearchQueryEveryTime: ${args.preloadSearchQueryEveryTime},
+	</#if>
 
-		model: model,
-		tree: {
-			buttons: {
-				"${itemType}": [ "itemSelect" ],
-				"selected-yes": [ "itemUnselect" ],
-			},
-		},
-		list: {
-			buttons: {
-				"selected-yes": [ "itemUnselect" ],
-			},
-		},
-		autoShow: ${autoShow}
+        model: model,
+        tree: {
+            buttons: {
+                "${itemType}": ["itemSelect"],
+                "selected-yes": ["itemUnselect"],
+            },
+        },
+        list: {
+            buttons: {
+                "selected-yes": ["itemUnselect"],
+            },
+        },
+        autoShow: ${autoShow}
 
-	});
+    });
+});
 //]]></script>
 
 <@renderDynamicTreePickerHTML id />

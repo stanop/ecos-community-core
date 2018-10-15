@@ -36,13 +36,12 @@ import java.util.Map;
 
 /**
  * This task listener automatically copies variable cwf:sender from execution context.
- * 
+ *
  * @author Sergey Tiunov
  */
-public class TaskSenderPull extends AbstractTaskListener 
-{
+public class TaskSenderPull extends AbstractTaskListener {
 
-	private NodeService nodeService;
+    private NodeService nodeService;
     private WorkflowQNameConverter qNameConverter;
     private PersonService personService;
 
@@ -55,13 +54,16 @@ public class TaskSenderPull extends AbstractTaskListener
     @Override
     protected void notifyImpl(DelegateTask task) {
         String varName = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_SENDER);
-        
+
         // if sender is set in execution context - it is set in task
         // otherwise workflow initiator is considered as sender
         Object value = task.getExecution().getVariable(varName);
-        if(value == null) {
-            NodeRef initiator = ((ScriptNode) task.getExecution().getVariable(WorkflowConstants.PROP_INITIATOR)).getNodeRef();
-            value = nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
+        if (value == null) {
+            Object initiatorValue = task.getExecution().getVariable(WorkflowConstants.PROP_INITIATOR);
+            if (initiatorValue instanceof ScriptNode) {
+                NodeRef initiator = ((ScriptNode) initiatorValue).getNodeRef();
+                value = nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
+            }
         }
         task.setVariableLocal(varName, value);
         updateSenderName(task, (String) value);
@@ -69,13 +71,13 @@ public class TaskSenderPull extends AbstractTaskListener
 
     private void updateSenderName(DelegateTask task, String person) {
         if (!StringUtils.isEmpty(person) && personService.personExists(person)) {
-            NodeRef personNode =  personService.getPerson(person);
+            NodeRef personNode = personService.getPerson(person);
             Map<QName, Serializable> properties = nodeService.getProperties(personNode);
             String firstName = (String) properties.get(ContentModel.PROP_FIRSTNAME);
             String lastName = (String) properties.get(ContentModel.PROP_LASTNAME);
             String name = firstName;
             if (!StringUtils.isEmpty(lastName)) {
-                name += StringUtils.isEmpty(firstName)? lastName : " " + lastName;
+                name += StringUtils.isEmpty(firstName) ? lastName : " " + lastName;
             }
             task.setVariableLocal(qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_SENDER_NAME), name);
         }

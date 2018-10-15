@@ -11,10 +11,7 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.preference.PreferenceService;
 import org.alfresco.service.cmr.rating.RatingService;
-import org.alfresco.service.cmr.repository.ContentService;
-import org.alfresco.service.cmr.repository.MimetypeService;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.cmr.security.PersonService;
@@ -22,8 +19,6 @@ import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,7 +61,7 @@ public class NodeInfoGet extends AbstractWebScript {
 
     private Map<String, Method> fillMethods = new HashMap<>();
 
-    private PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();
+    private List<QName> displayByNameClasses = new ArrayList<>();
 
     @PostConstruct
     public void initMethods() {
@@ -107,6 +102,39 @@ public class NodeInfoGet extends AbstractWebScript {
         objectMapper.writeValue(res.getOutputStream(), response);
 
         res.setStatus(Status.STATUS_OK);
+    }
+
+    private List<PathItem> fillNodePath(RequestContext context) {
+
+        List<PathItem> pathItems = new ArrayList<>();
+
+        AuthenticationUtil.runAsSystem(() -> {
+            ChildAssociationRef parentRef = nodeService.getPrimaryParent(context.nodeRef);
+
+            while (parentRef != null && ContentModel.ASSOC_CONTAINS.equals(parentRef.getTypeQName())) {
+
+                Map<QName, Serializable> props = nodeService.getProperties(parentRef.getParentRef());
+                PathItem item = new PathItem();
+                item.name = (String) props.get(ContentModel.PROP_NAME);
+                item.title = (String) props.get(ContentModel.PROP_TITLE);
+
+                if (StringUtils.isEmpty(item.title)) {
+                    item.title = item.name;
+                }
+
+                parentRef = nodeService.getPrimaryParent(parentRef.getParentRef());
+
+                if (parentRef != null) {
+                    item.qname = parentRef.getQName().toPrefixString(namespaceService);
+                }
+                pathItems.add(item);
+            }
+            return null;
+        });
+
+        Collections.reverse(pathItems);
+
+        return pathItems;
     }
 
     private QShare fillQshare(RequestContext context) {
@@ -177,7 +205,10 @@ public class NodeInfoGet extends AbstractWebScript {
     }
 
     private String fillDisplayName(RequestContext context) {
-        String displayName = (String) context.getProps().get(ContentModel.PROP_TITLE);
+        String displayName = null;
+        if (!displayByNameClasses.contains(context.getType())) {
+            displayName = (String) context.getProps().get(ContentModel.PROP_TITLE);
+        }
         if (StringUtils.isBlank(displayName)) {
             displayName = (String) context.getProps().get(ContentModel.PROP_NAME);
         }
@@ -295,6 +326,10 @@ public class NodeInfoGet extends AbstractWebScript {
         this.mimetypeService = serviceRegistry.getMimetypeService();
     }
 
+    public void setDisplayByNameClasses(List<QName> displayByNameClasses) {
+        this.displayByNameClasses = displayByNameClasses;
+    }
+
     private class RequestContext {
 
         final NodeRef nodeRef;
@@ -332,5 +367,11 @@ public class NodeInfoGet extends AbstractWebScript {
     private static class QShare {
         public String sharedBy;
         public String sharedId;
+    }
+
+    private static class PathItem {
+        public String name;
+        public String title;
+        public String qname;
     }
 }

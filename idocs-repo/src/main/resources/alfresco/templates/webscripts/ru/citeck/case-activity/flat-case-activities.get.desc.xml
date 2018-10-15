@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Flat activities get</shortname>
+    <description>Flat activities get</description>
+    <url>/citeck/case/activities/flat?rootRef={rootRef}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>

@@ -37,13 +37,13 @@
 
 .node-header .node-path .folder-open
 {
-    background-image: url(../documentlibrary/images/folder-open-16.png);
+    background-image: url(/share/res/components/documentlibrary/images/folder-open-16.png);
     padding-left: 20px;
 }
 
 .node-header .node-path .folder-closed
 {
-    background-image: url(../documentlibrary/images/folder-closed-16.png);
+    background-image: url(/share/res/components/documentlibrary/images/folder-closed-16.png);
     padding-left: 20px;
 }
 

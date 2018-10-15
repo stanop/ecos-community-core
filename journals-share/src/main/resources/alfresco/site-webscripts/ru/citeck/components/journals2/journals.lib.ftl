@@ -133,6 +133,7 @@
         columnTemplate: longUniqueNameOfColumnTemplate,
         set: longUniqueNameOfSettings,
         sortedBy: sortByFirst,
+        loadingProp: externalLoading,
         doubleClickConfig: {
             field: recordIdField,
             setter: selectedId

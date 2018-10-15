@@ -33,7 +33,7 @@ import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
 import ru.citeck.ecos.journals.records.JournalRecords;
 import ru.citeck.ecos.journals.records.JournalRecordsDAO;
-import ru.citeck.ecos.journals.records.RecordsResult;
+import ru.citeck.ecos.journals.records.JournalRecordsResult;
 import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
@@ -170,10 +170,10 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public RecordsResult getRecords(String journalId,
-                                    String query,
-                                    String language,
-                                    JGqlPageInfoInput pageInfo) {
+    public JournalRecordsResult getRecords(String journalId,
+                                           String query,
+                                           String language,
+                                           JGqlPageInfoInput pageInfo) {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }
@@ -198,7 +198,7 @@ class JournalServiceImpl implements JournalService {
     public JournalData getRecordsWithData(String journalId,
                                           String query,
                                           String language,
-                                          JGqlPageInfoInput pageInfo) throws Exception {
+                                          JGqlPageInfoInput pageInfo) {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }

@@ -48,9 +48,9 @@ public class SplitLoadingResponseConverter implements ResponseConverter {
 
         JournalData.JournalRecords journalRecords = new JournalData.JournalRecords();
 
-        List<LinkedHashMap> recordMap = null;
+        List<?> recordMap = null;
         try {
-            recordMap = (List<LinkedHashMap>) propertyUtilsBean.getProperty(source.getData(), RECORD_PATH);
+            recordMap = (List<?>) propertyUtilsBean.getProperty(source.getData(), RECORD_PATH);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassCastException e) {
             e.printStackTrace();
         }

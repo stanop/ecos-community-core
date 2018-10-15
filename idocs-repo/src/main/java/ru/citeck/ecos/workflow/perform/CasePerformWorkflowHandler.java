@@ -1,7 +1,5 @@
 package ru.citeck.ecos.workflow.perform;
 
-import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
@@ -15,6 +13,7 @@ import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.workflow.variable.type.NodeRefsList;
 import ru.citeck.ecos.workflow.variable.type.TaskConfig;
 import ru.citeck.ecos.workflow.variable.type.TaskConfigs;
+import ru.citeck.ecos.workflow.variable.type.TaskStages;
 
 import java.io.Serializable;
 import java.util.*;
@@ -35,7 +34,7 @@ public class CasePerformWorkflowHandler implements Serializable {
     public void init() {
     }
 
-    public void onWorkflowStart(ExecutionEntity execution) {
+    public void onWorkflowStart(PerformExecution execution) {
 
         execution.setVariable(CasePerformUtils.WORKFLOW_VERSION_KEY, WORKFLOW_VERSION);
 
@@ -53,7 +52,41 @@ public class CasePerformWorkflowHandler implements Serializable {
         }
     }
 
-    public void onBeforePerformingFlowTake(ExecutionEntity execution) {
+    public void onRepeatIterationGatewayStarted(PerformExecution execution) {
+
+        TaskStages stages = utils.getTaskStages(execution);
+
+        if (stages != null && stages.size() > 0) {
+
+            Integer stageIndex = (Integer) execution.getVariable(CasePerformUtils.PERFORM_STAGE_IDX);
+            if (stageIndex == null) {
+                stageIndex = 0;
+                execution.setVariable(CasePerformUtils.PERFORM_STAGE_IDX, stageIndex);
+            }
+
+            TaskConfigs configs = stages.get(stageIndex);
+            NodeRefsList performers = new NodeRefsList();
+
+            for (TaskConfig config : configs) {
+                String performer = config.getPerformer();
+                if (StringUtils.isNotBlank(performer)) {
+                    NodeRef performerRef = authorityService.getAuthorityNodeRef(performer);
+                    performers.add(performerRef);
+                }
+            }
+
+            execution.setVariable(CasePerformUtils.TASK_CONFIGS, configs);
+            String performersKey = utils.toString(CasePerformModel.ASSOC_PERFORMERS);
+            execution.setVariable(performersKey, performers);
+
+        } else {
+
+            execution.setVariable(CasePerformUtils.PERFORM_STAGE_IDX, null);
+            execution.setVariable(CasePerformUtils.TASK_CONFIGS, null);
+        }
+    }
+
+    public void onBeforePerformingFlowTake(PerformExecution execution) {
 
         String performersKey = utils.toString(CasePerformModel.ASSOC_PERFORMERS);
         Collection<NodeRef> initialPerformers = utils.getNodeRefsList(execution, performersKey);
@@ -70,7 +103,7 @@ public class CasePerformWorkflowHandler implements Serializable {
         utils.fillRolesByPerformers(execution);
     }
 
-    public void onSkipPerformingGatewayStarted(ExecutionEntity execution) {
+    public void onSkipPerformingGatewayStarted(PerformExecution execution) {
 
         Collection<NodeRef> optionalPerformers = utils.getNodeRefsList(execution, CasePerformUtils.OPTIONAL_PERFORMERS);
         Collection<NodeRef> performers = utils.getNodeRefsList(execution, CasePerformUtils.PERFORMERS);
@@ -97,7 +130,7 @@ public class CasePerformWorkflowHandler implements Serializable {
 
     /* skip way */
 
-    public void onSkipPerformingFlowTake(ExecutionEntity execution) {
+    public void onSkipPerformingFlowTake(PerformExecution execution) {
 
     }
 
@@ -105,9 +138,18 @@ public class CasePerformWorkflowHandler implements Serializable {
 
     /* perform way */
 
-    public void onPerformingFlowTake(ExecutionEntity execution) {
+    public void onPerformingFlowTake(PerformExecution execution) {
+        TaskConfigs configs = (TaskConfigs) execution.getVariable(CasePerformUtils.TASK_CONFIGS);
+        if (configs == null) {
+            configs = createTaskConfigs(execution);
+            execution.setVariableLocal(CasePerformUtils.TASK_CONFIGS, configs);
+        }
+    }
+
+    private TaskConfigs createTaskConfigs(PerformExecution execution) {
 
         Collection<NodeRef> performers = utils.getNodeRefsList(execution, CasePerformUtils.PERFORMERS);
+
         TaskConfigs taskConfigs = new TaskConfigs();
 
         if (performers.size() > 0) {
@@ -145,10 +187,10 @@ public class CasePerformWorkflowHandler implements Serializable {
             config.setFormKey(formKey);
         }
 
-        execution.setVariableLocal(CasePerformUtils.TASK_CONFIGS, taskConfigs);
+        return taskConfigs;
     }
 
-    public void onBeforePerformTaskCreated(ExecutionEntity execution) {
+    public void onBeforePerformTaskCreated(PerformExecution execution) {
 
         Object taskConfigObj = execution.getVariableLocal("taskConfig");
         TaskConfig taskConfig;
@@ -187,7 +229,7 @@ public class CasePerformWorkflowHandler implements Serializable {
         execution.setVariableLocal("wfcp_performer", performer);
     }
 
-    public void onPerformTaskCreated(ExecutionEntity execution, TaskEntity task) {
+    public void onPerformTaskCreated(PerformExecution execution, PerformTask task) {
 
         utils.shareVariables(execution, task);
 
@@ -206,7 +248,7 @@ public class CasePerformWorkflowHandler implements Serializable {
         task.setVariableLocal(utils.toString(CasePerformModel.ASSOC_CASE_ROLE), utils.getCaseRole(performer, execution));
     }
 
-    public void onPerformTaskAssigned(ExecutionEntity execution, TaskEntity task) {
+    public void onPerformTaskAssigned(PerformExecution execution, PerformTask task) {
 
         Boolean syncEnabled = (Boolean) execution.getVariable(utils.toString(CasePerformModel.PROP_SYNC_WORKFLOW_TO_ROLES));
 
@@ -227,7 +269,7 @@ public class CasePerformWorkflowHandler implements Serializable {
         }
     }
 
-    public void onPerformTaskCompleted(ExecutionEntity execution, TaskEntity task) {
+    public void onPerformTaskCompleted(PerformExecution execution, PerformTask task) {
 
         utils.shareVariables(task, execution);
         utils.saveTaskResult(execution, task);
@@ -241,18 +283,42 @@ public class CasePerformWorkflowHandler implements Serializable {
 
         Collection<String> mandatoryTasks = utils.getStringsList(execution, CasePerformUtils.MANDATORY_TASKS);
         mandatoryTasks.remove(task.getId());
-        execution.setVariable(CasePerformUtils.ABORT_PERFORMING, mandatoryTasks.size() == 0
-                                                                || utils.isAbortOutcomeReceived(execution, task));
+
+        boolean abortOutcomeReceived = utils.isAbortOutcomeReceived(execution, task);
+        execution.setVariable(CasePerformUtils.ABORT_PROCESS, abortOutcomeReceived);
+
+        boolean abortPerforming = mandatoryTasks.size() == 0 || abortOutcomeReceived;
+        execution.setVariable(CasePerformUtils.ABORT_PERFORMING, abortPerforming);
+
         execution.setVariable(CasePerformUtils.MANDATORY_TASKS, mandatoryTasks);
     }
 
-    public void onAfterPerformingFlowTake(ExecutionEntity execution) {
+    public void onAfterPerformingFlowTake(PerformExecution execution) {
 
+    }
+
+    public void onRepeatPerformingGatewayStarted(PerformExecution execution) {
+        Boolean abortProcess = (Boolean) execution.getVariable(CasePerformUtils.ABORT_PROCESS);
+        if (Boolean.TRUE.equals(abortProcess)) {
+            execution.setVariable(CasePerformUtils.REPEAT_PERFORMING, false);
+        } else {
+            Integer stageIndex = (Integer) execution.getVariable(CasePerformUtils.PERFORM_STAGE_IDX);
+            TaskStages stages = utils.getTaskStages(execution);
+            boolean repeatRequired = false;
+            if (stageIndex != null && stages != null) {
+                stageIndex++;
+                repeatRequired = stageIndex < stages.size();
+                if (repeatRequired) {
+                    execution.setVariable(CasePerformUtils.PERFORM_STAGE_IDX, stageIndex);
+                }
+            }
+            execution.setVariable(CasePerformUtils.REPEAT_PERFORMING, repeatRequired);
+        }
     }
 
     /* perform way */
 
-    public void onWorkflowEnd(ExecutionEntity execution) {
+    public void onWorkflowEnd(PerformExecution execution) {
         utils.getNodeRefsList(execution, CasePerformUtils.OPTIONAL_PERFORMERS).clear();
         utils.getNodeRefsList(execution, CasePerformUtils.EXCLUDED_PERFORMERS).clear();
     }

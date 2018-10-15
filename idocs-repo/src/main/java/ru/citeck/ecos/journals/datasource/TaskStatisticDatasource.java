@@ -13,19 +13,19 @@ import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
-import ru.citeck.ecos.graphql.journal.datasource.alfnode.AlfNodeAttribute;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
+import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeAtt;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
-import ru.citeck.ecos.graphql.journal.record.attribute.JGqlAttributeMapValue;
 import ru.citeck.ecos.graphql.journal.response.JournalData;
+import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
+import ru.citeck.ecos.graphql.meta.value.MetaMapValue;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.history.HistoryEventType;
-import ru.citeck.ecos.journals.records.RecordsResult;
+import ru.citeck.ecos.journals.records.JournalRecordsResult;
 import ru.citeck.ecos.model.HistoryModel;
-import ru.citeck.ecos.repo.RemoteRef;
+import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.CriteriaTriplet;
 import ru.citeck.ecos.search.SearchCriteria;
@@ -114,7 +114,7 @@ public class TaskStatisticDatasource implements JournalDataSource {
             }
         }
 
-        List<JGqlAttributeValue> records = new ArrayList<>();
+        List<MetaValue> records = new ArrayList<>();
 
         assignNodes.forEach((taskId, assignNode) -> {
 
@@ -156,7 +156,7 @@ public class TaskStatisticDatasource implements JournalDataSource {
                                                              context);
 
             if (recordAttributes != null) {
-                JGqlAttributeMapValue record = new JGqlAttributeMapValue(taskId);
+                MetaMapValue record = new MetaMapValue(taskId);
                 record.setAttributes(recordAttributes);
                 records.add(record);
             }
@@ -185,23 +185,23 @@ public class TaskStatisticDatasource implements JournalDataSource {
     }
 
     @Override
-    public RecordsResult queryIds(GqlContext context,
-                                  String query,
-                                  String language,
-                                  JGqlPageInfoInput pageInfo) {
+    public JournalRecordsResult queryIds(GqlContext context,
+                                         String query,
+                                         String language,
+                                         JGqlPageInfoInput pageInfo) {
         return null;
     }
 
     @Override
-    public List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
-                                                      List<RemoteRef> remoteRefList) {
+    public List<MetaValue> convertToGqlValue(GqlContext context,
+                                                      List<RecordRef> remoteRefList) {
         return null;
     }
 
     @Override
     public JournalData queryMetadata(String gqlQuery,
                                      String dataSourceBeanName,
-                                     RecordsResult recordsResult) {
+                                     JournalRecordsResult recordsResult) {
         return null;
     }
 
@@ -217,7 +217,7 @@ public class TaskStatisticDatasource implements JournalDataSource {
         Map<String, Object> recordAttributes = new HashMap<>();
 
         String documentAttrName = HistoryModel.ASSOC_DOCUMENT.toPrefixString(namespaceService);
-        JGqlAttribute docAttributeGql = getAssocAttribute(startEvent, documentAttrName, context);
+        MetaAttribute docAttributeGql = getAssocAttribute(startEvent, documentAttrName, context);
         recordAttributes.put(documentAttrName, docAttributeGql);
 
         Map<QName, Serializable> startedProps = startEvent.getProperties();
@@ -261,9 +261,9 @@ public class TaskStatisticDatasource implements JournalDataSource {
         return recordAttributes;
     }
 
-    private AlfNodeAttribute getAssocAttribute(GqlAlfNode node, String key, GqlContext context) {
+    private AlfNodeAtt getAssocAttribute(GqlAlfNode node, String key, GqlContext context) {
         Attribute initiatorAttr = node.attribute(key);
-        return new AlfNodeAttribute(initiatorAttr, context);
+        return new AlfNodeAtt(initiatorAttr, context);
     }
 
     @Override

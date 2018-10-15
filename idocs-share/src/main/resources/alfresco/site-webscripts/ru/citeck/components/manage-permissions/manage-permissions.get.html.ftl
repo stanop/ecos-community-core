@@ -15,61 +15,62 @@
 
 <#assign id=args.htmlid>
     <script type="text/javascript">
-
-        new MP.ManagePermissions("${args.htmlid}").setOptions({
-            nodeRef: "${(page.url.args["nodeRef"]!"")?js_string}",
-            supportedPermissions: [
+        require(['jquery', 'citeck/components/dynamic-tree/dynamic-tree-picker'], function() {
+            new MP.ManagePermissions("${args.htmlid}").setOptions({
+                nodeRef: "${(page.url.args["nodeRef"]!"")?js_string}",
+                supportedPermissions: [
             <#list supportedPermissions as permissionGroup>
               {
-                groupBrief: '${msg("permissions." + permissionGroup.group)}',
-                permissions: [
+                  groupBrief: '${msg("permissions." + permissionGroup.group)}',
+                  permissions: [
                 <#list permissionGroup.permissions as permission>
                     { alias: '${permission}', brief: '${msg("permission." + permission)}' }<#if permission_has_next>,</#if>
                 </#list>
-                ]
+                  ]
               }<#if permissionGroup_has_next>,</#if>
             </#list>
-            ]
-        }).setMessages(${messages});
+                ]
+            }).setMessages(${messages});
 
-        (function () {
+            (function () {
 
-            Citeck = typeof Citeck != "undefined" ? Citeck : {};
-            Citeck.widget = Citeck.widget || {};
+                Citeck = typeof Citeck != "undefined" ? Citeck : {};
+                Citeck.widget = Citeck.widget || {};
 
-            var Dom = YAHOO.util.Dom;
+                var Dom = YAHOO.util.Dom;
 
-            Citeck.widget.SelectNewOwner = function (htmlid,nodeRef, params) {
-                Citeck.widget.SelectNewOwner.superclass.constructor.call(this, htmlid, htmlid + "-finder",
-                        Alfresco.constants.URL_SERVICECONTEXT + "components/people-finder/people-finder", params);
-                this.createEvent("itemSelected");
-                YAHOO.Bubbling.on("personSelected", function (layer, args) {
+                Citeck.widget.SelectNewOwner = function (htmlid,nodeRef, params) {
+                    Citeck.widget.SelectNewOwner.superclass.constructor.call(this, htmlid, htmlid + "-finder",
+                            Alfresco.constants.URL_SERVICECONTEXT + "components/people-finder/people-finder", params);
+                    this.createEvent("itemSelected");
+                    YAHOO.Bubbling.on("personSelected", function (layer, args) {
 
-                    var request = new XMLHttpRequest();
-                    request.open("GET", Alfresco.constants.PROXY_URI + '/node/owner/set?nodeRef='+nodeRef+'&owner='+args[1].userName )
-                    request.onload = function (response) {
-                        var result = response.target.response;
-                        if(result){
-                            window.location.reload()
-                        }
-                    };
-                    request.send(null);
-                    this.fireEvent("itemSelected", args[1]);
-                    this.hide();
-                }, this);
-            };
-            YAHOO.extend(Citeck.widget.SelectNewOwner, Citeck.widget.AbstractFinderDialog);
-        })();
+                        var request = new XMLHttpRequest();
+                        request.open("GET", Alfresco.constants.PROXY_URI + '/node/owner/set?nodeRef='+nodeRef+'&owner='+args[1].userName )
+                        request.onload = function (response) {
+                            var result = response.target.response;
+                            if(result){
+                                window.location.reload()
+                            }
+                        };
+                        request.send(null);
+                        this.fireEvent("itemSelected", args[1]);
+                        this.hide();
+                    }, this);
+                };
+                YAHOO.extend(Citeck.widget.SelectNewOwner, Citeck.widget.AbstractFinderDialog);
+            })();
 
 
-        jQuery(document).ready(function(){
-            var nodeRef = '${(page.url.args["nodeRef"]!"")?js_string}'
-            window.SelectNewOwner = new Citeck.widget.SelectNewOwner('peoplepicker', nodeRef);
-        jQuery('#${id}-change-owner').bind('click', function () {
+            jQuery(document).ready(function(){
+                var nodeRef = '${(page.url.args["nodeRef"]!"")?js_string}'
+                window.SelectNewOwner = new Citeck.widget.SelectNewOwner('peoplepicker', nodeRef);
+                jQuery('#${id}-change-owner').bind('click', function () {
 
-            window.SelectNewOwner.show()
-        })
-        })
+                    window.SelectNewOwner.show()
+                })
+            })
+        });
     </script>
 
 

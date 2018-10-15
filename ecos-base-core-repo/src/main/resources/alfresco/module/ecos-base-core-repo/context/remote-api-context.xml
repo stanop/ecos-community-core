@@ -231,4 +231,19 @@
         </property>
     </bean>
 
+    <bean id="webscript.ru.citeck.ecos.records.post"
+          class="ru.citeck.ecos.records.RecordsPost"
+          parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.ecos.group-action.post"
+          class="ru.citeck.ecos.action.group.GroupActionPost"
+          parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.ecos.records-group-action.post"
+          class="ru.citeck.ecos.records.RecordsGroupActionPost"
+          parent="webscript">
+    </bean>
+
 </beans>

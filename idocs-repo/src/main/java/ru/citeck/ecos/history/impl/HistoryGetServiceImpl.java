@@ -49,10 +49,18 @@ public class HistoryGetServiceImpl implements HistoryGetService {
             entryMap.put(DocumentHistoryConstants.TASK_INSTANCE_ID.getValue(),
                     nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_INSTANCE_ID));
             QName taskTypeValue = (QName) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_TYPE);
-            entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(), taskTypeValue != null ? taskTypeValue.toString() : "");
+            entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(), taskTypeValue != null ? taskTypeValue.toString()
+                    : "");
 
-            ArrayList<NodeRef> attachments = (ArrayList<NodeRef>) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_ATTACHMENTS);
-            entryMap.put(DocumentHistoryConstants.TASK_ATTACHMENTS.getValue(), Optional.ofNullable(attachments).orElse(new ArrayList<>()));
+            ArrayList<NodeRef> attachments = (ArrayList<NodeRef>) nodeService.getProperty(eventRef,
+                    HistoryModel.PROP_TASK_ATTACHMENTS);
+            entryMap.put(DocumentHistoryConstants.TASK_ATTACHMENTS.getValue(),
+                    Optional.ofNullable(attachments).orElse(new ArrayList<>()));
+
+            ArrayList<NodeRef> pooledActors = (ArrayList<NodeRef>) nodeService.getProperty(eventRef,
+                    HistoryModel.PROP_TASK_POOLED_ACTORS);
+            entryMap.put(DocumentHistoryConstants.TASK_POOLED_ACTORS.getValue(),
+                    Optional.ofNullable(pooledActors).orElse(new ArrayList<>()));
 
             result.add(entryMap);
         }

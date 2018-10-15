@@ -1151,7 +1151,7 @@ JournalsWidget
                 columns.unshift(new ActionsColumn({
                     id: 'actions',
                     label: this.msg("column.actions"),
-                    formatter: formatters.journalActions(this.records())
+                    formatter: formatters.journalActions()
                 }));
             }
         }
@@ -1225,8 +1225,9 @@ JournalsWidget
         }
     })
     .computed('loading', function() {
-        return !this.records.loaded();
+        return !this.recordsLoaded() || this.externalLoading();
     })
+    .property('externalLoading', b, false)
     .property('selectedId', s)
     .shortcut('recordIdField', 'journal.type.options.doubleClickId', 'nodeRef')
     .shortcut('recordUrl', 'journal.type.options.doubleClickLink', null)
@@ -1388,9 +1389,10 @@ JournalsWidget
     })
 
     .method('performSearch', function() {
+        this.recordsLoaded(false);
         this.records.reload();
     })
-
+    .property('recordsLoaded', b, false)
     .property('createReportType', s)
     .property('createReportDownload', b)
     .property('createReportFormId', s)
@@ -1749,7 +1751,7 @@ JournalsWidget
             }
 
             var recordsQuery = this.recordsQuery();
-            if (!recordsQuery) {
+            if (!recordsQuery || recordsQuery === "{}") {
                 logger.debug("Records query is not ready, skipping");
                 koutils.subscribeOnce(this.recordsQuery, load, this);
                 return;
@@ -1787,6 +1789,10 @@ JournalsWidget
                         });
 
                         customRecordLoader(new Citeck.utils.DoclibRecordLoader(self.actionGroupId()));
+
+                        koutils.subscribeOnce(this.records, function() {
+                            this.recordsLoaded(true);
+                        }, this);
 
                         this.model({
                             records: records,

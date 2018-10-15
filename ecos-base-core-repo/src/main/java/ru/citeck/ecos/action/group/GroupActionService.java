@@ -1,7 +1,6 @@
 package ru.citeck.ecos.action.group;
 
 import ru.citeck.ecos.action.group.impl.GroupActionExecutor;
-import ru.citeck.ecos.repo.RemoteRef;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,24 +17,25 @@ public interface GroupActionService {
      * Raw group action execution
      * Warning! Transaction splitting is not performed by service. Is is responsibility of GroupAction
      */
-    List<ActionResult> execute(Iterable<RemoteRef> nodes,
-                               GroupAction action);
+    <T> ActionResults<T> execute(Iterable<T> nodes,
+                                 GroupAction<T> action);
 
-    List<ActionResult> execute(Iterable<RemoteRef> nodes,
-                               Consumer<RemoteRef> action,
-                               GroupActionConfig config);
+    <T> ActionResults<T> execute(Iterable<T> nodes,
+                                 Consumer<T> action,
+                                 GroupActionConfig config);
 
-    List<ActionResult> execute(Iterable<RemoteRef> nodes,
-                               Function<RemoteRef, ActionStatus> action,
-                               GroupActionConfig config);
+    <T> ActionResults<T> execute(Iterable<T> nodes,
+                                 Function<T, ActionStatus> action,
+                                 GroupActionConfig config);
 
-    List<ActionResult> execute(Iterable<RemoteRef> nodes,
-                               String actionId,
-                               GroupActionConfig config);
+    <T> ActionResults<T> execute(Iterable<T> nodes,
+                                 GroupActionConfig config);
 
-    void cancelActions();
+    <T> GroupAction<T> createAction(GroupActionConfig config);
 
-    List<ActionExecution> getActiveActions();
+    void cancelAllActions();
+
+    List<ActionExecution<?>> getActiveActions();
 
     void register(GroupActionFactory factory);
 

@@ -21,7 +21,6 @@ package ru.citeck.ecos.workflow.utils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.security.authentication.AuthenticationUtil.RunAsWork;
 import org.alfresco.repo.workflow.WorkflowModel;
-import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
@@ -33,12 +32,13 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import ru.citeck.ecos.job.AbstractLockedJob;
 import ru.citeck.ecos.notification.NotificationSender;
 
 import java.util.Date;
 import java.util.List;
 
-public class OverdueNotificationJob extends AbstractScheduledLockedJob
+public class OverdueNotificationJob extends AbstractLockedJob
 {
 	private static Log logger = LogFactory.getLog(OverdueNotificationJob.class);
 

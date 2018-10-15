@@ -9,5 +9,7 @@
         <order>a5</order>
         <mobile-order>0</mobile-order>
     </position>
-    <control url="js/citeck/modules/cardlets/node-header/node-header" />
+    <control url="js/citeck/modules/cardlets/node-header/node-header">
+        <prop name="show-path">false</prop>
+    </control>
 </cardlet>

@@ -19,7 +19,6 @@
 package ru.citeck.ecos.role;
 
 import org.alfresco.service.cmr.repository.NodeRef;
-import ru.citeck.ecos.role.dao.RoleDAO;
 
 import java.util.Collection;
 import java.util.List;
@@ -144,11 +143,6 @@ public interface CaseRoleService {
     void updateRole(NodeRef caseRef, String roleName);
 
     void roleChanged(NodeRef roleRef, NodeRef added, NodeRef removed);
-
-    /**
-     * Register role DAO
-     */
-    void register(RoleDAO roleDAO);
 
     /**
      * Set assignee delegate for role. This delegate would be set

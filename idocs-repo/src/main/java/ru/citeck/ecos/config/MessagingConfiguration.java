@@ -88,7 +88,8 @@ public class MessagingConfiguration {
      * @return Rabbit template or null (in case of absence connection factory)
      */
     @Bean(name = "historyRabbitTemplate")
-    public RabbitTemplate historyRabbitTemplate(CachingConnectionFactory connectionFactory) {
+    public RabbitTemplate historyRabbitTemplate(@Qualifier("historyRabbitConnectionFactory")
+                                                CachingConnectionFactory connectionFactory) {
         if (connectionFactory != null) {
             return new RabbitTemplate(connectionFactory);
         } else {

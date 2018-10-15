@@ -3,8 +3,10 @@ package ru.citeck.ecos.flowable.form.view;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 import org.flowable.form.model.FormField;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.flowable.form.FlowableNodeViewProvider;
 import ru.citeck.ecos.invariants.Feature;
 import ru.citeck.ecos.invariants.InvariantDefinition;
@@ -16,6 +18,8 @@ import ru.citeck.ecos.service.namespace.EcosNsPrefixResolver;
 import java.util.*;
 
 public abstract class FieldConverter<T extends FormField> {
+
+    private static final String FIELD_LABEL_KEY_TEMPLATE = "flowable.form.field.%s.label";
 
     @Autowired
     protected EcosNsPrefixResolver prefixResolver;
@@ -64,10 +68,14 @@ public abstract class FieldConverter<T extends FormField> {
     }
 
     protected Optional<NodeViewRegion> createLabelRegion(T field, Map<String, Object> variables) {
+        String fieldLabel = I18NUtil.getMessage(String.format(FIELD_LABEL_KEY_TEMPLATE, field.getId()));
+        if (StringUtils.isBlank(fieldLabel)) {
+            fieldLabel = field.getName();
+        }
         return Optional.of(new NodeViewRegion.Builder(prefixResolver)
                                              .name("label")
                                              .template("label")
-                                             .templateParams(Collections.singletonMap("text", field.getName()))
+                                             .templateParams(Collections.singletonMap("text", fieldLabel))
                                              .build());
     }
 

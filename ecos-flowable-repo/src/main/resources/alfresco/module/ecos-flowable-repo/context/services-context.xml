@@ -278,10 +278,7 @@
 	<bean id="flowableFormCommentsListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.FormCommentsListener"/>
 
 	<!-- Example -->
-	<bean id="flowable-ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.flowable.example.FlowableCasePerformWorkflowHandler"
-		  init-method="init">
-		<property name="utils" ref="flowableCasePerformUtils" />
-		<property name="authorityService" ref="authorityService" />
+	<bean id="flowable-ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.flowable.example.FlowableCasePerformWorkflowHandler">
 	</bean>
 
 	<bean name="FlowableConfirmHelper" class="ru.citeck.ecos.flowable.example.FlowableConfirmHelper">
@@ -312,5 +309,15 @@
 		<property name="searchService" ref="searchService"/>
 		<property name="nodeService" ref="nodeService"/>
 	</bean>
+
+	<bean id="abstractFlowableSaveToExecutionListener"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.variables.AbstractFlowableSaveToExecutionListener"
+		  abstract="true"/>
+
+	<bean id="flowableCaseRolesSetListener"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.variables.FlowableCaseRolesSetListener"/>
+
+	<bean id="flowableCaseStatusSetListener"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.variables.FlowableCaseStatusSetListener"/>
 
 </beans>
