@@ -176,7 +176,7 @@ export function loadUserMenuPhoto(userNodeRef) {
 
         api.getPhotoSize(userNodeRef).then(size => {
             if (size > 0) {
-                let photoUrl = window.Alfresco.constants.PROXY_URI + "api/node/content;ecos:photo/" + userNodeRef.replace(":/", "") + "/image.jpg";
+                let photoUrl = window.Alfresco.constants.PROXY_URI + `citeck/ecos/image/thumbnail?nodeRef=${userNodeRef}&property=ecos:photo&width=150`;
                 dispatch(setUserPhoto(photoUrl));
             }
         });
