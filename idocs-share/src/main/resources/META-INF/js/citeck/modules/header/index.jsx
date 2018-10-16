@@ -13,8 +13,6 @@ import {
     loadUserMenuPhoto
 } from './actions';
 
-import "xstyle!js/citeck/lib/css/bootstrap.min.css";
-
 // TODO include polyfills
 
 const api = new API(window.Alfresco.constants.PROXY_URI);
