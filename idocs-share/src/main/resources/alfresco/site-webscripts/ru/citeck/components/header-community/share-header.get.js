@@ -9,6 +9,7 @@
 
 // GLOBAL VARIABLES
 var isMobile = isMobileDevice(context.headers["user-agent"]);
+model.isMobile = isMobile;
 
 // ---------------------
 // HEADER MENU

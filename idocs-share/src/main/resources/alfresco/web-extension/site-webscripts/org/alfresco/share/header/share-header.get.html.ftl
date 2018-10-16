@@ -39,13 +39,12 @@
                     userName: "${((user.name)!"")?js_string}",
                     userFullname: "${((user.fullName)!"")?js_string}",
                     userNodeRef: "${((user.properties.nodeRef)!"")?js_string}",
-                    userIsAdmin: "${user.isAdmin?string}",
                     userIsAvailable: "${((user.properties.available)!"")?string}",
                     userIsMutable: "${((user.capabilities.isMutable)!"")?string}",
                     isExternalAuthentication: "${((context.externalAuthentication)!"")?string}",
-                    site: "${((page.url.templateArgs.site)!"")?js_string}",
                     slideMenuConfig: ${jsonUtils.toJSONString(slideMenuConfig)},
-                    siteMenuItems: ${jsonUtils.toJSONString(siteMenuItems)}
+                    siteMenuItems: ${jsonUtils.toJSONString(siteMenuItems)},
+                    isMobile: "${isMobile?string}"
                 });
             });
         //]]></script>

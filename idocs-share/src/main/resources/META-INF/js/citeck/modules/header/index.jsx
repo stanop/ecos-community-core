@@ -10,7 +10,8 @@ import rootReducer from './reducers';
 import {
     setUserFullName,
     loadTopMenuData,
-    loadUserMenuPhoto
+    loadUserMenuPhoto,
+    setIsMobile
 } from './actions';
 
 // TODO include polyfills
@@ -38,6 +39,8 @@ export const render = (elementId, props) => {
         props.isExternalAuthentication === "true",
         props.siteMenuItems
     ));
+
+    store.dispatch(setIsMobile(props.isMobile === "true"));
 
     ReactDOM.render(
         <Provider store={store}>

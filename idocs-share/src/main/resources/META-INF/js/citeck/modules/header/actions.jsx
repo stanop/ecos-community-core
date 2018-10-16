@@ -198,6 +198,18 @@ export function setCurrentSiteMenuItems(payload) {
 /* ---------------- */
 
 
+/* View */
+export const VIEW_SET_IS_MOBILE = 'VIEW_SET_IS_MOBILE';
+
+export function setIsMobile(payload) {
+    return {
+        type: VIEW_SET_IS_MOBILE,
+        payload
+    }
+}
+/* ---------------- */
+
+
 
 
 /* COMMON */

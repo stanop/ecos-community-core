@@ -4,14 +4,18 @@ import { Dropdown } from 'react-bootstrap';
 import DropDownMenuItem from './dropdown-menu-item';
 import CustomToggle from './dropdown-menu-custom-toggle';
 
-const UserMenu = ({ userFullName, userPhotoUrl, items }) => {
-    const userImage = userPhotoUrl ? (
+const UserMenu = ({ userFullName, userPhotoUrl, items, isMobile }) => {
+    let userImage = userPhotoUrl ? (
         (
             <div className="user-photo-header">
                 <div style={{backgroundImage: 'url(' + userPhotoUrl + ')'}} />
             </div>
         )
     ) : null;
+
+    if (userImage === null && isMobile) {
+        userImage = <i className={"fa fa-user"} />;
+    }
 
     let menuListItems = null;
     if (Array.isArray(items) && items.length > 0) {
@@ -41,7 +45,8 @@ const UserMenu = ({ userFullName, userPhotoUrl, items }) => {
 const mapStateToProps = (state) => ({
     userPhotoUrl: state.user.photo,
     userFullName: state.user.fullName,
-    items: state.userMenu.items
+    items: state.userMenu.items,
+    isMobile: state.view.isMobile
 });
 
 export default connect(mapStateToProps)(UserMenu);

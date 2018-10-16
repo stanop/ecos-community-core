@@ -97,10 +97,15 @@
 }
 
 .site-dropdown-menu__toggle i,
+.user-dropdown-menu__toggle i,
 .user-dropdown-menu__toggle .user-menu-username {
     color: #ffffff;
     line-height: 40px;
     display: inline-block;
+}
+
+.user-dropdown-menu__toggle i {
+    font-size: 18px;
 }
 
 .user-photo-header {

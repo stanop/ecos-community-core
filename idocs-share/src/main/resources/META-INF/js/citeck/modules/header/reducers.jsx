@@ -15,7 +15,9 @@ import {
     SEARCH_AUTOCOMPLETE_VISIBILITY_TOGGLE,
     SEARCH_AUTOCOMPLETE_UPDATE_RESULTS,
     SEARCH_AUTOCOMPLETE_UPDATE_DOCUMENTS_RESULTS,
-    SEARCH_SET_LAST_SEARCH_INDEX
+    SEARCH_SET_LAST_SEARCH_INDEX,
+
+    VIEW_SET_IS_MOBILE
 } from './actions';
 
 /* caseMenuReducer */
@@ -227,6 +229,26 @@ function searchReducer(state = searchInitialState, action) {
     }
 }
 
+/* viewReducer */
+const viewInitialState = {
+    isMobile: false,
+};
+
+Object.freeze(viewInitialState);
+
+function viewReducer(state = viewInitialState, action) {
+    switch (action.type) {
+        case VIEW_SET_IS_MOBILE:
+            return {
+                ...state,
+                isMobile: action.payload
+            };
+
+        default:
+            return state;
+    }
+}
+
 
 /* root reducer */
 export default combineReducers({
@@ -235,5 +257,6 @@ export default combineReducers({
     modal: modalReducer,
     search: searchReducer,
     userMenu: userMenuReducer,
-    user: userReducer
+    user: userReducer,
+    view: viewReducer
 });
