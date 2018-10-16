@@ -1,10 +1,10 @@
 package ru.citeck.ecos.behavior.common;
 
+import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
@@ -16,6 +16,13 @@ public class DeleteNodeOnDeleteAssocBehaviour extends AbstractBehaviour
 
     private NodeUtils nodeUtils;
 
+    @Override
+    protected void beforeInit() {
+        if (this.getAssocName() != null) {
+            throw new AlfrescoRuntimeException("Not set assoc name!");
+        }
+    }
+
     @PolicyMethod(policy = NodeServicePolicies.OnDeleteAssociationPolicy.class,
             frequency = Behaviour.NotificationFrequency.TRANSACTION_COMMIT, checkNodeRefs = false, runAsSystem = true)
     public void onDeleteAssociation(AssociationRef nodeAssocRef) {
@@ -23,12 +30,8 @@ public class DeleteNodeOnDeleteAssocBehaviour extends AbstractBehaviour
         NodeRef node = nodeAssocRef.getSourceRef();
         if (node != null && nodeService.exists(node)) {
 
-            QName assocName = this.getAssocName();
-            if (assocName != null) {
-
-                if (!nodeUtils.getAssocTarget(node, assocName).isPresent()) {
-                    RepoUtils.deleteNode(node, nodeService);
-                }
+            if (!nodeUtils.getAssocTarget(node, this.getAssocName()).isPresent()) {
+                RepoUtils.deleteNode(node, nodeService);
             }
         }
     }
