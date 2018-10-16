@@ -24,7 +24,6 @@
             fields: [
             {key: 'dueDate'},
             {key: 'startDate'},
-            {key: 'taskType'},
             {key: 'sender'},
             {key: 'lastComment'},
             {key: 'taskId'},
