@@ -12,7 +12,7 @@
         <prop name="header">doctasks.header</prop>
         <prop name="childrenFormat">task</prop>
         <prop name="childrenUrl">Alfresco.constants.PROXY_URI + "citeck/tasks/document?nodeRef=${nodeRef}"</prop>
-        <prop name="columns">[{key: 'taskType', label: Alfresco.util.message("doctasks.header.taskType"), formatter: Citeck.format.typeName()},
+        <prop name="columns">[{key: 'taskTitle', label: Alfresco.util.message("doctasks.header.taskType")},
             {key: 'startDate', label: Alfresco.util.message("doctasks.header.startDate"), formatter: Citeck.format.datetime('dd.MM.yyyy')},
             {key: 'dueDate', label: Alfresco.util.message("doctasks.header.dueDate"), formatter: Citeck.format.datetime('dd.MM.yyyy')},
             {key: 'sender', label: Alfresco.util.message("doctasks.header.sender")},
@@ -33,7 +33,8 @@
             {key: 'reassignable'},
             {key: 'releasable'},
             {key: 'claimable'},
-            {key: 'comment'}
+            {key: 'comment'},
+            {key: 'taskTitle'}
             ]}
         </prop>
         <prop name="hideEmpty">true</prop>
