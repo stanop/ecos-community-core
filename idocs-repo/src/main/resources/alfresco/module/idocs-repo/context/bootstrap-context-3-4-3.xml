@@ -5,12 +5,12 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="idocs.import-spaces.3-5-0" abstract="true" parent="idocs.import-spaces.3-4-0">
+    <bean id="idocs.import-spaces.3-4-3" abstract="true" parent="idocs.import-spaces.3-4-0">
         <property name="sinceVersion" value="3.4.3"/>
         <property name="appliesFromVersion" value="3.4.3"/>
     </bean>
 
-    <bean id="idocs.import-scripts.3-5-0" abstract="true" parent="idocs.import-scripts.3-4-0">
+    <bean id="idocs.import-scripts.3-4-3" abstract="true" parent="idocs.import-scripts.3-4-0">
         <property name="sinceVersion" value="3.4.3"/>
         <property name="appliesFromVersion" value="3.4.3"/>
     </bean>
