@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import { pure } from 'recompose';
 import { MenuItem } from 'react-bootstrap';
 import { t } from '../misc/util';
 import handleControl from '../misc/handle-control';
@@ -35,4 +34,4 @@ const DropDownMenuItem = ({ key, data, dispatch }) => {
     )
 };
 
-export default connect(null, mapDispatchToProps)(pure(DropDownMenuItem));
+export default connect(null, mapDispatchToProps)(DropDownMenuItem);
