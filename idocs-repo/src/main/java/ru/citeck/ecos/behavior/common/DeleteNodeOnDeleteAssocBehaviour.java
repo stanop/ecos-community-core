@@ -18,7 +18,7 @@ public class DeleteNodeOnDeleteAssocBehaviour extends AbstractBehaviour
 
     @Override
     protected void beforeInit() {
-        if (this.getAssocName() != null) {
+        if (this.getAssocName() == null) {
             throw new AlfrescoRuntimeException("Not set assoc name!");
         }
     }
