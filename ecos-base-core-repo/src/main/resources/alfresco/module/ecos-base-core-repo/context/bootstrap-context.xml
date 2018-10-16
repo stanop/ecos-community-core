@@ -44,8 +44,8 @@
     <bean id="ecos-base-core.module-component.ecos-config-root" parent="ecos-base-core.import-spaces">
         <property name="name" value="ecos-config-root"/>
         <property name="description" value="Root for ecos-configs"/>
-        <property name="sinceVersion" value="3.5.0"/>
-        <property name="appliesFromVersion" value="3.5.0"/>
+        <property name="sinceVersion" value="3.4.3"/>
+        <property name="appliesFromVersion" value="3.4.3"/>
         <property name="bootstrapViews">
             <list>
                 <props>
