@@ -100,6 +100,10 @@ public abstract class AbstractBehaviour {
 
         JavaPolicyBehaviour behaviour = new JavaPolicyBehaviour(this, method.getName(),
                                                                 nodeService, config.frequency());
+
+        if (Behaviour.NotificationFrequency.TRANSACTION_COMMIT.equals(config.frequency())) {
+            behaviour.setCheckNodeRefs(config.checkNodeRefs());
+        }
         behaviour.setRunAsSystem(config.runAsSystem());
         behaviour.setRecursive(config.recursive());
         behaviour.setFullEnabled(enabled);
