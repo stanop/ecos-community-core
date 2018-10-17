@@ -23,22 +23,20 @@ function CardDetailsImpl(props) {
         }}/>
     };
 
-    let headerComponent = <div />;
+    const headerComponent = <SurfRegion args={{
+        regionId: "share-header",
+        scope: "global",
+        chromeless: "true",
+        pageid: "card-details",
+        site: pageArgs.site,
+        theme: pageArgs.theme,
+        cacheAge: 300,
+        userName: props.userName
+    }} />;
+
     let uploadersComponents = [];
 
     if (props.anyCardModeLoaded) {
-
-        headerComponent = <SurfRegion args={{
-            regionId: "share-header",
-            scope: "global",
-            chromeless: "true",
-            pageid: "card-details",
-            site: pageArgs.site,
-            theme: pageArgs.theme,
-            cacheAge: 300,
-            userName: props.userName
-        }} />;
-
         uploadersComponents = [
             createUploaderRegion('dnd-upload'),
             createUploaderRegion('file-upload')

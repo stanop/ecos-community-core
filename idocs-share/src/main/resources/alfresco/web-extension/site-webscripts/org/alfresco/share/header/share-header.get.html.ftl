@@ -30,7 +30,27 @@
          Alfresco.constants.DASHLET_RESIZE = ${((page.url.templateArgs.userid!"-") = (user.name!""))?string} && YAHOO.env.ua.mobile === null;
       </#if>
    </@>
-   <@processJsonModel group="share"/>
+   <#if isReactMenu>
+        <script type="text/javascript">//<![CDATA[
+            require([
+                'js/citeck/modules/header/index'
+            ], function(ShareHeader) {
+                ShareHeader.render('share-header', {
+                    userName: "${((user.name)!"")?js_string}",
+                    userFullname: "${((user.fullName)!"")?js_string}",
+                    userNodeRef: "${((user.properties.nodeRef)!"")?js_string}",
+                    userIsAvailable: "${((user.properties.available)!"")?string}",
+                    userIsMutable: "${((user.capabilities.isMutable)!"")?string}",
+                    isExternalAuthentication: "${((context.externalAuthentication)!"")?string}",
+                    slideMenuConfig: ${jsonUtils.toJSONString(slideMenuConfig)},
+                    siteMenuItems: ${jsonUtils.toJSONString(siteMenuItems)},
+                    isMobile: "${isMobile?string}"
+                });
+            });
+        //]]></script>
+   <#else>
+      <@processJsonModel group="share"/>
+   </#if>
 </@>
 
 <@markup id="html">
