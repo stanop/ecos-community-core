@@ -1,6 +1,5 @@
 package ru.citeck.ecos.records.source;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import graphql.ExecutionResult;
 import org.apache.commons.logging.Log;
@@ -10,12 +9,10 @@ import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.*;
-import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.query.RecordsRefsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.remote.RestConnection;
 
@@ -23,7 +20,7 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class RemoteRecordsDAO extends AbstractRecordsDAO {
+public class RemoteRecordsDAO extends AbstractRecordsDAO implements RecordsMetaDAO, RecordsActionExecutor {
 
     private static final Log logger = LogFactory.getLog(RemoteRecordsDAO.class);
 
@@ -51,7 +48,7 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
     }
 
     @Override
-    public RecordsResult queryRecords(RecordsQuery query) {
+    public RecordsRefsResult getRecords(RecordsQuery query) {
 
         RecordsPost.Request request = new RecordsPost.Request();
 
@@ -64,14 +61,14 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
                 request.query.setAfterId(new RecordRef(afterId.getId()));
             }
 
-            RecordsResult result = restConnection.jsonPost(recordsMethod, request, RecordsResult.class);
+            RecordsRefsResult result = restConnection.jsonPost(recordsMethod, request, RecordsRefsResult.class);
             if (result != null) {
                 return result.addSourceId(getId());
             } else {
                 logger.error("[" + getId() + "] queryRecords will return nothing. " + request);
             }
         }
-        return new RecordsResult();
+        return new RecordsRefsResult();
     }
 
     @Override
@@ -105,11 +102,6 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO {
         }
 
         return results;
-    }
-
-    @Override
-    public Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef) {
-        throw new RuntimeException("getMetaValue is not supported for remote recordsDAO");
     }
 
     public void setRemoteSourceId(String remoteSourceId) {

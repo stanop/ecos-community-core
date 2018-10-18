@@ -21,7 +21,6 @@ import ru.citeck.ecos.records.source.alfnode.CriteriaAlfNodesSearch;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RecordsDataSource implements JournalDataSource {
 
@@ -40,12 +39,7 @@ public class RecordsDataSource implements JournalDataSource {
 
         JGqlRecordsConnection result = new JGqlRecordsConnection();
 
-        result.setRecords(recordsResult.records
-                                       .stream()
-                                       .map(r -> recordsService.getMetaValue(context, r))
-                                       .flatMap( o -> o.map(Stream::of).orElseGet(Stream::empty))
-                                       .collect(Collectors.toList()));
-
+        result.setRecords(recordsService.getMetaValues(context, recordsResult.records));
         result.setTotalCount(recordsResult.totalCount);
         result.pageInfo().setHasNextPage(recordsResult.hasNext);
         result.pageInfo().set(pageInfo);
@@ -85,10 +79,10 @@ public class RecordsDataSource implements JournalDataSource {
         recordsQuery.setConsistency(QueryConsistency.EVENTUAL);
         recordsQuery.setSourceId(sourceId);
 
-        RecordsResult records = recordsService.getRecords(recordsQuery);
+        RecordsResult<RecordRef> records = recordsService.getRecords(recordsQuery);
 
         return new JournalRecordsResult(records.getRecords(),
-                                        records.hasMore(),
+                                        records.getHasMore(),
                                         records.getTotalCount(),
                                         recordsQuery.getSkipCount(),
                                         recordsQuery.getMaxItems());
@@ -97,10 +91,7 @@ public class RecordsDataSource implements JournalDataSource {
     @Override
     public List<MetaValue> convertToGqlValue(GqlContext context,
                                              List<RecordRef> recordsList) {
-        return recordsList.stream()
-                          .map(r -> recordsService.getMetaValue(context, r))
-                          .flatMap( o -> o.map(Stream::of).orElseGet(Stream::empty))
-                          .collect(Collectors.toList());
+        return recordsService.getMetaValues(context, recordsList);
     }
 
     @Override

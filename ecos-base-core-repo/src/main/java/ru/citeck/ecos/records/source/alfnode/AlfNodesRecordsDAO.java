@@ -5,22 +5,22 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.action.group.ActionResults;
-import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeRecord;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
+import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.source.LocalRecordsDAO;
+import ru.citeck.ecos.records.source.RecordsMetaValueDAO;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Component
-public class AlfNodesRecordsDAO extends LocalRecordsDAO {
+public class AlfNodesRecordsDAO extends LocalRecordsDAO
+                                implements RecordsMetaValueDAO {
 
     private static final Log logger = LogFactory.getLog(AlfNodesRecordsDAO.class);
 
@@ -33,7 +33,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO {
     }
 
     @Override
-    public RecordsResult queryRecords(RecordsQuery query) {
+    public RecordsResult<RecordRef> getRecords(RecordsQuery query) {
         AlfNodesSearch alfNodesSearch = searchByLanguage.get(query.getLanguage());
         if (alfNodesSearch == null) {
             throw new IllegalArgumentException("Language " + query.getLanguage() +
@@ -49,7 +49,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO {
 
             if (afterId != null) {
                 if (!ID.equals(afterId.getSourceId())) {
-                    return new RecordsResult();
+                    return new RecordsResult<>();
                 }
                 NodeRef afterIdNodeRef = new NodeRef(afterId.getId());
 
@@ -84,14 +84,13 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO {
     }
 
     @Override
-    public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {
-        return groupActionService.execute(records, config);
-    }
-
-    @Override
-    public Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef) {
-        Optional<GqlAlfNode> node = context.getNode(recordRef.getId());
-        return node.map(gqlAlfNode -> new AlfNodeRecord(gqlAlfNode, context));
+    public List<MetaValue> getMetaValues(GqlContext context, List<RecordRef> recordRef) {
+        return recordRef.stream()
+                        .map(RecordRef::getId)
+                        .map(context::getNode)
+                        .filter(Optional::isPresent)
+                        .map(n -> new AlfNodeRecord(n.get(), context))
+                        .collect(Collectors.toList());
     }
 
     public void register(AlfNodesSearch alfNodesSearch) {

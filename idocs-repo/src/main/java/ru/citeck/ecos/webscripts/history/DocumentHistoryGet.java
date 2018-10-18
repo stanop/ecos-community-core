@@ -1,20 +1,17 @@
 package ru.citeck.ecos.webscripts.history;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.extensions.webscripts.Cache;
-import org.springframework.extensions.webscripts.DeclarativeWebScript;
-import org.springframework.extensions.webscripts.Status;
-import org.springframework.extensions.webscripts.WebScriptRequest;
+import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.constants.DocumentHistoryConstants;
 import ru.citeck.ecos.history.HistoryRemoteService;
 import ru.citeck.ecos.history.filter.Criteria;
@@ -22,13 +19,15 @@ import ru.citeck.ecos.history.impl.HistoryGetService;
 import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.spring.registry.MappingRegistry;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DocumentHistoryGet extends DeclarativeWebScript {
+public class DocumentHistoryGet extends AbstractWebScript {
 
     private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citeck.history.service.enabled";
 
@@ -69,53 +68,62 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
 
     private MappingRegistry<String, Criteria> filterRegistry = new MappingRegistry<>();
 
-    /**
-     * Execute implementation
-     *
-     * @param req    Http-request
-     * @param status Status
-     * @param cache  Cache
-     * @return Map of attributes
-     */
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
-    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
+    public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
         String nodeRefUuid = req.getParameter(PARAM_DOCUMENT_NODE_REF);
         String eventsParam = req.getParameter(PARAM_EVENTS);
-
-        Set<String> includeEvents = null;
-        if (StringUtils.isNotBlank(eventsParam)) {
-            includeEvents = Arrays.stream(eventsParam.split(",")).collect(Collectors.toSet());
-        }
+        String filterParam = req.getParameter(PARAM_FILTER);
 
         /* Check history event status */
-        NodeRef documentRef = new NodeRef(nodeRefUuid);
+
+
+        List<ObjectNode> events = getHistoryEvents(nodeRefUuid, filterParam, eventsParam);
+
+        try (Writer writer = res.getWriter()) {
+            res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
+            objectMapper.writeValue(writer, Collections.singletonMap(HISTORY_PROPERTY_NAME, events));
+            res.setStatus(Status.STATUS_OK);
+        }
+    }
+
+    public List<ObjectNode> getHistoryEvents(String nodeRef, String filter, String events) {
+
+        NodeRef documentRef = new NodeRef(nodeRef);
+
+        Set<String> includeEvents = Collections.emptySet();
+        if (StringUtils.isNotBlank(events)) {
+            includeEvents = Arrays.stream(events.split(",")).collect(Collectors.toSet());
+        }
+
+        Criteria filterCriteria = null;
+
+        if (StringUtils.isNotBlank(filter)) {
+            filterCriteria = filterRegistry.getMapping().get(filter);
+            if (filterCriteria == null) {
+                throw new WebScriptException(Status.STATUS_BAD_REQUEST, "Filter with id: " + filter + " not found");
+            }
+        }
+
         Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.PROP_USE_NEW_HISTORY);
         if ((useNewHistory == null || !useNewHistory) && isEnabledRemoteHistoryService()) {
             historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
         }
         /* Load data */
-        List historyRecordMaps;
+        List<Map> historyRecordMaps;
         if (isEnabledRemoteHistoryService()) {
             historyRecordMaps = historyRemoteService.getHistoryRecords(documentRef.getId());
         } else {
             historyRecordMaps = historyGetService.getHistoryEventsByDocumentRef(documentRef);
         }
 
-        String filterParam = req.getParameter(PARAM_FILTER);
-        if (StringUtils.isNotBlank(filterParam)) {
-            Criteria filterCriteria = filterRegistry.getMapping().get(filterParam);
-            if (filterCriteria == null) {
-                status.setCode(Status.STATUS_BAD_REQUEST, "Filter with id: " + filterParam + " not found");
-                return null;
-            }
-
+        if (filterCriteria != null) {
             historyRecordMaps = filterCriteria.meetCriteria(historyRecordMaps);
         }
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("jsonResult", createJsonResponse(historyRecordMaps, includeEvents));
-        return result;
+        return formatHistoryNodes(historyRecordMaps, includeEvents);
     }
 
     /**
@@ -139,10 +147,10 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
      * @return Json string
      */
     @SuppressWarnings("unchecked")
-    private String createJsonResponse(List<Map> historyRecordMaps, Set<String> includeEvents) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode resultObjectNode = objectMapper.createObjectNode();
-        ArrayNode arrayNode = objectMapper.createArrayNode();
+    private List<ObjectNode> formatHistoryNodes(List<Map> historyRecordMaps, Set<String> includeEvents) {
+
+        List<ObjectNode> result = new ArrayList<>();
+
         /* Transform records */
         for (Map<String, Object> historyRecordMap : historyRecordMaps) {
 
@@ -213,10 +221,11 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
 
             /* Add history node to result */
             recordObjectNode.put(ATTRIBUTES_PROPERTY_NAME, attributesNode);
-            arrayNode.add(recordObjectNode);
+
+            result.add(recordObjectNode);
         }
-        resultObjectNode.put(HISTORY_PROPERTY_NAME, arrayNode);
-        return resultObjectNode.toString();
+
+        return result;
     }
 
     private ArrayNode transformNodeRefsToArrayNode(ArrayList<NodeRef> nodes) {

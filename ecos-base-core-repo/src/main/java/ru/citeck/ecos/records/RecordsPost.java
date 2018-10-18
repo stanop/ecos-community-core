@@ -1,11 +1,11 @@
 package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
-import ru.citeck.ecos.records.query.RecordsMetaResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
 
@@ -28,41 +28,34 @@ public class RecordsPost extends AbstractWebScript {
                         "but found both. 'records' field will be ignored");
         }
 
-        RecordsResult records;
+        RecordsResult<?> recordsResult;
 
         if (request.query != null) {
-
-            records = recordsService.getRecords(request.query);
-
             if (request.schema != null) {
-                RecordsMetaResult metaResult = new RecordsMetaResult();
-                metaResult.setHasMore(records.hasMore());
-                metaResult.setTotalCount(records.getTotalCount());
-
-                metaResult.setMeta(recordsService.getMeta(records.getRecords(), request.schema));
-
-                records = metaResult;
+                recordsResult = recordsService.getRecords(request.query, request.schema);
+            } else {
+                recordsResult = recordsService.getRecords(request.query);
             }
-
         } else {
 
             if (request.records == null) {
-                throw new IllegalArgumentException("At least 'records' or 'query' must be specified");
+                throw new WebScriptException(Status.STATUS_BAD_REQUEST,
+                                             "At least 'records' or 'query' must be specified");
             }
             if (request.schema == null) {
-                throw new IllegalArgumentException("When records specified parameter 'schema' is mandatory");
+                throw new WebScriptException(Status.STATUS_BAD_REQUEST,
+                                             "When records specified parameter 'schema' is mandatory");
             }
 
-            RecordsMetaResult metaResult = new RecordsMetaResult();
-            metaResult.setHasMore(false);
+            RecordsResult<ObjectNode> metaResult = new RecordsResult<>();
             metaResult.setTotalCount(request.records.size());
-            metaResult.setMeta(recordsService.getMeta(request.records, request.schema));
-
-            records = metaResult;
+            metaResult.setHasMore(false);
+            metaResult.setRecords(recordsService.getMeta(request.records, request.schema));
+            recordsResult = metaResult;
         }
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
-        objectMapper.writeValue(res.getOutputStream(), records);
+        objectMapper.writeValue(res.getOutputStream(), recordsResult);
         res.setStatus(Status.STATUS_OK);
     }
 

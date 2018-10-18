@@ -12,6 +12,7 @@ import java.util.Optional;
 public class MetaExplicitValue implements MetaValue {
 
     private Object val;
+    private MetaValue metaVal;
 
     public MetaExplicitValue(Object value) {
         if (value instanceof Optional) {
@@ -19,16 +20,24 @@ public class MetaExplicitValue implements MetaValue {
         } else {
             val = value;
         }
+        if (val instanceof MetaValue) {
+            metaVal = (MetaValue) val;
+        }
     }
 
     @Override
     public String id() {
+        if (metaVal != null) {
+            return metaVal.id();
+        }
         return null;
     }
 
     @Override
     public String str() {
-        if (val != null) {
+        if (metaVal != null) {
+            return metaVal.str();
+        } else if (val != null) {
             if (val instanceof Date) {
                 return ISO8601DateFormat.format((Date) val);
             }
@@ -39,11 +48,17 @@ public class MetaExplicitValue implements MetaValue {
 
     @Override
     public Optional<MetaAttribute> att(String name) {
+        if (metaVal != null) {
+            return metaVal.att(name);
+        }
         return Optional.of(new MetaReflectionAtt(val, name));
     }
 
     @Override
     public List<MetaAttribute> atts(String filter) {
+        if (metaVal != null) {
+            return metaVal.atts(filter);
+        }
         return Collections.emptyList();
     }
 }

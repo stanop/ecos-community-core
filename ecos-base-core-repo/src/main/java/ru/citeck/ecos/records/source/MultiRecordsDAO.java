@@ -1,18 +1,15 @@
 package ru.citeck.ecos.records.source;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
-import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
+import ru.citeck.ecos.records.query.RecordsResult;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,7 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Pavel Simonov
  */
-public class MultiRecordsDAO extends AbstractRecordsDAO {
+public class MultiRecordsDAO extends AbstractRecordsDAO
+                             implements RecordsActionExecutor {
 
     private static final Log logger = LogFactory.getLog(MultiRecordsDAO.class);
 
@@ -28,9 +26,9 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
     private Map<String, RecordsDAO> daoBySource = new ConcurrentHashMap<>();
 
     @Override
-    public RecordsResult queryRecords(RecordsQuery query) {
+    public RecordsResult<RecordRef> getRecords(RecordsQuery query) {
 
-        RecordsResult result = new RecordsResult();
+        RecordsResult<RecordRef> result = new RecordsResult<>();
 
         RecordsQuery localQuery = new RecordsQuery(query);
 
@@ -47,7 +45,7 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
 
             localQuery.setMaxItems(query.getMaxItems() - result.getRecords().size());
             RecordsDAO recordsDAO = recordsDao.get(sourceIdx);
-            RecordsResult daoRecords = recordsDAO.queryRecords(localQuery);
+            RecordsResult<RecordRef> daoRecords = recordsDAO.getRecords(localQuery);
 
             result.merge(daoRecords);
 
@@ -64,7 +62,7 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
             }
         }
 
-        if (result.getTotalCount() == query.getMaxItems() && result.hasMore()) {
+        if (result.getTotalCount() == query.getMaxItems() && result.getHasMore()) {
             result.setTotalCount(result.getTotalCount() + 1);
         }
 
@@ -76,27 +74,17 @@ public class MultiRecordsDAO extends AbstractRecordsDAO {
         ActionResults<RecordRef> results = new ActionResults<>();
         RecordsUtils.groupRefBySource(records).forEach((sourceId, sourceRecs) -> {
             RecordsDAO recordsDAO = daoBySource.get(sourceId);
-            if (recordsDAO != null) {
-                results.merge(recordsDAO.executeAction(sourceRecs, config));
+            if (recordsDAO instanceof RecordsActionExecutor) {
+                results.merge(((RecordsActionExecutor) recordsDAO).executeAction(sourceRecs, config));
             } else {
                 ActionStatus status = new ActionStatus(ActionStatus.STATUS_SKIPPED);
-                status.setMessage("Source id " + sourceId + " is not registered!");
+                status.setMessage("Source id " + sourceId + " doesn't support actions");
                 for (RecordRef recordRef : sourceRecs) {
                     results.getResults().add(new ActionResult<>(recordRef, status));
                 }
             }
         });
         return results;
-    }
-
-    @Override
-    public List<ObjectNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
-        throw new RuntimeException("Is not supported. Use RecordsService instead");
-    }
-
-    @Override
-    public Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef) {
-        throw new RuntimeException("Is not supported. Use RecordsService instead");
     }
 
     public void setRecordsDao(List<RecordsDAO> records) {
