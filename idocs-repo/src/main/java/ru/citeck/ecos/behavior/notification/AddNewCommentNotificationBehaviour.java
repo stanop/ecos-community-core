@@ -21,7 +21,7 @@ import java.util.List;
 public class AddNewCommentNotificationBehaviour extends AbstractICaseDocumentNotificationBehaviour
         implements NodeServicePolicies.OnCreateChildAssociationPolicy {
 
-    private PersonService personService;
+    protected PersonService personService;
     private ContentService contentService;
     private String documentNamespace;
     private String documentType;
