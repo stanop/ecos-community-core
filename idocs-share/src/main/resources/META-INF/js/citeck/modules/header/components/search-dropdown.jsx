@@ -21,7 +21,7 @@ const SearchDropdown = () => {
                 <CustomToggle bsRole='toggle' className='search-dropdown-menu__toggle'>
                     <i className={'fa fa-chevron-circle-down'} />
                 </CustomToggle>
-                <Dropdown.Menu className='custom-dropdown-menu__body'>
+                <Dropdown.Menu className='custom-dropdown-menu__body' id='HEADER_SEARCH__DROPDOWN'>
                     {searchDropdownListItems}
                 </Dropdown.Menu>
             </Dropdown>
