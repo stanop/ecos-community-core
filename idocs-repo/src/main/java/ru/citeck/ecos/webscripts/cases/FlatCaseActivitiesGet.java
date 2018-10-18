@@ -22,10 +22,7 @@ import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
 import ru.citeck.ecos.icase.activity.CaseActivityServiceImpl;
-import ru.citeck.ecos.model.ActivityModel;
-import ru.citeck.ecos.model.EventModel;
-import ru.citeck.ecos.model.ICaseEventModel;
-import ru.citeck.ecos.model.LifeCycleModel;
+import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.IOException;
@@ -98,22 +95,30 @@ public class FlatCaseActivitiesGet extends AbstractWebScript {
 
             startTimeContext.add(activity.id);
 
+            Date maxTime = null;
+
             for (Depend depend : activity.depend) {
+
+                Date endTime = null;
+
                 if (Direction.FS.equals(depend.direction)) {
                     fillEndTime(depend.target, startTimeContext, endTimeContext);
-                    activity.start = depend.target.end;
-                    break;
-                }
-                if (Direction.SS.equals(depend.direction)) {
+                    endTime = depend.target.end;
+                } else if (Direction.SS.equals(depend.direction)) {
                     fillStartTime(depend.target, startTimeContext, endTimeContext);
-                    activity.start = depend.target.start;
-                    break;
+                    endTime = depend.target.start;
+                }
+
+                if (endTime != null && (maxTime == null || maxTime.getTime() < endTime.getTime())) {
+                    maxTime = endTime;
                 }
             }
 
-            if (activity.start == null) {
-                activity.start = new Date();
+            if (maxTime == null) {
+                maxTime = new Date();
             }
+
+            activity.start = maxTime;
 
             startTimeContext.remove(activity.id);
         }
@@ -134,36 +139,51 @@ public class FlatCaseActivitiesGet extends AbstractWebScript {
 
             fillStartTime(activity, startTimeContext, endTimeContext);
 
+            if (dictionaryService.isSubClass(activity.typeQName, ActionModel.TYPE_ACTION)) {
+                activity.end = activity.start;
+                endTimeContext.remove(activity.id);
+                return;
+            }
+
+            Date maxTime = null;
+
             for (Depend depend : activity.depend) {
+
+                Date endTime = null;
+
                 if (Direction.FF.equals(depend.direction)) {
                     if (depend.target == activity) {
-                        Date lastEndTime = activity.start;
+                        endTime = activity.start;
                         Activity lastActivity = activity;
                         for (Activity child : activity.children) {
                             fillEndTime(child, startTimeContext, endTimeContext);
-                            if (child.end.getTime() > lastEndTime.getTime()) {
-                                lastEndTime = child.end;
+                            if (child.end.getTime() > endTime.getTime()) {
+                                endTime = child.end;
                                 lastActivity = child;
                             }
                         }
                         depend.target = lastActivity;
-                        activity.end = lastEndTime;
+                        //stage completed when all children completed
+                        break;
                     } else {
                         fillEndTime(depend.target, startTimeContext, endTimeContext);
-                        activity.end = depend.target.end;
+                        endTime = depend.target.end;
                     }
-                    break;
-                }
-                if (Direction.SF.equals(depend.direction)) {
+                } else if (Direction.SF.equals(depend.direction)) {
                     fillStartTime(depend.target, startTimeContext, endTimeContext);
-                    activity.end = depend.target.start;
-                    break;
+                    endTime = depend.target.start;
+                }
+
+                if (endTime != null && (maxTime == null || maxTime.getTime() < endTime.getTime())) {
+                    maxTime = endTime;
                 }
             }
 
-            if (activity.end == null) {
-                activity.end = new Date(activity.start.getTime() + (long) (activity.sla / 8.0) * 24 * 60 * 60 * 1000);
+            if (maxTime == null) {
+                maxTime = new Date(activity.start.getTime() + (long) (activity.sla / 8.0) * 24 * 60 * 60 * 1000);
             }
+
+            activity.end = maxTime;
 
             endTimeContext.remove(activity.id);
         }
@@ -245,6 +265,8 @@ public class FlatCaseActivitiesGet extends AbstractWebScript {
 
             Integer sla = (Integer) activityProps.get(ActivityModel.PROP_EXPECTED_PERFORM_TIME);
             activity.sla = sla != null ? sla : defaultSla;
+
+            activity.typeQName = nodeService.getType(activityRef);
 
             activities.put(activityRef, activity);
             if (parent != null) {
@@ -328,6 +350,7 @@ public class FlatCaseActivitiesGet extends AbstractWebScript {
         Date end;
         Activity parent;
         List<Activity> children = new ArrayList<>();
+        QName typeQName;
 
         public String getStart() {
             return formatDate(start);
