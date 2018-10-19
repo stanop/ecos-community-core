@@ -8,9 +8,11 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.constants.DocumentHistoryConstants;
 import ru.citeck.ecos.history.HistoryRemoteService;
@@ -18,6 +20,7 @@ import ru.citeck.ecos.history.filter.Criteria;
 import ru.citeck.ecos.history.impl.HistoryGetService;
 import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.spring.registry.MappingRegistry;
+import ucar.nc2.util.HashMapLRU;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -151,6 +154,8 @@ public class DocumentHistoryGet extends AbstractWebScript {
 
         List<ObjectNode> result = new ArrayList<>();
 
+        Map<Pair<String, String>, String> outcomeTitles = new HashMap<>();
+
         /* Transform records */
         for (Map<String, Object> historyRecordMap : historyRecordMaps) {
 
@@ -164,6 +169,23 @@ public class DocumentHistoryGet extends AbstractWebScript {
             recordObjectNode.put(DocumentHistoryConstants.NODE_REF.getKey(),
                     (String) historyRecordMap.get(DocumentHistoryConstants.NODE_REF.getValue()));
             ObjectNode attributesNode = objectMapper.createObjectNode();
+
+            String taskType = (String) historyRecordMap.get(DocumentHistoryConstants.TASK_TYPE.getValue());
+            String taskTypeShort = null;
+
+            if (StringUtils.isNotEmpty(taskType)) {
+
+                QName taskTypeValue = QName.createQName(taskType);
+
+                ObjectNode taskTypeNode = objectMapper.createObjectNode();
+                taskTypeNode.put("fullQName", taskType);
+
+                taskTypeShort = taskTypeValue.toPrefixString(serviceRegistry.getNamespaceService());
+                taskTypeNode.put("shortQName", taskTypeShort);
+
+                attributesNode.put(DocumentHistoryConstants.TASK_TYPE.getKey(), taskTypeNode);
+            }
+
             /* Populate object */
             Date date = new Date((Long) historyRecordMap.get(DocumentHistoryConstants.DOCUMENT_DATE.getValue()));
             ZoneOffset offset = ZoneOffset.systemDefault().getRules().getOffset(Instant.now());
@@ -179,23 +201,15 @@ public class DocumentHistoryGet extends AbstractWebScript {
                     (String) historyRecordMap.get(DocumentHistoryConstants.TASK_ROLE.getValue()));
             attributesNode.put(DocumentHistoryConstants.TASK_OUTCOME.getKey(),
                     (String) historyRecordMap.get(DocumentHistoryConstants.TASK_OUTCOME.getValue()));
+            attributesNode.put(DocumentHistoryConstants.TASK_OUTCOME_TITLE.getKey(), getTaskOutcomeTitle(
+                    taskTypeShort,
+                    (String) historyRecordMap.get(DocumentHistoryConstants.TASK_OUTCOME.getValue()),
+                    outcomeTitles
+            ));
             attributesNode.put(DocumentHistoryConstants.TASK_INSTANCE_ID.getKey(),
                     (String) historyRecordMap.get(DocumentHistoryConstants.TASK_INSTANCE_ID.getValue()));
 
-            String taskType = (String) historyRecordMap.get(DocumentHistoryConstants.TASK_TYPE.getValue());
 
-            if (StringUtils.isNotEmpty(taskType)) {
-
-                QName taskTypeValue = QName.createQName(taskType);
-
-                ObjectNode taskTypeNode = objectMapper.createObjectNode();
-                taskTypeNode.put("fullQName", taskType);
-                taskTypeNode.put("shortQName", taskTypeValue.toPrefixString(
-                        serviceRegistry.getNamespaceService())
-                );
-
-                attributesNode.put(DocumentHistoryConstants.TASK_TYPE.getKey(), taskTypeNode);
-            }
 
             ArrayList<NodeRef> attachments = (ArrayList<NodeRef>) historyRecordMap.get(
                     DocumentHistoryConstants.TASK_ATTACHMENTS.getValue());
@@ -226,6 +240,40 @@ public class DocumentHistoryGet extends AbstractWebScript {
         }
 
         return result;
+    }
+
+    private String getTaskOutcomeTitle(String taskTypeShort,
+                                       String outcome,
+                                       Map<Pair<String, String>, String> titles) {
+
+        if (outcome == null) {
+            return null;
+        }
+
+        return titles.computeIfAbsent(new Pair<>(taskTypeShort, outcome), p -> {
+
+            String title;
+
+            if (StringUtils.isNotBlank(taskTypeShort)) {
+
+                String correctType = taskTypeShort.replaceAll(":", "_");
+                String keyByType = "workflowtask." + correctType + ".outcome." + outcome;
+
+                title = I18NUtil.getMessage(keyByType);
+
+                if (StringUtils.isNotBlank(title)) {
+                    return title;
+                }
+            }
+
+            String globalKey = "workflowtask.outcome." + outcome;
+            title = I18NUtil.getMessage(globalKey);
+            if (StringUtils.isNotBlank(title)) {
+                return title;
+            }
+
+            return p.getSecond();
+        });
     }
 
     private ArrayNode transformNodeRefsToArrayNode(ArrayList<NodeRef> nodes) {
