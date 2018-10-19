@@ -67,6 +67,7 @@ public class FlatCaseActivitiesGet extends AbstractWebScript {
 
         fillActivities(activities, new HashMap<>(), null, rootRef, defaultSla);
         fillDepends(activities, ICaseEventModel.ASSOC_ACTIVITY_START_EVENTS, Direction.SS, Direction.FS);
+        fillDepends(activities, ICaseEventModel.ASSOC_ACTIVITY_RESTART_EVENTS, Direction.SS, Direction.FS);
         fillDepends(activities, ICaseEventModel.ASSOC_ACTIVITY_END_EVENTS, Direction.SF, Direction.FF);
         fillStartEndTime(activities);
 
