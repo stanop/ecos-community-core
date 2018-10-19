@@ -1779,9 +1779,13 @@ ko.components.register("autocomplete", {
         this.criteria = ko.pureComputed(function() {
             if (self.searchQuery()) {
                 return _.map(params["criteria"] || self.defaults.criteria, function(item) {
-                    return _.defaults({ value: self.searchQuery() }, item);
+                    return _.defaults(item, { value: self.searchQuery() });
                 });
-            } else { return [] }
+            } else {
+                return _.filter(params["criteria"] || self.defaults.criteria, function(item) {
+                    return (item && item.value && item.predicate && item.attribute);
+                });
+            }
         }).extend({ rateLimit: { timeout: 500, method: "notifyWhenChangesStop" } });
 
         this.options = ko.pureComputed(function() {
