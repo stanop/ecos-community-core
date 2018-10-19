@@ -1779,7 +1779,7 @@ ko.components.register("autocomplete", {
         this.criteria = ko.pureComputed(function() {
             if (self.searchQuery()) {
                 return _.map(params["criteria"] || self.defaults.criteria, function(item) {
-                    return _.defaults(item, { value: self.searchQuery() });
+                    return _.defaults(_.clone(item), { value: self.searchQuery() });
                 });
             } else {
                 return _.filter(params["criteria"] || self.defaults.criteria, function(item) {
