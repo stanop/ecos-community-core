@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
+    <id>common-node-header</id>
+    <regionId>node-header</regionId>
+    <allowed-type>{http://www.alfresco.org/model/content/1.0}cmobject</allowed-type>
+    <position>
+        <card-mode>all</card-mode>
+        <column>top</column>
+        <order>a5</order>
+        <mobile-order>0</mobile-order>
+    </position>
+    <control url="js/citeck/modules/cardlets/node-header/node-header">
+        <prop name="show-path">false</prop>
+    </control>
+</cardlet>

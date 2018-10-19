@@ -14,7 +14,7 @@ import java.util.*;
  *
  * @author Pavel Simonov
  */
-public class TypeKindContentDAO<T> extends RepoContentDAO<T> {
+public class TypeKindContentDAO<T> extends RepoContentDAOImpl<T> {
 
     private QName typeField = ClassificationModel.PROP_DOCUMENT_APPLIES_TO_TYPE;
     private QName kindField = ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND;

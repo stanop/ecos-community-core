@@ -1,6 +1,7 @@
 <#assign controlId = fieldId + "-createObjectControl">
 <#assign params = viewScope.region.params!{} />
 <#assign source = params.source!"create-variants" />
+<#assign customType = params.customType!"" />
 <#assign buttonTitle = params.buttonTitle!"button.create" />
 
 <#assign constraint = params.constraint!"" />
@@ -14,6 +15,7 @@
 
 		scope: $data,
 		source: '${source}',
+		customType: '${customType}',
 		id: '${controlId}',
 		buttonTitle: '${msg(buttonTitle)}',
 		parentRuntime: $root.key(),

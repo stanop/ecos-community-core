@@ -33,7 +33,7 @@ public class FormActionBehaviour implements NodeServicePolicies.OnUpdateProperti
         policyComponent.bindClassBehaviour(
                 NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,
                 IdocsModel.ASPECT_HAS_CUSTOM_FORM_ACTION,
-                new JavaBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.EVERY_EVENT)
+                new JavaBehaviour(this, "onUpdateProperties", Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
         );
     }
 

@@ -52,22 +52,25 @@
     </#macro>
 
     <script type="text/javascript">//<![CDATA[
-    require(['citeck/components/dynamic-tree/cell-formatters'], function() {
-        YAHOO.util.Event.onContentReady("${el}", function() {
-            var component = new Citeck.widget.DocumentAssociations("${el}").setOptions({
-                nodeRef: "${nodeRef?js_string}",
 
-                    <#if columns??>columns: ${columns},</#if>
-                    <#if isMultiple??>isMultiple: ${isMultiple?string},</#if>
-                visible: <@renderAssocList assocs.visible />,
-                addable: <@renderAssocList assocs.addable />,
-                removeable: <@renderAssocList assocs.removeable />,
-                dependencies: ${jsonUtils.toJSONString(dependencies)}
-            }).setMessages(${messages});
+        Alfresco.util.createTwister("${el}-heading", "Citeck.widget.DocumentAssociations", { panel: "${el}-body" });
 
-            Alfresco.util.createTwister("${el}-heading", "Citeck.widget.DocumentAssociations", { panel: "${el}-body" });
+        require(['citeck/components/dynamic-tree/cell-formatters',
+                 'citeck/components/document-associations/document-associations'], function() {
+
+            YAHOO.util.Event.onContentReady("${el}", function() {
+                var component = new Citeck.widget.DocumentAssociations("${el}").setOptions({
+                    nodeRef: "${nodeRef?js_string}",
+
+                        <#if columns??>columns: ${columns},</#if>
+                        <#if isMultiple??>isMultiple: ${isMultiple?string},</#if>
+                    visible: <@renderAssocList assocs.visible />,
+                    addable: <@renderAssocList assocs.addable />,
+                    removeable: <@renderAssocList assocs.removeable />,
+                    dependencies: ${jsonUtils.toJSONString(dependencies)}
+                }).setMessages(${messages});
+            });
         });
-    });
     //]]></script>
 
 </#if>

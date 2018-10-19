@@ -114,7 +114,11 @@ ko.bindingHandlers.yuiDataTable = {
             sortedBy = cfg.sortedBy,
             doubleClickConfig = cfg.doubleClickConfig,
             configs = cfg.set;
-       
+
+        if (cfg.loadingProp) {
+            cfg.loadingProp(true);
+        }
+
         // data source
         ds = new YAHOO.util.LocalDataSource({
             records: _.map(records, function(record) {
@@ -126,7 +130,7 @@ ko.bindingHandlers.yuiDataTable = {
             resultsList: 'records',
             fields: fields
         };
-        
+
         // data table
         dt = new YAHOO.widget.DataTable(element, columnDefs, ds);
 
@@ -148,7 +152,6 @@ ko.bindingHandlers.yuiDataTable = {
                 dt.set(key, value);
             });
         }
-
 
         // highlighting
         dt.subscribe("rowMouseoverEvent", dt.onEventHighlightRow);
@@ -260,6 +263,7 @@ ko.bindingHandlers.yuiDataTable = {
     },
     
     update: function(element, valueAccessor) {
+
         var cfg = valueAccessor(),
             ds = valueAccessor.ds,
             dt = valueAccessor.dt,
@@ -272,64 +276,94 @@ ko.bindingHandlers.yuiDataTable = {
             fields = koValue(cfg.fields) || [],
             sortedBy = koValue(cfg.sortedBy);
 
-        
-        // remove sortedBy
-        dt.set('sortedBy', null);
-        
-        // remove all columns
-        for(var i = columnDefs.length; i--; ) {
-            var column = dt.getColumn(columnDefs[i].key);
-            if(column) dt.removeColumn(column);
-        }
-        
-        // remove all data
-        DT.update(dt, ds, {
-            records: []
-        });
-        
-        // add fields
-        ds.responseSchema = {
-            resultsList: 'records',
-            fields: fields
-        };
-        
-        // add columns
-        _.each(newColumnDefs, function(def) {
-            dt.insertColumn(def);
-        });
+        valueAccessor.updateImpl = function() {
 
-        // set data
-        DT.update(dt, ds, {
-            records: _.map(records, function(record) {
-                return record.model();
-            })
-        });
-        
-        // set sortedBy only if this key is in the columns
-        if(sortedBy && _.findWhere(newColumnDefs, { key: sortedBy.key })) {
-            dt.set('sortedBy', sortedBy);
-        }
+            // remove sortedBy
+            dt.set('sortedBy', null);
 
-        // restore selected rows
-        var yuiRecord;
-        for (var i in records) {
-            yuiRecord = getYuiRecordByNodeRef(records[i].nodeRef());
-            if(records[i].selected()) {
-                dt.selectRow(yuiRecord);
-            } else {
-                dt.unselectRow(yuiRecord);
+            // remove all columns
+            for(var i = columnDefs.length; i--; ) {
+                var column = dt.getColumn(columnDefs[i].key);
+                if(column) dt.removeColumn(column);
             }
+
+            // remove all data
+            DT.update(dt, ds, {
+                records: []
+            });
+
+            // add fields
+            ds.responseSchema = {
+                resultsList: 'records',
+                fields: fields
+            };
+
+            // add columns
+            _.each(newColumnDefs, function(def) {
+                dt.insertColumn(def);
+            });
+
+            // set data
+            DT.update(dt, ds, {
+                records: _.map(records, function(record) {
+                    return record.model();
+                })
+            });
+
+            // set sortedBy only if this key is in the columns
+            if(sortedBy && _.findWhere(newColumnDefs, { key: sortedBy.key })) {
+                dt.set('sortedBy', sortedBy);
+            }
+
+            // restore selected rows
+            var yuiRecord;
+            for (var i in records) {
+                yuiRecord = getYuiRecordByNodeRef(records[i].nodeRef());
+                if(records[i].selected()) {
+                    dt.selectRow(yuiRecord);
+                } else {
+                    dt.unselectRow(yuiRecord);
+                }
+            }
+
+            if (records.length > 0 && _.every(records, function(record) { return record.selected(); })) {
+                $(":checkbox[data-action='select-all']", dt.getTheadEl()).attr("checked", "");
+            }
+
+            // select all records
+            $(":checkbox[data-action='select-all']", dt.getTheadEl()).on("change", function(event) {
+                records.forEach(function(record) { record.selected(event.target.checked) });
+            });
+
+            if (cfg.loadingProp) {
+                cfg.loadingProp(false);
+            }
+        };
+
+        valueAccessor.updateReceived = true;
+
+        if (!valueAccessor.timeoutStarted) {
+            valueAccessor.timeoutStarted = true;
+            waitUpdate();
         }
 
-        if (records.length > 0 && _.every(records, function(record) { return record.selected(); })) {
-            $(":checkbox[data-action='select-all']", dt.getTheadEl()).attr("checked", "");
+        function waitUpdate() {
+            if (cfg.loadingProp) {
+                cfg.loadingProp(true);
+            }
+            valueAccessor.updateReceived = false;
+            setTimeout(function() {
+                if (valueAccessor.updateReceived) {
+                    waitUpdate();
+                } else {
+                    if (valueAccessor.updateImpl) {
+                        valueAccessor.updateImpl();
+                        valueAccessor.updateImpl = null;
+                    }
+                    valueAccessor.timeoutStarted = false;
+                }
+            }, 300);
         }
-
-        // select all records
-        $(":checkbox[data-action='select-all']", dt.getTheadEl()).on("change", function(event) {
-            records.forEach(function(record) { record.selected(event.target.checked) });
-        });
-
 
         function getYuiRecordByNodeRef(nodeRef) {
             var recordSet = dt.getRecordSet(),

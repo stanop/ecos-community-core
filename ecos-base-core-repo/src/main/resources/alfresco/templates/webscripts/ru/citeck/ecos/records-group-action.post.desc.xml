@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>Group action</shortname>
+    <description>Execute remote group action</description>
+    <url>/citeck/ecos/records-group-action</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

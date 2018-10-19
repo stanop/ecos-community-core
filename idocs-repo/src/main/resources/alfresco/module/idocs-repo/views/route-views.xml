@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/route/1.0" prefix="route" />
+    </imports>
+
+    <view class="route:route">
+        <field prop="cm:name" template="row" />
+        <field prop="tk:appliesToType">
+            <region name="input" template="select" />
+            <invariant on="multiple" language="explicit">false</invariant>
+            <invariant on="options" language="javascript"><![CDATA[(function() {
+                var query = 'TYPE:"cm:category" AND PARENT:"workspace://SpacesStore/category-document-type-root"';
+                return searchQuery(node, "tk:appliesToType", query, null, 60000);
+            })()]]></invariant>
+        </field>
+        <field prop="tk:appliesToKind">
+            <region name="input" template="select" />
+            <invariant on="multiple" language="explicit">false</invariant>
+            <invariant on="options" language="javascript"><![CDATA[(function() {
+                var type = node.properties['tk:appliesToType'];
+                if (type) {
+                    var query = 'TYPE:"cm:category" AND PARENT:"' + type.nodeRef + '"';
+                    return searchQuery(node, "tk:appliesToKind", query, null, 60000);
+                }
+                return [];
+            })()]]></invariant>
+        </field>
+        <field prop="route:scriptCondition">
+            <region name="input" template="textarea">
+                <param name="height">50px</param>
+            </region>
+        </field>
+        <field assoc="route:stages">
+            <region name="select" template="create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
+            </region>
+            <region name="input" template="view-table">
+                <param name="columns">route:dueDateTime,route:dueDateTimeUnit,route:participants</param>
+            </region>
+        </field>
+        <field prop="route:precedence" template="none">
+            <invariant on="value" language="javascript"><![CDATA[(function() {
+                var stages = node.childAssocs['route:stages'] || [];
+                var result = [];
+                for (var stageIdx in stages) {
+                    var stage = stages[stageIdx];
+                    var parts = stage.childAssocs['route:participants'] || []
+                    var participantsRefs = [];
+
+                    for (var partIdx in parts) {
+                        var participant = parts[partIdx];
+                        var authorities = (participant.assocs || {})['route:authority'] || [];
+                        for (var authIdx in authorities) {
+                            participantsRefs.push(authorities[authIdx].nodeRef);
+                        }
+                    }
+                    if (participantsRefs.length) {
+                        var stageData = participantsRefs[0] + "_" + stage.properties['route:dueDateExpr'];
+                        for (var i = 1; i < participantsRefs.length; i++) {
+                            stageData += '|' + participantsRefs[i]
+                        }
+                        result.push(stageData);
+                    }
+                }
+                return result.join(',');
+            })()]]>
+            </invariant>
+        </field>
+        <!--<field prop="cm:taggable" />-->
+    </view>
+
+    <view class="route:stage">
+        <field prop="route:dueDateExpr" template="none">
+            <invariant on="value" language="javascript"><![CDATA[(function() {
+                var time = node.properties['route:dueDateTime'];
+                var unit = node.properties['route:dueDateTimeUnit'];
+                if (time && unit) {
+                    return time + '/' + unit;
+                }
+                return value;
+            })()]]>
+            </invariant>
+        </field>
+        <field prop="route:dueDateTime">
+            <invariant on="default" language="javascript"><![CDATA[(function() {
+                if (!node.impl) return value;
+                var expr = node.impl().attribute('route:dueDateExpr').persistedValue() || '0/h';
+                return expr.split('/')[0] || '0';
+            })()]]>
+            </invariant>
+        </field>
+        <field prop="route:dueDateTimeUnit">
+            <region name="input" template="select" />
+            <invariant on="options" language="javascript">['h', 'd', 'm']</invariant>
+            <invariant on="value-title" language="javascript">({
+                    'h': 'Часы',
+                    'd': 'Дни',
+                    'm': 'Месяцы'
+                }[value])
+            </invariant>
+            <invariant on="default" language="javascript"><![CDATA[(function() {
+                if (!node.impl) return value;
+                var expr = node.impl().attribute('route:dueDateExpr').persistedValue() || '0/h';
+                return expr.split('/')[1] || 'h';
+            })()]]>
+            </invariant>
+        </field>
+        <field assoc="route:participants">
+            <region name="select" template="create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
+            </region>
+            <region name="input" template="view-table">
+                <param name="columns">route:authority</param>
+            </region>
+        </field>
+    </view>
+
+    <view class="route:participant">
+        <field assoc="route:authority" />
+    </view>
+
+</views>

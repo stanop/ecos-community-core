@@ -5,7 +5,7 @@
 
 <@markup id="html">
 
- <div id="graphiql" style="height: 800px;">Loading...</div>
+ <div id="graphiql">Loading...</div>
 
  <script>
 
@@ -88,7 +88,7 @@
          // use fetch, and could instead implement graphQLFetcher however you like,
          // as long as it returns a Promise or Observable.
          function graphQLFetcher(graphQLParams) {
-             return fetch(Alfresco.constants.PROXY_URI + 'ecos/graphql', {
+             return fetch(Alfresco.constants.PROXY_URI + 'citeck/ecos/graphql', {
                  method: 'post',
                  headers: {
                      'Accept': 'application/json',

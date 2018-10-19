@@ -196,6 +196,17 @@
 		<property name="authorityService" ref="authorityService" />
 	</bean>
 
+    <bean id="webscript.ru.citeck.node.node-info.get"
+          class="ru.citeck.ecos.webscripts.node.NodeInfoGet"
+          parent="webscript">
+        <property name="displayByNameClasses">
+            <list>
+                <value>{http://www.citeck.ru/model/content/ecos/1.0}document</value>
+                <value>{http://www.citeck.ru/model/content/ecos/1.0}case</value>
+            </list>
+        </property>
+    </bean>
+
 	<bean id="webscript.ru.citeck.security.checkBelongsUserToGroup.get"
 	      class="ru.citeck.ecos.webscripts.authority.CheckBelongsUserToGroup"
 	      parent="webscript">
@@ -317,11 +328,13 @@
         <property name="namespaceService" ref="NamespaceService"/>
     </bean>
 
-    <bean id="webscript.ru.citeck.history.document-history.get" class="ru.citeck.ecos.webscripts.history.DocumentHistoryGet" parent="webscript">
+    <bean id="webscript.ru.citeck.history.document-history.get"
+          class="ru.citeck.ecos.webscripts.history.DocumentHistoryGet" parent="webscript">
         <property name="historyRemoteService" ref="historyRemoteService"/>
         <property name="nodeService" ref="NodeService"/>
         <property name="personService" ref="PersonService"/>
         <property name="historyGetService" ref="historyGetService"/>
+        <property name="filterRegistry" ref="historyFilter.mappingRegistry"/>
     </bean>
 
     <!--<bean id="webscript.ru.citeck.cases.activities-create-menu.get" class="ru.citeck.ecos.webscripts.cases.ActivityCreateVariantsGet"
@@ -410,6 +423,10 @@
         <property name="serviceRegistry" ref="ServiceRegistry"/>
         <property name="authenticationService" ref="authenticationService"/>
     </bean>
+    
+    <bean id="webscript.ru.citeck.case-activity.flat-case-activities.get"
+          class="ru.citeck.ecos.webscripts.cases.FlatCaseActivitiesGet" parent="webscript">
+    </bean>
 
     <bean id="webscript.ru.citeck.orgstruct.v2.children.get" class="ru.citeck.ecos.webscripts.orgstruct.ChildrenGet" parent="webscript" />
 
@@ -419,5 +436,14 @@
         <property name="searchService" ref="searchService" />
         <property name="nodeService" ref="nodeService" />
     </bean>
+
+    <bean id="webscript.ru.citeck.cardlets.cardlets.get"
+          class="ru.citeck.ecos.webscripts.cardlet.CardletsGet"
+          parent="webscript">
+    </bean>
+    
+    <bean id="webscript.ru.citeck.image.image-thumbnail.get"
+          class="ru.citeck.ecos.webscripts.image.ImageThumbnailGet"
+          parent="webscript" />
 
 </beans>

@@ -1,53 +1,42 @@
 package ru.citeck.ecos.webscripts.history;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.Pair;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.extensions.webscripts.Cache;
-import org.springframework.extensions.webscripts.DeclarativeWebScript;
-import org.springframework.extensions.webscripts.Status;
-import org.springframework.extensions.webscripts.WebScriptRequest;
+import org.springframework.extensions.surf.util.I18NUtil;
+import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.constants.DocumentHistoryConstants;
 import ru.citeck.ecos.history.HistoryRemoteService;
+import ru.citeck.ecos.history.filter.Criteria;
 import ru.citeck.ecos.history.impl.HistoryGetService;
 import ru.citeck.ecos.model.IdocsModel;
+import ru.citeck.ecos.spring.registry.MappingRegistry;
+import ucar.nc2.util.HashMapLRU;
 
-import java.text.SimpleDateFormat;
+import java.io.IOException;
+import java.io.Writer;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Document history get web script
- */
-public class DocumentHistoryGet extends DeclarativeWebScript {
+public class DocumentHistoryGet extends AbstractWebScript {
 
-    /**
-     * Exclude event types
-     */
-    private static final String EXCLUDE_EVENT_TYPES_PROPERTY = "ecos.citeck.history.exclude.types";
-
-    /**
-     * Date-time format
-     */
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
-    /**
-     * Properties constants
-     */
     private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citeck.history.service.enabled";
 
-    /** Constants */
+    /**
+     * Constants
+     */
     public static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
     public static final String HISTORY_PROPERTY_NAME = "history";
     public static final String ATTRIBUTES_PROPERTY_NAME = "attributes";
@@ -57,6 +46,7 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
      */
     private static final String PARAM_DOCUMENT_NODE_REF = "nodeRef";
     private static final String PARAM_EVENTS = "events";
+    private static final String PARAM_FILTER = "filter";
 
     /**
      * Global properties
@@ -79,44 +69,69 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
     @Autowired
     private ServiceRegistry serviceRegistry;
 
-    /**
-     * Execute implementation
-     * @param req Http-request
-     * @param status Status
-     * @param cache Cache
-     * @return Map of attributes
-     */
+    private MappingRegistry<String, Criteria> filterRegistry = new MappingRegistry<>();
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
-    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
+    public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
         String nodeRefUuid = req.getParameter(PARAM_DOCUMENT_NODE_REF);
         String eventsParam = req.getParameter(PARAM_EVENTS);
+        String filterParam = req.getParameter(PARAM_FILTER);
 
-        Set<String> includeEvents = null;
-        if (StringUtils.isNotBlank(eventsParam)) {
-            includeEvents = Arrays.stream(eventsParam.split(",")).collect(Collectors.toSet());
+        /* Check history event status */
+
+
+        List<ObjectNode> events = getHistoryEvents(nodeRefUuid, filterParam, eventsParam);
+
+        try (Writer writer = res.getWriter()) {
+            res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
+            objectMapper.writeValue(writer, Collections.singletonMap(HISTORY_PROPERTY_NAME, events));
+            res.setStatus(Status.STATUS_OK);
+        }
+    }
+
+    public List<ObjectNode> getHistoryEvents(String nodeRef, String filter, String events) {
+
+        NodeRef documentRef = new NodeRef(nodeRef);
+
+        Set<String> includeEvents = Collections.emptySet();
+        if (StringUtils.isNotBlank(events)) {
+            includeEvents = Arrays.stream(events.split(",")).collect(Collectors.toSet());
         }
 
-        /** Check history event status */
-        NodeRef documentRef = new NodeRef(nodeRefUuid);
+        Criteria filterCriteria = null;
+
+        if (StringUtils.isNotBlank(filter)) {
+            filterCriteria = filterRegistry.getMapping().get(filter);
+            if (filterCriteria == null) {
+                throw new WebScriptException(Status.STATUS_BAD_REQUEST, "Filter with id: " + filter + " not found");
+            }
+        }
+
         Boolean useNewHistory = (Boolean) nodeService.getProperty(documentRef, IdocsModel.PROP_USE_NEW_HISTORY);
         if ((useNewHistory == null || !useNewHistory) && isEnabledRemoteHistoryService()) {
             historyRemoteService.sendHistoryEventsByDocumentToRemoteService(documentRef);
         }
-        /** Load data */
-        List historyRecordMaps;
+        /* Load data */
+        List<Map> historyRecordMaps;
         if (isEnabledRemoteHistoryService()) {
             historyRecordMaps = historyRemoteService.getHistoryRecords(documentRef.getId());
         } else {
             historyRecordMaps = historyGetService.getHistoryEventsByDocumentRef(documentRef);
         }
-        Map<String, Object> result = new HashMap<>();
-        result.put("jsonResult", createJsonResponse(historyRecordMaps, includeEvents));
-        return result;
+
+        if (filterCriteria != null) {
+            historyRecordMaps = filterCriteria.meetCriteria(historyRecordMaps);
+        }
+
+        return formatHistoryNodes(historyRecordMaps, includeEvents);
     }
 
     /**
      * Check - is remote history service enabled
+     *
      * @return Check result
      */
     private Boolean isEnabledRemoteHistoryService() {
@@ -130,15 +145,19 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
 
     /**
      * Create json response
+     *
      * @param historyRecordMaps History records maps
      * @return Json string
      */
-    private String createJsonResponse(List<Map> historyRecordMaps, Set<String> includeEvents) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode resultObjectNode = objectMapper.createObjectNode();
-        ArrayNode arrayNode = objectMapper.createArrayNode();
-        /** Transform records */
-        for (Map<String, Object> historyRecordMap : historyRecordMaps ) {
+    @SuppressWarnings("unchecked")
+    private List<ObjectNode> formatHistoryNodes(List<Map> historyRecordMaps, Set<String> includeEvents) {
+
+        List<ObjectNode> result = new ArrayList<>();
+
+        Map<Pair<String, String>, String> outcomeTitles = new HashMap<>();
+
+        /* Transform records */
+        for (Map<String, Object> historyRecordMap : historyRecordMaps) {
 
             String eventType = (String) historyRecordMap.get(DocumentHistoryConstants.EVENT_TYPE.getValue());
 
@@ -147,19 +166,12 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
             }
 
             ObjectNode recordObjectNode = objectMapper.createObjectNode();
-            recordObjectNode.put(DocumentHistoryConstants.NODE_REF.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.NODE_REF.getValue()));
+            recordObjectNode.put(DocumentHistoryConstants.NODE_REF.getKey(),
+                    (String) historyRecordMap.get(DocumentHistoryConstants.NODE_REF.getValue()));
             ObjectNode attributesNode = objectMapper.createObjectNode();
-            /** Populate object */
-            Date date = new Date((Long) historyRecordMap.get(DocumentHistoryConstants.DOCUMENT_DATE.getValue()));
-            ZoneOffset offset = ZoneOffset.systemDefault().getRules().getOffset(Instant.now());
-            OffsetDateTime offsetDateTime = date.toInstant().atOffset(offset);
-            attributesNode.put(DocumentHistoryConstants.DOCUMENT_DATE.getKey(), offsetDateTime.toString());
-            attributesNode.put(DocumentHistoryConstants.DOCUMENT_VERSION.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.DOCUMENT_VERSION.getValue()));
-            attributesNode.put(DocumentHistoryConstants.COMMENTS.getKey(), (String)historyRecordMap.get(DocumentHistoryConstants.COMMENTS.getValue()));
-            attributesNode.put(DocumentHistoryConstants.EVENT_TYPE.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.EVENT_TYPE.getValue()));
-            attributesNode.put(DocumentHistoryConstants.TASK_ROLE.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.TASK_ROLE.getValue()));
-            attributesNode.put(DocumentHistoryConstants.TASK_OUTCOME.getKey(), (String) historyRecordMap.get(DocumentHistoryConstants.TASK_OUTCOME.getValue())); // good
+
             String taskType = (String) historyRecordMap.get(DocumentHistoryConstants.TASK_TYPE.getValue());
+            String taskTypeShort = null;
 
             if (StringUtils.isNotEmpty(taskType)) {
 
@@ -167,25 +179,122 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
 
                 ObjectNode taskTypeNode = objectMapper.createObjectNode();
                 taskTypeNode.put("fullQName", taskType);
-                taskTypeNode.put("shortQName", taskTypeValue.toPrefixString(serviceRegistry.getNamespaceService()));
+
+                taskTypeShort = taskTypeValue.toPrefixString(serviceRegistry.getNamespaceService());
+                taskTypeNode.put("shortQName", taskTypeShort);
 
                 attributesNode.put(DocumentHistoryConstants.TASK_TYPE.getKey(), taskTypeNode);
             }
-            /** User */
-            NodeRef userNodeRef = personService.getPerson((String) historyRecordMap.get(DocumentHistoryConstants.EVENT_INITIATOR.getValue()));
+
+            /* Populate object */
+            Date date = new Date((Long) historyRecordMap.get(DocumentHistoryConstants.DOCUMENT_DATE.getValue()));
+            ZoneOffset offset = ZoneOffset.systemDefault().getRules().getOffset(Instant.now());
+            OffsetDateTime offsetDateTime = date.toInstant().atOffset(offset);
+            attributesNode.put(DocumentHistoryConstants.DOCUMENT_DATE.getKey(), offsetDateTime.toString());
+            attributesNode.put(DocumentHistoryConstants.DOCUMENT_VERSION.getKey(),
+                    (String) historyRecordMap.get(DocumentHistoryConstants.DOCUMENT_VERSION.getValue()));
+            attributesNode.put(DocumentHistoryConstants.COMMENTS.getKey(),
+                    (String) historyRecordMap.get(DocumentHistoryConstants.COMMENTS.getValue()));
+            attributesNode.put(DocumentHistoryConstants.EVENT_TYPE.getKey(),
+                    (String) historyRecordMap.get(DocumentHistoryConstants.EVENT_TYPE.getValue()));
+            attributesNode.put(DocumentHistoryConstants.TASK_ROLE.getKey(),
+                    (String) historyRecordMap.get(DocumentHistoryConstants.TASK_ROLE.getValue()));
+            attributesNode.put(DocumentHistoryConstants.TASK_OUTCOME.getKey(),
+                    (String) historyRecordMap.get(DocumentHistoryConstants.TASK_OUTCOME.getValue()));
+            attributesNode.put(DocumentHistoryConstants.TASK_OUTCOME_TITLE.getKey(), getTaskOutcomeTitle(
+                    taskTypeShort,
+                    (String) historyRecordMap.get(DocumentHistoryConstants.TASK_OUTCOME.getValue()),
+                    outcomeTitles
+            ));
+            attributesNode.put(DocumentHistoryConstants.TASK_INSTANCE_ID.getKey(),
+                    (String) historyRecordMap.get(DocumentHistoryConstants.TASK_INSTANCE_ID.getValue()));
+
+
+
+            ArrayList<NodeRef> attachments = (ArrayList<NodeRef>) historyRecordMap.get(
+                    DocumentHistoryConstants.TASK_ATTACHMENTS.getValue());
+            if (attachments != null) {
+                attributesNode.put(DocumentHistoryConstants.TASK_ATTACHMENTS.getKey(),
+                        transformNodeRefsToArrayNode(attachments));
+            }
+
+            ArrayList<NodeRef> pooledActors = (ArrayList<NodeRef>) historyRecordMap.get(
+                    DocumentHistoryConstants.TASK_POOLED_ACTORS.getValue());
+            if (pooledActors != null) {
+                attributesNode.put(DocumentHistoryConstants.TASK_POOLED_ACTORS.getKey(),
+                        transformNodeRefsToArrayNode(pooledActors));
+            }
+
+            /* User */
+            NodeRef userNodeRef = personService.getPerson((String) historyRecordMap.get(
+                    DocumentHistoryConstants.EVENT_INITIATOR.getValue())
+            );
             if (userNodeRef != null) {
                 attributesNode.put(DocumentHistoryConstants.EVENT_INITIATOR.getKey(), createUserNode(userNodeRef));
             }
-            /** Add history node to result */
+
+            /* Add history node to result */
             recordObjectNode.put(ATTRIBUTES_PROPERTY_NAME, attributesNode);
-            arrayNode.add(recordObjectNode);
+
+            result.add(recordObjectNode);
         }
-        resultObjectNode.put(HISTORY_PROPERTY_NAME, arrayNode);
-        return resultObjectNode.toString();
+
+        return result;
+    }
+
+    private String getTaskOutcomeTitle(String taskTypeShort,
+                                       String outcome,
+                                       Map<Pair<String, String>, String> titles) {
+
+        if (outcome == null) {
+            return null;
+        }
+
+        return titles.computeIfAbsent(new Pair<>(taskTypeShort, outcome), p -> {
+
+            String title;
+
+            if (StringUtils.isNotBlank(taskTypeShort)) {
+
+                String correctType = taskTypeShort.replaceAll(":", "_");
+                String keyByType = "workflowtask." + correctType + ".outcome." + outcome;
+
+                title = I18NUtil.getMessage(keyByType);
+
+                if (StringUtils.isNotBlank(title)) {
+                    return title;
+                }
+            }
+
+            String globalKey = "workflowtask.outcome." + outcome;
+            title = I18NUtil.getMessage(globalKey);
+            if (StringUtils.isNotBlank(title)) {
+                return title;
+            }
+
+            return p.getSecond();
+        });
+    }
+
+    private ArrayNode transformNodeRefsToArrayNode(ArrayList<NodeRef> nodes) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode result = objectMapper.createArrayNode();
+        if (nodes == null || nodes.isEmpty()) {
+            return result;
+        }
+
+        for (NodeRef node : nodes) {
+            ObjectNode attachmentNode = objectMapper.createObjectNode();
+            attachmentNode.put("nodeRef", node.toString());
+            result.add(attachmentNode);
+        }
+
+        return result;
     }
 
     /**
      * Create user node
+     *
      * @param userNodeRef User node reference
      * @return Array node
      */
@@ -195,11 +304,16 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
         ObjectNode userNode = objectMapper.createObjectNode();
         userNode.put("nodeRef", userNodeRef.toString());
         userNode.put("type", "cm:person");
-        userNode.put("cm:userName", (String) nodeService.getProperty(userNodeRef, QName.createQName(ALFRESCO_NAMESPACE, "userName")));
-        userNode.put("cm:firstName", (String) nodeService.getProperty(userNodeRef, QName.createQName(ALFRESCO_NAMESPACE, "firstName")));
-        userNode.put("cm:lastName", (String) nodeService.getProperty(userNodeRef, QName.createQName(ALFRESCO_NAMESPACE, "lastName")));
-        userNode.put("cm:middleName", (String) nodeService.getProperty(userNodeRef, QName.createQName(ALFRESCO_NAMESPACE, "middleName")));
-        String displayName = userNode.get("cm:lastName") + " " + userNode.get("cm:firstName") + " " + userNode.get("cm:middleName");
+        userNode.put("cm:userName", (String) nodeService.getProperty(userNodeRef,
+                QName.createQName(ALFRESCO_NAMESPACE, "userName")));
+        userNode.put("cm:firstName", (String) nodeService.getProperty(userNodeRef,
+                QName.createQName(ALFRESCO_NAMESPACE, "firstName")));
+        userNode.put("cm:lastName", (String) nodeService.getProperty(userNodeRef,
+                QName.createQName(ALFRESCO_NAMESPACE, "lastName")));
+        userNode.put("cm:middleName", (String) nodeService.getProperty(userNodeRef,
+                QName.createQName(ALFRESCO_NAMESPACE, "middleName")));
+        String displayName = userNode.get("cm:lastName") + " " + userNode.get("cm:firstName") + " "
+                + userNode.get("cm:middleName");
         userNode.put("displayName", displayName.trim());
         result.add(userNode);
         return result;
@@ -220,5 +334,9 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
 
     public void setHistoryGetService(HistoryGetService historyGetService) {
         this.historyGetService = historyGetService;
+    }
+
+    public void setFilterRegistry(MappingRegistry<String, Criteria> filterRegistry) {
+        this.filterRegistry = filterRegistry;
     }
 }

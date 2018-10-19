@@ -337,9 +337,19 @@ define([
                     else {
                         nodeRefs.push(sData);
                     }
-                    for(var i = 0; i < nodeRefs.length; i++) {
+
+                    for (var i = 0; i < nodeRefs.length; i++) {
+                        var currentNodeRef = nodeRefs[i];
+                        if (currentNodeRef instanceof Object) {
+                            currentNodeRef = currentNodeRef.nodeRef;
+                        }
+
+                        if (!currentNodeRef) {
+                            continue;
+                        }
+
                         Alfresco.util.Ajax.request({
-                            url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + nodeRefs[i],
+                            url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + currentNodeRef,
                             successCallback: {
                                 scope: this,
                                 fn: function(response) {
@@ -688,7 +698,7 @@ define([
                         sData = {
                             data: sData,
                             nodeRef: oRecord._oData.nodeRef,
-                            displayName: sData.str
+                            displayName: sData.str || sData.toString()
                         };
                     } else {
                         if (!sData.hasOwnProperty('nodeRef')) {
@@ -1331,41 +1341,28 @@ define([
         },
 
         overdueNodeRef: function(propertyName) {
-            return function(elCell, oRecord, oColumn, sData) {
-                if(!sData) {
+            return function (elCell, oRecord, oColumn, sData) {
+                if (!sData) {
                     elCell.innerHTML = "";
                     return;
                 }
-                else
-                {
-                    Alfresco.util.Ajax.request({
-                        url: Alfresco.constants.PROXY_URI + "citeck/node?nodeRef=" + oRecord._oData.nodeRef,
-                        successCallback: {
-                            scope: this,
-                            fn: function(response) {
-                                if (response.json && response.json.props) {
-                                    propValue = response.json.props[propertyName];
-                                    var now = new Date();
-                                    if(propValue && propValue==true)
-                                    {
-                                            Dom.addClass(elCell.parentElement.parentElement, "yui-overdue-node");
-                                            var currentElement = elCell.parentElement.nextElementSibling;
-                                            while(currentElement!=null)
-                                            {
-                                                if(currentElement.children[0] && currentElement.children[0].children[0] && currentElement.children[0].children[0].localName=="a")
-                                                {
-                                                    for(var i=0; i<currentElement.children[0].children.length; i++)
-                                                    {
-                                                        Dom.addClass(currentElement.children[0].children[i], "yui-overdue-node");
-                                                    }
-                                                }
-                                                currentElement=currentElement.nextElementSibling;
-                                            }
-                                    }
+                else {
+                    var propValue = oRecord._oData["attributes['" + propertyName + "']"]
+                        && oRecord._oData["attributes['" + propertyName + "']"][0]
+                        ? oRecord._oData["attributes['" + propertyName + "']"][0].str : false;
+                    if (propValue && propValue === "true") {
+                        Dom.addClass(elCell.parentElement.parentElement, "yui-overdue-node");
+                        var currentElement = elCell.parentElement.nextElementSibling;
+                        while (currentElement != null) {
+                            if (currentElement.children[0] && currentElement.children[0].children[0]
+                                && currentElement.children[0].children[0].localName == "a") {
+                                for (var i = 0; i < currentElement.children[0].children.length; i++) {
+                                    Dom.addClass(currentElement.children[0].children[i], "yui-overdue-node");
                                 }
                             }
-                        }, failureCallback: { scope: this, fn: function(response) {} }, execScripts: true
-                    });
+                            currentElement = currentElement.nextElementSibling;
+                        }
+                    }
                 }
                 elCell.innerHTML = sData.hasOwnProperty('str') ? sData.str : sData;
             };
@@ -1931,7 +1928,7 @@ define([
             var typeName = this.typeName(null);
 
             return function(elCell, oRecord, oColumn, sData) {
-                var title = oRecord.getData('attributes["cwf:taskTitle"]');
+                var title = oRecord.getData('taskTitle');
                 if (title) {
                     elCell.innerHTML = title;
                 } else {

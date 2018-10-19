@@ -30,7 +30,9 @@ import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -41,7 +43,9 @@ import static org.alfresco.repo.transaction.AlfrescoTransactionSupport.getTransa
  */
 public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
-    /** JSON constants */
+    /**
+     * JSON constants
+     */
     private static final String USERNAME = "username";
     private static final String USER_ID = "userId";
     private static final String INITIATOR = "initiator";
@@ -107,6 +111,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private NodeUtils nodeUtils;
 
     @Autowired(required = false)
+    @Qualifier("historyRabbitTemplate")
     private RabbitTemplate rabbitTemplate;
 
     @Autowired(required = false)
@@ -114,16 +119,18 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     /**
      * Get history records
+     *
      * @param documentUuid Document uuid
      * @return List of maps
      */
     @Override
-    public List getHistoryRecords(String documentUuid) {
+    public List<Map> getHistoryRecords(String documentUuid) {
         return restTemplate.getForObject(properties.getProperty(HISTORY_SERVICE_HOST) + GET_BY_DOCUMENT_ID_PATH + documentUuid, List.class);
     }
 
     /**
      * Send history event to remote service
+     *
      * @param requestParams Request params
      */
     @Override
@@ -153,20 +160,21 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     /**
      * Send history events to remote service by document reference
+     *
      * @param documentRef Document reference
      */
     @Override
     public void sendHistoryEventsByDocumentToRemoteService(NodeRef documentRef) {
-        /** Loaf associations */
+        /* Loaf associations */
         List<AssociationRef> associations = nodeService.getSourceAssocs(documentRef, HistoryModel.ASSOC_DOCUMENT);
         List<Map<String, Object>> result = new ArrayList<>(associations.size());
-        /** Create entries */
+        /* Create entries */
         for (AssociationRef associationRef : associations) {
             NodeRef eventRef = associationRef.getSourceRef();
             Map<String, Object> entryMap = getEventMap(eventRef, documentRef);
             result.add(entryMap);
         }
-        /** Send data */
+        /* Send data */
         try {
             if (useActiveMq()) {
                 if (rabbitTemplate != null) {
@@ -180,7 +188,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
                 map.add("records", convertListOfMapsToJsonString(result));
                 restTemplate.postForObject(properties.getProperty(HISTORY_SERVICE_HOST) + INSERT_RECORDS_PATH, map, Boolean.class);
             }
-            /** Update document status */
+            /* Update document status */
             updateDocumentHistoryStatus(documentRef, true);
         } catch (Exception exception) {
             logger.error(exception);
@@ -189,6 +197,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     /**
      * Send history event to remote service by event reference
+     *
      * @param eventRef Event reference
      */
     public void sendHistoryEventToRemoteService(NodeRef eventRef) {
@@ -206,10 +215,12 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     /**
      * Get event request params
-     * @param eventRef Event reference
+     *
+     * @param eventRef    Event reference
      * @param documentRef Document reference
      * @return Event request params
      */
+    @SuppressWarnings("unchecked")
     private Map<String, Object> getEventMap(NodeRef eventRef, NodeRef documentRef) {
         Map<String, Object> entryMap = new HashMap<>();
         entryMap.put(DocumentHistoryConstants.DOCUMENT_ID.getValue(), documentRef.getId());
@@ -226,23 +237,36 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
                 nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_ROLE));
         entryMap.put(DocumentHistoryConstants.TASK_OUTCOME.getValue(),
                 nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_OUTCOME));
+        entryMap.put(DocumentHistoryConstants.TASK_INSTANCE_ID.getValue(),
+                nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_INSTANCE_ID));
         QName taskType = (QName) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_TYPE);
-        entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(),taskType != null ? taskType.getLocalName() : "");
-        entryMap.put(FULL_TASK_TYPE,taskType != null ? taskType.toString() : "");
-        /** Workflow */
+        entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(), taskType != null ? taskType.getLocalName() : "");
+        entryMap.put(FULL_TASK_TYPE, taskType != null ? taskType.toString() : "");
+
+        ArrayList<NodeRef> attachments = (ArrayList<NodeRef>) nodeService.getProperty(eventRef,
+                HistoryModel.PROP_TASK_ATTACHMENTS);
+        entryMap.put(DocumentHistoryConstants.TASK_ATTACHMENTS.getValue(),
+                Optional.ofNullable(attachments).orElse(new ArrayList<>()));
+
+        ArrayList<NodeRef> pooledActors = (ArrayList<NodeRef>) nodeService.getProperty(eventRef,
+                HistoryModel.PROP_TASK_POOLED_ACTORS);
+        entryMap.put(DocumentHistoryConstants.TASK_POOLED_ACTORS.getValue(),
+                Optional.ofNullable(pooledActors).orElse(new ArrayList<>()));
+
+        /* Workflow */
         entryMap.put(WORKFLOW_INSTANCE_ID, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
         entryMap.put(WORKFLOW_DESCRIPTION, nodeService.getProperty(eventRef, HistoryModel.PROP_WORKFLOW_DESCRIPTION));
         entryMap.put(TASK_EVENT_INSTANCE_ID, nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_INSTANCE_ID));
         entryMap.put(INITIATOR, nodeService.getProperty(eventRef, HistoryModel.ASSOC_INITIATOR));
         QName propertyName = (QName) properties.get(HistoryModel.PROP_PROPERTY_NAME);
         entryMap.put(PROPERTY_NAME, propertyName != null ? propertyName.getLocalName() : null);
-        /** Event task */
+        /* Event task */
         NodeRef taskNodeRef = (NodeRef) nodeService.getProperty(eventRef, HistoryModel.PROP_CASE_TASK);
         if (taskNodeRef != null) {
             Integer expectedPerformTime = (Integer) nodeService.getProperty(taskNodeRef, ICaseTaskModel.PROP_EXPECTED_PERFORM_TIME);
             entryMap.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
         }
-        /** Username and user id */
+        /* Username and user id */
         String username = (String) nodeService.getProperty(eventRef, HistoryModel.MODIFIER_PROPERTY);
         NodeRef userNodeRef = personService.getPerson(username);
         entryMap.put(USER_ID, userNodeRef != null ? userNodeRef.getId() : null);
@@ -252,6 +276,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     /**
      * Convert list of maps to json string
+     *
      * @param records History records
      * @return Json string
      */
@@ -266,47 +291,49 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     /**
      * Convert map to json string
+     *
      * @param requestParams Request params map
      * @return Json string
      */
     private String convertMapToJsonString(Map<String, Object> requestParams) {
-        JSONObject jsonObject =  new JSONObject(requestParams);
+        JSONObject jsonObject = new JSONObject(requestParams);
         return jsonObject.toString();
     }
 
     /**
      * Save history record as csv file
+     *
      * @param requestParams Request params
      */
     private void saveHistoryRecordAsCsv(Map<String, Object> requestParams) {
-        /** Make csv string */
+        /* Make csv string */
         StringBuilder csvResult = new StringBuilder();
         for (String key : KEYS) {
             Object value = requestParams.get(key);
             csvResult.append((value != null ? value.toString() : "") + DELIMITER);
         }
-        /** Create file */
+        csvResult.append("\n");
+        /* Create file */
         String currentDate = dateFormat.format(new Date());
         File csvFile = new File(properties.getProperty(CSV_RESULT_FOLDER, DEFAULT_RESULT_CSV_FOLDER)
                 + HISTORY_RECORD_FILE_NAME + currentDate + ".csv");
-        PrintWriter printWriter = null;
         try {
-            csvFile.createNewFile();
-            printWriter = new PrintWriter(csvFile);
-            printWriter.print(csvResult.toString());
-            printWriter.flush();
+            Files.write(
+                    Paths.get(csvFile.toURI()),
+                    csvResult.toString().getBytes(),
+                    StandardOpenOption.APPEND,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.SYNC
+            );
         } catch (IOException e) {
             logger.error(e);
             throw new RuntimeException(e);
-        } finally {
-            if (printWriter != null) {
-                printWriter.close();
-            }
         }
     }
 
     /**
      * Update document history status
+     *
      * @param documentNodeRef Document node reference
      * @param newStatus       New document status
      */
@@ -316,12 +343,13 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
             setUseNewHistoryStatus(documentNodeRef, newStatus);
         } catch (Exception e) {
             logger.error("Unexpected error with args documentNodeRef = " + documentNodeRef +
-                    ", newStatus = "+ newStatus, e);
+                    ", newStatus = " + newStatus, e);
         }
     }
 
     /**
      * Remove history events by document
+     *
      * @param documentNodeRef Document node reference
      */
     @Override
@@ -340,6 +368,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
 
     /**
      * Check - use active mq for history records sending
+     *
      * @return Check result
      */
     private Boolean useActiveMq() {

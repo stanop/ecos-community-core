@@ -150,18 +150,22 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
 
                             me.assocTypeMenu = new YAHOO.widget.ContextMenu(
                                 this.id + "-contextmenu",
-                                { trigger: this.id + '-create-button' }
+                                {
+                                    trigger: this.id + '-create-button',
+                                    lazyLoad: true
+                                }
                             );
 
                             for (var i=0; i<this.options.addable.length; i++) {
                                 var assoc = this.options.addable[i],
                                     type = assoc.name;
                                 if(type != '') {
+                                    var menuItems = [];
                                     if(assoc.direction == "both" 
                                     || assoc.direction == "target" 
                                     || assoc.direction == "undirected")
                                     {
-                                        me.assocTypeMenu.addItem({
+                                        menuItems.push({
                                             'text': this.msg("association." + type.replace(":", "_") + ".target"),
                                             'value': type + ".target"
                                         });
@@ -169,11 +173,12 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                                     if(assoc.direction == "both" 
                                     || assoc.direction == "source")
                                     {
-                                        me.assocTypeMenu.addItem({
+                                        menuItems.push({
                                             'text': this.msg("association." + type.replace(":", "_") + ".source"),
                                             'value': type + ".source"
                                         });
                                     }
+                                    me.assocTypeMenu.addItems(menuItems);
                                 }
                             }
 
@@ -250,11 +255,13 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                                     var messageEl = Dom.get(this.id + "-message");
                                     messageEl.innerHTML = me.msg("assocs-load-error");
                                 },
-                                scope: this
+                                scope: this,
+                                cache: false
                             }
                         );
                     },
-                    scope: this
+                    scope: this,
+                    cache: false
                 }
             );
         },
@@ -339,7 +346,8 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                             me.refreshed = true;
                         }
                     },
-                    scope: me
+                    scope: me,
+                    cache: false
                 }
             );
         },

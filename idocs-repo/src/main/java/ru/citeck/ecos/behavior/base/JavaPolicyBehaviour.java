@@ -29,6 +29,7 @@ public class JavaPolicyBehaviour extends BaseBehaviour implements TransactionBeh
     private boolean isFullEnabled = true;
     private boolean runAsSystem = false;
     private boolean recursive = false;
+    private boolean checkNodeRefs = false;
 
     private NodeService nodeService;
 
@@ -98,6 +99,14 @@ public class JavaPolicyBehaviour extends BaseBehaviour implements TransactionBeh
 
     public boolean isRunAsSystem() {
         return runAsSystem;
+    }
+
+    public boolean isCheckNodeRefs() {
+        return checkNodeRefs;
+    }
+
+    public void setCheckNodeRefs(boolean checkNodeRefs) {
+        this.checkNodeRefs = checkNodeRefs;
     }
 
     public void setOrder(int order) {
@@ -239,7 +248,7 @@ public class JavaPolicyBehaviour extends BaseBehaviour implements TransactionBeh
 
         private Object invokeImpl(Object[] args) throws Exception {
 
-            if (NotificationFrequency.TRANSACTION_COMMIT.equals(behaviour.getNotificationFrequency())) {
+            if (behaviour.checkNodeRefs) {
                 if (behaviour.checkNodeRefs(args)) {
                     delegateMethod.invoke(behaviour.getInstance(), args);
                 }

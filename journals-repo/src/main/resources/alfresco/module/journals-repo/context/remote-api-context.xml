@@ -10,4 +10,9 @@
         <property name="cacheAgeSeconds" value="600" />
     </bean>
 
+    <bean id="webscript.ru.citeck.journals2.remote.get-ids.post" parent="webscript"
+          class="ru.citeck.ecos.journals.webscripts.GetRecordsIdPost">
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
 </beans>

@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
 
@@ -23,6 +24,7 @@ public class GqlContext {
 
     private Map<Object, Optional<GqlAlfNode>> nodes = new ConcurrentHashMap<>();
     private Map<Object, Optional<GqlQName>> qnames = new ConcurrentHashMap<>();
+    private List<MetaValue> metaValues;
 
     private final ServiceRegistry serviceRegistry;
 
@@ -35,7 +37,7 @@ public class GqlContext {
     @Getter
     private final MessageService messageService;
 
-    GqlContext(ServiceRegistry serviceRegistry) {
+    public GqlContext(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.namespaceService = serviceRegistry.getNamespaceService();
@@ -101,6 +103,14 @@ public class GqlContext {
             }
             return result;
         });
+    }
+
+    public List<MetaValue> getMetaValues() {
+        return metaValues;
+    }
+
+    public void setMetaValues(List<MetaValue> metaValues) {
+        this.metaValues = metaValues;
     }
 
     public SearchService getSearchService() {

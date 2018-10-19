@@ -2,7 +2,7 @@
 <script type="text/javascript">//<![CDATA[
 <#assign params = field.control.params />
 
-(function() {
+require(['citeck/components/form/select'], function() {
 	var select = new Alfresco.SelectControl("${fieldHtmlId}").setOptions({
 		optionsUrl: "/share/proxy/alfresco/api/get-all-properties",
 		mode: "${form.mode}",
@@ -16,7 +16,7 @@
 		<#if params.requestParam??>requestParam: "${params.requestParam}",</#if>
 		<#if params.resultsList??>resultsList: "${params.resultsList}",</#if>
 	}).setMessages(${messages});
-})();
+});
 //]]></script>
 
 <@selectFieldHTML "${fieldHtmlId}" field/>

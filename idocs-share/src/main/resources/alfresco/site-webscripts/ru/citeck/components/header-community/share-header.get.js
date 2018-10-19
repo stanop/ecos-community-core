@@ -9,6 +9,7 @@
 
 // GLOBAL VARIABLES
 var isMobile = isMobileDevice(context.headers["user-agent"]);
+model.isMobile = isMobile;
 
 // ---------------------
 // HEADER MENU
@@ -50,6 +51,8 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
         { id: "more", url: "console/admin-console/", iconImage: "/share/res/components/images/header/more.png" }
     ];
 
+    model.isReactMenu = isSlideMenu;
+
 // ---------------------
 // General code
 // ---------------------
@@ -61,6 +64,10 @@ userMenuBar.config.widgets = [];
 // delete the Title Bar everywhere (exept for Edit Page and Create Page)
 if (shareVerticalLayout && shareVerticalLayout.config.widgets.length) {
     shareVerticalLayout.config.widgets = shareVerticalLayout.config.widgets.filter(function(item) {
+        if (isSlideMenu && item.id === "SHARE_HEADER") {
+            return false;
+        }
+
         if (item.id == "HEADER_TITLE_BAR" && (page.id.indexOf("edit") != -1 || page.id.indexOf("create") != -1 || page.id.indexOf("start") != -1)) {
             item.config.widgets = item.config.widgets.filter(function(item) {
                 return item.id == "HEADER_TITLE"
@@ -260,6 +267,8 @@ if (siteMenuItems.length) {
         }
     }];
 }
+
+model.siteMenuItems = siteMenuItems;
 
 
 // DEBUG MENU
@@ -634,17 +643,21 @@ if (isSlideMenu) {
     userMenuBar.config.widgets.push(HEADER_USER_MENU);
 
     // BUILD APP MENU
+    var slideMenuConfig = {
+        id: "HEADER_SLIDE_MENU",
+        isMobile: isMobile,
+        userName: user.name,
+        logoSrc: getHeaderLogoUrl(),
+        logoSrcMobile: getHeaderMobileLogoUrl(),
+        widgets: getWidgets()
+    };
+
+    model.slideMenuConfig = slideMenuConfig;
+
     appMenuBar.config.widgets.push({
         id: "HEADER_SLIDE_MENU",
         name: "js/citeck/header/citeckMainSlideMenu",
-        config: {
-            id: "HEADER_SLIDE_MENU",
-            isMobile: isMobile,
-            userName: user.name,
-            logoSrc: getHeaderLogoUrl(),
-            logoSrcMobile: getHeaderMobileLogoUrl(),
-            widgets: getWidgets()
-        }
+        config: slideMenuConfig
     },
         HEADER_CREATE_CASE);
 

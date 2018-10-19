@@ -5,10 +5,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
 import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
+import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.journals.records.JournalRecordsResult;
+import ru.citeck.ecos.records.RecordRef;
 
 import javax.sql.DataSource;
 import java.sql.ResultSetMetaData;
@@ -32,7 +35,7 @@ public class DbJournalDataSource implements JournalDataSource {
 
         String sqlQuery = sqlFromTemplate(sqlQueryTemplate, query, language);
 
-        List<JGqlAttributeValue> records = template.query(sqlQuery, namedParameters, (resultSet, i) -> {
+        List<MetaValue> records = template.query(sqlQuery, namedParameters, (resultSet, i) -> {
             ResultSetMetaData metaData = resultSet.getMetaData();
             Map<String, String> attributes = new HashMap<>();
             for (int columnIdx = 1; columnIdx < metaData.getColumnCount(); columnIdx++) {
@@ -55,8 +58,34 @@ public class DbJournalDataSource implements JournalDataSource {
         return connection;
     }
 
+    @Override
+    public String getServerId() {
+        return null;
+    }
+
     protected String sqlFromTemplate(String sqlQueryTemplate, String query, String language) {
         return sqlQueryTemplate;
+    }
+
+    @Override
+    public JournalRecordsResult queryIds(GqlContext context,
+                                         String query,
+                                         String language,
+                                         JGqlPageInfoInput pageInfo) {
+        return null;
+    }
+
+    @Override
+    public List<MetaValue> convertToGqlValue(GqlContext context,
+                                                      List<RecordRef> remoteRefList) {
+        return null;
+    }
+
+    @Override
+    public JournalData queryMetadata(String gqlQuery,
+                                     String dataSourceBeanName,
+                                     JournalRecordsResult recordsResult) {
+        return null;
     }
 
     @Override
@@ -72,7 +101,7 @@ public class DbJournalDataSource implements JournalDataSource {
         this.sqlQueryTemplate = sqlQueryTemplate;
     }
 
-    private class RecordValue implements JGqlAttributeValue {
+    private class RecordValue implements MetaValue {
 
         private String id;
         private Map<String, String> attributes;
@@ -93,17 +122,22 @@ public class DbJournalDataSource implements JournalDataSource {
         }
 
         @Override
-        public Optional<JGqlAttribute> attr(String name) {
-            return Optional.of(new Attribute(name, attributes.get(name)));
+        public Optional<MetaAttribute> att(String name) {
+            return Optional.of(new Att(name, attributes.get(name)));
+        }
+
+        @Override
+        public List<MetaAttribute> atts(String filter) {
+            return Collections.emptyList();
         }
     }
 
-    private class Attribute implements JGqlAttribute {
+    private class Att implements MetaAttribute {
 
         private String name;
         private String value;
 
-        public Attribute(String name, String value) {
+        public Att(String name, String value) {
             this.name = name;
             this.value = value;
         }
@@ -114,12 +148,12 @@ public class DbJournalDataSource implements JournalDataSource {
         }
 
         @Override
-        public List<JGqlAttributeValue> val() {
+        public List<MetaValue> val() {
             return Collections.singletonList(new AttrValue(value));
         }
     }
 
-    private class AttrValue implements JGqlAttributeValue {
+    private class AttrValue implements MetaValue {
 
         private String val;
 
@@ -138,8 +172,13 @@ public class DbJournalDataSource implements JournalDataSource {
         }
 
         @Override
-        public Optional<JGqlAttribute> attr(String name) {
+        public Optional<MetaAttribute> att(String name) {
             return Optional.empty();
+        }
+
+        @Override
+        public List<MetaAttribute> atts(String filter) {
+            return Collections.emptyList();
         }
     }
 }

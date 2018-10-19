@@ -25,6 +25,9 @@ public interface ConfirmWorkflowModel {
 	public static final String NAMESPACE = "http://www.citeck.ru/model/workflow/confirm/1.0";
 	public static final String PREFIX = "wfcf";
 
+	public static final QName TYPE_CONFIRM_TASK = QName.createQName(NAMESPACE, "confirmTask");
+	public static final QName TYPE_CORRECT_TASK = QName.createQName(NAMESPACE, "correctTask");
+
 	public static final QName TYPE_CONFIRM_DECISION = QName.createQName(NAMESPACE, "confirmDecision");
 	public static final QName PROP_CONFIRM_VERSIONS = QName.createQName(NAMESPACE, "confirmVersions");
 	public static final QName PROP_CONFIRM_ROLE = QName.createQName(NAMESPACE, "confirmerRole");

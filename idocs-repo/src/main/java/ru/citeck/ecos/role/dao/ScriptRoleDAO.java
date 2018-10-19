@@ -1,12 +1,16 @@
 package ru.citeck.ecos.role.dao;
 
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.ScriptService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.model.ICaseRoleModel;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
@@ -15,12 +19,14 @@ import java.util.*;
 /**
  * @author Pavel Simonov
  */
-public class ScriptRoleDAO extends AbstractRoleDAO {
+@Component
+public class ScriptRoleDAO implements RoleDAO {
 
     private static final Log logger = LogFactory.getLog(ScriptRoleDAO.class);
 
     private ScriptService scriptService;
     private AuthorityService authorityService;
+    private NodeService nodeService;
 
     @Override
     public QName getRoleType() {
@@ -50,11 +56,14 @@ public class ScriptRoleDAO extends AbstractRoleDAO {
         return Collections.emptySet();
     }
 
-    public void setScriptService(ScriptService scriptService) {
-        this.scriptService = scriptService;
+    @Autowired
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.authorityService = serviceRegistry.getAuthorityService();
+        this.nodeService = serviceRegistry.getNodeService();
     }
 
-    public void setAuthorityService(AuthorityService authorityService) {
-        this.authorityService = authorityService;
+    @Autowired
+    public void setScriptService(ScriptService scriptService) {
+        this.scriptService = scriptService;
     }
 }

@@ -13,9 +13,9 @@
     <#assign currentValue = field.value!"" />
 </#if>    
 
-
 <script type="text/javascript">//<![CDATA[
-(function () {
+require(['citeck/components/form/citeck-object-finder'], function() {
+
     <@renderPickerJS field "picker" />
 
     var resolveDestFolder='';
@@ -46,6 +46,9 @@
             siteId: "",
             pageMode: false,
 			searchWholeRepo: ${field.control.params.searchWholeRepo!"true"},
+        </#if>
+        <#if field.control.params.showSearchBar?? && field.control.params.showSearchBar=="true">
+            showSearchBar: true,
         </#if>
         <#if field.control.params.showTargetLink??>
             showLinkToTarget: ${field.control.params.showTargetLink},
@@ -92,7 +95,7 @@
     <#if form.mode == "create">
         picker.selectItems("${field.value}");
     </#if>
-    })();
+    });
 
 //]]></script>
 
@@ -153,9 +156,9 @@
                     </div>
                 </div>
             </div>
-            <div id="${pickerId}-searchContainer" class="search">
+            <div id="${pickerId}-searchContainer" class="search" style="display: none">
                 <input type="text" class="search-input" name="-" id="${pickerId}-searchText" value="" maxlength="256"/>
-                <span class="search-button"><button
+                <span class="yui-button search-button"><button
                         id="${pickerId}-searchButton">${msg("form.control.object-picker.search")}</button></span>
             </div>
             <div id="${controlId}-mode-selector">
@@ -272,4 +275,5 @@
     }).setMessages(
         ${messages}
     );
+
 </#macro>

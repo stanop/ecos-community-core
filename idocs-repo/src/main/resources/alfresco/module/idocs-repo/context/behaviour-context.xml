@@ -382,6 +382,7 @@
         <property name="lastNameProperty" value="org:lastName"/>
         <property name="middleNameProperty" value="org:middleName"/>
         <property name="updateAlways" value="${full-name-behaviour.update-always}"/>
+        <property name="forceUpdate" value="${full-name-behaviour.force-update}"/>
         <property name="separator" value=" "/>
     </bean>
 
@@ -616,13 +617,6 @@
 		</property>
 	</bean>
 
-    <bean id="idocs.EcosDocumentTitleGenerationBehaviour" parent="TitleGenerationBehaviour">
-        <property name="className" value="ecos:document"/>
-        <property name="titleTemplate">
-            <value><![CDATA[<#if node.properties['cm:title']?has_content>#{'$'}{node.properties['cm:title']}<#else>#{'$'}{node.properties['cm:name']!"Документ"}</#if>]]></value>
-        </property>
-    </bean>
-
     <bean id="idocs.applicationFileNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="dms:applicationFile"/>
         <property name="nameTemplate" value="${node.properties['dms:applicationFileName']}"/>
@@ -840,6 +834,18 @@
 
     <bean id="ru.citeck.ecos.caseTemplateContentSyncBehaviour"
           class="ru.citeck.ecos.cmmn.behaviour.CaseTemplateContentSyncBehaviour">
+    </bean>
+
+    <bean id="ru.citeck.ecos.behavior.cardlet.CardletMetadataSyncBehaviour"
+          class="ru.citeck.ecos.behavior.cardlet.CardletMetadataSyncBehaviour">
+        <property name="contentToPropsFields">
+            <list>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}id</value>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}regionId</value>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}cardMode</value>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}allowedType</value>
+            </list>
+        </property>
     </bean>
 
     <bean id="ru.citeck.ecos.disablingPersonBehaviour" class="ru.citeck.ecos.behavior.authority.DisablingPersonBehaviour"

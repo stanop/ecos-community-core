@@ -193,7 +193,15 @@
                     <type>d:text</type>
                 </property>
             </properties>
+        </aspect>
 
+        <aspect name="orders:hasLastCorrectOutcome">
+            <properties>
+                <property name="orders:lastCorrectOutcome">
+                    <title>Последнее решение по корректированию</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
         </aspect>
 	</aspects>
 

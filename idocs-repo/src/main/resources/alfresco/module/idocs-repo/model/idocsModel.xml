@@ -101,6 +101,16 @@
             </parameter>
         </constraint>
 
+        <constraint name="idocs:constraint:contractorKind" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>legal-entity</value>
+                    <value>individual</value>
+                    <value>public-body</value>
+                </list>
+            </parameter>
+        </constraint>
+
         <constraint name="idocs:constraint:attachmentStateOptions" type="LIST">
             <parameter name="allowedValues">
                 <list>
@@ -327,6 +337,7 @@
                 <aspect>idocs:diadocInfo</aspect>
                 <aspect>idocs:contractorType</aspect>
                 <aspect>idocs:hasBankAccount</aspect>
+                <aspect>idocs:doNotSendContractsToEdiAspect</aspect>
             </mandatory-aspects>
         </type>
 
@@ -1300,6 +1311,19 @@
             </properties>
         </aspect>
 
+        <aspect name="idocs:hasContractorKind">
+            <title>Contractor kind</title>
+            <properties>
+                <property name="idocs:contractorKind">
+                    <title>Contractor kind</title>
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="idocs:constraint:contractorKind" />
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+
         <aspect name="idocs:hasBankAccount">
             <title>Банковский счет</title>
             <properties>
@@ -1378,6 +1402,17 @@
                     <title>Comment</title>
                     <type>d:text</type>
                     <mandatory>false</mandatory>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:doNotSendContractsToEdiAspect">
+            <properties>
+                <property name="idocs:doNotSendContractToEdiFlag">
+                    <title>Do not send contract through EDI</title>
+                    <type>d:boolean</type>
+                    <mandatory>false</mandatory>
+                    <default>false</default>
                 </property>
             </properties>
         </aspect>

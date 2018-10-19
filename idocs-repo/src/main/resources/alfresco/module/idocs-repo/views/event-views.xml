@@ -7,6 +7,7 @@
         <import uri="http://www.citeck.ru/model/icaseEvent/1.0" prefix="icaseEvent"/>
         <import uri="http://www.citeck.ru/model/icaseRole/1.0" prefix="icaseRole"/>
         <import uri="http://www.citeck.ru/model/attribute/1.0" prefix="attr" />
+        <import uri="http://www.citeck.ru/model/route/1.0" prefix="route" />
     </imports>
 
     <views any="true">
@@ -120,6 +121,52 @@
         <field prop="iEvent:comment">
             <region name="input" template="textarea">
                 <param name="height">70px</param>
+            </region>
+        </field>
+    </view>
+
+    <view class="iEvent:confirmRouteData">
+        <field assoc="iEvent:confirmRoute">
+            <region name="select" template="select-journal" >
+                <param name="journalType">routes</param>
+            </region>
+            <region name="input" template="view" />
+        </field>
+        <field prop="route:precedence" template="none">
+            <invariant on="value" language="javascript"><![CDATA[(function() {
+                var stages = node.childAssocs['route:stages'] || [];
+                var result = [];
+                for (var stageIdx in stages) {
+                    var stage = stages[stageIdx];
+                    var parts = stage.childAssocs['route:participants'] || []
+                    var participantsRefs = [];
+
+                    for (var partIdx in parts) {
+                        var participant = parts[partIdx];
+                        var authorities = (participant.assocs || {})['route:authority'] || [];
+                        for (var authIdx in authorities) {
+                            participantsRefs.push(authorities[authIdx].nodeRef);
+                        }
+                    }
+                    if (participantsRefs.length) {
+                        var stageData = participantsRefs[0] + "_" + stage.properties['route:dueDateExpr'];
+                        for (var i = 1; i < participantsRefs.length; i++) {
+                            stageData += '|' + participantsRefs[i]
+                        }
+                        result.push(stageData);
+                    }
+                }
+                return result.join(',');
+            })()]]>
+            </invariant>
+        </field>
+        <field assoc="route:stages">
+            <region name="select" template="create-object">
+                <param name="source">create-views</param>
+                <param name="virtualParent">true</param>
+            </region>
+            <region name="input" template="view-table">
+                <param name="columns">route:dueDateTime,route:dueDateTimeUnit,route:participants</param>
             </region>
         </field>
     </view>

@@ -43,7 +43,7 @@ public class CaseStatusHistoryBehaviour implements CaseStatusPolicies.OnCaseStat
     public void init() {
         policyComponent.bindClassBehaviour(
                 CaseStatusPolicies.OnCaseStatusChangedPolicy.QNAME, ICaseModel.TYPE_CASE_STATUS,
-                new OrderedBehaviour(this, "onCaseStatusChanged", NotificationFrequency.TRANSACTION_COMMIT, order)
+                new OrderedBehaviour(this, "onCaseStatusChanged", NotificationFrequency.EVERY_EVENT, order)
         );
     }
 

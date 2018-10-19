@@ -6,7 +6,6 @@ import org.alfresco.repo.batch.BatchProcessWorkProvider;
 import org.alfresco.repo.batch.BatchProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
-import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -22,8 +21,8 @@ import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
 import org.apache.commons.logging.Log;
 import ru.citeck.ecos.icase.CaseStatusService;
+import ru.citeck.ecos.job.AbstractLockedJob;
 import ru.citeck.ecos.service.AlfrescoServices;
-import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.service.EcosCoreServices;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ import java.util.List;
  *
  * @author Pavel Simonov
  */
-public class ChangeStatusByDate extends AbstractScheduledLockedJob implements StatefulJob {
+public class ChangeStatusByDate extends AbstractLockedJob {
 
     private static final int WORKER_THREADS = 1;
     private static final int BATCH_SIZE = 10;

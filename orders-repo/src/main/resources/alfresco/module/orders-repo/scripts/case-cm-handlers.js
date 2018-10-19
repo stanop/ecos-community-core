@@ -94,6 +94,7 @@ function resetCase() {
     //reset util properties
     document.properties["orders:currentConfirmationStatus"] = "not-started";
     document.properties["orders:lastConfirmOutcome"] = "";
+    document.properties["orders:lastCorrectOutcome"] = "";
     document.save();
 }
 

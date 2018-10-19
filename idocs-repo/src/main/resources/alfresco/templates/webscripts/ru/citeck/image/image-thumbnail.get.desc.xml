@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Get image thumbnail</shortname>
+    <description>thumbnail image will be cached as child of original image node</description>
+    <url>/citeck/ecos/image/thumbnail?nodeRef={nodeRef}&amp;property={property}&amp;width={width}&amp;height={height}&amp;stretch={stretch}&amp;cached={cached}&amp;attach={attach}</url>
+    <format default="">argument</format>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>

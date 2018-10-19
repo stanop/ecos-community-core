@@ -1,7 +1,6 @@
 package ru.citeck.ecos.job;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.ResultSet;
@@ -17,7 +16,7 @@ import java.util.Properties;
 /**
  * Send and remove completed cases job
  */
-public class SendAndRemoveCompletedCasesJob extends AbstractScheduledLockedJob {
+public class SendAndRemoveCompletedCasesJob extends AbstractLockedJob {
 
     /**
      * Constants

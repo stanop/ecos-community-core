@@ -1,12 +1,15 @@
 package ru.citeck.ecos.content;
 
 import org.alfresco.error.AlfrescoRuntimeException;
+import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentWriter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import ru.citeck.ecos.content.dao.NodeDataReader;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -20,9 +23,10 @@ public class ContentData<T> {
 
     private NodeRef nodeRef;
     private T data;
+    private boolean hasContent = false;
 
     private long lastModified;
-    private RepoContentDAO<T> registry;
+    private RepoContentDAOImpl<T> registry;
 
     public NodeRef getNodeRef() {
         return nodeRef;
@@ -48,7 +52,7 @@ public class ContentData<T> {
      */
     public void changeData(Consumer<T> consumer) {
 
-        if (data != null) {
+        if (data != null && hasContent) {
 
             synchronized (this) {
 
@@ -70,6 +74,48 @@ public class ContentData<T> {
             return false;
         }
 
+        hasContent = updateFromContent();
+        if (!hasContent && !updateFromNode()) {
+            //content doesn't exists
+            data = null;
+            lastModified = 0;
+        }
+
+        return data != null;
+    }
+
+    private boolean updateFromNode() {
+
+        NodeDataReader<T> nodeDataDAO = registry.getNodeDataReader();
+
+        if (nodeDataDAO != null) {
+
+            Date modifiedDate = (Date) registry.getNodeService().getProperty(nodeRef, ContentModel.PROP_MODIFIED);
+            long nodeLastModified = modifiedDate != null ? modifiedDate.getTime() : 0;
+
+            if (lastModified < nodeLastModified) {
+
+                synchronized (this) {
+
+                    if (lastModified < nodeLastModified) {
+
+                        try {
+                            data = nodeDataDAO.getData(nodeRef);
+                            lastModified = nodeLastModified;
+                        } catch (Exception e) {
+                            throw new AlfrescoRuntimeException("Can't get data from node " + nodeRef, e);
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    private boolean updateFromContent() {
+
         ContentReader reader = registry.getContentService().getReader(nodeRef, registry.getContentFieldName());
 
         if (reader == null) {
@@ -77,6 +123,10 @@ public class ContentData<T> {
         }
 
         long contentLastModified = reader.getLastModified();
+
+        if (contentLastModified == 0) {
+            return false;
+        }
 
         if (lastModified < contentLastModified) {
 
@@ -89,21 +139,18 @@ public class ContentData<T> {
                         data = registry.getContentDAO().read(in);
                         lastModified = contentLastModified;
 
+                        return true;
+
                     } catch (Exception e) {
                         throw new AlfrescoRuntimeException("Can't parse content from node " + nodeRef, e);
                     }
                 }
             }
-        } else if (contentLastModified == 0) {
-            //content doesn't exists
-            data = null;
-            lastModified = 0;
         }
-
         return true;
     }
 
-    ContentData(NodeRef nodeRef, RepoContentDAO<T> owner) {
+    ContentData(NodeRef nodeRef, RepoContentDAOImpl<T> owner) {
         this.nodeRef = nodeRef;
         this.lastModified = 0;
         this.data = null;

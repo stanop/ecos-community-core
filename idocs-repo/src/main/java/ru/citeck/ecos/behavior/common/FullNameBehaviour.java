@@ -47,13 +47,14 @@ public class FullNameBehaviour implements OnCreateNodePolicy, OnUpdateProperties
     private PolicyComponentImpl policyComponent;
     private NodeService nodeService;
     @SuppressWarnings("unused")
-	private NamespaceService namespaceService;
+    private NamespaceService namespaceService;
 
     private QName fullNameProperty;
     private QName firstNameProperty;
     private QName lastNameProperty;
     private QName middleNameProperty;
     private boolean updateAlways = false;
+    private boolean forceUpdate = false;
 
     private QName PROP_CM_MIDDLE_NAME = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, "middleName");
 
@@ -69,15 +70,15 @@ public class FullNameBehaviour implements OnCreateNodePolicy, OnUpdateProperties
     @Override
     public void onCreateNode(ChildAssociationRef childAssocRef) {
         NodeRef nodeRef = childAssocRef.getChildRef();
-        if(!nodeService.exists(nodeRef)) {
+        if (!nodeService.exists(nodeRef)) {
             return;
         }
-        
+
         String fullName = getStringProperty(nodeService.getProperty(nodeRef, fullNameProperty));
         String firstName = getStringProperty(nodeService.getProperty(nodeRef, firstNameProperty));
         String lastName = getStringProperty(nodeService.getProperty(nodeRef, lastNameProperty));
-        
-        if(fullName != null && firstName != null && lastName != null) {
+
+        if (fullName != null && firstName != null && lastName != null) {
             updateNames(nodeRef, fullName, firstName, lastName);
         }
     }
@@ -85,11 +86,11 @@ public class FullNameBehaviour implements OnCreateNodePolicy, OnUpdateProperties
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
         String fullNameBefore = getStringProperty(before.get(fullNameProperty)),
-               fullName = getStringProperty(after.get(fullNameProperty)),
-               firstNameBefore = getStringProperty(before.get(firstNameProperty)),
-               firstName = getStringProperty(after.get(firstNameProperty)),
-               lastNameBefore = getStringProperty(before.get(lastNameProperty)),
-               lastName = getStringProperty(after.get(lastNameProperty));
+                fullName = getStringProperty(after.get(fullNameProperty)),
+                firstNameBefore = getStringProperty(before.get(firstNameProperty)),
+                firstName = getStringProperty(after.get(firstNameProperty)),
+                lastNameBefore = getStringProperty(before.get(lastNameProperty)),
+                lastName = getStringProperty(after.get(lastNameProperty));
 
         if (logger.isDebugEnabled()) {
             String TO = " -> ";
@@ -98,33 +99,48 @@ public class FullNameBehaviour implements OnCreateNodePolicy, OnUpdateProperties
                     "; firstName: " + firstNameBefore + TO + firstName +
                     "; lastName: " + lastNameBefore + TO + lastName);
         }
-        
-        if (fullName == null 
-                || firstName == null 
-                || lastName == null
-                || !updateAlways
-                && fullName.equals(fullNameBefore)
-                && firstName.equals(firstNameBefore)
-                && lastName.equals(lastNameBefore)
-                || !nodeService.exists(nodeRef)) {
+
+        if (!nodeService.exists(nodeRef)) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Return, nodeRef: " + nodeRef + " does not exists");
+            }
             return;
         }
-        
-        updateNames(nodeRef, fullName, firstName, lastName);
+
+        if (fullName == null || firstName == null || lastName == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Return one of names is null");
+            }
+            return;
+        }
+
+        if (forceUpdate) {
+            updateNames(nodeRef, fullName, firstName, lastName);
+        } else {
+            if (!updateAlways && fullName.equals(fullNameBefore) && firstName.equals(firstNameBefore)
+                    && lastName.equals(lastNameBefore)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Return, update not required");
+                }
+                return;
+            }
+            updateNames(nodeRef, fullName, firstName, lastName);
+        }
     }
 
     private void updateNames(NodeRef nodeRef, String fullName,
-            String firstName, String lastName) {
+                             String firstName, String lastName) {
         String middleName = getMiddleName(fullName, firstName, lastName);
+        String firstNameFinal = firstName + " " + middleName;
 
-        nodeService.setProperty(nodeRef, ContentModel.PROP_FIRSTNAME, firstName + " " + middleName);
+        nodeService.setProperty(nodeRef, ContentModel.PROP_FIRSTNAME, firstNameFinal);
         nodeService.setProperty(nodeRef, PROP_CM_MIDDLE_NAME, "");
         nodeService.setProperty(nodeRef, ContentModel.PROP_LASTNAME, lastName);
         nodeService.setProperty(nodeRef, middleNameProperty, middleName);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Updated person. nodeRef: " + nodeRef +
-                    "; firstName: " + firstName +
+                    "; firstName: " + firstNameFinal +
                     "; middleName: " + middleName +
                     "; lastName: " + lastName);
         }
@@ -189,4 +205,7 @@ public class FullNameBehaviour implements OnCreateNodePolicy, OnUpdateProperties
         this.updateAlways = updateAlways;
     }
 
+    public void setForceUpdate(boolean forceUpdate) {
+        this.forceUpdate = forceUpdate;
+    }
 }

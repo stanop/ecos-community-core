@@ -98,6 +98,7 @@
                 <value>alfresco/module/idocs-repo/messages/case-mt/caseTimer</value>
                 <value>alfresco/module/idocs-repo/messages/patch</value>
                 <value>alfresco/module/idocs-repo/messages/associationModel</value>
+                <value>alfresco/module/idocs-repo/messages/route</value>
             </list>
         </property>
     </bean>
@@ -368,7 +369,6 @@
         <property name="appliesFromVersion" value="2.3" />
         <property name="bootstrapView">
             <props>
-                <prop key="uuidBinding">UPDATE_EXISTING</prop>
                 <prop key="path">/</prop>
                 <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/global-data-lists.xml</prop>
                 <prop key="encoding">UTF-8</prop>

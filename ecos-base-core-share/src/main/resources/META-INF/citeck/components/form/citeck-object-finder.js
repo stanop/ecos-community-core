@@ -25,6 +25,8 @@
  */
 (function()
 {
+    require(['xstyle!citeck/components/form/citeck-object-finder.css']);
+
     /**
      * YUI Library aliases
      */
@@ -420,6 +422,8 @@
 
 				onlyFiltered: false,
 
+                showSearchBar: false,
+
                 /**
                  * It is a value of 'formId' parameter of the search form.
                  */
@@ -677,6 +681,10 @@
                     });
                     this.widgets.dialog.hideEvent.subscribe(this.onCancel, null, this);
                     Dom.addClass(this.pickerId, "object-finder");
+                }
+
+                if (this.options.showSearchBar) {
+                    Dom.setStyle(this.pickerId + "-searchContainer", "display", "block");
                 }
 
                 this._loadSelectedItems();

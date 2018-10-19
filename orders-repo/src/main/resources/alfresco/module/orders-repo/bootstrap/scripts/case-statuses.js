@@ -8,7 +8,8 @@ var statuses = [
     {name: 'active',               title: {'en': 'Active',                 'ru': '\u0414\u0435\u0439\u0441\u0442\u0432\u0443\u0435\u0442'}},
     {name: 'inprogress',           title: {'en': 'In Progress',            'ru': '\u0412 \u043F\u0440\u043E\u0446\u0435\u0441\u0441\u0435'}},
     {name: 'onexecution',          title: {'en': 'On Execution',           'ru': '\u041D\u0430 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u0438'}},
-    {name: 'infamiliarization',    title: {'en': 'In Familiarization',     'ru': '\u041D\u0430 \u043E\u0437\u043D\u0430\u043A\u043E\u043C\u043B\u0435\u043D\u0438\u0438'}}
+    {name: 'infamiliarization',    title: {'en': 'In Familiarization',     'ru': '\u041D\u0430 \u043E\u0437\u043D\u0430\u043A\u043E\u043C\u043B\u0435\u043D\u0438\u0438'}},
+    {name: 'cancelled-m',          title: {'en': 'Cancelled',              'ru': '\u041e\u0442\u043c\u0435\u043d\u0435\u043d'}}
 ];
 
 function main(statuses) {

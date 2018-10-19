@@ -36,6 +36,8 @@ import org.alfresco.service.cmr.workflow.*;
 import org.alfresco.service.cmr.workflow.WorkflowTaskQuery.OrderBy;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
@@ -173,7 +175,18 @@ public class DocumentTasksGet extends DeclarativeWebScript {
         model.put(MODEL_DUE_DATE, properties.get(WorkflowModel.PROP_DUE_DATE));
         model.put(MODEL_SENDER, properties.get(CiteckWorkflowModel.PROP_SENDER_NAME));
         model.put(MODEL_LAST_COMMENT, properties.get(CiteckWorkflowModel.PROP_LASTCOMMENT));
-        model.put(MODEL_TASK_TITLE, task.getTitle());
+
+        String taskTitleProp = (String) properties.get(CiteckWorkflowModel.PROP_TASK_TITLE);
+        if (StringUtils.isNotBlank(taskTitleProp)) {
+            String taskTitleMessage = I18NUtil.getMessage(taskTitleProp);
+            if (StringUtils.isNotBlank(taskTitleMessage)) {
+                taskTitleProp = taskTitleMessage;
+            }
+        } else {
+            taskTitleProp = task.getTitle();
+        }
+
+        model.put(MODEL_TASK_TITLE, taskTitleProp);
 
         List<?> pooledActors = (List<?>) properties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
 

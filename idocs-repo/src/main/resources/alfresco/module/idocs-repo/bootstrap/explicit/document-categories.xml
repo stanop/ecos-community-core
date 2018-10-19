@@ -85,6 +85,17 @@
                 </view:properties>
             </cm:category>
 
+            <!--Scan documents-->
+            <cm:category view:childName="cm:scan-documents">
+                <view:properties>
+                    <sys:node-uuid>kind-d-scan-documents</sys:node-uuid>
+                    <cm:name>Scan documents</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">Scan documents</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">Отсканированные документы</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
 
         </cm:subcategories>
 

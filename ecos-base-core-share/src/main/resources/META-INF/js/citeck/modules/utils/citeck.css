@@ -461,7 +461,6 @@
   width: 16px;
   height: 16px;
   line-height: 12px;
-  background-image: url(/share/res/js/aikau/1.0.63/alfresco/css/images/Delete.PNG);
   background-repeat: no-repeat;
   margin-right: 10px;
 }
@@ -516,4 +515,9 @@
 
 .clear-both {
   clear: both;
+}
+
+#page-content-root>.sticky-wrapper {
+  height: 100%;
+  min-height: 100%;
 }
