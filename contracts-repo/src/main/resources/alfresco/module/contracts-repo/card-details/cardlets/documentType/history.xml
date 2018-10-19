@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
-    <id>common-history</id>
+    <id>document-type-history</id>
     <regionId>history</regionId>
-    <allowed-type>{http://www.alfresco.org/model/content/1.0}cmobject</allowed-type>
+    <allowed-type>{http://www.citeck.ru/model/contracts/1.0}documentType</allowed-type>
     <position>
         <column>left</column>
-        <order>h5</order>
-        <mobile-order>-1</mobile-order>
+        <order>c5</order>
+        <mobile-order>0</mobile-order>
     </position>
     <control url="js/citeck/modules/cardlets/grid/grid">
         <prop name="header">dochist.header</prop>
