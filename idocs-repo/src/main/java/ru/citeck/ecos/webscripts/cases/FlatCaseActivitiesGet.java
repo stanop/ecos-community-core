@@ -130,7 +130,10 @@ public class FlatCaseActivitiesGet extends AbstractWebScript {
         if (activity.end == null) {
 
             if (endTimeContext.contains(activity.id)) {
-                activity.start = new Date();
+                activity.end = activity.start;
+                if (activity.end == null) {
+                    activity.end = new Date();
+                }
                 logger.error("[fillEndTime] Found infinite loop. Activity: " + activity +
                              " context: " + endTimeContext);
                 return;
