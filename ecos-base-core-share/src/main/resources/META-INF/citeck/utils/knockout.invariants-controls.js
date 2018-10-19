@@ -1348,13 +1348,19 @@ ko.bindingHandlers.journalControl = {
 
                                 if (searchCriteria && searchCriteria.length > 0) {
                                     criteria(_.map(searchCriteria, function (item) {
-                                        return _.defaults({value: searchValue}, item);
+                                        return _.defaults(item, {value: searchValue});
                                     }));
                                 } else {
                                     criteria([{attribute: "cm:name", predicate: "string-contains", value: searchValue}]);
                                 }
                             } else {
-                                criteria([]);
+                                if (searchCriteria && searchCriteria.length > 0) {
+                                    criteria(_.filter(searchCriteria, function (item) {
+                                        return (item && item.value && item.predicate && item.attribute);
+                                    }));
+                                } else {
+                                    criteria([]);
+                                }
                             }
                         }
                     });
