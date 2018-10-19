@@ -21,11 +21,11 @@ const CreateCaseWidget = ({ items }) => {
 
     return (
         <div id='HEADER_CREATE_CASE'>
-            <Dropdown id="HEADER_CREATE_CASE__DROPDOWN" className="custom-dropdown-menu" pullLeft>
-                <CustomToggle bsRole="toggle" className="create-case-dropdown-menu__toggle custom-dropdown-menu__toggle">
-                    <i className={"fa fa-plus"} />
+            <Dropdown className='custom-dropdown-menu' pullLeft>
+                <CustomToggle bsRole='toggle' className='create-case-dropdown-menu__toggle custom-dropdown-menu__toggle'>
+                    <i className={'fa fa-plus'} />
                 </CustomToggle>
-                <Dropdown.Menu bsRole="menu" className="custom-dropdown-menu__body">
+                <Dropdown.Menu bsRole='menu' className='custom-dropdown-menu__body' id='HEADER_CREATE_CASE__DROPDOWN'>
                     {menuListItems}
                 </Dropdown.Menu>
             </Dropdown>

@@ -7,14 +7,14 @@ import CustomToggle from './dropdown-menu-custom-toggle';
 const UserMenu = ({ userFullName, userPhotoUrl, items, isMobile }) => {
     let userImage = userPhotoUrl ? (
         (
-            <div className="user-photo-header">
+            <div className='user-photo-header'>
                 <div style={{backgroundImage: 'url(' + userPhotoUrl + ')'}} />
             </div>
         )
     ) : null;
 
     if (userImage === null && isMobile) {
-        userImage = <i className={"fa fa-user"} />;
+        userImage = <i className={'fa fa-user'} />;
     }
 
     let menuListItems = null;
@@ -29,12 +29,12 @@ const UserMenu = ({ userFullName, userPhotoUrl, items, isMobile }) => {
 
     return (
         <div id='HEADER_USER_MENU'>
-            <Dropdown id="HEADER_USER_MENU__DROPDOWN" className="custom-dropdown-menu" pullRight>
-                <CustomToggle bsRole="toggle" className="user-dropdown-menu__toggle custom-dropdown-menu__toggle">
-                    <span className="user-menu-username">{userFullName}</span>
+            <Dropdown className='custom-dropdown-menu' pullRight>
+                <CustomToggle bsRole='toggle' className='user-dropdown-menu__toggle custom-dropdown-menu__toggle'>
+                    <span className='user-menu-username'>{userFullName}</span>
                     {userImage}
                 </CustomToggle>
-                <Dropdown.Menu bsRole="menu" className="custom-dropdown-menu__body">
+                <Dropdown.Menu bsRole='menu' className='custom-dropdown-menu__body' id='HEADER_USER_MENU__DROPDOWN'>
                     {menuListItems}
                 </Dropdown.Menu>
             </Dropdown>

@@ -12,12 +12,12 @@ const SitesMenu = ({ items }) => {
     const menuListItems = items.map((item, key) => <DropDownMenuItem key={key} data={item} />);
 
     return (
-        <div id="HEADER_SITE_MENU">
-            <Dropdown id="HEADER_SITE_MENU__DROPDOWN" className="custom-dropdown-menu" pullRight>
-                <CustomToggle bsRole="toggle" className="site-dropdown-menu__toggle custom-dropdown-menu__toggle">
-                    <i className={"fa fa-cog"} />
+        <div id='HEADER_SITE_MENU'>
+            <Dropdown className='custom-dropdown-menu' pullRight>
+                <CustomToggle bsRole='toggle' className='site-dropdown-menu__toggle custom-dropdown-menu__toggle'>
+                    <i className={'fa fa-cog'} />
                 </CustomToggle>
-                <Dropdown.Menu bsRole="menu" className="custom-dropdown-menu__body">
+                <Dropdown.Menu bsRole='menu' className='custom-dropdown-menu__body' id='HEADER_SITE_MENU__DROPDOWN'>
                     {menuListItems}
                 </Dropdown.Menu>
             </Dropdown>
