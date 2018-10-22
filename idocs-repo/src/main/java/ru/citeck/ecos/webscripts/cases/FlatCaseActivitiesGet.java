@@ -89,7 +89,7 @@ public class FlatCaseActivitiesGet extends AbstractWebScript {
 
             if (startTimeContext.contains(activity.id)) {
                 activity.start = new Date();
-                logger.error("[fillEndTime] Found infinite loop. Activity: " + activity +
+                logger.error("[fillStartTime] Found infinite loop. Activity: " + activity +
                              " context: " + startTimeContext);
                 return;
             }
@@ -104,7 +104,9 @@ public class FlatCaseActivitiesGet extends AbstractWebScript {
 
                 if (Direction.FS.equals(depend.direction)) {
                     fillEndTime(depend.target, startTimeContext, endTimeContext);
-                    endTime = depend.target.end;
+                    if (depend.target.end != null) {
+                        endTime = depend.target.end;
+                    }
                 } else if (Direction.SS.equals(depend.direction)) {
                     fillStartTime(depend.target, startTimeContext, endTimeContext);
                     endTime = depend.target.start;
@@ -131,9 +133,6 @@ public class FlatCaseActivitiesGet extends AbstractWebScript {
 
             if (endTimeContext.contains(activity.id)) {
                 activity.end = activity.start;
-                if (activity.end == null) {
-                    activity.end = new Date();
-                }
                 logger.error("[fillEndTime] Found infinite loop. Activity: " + activity +
                              " context: " + endTimeContext);
                 return;
@@ -161,7 +160,7 @@ public class FlatCaseActivitiesGet extends AbstractWebScript {
                         Activity lastActivity = activity;
                         for (Activity child : activity.children) {
                             fillEndTime(child, startTimeContext, endTimeContext);
-                            if (child.end.getTime() > endTime.getTime()) {
+                            if (child.end != null && child.end.getTime() > endTime.getTime()) {
                                 endTime = child.end;
                                 lastActivity = child;
                             }
@@ -171,7 +170,9 @@ public class FlatCaseActivitiesGet extends AbstractWebScript {
                         break;
                     } else {
                         fillEndTime(depend.target, startTimeContext, endTimeContext);
-                        endTime = depend.target.end;
+                        if (depend.target.end != null) {
+                            endTime = depend.target.end;
+                        }
                     }
                 } else if (Direction.SF.equals(depend.direction)) {
                     fillStartTime(depend.target, startTimeContext, endTimeContext);
