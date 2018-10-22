@@ -7,6 +7,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.journals.JournalType;
+import ru.citeck.ecos.model.AttributeModel;
 import ru.citeck.ecos.records.RecordsService;
 import ru.citeck.ecos.records.source.MetaAttributeDef;
 
@@ -43,6 +44,11 @@ public class GqlQueryGenerator {
         int attrCounter = 0;
 
         List<QName> attributes = new ArrayList<>(journalType.getAttributes());
+        if (StringUtils.isEmpty(journalType.getDataSource())) {
+            attributes.add(AttributeModel.ATTR_ASPECTS);
+            attributes.add(AttributeModel.ATTR_IS_CONTAINER);
+            attributes.add(AttributeModel.ATTR_IS_DOCUMENT);
+        }
 
         Set<String> strAtts = attributes.stream()
                                         .map(a -> a.toPrefixString(namespaceService))
@@ -74,7 +80,6 @@ public class GqlQueryGenerator {
 
         return schemaBuilder.toString();
     }
-
 
     private String getAttributeSchema(Map<String, String> attributeOptions, MetaAttributeDef info) {
 
