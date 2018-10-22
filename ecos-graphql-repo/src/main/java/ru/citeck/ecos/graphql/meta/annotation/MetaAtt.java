@@ -1,4 +1,7 @@
-package ru.citeck.ecos.graphql.meta.converter;
+package ru.citeck.ecos.graphql.meta.annotation;
+
+import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
+import ru.citeck.ecos.graphql.meta.converter.NotValidConverter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

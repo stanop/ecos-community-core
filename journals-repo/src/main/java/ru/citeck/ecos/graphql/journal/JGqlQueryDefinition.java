@@ -27,7 +27,7 @@ public class JGqlQueryDefinition {
 
     private static ConcurrentHashMap<String, Optional<JournalDataSource>> dataSources = new ConcurrentHashMap<>();
 
-    @GraphQLField
+/*    @GraphQLField
     public static Optional<JGqlRecordsConnection> journalRecords(
             DataFetchingEnvironment env,
             @GraphQLName("datasource") String datasource,
@@ -40,13 +40,13 @@ public class JGqlQueryDefinition {
             return getJournalDataSource(context, source);
         });
         return dataSource.map(source -> source.getRecords(context, query, language, pageInfo));
-    }
-
+    }*/
+/*
     @GraphQLField
     public static List<MetaValue> journalRecordsMetadata(
-            DataFetchingEnvironment env,
-            @GraphQLName("datasource") String datasource,
-            @GraphQLName("remoteRefs") RecordsInput remoteIds) {
+                                    DataFetchingEnvironment env,
+                                    @GraphQLName("datasource") String datasource,
+                                    @GraphQLName("remoteRefs") RecordsInput remoteIds) {
 
         GqlContext context = env.getContext();
         Optional<JournalDataSource> dataSource = dataSources.computeIfAbsent(datasource, source -> {
@@ -61,9 +61,9 @@ public class JGqlQueryDefinition {
         }
 
         return Collections.emptyList();
-    }
+    }*/
 
-    private static Optional<JournalDataSource> getJournalDataSource(GqlContext context, String source) {
+/*    private static Optional<JournalDataSource> getJournalDataSource(GqlContext context, String source) {
         QName key = QName.createQName(null, source);
         Object datasourceBean = context.getService(key);
 
@@ -77,5 +77,5 @@ public class JGqlQueryDefinition {
                     " DataSource class: " + datasourceBean.getClass().getName());
         }
         return Optional.empty();
-    }
+    }*/
 }

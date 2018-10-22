@@ -5,13 +5,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
-import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.journals.records.JournalRecordsResult;
-import ru.citeck.ecos.records.RecordRef;
 
 import javax.sql.DataSource;
 import java.sql.ResultSetMetaData;
@@ -58,39 +54,8 @@ public class DbJournalDataSource implements JournalDataSource {
         return connection;
     }
 
-    @Override
-    public String getServerId() {
-        return null;
-    }
-
     protected String sqlFromTemplate(String sqlQueryTemplate, String query, String language) {
         return sqlQueryTemplate;
-    }
-
-    @Override
-    public JournalRecordsResult queryIds(GqlContext context,
-                                         String query,
-                                         String language,
-                                         JGqlPageInfoInput pageInfo) {
-        return null;
-    }
-
-    @Override
-    public List<MetaValue> convertToGqlValue(GqlContext context,
-                                                      List<RecordRef> remoteRefList) {
-        return null;
-    }
-
-    @Override
-    public JournalData queryMetadata(String gqlQuery,
-                                     String dataSourceBeanName,
-                                     JournalRecordsResult recordsResult) {
-        return null;
-    }
-
-    @Override
-    public Optional<JGqlAttributeInfo> getAttributeInfo(String attributeName) {
-        return Optional.empty();
     }
 
     public void setDataSource(DataSource dataSource) {

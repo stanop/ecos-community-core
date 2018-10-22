@@ -6,16 +6,19 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.converter.ConvertersProvider;
-import ru.citeck.ecos.graphql.meta.converter.MetaAtt;
+import ru.citeck.ecos.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.actions.RecordsActionFactory;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.source.MetaAttributeDef;
+import ru.citeck.ecos.records.source.MetaValueTypeDef;
 import ru.citeck.ecos.records.source.RecordsDAO;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service to work with some abstract "records" from any source
@@ -94,4 +97,12 @@ public interface RecordsService {
      * Register new RecordsDAO. It must return valid id from method "getId()" to call this method.
      */
     void register(RecordsDAO recordsSource);
+
+    List<MetaValueTypeDef> getTypesDefinition(String sourceId, Collection<String> names);
+
+    Optional<MetaValueTypeDef> getTypeDefinition(String sourceId, String name);
+
+    List<MetaAttributeDef> getAttsDefinition(String sourceId, Collection<String> names);
+
+    Optional<MetaAttributeDef> getAttDefinition(String sourceId, String name);
 }

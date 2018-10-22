@@ -1,12 +1,9 @@
 package ru.citeck.ecos.journals.webscripts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
-import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.journals.JournalService;
 
 import java.io.IOException;
@@ -23,8 +20,6 @@ public class JournalRecordsPost extends AbstractWebScript {
     private static final String PARAM_JOURNAL_ID = "journalId";
     //=======/PARAMS========
 
-    private static final Log logger = LogFactory.getLog(JournalRecordsPost.class);
-
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
@@ -37,15 +32,13 @@ public class JournalRecordsPost extends AbstractWebScript {
 
         RequestBody request = objectMapper.readValue(req.getContent().getContent(), RequestBody.class);
 
-        JournalData result = journalService.getRecordsWithData(
+        res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
+        objectMapper.writeValue(res.getOutputStream(), journalService.getRecordsWithData(
                 journalId,
                 request.query,
                 request.language,
                 request.pageInfo
-        );
-
-        res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
-        objectMapper.writeValue(res.getOutputStream(), result);
+        ));
 
         res.setStatus(Status.STATUS_OK);
     }

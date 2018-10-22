@@ -176,6 +176,36 @@ public class RecordsServiceImpl implements RecordsService {
         return results;
     }
 
+    @Override
+    public Optional<MetaValueTypeDef> getTypeDefinition(String sourceId, String name) {
+        return getTypesDefinition(sourceId, Collections.singletonList(name)).stream().findFirst();
+    }
+
+    @Override
+    public List<MetaValueTypeDef> getTypesDefinition(String sourceId, Collection<String> names) {
+        RecordsDAO recordsDAO = needRecordsSource(sourceId);
+        if (recordsDAO instanceof RecordsDefinitionDAO) {
+            RecordsDefinitionDAO definitionDAO = (RecordsDefinitionDAO) recordsDAO;
+            return definitionDAO.getTypesDefinition(names);
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<MetaAttributeDef> getAttsDefinition(String sourceId, Collection<String> names) {
+        RecordsDAO recordsDAO = needRecordsSource(sourceId);
+        if (recordsDAO instanceof RecordsDefinitionDAO) {
+            RecordsDefinitionDAO definitionDAO = (RecordsDefinitionDAO) recordsDAO;
+            return definitionDAO.getAttsDefinition(names);
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Optional<MetaAttributeDef> getAttDefinition(String sourceId, String name) {
+        return getAttsDefinition(sourceId, Collections.singletonList(name)).stream().findFirst();
+    }
+
     private Optional<RecordsDAO> getRecordsSource(String sourceId) {
         if (sourceId == null) {
             sourceId = "";

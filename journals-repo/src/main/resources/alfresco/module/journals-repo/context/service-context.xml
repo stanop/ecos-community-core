@@ -22,38 +22,11 @@
     </bean>-->
 
     <bean id="journals.recordsDAO" class="ru.citeck.ecos.journals.records.JournalRecordsDAO">
-        <property name="recordsBaseQuery">
-            <value>
-                query getJournalRecords($datasource: String, $query: String, $language: String, $pageInfo: InputJGqlPageInfoInput) {
-                    journalRecords(datasource: $datasource, query: $query, language: $language, pageInfo: $pageInfo) {
-                        records {__RECORD_FIELDS__}
-                        totalCount
-                        pageInfo {
-                            hasNextPage
-                            skipCount
-                            maxItems
-                        }
-                    }
-                }
-            </value>
-        </property>
-        <property name="recordsMetadataBaseQuery" value="__RECORD_FIELDS__"/>
-        <property name="recordsListPath" value="journalRecords.records" />
-        <property name="totalCountPath" value="journalRecords.totalCount" />
-        <property name="hasNextPagePath" value="journalRecords.pageInfo.hasNextPage" />
-        <property name="skipCountPath" value="journalRecords.pageInfo.skipCount" />
-        <property name="maxItemsPath" value="journalRecords.pageInfo.maxItems" />
-        <property name="serviceRegistry" ref="ServiceRegistry" />
         <property name="gqlQueryGenerator" ref="journals.gqlQueryGenerator" />
-        <property name="gqlQueryExecutor" ref="journals.gqlQueryExecutor"/>
     </bean>
 
     <bean id="journals.gqlQueryGenerator" class="ru.citeck.ecos.journals.records.GqlQueryGenerator">
         <property name="serviceRegistry" ref="ServiceRegistry" />
-    </bean>
-
-    <bean id="journals.gqlQueryExecutor" class="ru.citeck.ecos.journals.records.GqlQueryExecutor">
-        <property name="graphQLService" ref="graphQLServiceImpl"/>
     </bean>
 
 </beans>

@@ -507,7 +507,7 @@ define([
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        var data = response.json.data.journalRecords, self = this,
+                        var data = response.json, self = this,
                             records = data.records;
 
                         var results = _.map(records, function(node) {
@@ -549,9 +549,9 @@ define([
                         });
 
                         results.pagination = {
-                            hasMore: data.pageInfo.hasNextPage,
-                            maxItems: data.pageInfo.maxItems,
-                            skipCount: data.pageInfo.skipCount,
+                            hasMore: data.hasMore,
+                            maxItems: queryData.pageInfo.maxItems,
+                            skipCount: queryData.pageInfo.skipCount,
                             totalCount: data.totalCount,
                             totalItems: data.totalCount
                         };

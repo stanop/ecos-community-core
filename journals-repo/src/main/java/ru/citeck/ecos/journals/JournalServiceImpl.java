@@ -18,6 +18,7 @@
  */
 package ru.citeck.ecos.journals;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -27,17 +28,16 @@ import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
-import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.invariants.Feature;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
-import ru.citeck.ecos.journals.records.JournalRecords;
 import ru.citeck.ecos.journals.records.JournalRecordsDAO;
-import ru.citeck.ecos.journals.records.JournalRecordsResult;
 import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
 import ru.citeck.ecos.model.JournalsModel;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.NamespacePrefixResolverMapImpl;
@@ -170,10 +170,10 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public JournalRecordsResult getRecords(String journalId,
-                                           String query,
-                                           String language,
-                                           JGqlPageInfoInput pageInfo) {
+    public RecordsResult<RecordRef> getRecords(String journalId,
+                                               String query,
+                                               String language,
+                                               JGqlPageInfoInput pageInfo) {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }
@@ -182,23 +182,10 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public JournalRecords getRecordsLazy(String journalId,
-                                         String query,
-                                         String language,
-                                         JGqlPageInfoInput pageInfo) {
-
-        if (pageInfo == null) {
-            pageInfo = new JGqlPageInfoInput(null, 0, Collections.emptyList(), 0);
-        }
-        JournalType journalType = needJournalType(journalId);
-        return new JournalRecords(recordsDAO, journalType, query, language, pageInfo);
-    }
-
-    @Override
-    public JournalData getRecordsWithData(String journalId,
-                                          String query,
-                                          String language,
-                                          JGqlPageInfoInput pageInfo) {
+    public RecordsResult<ObjectNode> getRecordsWithData(String journalId,
+                                                        String query,
+                                                        String language,
+                                                        JGqlPageInfoInput pageInfo) {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }

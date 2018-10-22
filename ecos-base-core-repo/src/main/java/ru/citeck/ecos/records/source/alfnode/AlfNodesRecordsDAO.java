@@ -1,9 +1,14 @@
 package ru.citeck.ecos.records.source.alfnode;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.i18n.MessageService;
+import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.NamespaceService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeRecord;
@@ -11,8 +16,7 @@ import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
-import ru.citeck.ecos.records.source.LocalRecordsDAO;
-import ru.citeck.ecos.records.source.RecordsMetaValueDAO;
+import ru.citeck.ecos.records.source.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,13 +24,18 @@ import java.util.stream.Collectors;
 
 @Component
 public class AlfNodesRecordsDAO extends LocalRecordsDAO
-                                implements RecordsMetaValueDAO {
+                                implements RecordsMetaValueDAO,
+                                           RecordsDefinitionDAO {
 
     private static final Log logger = LogFactory.getLog(AlfNodesRecordsDAO.class);
 
     public static final String ID = "";
 
     private Map<String, AlfNodesSearch> searchByLanguage = new ConcurrentHashMap<>();
+
+    private DictionaryService dictionaryService;
+    private NamespaceService namespaceService;
+    private MessageService messageService;
 
     public AlfNodesRecordsDAO() {
         setId(ID);
@@ -91,6 +100,25 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                         .filter(Optional::isPresent)
                         .map(n -> new AlfNodeRecord(n.get(), context))
                         .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MetaValueTypeDef> getTypesDefinition(Collection<String> names) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<MetaAttributeDef> getAttsDefinition(Collection<String> names) {
+        return names.stream()
+                    .map(n -> new AlfAttributeDefinition(n, namespaceService, dictionaryService, messageService))
+                    .collect(Collectors.toList());
+    }
+
+    @Autowired
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.dictionaryService = serviceRegistry.getDictionaryService();
+        this.namespaceService = serviceRegistry.getNamespaceService();
+        this.messageService = serviceRegistry.getMessageService();
     }
 
     public void register(AlfNodesSearch alfNodesSearch) {

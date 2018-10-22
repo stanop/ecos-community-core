@@ -14,18 +14,14 @@ import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeAtt;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
-import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
 import ru.citeck.ecos.graphql.meta.value.MetaMapValue;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.history.HistoryEventType;
-import ru.citeck.ecos.journals.records.JournalRecordsResult;
 import ru.citeck.ecos.model.HistoryModel;
-import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.CriteriaTriplet;
 import ru.citeck.ecos.search.SearchCriteria;
@@ -179,32 +175,6 @@ public class TaskStatisticDatasource implements JournalDataSource {
 
     }
 
-    @Override
-    public String getServerId() {
-        return null;
-    }
-
-    @Override
-    public JournalRecordsResult queryIds(GqlContext context,
-                                         String query,
-                                         String language,
-                                         JGqlPageInfoInput pageInfo) {
-        return null;
-    }
-
-    @Override
-    public List<MetaValue> convertToGqlValue(GqlContext context,
-                                                      List<RecordRef> remoteRefList) {
-        return null;
-    }
-
-    @Override
-    public JournalData queryMetadata(String gqlQuery,
-                                     String dataSourceBeanName,
-                                     JournalRecordsResult recordsResult) {
-        return null;
-    }
-
     private Map<String, Object> getRecord(GqlAlfNode startEvent,
                                           GqlAlfNode endEvent,
                                           GqlAlfNode assignEvent,
@@ -264,10 +234,5 @@ public class TaskStatisticDatasource implements JournalDataSource {
     private AlfNodeAtt getAssocAttribute(GqlAlfNode node, String key, GqlContext context) {
         Attribute initiatorAttr = node.attribute(key);
         return new AlfNodeAtt(initiatorAttr, context);
-    }
-
-    @Override
-    public Optional<JGqlAttributeInfo> getAttributeInfo(String attributeName) {
-        return Optional.empty();
     }
 }

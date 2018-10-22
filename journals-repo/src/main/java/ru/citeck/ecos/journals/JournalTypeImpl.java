@@ -37,8 +37,6 @@ import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 
 class JournalTypeImpl implements JournalType {
 
-    private static final String DATASOURCE_DEFAULT = "ecos.journals.datasource.AlfNodes";
-
     private final String id;
     private final String datasource;
 
@@ -68,7 +66,7 @@ class JournalTypeImpl implements JournalType {
         List<QName> allAttributes = new ArrayList<>(headers.size());
 
         String datasource = journal.getDatasource();
-        this.datasource = StringUtils.isNotBlank(datasource) ? datasource : DATASOURCE_DEFAULT;
+        this.datasource = StringUtils.isNotBlank(datasource) ? datasource : "";
 
         batchEdit = new HashMap<>();
         criterion = new HashMap<>();
