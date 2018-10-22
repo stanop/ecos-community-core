@@ -907,7 +907,7 @@ ko.bindingHandlers.journalControl = {
         searchMinQueryLength        = params.searchMinQueryLength,
         searchScript                = _.contains(["criteria-search", "light-search"], params.searchScript) ? params.searchScript : "criteria-search",
 
-        searchCriteria              = params.searchCriteria || data.searchCriteria,
+        searchCriteria              = params.searchCriteria ? params.searchCriteria() : data.searchCriteria,
         defaultCriteria             = params.defaultCriteria,
         hiddenCriteria              = params.hiddenCriteria || [],
         optionsFilter               = params.optionsFilter ? params.optionsFilter() : null,
@@ -1339,6 +1339,8 @@ ko.bindingHandlers.journalControl = {
                         if (event.keyCode == 13) {
                             event.stopPropagation();
 
+                            var criterias = _.isFunction(searchCriteria) ? searchCriteria() : searchCriteria;
+
                             var search = Dom.get(searchId);
                             if (search.value) {
                                 var searchValue = search.value.trim();
@@ -1346,16 +1348,16 @@ ko.bindingHandlers.journalControl = {
                                     return false;
                                 }
 
-                                if (searchCriteria && searchCriteria.length > 0) {
-                                    criteria(_.map(searchCriteria, function (item) {
+                                if (criterias && criterias.length > 0) {
+                                    criteria(_.map(criterias, function (item) {
                                         return _.defaults(_.clone(item), {value: searchValue});
                                     }));
                                 } else {
                                     criteria([{attribute: "cm:name", predicate: "string-contains", value: searchValue}]);
                                 }
                             } else {
-                                if (searchCriteria && searchCriteria.length > 0) {
-                                    criteria(_.filter(searchCriteria, function (item) {
+                                if (criterias && criterias.length > 0) {
+                                    criteria(_.filter(criterias, function (item) {
                                         return (item && item.value && item.predicate && item.attribute);
                                     }));
                                 } else {
@@ -1749,6 +1751,7 @@ ko.components.register("autocomplete", {
         this.disabled = this.data["protected"];
 
         this.searchScript = params.searchScript || self.defaults.searchScript;
+        this.searchCriteria = _.isFunction(params["criteria"]) ? params["criteria"]() : params["criteria"];
         this.minQueryLength = params.minQueryLength;
         this.maxItems = params.maxItems || self.defaults.maxItems;
 
@@ -1783,12 +1786,14 @@ ko.components.register("autocomplete", {
         });
 
         this.criteria = ko.pureComputed(function() {
+            var criterias = _.isFunction(self.searchCriteria) ? self.searchCriteria() : self.searchCriteria;
+
             if (self.searchQuery()) {
-                return _.map(params["criteria"] || self.defaults.criteria, function(item) {
+                return _.map(criterias || self.defaults.criteria, function(item) {
                     return _.defaults(_.clone(item), { value: self.searchQuery() });
                 });
             } else {
-                return _.filter(params["criteria"] || self.defaults.criteria, function(item) {
+                return _.filter(criterias || self.defaults.criteria, function(item) {
                     return (item && item.value && item.predicate && item.attribute);
                 });
             }
