@@ -13,7 +13,7 @@
             <#if controlParams.criteria??>
                 criteria: function() {
                     return ko.computed(function() {
-                        var inputParam = ${controlParams.criteria?js_string};
+                        var inputParam = ${controlParams.criteria?replace("'", "\"")};
                         return _.isFunction(inputParam) ? inputParam() : inputParam;
                     });
                 },
