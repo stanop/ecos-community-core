@@ -956,6 +956,9 @@ define([
         'd:period': 'org.alfresco.service.cmr.repository.Period'
     };
 
+    var numericDatatypes = ['d:int', 'd:long', 'd:float', 'd:double'];
+    var THOUSANDS_DELIMETER = ' ';
+
     var datatypeNodetypeMapping = {
         'd:noderef': 'sys:base',
         'd:category': 'cm:category'
@@ -1655,8 +1658,14 @@ define([
 
         // value title
         .method('getValueTitle', function(value, postprocessing) {
+            var lastValue = value;
             var value = this.valueTitleEvaluator(this.getInvariantsModel(value)).value;
             if (postprocessing) { return postprocessing(value);  }
+
+            if(numericDatatypes.includes(this.datatype()) && value == lastValue){
+                value = koutils.setThousandsDelimeter(value, THOUSANDS_DELIMETER);
+            }
+
             return value;
         })
         .computed('valueTitle', function() { return this.getValueTitle(this.singleValue()); })
