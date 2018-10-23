@@ -9,6 +9,7 @@
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
         <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
     </imports>
 
     <type name="contracts:agreement">
@@ -91,6 +92,13 @@
         <property name="cm:content">
             <invariant on="relevant" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
             <invariant on="mandatory" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+            <invariant on="value" language="javascript"><![CDATA[
+                (function() {
+                    var content = view.params.cm_content;
+                    if (content) return content;
+                    return null;
+                })()
+            ]]></invariant>
         </property>
         <property name="contracts:digiSign">
             <invariant on="protected" language="javascript"><![CDATA[
@@ -134,6 +142,15 @@
         <association name="idocs:signatory">
             <invariant on="mandatory" language="explicit">true</invariant>
         </association>
+        <child-association name="icase:documents">
+            <invariant on="value" language="javascript"><![CDATA[
+                (function() {
+                    var docs = view.params.icase_documents;
+                    if (docs) return docs.split(",");
+                    return null;
+                })()
+            ]]></invariant>
+        </child-association>
     </type>
 
     <type name="payments:payment">
@@ -367,6 +384,15 @@
             </invariant>
             <invariant on="value-title" language="javascript">value.properties['idocs:currencyName']</invariant>
         </association>
+        <child-association name="icase:documents">
+            <invariant on="value" language="javascript"><![CDATA[
+                (function() {
+                    var docs = view.params.icase_documents;
+                    if (docs) return docs.split(",");
+                    return null;
+                })()
+            ]]></invariant>
+        </child-association>
         <property name="contracts:agreementAmount">
             <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">value >= 0</invariant>
         </property>
@@ -376,6 +402,13 @@
         <property name="cm:content">
             <invariant on="relevant" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
             <invariant on="mandatory" language="javascript">(node.properties["dms:updateContent"] == false &amp;&amp; view.mode == "create") || view.mode != "create"</invariant>
+            <invariant on="value" language="javascript"><![CDATA[
+                (function() {
+                    var content = view.params.cm_content;
+                    if (content) return content;
+                    return null;
+                })()
+            ]]></invariant>
         </property>
         <property name="dms:updateContent">
             <invariant on="relevant" language="javascript">view.mode == "create"</invariant>
