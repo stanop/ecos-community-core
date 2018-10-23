@@ -47,7 +47,7 @@ public class SearchServiceAlfNodesSearch {
         recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_XPATH));
     }
 
-    private RecordsResult queryRecordsImpl(RecordsQuery recordsQuery, Long afterDbId, Date afterCreated) {
+    private RecordsResult<RecordRef> queryRecordsImpl(RecordsQuery recordsQuery, Long afterDbId, Date afterCreated) {
 
         String query = recordsQuery.getQuery();
 
@@ -104,7 +104,7 @@ public class SearchServiceAlfNodesSearch {
             }
             resultSet = searchService.query(searchParameters);
 
-            RecordsResult result = new RecordsResult();
+            RecordsResult<RecordRef> result = new RecordsResult<>();
             result.setRecords(resultSet.getNodeRefs()
                                        .stream()
                                        .map(RecordRef::new)
@@ -138,7 +138,7 @@ public class SearchServiceAlfNodesSearch {
         }
 
         @Override
-        public RecordsResult queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
+        public RecordsResult<RecordRef> queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
             return queryRecordsImpl(query, afterDbId, afterCreated);
         }
 

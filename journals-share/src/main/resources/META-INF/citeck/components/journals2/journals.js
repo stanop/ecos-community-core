@@ -1772,7 +1772,7 @@ JournalsWidget
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        var data = response.json.data.journalRecords, self = this,
+                        var data = response.json, self = this,
                             records = data.records;
 
                         records = _.map(records, function(node) {
@@ -1796,10 +1796,10 @@ JournalsWidget
 
                         this.model({
                             records: records,
-                            skipCount: data.pageInfo.skipCount,
-                            maxItems: data.pageInfo.maxItems,
+                            skipCount: queryData.pageInfo.skipCount,
+                            maxItems: queryData.pageInfo.maxItems,
                             totalItems: data.totalCount,
-                            hasMore: data.pageInfo.hasNextPage
+                            hasMore: data.hasMore
                         });
                     }
                 }

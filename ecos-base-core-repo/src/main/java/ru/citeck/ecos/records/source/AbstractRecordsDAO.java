@@ -1,14 +1,10 @@
 package ru.citeck.ecos.records.source;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
 import ru.citeck.ecos.records.RecordsUtils;
 
 import javax.annotation.PostConstruct;
-import java.util.Optional;
 
 public abstract class AbstractRecordsDAO implements RecordsDAO {
 
@@ -22,11 +18,6 @@ public abstract class AbstractRecordsDAO implements RecordsDAO {
         if (id != null) {
             recordsService.register(this);
         }
-    }
-
-    @Override
-    public Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef) {
-        return Optional.empty();
     }
 
     @Override

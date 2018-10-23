@@ -9,7 +9,6 @@ import ru.citeck.ecos.graphql.meta.value.MetaValue;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @GraphQLQueryDefinition
 public class RecordsGqlDefinition {
@@ -23,9 +22,9 @@ public class RecordsGqlDefinition {
         GqlContext context = env.getContext();
         RecordsService recordsService = context.getService(RECORDS_SERVICE_ID);
 
-        return refs.stream()
-                   .map(r -> recordsService.getMetaValue(context, new RecordRef(r)))
-                   .flatMap( o -> o.map(Stream::of).orElseGet(Stream::empty))
-                   .collect(Collectors.toList());
+        List<RecordRef> records = refs.stream()
+                                      .map(RecordRef::new)
+                                      .collect(Collectors.toList());
+        return recordsService.getMetaValues(context, records);
     }
 }

@@ -1181,7 +1181,7 @@
   background-color: white;
 }
 
-.orgstruct-layout .selected-object {
+#Share .orgstruct-layout .selected-object {
   padding: 10px 35px 10px 32px;
   position: relative;
   line-height: normal;
@@ -1217,6 +1217,11 @@
 
 .orgstruct-layout .selected-object:hover:after {
   background-image: url(images/remove-active.png);
+}
+
+#Share .orgstruct-layout .selected-object:after,
+#Share .orgstruct-layout .selected-object:hover:after {
+  background-image: none;
 }
 
 .orgstruct-header .orgstruct-search {

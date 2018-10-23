@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import graphql.ExecutionResult;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.action.group.ActionResults;
+import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
@@ -17,7 +19,8 @@ import java.util.stream.Collectors;
 /**
  * @author Pavel Simonov
  */
-public abstract class LocalRecordsDAO extends AbstractRecordsDAO {
+public abstract class LocalRecordsDAO extends AbstractRecordsDAO
+                                      implements RecordsMetaDAO, RecordsActionExecutor {
 
     protected NodeService nodeService;
     protected GqlMetaUtils gqlMetaUtils;
@@ -50,6 +53,11 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO {
         } else {
             return gqlMetaUtils.convertMeta(recordsRefs, executionResult);
         }
+    }
+
+    @Override
+    public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {
+        return groupActionService.execute(records, config);
     }
 
     @Autowired

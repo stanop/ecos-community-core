@@ -55,6 +55,11 @@ public class ActionResults<T> {
         return this;
     }
 
+    public ActionResults<T> addResults(List<ActionResult<T>> results) {
+        getResults().addAll(results);
+        return this;
+    }
+
     public List<ActionResult<T>> getResults() {
         if (results == null) {
             results = new ArrayList<>();

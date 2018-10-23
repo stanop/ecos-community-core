@@ -10,6 +10,7 @@ import ru.citeck.ecos.graphql.meta.converter.ConvertersProvider;
 import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,10 @@ public class GqlMetaUtils {
     private ConvertersProvider convertersProvider = new ConvertersProvider();
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    public <K> String createQuery(String queryBase, String schema) {
+        return String.format(QUERY_TEMPLATE, queryBase, schema);
+    }
+
     public <K> String createQuery(String queryBase, List<K> ids, String schema) {
         List<String> strIds = ids.stream().map(Object::toString).collect(Collectors.toList());
         String baseWithId = String.format(queryBase, String.join("\",\"", strIds));
@@ -31,6 +36,10 @@ public class GqlMetaUtils {
     public String createSchema(Class<?> metaClass) {
         MetaConverter<?> converter = convertersProvider.getConverter(metaClass);
         return converter.appendQuery(new StringBuilder()).toString();
+    }
+
+    public <K> List<ObjectNode> convertMeta(ExecutionResult executionResult) {
+        return convertMeta(Collections.emptyList(), executionResult);
     }
 
     public <K> List<ObjectNode> convertMeta(List<K> ids, ExecutionResult executionResult) {

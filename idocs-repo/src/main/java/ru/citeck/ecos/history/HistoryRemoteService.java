@@ -15,7 +15,7 @@ public interface HistoryRemoteService {
      * @param documentUuid Document uuid
      * @return List of maps
      */
-    List getHistoryRecords(String documentUuid);
+    List<Map> getHistoryRecords(String documentUuid);
 
     /**
      * Send history event to remote service

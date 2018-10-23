@@ -9,6 +9,7 @@ import graphql.language.ObjectTypeDefinition;
 import graphql.language.SourceLocation;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.service.ServiceRegistry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.graphql.exceptions.CiteckGraphQLException;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.remote.RestConnection;
 
 import javax.annotation.PostConstruct;
@@ -25,12 +27,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 public class GraphQLServiceImpl implements GraphQLService {
 
     private static final Log logger = LogFactory.getLog(GraphQLServiceImpl.class);
 
+    private static final String TXN_GQL_CONTEXT_KEY = GraphQLServiceImpl.class.getName() + ".context";
     private static final String GRAPHQL_BASE_PACKAGE = "ru.citeck.ecos";
     private static final String QUERY_TYPE = "Query";
 
@@ -70,28 +74,7 @@ public class GraphQLServiceImpl implements GraphQLService {
     }
 
     public ExecutionResult execute(String query, Map<String, Object> variables) {
-
-        Map<String, Object> notNullVars = variables != null ? variables : Collections.emptyMap();
-
-        ExecutionInput input = ExecutionInput.newExecutionInput()
-                                             .context(new GqlContext(serviceRegistry))
-                                             .query(query)
-                                             .variables(notNullVars)
-                                             .build();
-
-        ExecutionResult result = graphQL.execute(input);
-        result = new GqlExecutionResult(result);
-
-        if (logger.isWarnEnabled()) {
-            for (GraphQLError error : result.getErrors()) {
-                if (error instanceof ExceptionWhileDataFetching) {
-                    ExceptionWhileDataFetching fetchExc = (ExceptionWhileDataFetching) error;
-                    logger.warn("Exception while data fetching", fetchExc.getException());
-                }
-            }
-        }
-
-        return result;
+        return executeImpl(query, variables, getContext());
     }
 
     @Override
@@ -116,6 +99,57 @@ public class GraphQLServiceImpl implements GraphQLService {
             return null;
         }
         return parseRawResult(result);
+    }
+
+    @Override
+    public ExecutionResult execute(String query,
+                                   Map<String, Object> variables,
+                                   Function<GqlContext, List<MetaValue>> valuesProvider) {
+
+        GqlContext context = getContext();
+        context.setMetaValues(valuesProvider.apply(context));
+
+        return executeImpl(query, variables, context);
+    }
+
+    private ExecutionResult executeImpl(String query, Map<String, Object> variables, GqlContext context) {
+
+        Map<String, Object> notNullVars = variables != null ? variables : Collections.emptyMap();
+
+        ExecutionInput input = ExecutionInput.newExecutionInput()
+                                             .context(context)
+                                             .query(query)
+                                             .variables(notNullVars)
+                                             .build();
+
+        ExecutionResult result = graphQL.execute(input);
+        result = new GqlExecutionResult(result);
+
+        if (logger.isWarnEnabled()) {
+            for (GraphQLError error : result.getErrors()) {
+                if (error instanceof ExceptionWhileDataFetching) {
+                    ExceptionWhileDataFetching fetchExc = (ExceptionWhileDataFetching) error;
+                    logger.warn("Exception while data fetching", fetchExc.getException());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private GqlContext getContext() {
+        AlfrescoTransactionSupport.TxnReadState readState = AlfrescoTransactionSupport.getTransactionReadState();
+        GqlContext context;
+        if (AlfrescoTransactionSupport.TxnReadState.TXN_READ_ONLY.equals(readState)) {
+            context = AlfrescoTransactionSupport.getResource(TXN_GQL_CONTEXT_KEY);
+            if (context == null) {
+                context = new GqlContext(serviceRegistry);
+                AlfrescoTransactionSupport.bindResource(TXN_GQL_CONTEXT_KEY, context);
+            }
+        } else {
+            context = new GqlContext(serviceRegistry);
+        }
+        return context;
     }
 
     private ExecutionResult parseRawResult(ObjectNode resultNode) {

@@ -36,7 +36,7 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
     }
 
     @Override
-    public RecordsResult queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
+    public RecordsResult<RecordRef> queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
 
         SearchCriteria criteria = criteriaParser.parse(query.getQuery());
         criteria.setSkip(query.getSkipCount());
@@ -65,7 +65,7 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
 
         CriteriaSearchResults criteriaResults = searchService.query(criteria, SearchService.LANGUAGE_FTS_ALFRESCO);
 
-        RecordsResult result = new RecordsResult();
+        RecordsResult<RecordRef> result = new RecordsResult<>();
 
         result.setRecords(criteriaResults.getResults()
                                          .stream()

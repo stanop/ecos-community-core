@@ -1,188 +1,76 @@
 package ru.citeck.ecos.journals.records;
 
-import graphql.ExecutionResult;
-import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.namespace.QName;
-import org.apache.commons.beanutils.PropertyUtilsBean;
-import ru.citeck.ecos.graphql.GqlContext;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.alfresco.service.cmr.search.QueryConsistency;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
-import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
-import ru.citeck.ecos.graphql.journal.response.JournalData;
-import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverter;
-import ru.citeck.ecos.graphql.journal.response.converter.ResponseConverterFactory;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.RecordsService;
+import ru.citeck.ecos.records.query.RecordsQuery;
+import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.query.SortBy;
+import ru.citeck.ecos.records.source.alfnode.CriteriaAlfNodesSearch;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class JournalRecordsDAO {
 
-    private static final Integer DEFAULT_PAGE_SIZE = 10;
-
-    private ServiceRegistry serviceRegistry;
     private GqlQueryGenerator gqlQueryGenerator;
-    private GqlQueryExecutor gqlQueryExecutor;
+    private RecordsService recordsService;
 
-    private String recordsListPath;
-    private String hasNextPagePath;
-    private String totalCountPath;
-    private String skipCountPath;
-    private String maxItemsPath;
+    public RecordsResult<ObjectNode> getRecordsWithData(JournalType journalType,
+                                                        String query,
+                                                        String language,
+                                                        JGqlPageInfoInput pageInfo) {
 
-    private String recordsMetadataBaseQuery;
-    private String recordsBaseQuery;
-    private String gqlRecordsIdQuery;
+        String gqlQuery = gqlQueryGenerator.generate(journalType);
+        RecordsQuery recordsQuery = createQuery(journalType.getDataSource(), query, language, pageInfo);
 
-    private PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();
-    private ResponseConverterFactory responseConverterFactory = new ResponseConverterFactory();
+        return recordsService.getRecords(recordsQuery, gqlQuery);
+    }
 
-    public JournalData getRecordsWithData(JournalType journalType,
-                                          String query,
-                                          String language,
-                                          JGqlPageInfoInput pageInfo) {
+    public RecordsResult<RecordRef> getRecords(JournalType journalType,
+                                               String query,
+                                               String language,
+                                               JGqlPageInfoInput pageInfo) {
 
-        JournalDataSource dataSource = getDataSourceInstance(journalType);
-        if (dataSource.isSupportsSplitLoading()) {
-            GqlContext gqlContext = new GqlContext(serviceRegistry);
-            JournalRecordsResult recordsResult = dataSource.queryIds(gqlContext, query, language, pageInfo);
-            String gqlQuery = gqlQueryGenerator.generate(journalType, recordsMetadataBaseQuery, dataSource);
-            return dataSource.queryMetadata(gqlQuery, journalType.getDataSource(), recordsResult);
+        RecordsQuery recordsQuery = createQuery(journalType.getDataSource(), query, language, pageInfo);
+        return recordsService.getRecords(recordsQuery);
+    }
+
+    public RecordsQuery createQuery(String sourceId, String query, String language, JGqlPageInfoInput pageInfo) {
+
+        RecordsQuery recordsQuery = new RecordsQuery();
+        recordsQuery.setQuery(query);
+        if (StringUtils.isBlank(language)) {
+            recordsQuery.setLanguage(CriteriaAlfNodesSearch.LANGUAGE);
         } else {
-            String gqlQuery = gqlQueryGenerator.generate(journalType, recordsBaseQuery, dataSource);
-            ExecutionResult result = gqlQueryExecutor.executeQuery(journalType, gqlQuery,
-                    query, language, pageInfo, dataSource);
-            ResponseConverter responseConverter = responseConverterFactory.getConverter(dataSource);
-            return responseConverter.convert(result, Collections.emptyMap());
+            recordsQuery.setLanguage(language);
         }
-    }
+        recordsQuery.setMaxItems(pageInfo.getMaxItems());
+        recordsQuery.setSortBy(pageInfo.getSortBy()
+                                       .stream()
+                                       .map(sort -> new SortBy(sort.getAttribute(), sort.isAscending()))
+                                       .collect(Collectors.toList()));
+        recordsQuery.setSkipCount(pageInfo.getSkipCount());
+        recordsQuery.setConsistency(QueryConsistency.EVENTUAL);
+        recordsQuery.setSourceId(sourceId);
 
-    public JournalRecordsResult getRecords(JournalType journalType,
-                                    String query,
-                                    String language,
-                                    JGqlPageInfoInput pageInfo) {
-
-        JournalDataSource dataSource = getDataSourceInstance(journalType);
-        if (dataSource.isSupportsSplitLoading()) {
-            GqlContext gqlContext = new GqlContext(serviceRegistry);
-            try {
-                return dataSource.queryIds(gqlContext, query, language, pageInfo);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        ExecutionResult result = gqlQueryExecutor.executeQuery(journalType, gqlRecordsIdQuery,
-                query, language, pageInfo, dataSource);
-
-        List<Map<String, String>> recordsData = null;
-        Boolean hasNextPage = null;
-        Long totalCount = null;
-        Integer skipCount = null;
-        Integer maxItems = null;
-
-        if (result.getData() != null) {
-            try {
-                Object recordsList = propertyUtilsBean.getProperty(result.getData(), recordsListPath);
-                recordsData = recordsList instanceof List ? (List) recordsList : null;
-
-                Object hasNextPageObj = propertyUtilsBean.getProperty(result.getData(), hasNextPagePath);
-                if (hasNextPageObj instanceof Boolean) {
-                    hasNextPage = (Boolean) hasNextPageObj;
-                }
-
-                Object totalCountObj = propertyUtilsBean.getProperty(result.getData(), totalCountPath);
-                if (totalCountObj instanceof Long) {
-                    totalCount = (Long) totalCountObj;
-                }
-
-                Object skipCountObj = propertyUtilsBean.getProperty(result.getData(), skipCountPath);
-                if (skipCountObj instanceof Integer) {
-                    skipCount = (Integer) skipCountObj;
-                }
-
-                Object maxItemsObj = propertyUtilsBean.getProperty(result.getData(), maxItemsPath);
-                if (maxItemsObj instanceof Integer) {
-                    maxItems = (Integer) maxItemsObj;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (recordsData == null) {
-            recordsData = Collections.emptyList();
-        }
-        if (hasNextPage == null) {
-            hasNextPage = pageInfo.getMaxItems() == recordsData.size();
-        }
-        if (totalCount == null) {
-            totalCount = (long) recordsData.size();
-        }
-        if (skipCount == null) {
-            skipCount = 0;
-        }
-        if (maxItems == null) {
-            maxItems = DEFAULT_PAGE_SIZE;
-        }
-
-        List<RecordRef> records = recordsData.stream()
-                .map(entry -> new RecordRef(entry.get("id")))
-                .collect(Collectors.toList());
-
-        return new JournalRecordsResult(records, hasNextPage, totalCount, skipCount, maxItems);
-    }
-
-    private JournalDataSource getDataSourceInstance(JournalType journalType) {
-        String dataSourceBeanId = journalType.getDataSource();
-        QName dataSourceQname = QName.createQName(null, dataSourceBeanId);
-        return (JournalDataSource) serviceRegistry.getService(dataSourceQname);
+        return recordsQuery;
     }
 
     public void clearCache() {
         gqlQueryGenerator.clearCache();
     }
 
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-    }
-
     public void setGqlQueryGenerator(GqlQueryGenerator gqlQueryGenerator) {
         this.gqlQueryGenerator = gqlQueryGenerator;
     }
 
-    public void setGqlQueryExecutor(GqlQueryExecutor gqlQueryExecutor) {
-        this.gqlQueryExecutor = gqlQueryExecutor;
-    }
-
-    public void setRecordsBaseQuery(String recordsBaseQuery) {
-        this.recordsBaseQuery = recordsBaseQuery;
-        this.gqlRecordsIdQuery = recordsBaseQuery + "\nfragment recordsFields on MetaValue { id }";
-    }
-
-    public void setRecordsMetadataBaseQuery(String recordsMetadataBaseQuery) {
-        this.recordsMetadataBaseQuery = recordsMetadataBaseQuery;
-    }
-
-    public void setRecordsListPath(String recordsListPath) {
-        this.recordsListPath = recordsListPath;
-    }
-
-    public void setHasNextPagePath(String hasNextPagePath) {
-        this.hasNextPagePath = hasNextPagePath;
-    }
-
-    public void setTotalCountPath(String totalCountPath) {
-        this.totalCountPath = totalCountPath;
-    }
-
-    public void setSkipCountPath(String skipCountPath) {
-        this.skipCountPath = skipCountPath;
-    }
-
-    public void setMaxItemsPath(String maxItemsPath) {
-        this.maxItemsPath = maxItemsPath;
+    @Autowired
+    public void setRecordsService(RecordsService recordsService) {
+        this.recordsService = recordsService;
     }
 }

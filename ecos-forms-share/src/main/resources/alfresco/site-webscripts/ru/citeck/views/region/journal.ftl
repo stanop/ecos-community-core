@@ -70,7 +70,14 @@
             <#if params.defaultHiddenByType??>defaultHiddenByType: '${params.defaultHiddenByType}',</#if>
             <#if params.searchMinQueryLength??>searchMinQueryLength: '${params.searchMinQueryLength}',</#if>
             <#if params.searchScript??>searchScript: '${params.searchScript}',</#if>
-            <#if params.searchCriteria??>searchCriteria: ${params.searchCriteria},</#if>
+            <#if params.searchCriteria??>
+            searchCriteria: function() {
+                return ko.computed(function() {
+                    var inputParam = ${params.searchCriteria?replace("\"", "'")};
+                    return _.isFunction(inputParam) ? inputParam() : inputParam;
+                });
+            },
+            </#if>
             <#if params.defaultCriteria??>defaultCriteria: ${params.defaultCriteria},</#if>
             <#if params.hiddenCriteria??>hiddenCriteria: ${params.hiddenCriteria},</#if>
             <#if params.optionsFilter??>

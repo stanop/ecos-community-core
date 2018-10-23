@@ -124,7 +124,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      * @return List of maps
      */
     @Override
-    public List getHistoryRecords(String documentUuid) {
+    public List<Map> getHistoryRecords(String documentUuid) {
         return restTemplate.getForObject(properties.getProperty(HISTORY_SERVICE_HOST) + GET_BY_DOCUMENT_ID_PATH + documentUuid, List.class);
     }
 

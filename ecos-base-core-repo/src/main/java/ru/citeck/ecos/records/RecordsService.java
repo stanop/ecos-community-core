@@ -1,23 +1,23 @@
 package ru.citeck.ecos.records;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.converter.ConvertersProvider;
-import ru.citeck.ecos.graphql.meta.converter.MetaAtt;
+import ru.citeck.ecos.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.actions.RecordsActionFactory;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.source.MetaAttributeDef;
+import ru.citeck.ecos.records.source.MetaValueTypeDef;
 import ru.citeck.ecos.records.source.RecordsDAO;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -34,13 +34,29 @@ public interface RecordsService {
      * Query records from default RecordsDAO
      * @return list of RecordRef and page info
      */
-    RecordsResult getRecords(RecordsQuery query);
+    RecordsResult<RecordRef> getRecords(RecordsQuery query);
 
     /**
-     * Get Iterable with records which fit the query from default source.
-     * This method can be used to process all records in system without search limits
+     * Query records with meta
+     * @param metaSchema GraphQL schema for MetaValue
      */
-    Iterable<RecordRef> getIterableRecords(RecordsQuery query);
+    RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema);
+
+    /**
+     * Query records with meta
+     * @param metaClass POJO to generate metadata GQL schema and retrieve data
+     *                  This class must contain constructor without arguments and have public fields
+     *                  Getters/setters is not yet supported
+     */
+    <T> RecordsResult<T> getRecords(RecordsQuery query, Class<T> metaClass);
+
+    /**
+     * Get metadata for specified records
+     *
+     * @param metaSchema GraphQL schema for MetaValue
+     * @see MetaValue
+     */
+    List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema);
 
     /**
      * Get metadata for specified records.
@@ -55,17 +71,9 @@ public interface RecordsService {
     <T> List<T> getMeta(Collection<RecordRef> records, Class<T> metaClass);
 
     /**
-     * Get metadata for specified records
-     *
-     * @param gqlSchema schema for MetaValue
-     * @see MetaValue
-     */
-    List<ObjectNode> getMeta(Collection<RecordRef> records, String gqlSchema);
-
-    /**
      * Get MetaValue by record. Executed in GraphQL execution context
      */
-    Optional<MetaValue> getMetaValue(GqlContext context, RecordRef recordRef);
+    List<MetaValue> getMetaValues(GqlContext context, List<RecordRef> records);
 
     /**
      * Execute action with specified records.
@@ -80,7 +88,21 @@ public interface RecordsService {
     ActionResults<RecordRef> executeAction(Collection<RecordRef> records, GroupActionConfig processConfig);
 
     /**
+     * Get Iterable with records which fit the query from default source.
+     * This method can be used to process all records in system without search limits
+     */
+    Iterable<RecordRef> getIterableRecords(RecordsQuery query);
+
+    /**
      * Register new RecordsDAO. It must return valid id from method "getId()" to call this method.
      */
     void register(RecordsDAO recordsSource);
+
+    List<MetaValueTypeDef> getTypesDefinition(String sourceId, Collection<String> names);
+
+    Optional<MetaValueTypeDef> getTypeDefinition(String sourceId, String name);
+
+    List<MetaAttributeDef> getAttsDefinition(String sourceId, Collection<String> names);
+
+    Optional<MetaAttributeDef> getAttDefinition(String sourceId, String name);
 }

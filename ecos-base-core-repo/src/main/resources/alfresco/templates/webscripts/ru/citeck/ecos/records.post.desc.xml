@@ -4,6 +4,6 @@
     <url>/citeck/ecos/records</url>
     <format default="json"/>
     <authentication>user</authentication>
-    <transaction>required</transaction>
+    <transaction allow="readonly">required</transaction>
     <lifecycle>public_api</lifecycle>
 </webscript>

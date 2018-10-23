@@ -29,16 +29,15 @@ public class RecordsQuery {
     }
 
     public RecordsQuery(RecordsQuery other) {
-        this.sourceId = other.sourceId;
-        this.skipCount = other.skipCount;
-        this.sortBy = new ArrayList<>(other.sortBy);
-        this.maxItems = other.maxItems;
+        this.query = other.query;
         this.afterId = other.afterId;
+        this.maxItems = other.maxItems;
+        this.sourceId = other.sourceId;
+        this.language = other.language;
+        this.skipCount = other.skipCount;
         this.afterIdMode = other.afterIdMode;
         this.consistency = other.consistency;
-        this.language = other.language;
-        this.query = other.query;
-
+        this.sortBy = new ArrayList<>(other.sortBy);
     }
 
     public String getSourceId() {
@@ -139,8 +138,8 @@ public class RecordsQuery {
         result = 31 * result + maxItems;
         result = 31 * result + Objects.hashCode(sortBy);
         result = 31 * result + Objects.hashCode(afterId);
-        result = 31 * result + Objects.hashCode(consistency);
         result = 31 * result + Objects.hashCode(sourceId);
+        result = 31 * result + Objects.hashCode(consistency);
         return result;
     }
 

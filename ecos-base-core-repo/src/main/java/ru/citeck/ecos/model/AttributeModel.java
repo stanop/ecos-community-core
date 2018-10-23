@@ -22,22 +22,23 @@ import org.alfresco.service.namespace.QName;
 
 public interface AttributeModel {
 
-    public static final String NAMESPACE = "http://www.citeck.ru/model/attribute/1.0";
-    public static final String PREFIX = "attr";
+    String NAMESPACE = "http://www.citeck.ru/model/attribute/1.0";
+    String PREFIX = "attr";
     
-    public static final String NAMESPACE_SOURCE_ASSOC = "http://www.citeck.ru/model/attribute/source-assoc/1.0";
-    public static final String PREFIX_SOURCE_ASSOC = "source";
+    String NAMESPACE_SOURCE_ASSOC = "http://www.citeck.ru/model/attribute/source-assoc/1.0";
+    String PREFIX_SOURCE_ASSOC = "source";
     
-    public static final QName ATTR_TYPES = QName.createQName(NAMESPACE, "types");
-    public static final QName ATTR_ASPECTS = QName.createQName(NAMESPACE, "aspects");
-    public static final QName ATTR_NODEREF = QName.createQName(NAMESPACE, "noderef");
-    public static final QName ATTR_PARENT = QName.createQName(NAMESPACE, "parent");
-    public static final QName ATTR_PARENT_ASSOC = QName.createQName(NAMESPACE, "parentassoc");
+    QName ATTR_TYPES = QName.createQName(NAMESPACE, "types");
+    QName ATTR_ASPECTS = QName.createQName(NAMESPACE, "aspects");
+    QName ATTR_NODEREF = QName.createQName(NAMESPACE, "noderef");
+    QName ATTR_PARENT = QName.createQName(NAMESPACE, "parent");
+    QName ATTR_PARENT_ASSOC = QName.createQName(NAMESPACE, "parentassoc");
+    QName ATTR_IS_CONTAINER = QName.createQName(NAMESPACE, "isContainer");
+    QName ATTR_IS_DOCUMENT = QName.createQName(NAMESPACE, "isDocument");
 
-    public static final QName TYPE_VIRTUAL = QName.createQName(NAMESPACE, "virtual");
-    public static final QName TYPE_PROPERTY = QName.createQName(NAMESPACE, "property");
-    public static final QName TYPE_TARGET_ASSOCIATION = QName.createQName(NAMESPACE, "target-association");
-    public static final QName TYPE_SOURCE_ASSOCIATION = QName.createQName(NAMESPACE, "source-association");
-    public static final QName TYPE_CHILD_ASSOCIATION = QName.createQName(NAMESPACE, "child-association");
-    
+    QName TYPE_VIRTUAL = QName.createQName(NAMESPACE, "virtual");
+    QName TYPE_PROPERTY = QName.createQName(NAMESPACE, "property");
+    QName TYPE_TARGET_ASSOCIATION = QName.createQName(NAMESPACE, "target-association");
+    QName TYPE_SOURCE_ASSOCIATION = QName.createQName(NAMESPACE, "source-association");
+    QName TYPE_CHILD_ASSOCIATION = QName.createQName(NAMESPACE, "child-association");
 }

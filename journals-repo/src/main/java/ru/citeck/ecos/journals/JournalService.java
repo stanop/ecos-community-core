@@ -18,14 +18,14 @@
  */
 package ru.citeck.ecos.journals;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
-import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
-import ru.citeck.ecos.journals.records.JournalRecords;
-import ru.citeck.ecos.journals.records.JournalRecordsResult;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.query.RecordsResult;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -51,18 +51,13 @@ public interface JournalService {
 
     NodeRef getJournalRef(String id);
 
-    JournalRecordsResult getRecords(String journalId,
-                                    String query,
-                                    String language,
-                                    JGqlPageInfoInput pageInfo);
+    RecordsResult<RecordRef> getRecords(String journalId,
+                                        String query,
+                                        String language,
+                                        JGqlPageInfoInput pageInfo);
 
-    JournalRecords getRecordsLazy(String journalId,
-                                  String query,
-                                  String language,
-                                  JGqlPageInfoInput pageInfo);
-
-    JournalData getRecordsWithData(String journalId,
-                                   String query,
-                                   String language,
-                                   JGqlPageInfoInput pageInfo);
+    RecordsResult<ObjectNode> getRecordsWithData(String journalId,
+                                                 String query,
+                                                 String language,
+                                                 JGqlPageInfoInput pageInfo);
 }

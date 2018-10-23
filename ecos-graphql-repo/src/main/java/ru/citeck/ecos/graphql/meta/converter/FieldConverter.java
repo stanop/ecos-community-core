@@ -1,6 +1,7 @@
 package ru.citeck.ecos.graphql.meta.converter;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import ru.citeck.ecos.graphql.meta.annotation.MetaAtt;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
