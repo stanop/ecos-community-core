@@ -31,6 +31,7 @@ public class TaskConfig implements EcosPojoType {
         }
     }
 
+    //json ignore doesn't work. why?
     @JsonIgnore
     public void setPerformer(String authorityName) {
         if (StringUtils.isNotBlank(authorityName)) {
@@ -42,6 +43,7 @@ public class TaskConfig implements EcosPojoType {
         }
     }
 
+    //json ignore doesn't work. why?
     @JsonIgnore
     public String getPerformer() {
         String result = null;
@@ -58,14 +60,18 @@ public class TaskConfig implements EcosPojoType {
         if (candidateUsers == null) {
             candidateUsers = new ArrayList<>();
         }
-        candidateUsers.add(userName);
+        if (!candidateUsers.contains(userName)) {
+            candidateUsers.add(userName);
+        }
     }
 
     private void addCandidateGroup(String authorityName) {
         if (candidateGroups == null) {
             candidateGroups = new ArrayList<>();
         }
-        candidateGroups.add(authorityName);
+        if (!candidateGroups.contains(authorityName)) {
+            candidateGroups.add(authorityName);
+        }
     }
 
     @JsonProperty(value = "u")
