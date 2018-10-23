@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class Attribute {
 
-    enum Type { ASSOC, CHILD_ASSOC, PROP, UNKNOWN }
+    public enum Type { ASSOC, CHILD_ASSOC, PROP, UNKNOWN }
 
     private Type type;
     private QName name;
