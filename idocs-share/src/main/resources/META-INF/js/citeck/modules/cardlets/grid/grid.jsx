@@ -28,7 +28,7 @@ export default class GridCardlet extends NodeCardlet {
                     data: data.records,
                     columns: dataSource.getColumns(),
                     htmlId: htmlId,
-                    header: Alfresco.messages.global[headerId] || headerId,
+                    header: Alfresco.util.message[headerId] || headerId,
                     hideTwister: controlProps.hideTwister,
                     twisterKey: controlProps.twisterKey
                 });

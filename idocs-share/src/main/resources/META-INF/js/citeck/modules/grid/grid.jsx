@@ -9,10 +9,6 @@ export default class Grid extends Component  {
 
         Object.assign(ReactTableDefaults.column, column);
 
-        return (
-            <div>
-                <ReactTable {...props} />
-            </div>
-        );
+        return <ReactTable {...props} />;
     }
 }
