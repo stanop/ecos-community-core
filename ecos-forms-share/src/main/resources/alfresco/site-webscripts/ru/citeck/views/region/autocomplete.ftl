@@ -11,7 +11,12 @@
                 searchScript: "${controlParams.searchScript}",
             </#if>
             <#if controlParams.criteria??>
-                criteria: ${controlParams.criteria},
+                criteria: function() {
+                    return ko.computed(function() {
+                        var inputParam = ${controlParams.criteria?replace("'", "\"")};
+                        return _.isFunction(inputParam) ? inputParam() : inputParam;
+                    });
+                },
             </#if>
 
             data: $data,
