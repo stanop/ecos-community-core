@@ -1,5 +1,8 @@
 package ru.citeck.ecos.graphql;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import lombok.Getter;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.ServiceRegistry;
@@ -15,15 +18,13 @@ import ru.citeck.ecos.graphql.node.GqlQName;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class GqlContext {
 
-    private Map<Object, Optional<GqlAlfNode>> nodes = new ConcurrentHashMap<>();
-    private Map<Object, Optional<GqlQName>> qnames = new ConcurrentHashMap<>();
+    private LoadingCache<NodeRef, GqlAlfNode> nodes;
+    private LoadingCache<Object, Optional<GqlQName>> qnames;
     private List<MetaValue> metaValues;
 
     private final ServiceRegistry serviceRegistry;
@@ -43,6 +44,13 @@ public class GqlContext {
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.nodeService = serviceRegistry.getNodeService();
         this.messageService = serviceRegistry.getMessageService();
+
+        nodes = CacheBuilder.newBuilder()
+                            .maximumSize(1000)
+                            .build(CacheLoader.from(this::createNode));
+        qnames = CacheBuilder.newBuilder()
+                             .maximumSize(1000)
+                             .build(CacheLoader.from(this::createQName));
     }
 
     public List<GqlAlfNode> getNodes(Collection<?> keys) {
@@ -53,23 +61,21 @@ public class GqlContext {
                    .collect(Collectors.toList());
     }
 
-    public Optional<GqlAlfNode> getNode(Object nodeRef) {
-        if (nodeRef == null) {
-            return Optional.empty();
+    public Optional<GqlAlfNode> getNode(Object key) {
+        if (key instanceof GqlAlfNode) {
+            return Optional.of((GqlAlfNode) key);
         }
-        return nodes.computeIfAbsent(nodeRef, value -> {
-            Optional<GqlAlfNode> result;
-            if (value instanceof GqlAlfNode) {
-                result = Optional.of((GqlAlfNode) value);
-            } else if (value instanceof NodeRef) {
-                result = Optional.of(new GqlAlfNode((NodeRef) value, this));
-            } else if (value instanceof String && NodeRef.isNodeRef((String) value)) {
-                result = Optional.of(new GqlAlfNode(new NodeRef((String) value), this));
-            } else {
-                result = Optional.empty();
-            }
-            return result;
-        });
+        NodeRef nodeRef = null;
+        if (key instanceof NodeRef) {
+            nodeRef = (NodeRef) key;
+        } else if (key instanceof String && NodeRef.isNodeRef((String) key)) {
+            nodeRef = new NodeRef((String) key);
+        }
+        return nodeRef == null ? Optional.empty() : Optional.of(nodes.getUnchecked(nodeRef));
+    }
+
+    private GqlAlfNode createNode(NodeRef nodeRef) {
+        return new GqlAlfNode(nodeRef, this);
     }
 
     public List<GqlQName> getQNames(Collection<?> keys) {
@@ -81,28 +87,27 @@ public class GqlContext {
     }
 
     public Optional<GqlQName> getQName(Object qname) {
-        if (qname == null) {
-            return Optional.empty();
-        }
-        return qnames.computeIfAbsent(qname, value -> {
-            Optional<GqlQName> result;
-            if (value instanceof GqlQName) {
-                result = Optional.of((GqlQName) value);
-            } else if (value instanceof QName) {
-                result = Optional.of(new GqlQName((QName) value, this));
-            } else if (value instanceof String) {
-                String str = (String) value;
-                if (str.startsWith("{") || str.contains(":")) {
-                    QName resolvedQName = QName.resolveToQName(namespaceService, str);
-                    result = Optional.of(new GqlQName(resolvedQName, this));
-                } else {
-                    result = Optional.empty();
-                }
+       return qname == null ? Optional.empty() : qnames.getUnchecked(qname);
+    }
+
+    private Optional<GqlQName> createQName(Object value) {
+        Optional<GqlQName> result;
+        if (value instanceof GqlQName) {
+            result = Optional.of((GqlQName) value);
+        } else if (value instanceof QName) {
+            result = Optional.of(new GqlQName((QName) value, this));
+        } else if (value instanceof String) {
+            String str = (String) value;
+            if (str.startsWith("{") || str.contains(":")) {
+                QName resolvedQName = QName.resolveToQName(namespaceService, str);
+                result = Optional.of(new GqlQName(resolvedQName, this));
             } else {
                 result = Optional.empty();
             }
-            return result;
-        });
+        } else {
+            result = Optional.empty();
+        }
+        return result;
     }
 
     public List<MetaValue> getMetaValues() {

@@ -60,7 +60,4 @@ public interface JournalType {
     List<JournalGroupAction> getGroupActions();
 
     JournalCriterion getCriterion(QName attributeKey);
-    
-    String getFieldsSchema();
-    
 }

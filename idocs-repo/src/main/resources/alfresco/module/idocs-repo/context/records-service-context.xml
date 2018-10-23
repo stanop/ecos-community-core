@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+
+    <bean id="ru.citeck.ecos.records.tasksRecordsDAO" class="ru.citeck.ecos.records.source.ExactCriteriaRecordsDAO">
+        <property name="id" value="workflow-tasks" />
+        <property name="targetDAO" ref="alfNodesRecordsDAO" />
+        <property name="filteredFields">
+            <list>
+                <value>bpm:completionDate</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

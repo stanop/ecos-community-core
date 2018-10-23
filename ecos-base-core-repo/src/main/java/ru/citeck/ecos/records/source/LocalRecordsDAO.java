@@ -20,8 +20,7 @@ import java.util.stream.Collectors;
  * @author Pavel Simonov
  */
 public abstract class LocalRecordsDAO extends AbstractRecordsDAO
-                                      implements RecordsMetaDAO,
-        RecordsActionExecutor {
+                                      implements RecordsMetaDAO, RecordsActionExecutor {
 
     protected NodeService nodeService;
     protected GqlMetaUtils gqlMetaUtils;

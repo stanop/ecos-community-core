@@ -54,8 +54,6 @@ class JournalTypeImpl implements JournalType {
     private final Map<QName, List<JournalBatchEdit>> batchEdit;
     private final Map<QName, JournalCriterion> criterion;
 
-    private String fieldsSchema;
-
     public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver, ServiceRegistry serviceRegistry,
                            SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
 
@@ -78,9 +76,6 @@ class JournalTypeImpl implements JournalType {
         groupableAttributes = new BitSet(allAttributes.size());
 
         this.attributeOptions = new TreeMap<>();
-
-        StringBuilder fieldsSchemaBuilder = new StringBuilder("fragment journalFields on GqlAlfNode {");
-        fieldsSchemaBuilder.append("nodeRef\n");
 
         int index = 0;
         for (Header header : headers) {
@@ -107,11 +102,6 @@ class JournalTypeImpl implements JournalType {
             Map<String, String> headerOptions = Collections.unmodifiableMap(getOptions(header.getOption()));
             this.attributeOptions.put(attributeKey, headerOptions);
 
-            fieldsSchemaBuilder.append(header.getKey().replaceAll(":", "_"));
-            String attributeSchema = headerOptions.get("attributeSchema");
-            fieldsSchemaBuilder.append(": attribute(name:\"").append(header.getKey()).append("\"){");
-            fieldsSchemaBuilder.append(attributeSchema != null ? attributeSchema : "value").append("}\n");
-
             List<JournalBatchEdit> attributeBatchEdit = new ArrayList<>();
             for (BatchEdit batchEdit : header.getBatchEdit()) {
                 attributeBatchEdit.add(new JournalBatchEdit(batchEdit, journal.getId(),
@@ -125,15 +115,8 @@ class JournalTypeImpl implements JournalType {
 
             index++;
         }
-        fieldsSchemaBuilder.append("}");
 
-        this.fieldsSchema = fieldsSchemaBuilder.toString();
         this.attributes = Collections.unmodifiableList(allAttributes);
-    }
-
-    @Override
-    public String getFieldsSchema() {
-        return fieldsSchema;
     }
 
     @Override

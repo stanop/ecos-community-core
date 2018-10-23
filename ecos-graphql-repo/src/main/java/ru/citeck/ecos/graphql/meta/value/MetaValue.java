@@ -1,6 +1,7 @@
 package ru.citeck.ecos.graphql.meta.value;
 
 import graphql.annotations.annotationTypes.GraphQLField;
+import graphql.annotations.annotationTypes.GraphQLID;
 import graphql.annotations.annotationTypes.GraphQLName;
 import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
 
@@ -10,6 +11,7 @@ import java.util.Optional;
 public interface MetaValue {
 
     @GraphQLField
+    @GraphQLID
     String id();
 
     @GraphQLField
