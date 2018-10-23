@@ -52,8 +52,7 @@ function getAssocList(assocs, listName, defaultList) {
         removeable = getAssocList(assocConfig, "removeable", visible);
 
     // type scopes
-    var typeConfigs = assocConfig.childrenMap["doctype"];
-    if(!typeConfigs) { return; }
+    var typeConfigs = assocConfig.childrenMap["doctype"] || new Packages.java.util.ArrayList();
 
     for(var i = 0, ii = typeConfigs.size(); i < ii; i++) {
         var typeConfig = typeConfigs.get(i),
