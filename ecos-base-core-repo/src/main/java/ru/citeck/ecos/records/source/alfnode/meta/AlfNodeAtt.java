@@ -1,4 +1,4 @@
-package ru.citeck.ecos.graphql.meta.alfnode;
+package ru.citeck.ecos.records.source.alfnode.meta;
 
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;

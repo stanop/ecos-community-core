@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
-import ru.citeck.ecos.graphql.meta.value.MetaJsonNodeValue;
+import ru.citeck.ecos.records.source.meta.MetaJsonNodeValue;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;

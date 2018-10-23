@@ -1,4 +1,4 @@
-package ru.citeck.ecos.graphql.meta.alfnode;
+package ru.citeck.ecos.records.source.alfnode.meta;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.service.cmr.repository.NodeRef;

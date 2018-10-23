@@ -11,12 +11,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeRecord;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.source.*;
+import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeRecord;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

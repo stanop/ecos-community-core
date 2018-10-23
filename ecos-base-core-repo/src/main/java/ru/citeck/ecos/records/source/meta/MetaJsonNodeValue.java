@@ -1,4 +1,4 @@
-package ru.citeck.ecos.graphql.meta.value;
+package ru.citeck.ecos.records.source.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -8,9 +8,10 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.alfnode.AlfNodeAttValue;
 import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
 import ru.citeck.ecos.graphql.meta.attribute.MetaExplicitAtt;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeAttValue;
 
 import java.util.ArrayList;
 import java.util.Collections;

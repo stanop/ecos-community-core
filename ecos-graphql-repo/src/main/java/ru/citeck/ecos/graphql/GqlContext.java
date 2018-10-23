@@ -18,7 +18,9 @@ import ru.citeck.ecos.graphql.node.GqlQName;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class GqlContext {
@@ -37,6 +39,8 @@ public class GqlContext {
     private final NodeService nodeService;
     @Getter
     private final MessageService messageService;
+
+    private final Map<String, Object> servicesCache = new ConcurrentHashMap<>();
 
     public GqlContext(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
@@ -133,6 +137,8 @@ public class GqlContext {
 
     @SuppressWarnings("unchecked")
     public <T> T getService(String beanId) {
-        return (T) serviceRegistry.getService(QName.createQName(null, beanId));
+        return (T) servicesCache.computeIfAbsent(beanId, bean ->
+            serviceRegistry.getService(QName.createQName(null, beanId))
+        );
     }
 }
