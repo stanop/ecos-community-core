@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
-    <id>common-history</id>
+    <id>closing-document-history</id>
     <regionId>history</regionId>
-    <allowed-type>{http://www.alfresco.org/model/content/1.0}cmobject</allowed-type>
+    <allowed-type>{http://www.citeck.ru/model/contracts/1.0}closingDocument</allowed-type>
     <position>
         <column>left</column>
-        <order>h5</order>
+        <order>c5</order>
         <mobile-order>-1</mobile-order>
     </position>
     <control url="js/citeck/modules/cardlets/grid/grid">
