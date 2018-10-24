@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class GraphQLServiceImpl implements GraphQLService {
@@ -127,9 +128,21 @@ public class GraphQLServiceImpl implements GraphQLService {
 
         if (logger.isWarnEnabled()) {
             for (GraphQLError error : result.getErrors()) {
+
+                List<SourceLocation> locations = error.getLocations();
+                String locationsMsg = "";
+                if (locations != null && locations.size() > 0) {
+                    locationsMsg = " at " + locations.stream()
+                                                     .map(l -> l.getLine() + ":" + l.getColumn())
+                                                     .collect(Collectors.joining(", ")) + " ";
+                }
+
+                String message = "GraphQL " + error.getErrorType() + locationsMsg + "message: " + error.getMessage();
+
                 if (error instanceof ExceptionWhileDataFetching) {
-                    ExceptionWhileDataFetching fetchExc = (ExceptionWhileDataFetching) error;
-                    logger.warn("Exception while data fetching", fetchExc.getException());
+                    logger.error(message, ((ExceptionWhileDataFetching) error).getException());
+                } else {
+                    logger.error(message);
                 }
             }
         }

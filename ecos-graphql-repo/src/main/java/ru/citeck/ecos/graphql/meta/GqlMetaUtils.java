@@ -2,8 +2,10 @@ package ru.citeck.ecos.graphql.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import graphql.ExecutionResult;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.meta.converter.ConvertersProvider;
@@ -46,9 +48,11 @@ public class GqlMetaUtils {
 
         List<ObjectNode> result = new ArrayList<>();
 
-        if (executionResult == null) {
-            for (K ignored : ids) {
-                result.add(null);
+        if (executionResult == null || executionResult.getData() == null) {
+            for (K id : ids) {
+                ObjectNode node = JsonNodeFactory.instance.objectNode();
+                node.set("id", TextNode.valueOf(String.valueOf(id)));
+                result.add(node);
             }
         } else {
             JsonNode jsonNode = objectMapper.valueToTree(executionResult.getData());
