@@ -2,7 +2,7 @@ package ru.citeck.ecos.flowable.services;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * @author Roman Makarskiy
@@ -10,7 +10,7 @@ import java.util.List;
 public interface FlowableRecipientsService {
     String getRoleEmails(NodeRef document, String caseRoleName);
 
-    List<String> getRoleGroups(NodeRef document, String caseRoleName);
+    Set<String> getRoleGroups(NodeRef document, String caseRoleName);
 
-    List<String> getRoleUsers(NodeRef document, String caseRoleName);
+    Set<String> getRoleUsers(NodeRef document, String caseRoleName);
 }
