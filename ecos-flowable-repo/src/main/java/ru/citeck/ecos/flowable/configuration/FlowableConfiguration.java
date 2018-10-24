@@ -24,6 +24,7 @@ import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
 import ru.citeck.ecos.flowable.handlers.UserTaskBpmnParseHandler;
+import ru.citeck.ecos.flowable.services.FlowableRecipientsServiceJS;
 import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
 import ru.citeck.ecos.flowable.services.impl.ModelMapper;
@@ -76,6 +77,7 @@ public class FlowableConfiguration {
 
     private static final String BEAN_KEY_COMPLETENESS_SERVICE_JS = "caseCompletenessServiceJS";
     private static final String BEAN_KEY_CASE_STATUS_SERVICE_JS = "caseStatusServiceJS";
+    private static final String BEAN_KEY_FLOWABLE_RECIPIENTS_SERVICE_JS = "flowableRecipientsServiceJS";
 
     /**
      * Application context provider
@@ -193,10 +195,13 @@ public class FlowableConfiguration {
                 CaseCompletenessServiceJS.class);
         CaseStatusServiceJS caseStatusServiceJS = applicationContext.getBean(BEAN_KEY_CASE_STATUS_SERVICE_JS,
                 CaseStatusServiceJS.class);
+        FlowableRecipientsServiceJS flowableRecipientsServiceJS = applicationContext.getBean(
+                BEAN_KEY_FLOWABLE_RECIPIENTS_SERVICE_JS, FlowableRecipientsServiceJS.class);
 
         beans.put(FlowableConstants.SERVICE_REGISTRY_BEAN_KEY, descriptorRegistry);
         beans.put(FlowableConstants.COMPLETENESS_SERVICE_JS_KEY, caseCompletenessServiceJS);
         beans.put(FlowableConstants.CASE_STATUS_SERVICE_JS_KEY, caseStatusServiceJS);
+        beans.put(FlowableConstants.FLOWABLE_RECIPIENTS_SERVICE_JS_KEY, flowableRecipientsServiceJS);
 
         return beans;
     }
