@@ -349,9 +349,13 @@
         <property name="nodeService" ref="NodeService"/>
     </bean>
 
-    <bean id="webscript.ru.citeck.tasks.document-tasks.get" class="ru.citeck.ecos.webscripts.tasks.DocumentTasksGet"
-            parent="webscript">
+    <bean id="webscript.ru.citeck.tasks.document-tasks.get"
+          class="ru.citeck.ecos.webscripts.tasks.DocumentTasksGet" parent="webscript">
         <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <bean id="webscript.ru.citeck.tasks.document-tasks-manual.get"
+          class="ru.citeck.ecos.webscripts.tasks.DocumentTasksManualGet" parent="webscript">
     </bean>
 
 	<bean id="webscript.ru.citeck.passports.passports.get" class="ru.citeck.ecos.webscripts.passports.PassportsGet"
