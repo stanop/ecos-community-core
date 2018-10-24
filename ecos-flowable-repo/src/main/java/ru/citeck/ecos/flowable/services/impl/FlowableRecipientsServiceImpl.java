@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.flowable.services.FlowableRecipientsService;
 import ru.citeck.ecos.role.CaseRoleService;
@@ -18,6 +19,8 @@ import java.util.Set;
  * @author Roman Makarskiy
  */
 public class FlowableRecipientsServiceImpl implements FlowableRecipientsService {
+
+    private static final Logger logger = Logger.getLogger(FlowableRecipientsServiceImpl.class);
 
     @Autowired
     private CaseRoleService caseRoleService;
@@ -53,6 +56,10 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
             throw new IllegalArgumentException("CaseRoleName must be specified");
         }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Getting role recipients, document: " + document + ", caseRoleName: " + caseRoleName);
+        }
+
         Set<String> recipients = new HashSet<>();
         Set<NodeRef> assignees = caseRoleService.getAssignees(document, caseRoleName);
 
@@ -64,6 +71,10 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
                     recipients.add(name);
                 }
             }
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Return recipients: " + recipients);
         }
 
         return recipients;

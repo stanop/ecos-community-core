@@ -4,7 +4,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
-import java.util.List;
 import java.util.Set;
 
 /**
