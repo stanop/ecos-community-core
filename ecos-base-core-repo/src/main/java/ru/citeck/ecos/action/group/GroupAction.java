@@ -21,6 +21,8 @@ public interface GroupAction<T> extends ResultsListener<T>, Closeable {
 
     long getTimeout();
 
+    boolean isReadOnly();
+
     void addListener(ResultsListener<T> listener);
 
     default void onProcessed(List<ActionResult<T>> results) {}

@@ -65,6 +65,10 @@ public class ActionExecution<T> {
         }
     }
 
+    public boolean isReadOnly() {
+        return action.isReadOnly();
+    }
+
     public void cancel() {
         cancelCause = new ManualCancelException();
     }

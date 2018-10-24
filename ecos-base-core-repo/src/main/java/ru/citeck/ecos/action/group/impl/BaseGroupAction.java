@@ -104,6 +104,11 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
         }
     }
 
+    @Override
+    public boolean isReadOnly() {
+        return config.isReadOnly();
+    }
+
     private void processNodes() {
         processNodesImpl(input);
         processedCount += input.size();
