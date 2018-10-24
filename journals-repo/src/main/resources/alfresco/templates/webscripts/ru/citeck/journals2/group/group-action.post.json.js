@@ -76,12 +76,7 @@ function getRecordsSource(journalId) {
     var journalType = journals.getJournalType(journalId);
     if (journalType) {
         var datasourceId = journalType.getDataSource();
-        if (datasourceId) {
-            var datasource = services.get(datasourceId);
-            if (datasource && datasource.getSourceId) {
-                return datasource.getSourceId() || "";
-            }
-        }
+        return datasourceId || "";
     }
     return "";
 }
