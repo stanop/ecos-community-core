@@ -18,6 +18,7 @@ public class GroupActionConfig {
     private int maxErrors = 1000;
     private long timeout = TimeUnit.HOURS.toMillis(5);
     private String actionId;
+    private boolean readOnly = false;
 
     public GroupActionConfig() {
     }
@@ -122,6 +123,14 @@ public class GroupActionConfig {
 
     public void setTimeout(long timeout) {
         this.timeout = timeout;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     @Override

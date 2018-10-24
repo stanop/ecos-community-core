@@ -50,6 +50,11 @@ public class GroupActionServiceImpl implements GroupActionService {
         }
     }
 
+    private <T> ActionResults<T> executeInTxn(ActionExecution<T> execution) {
+        RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
+        return txnHelper.doInTransaction(() -> executeImpl(execution), execution.isReadOnly(), false);
+    }
+
     @Override
     public <T> ActionResults<T> execute(Iterable<T> nodes, GroupAction<T> action) {
 
@@ -65,19 +70,17 @@ public class GroupActionServiceImpl implements GroupActionService {
             final String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
             final Locale locale = I18NUtil.getLocale();
 
-            RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
-
             AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
                 @Override
                 public void afterCommit() {
-                    new Thread(() -> txnHelper.doInTransaction(() -> {
+                    new Thread(() -> {
 
                         AuthenticationUtil.setRunAsUser(currentUser);
                         I18NUtil.setLocale(locale);
 
-                        return executeImpl(execution);
+                        executeInTxn(execution);
 
-                    }, false)).start();
+                    }).start();
                 }
             });
 
@@ -85,7 +88,7 @@ public class GroupActionServiceImpl implements GroupActionService {
 
         } else {
 
-            return executeImpl(execution);
+            return executeInTxn(execution);
         }
     }
 

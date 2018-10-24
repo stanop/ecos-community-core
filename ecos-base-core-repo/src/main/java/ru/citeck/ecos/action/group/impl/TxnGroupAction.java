@@ -38,7 +38,7 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
 
                 RetryingTransactionHelper tHelper = transactionService.getRetryingTransactionHelper();
                 List<ActionResult<T>> txnOutput = tHelper.doInTransaction(() -> processNodesInTxn(nodesToProcess),
-                                                                          false, true);
+                                                                          isReadOnly(), true);
                 transactionResults.addAll(txnOutput);
                 nodesToProcess.clear();
 
@@ -80,7 +80,7 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
             transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
                 onProcessedInTxn(actionResults);
                 return null;
-            }, false, true);
+            }, isReadOnly(), true);
         } catch (Exception e) {
             throw new RuntimeException(getClass() + " onProcessed error. Results: " + actionResults);
         }
