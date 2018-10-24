@@ -314,9 +314,6 @@
 		  class="ru.citeck.ecos.flowable.listeners.global.impl.variables.AbstractFlowableSaveToExecutionListener"
 		  abstract="true"/>
 
-	<bean id="flowableCaseRolesSetListener"
-		  class="ru.citeck.ecos.flowable.listeners.global.impl.variables.FlowableCaseRolesSetListener"/>
-
 	<bean id="flowableCaseStatusSetListener"
 		  class="ru.citeck.ecos.flowable.listeners.global.impl.variables.FlowableCaseStatusSetListener"/>
 
