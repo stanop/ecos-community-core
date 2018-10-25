@@ -268,6 +268,27 @@ define([
             onGroupAction: function (records, action) {
                 var self = this;
 
+                if (!self.widgets.waitingDialog) {
+                    self.widgets.waitingDialog = new YAHOO.widget.SimpleDialog("group-action-waiting-dialog", {
+                        width: "600px",
+                        effect:{
+                            effect: YAHOO.widget.ContainerEffect.FADE,
+                            duration: 0.25
+                        },
+                        fixedcenter: "contained",
+                        modal: true,
+                        visible: true,
+                        draggable: false,
+                        close: false
+                    });
+
+                    self.widgets.waitingDialog.setBody('<div class="loading" style="height: 200px"></div>');
+                    self.widgets.waitingDialog.setHeader(msg("message.please-wait"));
+                    self.widgets.waitingDialog.render(document.body);
+                }
+
+                self.widgets.waitingDialog.show();
+
                 var dataObj = {
                     nodes: _.map(records, function(record) { return record.nodeRef(); }),
                     actionId: action.settings().actionId,
@@ -275,6 +296,13 @@ define([
                     groupType: action.groupType(),
                     journalId: this.viewModel.journal().type().id(),
                     query: this.viewModel.recordsQuery()
+                };
+
+                var showError = function (msg) {
+                    Alfresco.util.PopupManager.displayMessage({
+                        text: msg,
+                        displayTime: 5
+                    });
                 };
 
                 var groupActionPost = function () {
@@ -285,7 +313,7 @@ define([
                             scope: this,
                             fn: function(response) {
                                 YAHOO.Bubbling.fire("metadataRefresh");
-                                var results = response.json;
+                                var results = response.json.results;
                                 var downloadReportUrl = results && results[0] && results[0].url;
 
                                 if (!self.widgets.gard) {
@@ -321,7 +349,7 @@ define([
                                     self.widgets.gard.render(document.body);
                                 }
                                 if (downloadReportUrl) {
-                                    self.widgets.gard.setBody(
+                                    var body = (
                                         '<table  style="width: 100%; height: 60px">' +
                                         '<tr style="text-align: center">' +
                                         '<td>' + msg("group-action.label.report") + '</td>' +
@@ -329,7 +357,10 @@ define([
                                         + 'href="' + Alfresco.constants.PROXY_URI + downloadReportUrl + '">' + msg("actions.document.download") + '</a></td>' +
                                         '</tr>' +
                                         '</table>'
-                                    )
+                                    );
+
+                                    self.widgets.gard.setBody(body);
+
                                 } else {
                                     $("table tbody", self.widgets.gard.body).remove();
 
@@ -339,40 +370,54 @@ define([
                                             return rec.nodeRef() == result.nodeRef;
                                         });
 
+                                        var recordName;
+
                                         if (record) {
                                             var nameAttr   = record.attributes()["cm:name"],
                                                 name       = nameAttr && nameAttr[0] && nameAttr[0].hasOwnProperty('str') ? nameAttr[0].str : nameAttr,
                                                 titleAttr  = record.attributes()["cm:title"],
-                                                title      = titleAttr && titleAttr[0] && titleAttr[0].hasOwnProperty('str') ? titleAttr[0].str : titleAttr,
-                                                recordName = title || name,
-                                                document   = record.attributes()["wfm:document"];
+                                                title      = titleAttr && titleAttr[0] && titleAttr[0].hasOwnProperty('str') ? titleAttr[0].str : titleAttr;
 
-                                            if (record.isDocument() && document) {
-                                                id = document.displayName || (document[0] && document[0].hasOwnProperty('str') ? document[0].str : "");
-                                            }
-
-                                            rtbody.append(
-                                                $("<tr>")
-                                                    .append($("<td>", { text: recordName }))
-                                                    .append($("<td>", {
-                                                        text: msg("batch-edit.message." + result.status)
-                                                    }))
-                                                    .append($("<td>", { text: result.message }))
-                                            );
+                                            recordName = title || name;
+                                        } else {
+                                            recordName = result.nodeRef;
                                         }
+
+                                        rtbody.append(
+                                            $("<tr>")
+                                                .append($("<td>", { text: recordName }))
+                                                .append($("<td>", {
+                                                    text: msg("batch-edit.message." + result.status)
+                                                }))
+                                                .append($("<td>", { text: result.message }))
+                                        );
                                     });
 
                                     $("table", self.widgets.gard.body).append(rtbody);
                                 }
+                                self.widgets.waitingDialog.hide();
                                 self.widgets.gard.show();
+
+                                var error = response.json.error;
+                                if (error) {
+                                    showError("Ошибка [" + error.type + "] message: " + error.message);
+                                }
                             }
                         },
                         failureCallback: {
                             scope: this,
                             fn: function(response) {
-                                Alfresco.util.PopupManager.displayMessage({
-                                    text: this.msg("batch-edit.message.ERROR")
-                                });
+
+                                self.widgets.waitingDialog.hide();
+
+                                var msg = ((response || {}).json || {}).message;
+                                if (msg) {
+                                    msg = msg.replace(/.+\.json\.js': /, "");
+                                } else {
+                                    msg = Alfresco.util.message('batch-edit.message.ERROR');
+                                }
+
+                                showError(msg);
                             }
                         }
                     });

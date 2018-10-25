@@ -1,6 +1,9 @@
 package ru.citeck.ecos.action.group.impl;
 
 import ru.citeck.ecos.action.group.*;
+import ru.citeck.ecos.action.group.exception.ElementsLimitException;
+import ru.citeck.ecos.action.group.exception.ErrorsLimitException;
+import ru.citeck.ecos.action.group.exception.GroupActionException;
 
 import java.util.*;
 
@@ -16,6 +19,7 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
 
     private int errorsCount = 0;
     private int processedCount = 0;
+    private int receivedElements = 0;
 
     private List<ResultsListener<T>> listeners = new ArrayList<>();
 
@@ -24,12 +28,17 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
     }
 
     @Override
-    public final void process(T remoteRef) {
+    public final boolean process(T remoteRef) {
         input.add(remoteRef);
         int batchSize = config.getBatchSize();
         if (batchSize > 0 && input.size() >= batchSize) {
             processNodes();
         }
+        if (++receivedElements >= config.getElementsLimit()) {
+            processNodes();
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -43,6 +52,9 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
         results.setResults(output);
         results.setErrorsCount(errorsCount);
         results.setProcessedCount(processedCount);
+        if (receivedElements >= config.getElementsLimit()) {
+            results.setCancelCause(new ElementsLimitException("Items limit: " + config.getElementsLimit()));
+        }
 
         return results;
     }
@@ -97,10 +109,10 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
                 output.add(result);
             }
         }
-        int maxErrors = config.getMaxErrors();
-        if (maxErrors > 0 && errorsCount >= maxErrors) {
-            throw new ErrorsLimitReachedException("Group action max errors limit is reached! " +
-                                                  "LastError: " + lastErrorMsg, lastError);
+        int errorsLimit = config.getErrorsLimit();
+        if (errorsLimit > 0 && errorsCount >= errorsLimit) {
+            throw new ErrorsLimitException("Group action max errors limit is reached! " +
+                                           "LastError: " + lastErrorMsg, lastError);
         }
     }
 
@@ -110,9 +122,11 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
     }
 
     private void processNodes() {
-        processNodesImpl(input);
-        processedCount += input.size();
-        input.clear();
+        if (input.size() > 0) {
+            processNodesImpl(input);
+            processedCount += input.size();
+            input.clear();
+        }
     }
 
     protected void onComplete() {
@@ -131,7 +145,7 @@ public abstract class BaseGroupAction<T> implements GroupAction<T> {
     }
 
     protected ActionStatus processImpl(T nodeRef) {
-        throw new RuntimeException("Method not implemented");
+        throw new GroupActionException("Method not implemented");
     }
 
     public GroupActionConfig getConfig() {

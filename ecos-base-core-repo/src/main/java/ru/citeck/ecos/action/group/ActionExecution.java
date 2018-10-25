@@ -2,7 +2,8 @@ package ru.citeck.ecos.action.group;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.action.group.impl.ManualCancelException;
+import ru.citeck.ecos.action.group.exception.ActionTimeoutException;
+import ru.citeck.ecos.action.group.exception.ManualCancelException;
 
 import java.io.IOException;
 import java.util.Date;
@@ -45,17 +46,20 @@ public class ActionExecution<T> {
             boolean hasNext = it.hasNext();
             while (cancelCause == null && hasNext) {
                 try {
-                    action.process(it.next());
+                    boolean requireNext = action.process(it.next());
                     if (isTimeoutReached()) {
-                        throw new RuntimeException("Action timeout is reached. " + toString());
+                        throw new ActionTimeoutException("Action timeout is reached");
                     }
-                    hasNext = it.hasNext();
+                    hasNext = requireNext && it.hasNext();
                 } catch (Exception e) {
                     cancelCause = e;
-                    logger.error("Error while action executed. Action: " + action, e);
                 }
             }
-            return cancelCause != null ? action.cancel(cancelCause) : action.complete();
+            ActionResults<T> results = cancelCause != null ? action.cancel(cancelCause) : action.complete();
+            if (results.getCancelCause() != null) {
+                logger.error("Error while action executed. Action: " + action, results.getCancelCause());
+            }
+            return results;
         } finally {
             try {
                 action.close();
