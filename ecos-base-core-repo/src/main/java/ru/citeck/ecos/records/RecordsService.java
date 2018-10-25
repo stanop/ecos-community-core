@@ -72,6 +72,7 @@ public interface RecordsService {
 
     /**
      * Get MetaValue by record. Executed in GraphQL execution context
+     * @deprecated this method will be removed soon
      */
     List<MetaValue> getMetaValues(GqlContext context, List<RecordRef> records);
 

@@ -6,6 +6,9 @@ import ru.citeck.ecos.records.RecordRef;
 
 import java.util.List;
 
+/**
+ * @deprecated
+ */
 public interface RecordsMetaValueDAO {
 
     List<MetaValue> getMetaValues(GqlContext context, List<RecordRef> recordRefs);
