@@ -14,10 +14,7 @@ import ru.citeck.ecos.flowable.services.FlowableRecipientsService;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,6 +33,8 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
     @Autowired
     protected NodeService nodeService;
 
+    public static final String EMAIL_SEPARATOR = ",";
+
     @Override
     public String getRoleEmails(NodeRef document, String caseRoleName) {
         if (document == null || !nodeService.exists(document)) {
@@ -47,24 +46,24 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
         }
 
         Set<NodeRef> assignees = caseRoleService.getAssignees(document, caseRoleName);
-        List<String> emails = new ArrayList<>();
+        Set<String> emails = new HashSet<>();
 
         for (NodeRef assignee : assignees) {
             if (nodeService.exists(assignee)) {
                 QName type = nodeService.getType(assignee);
                 if (dictionaryService.isSubClass(type, ContentModel.TYPE_PERSON)) {
-                    Serializable emailRaw = nodeService.getProperty(assignee, ContentModel.PROP_EMAIL);
-                    if (emailRaw != null && isUniqueElement(emails, emailRaw.toString())) {
-                        emails.add(emailRaw.toString());
+                    String email = RepoUtils.getProperty(assignee, ContentModel.PROP_EMAIL, nodeService);
+                    if (StringUtils.isNotBlank(email)) {
+                        emails.add(email);
                     }
                 } else if (dictionaryService.isSubClass(type, ContentModel.TYPE_AUTHORITY_CONTAINER)) {
                     String groupName = (String) nodeService.getProperty(assignee, ContentModel.PROP_AUTHORITY_NAME);
                     Set<String> authorities = authorityService.getContainedAuthorities(AuthorityType.USER, groupName, false);
                     for (String authority : authorities) {
                         NodeRef authorityRef = authorityService.getAuthorityNodeRef(authority);
-                        Serializable emailRaw = nodeService.getProperty(authorityRef, ContentModel.PROP_EMAIL);
-                        if (emailRaw != null && isUniqueElement(emails, emailRaw.toString())) {
-                            emails.add(emailRaw.toString());
+                        String email = RepoUtils.getProperty(authorityRef, ContentModel.PROP_EMAIL, nodeService);
+                        if (StringUtils.isNotBlank(email)) {
+                            emails.add(email);
                         }
                     }
                 }
@@ -72,7 +71,7 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
         }
 
         if (!emails.isEmpty()) {
-            return String.join(",", emails);
+            return String.join(EMAIL_SEPARATOR, emails);
         } else {
             return "";
         }
@@ -122,14 +121,5 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
         }
 
         return recipients;
-    }
-
-    private boolean isUniqueElement(List<String> list, String value) {
-        for (String listItem : list) {
-            if (listItem.equals(value)) {
-                return false;
-            }
-        }
-        return true;
     }
 }
