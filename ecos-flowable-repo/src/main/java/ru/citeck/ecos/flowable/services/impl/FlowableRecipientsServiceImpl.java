@@ -4,6 +4,8 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -12,7 +14,10 @@ import ru.citeck.ecos.flowable.services.FlowableRecipientsService;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,13 +30,52 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
     @Autowired
     private CaseRoleService caseRoleService;
     @Autowired
+    private AuthorityService authorityService;
+    @Autowired
     private DictionaryService dictionaryService;
     @Autowired
     protected NodeService nodeService;
 
     @Override
     public String getRoleEmails(NodeRef document, String caseRoleName) {
-        return null;
+        if (document == null || !nodeService.exists(document)) {
+            throw new IllegalArgumentException("Document does not exist: " + document);
+        }
+
+        if (StringUtils.isBlank(caseRoleName)) {
+            throw new IllegalArgumentException("CaseRoleName must be specified");
+        }
+
+        Set<NodeRef> assignees = caseRoleService.getAssignees(document, caseRoleName);
+        List<String> emails = new ArrayList<>();
+
+        for (NodeRef assignee : assignees) {
+            if (nodeService.exists(assignee)) {
+                QName type = nodeService.getType(assignee);
+                if (dictionaryService.isSubClass(type, ContentModel.TYPE_PERSON)) {
+                    Serializable emailRaw = nodeService.getProperty(assignee, ContentModel.PROP_EMAIL);
+                    if (emailRaw != null && isUniqueElement(emails, emailRaw.toString())) {
+                        emails.add(emailRaw.toString());
+                    }
+                } else if (dictionaryService.isSubClass(type, ContentModel.TYPE_AUTHORITY_CONTAINER)) {
+                    String groupName = (String) nodeService.getProperty(assignee, ContentModel.PROP_AUTHORITY_NAME);
+                    Set<String> authorities = authorityService.getContainedAuthorities(AuthorityType.USER, groupName, false);
+                    for (String authority : authorities) {
+                        NodeRef authorityRef = authorityService.getAuthorityNodeRef(authority);
+                        Serializable emailRaw = nodeService.getProperty(authorityRef, ContentModel.PROP_EMAIL);
+                        if (emailRaw != null && isUniqueElement(emails, emailRaw.toString())) {
+                            emails.add(emailRaw.toString());
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!emails.isEmpty()) {
+            return String.join(",", emails);
+        } else {
+            return "";
+        }
     }
 
     @Override
@@ -78,5 +122,14 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
         }
 
         return recipients;
+    }
+
+    private boolean isUniqueElement(List<String> list, String value) {
+        for (String listItem : list) {
+            if (listItem.equals(value)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
