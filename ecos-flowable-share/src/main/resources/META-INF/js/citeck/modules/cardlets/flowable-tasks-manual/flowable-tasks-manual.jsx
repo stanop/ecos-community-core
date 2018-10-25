@@ -1,12 +1,11 @@
 import React from "react";
 import NodeCardlet from '../node-cardlet';
 
-import 'xstyle!./tasks-manual.css';
-
-export default class TasksManual extends NodeCardlet {
+export default class FlowableTasksManual extends NodeCardlet {
 
     static getFetchUrl(ownProps) {
-        return '/share/proxy/alfresco/citeck/document/tasks-manual?nodeRef=' + ownProps.nodeRef;
+        var base = '/share/proxy/alfresco/citeck/flowable/document/tasks/manual';
+        return base + '?nodeRef=' + ownProps.nodeRef + "&engine=flowable";
     }
 
     static fetchData(ownProps, onSuccess, onFailure) {
@@ -58,7 +57,7 @@ export default class TasksManual extends NodeCardlet {
                         {tasks.map(t => {
                             return (
                                 <div id={`${htmlId}-${t.id}`} className="yui-dt-liner">
-                                    <h3 className="thin dark" className="filename simple-view">{t.title}</h3>
+                                    <h3 className="thin dark filename simple-view">{t.title}</h3>
                                     <div dangerouslySetInnerHTML={{__html: t.description}} className="detail"/>
                                 </div>
                             );

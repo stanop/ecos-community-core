@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Workflow service utils
@@ -54,22 +55,37 @@ public class WorkflowUtils {
         }
     }
 
+    public List<WorkflowTask> getDocumentUserTasks(NodeRef nodeRef, boolean active) {
+        return getDocumentUserTasks(nodeRef, active, null);
+    }
+
     /**
      * Get current user document tasks
      */
-    public List<WorkflowTask> getDocumentUserTasks(NodeRef nodeRef, boolean active) {
+    public List<WorkflowTask> getDocumentUserTasks(NodeRef nodeRef, boolean active, String engine) {
 
         List<WorkflowTask> tasks = new LinkedList<>();
 
-        String userName = AuthenticationUtil.getFullyAuthenticatedUser();
-        Set<NodeRef> authorities = authorityUtils.getUserAuthoritiesRefs();
-
         List<WorkflowInstance> workflows = workflowService.getWorkflowsForContent(nodeRef, active);
 
-        for (WorkflowInstance workflow : workflows) {
-            for (WorkflowTask task : getWorkflowTasks(workflow, active)) {
-                if (isTaskActor(task, userName, authorities)) {
-                    tasks.add(task);
+        if (StringUtils.isNotBlank(engine)) {
+            String enginePrefix = engine + "$";
+            workflows = workflows.stream()
+                                 .filter(workflow -> workflow.getId()
+                                 .startsWith(enginePrefix))
+                                 .collect(Collectors.toList());
+        }
+
+        if (workflows.size() > 0) {
+
+            String userName = AuthenticationUtil.getFullyAuthenticatedUser();
+            Set<NodeRef> authorities = authorityUtils.getUserAuthoritiesRefs();
+
+            for (WorkflowInstance workflow : workflows) {
+                for (WorkflowTask task : getWorkflowTasks(workflow, active)) {
+                    if (isTaskActor(task, userName, authorities)) {
+                        tasks.add(task);
+                    }
                 }
             }
         }

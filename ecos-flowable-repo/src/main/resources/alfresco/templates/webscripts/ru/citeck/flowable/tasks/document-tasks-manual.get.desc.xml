@@ -1,7 +1,7 @@
 <webscript>
     <shortname>document-tasks-manual</shortname>
     <description>Gets active tasks manual</description>
-    <url>/citeck/document/tasks-manual?nodeRef={nodeRef}</url>
+    <url>/citeck/flowable/document/tasks/manual?nodeRef={nodeRef}</url>
     <format default="json"/>
     <authentication>user</authentication>
     <transaction allow="readonly">required</transaction>

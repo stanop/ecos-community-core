@@ -354,10 +354,6 @@
         <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
 
-    <bean id="webscript.ru.citeck.tasks.document-tasks-manual.get"
-          class="ru.citeck.ecos.webscripts.tasks.DocumentTasksManualGet" parent="webscript">
-    </bean>
-
 	<bean id="webscript.ru.citeck.passports.passports.get" class="ru.citeck.ecos.webscripts.passports.PassportsGet"
 			parent="webscript">
 		<!-- note that private services are used -->

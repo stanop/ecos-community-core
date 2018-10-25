@@ -1,4 +1,4 @@
-package ru.citeck.ecos.webscripts.tasks;
+package ru.citeck.ecos.flowable.webscripts.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -9,14 +9,14 @@ import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.utils.WorkflowUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DocumentTasksManualGet extends AbstractWebScript {
 
     private static final String PARAM_NODEREF = "nodeRef";
+    private static final String PARAM_ENGINE = "engine";
 
     private WorkflowUtils workflowUtils;
 
@@ -32,7 +32,8 @@ public class DocumentTasksManualGet extends AbstractWebScript {
 
         NodeRef documentRef = new NodeRef(nodeRefStr);
 
-        List<WorkflowTask> tasks = workflowUtils.getDocumentUserTasks(documentRef, true);
+        String engine = req.getParameter(PARAM_ENGINE);
+        List<WorkflowTask> tasks = workflowUtils.getDocumentUserTasks(documentRef, true, engine);
 
         Response response = new Response();
         response.tasks = tasks.stream().map(this::formatTask).collect(Collectors.toList());
