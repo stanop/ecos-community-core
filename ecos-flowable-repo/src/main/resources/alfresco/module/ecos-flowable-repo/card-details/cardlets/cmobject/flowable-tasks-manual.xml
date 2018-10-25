@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
+    <id>common-flowable-tasks-manual</id>
+    <regionId>flowable-tasks-manual</regionId>
+    <allowed-type>{http://www.alfresco.org/model/content/1.0}cmobject</allowed-type>
+    <position>
+        <column>right</column>
+        <order>a51</order>
+        <mobile-order>-1</mobile-order>
+    </position>
+    <control url="js/citeck/modules/cardlets/flowable-tasks-manual/flowable-tasks-manual">
+        <prop name="header">cardlet.tasks-manual.header</prop>
+    </control>
+</cardlet>
