@@ -47,6 +47,13 @@
                     isMobile: "${isMobile?string}"
                 });
             });
+
+            require([
+                'js/citeck/modules/slide-menu/index'
+            ], function(SlideMenu) {
+                SlideMenu.render('slide-menu', {});
+            });
+
         //]]></script>
    <#else>
       <@processJsonModel group="share"/>
@@ -55,4 +62,5 @@
 
 <@markup id="html">
    <div id="share-header"></div>
+   <div id="slide-menu"></div>
 </@>

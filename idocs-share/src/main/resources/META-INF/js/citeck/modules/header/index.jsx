@@ -51,9 +51,9 @@ export const render = (elementId, props) => {
         document.getElementById(elementId)
     );
 
-    if (props.slideMenuConfig) {
-        require(['js/citeck/header/citeckMainSlideMenu'], function(CiteckMainSlideMenu) {
-            new CiteckMainSlideMenu(props.slideMenuConfig);
-        });
-    }
+    // if (props.slideMenuConfig) {
+    //     require(['js/citeck/header/citeckMainSlideMenu'], function(CiteckMainSlideMenu) {
+    //         new CiteckMainSlideMenu(props.slideMenuConfig);
+    //     });
+    // }
 };

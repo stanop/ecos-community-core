@@ -1,0 +1,166 @@
+#slide-menu-checkbox {
+    display: none;
+}
+
+#page-content-root {
+    -webkit-transform: translateX(60px);
+    -moz-transform: translateX(60px);
+    transform: translateX(60px);
+    transition: transform 0.3s;
+    width: calc(100% - 60px);
+}
+
+.slide-menu {
+    box-sizing: border-box;
+    width: 60px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    left: 0;
+    padding: 0;
+    -webkit-transition: width 0.3s;
+    -moz-transition: width 0.3s;
+    transition: width 0.3s;
+    background: #f0f0f0;
+    border-color: rgba(0,0,0,.1);
+    color: rgba(0,0,0,.75);
+    z-index: 2000;
+}
+
+.slide-menu-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    cursor: pointer;
+}
+
+[id='slide-menu-checkbox'] {
+    position: absolute;
+    display: none;
+}
+
+[id='slide-menu-checkbox']:checked ~ .slide-menu .slide-menu-toggle {
+    left: auto;
+    bottom: auto;
+    right: 15px;
+    top: 8px;
+}
+
+[id='slide-menu-checkbox']:checked ~ .slide-menu {
+    width: 350px;
+}
+
+[id='slide-menu-checkbox']:checked ~ #page-content-root {
+    -webkit-transform: translateX(350px);
+    -moz-transform: translateX(350px);
+    transform: translateX(350px);
+}
+
+[id='slide-menu-checkbox']:checked ~ .slide-menu .slide-menu-toggle:after {
+    content: "\f100";
+    font: normal normal normal 25px/1 FontAwesome;
+    color: #52759d;
+}
+
+/**
+ * fix bug for Android <= 4.1.2
+ * see: http://timpietrusky.com/advanced-checkbox-hack
+ */
+
+body {
+    -webkit-animation: bugfix infinite 1s;
+}
+
+@-webkit-keyframes bugfix {
+    to {
+        padding: 0;
+    }
+}
+
+@media screen and (min-width: 320px) {
+    html,
+    body {
+        margin: 0;
+        overflow-x: hidden;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    html,
+    body {
+        margin: 0;
+        overflow-x: hidden;
+    }
+}
+
+@media screen and (max-width: 440px) {
+    html,
+    body {
+        margin: 0;
+        overflow-x: hidden;
+    }
+    .slide-menu {
+        left: -60px;
+    }
+    [id='slide-menu-checkbox']:checked ~ .slide-menu {
+        left: 0;
+        width: 80%;
+    }
+    #page-content-root {
+        -webkit-transform: translateX(0px);
+        -moz-transform: translateX(0px);
+        transform: translateX(0);
+    }
+    [id='slide-menu-checkbox']:checked ~ #page-content-root {
+        -webkit-transform: translateX(81%);
+        -moz-transform: translateX(81%);
+        transform: translateX(81%);
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .slide-menu {
+        left: -60px;
+    }
+    [id='slide-menu-checkbox']:checked ~ .slide-menu {
+        left: 0;
+    }
+    #page-content-root {
+        -webkit-transform: translateX(0px);
+        -moz-transform: translateX(0px);
+        transform: translateX(0);
+        width: 100%;
+    }
+}
+
+.mask-content {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    visibility: hidden;
+    opacity: 0;
+}
+
+[id='slide-menu-checkbox']:checked ~ .mask-content {
+    visibility: visible;
+    opacity: 1;
+    -webkit-transition: opacity .5s, visibility .5s;
+    transition: opacity .5s, visibility .5s;
+}
+
+.mask-content label {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
