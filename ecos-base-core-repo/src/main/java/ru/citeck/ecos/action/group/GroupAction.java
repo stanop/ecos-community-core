@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface GroupAction<T> extends ResultsListener<T>, Closeable {
 
-    void process(T nodeId);
+    boolean process(T nodeId);
 
     ActionResults<T> complete();
 

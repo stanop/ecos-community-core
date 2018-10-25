@@ -14,8 +14,11 @@ public class GroupActionConfig {
     private ObjectNode params;
     private int batchSize = 1;
     private boolean async = false;
+
     private int maxResults = 100;
-    private int maxErrors = 1000;
+    private int errorsLimit = 1_000;
+    private int elementsLimit = 10_000;
+
     private long timeout = TimeUnit.HOURS.toMillis(5);
     private String actionId;
     private boolean readOnly = false;
@@ -41,6 +44,14 @@ public class GroupActionConfig {
 
     public void setActionId(String actionId) {
         this.actionId = actionId;
+    }
+
+    public int getErrorsLimit() {
+        return errorsLimit;
+    }
+
+    public void setErrorsLimit(int errorsLimit) {
+        this.errorsLimit = errorsLimit;
     }
 
     public void setParams(ObjectNode params) {
@@ -109,14 +120,6 @@ public class GroupActionConfig {
         this.maxResults = maxResults;
     }
 
-    public int getMaxErrors() {
-        return maxErrors;
-    }
-
-    public void setMaxErrors(int maxErrors) {
-        this.maxErrors = maxErrors;
-    }
-
     public long getTimeout() {
         return timeout;
     }
@@ -131,6 +134,14 @@ public class GroupActionConfig {
 
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    public int getElementsLimit() {
+        return elementsLimit;
+    }
+
+    public void setElementsLimit(int elementsLimit) {
+        this.elementsLimit = elementsLimit;
     }
 
     @Override
@@ -161,7 +172,8 @@ public class GroupActionConfig {
                 ", batchSize=" + batchSize +
                 ", async=" + async +
                 ", maxResults=" + maxResults +
-                ", maxErrors=" + maxErrors +
+                ", errorsLimit=" + errorsLimit +
+                ", elementsLimit=" + elementsLimit +
                 ", timeout=" + timeout +
                 '}';
     }
