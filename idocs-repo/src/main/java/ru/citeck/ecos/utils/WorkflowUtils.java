@@ -9,6 +9,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
@@ -122,6 +123,8 @@ public class WorkflowUtils {
      *
      * @param workflowService Workflow service
      */
+    @Autowired
+    @Qualifier("WorkflowService")
     public void setWorkflowService(WorkflowService workflowService) {
         this.workflowService = workflowService;
     }

@@ -4,6 +4,8 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -40,6 +42,8 @@ public class AuthorityUtils {
         return getUserAuthoritiesRefs(AuthenticationUtil.getRunAsUser());
     }
 
+    @Autowired
+    @Qualifier("authorityService")
     public void setAuthorityService(AuthorityService authorityService) {
         this.authorityService = authorityService;
     }

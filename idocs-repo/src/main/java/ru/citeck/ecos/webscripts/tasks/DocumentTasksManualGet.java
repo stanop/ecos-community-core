@@ -9,7 +9,9 @@ import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.utils.WorkflowUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DocumentTasksManualGet extends AbstractWebScript {
@@ -54,7 +56,7 @@ public class DocumentTasksManualGet extends AbstractWebScript {
     }
 
     private static class Response {
-        List<Task> tasks;
+        public List<Task> tasks;
     }
 
     private static class Task {

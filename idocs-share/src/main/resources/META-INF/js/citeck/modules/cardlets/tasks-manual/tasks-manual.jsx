@@ -21,7 +21,7 @@ export default class TasksManual extends NodeCardlet {
         return <div id="cardlet-tasks-desc" className={loadingClass}>
             {data.tasks.map(t => {
                 return <div id={`tasks-desc-${t.id}`}>
-                    <div><span>Задача: ${t.title}</span></div>
+                    <div><span>Задача: {t.title}</span></div>
                     <div>
                         <span>Описание:</span>
                         <div dangerouslySetInnerHTML={{__html: t.description}} />
