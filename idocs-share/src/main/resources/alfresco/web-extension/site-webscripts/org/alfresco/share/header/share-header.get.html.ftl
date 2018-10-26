@@ -49,9 +49,11 @@
             });
 
             require([
-                'js/citeck/modules/slide-menu/index'
+                'js/citeck/modules/slide-menu/slide-menu'
             ], function(SlideMenu) {
-                SlideMenu.render('slide-menu', {});
+                SlideMenu.render('slide-menu', {
+                    slideMenuConfig: ${jsonUtils.toJSONString(slideMenuConfig)},
+                });
             });
 
         //]]></script>
