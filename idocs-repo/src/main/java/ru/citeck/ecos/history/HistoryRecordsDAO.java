@@ -2,12 +2,12 @@ package ru.citeck.ecos.history;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import graphql.ExecutionResult;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.graphql.GraphQLService;
-import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
+import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.meta.GraphQLMetaServiceImpl;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.source.meta.MetaJsonNodeValue;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
@@ -26,8 +26,7 @@ public class HistoryRecordsDAO extends AbstractRecordsDAO implements RecordsWith
     private static final String LANGUAGE_DOCUMENT = "document";
 
     private DocumentHistoryGet historyGet;
-    private GraphQLService graphQLService;
-    private GqlMetaUtils metaUtils;
+    private GraphQLMetaServiceImpl graphQLMetaService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -58,14 +57,7 @@ public class HistoryRecordsDAO extends AbstractRecordsDAO implements RecordsWith
                                                               queryData.filter,
                                                               queryData.events);
 
-        String metaQuery = metaUtils.createQuery("metaValues", metaSchema);
-        ExecutionResult gqlResult = graphQLService.execute(metaQuery, null, context ->
-            events.stream().map(e ->
-                new MetaJsonNodeValue(e.get("nodeRef").asText(), e.get("attributes"), context)
-            ).collect(Collectors.toList())
-        );
-
-        List<ObjectNode> nodes = metaUtils.convertMeta(gqlResult);
+        List<ObjectNode> nodes = graphQLMetaService.getMeta(context -> getMetaValues(events, context), metaSchema);
 
         RecordsResult<ObjectNode> result = new RecordsResult<>();
         result.setHasMore(false);
@@ -75,19 +67,20 @@ public class HistoryRecordsDAO extends AbstractRecordsDAO implements RecordsWith
         return result;
     }
 
+    private List<MetaValue> getMetaValues(List<ObjectNode> events, GqlContext context) {
+        return events.stream()
+                     .map(e -> new MetaJsonNodeValue(e.get("nodeRef").asText(), e.get("attributes"), context))
+                     .collect(Collectors.toList());
+    }
+
     @Autowired
     public void setHistoryGet(DocumentHistoryGet historyGet) {
         this.historyGet = historyGet;
     }
 
     @Autowired
-    public void setGraphQLService(GraphQLService graphQLService) {
-        this.graphQLService = graphQLService;
-    }
-
-    @Autowired
-    public void setMetaUtils(GqlMetaUtils metaUtils) {
-        this.metaUtils = metaUtils;
+    public void setGraphQLMetaService(GraphQLMetaServiceImpl graphQLMetaService) {
+        this.graphQLMetaService = graphQLMetaService;
     }
 
     public static class Query {

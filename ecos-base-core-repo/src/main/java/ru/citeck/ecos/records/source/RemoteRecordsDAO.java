@@ -1,22 +1,18 @@
 package ru.citeck.ecos.records.source;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import graphql.ExecutionResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.graphql.GraphQLService;
-import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
 import ru.citeck.ecos.records.*;
+import ru.citeck.ecos.records.query.RecordsNodesResult;
 import ru.citeck.ecos.records.query.RecordsRefsResult;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.remote.RestConnection;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,28 +20,14 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO implements RecordsMetaD
 
     private static final Log logger = LogFactory.getLog(RemoteRecordsDAO.class);
 
-    private String metaBaseQuery;
-
-    private GraphQLService graphQLService;
-    private GqlMetaUtils metaUtils;
-
     private boolean enabled = true;
 
     private RestConnection restConnection;
 
     private String recordsMethod = "alfresco/service/citeck/ecos/records";
-    private String graphqlMethod = "alfresco/service/citeck/ecos/graphql";
     private String groupActionMethod = "alfresco/service/citeck/ecos/records-group-action";
 
     private String remoteSourceId = "";
-
-    public RemoteRecordsDAO() {
-    }
-
-    @PostConstruct
-    public void init() {
-        metaBaseQuery = "records(refs:[\"%s\"])";
-    }
 
     @Override
     public RecordsRefsResult getRecords(RecordsQuery query) {
@@ -72,13 +54,19 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO implements RecordsMetaD
     }
 
     @Override
-    public List<ObjectNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
-        List<String> recordsRefs = records.stream().map(RecordRef::getId).collect(Collectors.toList());
-        String query = metaUtils.createQuery(metaBaseQuery, recordsRefs, gqlSchema);
-        ExecutionResult executionResult = graphQLService.execute(restConnection, graphqlMethod, query, null);
+    public List<ObjectNode> getMeta(List<RecordRef> records, String gqlSchema) {
 
-        List<ObjectNode> meta = metaUtils.convertMeta(recordsRefs, executionResult);
-        return RecordsUtils.convertToRefs(getId(), meta);
+        List<RecordRef> recordsRefs = records.stream()
+                                             .map(RecordRef::getId)
+                                             .map(RecordRef::new)
+                                             .collect(Collectors.toList());
+
+        RecordsPost.Request request = new RecordsPost.Request();
+        request.schema = gqlSchema;
+        request.records = recordsRefs;
+
+        RecordsNodesResult result = restConnection.jsonPost(recordsMethod, request, RecordsNodesResult.class);
+        return RecordsUtils.convertToRefs(getId(), result.getRecords());
     }
 
     @Override
@@ -112,22 +100,8 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO implements RecordsMetaD
         this.recordsMethod = recordsMethod;
     }
 
-    public void setGraphqlMethod(String graphqlMethod) {
-        this.graphqlMethod = graphqlMethod;
-    }
-
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    @Autowired
-    public void setGraphQLService(GraphQLService graphQLService) {
-        this.graphQLService = graphQLService;
-    }
-
-    @Autowired
-    public void setMetaUtils(GqlMetaUtils metaUtils) {
-        this.metaUtils = metaUtils;
     }
 
     public void setGroupActionMethod(String groupActionMethod) {

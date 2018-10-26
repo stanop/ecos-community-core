@@ -7,10 +7,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.group.*;
-import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
-import ru.citeck.ecos.graphql.meta.value.MetaIdValue;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
 import ru.citeck.ecos.records.query.RecordsQuery;
 import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.records.source.*;
@@ -24,11 +21,11 @@ import java.util.stream.Collectors;
 public class RecordsServiceImpl implements RecordsService {
 
     private Map<String, RecordsDAO> sources = new ConcurrentHashMap<>();
-    private GqlMetaUtils metaUtils;
+    private GraphQLMetaService graphQLMetaService;
 
     @Autowired
-    public RecordsServiceImpl(GqlMetaUtils metaUtils) {
-        this.metaUtils = metaUtils;
+    public RecordsServiceImpl(GraphQLMetaService graphQLMetaService) {
+        this.graphQLMetaService = graphQLMetaService;
     }
 
     @Override
@@ -43,6 +40,9 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public <T> List<T> getMeta(Collection<RecordRef> records, Class<T> metaClass) {
+        if (records == null || records.isEmpty()) {
+            return Collections.emptyList();
+        }
         if (metaClass.isAssignableFrom(RecordRef.class)) {
             @SuppressWarnings("unchecked")
             List<T> result = new ArrayList<>((Collection<T>) records);
@@ -55,8 +55,8 @@ public class RecordsServiceImpl implements RecordsService {
                                               .collect(Collectors.toList());
             return result;
         }
-        List<ObjectNode> meta = getMeta(records, metaUtils.createSchema(metaClass));
-        return metaUtils.convertMeta(meta, metaClass);
+        List<ObjectNode> meta = getMeta(records, graphQLMetaService.createSchema(metaClass));
+        return graphQLMetaService.convertMeta(meta, metaClass);
     }
 
     @Override
@@ -73,24 +73,6 @@ public class RecordsServiceImpl implements RecordsService {
                 }).collect(Collectors.toList());
             }
         });
-    }
-
-    @Override
-    public List<MetaValue> getMetaValues(GqlContext context, List<RecordRef> records) {
-
-        List<MetaValue> results = new ArrayList<>();
-
-        RecordsUtils.groupRefBySource(records).forEach((sourceId, sourceRecords) -> {
-            RecordsDAO source = needRecordsSource(sourceId);
-            if (source instanceof RecordsMetaValueDAO) {
-                RecordsMetaValueDAO metaValueDAO = (RecordsMetaValueDAO) source;
-                results.addAll(metaValueDAO.getMetaValues(context, sourceRecords));
-            } else {
-                results.addAll(sourceRecords.stream().map(MetaIdValue::new).collect(Collectors.toList()));
-            }
-        });
-
-        return results;
     }
 
     @Override
@@ -132,12 +114,12 @@ public class RecordsServiceImpl implements RecordsService {
 
         } else {
 
-            String schema = metaUtils.createSchema(metaClass);
+            String schema = graphQLMetaService.createSchema(metaClass);
             RecordsResult<ObjectNode> records = getRecords(query, schema);
 
             results.setTotalCount(records.getTotalCount());
             results.setHasMore(records.getHasMore());
-            results.setRecords(metaUtils.convertMeta(records.getRecords(), metaClass));
+            results.setRecords(graphQLMetaService.convertMeta(records.getRecords(), metaClass));
         }
 
         return results;
@@ -146,6 +128,9 @@ public class RecordsServiceImpl implements RecordsService {
     private <T> List<T> getRecordsMeta(Collection<RecordRef> records,
                                        BiFunction<RecordsDAO, List<RecordRef>, List<T>> getMeta) {
 
+        if (records == null || records.isEmpty()) {
+            return Collections.emptyList();
+        }
         List<T> result = new ArrayList<>();
 
         RecordsUtils.groupRefBySource(records).forEach((sourceId, sourceRecords) -> {
