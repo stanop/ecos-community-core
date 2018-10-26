@@ -43,6 +43,10 @@ class SlideMenu extends React.Component {
         // console.log(e.target.checked);
     };
 
+    toggleSlideMenu = () => {
+        this.slideMenuToggle && this.slideMenuToggle.click();
+    };
+
     render() {
         // TODO rid of this.props.slideMenuConfig
         const slideMenuConfig = this.props.slideMenuConfig;
@@ -53,9 +57,13 @@ class SlideMenu extends React.Component {
 
         return ReactDOM.createPortal(
             <Fragment>
-                <label className='slide-menu-toggle' htmlFor="slide-menu-checkbox" />
+                <label
+                    ref={el => this.slideMenuToggle = el}
+                    className='slide-menu-toggle'
+                    htmlFor="slide-menu-checkbox"
+                />
                 <LogoBlock smallLogo={smallLogo} largeLogo={largeLogo} />
-                <ListBlock />
+                <ListBlock toggleSlideMenu={this.toggleSlideMenu} items={slideMenuConfig.widgets} />
             </Fragment>,
             this.menu,
         );
