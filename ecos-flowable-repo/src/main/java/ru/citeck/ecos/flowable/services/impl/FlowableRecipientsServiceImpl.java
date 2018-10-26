@@ -33,8 +33,6 @@ public class FlowableRecipientsServiceImpl implements FlowableRecipientsService 
     @Autowired
     protected NodeService nodeService;
 
-    public static final String EMAIL_SEPARATOR = ",";
-
     @Override
     public String getRoleEmails(NodeRef document, String caseRoleName) {
         if (document == null || !nodeService.exists(document)) {
