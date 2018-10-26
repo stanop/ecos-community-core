@@ -1751,7 +1751,7 @@ JournalsWidget
             }
 
             var recordsQuery = this.recordsQuery();
-            if (!recordsQuery || recordsQuery === "{}") {
+            if (!recordsQuery) {
                 logger.debug("Records query is not ready, skipping");
                 koutils.subscribeOnce(this.recordsQuery, load, this);
                 return;

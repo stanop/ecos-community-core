@@ -45,7 +45,15 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
     @Override
     public JGqlRecordsConnection query(GqlContext context, String query, JGqlPageInfoInput pageInfo) {
 
+        JGqlRecordsConnection result = new JGqlRecordsConnection();
+        result.pageInfo().set(pageInfo);
+
         SearchCriteria criteria = criteriaParser.parse(query);
+
+        if (criteria.getTriplets().size() == 0) {
+            return result;
+        }
+
         criteria.setSkip(pageInfo.getSkipCount());
         criteria.setLimit(pageInfo.getMaxItems());
 
@@ -73,12 +81,9 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
 
         CriteriaSearchResults criteriaResults = searchService.query(criteria, SearchService.LANGUAGE_FTS_ALFRESCO);
 
-        JGqlRecordsConnection result = new JGqlRecordsConnection();
-
+        result.pageInfo().setHasNextPage(criteriaResults.hasMore());
         result.setRecords(recordsUtils.wrapToAttValue(context, criteriaResults.getResults()));
         result.setTotalCount(criteriaResults.getTotalCount());
-        result.pageInfo().setHasNextPage(criteriaResults.hasMore());
-        result.pageInfo().set(pageInfo);
 
         return result;
     }
