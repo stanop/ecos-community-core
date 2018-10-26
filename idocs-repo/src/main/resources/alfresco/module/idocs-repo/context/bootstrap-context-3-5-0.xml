@@ -30,7 +30,7 @@
         </property>
     </bean>
 
-    <bean id="idocs.module-component.defaultLegalEntity" parent="idocs.import-spaces.3-4-0">
+    <bean id="idocs.module-component.defaultLegalEntity" parent="idocs.import-spaces.3-5-0">
         <property name="name" value="defaultLegalEntity" />
         <property name="description" value="default legal entity" />
         <property name="bootstrapViews">

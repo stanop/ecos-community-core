@@ -71,11 +71,6 @@ public interface RecordsService {
     <T> List<T> getMeta(Collection<RecordRef> records, Class<T> metaClass);
 
     /**
-     * Get MetaValue by record. Executed in GraphQL execution context
-     */
-    List<MetaValue> getMetaValues(GqlContext context, List<RecordRef> records);
-
-    /**
      * Execute action with specified records.
      * Action with every record can be executed in different ways depends on RecordsDAO implementation
      * You can use RecordsActionFactory to combine remote/local records processing

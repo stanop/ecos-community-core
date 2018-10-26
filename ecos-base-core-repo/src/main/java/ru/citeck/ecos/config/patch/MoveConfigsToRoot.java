@@ -65,7 +65,7 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
         config.setBatchSize(10);
         config.setAsync(false);
         config.setMaxResults(0);
-        config.setMaxErrors(0);
+        config.setErrorsLimit(0);
 
         logger.info("Start " + getClass());
 

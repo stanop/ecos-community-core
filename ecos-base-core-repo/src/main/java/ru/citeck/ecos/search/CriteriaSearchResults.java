@@ -52,7 +52,7 @@ public class CriteriaSearchResults {
         }
         
         public Builder results(List<NodeRef> results) {
-            this.results = new ArrayList<NodeRef>(results);
+            this.results = new ArrayList<>(results);
             return this;
         }
 

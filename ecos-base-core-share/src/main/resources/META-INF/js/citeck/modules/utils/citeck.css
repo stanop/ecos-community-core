@@ -521,3 +521,7 @@
   height: 100%;
   min-height: 100%;
 }
+
+.web-preview canvas[id*="viewer-canvas"] {
+  visibility:inherit !important;
+}

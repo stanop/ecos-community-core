@@ -11,6 +11,18 @@ public class ActivitiValueFields implements ValueFields {
         this.impl = impl;
     }
 
+    public String getProcessInstanceId() {
+        throw new RuntimeException("not implemented");
+    }
+
+    public String getExecutionId() {
+        throw new RuntimeException("not implemented");
+    }
+
+    public String getTaskId() {
+        throw new RuntimeException("not implemented");
+    }
+
     @Override
     public String getName() {
         return impl.getName();

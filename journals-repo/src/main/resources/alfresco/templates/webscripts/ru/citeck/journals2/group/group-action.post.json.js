@@ -9,6 +9,7 @@
         language = jsonData.language || null,
         journalId = jsonData.journalId,
         actionResults,
+        actionResultsData,
         records;
 
     if (!exists("nodes", nodes) ||
@@ -21,10 +22,13 @@
     if (groupType == "selected") {
 
         records = recordsService.toRecords(nodes);
-        actionResults = groupActions.execute(records, {
+        actionResultsData = groupActions.execute(records, {
             params: params,
             actionId: actionId
         });
+
+        var actionResults = actionResultsData.getResults();
+
         for (var idx in actionResults) {
             var result = actionResults[idx];
             results.push({
@@ -42,11 +46,13 @@
             language: language || "criteria"
         });
 
-        actionResults = groupActions.execute(records, {
+        actionResultsData = groupActions.execute(records, {
             params: params,
             async: true,
             actionId: actionId
         });
+
+        var actionResults = actionResultsData.getResults();
 
         if (actionResults && actionResults.length > 0) {
             for (var idx in actionResults) {
@@ -68,7 +74,15 @@
         }
     }
 
-    model.results = results;
+    var error = null;
+    if (actionResultsData) {
+        error = actionResultsData.getCancelCause();
+    }
+
+    model.json = {
+        results: results,
+        error: error
+    };
 
 })();
 

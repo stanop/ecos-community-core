@@ -1,35 +1,27 @@
 package ru.citeck.ecos.records.source;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import graphql.ExecutionResult;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
-import ru.citeck.ecos.graphql.GraphQLService;
-import ru.citeck.ecos.graphql.meta.GqlMetaUtils;
+import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Pavel Simonov
  */
-public abstract class LocalRecordsDAO extends AbstractRecordsDAO
-                                      implements RecordsMetaDAO, RecordsActionExecutor {
+public abstract class LocalRecordsDAO extends AbstractRecordsDAO implements RecordsActionExecutor {
 
-    protected NodeService nodeService;
-    protected GqlMetaUtils gqlMetaUtils;
-    protected GraphQLService graphQLService;
+    protected GraphQLMetaService graphQLMetaService;
     protected GroupActionService groupActionService;
 
     private boolean addSourceId = true;
-
-    private String baseQuery;
 
     public LocalRecordsDAO() {
     }
@@ -38,21 +30,13 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO
         this.addSourceId = addSourceId;
     }
 
-    @PostConstruct
-    public void init() {
-        baseQuery = "records(refs:[\"%s\"])";
+    public List<ObjectNode> getMeta(List<RecordRef> records, String gqlSchema) {
+        List<ObjectNode> meta = graphQLMetaService.getMeta(context -> getMetaValues(context, records), gqlSchema);
+        return addSourceId ? RecordsUtils.convertToRefs(getId(), meta) : meta;
     }
 
-    @Override
-    public List<ObjectNode> getMeta(Collection<RecordRef> records, String gqlSchema) {
-        List<String> recordsRefs = records.stream().map(Object::toString).collect(Collectors.toList());
-        String query = gqlMetaUtils.createQuery(baseQuery, recordsRefs, gqlSchema);
-        ExecutionResult executionResult = graphQLService.execute(query);
-        if (addSourceId) {
-            return RecordsUtils.convertToRefs(getId(), gqlMetaUtils.convertMeta(recordsRefs, executionResult));
-        } else {
-            return gqlMetaUtils.convertMeta(recordsRefs, executionResult);
-        }
+    protected List<MetaValue> getMetaValues(GqlContext context, List<RecordRef> records) {
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
@@ -66,17 +50,7 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO
     }
 
     @Autowired
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    @Autowired
-    public void setGqlMetaUtils(GqlMetaUtils gqlMetaUtils) {
-        this.gqlMetaUtils = gqlMetaUtils;
-    }
-
-    @Autowired
-    public void setGraphQLService(GraphQLService graphQLService) {
-        this.graphQLService = graphQLService;
+    public void setGraphQLMetaService(GraphQLMetaService graphQLMetaService) {
+        this.graphQLMetaService = graphQLMetaService;
     }
 }

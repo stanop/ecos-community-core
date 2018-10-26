@@ -64,10 +64,6 @@ userMenuBar.config.widgets = [];
 // delete the Title Bar everywhere (exept for Edit Page and Create Page)
 if (shareVerticalLayout && shareVerticalLayout.config.widgets.length) {
     shareVerticalLayout.config.widgets = shareVerticalLayout.config.widgets.filter(function(item) {
-        if (isSlideMenu && item.id === "SHARE_HEADER") {
-            return false;
-        }
-
         if (item.id == "HEADER_TITLE_BAR" && (page.id.indexOf("edit") != -1 || page.id.indexOf("create") != -1 || page.id.indexOf("start") != -1)) {
             item.config.widgets = item.config.widgets.filter(function(item) {
                 return item.id == "HEADER_TITLE"
@@ -78,6 +74,11 @@ if (shareVerticalLayout && shareVerticalLayout.config.widgets.length) {
         }
 
     })
+}
+
+// dirty hack: hide the old top menu on the faceted search page
+if (isSlideMenu) {
+    header.name = "js/citeck/header/emptyMenu";
 }
 
 
