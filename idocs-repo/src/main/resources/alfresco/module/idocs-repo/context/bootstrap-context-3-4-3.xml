@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-4-3" abstract="true" parent="idocs.import-spaces.3-4-0">
+        <property name="sinceVersion" value="3.4.3"/>
+        <property name="appliesFromVersion" value="3.4.3"/>
+    </bean>
+
+    <bean id="idocs.import-scripts.3-4-3" abstract="true" parent="idocs.import-scripts.3-4-0">
+        <property name="sinceVersion" value="3.4.3"/>
+        <property name="appliesFromVersion" value="3.4.3"/>
+    </bean>
+
+    <bean id="idocs.patch.move-default-legal-entity-to-idocs" parent="ru.citeck.ecos.patch.MoveComponentsPatch">
+        <property name="id" value="idocs.patch.move-default-legal-entity-to-idocs" />
+        <property name="description" value="idocs.patch.move-default-legal-entity-to-idocs.description" />
+        <property name="fromModuleId" value="contracts-repo" />
+        <property name="toModuleId" value="idocs-repo" />
+        <property name="transitions">
+            <list>
+                <props>
+                    <prop key="from">contracts.module-component.defaultLegalEntity</prop>
+                    <prop key="to">idocs.module-component.defaultLegalEntity</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.defaultLegalEntity" parent="idocs.import-spaces.3-4-0">
+        <property name="name" value="defaultLegalEntity" />
+        <property name="description" value="default legal entity" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/default-legal-entity</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>
