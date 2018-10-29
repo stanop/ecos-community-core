@@ -1362,8 +1362,16 @@ JournalsWidget
     })
 
     .init(function() {
+
         this.columns.extend({ rateLimit: 100 });
         this.records.extend({ rateLimit: 100 });
+        this.recordsQueryDataImpl.extend({
+            rateLimit: {
+                timeout: 100,
+                method: "notifyWhenChangesStop"
+            }
+        });
+
         this.journal.subscribe(function() {
             // reset filter and settings
             this.filter(null);
@@ -1372,20 +1380,39 @@ JournalsWidget
             this.skipCount(0);
             this.selectedId(null);
             this.maxItems(this.defaultMaxItems() || 10);
-            this.performSearch();
         }, this);
         this.currentFilter.subscribe(function() {
             this.skipCount(0);
             this._filter(this.resolve('currentFilter.clone'));
-            this.performSearch();
         }, this);
         this.currentSettings.subscribe(function() {
             this._settings(this.resolve('currentSettings.clone'));
         }, this);
 
-        this.skipCount.subscribe(this.performSearch, this);
-        this.maxItems.subscribe(this.performSearch, this);
-        this.sortByQuery.subscribe(this.performSearch, this);
+        this.recordsQueryData.subscribe(this.performSearch, this);
+    })
+
+    // required to allow setup rateLimit
+    .computed('recordsQueryData', function() {
+        return this.recordsQueryDataImpl();
+    })
+
+    .computed('recordsQueryDataImpl', function() {
+
+        var recordsQuery = this.recordsQuery();
+
+        if (!recordsQuery) {
+            return null;
+        }
+
+        return {
+            query: recordsQuery,
+            pageInfo: {
+                sortBy: this.sortByQuery(),
+                skipCount: this.skipCount() || 0,
+                maxItems: this.maxItems() || this.defaultMaxItems() || 10
+            }
+        };
     })
 
     .method('performSearch', function() {
@@ -1744,31 +1771,24 @@ JournalsWidget
         resultsMap: { journals: 'journals' }
     }))
     .load('records', function() {
+        
         var load = function() {
-            if(this.records.loaded()) {
+
+            if (this.records.loaded()) {
                 logger.debug("Records are already loaded, skipping");
                 return;
             }
 
-            var recordsQuery = this.recordsQuery();
+            var recordsQuery = this.recordsQueryData();
             if (!recordsQuery) {
-                logger.debug("Records query is not ready, skipping");
-                koutils.subscribeOnce(this.recordsQuery, load, this);
+                logger.debug("Records query data is not ready, skipping");
+                koutils.subscribeOnce(this.recordsQueryData, load, this);
                 return;
             }
 
-            var queryData = {
-                query: recordsQuery,
-                pageInfo: {
-                    sortBy: this.sortByQuery(),
-                    skipCount: this.skipCount() || 0,
-                    maxItems: this.maxItems() || this.defaultMaxItems() || 10
-                }
-            };
-
             Alfresco.util.Ajax.jsonPost({
                 url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + this.journal().type().id(),
-                dataObj: queryData,
+                dataObj: recordsQuery,
                 successCallback: {
                     scope: this,
                     fn: function(response) {
