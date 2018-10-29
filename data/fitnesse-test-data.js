@@ -20,7 +20,7 @@ addUserToSitesWithCollaboratorRole(initiator);
 addUserToSitesWithCollaboratorRole(clerk);
 addUserToSitesWithCollaboratorRole(accountant);
 
-var clerksGroup = groups.getGroup("company_clerks"),
+var clerksGroup = groups.getGroup("clerks"),
     directorGroup = groups.getGroup("company_director"),
     accountantGroup = groups.getGroup("company_accountant"),
     chiefAccountantGroup = groups.getGroup("company_chief_accountant"),
