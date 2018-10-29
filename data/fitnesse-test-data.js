@@ -42,7 +42,7 @@ const LEGAL_ENTITY_TYPE = "idocs:legalEntity";
 
 var legalEntityRoot = getDataListRootByXpath(LEGAL_ENTITIES_PATH);
 
-var finTechLegalEntity = legalEntityRoot.createNode(null, LEGAL_ENTITY_TYPE, {
+legalEntityRoot.createNode(null, LEGAL_ENTITY_TYPE, {
     "idocs:fullOrganizationName": "ООО \"ФИНТЕХ\"",
     "idocs:juridicalAddress": "г. Москва, ул. Ленина 982, оф 311",
     "idocs:postAddress": "г. Москва, ул. Ленина 982, оф 311",
@@ -50,7 +50,7 @@ var finTechLegalEntity = legalEntityRoot.createNode(null, LEGAL_ENTITY_TYPE, {
     "idocs:kpp": "3900030427"
 }, ASSOC_TYPE_CONTAINS);
 
-legalEntityRoot.createNode(null, LEGAL_ENTITY_TYPE, {
+var techComplLegalEntity = legalEntityRoot.createNode(null, LEGAL_ENTITY_TYPE, {
     "idocs:fullOrganizationName": "ОАО \"ТЕХ-КОМПЛЕКТ\"",
     "idocs:juridicalAddress": "г. Новосибирск, ул. Ворошилова 4, оф 407",
     "idocs:postAddress": "г. Новосибирск, ул. Ворошилова 4, оф 407",
@@ -116,7 +116,7 @@ var contract = contractRoot.createNode(null, CONTRACT_TYPE, {
     "tk:kind": "workspace://SpacesStore/contracts-cat-contract-rent"
 }, ASSOC_TYPE_CONTAINS);
 
-contract.createAssociation(finTechLegalEntity, "contracts:agreementLegalEntity");
+contract.createAssociation(techComplLegalEntity, "contracts:agreementLegalEntity");
 contract.createAssociation(testCounterparty, "contracts:contractor");
 
 var currencyEur = search.findNode("workspace://SpacesStore/currency-eur");
