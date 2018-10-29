@@ -1816,8 +1816,8 @@ JournalsWidget
 
                         this.model({
                             records: records,
-                            skipCount: queryData.pageInfo.skipCount,
-                            maxItems: queryData.pageInfo.maxItems,
+                            skipCount: recordsQuery.pageInfo.skipCount,
+                            maxItems: recordsQuery.pageInfo.maxItems,
                             totalItems: data.totalCount,
                             hasMore: data.hasMore
                         });
