@@ -4,7 +4,7 @@
 
 //USERS
 const FAKE_MAIL_PART = ".fake.email@gmail.com";
-const USER_PASSWORD = "One two three!";
+const USER_PASSWORD = "One two three";
 
 people.createPerson("ivan.petrov", "Иван", "Петров", "ivan.petrov" + FAKE_MAIL_PART, USER_PASSWORD, true);
 people.createPerson("kata.petrova", "Екатерина", "Петрова", "kata.petrova" + FAKE_MAIL_PART, USER_PASSWORD, true);
