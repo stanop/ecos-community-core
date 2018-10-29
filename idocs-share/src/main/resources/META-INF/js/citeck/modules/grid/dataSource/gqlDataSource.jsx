@@ -2,7 +2,7 @@ import React from 'react';
 import BaseDataSource from './baseDataSource';
 import formatterStore from '../formatters/formatterStore';
 
-const DEFAULT_FORMATTER = 'DefaultFormatter';
+const DEFAULT_FORMATTER = 'DefaultGqlFormatter';
 
 export default class GqlDataSource extends BaseDataSource {
     constructor(options) {
@@ -23,10 +23,10 @@ export default class GqlDataSource extends BaseDataSource {
 
     _getColumns(columns){
         columns = columns.map((column, idx) => {
-            column.id = column.id || this._getIdByIdx(idx);
-            column.formatter = column.formatter || DEFAULT_FORMATTER;
-            column.accessor = column.accessor || this._getAccessor(column);
-            column.Cell = column.Cell || this._getCell(column);
+            column.dataField = column.id || this._getIdByIdx(idx);
+            column.formatterName = column.formatter;
+            column.formatter = this._setFormatter(column.formatter);
+            column.text = column.text || column.Header;
 
             return column;
         });
@@ -44,7 +44,7 @@ export default class GqlDataSource extends BaseDataSource {
 
     _getSchema(columns){
         let gqlSchemes = columns.map((column, idx) => {
-            let formatter = this._getFormatter(column.formatter);
+            let formatter = this._getFormatter(column.formatterName);
             let str = formatter ? formatter.getQueryString() : 'str';
 
             return `id, ${this._getIdByIdx(idx)}: att(name: "${column.field}") {name, val {${str}}}`;
@@ -53,38 +53,34 @@ export default class GqlDataSource extends BaseDataSource {
         return gqlSchemes.join(',');
     }
 
-    _getAccessor(column){
-        return row => {
-            const cell = row[column.id];
-            const val = cell ? cell.val[0] : null;
-            return val ? val.str : '';
-        };
+    _getNestedValue(cell){
+        const val = cell ? cell.val[0] : null;
+        return val ? val.str : '';
     }
 
-    _getCell(column){
-        let cell;
-        let Formatter = this._getFormatter(column.formatter);
+    _setFormatter(columnFormatter){
+        let that = this;
+        let formatter;
+        let Formatter = this._getFormatter(columnFormatter || DEFAULT_FORMATTER);
 
         if(Formatter){
-            cell = row => {
-                const val = this._getCellValByRow(row);
-
-                return <Formatter row = {row} val = {val} value = {row.value}/>
+            formatter = (cell, row) => {
+                return <Formatter row = {row} cell = {cell} />
             };
-        }else if(typeof column.formatter === 'function'){
-            cell = function(options){
+        }else if(typeof columnFormatter === 'function'){
+            formatter = (cell) => {
                 let elCell = {};
                 let oRecord = {};
                 let oColumn = {};
-                let sData = options.value;
+                let sData = that._getNestedValue(cell);
 
-                column.formatter(elCell, oRecord, oColumn, sData);
+                columnFormatter(elCell, oRecord, oColumn, sData);
 
                 return <div dangerouslySetInnerHTML={{__html: elCell.innerHTML}} />;
             };
         }
 
-        return cell
+        return formatter
     }
 
     _getFormatter(name){
@@ -93,14 +89,6 @@ export default class GqlDataSource extends BaseDataSource {
 
     _getIdByIdx(idx){
         return `a${idx}`;
-    }
-
-    _getCellValByRow(row){
-        const data = row.original;
-        const column = row.column;
-        const cell = data[column.id];
-
-        return (cell && cell.val) ? cell.val : null;
     }
 
     _getDefaultOptions(){
