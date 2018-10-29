@@ -53,7 +53,7 @@ export default class GridCardlet extends NodeCardlet {
         const header = props.header;
         const data = props.data;
         const columns = props.columns;
-        
+
         return (
             <div id={`${htmlId}-panel`} className="document-children document-details-panel">
                 <h2 id={`${htmlId}-heading`} className="thin dark">

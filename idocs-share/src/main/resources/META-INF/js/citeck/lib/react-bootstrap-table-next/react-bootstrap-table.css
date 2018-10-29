@@ -1,3 +1,304 @@
+/*Bootstrap styles*/
+.react-bootstrap-table .table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1rem;
+  background-color: transparent;
+}
+
+.react-bootstrap-table .table th,
+.react-bootstrap-table .table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+.react-bootstrap-table .table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.react-bootstrap-table .table tbody + tbody {
+  border-top: 2px solid #dee2e6;
+}
+
+.react-bootstrap-table .table .table {
+  background-color: #fff;
+}
+
+.react-bootstrap-table .table-sm th,
+.react-bootstrap-table .table-sm td {
+  padding: 0.3rem;
+}
+
+.react-bootstrap-table .table-bordered {
+  border: 1px solid #dee2e6;
+}
+
+.react-bootstrap-table .table-bordered th,
+.react-bootstrap-table .table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.react-bootstrap-table .table-bordered thead th,
+.react-bootstrap-table .table-bordered thead td {
+  border-bottom-width: 2px;
+}
+
+.react-bootstrap-table .table-borderless th,
+.react-bootstrap-table .table-borderless td,
+.react-bootstrap-table .table-borderless thead th,
+.react-bootstrap-table .table-borderless tbody + tbody {
+  border: 0;
+}
+
+.react-bootstrap-table .table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.react-bootstrap-table .table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+.react-bootstrap-table .table-primary,
+.react-bootstrap-table .table-primary > th,
+.react-bootstrap-table .table-primary > td {
+  background-color: #b8daff;
+}
+
+.react-bootstrap-table .table-hover .table-primary:hover {
+  background-color: #9fcdff;
+}
+
+.react-bootstrap-table .table-hover .table-primary:hover > td,
+.react-bootstrap-table .table-hover .table-primary:hover > th {
+  background-color: #9fcdff;
+}
+
+.react-bootstrap-table .table-secondary,
+.react-bootstrap-table .table-secondary > th,
+.react-bootstrap-table .table-secondary > td {
+  background-color: #d6d8db;
+}
+
+.react-bootstrap-table .table-hover .table-secondary:hover {
+  background-color: #c8cbcf;
+}
+
+.react-bootstrap-table .table-hover .table-secondary:hover > td,
+.react-bootstrap-table .table-hover .table-secondary:hover > th {
+  background-color: #c8cbcf;
+}
+
+.react-bootstrap-table .table-success,
+.react-bootstrap-table .table-success > th,
+.react-bootstrap-table .table-success > td {
+  background-color: #c3e6cb;
+}
+
+.react-bootstrap-table .table-hover .table-success:hover {
+  background-color: #b1dfbb;
+}
+
+.react-bootstrap-table .table-hover .table-success:hover > td,
+.react-bootstrap-table .table-hover .table-success:hover > th {
+  background-color: #b1dfbb;
+}
+
+.react-bootstrap-table .table-info,
+.react-bootstrap-table .table-info > th,
+.react-bootstrap-table .table-info > td {
+  background-color: #bee5eb;
+}
+
+.react-bootstrap-table .table-hover .table-info:hover {
+  background-color: #abdde5;
+}
+
+.react-bootstrap-table .table-hover .table-info:hover > td,
+.react-bootstrap-table .table-hover .table-info:hover > th {
+  background-color: #abdde5;
+}
+
+.react-bootstrap-table .table-warning,
+.react-bootstrap-table .table-warning > th,
+.react-bootstrap-table .table-warning > td {
+  background-color: #ffeeba;
+}
+
+.react-bootstrap-table .table-hover .table-warning:hover {
+  background-color: #ffe8a1;
+}
+
+.react-bootstrap-table .table-hover .table-warning:hover > td,
+.react-bootstrap-table .table-hover .table-warning:hover > th {
+  background-color: #ffe8a1;
+}
+
+.react-bootstrap-table .table-danger,
+.react-bootstrap-table .table-danger > th,
+.react-bootstrap-table .table-danger > td {
+  background-color: #f5c6cb;
+}
+
+.react-bootstrap-table .table-hover .table-danger:hover {
+  background-color: #f1b0b7;
+}
+
+.react-bootstrap-table .table-hover .table-danger:hover > td,
+.react-bootstrap-table .table-hover .table-danger:hover > th {
+  background-color: #f1b0b7;
+}
+
+.react-bootstrap-table .table-light,
+.react-bootstrap-table .table-light > th,
+.react-bootstrap-table .table-light > td {
+  background-color: #fdfdfe;
+}
+
+.react-bootstrap-table .table-hover .table-light:hover {
+  background-color: #ececf6;
+}
+
+.react-bootstrap-table .table-hover .table-light:hover > td,
+.react-bootstrap-table .table-hover .table-light:hover > th {
+  background-color: #ececf6;
+}
+
+.react-bootstrap-table .table-dark,
+.react-bootstrap-table .table-dark > th,
+.react-bootstrap-table .table-dark > td {
+  background-color: #c6c8ca;
+}
+
+.react-bootstrap-table .table-hover .table-dark:hover {
+  background-color: #b9bbbe;
+}
+
+.react-bootstrap-table .table-hover .table-dark:hover > td,
+.react-bootstrap-table .table-hover .table-dark:hover > th {
+  background-color: #b9bbbe;
+}
+
+.react-bootstrap-table .table-active,
+.react-bootstrap-table .table-active > th,
+.react-bootstrap-table .table-active > td {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+.react-bootstrap-table .table-hover .table-active:hover {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+.react-bootstrap-table .table-hover .table-active:hover > td,
+.react-bootstrap-table .table-hover .table-active:hover > th {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+.react-bootstrap-table .table .thead-dark th {
+  color: #fff;
+  background-color: #212529;
+  border-color: #32383e;
+}
+
+.react-bootstrap-table .table .thead-light th {
+  color: #495057;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.react-bootstrap-table .table-dark {
+  color: #fff;
+  background-color: #212529;
+}
+
+.react-bootstrap-table .table-dark th,
+.react-bootstrap-table .table-dark td,
+.react-bootstrap-table .table-dark thead th {
+  border-color: #32383e;
+}
+
+.react-bootstrap-table .table-dark.table-bordered {
+  border: 0;
+}
+
+.react-bootstrap-table .table-dark.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.react-bootstrap-table .table-dark.table-hover tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.075);
+}
+
+@media (max-width: 575.98px) {
+  .react-bootstrap-table .table-responsive-sm {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+  .react-bootstrap-table .table-responsive-sm > .table-bordered {
+    border: 0;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .react-bootstrap-table .table-responsive-md {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+  .react-bootstrap-table .table-responsive-md > .table-bordered {
+    border: 0;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .react-bootstrap-table .table-responsive-lg {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+  .react-bootstrap-table .table-responsive-lg > .table-bordered {
+    border: 0;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .react-bootstrap-table .table-responsive-xl {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+  .react-bootstrap-table .table-responsive-xl > .table-bordered {
+    border: 0;
+  }
+}
+
+.react-bootstrap-table .table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.react-bootstrap-table .table-responsive > .table-bordered {
+  border: 0;
+}
+
+
+
+/****************/
+/*Widget styles*/
+/****************/
 .react-bootstrap-table table {
   table-layout: fixed;
 }
