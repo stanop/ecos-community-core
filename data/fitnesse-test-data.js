@@ -9,12 +9,28 @@ const USER_PASSWORD = "One two three";
 people.createPerson("ivan.petrov", "Иван", "Петров", "ivan.petrov" + FAKE_MAIL_PART, USER_PASSWORD, true);
 people.createPerson("kata.petrova", "Екатерина", "Петрова", "kata.petrova" + FAKE_MAIL_PART, USER_PASSWORD, true);
 
-people.createPerson("initiator", "Initiator", "1", " initiator@citeck.ru", USER_PASSWORD, true);
-people.createPerson("clerk", "Clerk", "1", "clerk@citeck.ru", USER_PASSWORD, true);
-people.createPerson("approver", "Approver", "1", "approver@citeck.ru", USER_PASSWORD, true);
-people.createPerson("signatory", "Signatory", "1", "signatory@citeck.ru", USER_PASSWORD, true);
-people.createPerson("accountant", "Accountant", "1", "accountant@citeck.ru", USER_PASSWORD, true);
-people.createPerson("ordtech", "Ordtech", "1", "ordtech@citeck.ru", USER_PASSWORD, true);
+var initiator = people.createPerson("initiator", "Initiator", "1", " initiator@citeck.ru", USER_PASSWORD, true),
+    clerk = people.createPerson("clerk", "Clerk", "1", "clerk@citeck.ru", USER_PASSWORD, true),
+    approver = people.createPerson("approver", "Approver", "1", "approver@citeck.ru", USER_PASSWORD, true),
+    signatory = people.createPerson("signatory", "Signatory", "1", "signatory@citeck.ru", USER_PASSWORD, true),
+    accountant = people.createPerson("accountant", "Accountant", "1", "accountant@citeck.ru", USER_PASSWORD, true),
+    ordtech = people.createPerson("ordtech", "Ordtech", "1", "ordtech@citeck.ru", USER_PASSWORD, true);
+
+addUserToSitesWithCollaboratorRole(initiator);
+addUserToSitesWithCollaboratorRole(clerk);
+addUserToSitesWithCollaboratorRole(accountant);
+
+var clerksGroup = groups.getGroup("company_clerks"),
+    directorGroup = groups.getGroup("company_director"),
+    accountantGroup = groups.getGroup("company_accountant"),
+    chiefAccountantGroup = groups.getGroup("company_chief_accountant"),
+    ordersTechnologistGroup = groups.getGroup("orders-technologist");
+
+clerksGroup.addAuthority(clerk.properties["cm:userName"]);
+directorGroup.addAuthority(approver.properties["cm:userName"]);
+accountantGroup.addAuthority(accountant.properties["cm:userName"]);
+chiefAccountantGroup.addAuthority(accountant.properties["cm:userName"]);
+ordersTechnologistGroup.addAuthority(ordtech.properties["cm:userName"]);
 
 
 //DATA LIST
@@ -116,6 +132,17 @@ filesNomenclaturesRoot.createNode(null, FILES_NOMENCLATURES_TYPE, {
     "idocs:fileName": "Тестовое"
 }, ASSOC_TYPE_CONTAINS);
 
+
+function addUserToSitesWithCollaboratorRole(user) {
+    var collaboratorsGroupId = ["site_contracts_SiteCollaborator", "site_letters_SiteCollaborator",
+        "site_cases_SiteCollaborator", "site_orders_SiteCollaborator", "site_order-pass_SiteCollaborator",
+        "site_meetings_SiteCollaborator", "site_common-documents_SiteCollaborator"];
+
+    for each (var groupId in collaboratorsGroupId) {
+        var group = groups.getGroup(groupId);
+        group.addAuthority(user.properties["cm:userName"]);
+    }
+}
 
 function getDataListRootByXpath(xpath) {
     var dataList = search.xpathSearch(xpath);
