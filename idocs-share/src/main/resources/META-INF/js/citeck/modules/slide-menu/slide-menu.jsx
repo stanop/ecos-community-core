@@ -1,78 +1,65 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import ReactDOM from "react-dom";
+import { createStore, applyMiddleware, compose } from 'redux';
+import { Provider } from 'react-redux';
+import thunk from 'js/citeck/lib/redux-thunk';
+import SlideMenu from "./components/slide-menu";
+import rootReducer from './reducers';
+import {
+    setSmallLogo,
+    setLargeLogo,
+    setLeftMenuItems,
+    setLeftMenuFlatItems
+} from './actions';
 import "xstyle!./slide-menu.css";
-import { LogoBlock, ListBlock } from "./components";
 
-class SlideMenu extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.checkbox = document.createElement('input');
-        this.checkbox.id = 'slide-menu-checkbox';
-        this.checkbox.type = 'checkbox';
-
-        this.menu = document.createElement('div');
-        this.menu.classList.add('slide-menu');
-
-        this.mask = document.createElement('div');
-        this.mask.classList.add('slide-menu-mask');
-
-        const maskLabel = document.createElement('label');
-        maskLabel.setAttribute("for", "slide-menu-checkbox");
-        this.mask.appendChild(maskLabel);
-    }
-
-    componentDidMount() {
-        const theFirstChild = document.body.firstChild;
-        document.body.insertBefore(this.checkbox, theFirstChild);
-        document.body.insertBefore(this.menu, theFirstChild);
-        document.body.insertBefore(this.mask, theFirstChild);
-
-        // this.checkbox.addEventListener('change', this.onCheckboxChange);
-    }
-
-    componentWillUnmount() {
-        // this.checkbox.removeEventListener('change', this.onCheckboxChange);
-
-        document.body.removeChild(this.checkbox);
-        document.body.removeChild(this.menu);
-        document.body.removeChild(this.mask);
-    }
-
-    onCheckboxChange = e => {
-        // console.log(e.target.checked);
-    };
-
-    toggleSlideMenu = () => {
-        this.slideMenuToggle && this.slideMenuToggle.click();
-    };
-
-    render() {
-        // TODO rid of this.props.slideMenuConfig
-        const slideMenuConfig = this.props.slideMenuConfig;
-        const smallLogo = slideMenuConfig.logoSrcMobile;
-        const largeLogo = slideMenuConfig.logoSrc;
-
-        console.log('slideMenuConfig', slideMenuConfig);
-
-        return ReactDOM.createPortal(
-            <Fragment>
-                <label
-                    ref={el => this.slideMenuToggle = el}
-                    className='slide-menu-toggle'
-                    htmlFor="slide-menu-checkbox"
-                />
-                <LogoBlock smallLogo={smallLogo} largeLogo={largeLogo} />
-                <ListBlock toggleSlideMenu={this.toggleSlideMenu} items={slideMenuConfig.widgets} />
-            </Fragment>,
-            this.menu,
-        );
-    }
+let composeEnhancers = compose;
+if (typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) {
+    composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
 }
 
+const api = null; // TODO
+const store = createStore(rootReducer, {}, composeEnhancers(
+        applyMiddleware(thunk.withExtraArgument(api)),
+    )
+);
+
 export const render = (elementId, props) => {
+    const flatList = fetchFlatList(props.slideMenuConfig.widgets);
+
+    store.dispatch(setLeftMenuItems(props.slideMenuConfig.widgets));
+    store.dispatch(setLeftMenuFlatItems(flatList));
+
+    store.dispatch(setSmallLogo(props.slideMenuConfig.logoSrcMobile));
+    store.dispatch(setLargeLogo(props.slideMenuConfig.logoSrc));
+
     ReactDOM.render(
-        <SlideMenu { ...props } />,
+        <Provider store={store}>
+            <SlideMenu />
+        </Provider>,
         document.getElementById(elementId)
     );
 };
+
+// const itemId = item.id; // .split(' ').join('_'); TODO
+
+// TODO rename
+function fetchFlatList(items) {
+    let flatList = [];
+    items.map(item => {
+        const hasNestedList = !!item.widgets;
+        if (hasNestedList) {
+            let isNestedListExpanded = !!item.sectionTitle; // TODO or hasChildId
+            flatList.push(
+                {
+                    id: item.id,
+                    hasNestedList,
+                    isNestedListExpanded,
+                },
+                ...fetchFlatList(item.widgets)
+            );
+        }
+    });
+
+    return flatList;
+}
