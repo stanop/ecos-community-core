@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import BootstrapTable from 'js/citeck/lib/react-bootstrap-table-next/react-bootstrap-table-next';
 
-import 'xstyle!js/citeck/lib/bootstrap/bootstrap.css';
 import 'xstyle!js/citeck/lib/react-bootstrap-table-next/react-bootstrap-table.css';
 
 export default class Grid extends Component  {
