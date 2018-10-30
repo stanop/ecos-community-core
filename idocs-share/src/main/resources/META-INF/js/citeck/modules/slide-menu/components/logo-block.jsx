@@ -1,5 +1,4 @@
 import React from 'react';
-import { Scrollbars } from 'react-custom-scrollbars';
 
 const logoLinkHref = '/share/page';
 

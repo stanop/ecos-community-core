@@ -4,8 +4,9 @@ import {
     LEFT_MENU_SET_LARGE_LOGO,
 
     LEFT_MENU_SET_ITEMS,
-    LEFT_MENU_SET_FLAT_ITEMS,
-    LEFT_MENU_TOGGLE_EXPANDED
+    LEFT_MENU_SET_EXPANDABLE_ITEMS,
+    LEFT_MENU_TOGGLE_EXPANDED,
+    LEFT_MENU_SET_SELECTED_ID
 } from './actions';
 
 /* leftMenuReducer */
@@ -14,13 +15,19 @@ const leftMenuInitialState = {
     largeLogo: null,
     selectedId: null,
     items: [],
-    flatItems: [],
+    expandableItems: [],
 };
 
 Object.freeze(leftMenuInitialState);
 
 function leftMenuReducer(state = leftMenuInitialState, action) {
     switch (action.type) {
+        case LEFT_MENU_SET_SELECTED_ID:
+            return {
+                ...state,
+                selectedId: action.payload
+            };
+
         case LEFT_MENU_SET_SMALL_LOGO:
             return {
                 ...state,
@@ -39,23 +46,23 @@ function leftMenuReducer(state = leftMenuInitialState, action) {
                 items: action.payload
             };
 
-        case LEFT_MENU_SET_FLAT_ITEMS:
+        case LEFT_MENU_SET_EXPANDABLE_ITEMS:
             return {
                 ...state,
-                flatItems: action.payload
+                expandableItems: action.payload
             };
 
         case LEFT_MENU_TOGGLE_EXPANDED:
             return {
                 ...state,
-                flatItems: (() => {
-                    const flatItem = state.flatItems.find(fi => fi.id === action.payload);
-                    const listWithoutItem = state.flatItems.filter(fi => fi.id !== action.payload);
+                expandableItems: (() => {
+                    const expandableItem = state.expandableItems.find(fi => fi.id === action.payload);
+                    const listWithoutItem = state.expandableItems.filter(fi => fi.id !== action.payload);
                     return [
                         ...listWithoutItem,
                         {
-                            ...flatItem,
-                            isNestedListExpanded: !flatItem.isNestedListExpanded
+                            ...expandableItem,
+                            isNestedListExpanded: !expandableItem.isNestedListExpanded
                         }
                     ];
                 })(),

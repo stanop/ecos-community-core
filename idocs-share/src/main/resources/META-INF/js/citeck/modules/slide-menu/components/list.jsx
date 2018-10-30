@@ -1,32 +1,31 @@
 import React from 'react';
-import { Scrollbars } from 'react-custom-scrollbars';
 import { connect } from "react-redux";
 import { toggleExpanded } from "../actions";
 import ListItem from './list-item';
 
 const mapStateToProps = (state) => ({
-    flatItems: state.leftMenu.flatItems
+    expandableItems: state.leftMenu.expandableItems
 });
 
 const mapDispatchToProps = dispatch => ({
     setExpanded: id => dispatch(toggleExpanded(id))
 });
 
-const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, setExpanded, flatItems}) => {
+const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, setExpanded, expandableItems}) => {
     const listContent = items.map((item, idx) => {
         const isSelected = false;
 
         let nestedList = null;
         let isNestedListExpanded = false;
-        if (item.widgets && item.widgets.length) {
-            if (flatItems) {
-                const flatItem = flatItems.find(fi => fi.id === item.id);
-                isNestedListExpanded = flatItem.isNestedListExpanded;
+        if (item.items && item.items.length > 0) {
+            if (expandableItems && expandableItems.length > 0) {
+                const expandableItem = expandableItems.find(fi => fi.id === item.id);
+                isNestedListExpanded = expandableItem.isNestedListExpanded;
             }
 
             nestedList = (
                 <List
-                    items={item.widgets}
+                    items={item.items}
                     toggleSlideMenu={toggleSlideMenu}
                     isNested={!item.sectionTitle}
                     isExpanded={isNestedListExpanded}

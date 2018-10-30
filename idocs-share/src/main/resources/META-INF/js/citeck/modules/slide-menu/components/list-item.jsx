@@ -1,7 +1,22 @@
 import React from 'react';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { connect } from "react-redux";
+import { setSelectedId } from "../actions";
 
-const ListItem = ({item, toggleSlideMenu, isSelected, nestedList, toggleCollapse}) => {
+const selectedMenuItemIdKey = 'selectedMenuItemId';
+
+const mapStateToProps = (state, ownProps) => ({
+    isSelected: state.leftMenu.selectedId === ownProps.item.id
+});
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+    onSelectItem: id => {
+        sessionStorage && sessionStorage.setItem && sessionStorage.setItem(selectedMenuItemIdKey, id);
+        ownProps.toggleSlideMenu();
+        dispatch(setSelectedId(id));
+    }
+});
+
+const ListItem = ({item, onSelectItem, isSelected, nestedList, toggleCollapse}) => {
     if (item.sectionTitle) {
         return (
             <li id={item.id} className='slide-menu-list__item list-divider'>
@@ -41,8 +56,7 @@ const ListItem = ({item, toggleSlideMenu, isSelected, nestedList, toggleCollapse
             <a
                 href={targetUrl}
                 onClick={() => {
-                    // setSelected(itemId);
-                    toggleSlideMenu();
+                    onSelectItem(item.id);
                     eval(clickHandler);
                 }}
                 className={classes.join(' ')}
@@ -55,5 +69,5 @@ const ListItem = ({item, toggleSlideMenu, isSelected, nestedList, toggleCollapse
     );
 };
 
-export default ListItem;
+export default connect(mapStateToProps, mapDispatchToProps)(ListItem);
 
