@@ -43,7 +43,7 @@ public class RecordsResult<T> {
     }
 
     public void setRecords(List<T> records) {
-        this.records = records;
+        this.records = records != null ? records : Collections.emptyList();
     }
 
     public boolean getHasMore() {

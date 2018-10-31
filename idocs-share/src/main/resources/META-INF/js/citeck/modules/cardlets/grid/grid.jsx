@@ -53,7 +53,6 @@ export default class GridCardlet extends NodeCardlet {
         const header = props.header;
         const data = props.data;
         const columns = props.columns;
-        const rowCount = data.length;
 
         return (
             <div id={`${htmlId}-panel`} className="document-children document-details-panel">
@@ -64,17 +63,9 @@ export default class GridCardlet extends NodeCardlet {
 
                 <div className="panel-body">
                     <Grid
+                        keyField = 'id'
                         data = {data}
                         columns = {columns}
-                        showPagination = {false}
-                        defaultPageSize = {rowCount}
-                        className = '-striped -highlight'
-                        column = {{
-                            headerStyle: {
-                                'text-align': 'left',
-                                'font-weight': 'bold'
-                            }
-                        }}
                     />
                 </div>
             </div>

@@ -1,14 +1,20 @@
 import React, {Component} from 'react';
-import ReactTable, { ReactTableDefaults } from 'js/citeck/lib/react-table/react-table';
+import BootstrapTable from 'js/citeck/lib/react-bootstrap-table-next/react-bootstrap-table-next';
 
-import 'xstyle!js/citeck/lib/react-table/react-table.css';
+import 'xstyle!js/citeck/lib/react-bootstrap-table-next/react-bootstrap-table.css';
 
 export default class Grid extends Component  {
     render() {
-        let {column, ...props} = this.props;
+        let props = {
+            ...this.props,
+            ...{
+                noDataIndication: () => 'Нет элементов в списке',
+                classes: 'table_table-layout_auto',
+                bootstrap4: true,
+                bordered: false
+            }
+        };
 
-        Object.assign(ReactTableDefaults.column, column);
-
-        return <ReactTable {...props} />;
+        return <BootstrapTable {...props}/>;
     }
 }

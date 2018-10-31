@@ -564,6 +564,7 @@
             <field assoc="contracts:mainAgreement">
                 <region name="select" template="select-journal" >
                     <param name="journalType">contract-agreements</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
