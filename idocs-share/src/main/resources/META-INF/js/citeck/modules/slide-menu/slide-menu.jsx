@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import thunk from 'js/citeck/lib/redux-thunk';
 import SlideMenu from "./components/slide-menu";
 import rootReducer from './reducers';
+import API from '../common/api';
 import {
     setSmallLogo,
     setLargeLogo,
@@ -12,16 +13,20 @@ import {
     setLeftMenuExpandableItems,
     setSelectedId
 } from './actions';
+import {
+    selectedMenuItemIdKey,
+    fetchExpandableItems,
+    processApiData
+} from './util';
 import "xstyle!./slide-menu.css";
 
-const selectedMenuItemIdKey = 'selectedMenuItemId';
+const api = new API(window.Alfresco.constants.PROXY_URI);
 
 let composeEnhancers = compose;
 if (typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) {
     composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
 }
 
-const api = null; // TODO
 const store = createStore(rootReducer, {}, composeEnhancers(
         applyMiddleware(thunk.withExtraArgument(api)),
     )
@@ -57,63 +62,3 @@ export const render = (elementId, props) => {
         document.getElementById(elementId)
     );
 };
-
-// TODO delete
-// const itemId = item.id; // .split(' ').join('_'); TODO
-function processApiData(oldItems) {
-    if (!oldItems) {
-        return null;
-    }
-
-    return oldItems.map(item => {
-        let newItem = { ...item };
-        delete newItem['widgets'];
-        if (item.widgets) {
-            newItem.items = processApiData(item.widgets);
-        }
-
-        return newItem;
-    });
-}
-
-function fetchExpandableItems(items, selectedId) {
-    let flatList = [];
-    items.map(item => {
-        const hasNestedList = !!item.items;
-        if (hasNestedList) {
-            let isNestedListExpanded = !!item.sectionTitle || hasChildWithId(item.items, selectedId);
-            flatList.push(
-                {
-                    id: item.id,
-                    hasNestedList,
-                    isNestedListExpanded,
-                },
-                ...fetchExpandableItems(item.items, selectedId)
-            );
-        }
-    });
-
-    return flatList;
-}
-
-function hasChildWithId(items, selectedId) {
-    let childIndex = items.findIndex(item => item.id === selectedId);
-    if (childIndex !== -1) {
-        return true;
-    }
-
-    let totalItems = items.length;
-
-    for (let i = 0; i < totalItems; i++) {
-        if (!items[i].items) {
-            continue;
-        }
-
-        let hasChild = hasChildWithId(items[i].items, selectedId);
-        if (hasChild) {
-            return true;
-        }
-    }
-
-    return false;
-}

@@ -1,4 +1,4 @@
-import { t } from './util'
+import { t } from '../../common/util';
 import {
     showModal,
     hideModal,

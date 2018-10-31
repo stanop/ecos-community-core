@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from "react-redux";
 import { setSelectedId } from "../actions";
+import { t } from "../../common/util";
 
 const selectedMenuItemIdKey = 'selectedMenuItemId';
 
@@ -20,13 +21,13 @@ const ListItem = ({item, onSelectItem, isSelected, nestedList, toggleCollapse}) 
     if (item.sectionTitle) {
         return (
             <li id={item.id} className='slide-menu-list__item list-divider'>
-                <span className='list-divider__text'>{Alfresco.util.message(item.sectionTitle)}</span>
+                <span className='list-divider__text'>{t(item.sectionTitle)}</span>
                 {nestedList}
             </li>
         );
     }
 
-    let label = Alfresco.util.message(item.label || `header.${item.id}.label`);
+    let label = t(item.label || `header.${item.id}.label`);
     let icon = <i className={`fa fa-menu-default-icon ${item.id}`} />;
     let targetUrl = null;
     if (item.url) {

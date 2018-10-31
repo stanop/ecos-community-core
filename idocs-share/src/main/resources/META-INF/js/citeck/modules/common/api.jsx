@@ -1,38 +1,36 @@
-import { generateSearchTerm } from '../misc/util';
+import { generateSearchTerm } from './util';
 
-// TODO include polyfills
+function handleErrors(response) {
+    if (!response.ok) {
+        throw Error(`${response.status} (${response.statusText})`);
+    }
+    return response;
+}
 
-// const catchError = err => console.error(err);
+function toJson(response) {
+    return response.json();
+}
+
+const getOptions = {
+    credentials: 'include',
+    method: 'get'
+};
+
+const postOptions = {
+    ...getOptions,
+    method: 'post'
+};
 
 export default class {
     constructor(alfrescoProxyUri) {
         this.alfrescoProxyUri = alfrescoProxyUri;
     }
 
-    getJSON(url) {
-        return new Promise((resolve, reject) => {
-            const http = new XMLHttpRequest();
-            http.open('GET', this.alfrescoProxyUri + url, true);
-
-            http.onload = function() {
-                if (http.status === 200) {
-                    try {
-                        resolve(JSON.parse(http.responseText));
-                    } catch(e) {
-                        reject(Error('JSON is not valid'));
-                    }
-                } else {
-                    reject(Error(http.statusText));
-                }
-            };
-
-            http.onerror = function() {
-                reject(Error('Network error'))
-            };
-
-            http.send();
-        });
-    }
+    getJSON = url => {
+        return fetch(this.alfrescoProxyUri + url, getOptions)
+            .then(handleErrors)
+            .then(toJson);
+    };
 
     getPhotoSize = userNodeRef => {
         const url = "citeck/node?nodeRef=" + userNodeRef + "&props=ecos:photo";

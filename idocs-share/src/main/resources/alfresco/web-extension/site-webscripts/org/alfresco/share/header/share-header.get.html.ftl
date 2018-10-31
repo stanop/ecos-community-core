@@ -42,9 +42,7 @@
                     userIsAvailable: "${((user.properties.available)!"")?string}",
                     userIsMutable: "${((user.capabilities.isMutable)!"")?string}",
                     isExternalAuthentication: "${((context.externalAuthentication)!"")?string}",
-                    slideMenuConfig: ${jsonUtils.toJSONString(slideMenuConfig)},
-                    siteMenuItems: ${jsonUtils.toJSONString(siteMenuItems)},
-                    isMobile: "${isMobile?string}"
+                    siteMenuItems: ${jsonUtils.toJSONString(siteMenuItems)}
                 });
             });
 

@@ -5,7 +5,8 @@ import { Provider } from 'react-redux';
 import thunk from 'js/citeck/lib/redux-thunk';
 
 import ShareHeader from './share-header';
-import API from './misc/api';
+import API from '../common/api';
+import { isMobileDevice } from '../common/util';
 import rootReducer from './reducers';
 import {
     setUserFullName,
@@ -42,7 +43,7 @@ export const render = (elementId, props) => {
         props.siteMenuItems
     ));
 
-    store.dispatch(setIsMobile(props.isMobile === "true"));
+    store.dispatch(setIsMobile(isMobileDevice()));
 
     ReactDOM.render(
         <Provider store={store}>
@@ -50,10 +51,4 @@ export const render = (elementId, props) => {
         </Provider>,
         document.getElementById(elementId)
     );
-
-    // if (props.slideMenuConfig) {
-    //     require(['js/citeck/header/citeckMainSlideMenu'], function(CiteckMainSlideMenu) {
-    //         new CiteckMainSlideMenu(props.slideMenuConfig);
-    //     });
-    // }
 };

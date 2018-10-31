@@ -2,14 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import SearchDropdown from './search-dropdown';
 import SearchAutocomplete from './search-autocomplete';
-import ClickOutside from './click-outside';
+import ClickOutside from '../../common/components/click-outside';
 import {
     getSearchTextFromHistory,
     toggleAutocompleteVisibility,
     fetchAutocompleteItems,
     fetchMoreAutocompleteDocuments
 } from '../actions';
-import { t, generateSearchTerm } from '../misc/util';
+import { t, generateSearchTerm } from '../../common/util';
 
 const _ = window._;
 

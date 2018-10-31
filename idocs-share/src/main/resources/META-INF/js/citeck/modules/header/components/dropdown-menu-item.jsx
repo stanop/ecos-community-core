@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { MenuItem } from 'react-bootstrap';
-import { t } from '../misc/util';
+import { t } from '../../common/util';
 import handleControl from '../misc/handle-control';
 
 const mapDispatchToProps = dispatch => ({
