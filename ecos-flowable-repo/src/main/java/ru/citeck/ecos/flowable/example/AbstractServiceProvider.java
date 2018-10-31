@@ -6,9 +6,9 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.providers.ApplicationContextProvider;
 
 /**
- * Abstract listener
+ * Abstract service provider
  */
-public abstract class AbstractListener {
+public abstract class AbstractServiceProvider {
 
     protected ServiceRegistry serviceRegistry;
 
@@ -19,7 +19,7 @@ public abstract class AbstractListener {
     @SuppressWarnings("unchecked")
     protected <T> T getBean(String name, Class<T> clazz) {
         Object bean = getBean(name);
-        if(clazz.isInstance(bean)) {
+        if (clazz.isInstance(bean)) {
             return (T) bean;
         } else {
             return null;
@@ -31,13 +31,15 @@ public abstract class AbstractListener {
     }
 
     protected final void init() {
-        if(serviceRegistry == null) {
+        if (serviceRegistry == null) {
             serviceRegistry = ApplicationContextProvider.getBean(ServiceDescriptorRegistry.class);
             this.initImpl();
         }
     }
 
+    /**
+     * Override this method in subclasses for implement custom initialization.
+     */
     protected void initImpl() {
-        // subclasses can override this
     }
 }
