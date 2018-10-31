@@ -1,9 +1,10 @@
 package ru.citeck.ecos.share.evaluator;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.web.evaluator.BaseEvaluator;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.springframework.extensions.surf.RequestContext;
 import org.springframework.extensions.surf.ServletUtil;
@@ -13,18 +14,21 @@ import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.connector.Connector;
 import org.springframework.extensions.webscripts.connector.Response;
 
+import java.io.IOException;
+import java.util.List;
+
 public class HasAssocEvaluator extends BaseEvaluator {
 
     private static final String URL_TEMPLATE = "/citeck/assocs?nodeRef=%s&assocTypes=%s&addAssocs=false";
-
     private static final String NODE_REF_PARAM = "nodeRef";
 
-    private static final String TARGET_ASSOC_JSON_KEY = "targets";
-    private static final String CHILDREN_ASSOC_JSON_KEY = "children";
-    private static final String SOURCE_ASSOC_JSON_KEY = "sources";
-
+    private ObjectMapper objectMapper;
     private String assoc;
 
+    public HasAssocEvaluator() {
+        objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     private Connector getConnector(RequestContext context) throws ConnectorServiceException {
         return context != null
@@ -40,37 +44,34 @@ public class HasAssocEvaluator extends BaseEvaluator {
                 : null;
     }
 
-    private org.json.JSONObject extractBody(Response response) throws JSONException {
+    private Body extractBody(Response response) throws IOException {
         if (response == null) {
             return null;
         }
 
         return response.getStatus().getCode() == Status.STATUS_OK
-                ? new org.json.JSONObject(response.getResponse())
+                ? objectMapper.readValue(response.getResponse(), Body.class)
                 : null;
     }
 
-    private boolean checkHasAssoc(JSONObject node) throws ConnectorServiceException, JSONException {
+    private boolean checkHasAssoc(JSONObject node) throws ConnectorServiceException, IOException {
         RequestContext context = ThreadLocalRequestContext.getRequestContext();
         String url = String.format(URL_TEMPLATE, node.get(NODE_REF_PARAM), assoc);
         Response response = callWebscript(getConnector(context), url);
-        org.json.JSONObject body = extractBody(response);
+        Body body = extractBody(response);
         return body != null && isAssocPresent(body);
     }
 
-    private boolean isAssocPresent(org.json.JSONObject body) throws JSONException {
-        JSONArray targetAssocs = body.getJSONArray(TARGET_ASSOC_JSON_KEY);
-        if (targetAssocs != null && targetAssocs.length() > 0) {
+    private boolean isAssocPresent(Body body) {
+        if (body.targets != null && !body.targets.isEmpty()) {
             return true;
         }
 
-        JSONArray childAssocs = body.getJSONArray(CHILDREN_ASSOC_JSON_KEY);
-        if (childAssocs != null && childAssocs.length() > 0) {
+        if (body.children != null && !body.children.isEmpty()) {
             return true;
         }
 
-        JSONArray sourceAssocs = body.getJSONArray(SOURCE_ASSOC_JSON_KEY);
-        if (sourceAssocs != null && sourceAssocs.length() > 0) {
+        if (body.sources != null && !body.sources.isEmpty()) {
             return true;
         }
 
@@ -89,5 +90,15 @@ public class HasAssocEvaluator extends BaseEvaluator {
 
     public void setAssoc(String assoc) {
         this.assoc = assoc;
+    }
+
+
+    private static class Body {
+        @JsonProperty(value = "sources")
+        List<Object> sources;
+        @JsonProperty(value = "targets")
+        List<Object> targets;
+        @JsonProperty(value = "children")
+        List<Object> children;
     }
 }
