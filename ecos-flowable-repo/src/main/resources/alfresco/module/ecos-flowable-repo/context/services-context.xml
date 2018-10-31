@@ -322,7 +322,7 @@
     <bean id="flowableRecipientsServiceJS" name="flowableRecipientsServiceJS"
           class="ru.citeck.ecos.flowable.services.FlowableRecipientsServiceJS"
           parent="baseJavaScriptExtension">
-        <property name="extensionName" value="flowableRecipientsService"/>
+        <property name="extensionName" value="flwRecipients"/>
         <property name="flowableRecipientsService" ref="flowableRecipientsService"/>
     </bean>
 
