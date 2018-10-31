@@ -12,7 +12,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, setExpanded, expandableItems}) => {
-    const listContent = items.map((item, idx) => {
+    const listContent = items.map(item => {
         const isSelected = false;
 
         let nestedList = null;
@@ -45,7 +45,7 @@ const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, setExpanded, ex
 
         return (
             <ListItem
-                key={idx}
+                key={item.id}
                 toggleSlideMenu={toggleSlideMenu}
                 item={item}
                 isSelected={isSelected}
