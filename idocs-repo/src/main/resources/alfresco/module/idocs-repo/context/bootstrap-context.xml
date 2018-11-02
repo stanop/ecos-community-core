@@ -33,6 +33,7 @@
                 <value>alfresco/module/idocs-repo/model/case_mt/icaseRoleModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/case_mt/icaseTaskModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/cardletModel.xml</value>
+                <value>alfresco/module/idocs-repo/model/menuConfigModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/idocsModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/workflowMirrorModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/associationModel.xml</value>
