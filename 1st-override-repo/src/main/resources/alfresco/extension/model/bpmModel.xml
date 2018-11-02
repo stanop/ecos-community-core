@@ -348,6 +348,10 @@
                 </property>
 
             </overrides>
+            
+            <mandatory-aspects>
+                <aspect>bpm:hasTargetItem</aspect>
+            </mandatory-aspects>
 
         </type>
         
@@ -565,6 +569,22 @@
                         <many>true</many>
                     </target>
                 </child-association>
+            </associations>
+        </aspect>
+
+        <aspect name="bpm:hasTargetItem">
+            <associations>
+                <association name="bpm:targetItem">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:cmobject</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
             </associations>
         </aspect>
 
