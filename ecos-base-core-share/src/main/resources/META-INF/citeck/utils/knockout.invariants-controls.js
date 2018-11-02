@@ -3009,6 +3009,9 @@ ko.bindingHandlers.orgstructControl = {
         var rootGroupFunction;
         if (!params.rootGroup && params.rootGroupFunction && _.isFunction(params.rootGroupFunction)) {
             rootGroupFunction = ko.computed(params.rootGroupFunction);
+
+            options.rootGroup(rootGroupFunction());
+
             rootGroupFunction.subscribe(function (newValue) { options.rootGroup(newValue) });
         }
 
