@@ -69,7 +69,7 @@
     <bean id="contracts.module-components.contracts-confirm-routes1" parent="contracts.import-scripts.3-2-1">
         <property name="dependsOn">
             <list>
-                <ref bean="contracts.module-component.doctype-categories2"/>
+                <ref bean="contracts.module-component.doctype-categories1"/>
             </list>
         </property>
         <property name="name" value="contracts-confirm-routes" />

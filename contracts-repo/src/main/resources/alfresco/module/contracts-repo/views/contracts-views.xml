@@ -114,6 +114,7 @@
                 <region name="input" template="autocomplete">
                     <param name="criteria">[{ attribute: "cm:title", predicate: "string-contains" }]</param>
                 </region>
+                <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
             </field>
             <field prop="contracts:agreementAmount">
                 <region name="label" template="label">
