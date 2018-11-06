@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
+        <import uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org" />
+    </imports>
+
+    <view class="cm:authorityContainer">
+        <field prop="cm:authorityName"/>
+        <field prop="cm:authorityDisplayName"/>
+    </view>
+
+    <view class="cm:authorityContainer" id="orgstruct">
+        <field prop="cm:authorityName"/>
+        <field prop="cm:authorityDisplayName"/>
+    </view>
+
+    <view class="cm:authorityContainer" id="branch">
+        <field prop="cm:authorityName"/>
+        <field prop="cm:authorityDisplayName"/>
+        <field prop="org:branchType"/>
+    </view>
+
+    <view class="cm:authorityContainer" id="role">
+        <field prop="cm:authorityName"/>
+        <field prop="cm:authorityDisplayName"/>
+        <field prop="org:roleType"/>
+        <field prop="deputy:managedByMembers"/>
+    </view>
+
+</views>

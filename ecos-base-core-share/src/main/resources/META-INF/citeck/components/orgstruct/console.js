@@ -425,12 +425,35 @@ define([
                 formId = args.formId,
                 parentId = args.item,
                 parent = this.model.getItem(parentId),
-                htmlid = this.id + "-form-" + Alfresco.util.generateDomId(),
-                destination = this.model.getItemProperty(parent, this.config.forms.destination, true);
-            this.widgets.createItemDialog = new Citeck.widget.CreateFormDialog(htmlid, itemId, formId, destination, null, parent, this.name);
-            this.widgets.createItemDialog.setOptions(this.config.forms);
-            this.widgets.createItemDialog.show();
-            this.widgets.createItemDialog.subscribe("itemCreated", this.onItemCreated, this, true);
+                destination = this.model.getItemProperty(parent, this.config.forms.destination, true),
+                destinationAssoc = 'cm:member',
+                header = this.msg('panel.create.' + (this.formId || 'default') + '.header'),
+                mode = 'create';
+
+            Alfresco.util.Ajax.jsonGet({
+                url: Alfresco.constants.PROXY_URI + 'citeck/authority/getGroupNodeRef',
+                dataObj: {
+                    groupFullName: destination
+                },
+                successCallback: {
+                    fn: function(response) {
+                        var destinationNodeRef = response.json.nodeRef;
+                        if (destinationNodeRef) {
+                            this.widgets.createItemDialog = new Citeck.forms.dialog(itemId, formId, function () {}, {
+                                width: '800px',
+                                mode: mode,
+                                destination: destinationNodeRef,
+                                destinationAssoc: destinationAssoc,
+                                title: header});
+                            this.widgets.createItemDialog.setOptions(this.config.forms);
+                            this.widgets.createItemDialog.show();
+                            this.widgets.createItemDialog.subscribe('itemCreated', this.onItemCreated, this, true);
+                        }
+                    },
+                    scope: this
+                },
+                failureMessage: 'Group nodeRef receive failed!'
+            });
         },
 
         /**
