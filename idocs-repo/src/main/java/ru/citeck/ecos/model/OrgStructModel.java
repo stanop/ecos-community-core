@@ -42,4 +42,7 @@ public interface OrgStructModel {
 	public static final QName PROP_FIRST_NAME = QName.createQName(NAMESPACE, "firstName");
 	public static final QName PROP_LAST_NAME = QName.createQName(NAMESPACE, "lastName");
 
+    public static final QName ASPECT_IS_TEMPORARY_AUTHORITY_CONTAINER = QName.createQName(NAMESPACE, "isTemporaryAuthorityContainer");
+    public static final QName PROP_IS_TEMPORARY_AUTHORITY_CONTAINER = QName.createQName(NAMESPACE, "isTemporaryAuthorityContainer");
+
 }

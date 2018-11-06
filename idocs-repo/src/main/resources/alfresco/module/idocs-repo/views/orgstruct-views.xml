@@ -10,17 +10,28 @@
     <view class="cm:authorityContainer">
         <field prop="cm:authorityName"/>
         <field prop="cm:authorityDisplayName"/>
+        <field prop="org:isTemporaryAuthorityContainer"/>
     </view>
 
     <view class="cm:authorityContainer" id="orgstruct">
         <field prop="cm:authorityName"/>
         <field prop="cm:authorityDisplayName"/>
+        <field prop="org:isTemporaryAuthorityContainer"/>
     </view>
 
     <view class="cm:authorityContainer" id="branch">
         <field prop="cm:authorityName"/>
         <field prop="cm:authorityDisplayName"/>
-        <field prop="org:branchType"/>
+        <view kind="2-column">
+            <field prop="org:branchType"/>
+            <field assoc="org:hasLegalEntity">
+                <region name="input" template="view"/>
+                <region name="select" template="select-journal">
+                    <param name="journalType">legal-entities</param>
+                </region>
+            </field>
+        </view>
+        <field prop="org:isTemporaryAuthorityContainer"/>
     </view>
 
     <view class="cm:authorityContainer" id="role">
@@ -28,6 +39,7 @@
         <field prop="cm:authorityDisplayName"/>
         <field prop="org:roleType"/>
         <field prop="deputy:managedByMembers"/>
+        <field prop="org:isTemporaryAuthorityContainer"/>
     </view>
 
 </views>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
+        <import uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org" />
+    </imports>
+
+    <type name="cm:authorityContainer">
+        <property name="org:isTemporaryAuthorityContainer">
+            <invariant on="value" language="javascript">view.mode == "create"</invariant>
+            <invariant on="relevant" language="javascript">view.mode == "create"</invariant>
+        </property>
+
+        <association name="org:hasLegalEntity">
+            <invariant on="relevant" language="javascript">node.properties['org:branchType'] == "company"</invariant>
+        </association>
+    </type>
+
+</invariants>
