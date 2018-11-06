@@ -611,65 +611,63 @@ ko.components.register("datetime", {
         this.isFocus = ko.observable(false);
         this.intermediateValue = ko.observable();
 
-        if(!this.mode || !Citeck.HTML5.supportInput("datetime-local")){
-            this.calendar = function() {
-                if (!calendarDialog) {
-                    var formContainer = $("#" + this.fieldId).closest(".yui-panel-container"),
-                        zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
+        this.calendar = function() {
+            if (!calendarDialog) {
+                var formContainer = $("#" + this.fieldId).closest(".yui-panel-container"),
+                    zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
 
-                    calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
-                        visible:    false,
-                        context:    [calendarAccessorId, "tl", "bl"],
-                        draggable:  false,
-                        close:      true,
-                        zindex:     zindex
-                    });
-                    calendarDialog.setHeader(localization.labels.header);
-                    calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
-                    calendarDialog.render(document.body);
-                }
+                calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
+                    visible:    false,
+                    context:    [calendarAccessorId, "tl", "bl"],
+                    draggable:  false,
+                    close:      true,
+                    zindex:     zindex
+                });
+                calendarDialog.setHeader(localization.labels.header);
+                calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
+                calendarDialog.render(document.body);
+            }
 
-                if (!calendar) {
-                    calendar = new YAHOO.widget.Calendar(calendarContainerId, {
-                        LOCALE_WEEKDAYS: "short",
-                        LOCALE_MONTHS: "long",
-                        START_WEEKDAY: 1,
+            if (!calendar) {
+                calendar = new YAHOO.widget.Calendar(calendarContainerId, {
+                    LOCALE_WEEKDAYS: "short",
+                    LOCALE_MONTHS: "long",
+                    START_WEEKDAY: 1,
 
-                        iframe: false,
-                        navigator: {
-                            strings: {
-                                month:  localization.labels.month,
-                                year:   localization.labels.year,
-                                submit: localization.buttons.submit,
-                                cancel: localization.buttons.cancel
-                            }
+                    iframe: false,
+                    navigator: {
+                        strings: {
+                            month:  localization.labels.month,
+                            year:   localization.labels.year,
+                            submit: localization.buttons.submit,
+                            cancel: localization.buttons.cancel
                         }
-                    });
+                    }
+                });
 
-                    // localization months and days
-                    calendar.cfg.setProperty("MONTHS_LONG", localization.months.split(","));
-                    calendar.cfg.setProperty("WEEKDAYS_SHORT", localization.days.split(","));
+                // localization months and days
+                calendar.cfg.setProperty("MONTHS_LONG", localization.months.split(","));
+                calendar.cfg.setProperty("WEEKDAYS_SHORT", localization.days.split(","));
 
-                    // selected date
-                    calendar.selectEvent.subscribe(function() {
-                        if (calendar.getSelectedDates().length > 0) {
-                            var selectedDate = calendar.getSelectedDates()[0],
-                                nowDate = new Date;
+                // selected date
+                calendar.selectEvent.subscribe(function() {
+                    if (calendar.getSelectedDates().length > 0) {
+                        var selectedDate = calendar.getSelectedDates()[0],
+                            nowDate = new Date;
 
-                            selectedDate.setHours(nowDate.getHours());
-                            selectedDate.setMinutes(nowDate.getMinutes());
-                            self.value(selectedDate);
-                        }
+                        selectedDate.setHours(nowDate.getHours());
+                        selectedDate.setMinutes(nowDate.getMinutes());
+                        self.value(selectedDate);
+                    }
 
-                        calendarDialog.hide();
-                    });
+                    calendarDialog.hide();
+                });
 
-                    calendar.render();
-                }
+                calendar.render();
+            }
 
-                if (calendarDialog) calendarDialog.show();
-            };
-        }
+            if (calendarDialog) calendarDialog.show();
+        };
 
         this.textValue = ko.pureComputed({
             read: function() {
@@ -698,6 +696,7 @@ ko.components.register("datetime", {
                 self.value(self.intermediateValue());
             }
         });
+
         this.dateValue = ko.computed({
             read: function() {
                 return  Alfresco.util.toISO8601(self.value(), { milliseconds: false, hideTimezone: true });
@@ -719,19 +718,14 @@ ko.components.register("datetime", {
         });
     },
     template:
-       '<!-- ko if: Citeck.HTML5.supportInput("datetime-local") && mode -->\
-            <input type="datetime-local" data-bind="value: dateValue, hasFocus: isFocus, disable: disabled" />\
+       '<input type="text" data-bind="value: textValue, disable: disabled, attr: { placeholder: localization.formatIE }" />\
+        <!-- ko if: disabled -->\
+            <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">\
         <!-- /ko -->\
-        <!-- ko if: !mode || !Citeck.HTML5.supportInput("datetime-local") -->\
-            <input type="text" data-bind="value: textValue, disable: disabled, attr: { placeholder: localization.formatIE }" />\
-            <!-- ko if: disabled -->\
+        <!-- ko ifnot: disabled -->\
+            <a class="calendar-link-button" data-bind="disable: disabled, click: calendar, clickBubble: false, attr: { id: fieldId + \'-calendarAccessor\' }">\
                 <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">\
-            <!-- /ko -->\
-            <!-- ko ifnot: disabled -->\
-                <a class="calendar-link-button" data-bind="disable: disabled, click: calendar, clickBubble: false, attr: { id: fieldId + \'-calendarAccessor\' }">\
-                    <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">\
-                </a>\
-            <!-- /ko -->\
+            </a>\
         <!-- /ko -->'
 });
 
@@ -3015,6 +3009,9 @@ ko.bindingHandlers.orgstructControl = {
         var rootGroupFunction;
         if (!params.rootGroup && params.rootGroupFunction && _.isFunction(params.rootGroupFunction)) {
             rootGroupFunction = ko.computed(params.rootGroupFunction);
+
+            options.rootGroup(rootGroupFunction());
+
             rootGroupFunction.subscribe(function (newValue) { options.rootGroup(newValue) });
         }
 

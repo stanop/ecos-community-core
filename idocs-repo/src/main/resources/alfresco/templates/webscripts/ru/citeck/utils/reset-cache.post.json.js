@@ -6,7 +6,8 @@
         'invariants': 'invariants.autoDeployer.module',
         'case-templates': 'caseAutoDeployer',
         'fields-perm-matrix': 'permissionsMatrixDeployer',
-        'perm-matrix': 'docACLDeployer'
+        'perm-matrix': 'docACLDeployer',
+        'cardlets': 'ecos.cardlets.contentDeployer'
     };
 
     var additionalActions = {
