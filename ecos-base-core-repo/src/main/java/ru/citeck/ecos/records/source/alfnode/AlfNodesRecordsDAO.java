@@ -5,6 +5,7 @@ import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,8 +25,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class AlfNodesRecordsDAO extends LocalRecordsDAO
-                                implements RecordsMetaValueDAO,
-                                           RecordsDefinitionDAO {
+                                implements RecordsDefinitionDAO,
+                                           RecordsMetaDAO {
 
     private static final Log logger = LogFactory.getLog(AlfNodesRecordsDAO.class);
 
@@ -36,6 +37,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private DictionaryService dictionaryService;
     private NamespaceService namespaceService;
     private MessageService messageService;
+    private NodeService nodeService;
 
     public AlfNodesRecordsDAO() {
         setId(ID);
@@ -119,6 +121,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.messageService = serviceRegistry.getMessageService();
+        this.nodeService = serviceRegistry.getNodeService();
     }
 
     public void register(AlfNodesSearch alfNodesSearch) {

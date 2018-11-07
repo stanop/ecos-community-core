@@ -72,6 +72,7 @@ iframe:hover {
                 <label><input type="checkbox" name="case-templates" />Case templates</label>
                 <label><input type="checkbox" name="fields-perm-matrix" />Fields permissions matrix</label>
                 <label><input type="checkbox" name="perm-matrix" />Permissions matrix</label>
+                <label><input type="checkbox" name="cardlets" />Cardlets</label>
             </div>
             <input class="submit-button" type="button" value="Reload Selected" onclick="resetServicesCache()" />
         </form>

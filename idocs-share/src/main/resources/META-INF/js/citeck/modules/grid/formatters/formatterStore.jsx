@@ -1,9 +1,9 @@
-import UserNameLink from "./userNameLink";
-import DefaultFormatter from "./defaultFormatter";
+import UserNameLink from "./gql/userNameLink";
+import DefaultGqlFormatter from "./gql/defaultGqlFormatter";
 
 const formatterStore = {
     UserNameLink,
-    DefaultFormatter
+    DefaultGqlFormatter
 };
 
 export default formatterStore;

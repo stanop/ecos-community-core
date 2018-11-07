@@ -369,7 +369,9 @@ public class CaseRoleServiceImpl implements CaseRoleService {
         RoleDAO dao = rolesDAOByType.get(type);
         if (dao != null) {
             Set<NodeRef> assignees = dao.getAssignees(caseRef, roleRef);
-            setAssignees(roleRef, getDelegates(roleRef, assignees));
+            if (assignees != null) {
+                setAssignees(roleRef, getDelegates(roleRef, assignees));
+            }
         }
     }
 

@@ -28,17 +28,24 @@
         <view>
             <field assoc="idocs:initiator"/>
             <field assoc="orders:branch"/>
-            <field prop="orders:header"/>
+            <field assoc="orders:fileCode"/>
         </view>
 
         <view>
-            <field assoc="orders:fileCode"/>
+            <field prop="orders:header"/>
             <field prop="idocs:registrationNumber"/>
             <field prop="idocs:registrationDate"/>
         </view>
 
-        <view>
-            <field prop="idocs:summary"/>
+        <view id="summary" kind="1-column">
+            <field prop="idocs:summary">
+                <region name="input" template="textarea">
+                    <param name="height">100%</param>
+                </region>
+                <region name="label" template="label">
+                    <param name="key">idocs_idocsModel.property.idocs_summary.title</param>
+                </region>
+            </field>
         </view>
 
         <view>

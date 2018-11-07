@@ -12,7 +12,7 @@ import java.util.List;
 public class GqlMetaQuery {
 
     @GraphQLField
-    public static List<MetaValue> metaValues(DataFetchingEnvironment env) {
+    public static List<MetaValue> gqlMeta(DataFetchingEnvironment env) {
         GqlContext context = env.getContext();
         return context.getMetaValues();
     }

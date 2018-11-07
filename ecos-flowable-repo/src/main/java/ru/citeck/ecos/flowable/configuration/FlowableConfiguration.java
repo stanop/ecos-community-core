@@ -24,14 +24,15 @@ import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
 import ru.citeck.ecos.flowable.handlers.UserTaskBpmnParseHandler;
+import ru.citeck.ecos.flowable.services.FlowableEngineProcessService;
 import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
 import ru.citeck.ecos.flowable.services.impl.ModelMapper;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
 import ru.citeck.ecos.flowable.variable.FlowableEcosPojoTypeHandler;
-import ru.citeck.ecos.workflow.variable.handler.EcosPojoTypeHandler;
 import ru.citeck.ecos.icase.CaseStatusServiceJS;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessServiceJS;
+import ru.citeck.ecos.workflow.variable.handler.EcosPojoTypeHandler;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -197,6 +198,13 @@ public class FlowableConfiguration {
         beans.put(FlowableConstants.SERVICE_REGISTRY_BEAN_KEY, descriptorRegistry);
         beans.put(FlowableConstants.COMPLETENESS_SERVICE_JS_KEY, caseCompletenessServiceJS);
         beans.put(FlowableConstants.CASE_STATUS_SERVICE_JS_KEY, caseStatusServiceJS);
+
+        Map<String, FlowableEngineProcessService> engineProcessServices = applicationContext.getBeansOfType(
+                FlowableEngineProcessService.class);
+        engineProcessServices.forEach((k, v) -> {
+            logger.info("Added flowable process engine service: " + v.getKey());
+            beans.put(v.getKey(), v);
+        });
 
         return beans;
     }

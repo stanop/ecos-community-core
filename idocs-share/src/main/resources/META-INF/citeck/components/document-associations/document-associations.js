@@ -103,6 +103,8 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
              */
             isMultiple: true,
 
+            createVariantsVisibility: false,
+
             dependencies: {js: []}
         },
 
@@ -147,197 +149,32 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                             me.hasPermissionWrite = true;
                         }
                         if(this.options.addable.length>0 && this.hasPermissionWrite) {
-                            var createButton = Dom.get(this.id + '-create-button');
-                            createButton.setAttribute('title', me.msg('create-button.label'));
-                            createButton.setAttribute('class', 'create-link alfresco-twister-actions');
-
-                            me.assocTypeMenu = new YAHOO.widget.ContextMenu(
-                                this.id + "-contextmenu",
-                                {
-                                    trigger: this.id + '-create-button',
-                                    lazyLoad: true
-                                }
-                            );
-
-                            var controlId = me.id + "-control";
-
-                            require(['citeck/components/journals2/journals', 'citeck/utils/knockout.utils', 'citeck/utils/knockout.yui', 'citeck/utils/knockout.components',
-                                'citeck/utils/knockout.invariants-controls', 'lib/knockout'], function(journals, koutils, koyui, kocomponents, koic, ko) {
-                                var Node = koutils.koclass('invariants.Node'),
-                                    selectedValue = ko.observable(),
-                                    journalType = ko.observable(),
-                                    nodeType = ko.observable(),
-                                    protected = ko.observable(false),
-                                    isMultiple = ko.observable(me.options.isMultiple);
-
-                                selectedValue.subscribe(function(newValue) {
-                                    if (newValue) {
-                                        var isArray = _.isArray(newValue);
-                                        this.onAddAssociation(isArray ? newValue : [newValue]);
-                                    }
-
-                                }, me);
-                                ko.applyBindings({
-                                    "fieldId": controlId + "-field",
-                                    "name": ko.observable(controlId + "-create-field"),
-                                    "multiple": isMultiple,
-                                    "value": selectedValue,
-                                    "protected": protected,
-                                    "journalId": journalType,
-                                    "nodetype": nodeType,
-                                    "filterOptions":function(criteria, pagination) {
-
-                                        if (!this.cache) this.cache = {};
-                                        if (!this.cache.result) {
-                                            this.cache.result = ko.observable([]);
-                                            this.cache.result.extend({notify: 'always'});
-                                        }
-
-                                        var query = {
-                                            skipCount: 0,
-                                            maxItems: 10
-                                        };
-                                        if (!_.find(criteria, function (criterion) {
-                                                return criterion.predicate == 'journal-id';
-                                            })) {
-                                            if (!this.nodetype()) {
-                                                return [];
+                            require([
+                                'citeck/components/journals2/journals-selector',
+                                'react-dom',
+                                'react'
+                            ], function(
+                                component,
+                                ReactDOM,
+                                React
+                            ){
+                                ReactDOM.render(
+                                    React.createElement(component.JournalsSelector, {
+                                        id: me.id,
+                                        isMultiple: me.options.isMultiple,
+                                        addable: me.options.addable,
+                                        createVariantsVisibility: me.options.createVariantsVisibility,
+                                        onSelect: function(newValue, selectedType){
+                                            if (newValue) {
+                                                me.selectedType = selectedType;
+                                                var isArray = _.isArray(newValue);
+                                                me.onAddAssociation(isArray ? newValue : [newValue]);
                                             }
-
-                                            query['field_1'] = "type";
-                                            query['predicate_1'] = "type-equals";
-                                            query['value_1'] = this.nodetype();
                                         }
-
-                                        if (pagination) {
-                                            if (pagination.maxItems) query.maxItems = pagination.maxItems;
-                                            if (pagination.skipCount) query.skipCount = pagination.skipCount;
-                                        }
-
-                                        _.each(criteria, function(criterion, index) {
-                                            query['field_' + (index + 2)] = criterion.attribute;
-                                            query['predicate_' + (index + 2)] = criterion.predicate;
-                                            query['value_' + (index + 2)] = criterion.value;
-                                        });
-
-                                        if(this.cache.query) {
-                                            if(_.isEqual(query, this.cache.query)) return this.cache.result();
-                                        }
-
-                                        this.cache.query = query;
-                                        if (_.some(_.keys(query), function(p) {
-                                                return _.some(["field", "predicate", "value"], function(ci) {
-                                                    return p.indexOf(ci) != -1;
-                                                });
-                                            })) {
-                                            Alfresco.util.Ajax.jsonPost({
-                                                url: Alfresco.constants.PROXY_URI + "search/criteria-search",
-                                                dataObj: query,
-                                                successCallback: {
-                                                    scope: this.cache,
-                                                    fn: function(response) {
-                                                        var result = _.map(response.json.results, function(node) {
-                                                            return new Node(node);
-                                                        });
-                                                        result.pagination = response.json.paging;
-                                                        result.query = response.json.query;
-                                                        this.result(result);
-                                                    }
-                                                }
-                                            });
-                                        }
-
-                                        return this.cache.result();
-                                    }
-                                }, document.getElementById(controlId + "-container"));
-
-                                var addAssociation = function (journalId, journalControlId, selectedType) {
-                                    journalType(journalId);
-                                    me.selectedType = selectedType;
-
-                                    $("#" + controlId + "-button").click();
-                                    Event.on(controlId + "-journalPanel-submitInput", "click", function (event) {
-                                        if (isMultiple) {
-                                            selectedValue(null);
-                                        }
-                                    });
-                                };
-
-                                var getItemsUrl = Alfresco.constants.PROXY_URI + 'citeck/cardlets/sites-and-journals';
-
-                                YAHOO.util.Connect.asyncRequest(
-                                    'GET',
-                                    getItemsUrl, {
-                                        success: function (response) {
-                                            if (response.responseText) {
-                                                var data = eval('(' + response.responseText + ')');
-                                                if (data && data.sites && data.sites.length) {
-                                                    var getSubmenu = function (type) {
-                                                        var submenu = {id: type.replace(":", "_")};
-                                                        submenu.itemdata = data.sites.map(function(item) {
-                                                            var siteId = item.siteId + "-" + type.replace(":", "-");
-                                                            return {
-                                                                text: item.siteName,
-                                                                submenu: {
-                                                                    id: siteId,
-                                                                    itemdata: item.journals.map(function(journal) {
-                                                                        return {
-                                                                            id: controlId + "-" + siteId + "-" + journal.journalId,
-                                                                            text: journal.journalName,
-                                                                            onclick: { fn: addAssociation.bind(null, journal.journalId, journal.journalType, type)}
-                                                                        }
-                                                                    })
-                                                                }
-                                                            }
-                                                        });
-                                                        return submenu;
-                                                    };
-                                                    var menuItems = [];
-                                                    for (var  j = 0; j < me.options.addable.length; j++) {
-                                                        var assoc = me.options.addable[j],
-                                                            type = assoc.name;
-                                                        if(type != '') {
-                                                            if(assoc.direction == "both"
-                                                                || assoc.direction == "target"
-                                                                || assoc.direction == "undirected") {
-                                                                menuItems.push({
-                                                                    text: me.msg("association." + type.replace(":", "_") + ".target"),
-                                                                    submenu : getSubmenu(type)
-                                                                });
-                                                            }
-                                                            if(assoc.direction == "both" || assoc.direction == "source") {
-                                                                menuItems.push({
-                                                                    text: me.msg("association." + type.replace(":", "_") + ".source"),
-                                                                    submenu : getSubmenu(type)
-                                                                });
-                                                            }
-                                                        }
-                                                    }
-
-                                                    me.assocTypeMenu.addItems(menuItems);
-                                                    me.assocTypeMenu.render(me.id + '-create-button');
-                                                }
-                                            }
-                                        },
-                                        failure: function() {
-                                            var messageEl = Dom.get(this.id + "-message");
-                                            messageEl.innerHTML = me.msg("assocs-load-error");
-                                        },
-                                        scope: this
-                                    }
+                                    }),
+                                    document.getElementById(me.id + '-heading-actions')
                                 );
                             });
-
-                            Dom.setStyle(me.id + '-contextmenu', "font-size", "13px");
-
-                            Event.addListener(
-                                this.id + '-create-button',
-                                "click", function(event) {
-                                    var xy = YAHOO.util.Event.getXY(event);
-                                    me.assocTypeMenu.cfg.setProperty("xy", xy);
-                                    me.assocTypeMenu.show();
-                                }
-                            );
                         }
 
                         var searchUrl = Alfresco.constants.PROXY_URI + 'citeck/assocs?nodeRef=' + this.options.nodeRef+ '&assocTypes=' + this.types;

@@ -9,26 +9,10 @@
 <#if nodeRef?? && assocs??>
     <#assign el=args.htmlid?js_string>
 
-    <div id="${el}-control-container" >
-        <div id="${el}-control" data-bind="journalControl: { value: value, multiple: multiple }, params: function() {
-           return {
-                journalType: journalId,
-                mode: 'collapse',
-                hightlightSelection: true,
-                removeSelection: true,
-                createVariantsSource: 'journal-create-variants',
-                <#if createVariantsVisibility??>createVariantsVisibility: ${createVariantsVisibility?string}</#if>
-            }}">
-        </div>
-    </div>
-    <div id="${el}-control-button" ></div>
-
     <div id="${el}-panel" class="document-associations document-details-panel">
         <h2 id="${el}-heading" class="thin dark">
             ${msg("header.assocs")}
-            <span id="${el}-heading-actions" class="alfresco-twister-actions">
-                <a id="${el}-create-button">&nbsp;</a>
-            </span>
+            <span id="${el}-heading-actions" class="alfresco-twister-actions"></span>
         </h2>
         <div id="${el}-body" class="panel-body">
             <div id="${el}-message"></div>
@@ -67,6 +51,7 @@
                     visible: <@renderAssocList assocs.visible />,
                     addable: <@renderAssocList assocs.addable />,
                     removeable: <@renderAssocList assocs.removeable />,
+                    <#if createVariantsVisibility??>createVariantsVisibility: ${createVariantsVisibility?string},</#if>
                     dependencies: ${jsonUtils.toJSONString(dependencies)}
                 }).setMessages(${messages});
             });

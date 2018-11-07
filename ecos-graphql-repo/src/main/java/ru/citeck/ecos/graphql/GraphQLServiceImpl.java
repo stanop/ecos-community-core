@@ -19,7 +19,6 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.graphql.exceptions.CiteckGraphQLException;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.remote.RestConnection;
 
 import javax.annotation.PostConstruct;
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,45 +73,15 @@ public class GraphQLServiceImpl implements GraphQLService {
     }
 
     public ExecutionResult execute(String query, Map<String, Object> variables) {
-        return executeImpl(query, variables, getContext());
+        return executeImpl(query, variables, getGqlContext());
     }
 
     @Override
-    public ExecutionResult execute(RestConnection restConn,
-                                   String url,
-                                   String query,
-                                   Map<String, Object> variables) {
-
-        if (variables == null) {
-            variables = Collections.emptyMap();
-        }
-
-        GraphQLPost.Request request = new GraphQLPost.Request();
-        request.query = query;
-        request.variables = variables;
-
-        ObjectNode result = restConn.jsonPost(url, request, ObjectNode.class);
-        if (result == null) {
-            logger.error("connection.jsonPost result is null! " +
-                         "Seems that remote request was failed. Return null. " +
-                         "Connection: " + restConn + " URL: " + url + " Query: " + query + " variables: " + variables);
-            return null;
-        }
-        return parseRawResult(result);
-    }
-
-    @Override
-    public ExecutionResult execute(String query,
-                                   Map<String, Object> variables,
-                                   Function<GqlContext, List<MetaValue>> valuesProvider) {
-
-        GqlContext context = getContext();
-        context.setMetaValues(valuesProvider.apply(context));
-
+    public ExecutionResult execute(String query, Map<String, Object> variables, Object context) {
         return executeImpl(query, variables, context);
     }
 
-    private ExecutionResult executeImpl(String query, Map<String, Object> variables, GqlContext context) {
+    private ExecutionResult executeImpl(String query, Map<String, Object> variables, Object context) {
 
         Map<String, Object> notNullVars = variables != null ? variables : Collections.emptyMap();
 
@@ -150,7 +118,7 @@ public class GraphQLServiceImpl implements GraphQLService {
         return result;
     }
 
-    private GqlContext getContext() {
+    public GqlContext getGqlContext() {
         AlfrescoTransactionSupport.TxnReadState readState = AlfrescoTransactionSupport.getTransactionReadState();
         GqlContext context;
         if (AlfrescoTransactionSupport.TxnReadState.TXN_READ_ONLY.equals(readState)) {
@@ -163,6 +131,31 @@ public class GraphQLServiceImpl implements GraphQLService {
             context = new GqlContext(serviceRegistry);
         }
         return context;
+    }
+
+    @Override
+    public ExecutionResult execute(RestConnection restConn,
+                                   String url,
+                                   String query,
+                                   Map<String, Object> variables) {
+
+        if (variables == null) {
+            variables = Collections.emptyMap();
+        }
+
+        GraphQLPost.Request request = new GraphQLPost.Request();
+        request.query = query;
+        request.variables = variables;
+
+        ObjectNode result = restConn.jsonPost(url, request, ObjectNode.class);
+        if (result == null) {
+            logger.error("restConn.jsonPost result is null! " +
+                         "Seems that remote request was failed. Return null. " +
+                         "Connection: " + restConn + " URL: " + url +
+                         " Query: " + query + " variables: " + variables);
+            return null;
+        }
+        return parseRawResult(result);
     }
 
     private ExecutionResult parseRawResult(ObjectNode resultNode) {

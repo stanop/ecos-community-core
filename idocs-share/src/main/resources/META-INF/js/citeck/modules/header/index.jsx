@@ -12,7 +12,8 @@ import {
     setUserFullName,
     loadTopMenuData,
     loadUserMenuPhoto,
-    setIsMobile
+    setIsMobile,
+    setCreateCaseWidgetIsCascade
 } from './actions';
 
 import "xstyle!./lib/bootstrap.css";
@@ -32,6 +33,7 @@ const store = createStore(rootReducer, {}, composeEnhancers(
 );
 
 export const render = (elementId, props) => {
+    store.dispatch(setCreateCaseWidgetIsCascade(props.isCascadeCreateMenu === "true"));
     store.dispatch(setUserFullName(props.userFullname));
     store.dispatch(loadUserMenuPhoto(props.userNodeRef));
 
