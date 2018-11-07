@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+
+        <import uri="http://www.citeck.ru/model/workflow/perform/1.0" prefix="wfperf" />
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm" />
+        <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
+    </imports>
+
+    <view class="wfperf:submitPerformTask">
+        <field prop="bpm:workflowDescription">
+            <region name="input" template="textarea">
+                <param name="height">100px</param>
+                <param name="validation">false</param>
+            </region>
+        </field>
+        <view template="row">
+            <field prop="bpm:workflowDueDate"/>
+            <field prop="bpm:workflowPriority"/>
+        </view>
+        <field assoc="wfperf:performers">
+            <regions name="select" template="select-orgstruct"/>
+        </field>
+        <field property="wfperf:enableControl">
+            <invariant on="title" language="explicit">With Control</invariant>
+        </field>
+        <field assoc="wfperf:controller">
+            <regions name="select" template="select-orgstruct"/>
+            <invariant on="relevant" language="javascript">(function() {
+                if (node['impl']) {
+                    var attr = node.impl().allData().attributes["wfperf:enableControl"];
+                    return attr;
+                }
+                return true;
+                })()
+            </invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field assoc="cwf:targetItems">
+            <invariant on="title" language="explicit">Items</invariant>
+        </field>
+
+        <field prop="bpm:sendEMailNotifications"/>
+
+        <field prop="wfperf:performOutcome" template="half-width">
+            <region name="input" template="task-buttons">
+                <param name="buttons">[{value:"Performed", title:"Create Assignment", actionId:"submit"}]</param>
+            </region>
+            <region name="label" template="none"/>
+        </field>
+
+    </view>
+
+</views>

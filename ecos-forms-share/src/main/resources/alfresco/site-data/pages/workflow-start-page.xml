@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<page>
+    <title>Activiti Start</title>
+    <title-id>page.start-workflow.title</title-id>
+    <description>Page for starting WF on bpmn engines</description>
+    <description-id>page.start-workflow.description</description-id>
+    <template-instance>workflow-start</template-instance>
+    <authentication>user</authentication>
+
+    <components>
+
+        <component>
+            <region-id>node-view</region-id>
+            <url>/citeck/components/node-view</url>
+            <properties>
+                <type>{type}</type>
+                <viewId>{viewId}</viewId>
+                <formId>{formId}</formId>
+                <formKey>{formKey}</formKey>
+                <formType>{formType}</formType>
+                <formMode>{formMode}</formMode>
+                <mode>create</mode>
+                <param_destination>{destination}</param_destination>
+                <runtimeKey>node-create</runtimeKey>
+            </properties>
+        </component>
+
+    </components>
+
+</page>

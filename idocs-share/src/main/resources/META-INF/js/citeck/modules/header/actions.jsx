@@ -237,7 +237,7 @@ export function loadTopMenuData(userName, isUserAvailable, isUserMutable, isExte
                         {
                             id: "HEADER_CREATE_WORKFLOW_ADHOC",
                             label: "header.create-workflow-adhoc.label",
-                            targetUrl: "/share/page/start-specified-workflow?workflowId=activiti$perform"
+                            targetUrl: "/share/page/workflow-start-page?formType=workflowId&formKey=activiti$perform"
                         },
                         {
                             id: "HEADER_CREATE_WORKFLOW_CONFIRM",
