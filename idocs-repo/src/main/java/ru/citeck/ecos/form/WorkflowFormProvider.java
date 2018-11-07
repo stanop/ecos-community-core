@@ -1,4 +1,4 @@
-package ru.citeck.ecos.invariants.view.forms;
+package ru.citeck.ecos.form;
 
 import org.activiti.engine.TaskService;
 import org.alfresco.model.ContentModel;
@@ -23,8 +23,9 @@ import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewElement;
 import ru.citeck.ecos.invariants.view.NodeViewMode;
 import ru.citeck.ecos.invariants.view.NodeViewService;
+import ru.citeck.ecos.invariants.view.forms.TypeFormProvider;
+import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixResolver;
-
 
 import java.io.Serializable;
 import java.util.*;
@@ -35,7 +36,6 @@ public class WorkflowFormProvider implements NodeViewProvider {
     private static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
 
     private static final Log logger = LogFactory.getLog(WorkflowFormProvider.class);
-    public static final QName ASSOC_BPM_TARGET_ITEM = QName.createQName("http://www.alfresco.org/model/bpm/1.0", "targetItem");
 
     @Autowired
     private NodeViewService nodeViewService;
@@ -60,7 +60,6 @@ public class WorkflowFormProvider implements NodeViewProvider {
         String formKey = getFormKey(workflowId);
         return formNodeView(formKey, formId, mode, params);
     }
-
 
     public NodeViewDefinition formNodeView(String formKey, String formId, FormMode mode, Map<String, Object> params) {
         String modeStr = "create";
@@ -90,7 +89,6 @@ public class WorkflowFormProvider implements NodeViewProvider {
         return view;
     }
 
-
     @Override
     public Map<String, Object> saveNodeView(String workflowId, String formId, FormMode mode,
                                             Map<String, Object> params, Map<QName, Object> attributes) {
@@ -107,11 +105,27 @@ public class WorkflowFormProvider implements NodeViewProvider {
         }
         NodeRef wfPackage = workflowService.createPackage(null);
 
-        if (workflowAttributes.get(ASSOC_BPM_TARGET_ITEM) != null) {
-            NodeRef docRef = (NodeRef) (workflowAttributes.get(ASSOC_BPM_TARGET_ITEM));
-            nodeService.addChild(wfPackage, docRef, WorkflowModel.ASSOC_PACKAGE_CONTAINS,
-                    QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
-                            QName.createValidLocalName((String) nodeService.getProperty(docRef, ContentModel.PROP_NAME))));
+        List<NodeRef> itemsRefs = new ArrayList<>();
+        Serializable items = workflowAttributes.get(CiteckWorkflowModel.ASSOC_TARGET_ITEMS);
+
+        if (items != null) {
+            if (items instanceof NodeRef) {
+                itemsRefs.add((NodeRef) items);
+            } else if (items instanceof Collection) {
+                for (Object item : (Collection) items) {
+                    if (item instanceof NodeRef) {
+                        itemsRefs.add((NodeRef) item);
+                    }
+                }
+            }
+        }
+        for (NodeRef docRef : itemsRefs) {
+
+            String docName = (String) nodeService.getProperty(docRef, ContentModel.PROP_NAME);
+            docName = QName.createValidLocalName(docName);
+            QName docQName = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, docName);
+
+            nodeService.addChild(wfPackage, docRef, WorkflowModel.ASSOC_PACKAGE_CONTAINS, docQName);
         }
 
         workflowAttributes.put(WorkflowModel.ASSOC_PACKAGE, wfPackage);

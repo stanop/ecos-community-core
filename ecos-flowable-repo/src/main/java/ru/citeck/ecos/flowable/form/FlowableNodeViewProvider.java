@@ -28,7 +28,7 @@ import ru.citeck.ecos.invariants.view.NodeField;
 import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewRegion;
 import ru.citeck.ecos.invariants.view.forms.TypeFormProvider;
-import ru.citeck.ecos.invariants.view.forms.WorkflowFormProvider;
+import ru.citeck.ecos.form.WorkflowFormProvider;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixProvider;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixResolver;
 import ru.citeck.ecos.utils.ConvertUtils;

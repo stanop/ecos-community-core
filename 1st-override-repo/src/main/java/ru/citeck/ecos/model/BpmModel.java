@@ -16,5 +16,4 @@ public class BpmModel {
     public static final QName PROPERTY_TOKEN_AUTHORITY_EMAIL = QName.createQName(BPM_NAMESPASE, "tokenAuthorityEmail");
 
     public static final QName ASSOC_BPM_APPROVAL_TOKENS = QName.createQName(BPM_NAMESPASE, "approvalTokens");
-    public static final QName ASSOC_BPM_TARGET_ITEM = QName.createQName(BPM_NAMESPASE, "targetItem");
 }

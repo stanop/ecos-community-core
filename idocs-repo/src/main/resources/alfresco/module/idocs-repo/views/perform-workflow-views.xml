@@ -39,7 +39,7 @@
             </invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
-        <field assoc="bpm:targetItem">
+        <field assoc="cwf:targetItems">
             <invariant on="title" language="explicit">Items</invariant>
         </field>
 
