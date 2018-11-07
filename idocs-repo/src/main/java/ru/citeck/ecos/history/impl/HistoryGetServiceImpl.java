@@ -7,6 +7,7 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.constants.DocumentHistoryConstants;
 import ru.citeck.ecos.model.HistoryModel;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -29,36 +30,39 @@ public class HistoryGetServiceImpl implements HistoryGetService {
         List<Map> result = new ArrayList<>(associations.size());
         /* Create entries */
         for (AssociationRef associationRef : associations) {
+
             Map<String, Object> entryMap = new HashMap<>();
             NodeRef eventRef = associationRef.getSourceRef();
-            entryMap.put(DocumentHistoryConstants.NODE_REF.getValue(), eventRef.getId());
-            entryMap.put(DocumentHistoryConstants.EVENT_TYPE.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.PROP_NAME));
-            entryMap.put(DocumentHistoryConstants.DOCUMENT_VERSION.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.PROP_DOCUMENT_VERSION));
-            entryMap.put(DocumentHistoryConstants.COMMENTS.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_COMMENT));
-            entryMap.put(DocumentHistoryConstants.DOCUMENT_DATE.getValue(),
-                    ((Date) nodeService.getProperty(eventRef, HistoryModel.PROP_DATE)).getTime());
-            entryMap.put(DocumentHistoryConstants.EVENT_INITIATOR.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.MODIFIER_PROPERTY));
-            entryMap.put(DocumentHistoryConstants.TASK_ROLE.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_ROLE));
-            entryMap.put(DocumentHistoryConstants.TASK_OUTCOME.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_OUTCOME));
-            entryMap.put(DocumentHistoryConstants.TASK_INSTANCE_ID.getValue(),
-                    nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_INSTANCE_ID));
-            QName taskTypeValue = (QName) nodeService.getProperty(eventRef, HistoryModel.PROP_TASK_TYPE);
-            entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(), taskTypeValue != null ? taskTypeValue.toString()
-                    : "");
+            Map<QName, Serializable> eventProps = nodeService.getProperties(eventRef);
 
-            ArrayList<NodeRef> attachments = (ArrayList<NodeRef>) nodeService.getProperty(eventRef,
-                    HistoryModel.PROP_TASK_ATTACHMENTS);
+            entryMap.put(DocumentHistoryConstants.NODE_REF.getValue(), eventRef.getId());
+            entryMap.put(DocumentHistoryConstants.EVENT_TYPE.getValue(), eventProps.get(HistoryModel.PROP_NAME));
+
+            entryMap.put(DocumentHistoryConstants.DOCUMENT_VERSION.getValue(),
+                    eventProps.get(HistoryModel.PROP_DOCUMENT_VERSION));
+            entryMap.put(DocumentHistoryConstants.COMMENTS.getValue(),
+                    eventProps.get(HistoryModel.PROP_TASK_COMMENT));
+            entryMap.put(DocumentHistoryConstants.DOCUMENT_DATE.getValue(),
+                    ((Date) eventProps.get(HistoryModel.PROP_DATE)).getTime());
+            entryMap.put(DocumentHistoryConstants.TASK_ROLE.getValue(),
+                    eventProps.get(HistoryModel.PROP_TASK_ROLE));
+            entryMap.put(DocumentHistoryConstants.TASK_OUTCOME.getValue(),
+                    eventProps.get(HistoryModel.PROP_TASK_OUTCOME));
+            entryMap.put(DocumentHistoryConstants.TASK_INSTANCE_ID.getValue(),
+                    eventProps.get(HistoryModel.PROP_TASK_INSTANCE_ID));
+
+            entryMap.put(DocumentHistoryConstants.EVENT_INITIATOR.getValue(), getInitiator(eventRef, eventProps));
+
+            QName taskTypeValue = (QName) eventProps.get(HistoryModel.PROP_TASK_TYPE);
+            String taskType = taskTypeValue != null ? taskTypeValue.toString() : "";
+
+            entryMap.put(DocumentHistoryConstants.TASK_TYPE.getValue(), taskType);
+
+            ArrayList<NodeRef> attachments = (ArrayList<NodeRef>) eventProps.get(HistoryModel.PROP_TASK_ATTACHMENTS);
             entryMap.put(DocumentHistoryConstants.TASK_ATTACHMENTS.getValue(),
                     Optional.ofNullable(attachments).orElse(new ArrayList<>()));
 
-            ArrayList<NodeRef> pooledActors = (ArrayList<NodeRef>) nodeService.getProperty(eventRef,
-                    HistoryModel.PROP_TASK_POOLED_ACTORS);
+            ArrayList<NodeRef> pooledActors = (ArrayList<NodeRef>) eventProps.get(HistoryModel.PROP_TASK_POOLED_ACTORS);
             entryMap.put(DocumentHistoryConstants.TASK_POOLED_ACTORS.getValue(),
                     Optional.ofNullable(pooledActors).orElse(new ArrayList<>()));
 
@@ -70,6 +74,14 @@ public class HistoryGetServiceImpl implements HistoryGetService {
             return firstDate.compareTo(secondDate);
         });
         return result;
+    }
+
+    private String getInitiator(NodeRef nodeRef, Map<QName, Serializable> props) {
+        List<AssociationRef> initiatorAssoc = nodeService.getTargetAssocs(nodeRef, HistoryModel.ASSOC_INITIATOR);
+        if (initiatorAssoc != null && !initiatorAssoc.isEmpty()) {
+            return initiatorAssoc.get(0).getTargetRef().toString();
+        }
+        return (String) props.get(HistoryModel.MODIFIER_PROPERTY);
     }
 
     public void setNodeService(NodeService nodeService) {

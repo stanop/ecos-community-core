@@ -185,10 +185,8 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
                 taskTypeNode.put("shortQName", taskTypeValue.toPrefixString(
                         serviceRegistry.getNamespaceService())
                 );
-
                 attributesNode.put(DocumentHistoryConstants.TASK_TYPE.getKey(), taskTypeNode);
             }
-
             ArrayList<NodeRef> attachments = (ArrayList<NodeRef>) historyRecordMap.get(
                     DocumentHistoryConstants.TASK_ATTACHMENTS.getValue());
             if (attachments != null) {
@@ -204,11 +202,21 @@ public class DocumentHistoryGet extends DeclarativeWebScript {
             }
 
             /* User */
-            NodeRef userNodeRef = personService.getPerson((String) historyRecordMap.get(
-                    DocumentHistoryConstants.EVENT_INITIATOR.getValue())
-            );
-            if (userNodeRef != null) {
-                attributesNode.put(DocumentHistoryConstants.EVENT_INITIATOR.getKey(), createUserNode(userNodeRef));
+
+            Object initiatorObj = historyRecordMap.get(DocumentHistoryConstants.EVENT_INITIATOR.getValue());
+            NodeRef initiatorRef = null;
+            if (initiatorObj instanceof NodeRef) {
+                initiatorRef = (NodeRef) initiatorObj;
+            } else if (initiatorObj instanceof String) {
+                String initiatorStr = (String) initiatorObj;
+                if (initiatorStr.startsWith("workspace://")) {
+                    initiatorRef = new NodeRef(initiatorStr);
+                } else {
+                    initiatorRef = personService.getPersonOrNull(initiatorStr);
+                }
+            }
+            if (initiatorRef != null) {
+                attributesNode.put(DocumentHistoryConstants.EVENT_INITIATOR.getKey(), createUserNode(initiatorRef));
             }
 
             /* Add history node to result */
