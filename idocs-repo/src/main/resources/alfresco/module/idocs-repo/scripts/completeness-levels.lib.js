@@ -4,6 +4,8 @@ function createOrUpdateLevels(models) {
     var levelsRoot = search.selectNodes("/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:case-completeness-levels/journal:default")[0].assocs["journal:destination"][0];
     var defaultScope = search.selectNodes("/app:company_home/app:dictionary/cm:case-element-configs/cm:documents")[0];
 
+    var behavioursFilter = services.get("policyBehaviourFilter");
+
     for (var i in models) {
         var model = models[i];
         var titles = model.titles;
@@ -32,11 +34,16 @@ function createOrUpdateLevels(models) {
             setTitles(level, titles);
         } else {
             logger.warn("- Found. Updating.");
-            if (level.properties['cm:name'] != model.name) {
-                level.properties['cm:name'] = model.name;
-                level.save();
+            behavioursFilter.disableBehaviour();
+            try {
+                if (level.properties['cm:name'] != model.name) {
+                    level.properties['cm:name'] = model.name;
+                    level.save();
+                }
+                setTitles(level, titles);
+            } finally {
+                behavioursFilter.enableBehaviour();
             }
-            setTitles(level, titles);
         }
 
         for(var j in model.req) {
