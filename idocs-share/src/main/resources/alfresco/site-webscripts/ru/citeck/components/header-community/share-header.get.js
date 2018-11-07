@@ -52,6 +52,7 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
     ];
 
     model.isReactMenu = isSlideMenu;
+    model.isCascadeCreateMenu = isCascadCreateMenu;
 
 // ---------------------
 // General code

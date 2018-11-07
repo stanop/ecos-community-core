@@ -126,10 +126,18 @@ export function fetchMoreAutocompleteDocuments(payload) {
 
 /* Create case menu */
 export const CREATE_CASE_WIDGET_SET_ITEMS = 'CREATE_CASE_WIDGET_SET_ITEMS';
+export const CREATE_CASE_WIDGET_SET_IS_CASCADE = 'CREATE_CASE_WIDGET_SET_IS_CASCADE';
 
 export function setCreateCaseWidgetItems(payload) {
     return {
         type: CREATE_CASE_WIDGET_SET_ITEMS,
+        payload
+    }
+}
+
+export function setCreateCaseWidgetIsCascade(payload) {
+    return {
+        type: CREATE_CASE_WIDGET_SET_IS_CASCADE,
         payload
     }
 }
