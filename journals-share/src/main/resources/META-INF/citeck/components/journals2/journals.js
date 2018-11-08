@@ -1810,7 +1810,7 @@ JournalsWidget
                             console.error("Infinite loop? Iterations: " + iteration);
                         }
 
-                        var data = response.json.data.journalRecords,
+                        var data = response.json,
                             records = data.records;
 
                         records = _.map(records, function(node) {
