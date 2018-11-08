@@ -74,6 +74,19 @@
 					<type>d:text</type>
 				</property>
 			</properties>
+			<associations>
+				<association name="org:branchTypeAssoc">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>org:simpleBranchType</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
 			<mandatory-aspects>
 				<aspect>org:customFields</aspect>
 			</mandatory-aspects>
@@ -96,6 +109,19 @@
 					<type>d:text</type>
 				</property>
 			</properties>
+			<associations>
+				<association name="org:roleTypeAssoc">
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>org:simpleRoleType</class>
+						<mandatory>false</mandatory>
+						<many>false</many>
+					</target>
+				</association>
+			</associations>
 			<mandatory-aspects>
 				<aspect>org:customFields</aspect>
 			</mandatory-aspects>

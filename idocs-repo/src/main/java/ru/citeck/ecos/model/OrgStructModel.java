@@ -31,10 +31,12 @@ public interface OrgStructModel {
 	public static final QName ASPECT_BRANCH = QName.createQName(NAMESPACE, "branch");
 	public static final QName PROP_BRANCH_TYPE = QName.createQName(NAMESPACE, "branchType");
 	public static final QName PROP_BRANCH_INDEX = QName.createQName(NAMESPACE, "branchIndex");
+	public static final QName ASSOC_BRANCH_TYPE = QName.createQName(NAMESPACE, "branchTypeAssoc");
 
 	public static final QName ASPECT_ROLE = QName.createQName(NAMESPACE, "role");	
 	public static final QName PROP_ROLE_TYPE = QName.createQName(NAMESPACE, "roleType");
 	public static final QName PROP_ROLE_IS_MANAGER = QName.createQName(NAMESPACE, "roleIsManager");
+	public static final QName ASSOC_ROLE_TYPE = QName.createQName(NAMESPACE, "roleTypeAssoc");
 
 	public static final QName ASPECT_CUSTOM_FIELDS = QName.createQName(NAMESPACE, "customFields");
 	public static final QName PROP_CUSTOM_ASPECT = QName.createQName(NAMESPACE, "customAspect");

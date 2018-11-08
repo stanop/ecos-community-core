@@ -23,7 +23,6 @@
                 <value>alfresco/module/idocs-repo/model/workflowModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/grantModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/deputyModel.xml</value>
-                <value>alfresco/module/idocs-repo/model/orgstructModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/helpConfigurationModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/counterModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/historyModel.xml</value>
@@ -34,6 +33,7 @@
                 <value>alfresco/module/idocs-repo/model/case_mt/icaseTaskModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/cardletModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/idocsModel.xml</value>
+                <value>alfresco/module/idocs-repo/model/orgstructModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/workflowMirrorModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/associationModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/passportModel.xml</value>

@@ -8,38 +8,103 @@
     </imports>
 
     <view class="cm:authorityContainer">
+        <param name="preloadInvariants">true</param>
+
         <field prop="cm:authorityName"/>
         <field prop="cm:authorityDisplayName"/>
-        <field prop="org:isTemporaryAuthorityContainer"/>
+        <view>
+            <param name="relevant">false</param>
+            <field prop="org:isTemporaryAuthorityContainer"/>
+        </view>
     </view>
 
     <view class="cm:authorityContainer" id="orgstruct">
+        <param name="preloadInvariants">true</param>
+
         <field prop="cm:authorityName"/>
         <field prop="cm:authorityDisplayName"/>
-        <field prop="org:isTemporaryAuthorityContainer"/>
+        <view>
+            <param name="relevant">false</param>
+            <field prop="org:isTemporaryAuthorityContainer"/>
+        </view>
     </view>
 
     <view class="cm:authorityContainer" id="branch">
-        <field prop="cm:authorityName"/>
-        <field prop="cm:authorityDisplayName"/>
+        <param name="preloadInvariants">true</param>
+
+        <field prop="cm:authorityName">
+            <region name="label" template="label">
+                <param name="key">ecos.idocs.authorityName.branch.title</param>
+            </region>
+        </field>
+        <field prop="cm:authorityDisplayName">
+            <region name="label" template="label">
+                <param name="key">ecos.idocs.authorityDisplayName.branch.title</param>
+            </region>
+        </field>
         <view kind="2-column">
-            <field prop="org:branchType"/>
-            <field assoc="org:hasLegalEntity">
+            <field assoc="org:branchTypeAssoc">
+                <region name="select" template="select-journal">
+                    <param name="journalType">orgstruct-simple-branch-type</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
+                </region>
+                <region name="input" template="view-table">
+                    <param name="columns">cm:title</param>
+                </region>
+            </field>
+            <field assoc="org:legalEntity">
                 <region name="input" template="view"/>
                 <region name="select" template="select-journal">
                     <param name="journalType">legal-entities</param>
                 </region>
             </field>
         </view>
-        <field prop="org:isTemporaryAuthorityContainer"/>
+        <view>
+            <param name="relevant">false</param>
+            <field prop="org:branchType"/>
+            <field prop="org:isTemporaryAuthorityContainer"/>
+        </view>
     </view>
 
     <view class="cm:authorityContainer" id="role">
-        <field prop="cm:authorityName"/>
-        <field prop="cm:authorityDisplayName"/>
-        <field prop="org:roleType"/>
+        <param name="preloadInvariants">true</param>
+
+        <field prop="cm:authorityName">
+            <region name="label" template="label">
+                <param name="key">ecos.idocs.authorityName.role.title</param>
+            </region>
+        </field>
+        <field prop="cm:authorityDisplayName">
+            <region name="label" template="label">
+                <param name="key">ecos.idocs.authorityDisplayName.role.title</param>
+            </region>
+        </field>
+        <field assoc="org:roleTypeAssoc">
+            <region name="select" template="select-journal">
+                <param name="journalType">orgstruct-simple-role-type</param>
+                <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
+            </region>
+            <region name="input" template="view-table">
+                <param name="columns">cm:title</param>
+            </region>
+        </field>
         <field prop="deputy:managedByMembers"/>
-        <field prop="org:isTemporaryAuthorityContainer"/>
+        <view>
+            <param name="relevant">false</param>
+            <field prop="org:roleType"/>
+            <field prop="org:isTemporaryAuthorityContainer"/>
+        </view>
+    </view>
+
+    <view class="org:simpleRoleType">
+        <field prop="cm:name"/>
+        <field prop="cm:title"/>
+        <field prop="org:roleIsManager"/>
+    </view>
+
+    <view class="org:simpleBranchType">
+        <field prop="cm:name"/>
+        <field prop="cm:title"/>
     </view>
 
 </views>
