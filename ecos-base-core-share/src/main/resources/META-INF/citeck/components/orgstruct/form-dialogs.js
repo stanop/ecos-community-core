@@ -118,7 +118,7 @@ define([
         this.itemId = itemId;
         this.formId = formId;
         this.destination = destination;
-        this.assocType = assocType;
+        this.assocType = encodeURIComponent(assocType);
         this.marker = marker;
         this.createEvent("itemCreated");
     };
