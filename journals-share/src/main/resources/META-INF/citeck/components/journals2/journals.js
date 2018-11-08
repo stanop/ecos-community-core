@@ -21,7 +21,8 @@ define([
     'citeck/utils/knockout.utils',
     'citeck/components/invariants/invariants',
     'citeck/components/dynamic-tree/cell-formatters',
-    'citeck/components/dynamic-tree/action-renderer'
+    'citeck/components/dynamic-tree/action-renderer',
+    'lib/underscore'
 ], function(ko, koutils) {
 
 var logger = Alfresco.logger,
@@ -1771,10 +1772,16 @@ JournalsWidget
         resultsMap: { journals: 'journals' }
     }))
     .load('records', function() {
-        
-        var load = function() {
 
-            if (this.records.loaded()) {
+        var self = this;
+
+        var load = function(iteration) {
+
+            if (!iteration) {
+                iteration = 1;
+            }
+
+            if (self.records.loaded()) {
                 logger.debug("Records are already loaded, skipping");
                 return;
             }
@@ -1782,7 +1789,7 @@ JournalsWidget
             var recordsQuery = this.recordsQueryData();
             if (!recordsQuery) {
                 logger.debug("Records query data is not ready, skipping");
-                koutils.subscribeOnce(this.recordsQueryData, load, this);
+                koutils.subscribeOnce(this.recordsQueryData, function() { load.call(self, iteration); });
                 return;
             }
 
@@ -1792,7 +1799,18 @@ JournalsWidget
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        var data = response.json, self = this,
+
+                        var actualQuery = self.recordsQueryData();
+                        if (iteration < 4 && !_.isEqual(recordsQuery, actualQuery)) {
+                            load.call(self, iteration + 1);
+                            return;
+                        }
+         
+                        if (iteration >= 4) {
+                            console.error("Infinite loop? Iterations: " + iteration);
+                        }
+
+                        var data = response.json.data.journalRecords,
                             records = data.records;
 
                         records = _.map(records, function(node) {
@@ -1810,11 +1828,11 @@ JournalsWidget
 
                         customRecordLoader(new Citeck.utils.DoclibRecordLoader(self.actionGroupId()));
 
-                        koutils.subscribeOnce(this.records, function() {
-                            this.recordsLoaded(true);
+                        koutils.subscribeOnce(self.records, function() {
+                            self.recordsLoaded(true);
                         }, this);
 
-                        this.model({
+                        self.model({
                             records: records,
                             skipCount: recordsQuery.pageInfo.skipCount,
                             maxItems: recordsQuery.pageInfo.maxItems,
