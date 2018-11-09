@@ -293,6 +293,16 @@
 
 
 /* BUTTONS */
+.ecos-form .context-menu-button {
+  cursor: pointer;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url(../../../themes/citeckTheme/images/create.png);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .ecos-form .form-buttons input {
   font-weight: 900;
   padding: 3px 10px;

@@ -32,7 +32,6 @@ var Event = YAHOO.util.Event,
 var JournalType = koclass('JournalType'),
     Node = koclass('invariants.Node');
 
-
 // TODO: refactoring
 // - integrate the calendar into a single function for the date and datetime controls
 
@@ -169,7 +168,6 @@ ko.components.register("select", {
         <!-- /ko -->'
 });
 
-
 // ---------------
 // NUMBER-GENERATE
 // ---------------
@@ -260,7 +258,7 @@ ko.components.register("number", {
 // TASK-BUTTONS
 // ---------------
 
-    ko.components.register("task-buttons", {
+ko.components.register("task-buttons", {
         viewModel: function(params) {
             var self = this;
 
@@ -313,7 +311,7 @@ ko.components.register("number", {
 // CUSTOM-ACTION-BUTTON
 // ---------------
 
-    ko.components.register("custom-action-button", {
+ko.components.register("custom-action-button", {
         viewModel: function (params) {
             kocomponents.initializeParameters.call(this, params);
             var self = this;
@@ -374,7 +372,6 @@ ko.components.register("free-content", {
     template:
        '<div data-bind="html: content">'
 })
-
 
 // ---------------
 // MULTIPLE-TEXT
@@ -729,7 +726,6 @@ ko.components.register("datetime", {
         <!-- /ko -->'
 });
 
-
 // ---------------
 // DATE
 // ---------------
@@ -839,12 +835,276 @@ ko.bindingHandlers.dateControl = {
     }
 };
 
+// -------------
+// DOCUMENT-SELECT
+// -------------
+
+ko.components.register('documentSelect', {
+    viewModel: function(params) {
+        var that = this;
+        var Dom = YAHOO.util.Dom;
+        var Event = YAHOO.util.Event;
+
+        var ID = params['id'];
+        var CONTEXT_MENU_ID = ID + '-context-menu';
+        var CONTEXT_MENU_BUTTON_ID = CONTEXT_MENU_ID + '-button';
+        var JOURNAL_SELECT_ID = ID + '-journal-select';
+        var JOURNAL_SELECT_CONTAINER_ID = JOURNAL_SELECT_ID + '-container';
+        var JOURNAL_SELECT_BUTTON_ID = JOURNAL_SELECT_ID + '-button';
+        var createContextMenu;
+
+        this.contextMenuButtonId = CONTEXT_MENU_BUTTON_ID;
+        this.journalSelectContainerId = JOURNAL_SELECT_CONTAINER_ID;
+        this.journalSelectId = JOURNAL_SELECT_ID;
+        this.journalSelectButtonId = JOURNAL_SELECT_BUTTON_ID;
+
+        this.value = params.value;
+        this.multiple = params.multiple;
+        this.options = params.options;
+        this.journalId = ko.observable();
+        this.createVariantsVisibility = params.createVariantsVisibility;
+        this.journalSelectButtonText = Alfresco.util.message('button.select');
+        this.visibleJournalButton = false;
+        this.nodetype = ko.observable();
+        this.filterOptions = function(criteria, pagination) {
+            if (!this.cache) this.cache = {};
+
+            if (!this.cache.result) {
+                this.cache.result = ko.observable([]);
+                this.cache.result.extend({notify: 'always'});
+            }
+
+            var query = {
+                skipCount: 0,
+                maxItems: 10
+            };
+
+            if (!_.find(criteria, function (criterion) {
+                return criterion.predicate === 'journal-id';
+            })
+            ){
+                if (!this.nodetype()) {
+                    return [];
+                }
+
+                query['field_1'] = 'type';
+                query['predicate_1'] = 'type-equals';
+                query['value_1'] = this.nodetype();
+            }
+
+            if (pagination) {
+                if (pagination.maxItems) query.maxItems = pagination.maxItems;
+                if (pagination.skipCount) query.skipCount = pagination.skipCount;
+            }
+
+            _.each(criteria, function(criterion, index) {
+                query['field_' + (index + 2)] = criterion.attribute;
+                query['predicate_' + (index + 2)] = criterion.predicate;
+                query['value_' + (index + 2)] = criterion.value;
+            });
+
+            if(this.cache.query) {
+                if(_.isEqual(query, this.cache.query)) return this.cache.result();
+            }
+
+            this.cache.query = query;
+            if (_.some(_.keys(query), function(p) {
+                return _.some(['field', 'predicate', 'value'], function(ci) {
+                    return p.indexOf(ci) !== -1;
+                });
+            })
+            ) {
+                Alfresco.util.Ajax.jsonPost({
+                    url: Alfresco.constants.PROXY_URI + 'search/criteria-search',
+                    dataObj: query,
+                    successCallback: {
+                        scope: this.cache,
+                        fn: function(response) {
+                            var result = _.map(response.json.results, function(node) {
+                                return new Node(node);
+                            });
+                            result.pagination = response.json.paging;
+                            result.query = response.json.query;
+                            this.result(result);
+                        }
+                    }
+                });
+            }
+
+            return this.cache.result();
+        };
+
+        createContextMenu = function(params){
+            var siteId = params['siteId'];
+            var addable = params['addable'];
+
+            var assocTypeMenu = new YAHOO.widget.ContextMenu(
+                CONTEXT_MENU_ID,
+                {
+                    trigger: CONTEXT_MENU_BUTTON_ID,
+                    lazyLoad: true
+                }
+            );
+
+            var onMenuItemClick = function(journalId){
+                that.journalId(journalId);
+                $('#' + JOURNAL_SELECT_BUTTON_ID).click();
+            };
+
+            var getMenuItemsByAddable = function(addable, sites){
+                var menuItems = [];
+                var assoc;
+                var type;
+                var text;
+
+                for (var  j = 0; j < addable.length; j++) {
+                    assoc = addable[j];
+                    type = assoc.name;
+
+                    if(type !== '') {
+                        if(assoc.direction === 'both' || assoc.direction === 'target' || assoc.direction === 'undirected') {
+                            text = Alfresco.util.message('association.' + type.replace(':', '_') + '.target');
+                        }
+                        if(assoc.direction === 'source') {
+                            text = Alfresco.util.message('association.' + type.replace(':', '_') + '.source');
+                        }
+
+                        if(text){
+                            menuItems.push({
+                                text: text,
+                                submenu : getSubmenu(type, sites)
+                            });
+                        }
+                    }
+                }
+
+                return menuItems;
+            };
+
+            var getSiteItems = function(sites, parentId){
+
+                parentId = parentId ? ('-' + parentId) : '';
+
+                var menuItems = sites.map(function(item) {
+                    var siteId = item.siteId + parentId;
+
+                    return {
+                        text: item.siteName,
+                        submenu: {
+                            id: siteId,
+                            itemdata: getJournalsItemdata(item.journals, siteId)
+                        }
+                    }
+                })
+
+                return menuItems;
+            };
+
+            var getMenuItemsBySiteId = function(siteId, sites){
+                var menuItems = [];
+                var site = sites.filter(function(site){
+                    return site.siteId === siteId;
+                })[0];
+
+                if(site){
+                    menuItems = getJournalsItemdata(site.journals, siteId);
+                }
+
+                return menuItems;
+            };
+
+            var getJournalsItemdata = function(journals, parentId){
+                journals = journals || [];
+
+                parentId = parentId ? ('-' + parentId) : '';
+
+                return journals.map(function(journal) {
+                    return {
+                        id: ID + parentId + '-' + journal.journalId,
+                        text: journal.journalName,
+                        onclick: { fn: onMenuItemClick.bind(this, journal.journalId)}
+                    }
+                })
+            };
+
+            var getSubmenu = function (type, sites) {
+                var submenu = {
+                    id: type.replace(':', '_'),
+                    itemdata: getSiteItems(sites, type.replace(':', '-'))
+                };
+
+                return submenu;
+            };
+
+            YAHOO.util.Connect.asyncRequest(
+                'GET',
+                Alfresco.constants.PROXY_URI + 'citeck/cardlets/sites-and-journals',
+                {
+                    success: function (response) {
+                        if (response.responseText) {
+                            var data = eval('(' + response.responseText + ')');
+                            var menuItems = [];
+                            var sites;
+
+                            if (data && data.sites && data.sites.length) {
+                                sites = data.sites;
+
+                                if(addable.length){
+                                    menuItems = getMenuItemsByAddable(addable, sites);
+                                }else if(siteId){
+                                    menuItems = getMenuItemsBySiteId(siteId, sites);
+                                }else{
+                                    menuItems = getSiteItems(sites);
+                                }
+
+                                assocTypeMenu.addItems(menuItems);
+                                assocTypeMenu.render(CONTEXT_MENU_BUTTON_ID);
+                            }
+                        }
+                    },
+                    failure: function() {
+                        var messageEl = Dom.get(this.id + "-message");
+                        messageEl.innerHTML = Alfresco.util.message("assocs-load-error");
+                    },
+                    scope: this
+                }
+            );
+
+            Event.addListener(
+                CONTEXT_MENU_BUTTON_ID,
+                'click', function(event) {
+                    var xy = YAHOO.util.Event.getXY(event);
+                    assocTypeMenu.cfg.setProperty('xy', xy);
+                    assocTypeMenu.show();
+                }
+            );
+        };
+
+        createContextMenu(params);
+    },
+    template:'\
+        <a class="context-menu-button" data-bind = "attr: { id: contextMenuButtonId }">&nbsp;</a>\
+        <button data-bind="visible: visibleJournalButton, attr: { id: journalSelectButtonId }, text: journalSelectButtonText"></button>\
+        <div data-bind = "attr: { id: journalSelectContainerId }" >\
+            <div data-bind = \'\
+                attr: { id: journalSelectId },\
+                journalControl: { value: value, multiple: multiple, options: options }, params: function() {\
+                    return {\
+                        mode: "collapse",\
+                        hightlightSelection: true,\
+                        removeSelection: true,\
+                        createVariantsSource: "journal-create-variants",\
+                        createVariantsVisibility: createVariantsVisibility\
+                    }\
+                }\
+            \'></div>\
+        </div>\
+    '
+});
 
 // -------------
 // JOURNAL
 // -------------
-
-
 
 ko.bindingHandlers.journalControl = {
   init: function(element, valueAccessor, allBindings, data, context) {
@@ -1698,7 +1958,6 @@ ko.components.register('createObjectButton', {
             </span> \
         <!-- /ko -->'
 });
-
 
 // ------------
 // AUTOCOMPLETE
@@ -2774,7 +3033,6 @@ ko.components.register("select2", {
         <!-- /ko -->'
 });
 
-
 // -----------
 // FILE UPLOAD
 // -----------
@@ -2976,7 +3234,6 @@ ko.bindingHandlers.fileUploadControl = {
         });
     }
 };
-
 
 // ---------
 // ORGSTRUCT
@@ -3343,7 +3600,6 @@ ko.bindingHandlers.orgstructControl = {
         })
     }
 }
-
 
 // ----------------
 // PRIVATE FUNCTION
