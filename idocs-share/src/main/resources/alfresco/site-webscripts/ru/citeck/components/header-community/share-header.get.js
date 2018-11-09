@@ -52,6 +52,7 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
     ];
 
     model.isReactMenu = isSlideMenu;
+    model.isCascadeCreateMenu = isCascadCreateMenu;
 
 // ---------------------
 // General code
@@ -564,7 +565,7 @@ var HEADER_SITES_VARIANTS = {
                     config: {
                         id: "HEADER_CREATE_WORKFLOW_ADHOC",
                         label: "header.create-workflow-adhoc.label",
-                        targetUrl: "start-specified-workflow?workflowId=activiti$perform"
+                        targetUrl: "workflow-start-page?formType=workflowId&formKey=activiti$perform"
                     }
                 },
                 {
@@ -890,7 +891,7 @@ function buildCreateVariants(sites) {
                 widgets: buildItems([{
                         id: "HEADER_CREATE_WORKFLOW_ADHOC",
                         label: "header.create-workflow-adhoc.label",
-                        url: "start-specified-workflow?workflowId=activiti$perform"
+                        url: "workflow-start-page?formType=workflowId&formKey=activiti$perform"
                     },
                     {
                         id: "HEADER_CREATE_WORKFLOW_CONFIRM",
