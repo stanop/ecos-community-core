@@ -25,6 +25,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
@@ -50,6 +51,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 class JournalServiceImpl implements JournalService {
 
+    private static final String JOURNAL_OPTION_TYPE = "type";
+
     protected static final String JOURNALS_SCHEMA_LOCATION = "alfresco/module/journals-repo/schema/journals.xsd";
     protected static final String INVARIANTS_SCHEMA_LOCATION = "alfresco/module/ecos-forms-repo/schema/invariants.xsd";
 
@@ -57,6 +60,7 @@ class JournalServiceImpl implements JournalService {
     private ServiceRegistry serviceRegistry;
     private SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry;
     private JournalRecordsDAO recordsDAO;
+    private NamespaceService namespaceService;
 
     private LazyNodeRef journalsRoot;
     private Map<String, JournalType> journalTypes = new ConcurrentHashMap<>();
@@ -89,6 +93,20 @@ class JournalServiceImpl implements JournalService {
                 searchCriteriaSettingsRegistry.registerJournalStaticQuery(journal.getId(), staticQuery);
             }
         }
+    }
+
+    @Override
+    public Optional<JournalType> getJournalForType(QName typeName) {
+
+        String typeShortName = typeName.toPrefixString(namespaceService);
+
+        Collection<JournalType> types = getAllJournalTypes();
+        for (JournalType type : types) {
+            if (typeShortName.equals(type.getOptions().get("type"))) {
+                return Optional.of(type);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -221,6 +239,10 @@ class JournalServiceImpl implements JournalService {
 
     public void setSearchCriteriaSettingsRegistry(SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
         this.searchCriteriaSettingsRegistry = searchCriteriaSettingsRegistry;
+    }
+
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
     }
 
     public SearchCriteriaSettingsRegistry getSearchCriteriaSettingsRegistry() {

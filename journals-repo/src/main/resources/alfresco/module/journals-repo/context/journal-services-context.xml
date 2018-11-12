@@ -11,6 +11,7 @@
         <property name="serviceRegistry" ref="ServiceRegistry" />
         <property name="recordsDAO" ref="journals.recordsDAO" />
         <property name="searchCriteriaSettingsRegistry" ref="searchCriteriaSettingsRegistry" />
+        <property name="namespaceService" ref="namespaceService" />
     </bean>
 
     <bean id="journalServiceJS" class="ru.citeck.ecos.journals.JournalServiceJS" parent="baseJavaScriptExtension">
