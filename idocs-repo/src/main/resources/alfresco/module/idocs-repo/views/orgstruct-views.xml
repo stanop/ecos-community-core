@@ -12,10 +12,6 @@
 
         <field prop="cm:authorityName"/>
         <field prop="cm:authorityDisplayName"/>
-        <view>
-            <param name="relevant">false</param>
-            <field prop="org:isTemporaryAuthorityContainer"/>
-        </view>
     </view>
 
     <view class="cm:authorityContainer" id="orgstruct">
@@ -23,10 +19,6 @@
 
         <field prop="cm:authorityName"/>
         <field prop="cm:authorityDisplayName"/>
-        <view>
-            <param name="relevant">false</param>
-            <field prop="org:isTemporaryAuthorityContainer"/>
-        </view>
     </view>
 
     <view class="cm:authorityContainer" id="branch">
@@ -62,7 +54,6 @@
         <view>
             <param name="relevant">false</param>
             <field prop="org:branchType"/>
-            <field prop="org:isTemporaryAuthorityContainer"/>
         </view>
     </view>
 
@@ -92,7 +83,6 @@
         <view>
             <param name="relevant">false</param>
             <field prop="org:roleType"/>
-            <field prop="org:isTemporaryAuthorityContainer"/>
         </view>
     </view>
 

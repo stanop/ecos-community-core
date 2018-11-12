@@ -73,32 +73,6 @@
         <property name="subGroupType" value="{http://www.citeck.ru/model/orgstruct/1.0}roleType"/>
     </bean>
 
-    <bean id="temporaryAuthorityContainer" class="ru.citeck.ecos.behavior.orgstruct.TemporaryAuthorityContainerBehaviour" init-method="init">
-        <property name="nodeService" ref="NodeService"/>
-        <property name="authorityService" ref="authorityService"/>
-        <property name="policyComponent" ref="policyComponent"/>
-        <property name="aspectsToCopy">
-            <list>
-                <value>org:hasLegalEntity</value>
-            </list>
-        </property>
-        <property name="propsToCopy">
-            <list>
-                <value>cm:authorityDisplayName</value>
-                <value>org:branchType</value>
-                <value>org:roleType</value>
-                <value>deputy:managedByMembers</value>
-            </list>
-        </property>
-        <property name="assocsToCopy">
-            <list>
-                <value>org:legalEntity</value>
-                <value>org:branchTypeAssoc</value>
-                <value>org:roleTypeAssoc</value>
-            </list>
-        </property>
-    </bean>
-
     <bean id="orgstruct.OrgstructItemsAssocsBehaviour" class="ru.citeck.ecos.behavior.orgstruct.OrgstructItemsAssocsBehaviour" init-method="init">
         <property name="nodeService" ref="nodeService" />
         <property name="policyComponent" ref="policyComponent" />

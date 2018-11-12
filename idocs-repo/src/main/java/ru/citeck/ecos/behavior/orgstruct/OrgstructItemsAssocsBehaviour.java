@@ -50,15 +50,17 @@ public class OrgstructItemsAssocsBehaviour implements NodeServicePolicies.OnCrea
         QName assocQName = associationRef.getTypeQName();
         final NodeRef sourceRef = associationRef.getSourceRef();
         final NodeRef targetRef = associationRef.getTargetRef();
-        if (assocQName.equals(OrgStructModel.ASSOC_ROLE_TYPE)) {
-            String roleName = RepoUtils.getProperty(targetRef, ContentModel.PROP_NAME, String.class, nodeService);
-            if (nodeService.exists(sourceRef) && StringUtils.isNoneBlank(roleName)) {
-                nodeService.setProperty(sourceRef, OrgStructModel.PROP_ROLE_TYPE, roleName);
-            }
-        } else if (assocQName.equals(OrgStructModel.ASSOC_BRANCH_TYPE)) {
-            String branchName = RepoUtils.getProperty(targetRef, ContentModel.PROP_NAME, String.class, nodeService);
-            if (nodeService.exists(sourceRef) && StringUtils.isNoneBlank(branchName)) {
-                nodeService.setProperty(sourceRef, OrgStructModel.PROP_BRANCH_TYPE, branchName);
+        if (nodeService.exists(targetRef) && nodeService.exists(sourceRef)) {
+            if (assocQName.equals(OrgStructModel.ASSOC_ROLE_TYPE)) {
+                String roleName = RepoUtils.getProperty(targetRef, ContentModel.PROP_NAME, String.class, nodeService);
+                if (StringUtils.isNoneBlank(roleName)) {
+                    nodeService.setProperty(sourceRef, OrgStructModel.PROP_ROLE_TYPE, roleName);
+                }
+            } else if (assocQName.equals(OrgStructModel.ASSOC_BRANCH_TYPE)) {
+                String branchName = RepoUtils.getProperty(targetRef, ContentModel.PROP_NAME, String.class, nodeService);
+                if (StringUtils.isNoneBlank(branchName)) {
+                    nodeService.setProperty(sourceRef, OrgStructModel.PROP_BRANCH_TYPE, branchName);
+                }
             }
         }
     }

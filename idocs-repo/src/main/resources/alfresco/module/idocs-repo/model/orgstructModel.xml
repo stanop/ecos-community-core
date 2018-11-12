@@ -174,15 +174,6 @@
 				</association>
 			</associations>
 		</aspect>
-
-		<aspect name="org:isTemporaryAuthorityContainer">
-			<properties>
-				<property name="org:isTemporaryAuthorityContainer">
-					<type>d:boolean</type>
-				</property>
-			</properties>
-		</aspect>
-
 	</aspects>
 
 </model>

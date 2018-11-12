@@ -18,8 +18,8 @@
                     }
 
                     var sourceNode = getSourceNode(),
-                        department = 'department',
-                        type = 'type';
+                        department,
+                        type;
 
                     if (sourceNode) {
                         var departmentFullName = sourceNode.properties['cm:authorityName'];
@@ -31,26 +31,35 @@
                         return destinationNode || node.parent;
                     }
 
-                    if (node.assocs['org:roleTypeAssoc'] != null && node.assocs['org:roleTypeAssoc'].length > 0) {
-                        type = node.assocs['org:roleTypeAssoc'][0].properties['cm:name'];
-                    } else if (node.assocs['org:branchTypeAssoc'] != null && node.assocs['org:branchTypeAssoc'].length > 0) {
+                    if (node.assocs['org:branchTypeAssoc'] != null && node.assocs['org:branchTypeAssoc'].length > 0) {
                         type = node.assocs['org:branchTypeAssoc'][0].properties['cm:name'];
+                    } else if (node.assocs['org:roleTypeAssoc'] != null && node.assocs['org:roleTypeAssoc'].length > 0) {
+                        type = node.assocs['org:roleTypeAssoc'][0].properties['cm:name'];
                     }
 
-                    Alfresco.util.Ajax.jsonGet({
-                        url: Alfresco.constants.PROXY_URI + "/citeck/authority/name/with/counter",
-                        dataObj: {
-                            department: department,
-                            typeValue: type
-                        },
-                        successCallback: {
-                            scope: node.impl().attribute('cm:authorityName'),
-                            fn: function (response) {
-                                var value = response.json.value;
-                                this.value(value);
+                    if (department && type) {
+                        Alfresco.util.Ajax.jsonGet({
+                            url: Alfresco.constants.PROXY_URI + "/citeck/authority/name/with/counter",
+                            dataObj: {
+                                department: department,
+                                typeValue: type
+                            },
+                            successCallback: {
+                                scope: node.impl().attribute('cm:authorityName'),
+                                fn: function (response) {
+                                    var resultValue = response.json.value;
+                                    this.value(resultValue);
+                                }
+                            },
+                            failureCallback: {
+                                scope: node.impl().attribute('cm:authorityName'),
+                                fn: function (response) {
+                                    this.value('');
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
+                    return '';
                 })()]]>
             </invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
@@ -61,19 +70,16 @@
         <property name="cm:authorityDisplayName">
             <invariant on="default" language="javascript">
                 <![CDATA[(function() {
+                    var displayName = '';
                     if (node.assocs['org:roleTypeAssoc'] != null && node.assocs['org:roleTypeAssoc'].length > 0) {
-                        return node.assocs['org:roleTypeAssoc'][0].properties['cm:title'];
+                        displayName = node.assocs['org:roleTypeAssoc'][0].properties['cm:title'];
                     } else if (node.assocs['org:branchTypeAssoc'] != null && node.assocs['org:branchTypeAssoc'].length > 0) {
-                        return node.assocs['org:branchTypeAssoc'][0].properties['cm:title'];
+                        displayName = node.assocs['org:branchTypeAssoc'][0].properties['cm:title'];
                     }
+                    return displayName;
                 })()]]>
             </invariant>
             <invariant on="mandatory" language="explicit">true</invariant>
-        </property>
-
-        <property name="org:isTemporaryAuthorityContainer">
-            <invariant on="value" language="javascript">view.mode == "create"</invariant>
-            <invariant on="relevant" language="javascript">view.mode == "create"</invariant>
         </property>
 
         <association name="org:legalEntity">
