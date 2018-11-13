@@ -607,7 +607,7 @@
         </property>
     </bean>
 
-    <bean id="idocs.module-component.journals-orgstruct-simple-branch-type" parent="idocs.import-spaces.3-2-0">
+    <!--<bean id="idocs.module-component.journals-orgstruct-simple-branch-type" parent="idocs.import-spaces.3-2-0">
         <property name="name" value="orgstruct-simple-branch-type" />
         <property name="description" value="Orgstruct branch type" />
         <property name="sinceVersion" value="3.2.0.2" />
@@ -652,6 +652,6 @@
                 </props>
             </list>
         </property>
-    </bean>
+    </bean>-->
 
 </beans>
