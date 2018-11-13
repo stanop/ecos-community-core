@@ -24,9 +24,7 @@
         <field assoc="wfperf:performers">
             <regions name="select" template="select-orgstruct"/>
         </field>
-        <field property="wfperf:enableControl">
-            <invariant on="title" language="explicit">With Control</invariant>
-        </field>
+        <field property="wfperf:enableControl"></field>
         <field assoc="wfperf:controller">
             <regions name="select" template="select-orgstruct"/>
             <invariant on="relevant" language="javascript">(function() {
@@ -40,14 +38,15 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
         <field assoc="cwf:targetItems">
-            <invariant on="title" language="explicit">Items</invariant>
+            <region name="input" template="view" />
+            <region name="select" template="select-document" />
         </field>
 
         <field prop="bpm:sendEMailNotifications"/>
 
         <field prop="wfperf:performOutcome" template="half-width">
             <region name="input" template="task-buttons">
-                <param name="buttons">[{value:"Performed", title:"Create Assignment", actionId:"submit"}]</param>
+                <param name="buttons">[{value:"Performed", title:"workflowtask.submit.title", actionId:"submit"}]</param>
             </region>
             <region name="label" template="none"/>
         </field>
