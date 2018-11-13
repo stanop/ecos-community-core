@@ -382,6 +382,7 @@
         <property name="lastNameProperty" value="org:lastName"/>
         <property name="middleNameProperty" value="org:middleName"/>
         <property name="updateAlways" value="${full-name-behaviour.update-always}"/>
+        <property name="forceUpdate" value="${full-name-behaviour.force-update}"/>
         <property name="separator" value=" "/>
     </bean>
 
@@ -517,6 +518,23 @@
         <property name="dictionaryService" ref="DictionaryService"/>
     </bean>
 
+    <bean id="history.historicalAssocsBehaviour" class="ru.citeck.ecos.behavior.history.HistoricalAssocsBehaviour" init-method="init" abstract="true">
+        <property name="policyComponent" ref="policyComponent"/>
+        <property name="nodeService" ref="nodeService"/>
+        <property name="historyService" ref="historyService"/>
+        <property name="dictionaryService" ref="DictionaryService"/>
+    </bean>
+
+    <bean id="idocs.historyAssocsBehaviour" parent="history.historicalAssocsBehaviour">
+        <property name="allowedAssocs">
+            <list>
+                <value>assoc:associatedWith</value>
+            </list>
+        </property>
+        <property name="enableHistoryOnAddAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteAssocs" value="true"/>
+    </bean>
+
     <bean id="copyNodeIgnoreAttributesBehaviour.history" class="ru.citeck.ecos.behavior.common.EcosCopyBehaviourCallback">
         <property name="className" value="{http://www.citeck.ru/model/history/1.0}eventContainedAspect" />
         <property name="ignoredAttributes">
@@ -598,13 +616,6 @@
 			]]></value>
 		</property>
 	</bean>
-
-    <bean id="idocs.EcosDocumentTitleGenerationBehaviour" parent="TitleGenerationBehaviour">
-        <property name="className" value="ecos:document"/>
-        <property name="titleTemplate">
-            <value><![CDATA[<#if node.properties['cm:title']?has_content>#{'$'}{node.properties['cm:title']}<#else>#{'$'}{node.properties['cm:name']!"Документ"}</#if>]]></value>
-        </property>
-    </bean>
 
     <bean id="idocs.applicationFileNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="dms:applicationFile"/>
@@ -825,6 +836,18 @@
           class="ru.citeck.ecos.cmmn.behaviour.CaseTemplateContentSyncBehaviour">
     </bean>
 
+    <bean id="ru.citeck.ecos.behavior.cardlet.CardletMetadataSyncBehaviour"
+          class="ru.citeck.ecos.behavior.cardlet.CardletMetadataSyncBehaviour">
+        <property name="contentToPropsFields">
+            <list>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}id</value>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}regionId</value>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}cardMode</value>
+                <value>{http://www.citeck.ru/model/cardlet/1.0}allowedType</value>
+            </list>
+        </property>
+    </bean>
+
     <bean id="ru.citeck.ecos.disablingPersonBehaviour" class="ru.citeck.ecos.behavior.authority.DisablingPersonBehaviour"
           init-method="init">
         <property name="policyComponent" ref="policyComponent"/>
@@ -865,6 +888,33 @@
         <property name="enableHistoryOnDeleteChildAssocs" value="true"/>
     </bean>
 
+    <bean id="ecos.case.historyBehaviour" parent="history.historicalPropertiesBehaviour">
+        <property name="className" value="ecos:case"/>
+        <property name="allowedProperties">
+            <list>
+                <value>cm:content</value>
+                <value>cm:name</value>
+                <value>ecos:documentNumber</value>
+                <value>ecos:documentDate</value>
+                <value>ecos:documentAmount</value>
+                <value>ecos:responsible</value>
+                <value>idocs:documentStatus</value>
+                <value>idocs:note</value>
+                <value>idocs:legalEntity</value>
+                <value>idocs:contractor</value>
+                <value>idocs:currencyDocument</value>
+                <value>tk:kind</value>
+                <value>dms:updateContent</value>
+                <value>icase:documents</value>
+            </list>
+        </property>
+        <property name="enableHistoryOnUpdateProps" value="true"/>
+        <property name="enableHistoryOnAddAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteAssocs" value="true"/>
+        <property name="enableHistoryOnAddChildAssocs" value="true"/>
+        <property name="enableHistoryOnDeleteChildAssocs" value="true"/>
+    </bean>
+
     <bean id="idocs.addCreatedPersonToAllGroup"
           class="ru.citeck.ecos.behavior.authority.AddCreatedPersonToGroupBehaviour">
         <property name="groupFullName" value="GROUP_all"/>
@@ -889,6 +939,29 @@
     <bean id="setMontDayPersonAttributeBehaviour"
           class="ru.citeck.ecos.behavior.common.FillMonthDayPersonPropertyBehaviour">
     </bean>
+
+    <!--<bean id="ru.citeck.ecos.copy-metadata-from-target-to-source-assoc"-->
+          <!--class="ru.citeck.ecos.behavior.copy.CopyMetadataFromTargetToSourceBehaviour" init-method="init">-->
+        <!--<property name="policyComponent" ref="policyComponent"/>-->
+        <!--<property name="nodeService" ref="nodeService"/>-->
+        <!--<property name="targetTypeQName" value=""/>-->
+        <!--<property name="sourceTypeQName" value=""/>-->
+        <!--<property name="caseStatusAssocQName" value=""/>-->
+        <!--<property name="assocsToCopy">-->
+            <!--<map>-->
+                <!--<entry key="" value=""/>-->
+            <!--</map>-->
+        <!--</property>-->
+        <!--<property name="propsToCopy">-->
+            <!--<map>-->
+                <!--<entry key="" value=""/>-->
+                <!--<entry key="" value=""/>-->
+                <!--<entry key="" value=""/>-->
+                <!--<entry key="" value=""/>-->
+                <!--<entry key="" value=""/>-->
+            <!--</map>-->
+        <!--</property>-->
+    <!--</bean>-->
 
 </beans>
 

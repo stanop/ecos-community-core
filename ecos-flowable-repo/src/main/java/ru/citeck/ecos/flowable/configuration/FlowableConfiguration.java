@@ -8,6 +8,9 @@ import org.alfresco.repo.workflow.WorkflowObjectFactory;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.namespace.NamespaceService;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.flowable.engine.*;
 import org.flowable.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.flowable.engine.parse.BpmnParseHandler;
@@ -16,7 +19,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
@@ -35,6 +37,8 @@ import java.util.*;
 @Configuration
 public class FlowableConfiguration {
 
+    private static final Logger logger = Logger.getLogger(FlowableConfiguration.class);
+
     /**
      * Constants
      */
@@ -47,6 +51,11 @@ public class FlowableConfiguration {
     private static final String FLOWABLE_DB_USERNAME = "flowable.db.username";
     private static final String FLOWABLE_DB_PASSWORD = "flowable.db.password";
     private static final String FLOWABLE_DRIVER_CLASS_NAME = "flowable.db.driver.class.name";
+    private static final String FLOWABLE_DBCP_MIN_IDLE = "flowable.db.dbcp.min.idle";
+    private static final String FLOWABLE_DBCP_MAX_IDLE = "flowable.db.dbcp.max.idle";
+    private static final String FLOWABLE_DBCP_MAX_ACTIVE = "flowable.db.dbcp.max.active";
+    private static final String FLOWABLE_DBCP_MAX_OPEN_PREPARED_STATEMENTS = "flowable.db.dbcp.max.open.prepared.statements";
+
 
     /**
      * Mail properties constants
@@ -79,19 +88,48 @@ public class FlowableConfiguration {
      */
     @Bean(name = "flowableDataSource")
     public DataSource flowableDataSource() {
-        if (properties.getProperty(FLOWABLE_DB_URL) != null) {
-            try {
-                DriverManagerDataSource result = new DriverManagerDataSource();
-                result.setDriverClassName(properties.getProperty(FLOWABLE_DRIVER_CLASS_NAME));
-                result.setUrl(properties.getProperty(FLOWABLE_DB_URL));
-                result.setUsername(properties.getProperty(FLOWABLE_DB_USERNAME));
-                result.setPassword(properties.getProperty(FLOWABLE_DB_PASSWORD));
-                return result;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        } else {
+
+        String dbUrl = properties.getProperty(FLOWABLE_DB_URL);
+
+        if (StringUtils.isBlank(dbUrl)) {
+            return null;
+        }
+
+        String driverClassName = properties.getProperty(FLOWABLE_DRIVER_CLASS_NAME);
+        String username = properties.getProperty(FLOWABLE_DB_USERNAME);
+        String password = properties.getProperty(FLOWABLE_DB_PASSWORD);
+        int minIdle = Integer.parseInt(properties.getProperty(FLOWABLE_DBCP_MIN_IDLE));
+        int maxIdle = Integer.parseInt(properties.getProperty(FLOWABLE_DBCP_MAX_IDLE));
+        int maxActive = Integer.parseInt(properties.getProperty(FLOWABLE_DBCP_MAX_ACTIVE));
+        int maxOpenPreparedStatements = Integer.parseInt(properties.getProperty(
+                FLOWABLE_DBCP_MAX_OPEN_PREPARED_STATEMENTS));
+
+        String msg = "Connection to flowable data source with parameters:\n" +
+                "dbUrl: " + dbUrl + "\n" +
+                "driverClassName: " + driverClassName + "\n" +
+                "username: " + username + "\n" +
+                "minIdle: " + minIdle + "\n" +
+                "maxIdle: " + maxIdle + "\n" +
+                "maxActive: " + maxActive + "\n" +
+                "maxOpenPreparedStatements: " + maxOpenPreparedStatements;
+        logger.info(msg);
+
+        try {
+            BasicDataSource dataSource = new BasicDataSource();
+
+            dataSource.setDriverClassName(driverClassName);
+            dataSource.setUrl(dbUrl);
+            dataSource.setUsername(username);
+            dataSource.setPassword(password);
+
+            dataSource.setMinIdle(minIdle);
+            dataSource.setMaxIdle(maxIdle);
+            dataSource.setMaxActive(maxActive);
+            dataSource.setMaxOpenPreparedStatements(maxOpenPreparedStatements);
+
+            return dataSource;
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -136,6 +174,7 @@ public class FlowableConfiguration {
 
     /**
      * Set mail configuration
+     *
      * @param processEngineConfiguration Process engine configuration
      */
     private void setMailConfiguration(StandaloneProcessEngineConfiguration processEngineConfiguration) {

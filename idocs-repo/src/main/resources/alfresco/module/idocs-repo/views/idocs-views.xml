@@ -12,9 +12,14 @@
     <view class="idocs:organizationInfo">
         <field prop="idocs:fullOrganizationName"/>
         <field prop="idocs:shortOrganizationName"/>
-        <field prop="idocs:contractorType">
-            <region name="input" template="checkbox" />
-        </field>
+        <view>
+            <field prop="idocs:contractorType">
+                <region name="input" template="checkbox" />
+            </field>
+            <field prop="idocs:contractorKind">
+                <region name="input" template="select"/>
+            </field>
+        </view>
     </view>
 
     <view class="idocs:publicRegInfo">
@@ -74,6 +79,9 @@
             <field prop="idocs:CEOname"/>
             <field prop="idocs:nameInGenitiveCase"/>
             <field prop="idocs:diadocBoxId"/>
+        </view>
+        <view>
+            <field prop="idocs:doNotSendContractToEdiFlag"/>
         </view>
     </view>
 

@@ -13,8 +13,7 @@ import ru.citeck.ecos.utils.TransactionUtils;
 import java.util.Date;
 
 public class UpdateCaseModifiedDate extends AbstractBehaviour
-                                    implements CaseElementPolicies.OnCaseElementUpdatePolicy,
-                                               CaseElementPolicies.OnCaseElementAddPolicy,
+                                    implements CaseElementPolicies.OnCaseElementAddPolicy,
                                                CaseElementPolicies.OnCaseElementRemovePolicy {
 
     private static final String TXN_NODES_TO_UPDATE = UpdateCaseModifiedDate.class.getName();
@@ -30,12 +29,6 @@ public class UpdateCaseModifiedDate extends AbstractBehaviour
     @PolicyMethod(policy = CaseElementPolicies.OnCaseElementAddPolicy.class,
                   runAsSystem = true, frequency = Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
     public void onCaseElementAdd(NodeRef caseRef, NodeRef element, ElementConfigDto config) {
-        updateNode(caseRef);
-    }
-
-    @PolicyMethod(policy = CaseElementPolicies.OnCaseElementUpdatePolicy.class,
-                  runAsSystem = true, frequency = Behaviour.NotificationFrequency.TRANSACTION_COMMIT)
-    public void onCaseElementUpdate(NodeRef caseRef, NodeRef element, ElementConfigDto config) {
         updateNode(caseRef);
     }
 

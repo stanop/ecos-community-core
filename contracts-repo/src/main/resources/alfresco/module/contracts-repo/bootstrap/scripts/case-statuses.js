@@ -44,6 +44,7 @@ function main(statuses) {
         }
         utils.setLocale("en_US");
         statusNode.properties['cm:title'] = status.title.en;
+        statusNode.save();
         utils.setLocale("ru_RU");
         statusNode.properties['cm:title'] = status.title.ru;
         statusNode.save();

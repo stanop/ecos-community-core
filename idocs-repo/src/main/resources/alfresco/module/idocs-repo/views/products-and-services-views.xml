@@ -40,7 +40,9 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
         <field assoc="pas:currency">
-            <region name="input" template="select"/>
+            <region name="input" template="autocomplete">
+                <param name="criteria">[{ attribute: "cm:title", predicate: "string-contains" }]</param>
+            </region>
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
     </view>
@@ -70,7 +72,9 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
         <field assoc="pas:currency">
-            <region name="input" template="select"/>
+            <region name="input" template="autocomplete">
+                <param name="criteria">[{ attribute: "cm:title", predicate: "string-contains" }]</param>
+            </region>
         </field>
     </view>
 

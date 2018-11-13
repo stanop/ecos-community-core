@@ -13,7 +13,7 @@
     <parent>
         <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>ecos-community</artifactId>
-        <version>3.3.1</version>
+        <version>3.4.4</version>
     </parent>
 
     <properties>
@@ -40,6 +40,13 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-base-core-share</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.3.2</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

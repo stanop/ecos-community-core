@@ -9,18 +9,16 @@ import graphql.ExecutionResultImpl;
 import graphql.language.SourceLocation;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.graphql.exceptions.CiteckGraphQLException;
 
@@ -32,7 +30,6 @@ import java.util.*;
 /**
  * Remote graph-ql service implementation
  */
-@Service("remoteGraphQLService")
 public class RemoteGraphQLServiceImpl implements GraphQLService {
 
     /**
@@ -47,13 +44,6 @@ public class RemoteGraphQLServiceImpl implements GraphQLService {
     private static final String REMOTE_GRAPHQL_METHOD = "/ecos/graphql";
 
     /**
-     * Properties keys
-     */
-    private static final String REMOTE_GRAPHQL_SERVICE_HOST_PROP_KEY = "remote.graphql.service.host";
-    private static final String REMOTE_GRAPHQL_SERVICE_USERNAME_PROP_KEY = "remote.graphql.service.username";
-    private static final String REMOTE_GRAPHQL_SERVICE_PASSWORD_PROP_KEY = "remote.graphql.service.password";
-
-    /**
      * Object mapper
      */
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -64,20 +54,22 @@ public class RemoteGraphQLServiceImpl implements GraphQLService {
     private RestTemplate restTemplate;
 
     /**
-     * Global properties
+     * Autentication data
      */
-    @Autowired
-    @Qualifier("global-properties")
-    private Properties properties;
+    private String username;
+    private String password;
+
+    /**
+     * Remote Alfresco host
+     */
+    private String host;
 
     /**
      * Init
      */
     @PostConstruct
     private void init() {
-        String username = properties.getProperty(REMOTE_GRAPHQL_SERVICE_USERNAME_PROP_KEY);
-        String password = properties.getProperty(REMOTE_GRAPHQL_SERVICE_PASSWORD_PROP_KEY);
-        if (username != null && password != null) {
+        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
             this.restTemplate = new RestTemplate(this.createSecureTransport(username, password));
         } else {
             this.restTemplate = new RestTemplate();
@@ -137,9 +129,11 @@ public class RemoteGraphQLServiceImpl implements GraphQLService {
             /** Errors */
             ArrayList<CiteckGraphQLException> errorsList = new ArrayList<>();
             ArrayNode errors = (ArrayNode) resultNode.get("errors");
-            for (JsonNode node : errors) {
-                Map<String, Object> errorMap = objectMapper.readValue(node.toString(), Map.class);
-                errorsList.add(parseError(errorMap));
+            if (errors != null) {
+                for (JsonNode node : errors) {
+                    Map<String, Object> errorMap = objectMapper.readValue(node.toString(), Map.class);
+                    errorsList.add(parseError(errorMap));
+                }
             }
             return new ExecutionResultImpl(data, errorsList);
         } catch (IOException e) {
@@ -187,7 +181,9 @@ public class RemoteGraphQLServiceImpl implements GraphQLService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         /** Call remote service */
         HttpEntity requestEntity = new HttpEntity<>(createRequestBody(query, variables), headers);
-        return restTemplate.postForObject(getRemoteGraphQlServiceHost() + REMOTE_GRAPHQL_METHOD, requestEntity, String.class);
+        return restTemplate.postForObject(
+                getRemoteGraphQlServiceHost() + REMOTE_GRAPHQL_METHOD, requestEntity, String.class
+        );
     }
 
     /**
@@ -226,7 +222,18 @@ public class RemoteGraphQLServiceImpl implements GraphQLService {
      * @return Service host (default value - http://localhost:8080)
      */
     private String getRemoteGraphQlServiceHost() {
-        String host = properties.getProperty(REMOTE_GRAPHQL_SERVICE_HOST_PROP_KEY);
         return host != null ? host : DEFAULT_REMOTE_GRAPHQL_SERVICE_HOST;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 }

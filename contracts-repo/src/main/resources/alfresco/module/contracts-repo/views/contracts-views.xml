@@ -111,7 +111,10 @@
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.association.contracts_agreementCurrency.title</param>
                 </region>
-                <region name="input" template="select" />
+                <region name="input" template="autocomplete">
+                    <param name="criteria">[{ attribute: "cm:title", predicate: "string-contains" }]</param>
+                </region>
+                <invariant on="value-title" language="javascript">value.properties['cm:title']</invariant>
             </field>
             <field prop="contracts:agreementAmount">
                 <region name="label" template="label">
@@ -374,8 +377,8 @@
                 <region name="label" template="label">
                     <param name="key">payments_paymentsModel.association.payments_currency.title</param>
                 </region>
-                <region name="input" template="select" >
-                    <param name="alwaysSingle">true</param>
+                <region name="input" template="autocomplete">
+                    <param name="criteria">[{ attribute: "cm:title", predicate: "string-contains" }]</param>
                 </region>
             </field>
             <field prop="payments:paymentAmount">
@@ -421,7 +424,9 @@
                 </region>
             </field>
             <field assoc="payments:currency">
-                <region name="input" template="autocomplete" />
+                <region name="input" template="autocomplete">
+                    <param name="criteria">[{ attribute: "cm:title", predicate: "string-contains" }]</param>
+                </region>
                 <region name="label" template="label">
                     <param name="key">payments_paymentsModel.association.payments_currency.title</param>
                 </region>
@@ -540,7 +545,9 @@
         </view>
         <view>
             <field assoc="contracts:closingDocumentCurrency">
-                <region name="input" template="select" />
+                <region name="input" template="autocomplete">
+                    <param name="criteria">[{ attribute: "cm:title", predicate: "string-contains" }]</param>
+                </region>
             </field>
         </view>
         <field prop="dms:updateContent">
@@ -628,7 +635,9 @@
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.association.contracts_agreementCurrency.title</param>
                 </region>
-                <region name="input" template="select" />
+                <region name="input" template="autocomplete">
+                    <param name="criteria">[{ attribute: "cm:title", predicate: "string-contains" }]</param>
+                </region>
             </field>
             <field prop="contracts:agreementAmount">
                 <region name="label" template="label">
@@ -675,6 +684,7 @@
                 </region>
             </field>
         </view>
+        <field prop="contracts:digiSign" />
         <view id="note" kind="1-column">
             <field prop="idocs:note">
                 <region name="input" template="textarea">

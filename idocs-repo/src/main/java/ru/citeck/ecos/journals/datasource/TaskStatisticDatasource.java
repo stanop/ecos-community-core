@@ -9,20 +9,23 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.graphql.journal.JournalGqlPageInfo;
-import ru.citeck.ecos.graphql.journal.JournalGqlPageInfoInput;
+import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
+import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
 import ru.citeck.ecos.graphql.journal.datasource.alfnode.AlfNodeAttribute;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeGql;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeInfoGql;
-import ru.citeck.ecos.graphql.journal.record.JournalAttributeValueGql;
-import ru.citeck.ecos.graphql.journal.record.JournalRecordsConnection;
-import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.journal.record.attribute.JournalAttributeMapValue;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttribute;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
+import ru.citeck.ecos.graphql.journal.record.JGqlAttributeValue;
+import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
+import ru.citeck.ecos.graphql.journal.record.attribute.JGqlAttributeMapValue;
+import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.history.HistoryEventType;
+import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.repo.RemoteRef;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.CriteriaTriplet;
 import ru.citeck.ecos.search.SearchCriteria;
@@ -33,7 +36,6 @@ import ru.citeck.ecos.search.ftsquery.QueryResult;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Task statistic journal prototype
@@ -60,10 +62,10 @@ public class TaskStatisticDatasource implements JournalDataSource {
     }
 
     @Override
-    public JournalRecordsConnection getRecords(GqlContext context,
-                                               String query,
-                                               String language,
-                                               JournalGqlPageInfoInput pageInfo) {
+    public JGqlRecordsConnection getRecords(GqlContext context,
+                                            String query,
+                                            String language,
+                                            JGqlPageInfoInput pageInfo) {
 
         int maxItems = pageInfo.getMaxItems() * 2;
 
@@ -112,7 +114,7 @@ public class TaskStatisticDatasource implements JournalDataSource {
             }
         }
 
-        List<JournalAttributeValueGql> records = new ArrayList<>();
+        List<JGqlAttributeValue> records = new ArrayList<>();
 
         assignNodes.forEach((taskId, assignNode) -> {
 
@@ -154,18 +156,18 @@ public class TaskStatisticDatasource implements JournalDataSource {
                                                              context);
 
             if (recordAttributes != null) {
-                JournalAttributeMapValue record = new JournalAttributeMapValue(taskId);
+                JGqlAttributeMapValue record = new JGqlAttributeMapValue(taskId);
                 record.setAttributes(recordAttributes);
                 records.add(record);
             }
         });
 
-        JournalRecordsConnection connection = new JournalRecordsConnection();
+        JGqlRecordsConnection connection = new JGqlRecordsConnection();
         connection.setRecords(records);
 
         int numberFound = queryResult.getNodeRefs().size();
 
-        JournalGqlPageInfo outPageInfo = new JournalGqlPageInfo();
+        JGqlPageInfo outPageInfo = new JGqlPageInfo();
         outPageInfo.setHasNextPage(numberFound == maxItems || queryResult.hasMore());
         outPageInfo.setMaxItems(pageInfo.getMaxItems());
         outPageInfo.setSkipCount(pageInfo.getSkipCount());
@@ -175,6 +177,32 @@ public class TaskStatisticDatasource implements JournalDataSource {
 
         return connection;
 
+    }
+
+    @Override
+    public String getServerId() {
+        return null;
+    }
+
+    @Override
+    public RecordsResult queryIds(GqlContext context,
+                                  String query,
+                                  String language,
+                                  JGqlPageInfoInput pageInfo) {
+        return null;
+    }
+
+    @Override
+    public List<JGqlAttributeValue> convertToGqlValue(GqlContext context,
+                                                      List<RemoteRef> remoteRefList) {
+        return null;
+    }
+
+    @Override
+    public JournalData queryMetadata(String gqlQuery,
+                                     String dataSourceBeanName,
+                                     RecordsResult recordsResult) {
+        return null;
     }
 
     private Map<String, Object> getRecord(GqlAlfNode startEvent,
@@ -189,7 +217,7 @@ public class TaskStatisticDatasource implements JournalDataSource {
         Map<String, Object> recordAttributes = new HashMap<>();
 
         String documentAttrName = HistoryModel.ASSOC_DOCUMENT.toPrefixString(namespaceService);
-        JournalAttributeGql docAttributeGql = getAssocAttribute(startEvent, documentAttrName, context);
+        JGqlAttribute docAttributeGql = getAssocAttribute(startEvent, documentAttrName, context);
         recordAttributes.put(documentAttrName, docAttributeGql);
 
         Map<QName, Serializable> startedProps = startEvent.getProperties();
@@ -239,7 +267,7 @@ public class TaskStatisticDatasource implements JournalDataSource {
     }
 
     @Override
-    public Optional<JournalAttributeInfoGql> getAttributeInfo(String attributeName) {
+    public Optional<JGqlAttributeInfo> getAttributeInfo(String attributeName) {
         return Optional.empty();
     }
 }

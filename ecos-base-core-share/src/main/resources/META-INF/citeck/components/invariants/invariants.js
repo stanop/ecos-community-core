@@ -425,6 +425,10 @@ define([
     }
 
     function evalCriteriaQuery(criteria, model, pagination) {
+        if (criteria == null || criteria.length == 0) {
+            return null;
+        }
+
         var query = {
             skipCount: 0,
             sortBy: [{attribute: "sys:node-dbid", order: "asc"}]
@@ -1588,7 +1592,10 @@ define([
                 var values = this.convertValue(this.rawValue(), true);
                 return _.sortBy(values, this.getValueOrder, this);
             },
-            write: function(value) { this.value(value); }
+            write: function(value) {
+                value = _.isArray(value) ? _.difference(value, [undefined]) : value;
+                this.value(value);
+            }
         })
         .computed('lastValue', {
             read: function() {
@@ -1749,7 +1756,14 @@ define([
             return _.union(this.defaultAttributeNames(), this.viewAttributeNames(), this.definedAttributeNames());
         })
         .computed('valid', function() {
-            return _.all(this.attributes(), function(attr) { return attr.valid(); });
+            var viewAttributes = this.attributes(),
+                self = this;
+            if (this._viewAttributeNamesLoaded() && this.viewAttributeNames()) {
+                viewAttributes = viewAttributes.filter(function(item) {
+                    return self.viewAttributeNames().indexOf(item.name()) != -1;
+                });
+            }
+            return _.all(viewAttributes, function(attr) { return attr.valid(); });
         })
         .computed('validDraft', function() {
             return _.all(this.attributes(), function(attr) { return attr.validDraft(); });

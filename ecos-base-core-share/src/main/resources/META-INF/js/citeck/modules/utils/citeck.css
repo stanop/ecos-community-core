@@ -427,3 +427,97 @@
   -webkit-animation: cssload-spin 1100ms infinite linear;
   -moz-animation: cssload-spin 1100ms infinite linear;
 }
+
+.alfresco-share .alfresco-header-SearchBox {
+  margin: 2px 10px 0px 10px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 1px 1px 3px #cccccc inset;
+  padding-left: 4px;
+  padding-bottom: 1px;
+  height: 23px;
+}
+
+.alfresco-share .alfresco-header-SearchBox .alfresco-header-SearchBox-menu {
+  display: inline-block;
+  width: 35px;
+}
+
+.alfresco-share .alfresco-header-SearchBox input.alfresco-header-SearchBox-text {
+  background-color: #ffffff;
+  border: none;
+  font-size: 100%;
+  padding: 0;
+  margin-right: 8px;
+  margin-left: -6px;
+  position: relative;
+  top: 2px;
+  margin-top: 1px;
+  font-family: Open Sans, Arial, Helvetica, sans-serif;
+}
+
+.alfresco-share .alfresco-header-SearchBox .alfresco-header-SearchBox-clear {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  line-height: 12px;
+  background-repeat: no-repeat;
+  margin-right: 10px;
+}
+
+.alfresco-share .alfresco-header-SearchBox .alf-livesearch {
+  position: absolute;
+  min-width: 360px;
+  max-width: 500px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  box-shadow: 0.33px 0px 8px rgba(0, 0, 0, 0.3);
+  color: #333333;
+  margin-top: 3px;
+  z-index: 1000;
+  display: none;
+}
+
+.alfresco-share .dijitReset.dijitInline.dijitMenuItemLabel.dijitMenuItem {
+  margin: 0 5px;
+  padding: 2px 5px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 150px;
+  height: 20px;
+}
+
+.alfresco-share .alfresco-menus-AlfMenuBarPopup__arrow {
+  margin-left: 3px;
+  width: 20px;
+  padding-bottom: 2px;
+  vertical-align: super;
+}
+
+.alfresco-share .alfresco-menus-AlfMenuBar .dijitMenuBar {
+  font-family: Open Sans, arial, sans-serif;
+  background-color: transparent;
+  background-image: none;
+  background-repeat: no-repeat;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.alfresco-layout-LeftAndRight__right > * {
+  float: right;
+}
+
+.alfresco-layout-LeftAndRight__left > * {
+  float: left;
+}
+
+.clear-both {
+  clear: both;
+}
+
+#page-content-root>.sticky-wrapper {
+  height: 100%;
+  min-height: 100%;
+}

@@ -18,15 +18,21 @@
  */
 package ru.citeck.ecos.search;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
  * @author Anton Fateev <anton.fateev@citeck.ru>
  */
+@JsonSerialize(using = SearchCriteria.Serializer.class)
 public class SearchCriteria {
 
     private final List<CriteriaTriplet> triplets;
@@ -40,11 +46,20 @@ public class SearchCriteria {
     private NamespacePrefixResolver namespaceService;
 
     public SearchCriteria(NamespacePrefixResolver namespaceService) {
-        triplets = new ArrayList<CriteriaTriplet>();
-        sort = new LinkedHashMap<String, Boolean>();
+        triplets = new ArrayList<>();
+        sort = new LinkedHashMap<>();
         skip = null;
         limit = null;
         this.namespaceService = namespaceService;
+    }
+
+    public SearchCriteria(SearchCriteria other) {
+        this(other.namespaceService);
+        other.triplets.forEach(t ->
+                triplets.add(new CriteriaTriplet(t.getField(), t.getPredicate(), t.getValue())));
+        skip = other.skip;
+        limit = other.limit;
+        sort.putAll(other.sort);
     }
 
     public SearchCriteria addCriteriaTriplet(String field, String predicate, String value) {
@@ -144,9 +159,56 @@ public class SearchCriteria {
     }
 
     public Map<String, Object> toMap() {
-        HashMap<String, Object> map = new HashMap<String, Object>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("skip", skip);
         map.put("limit", limit);
         return map;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SearchCriteria (");
+        for (CriteriaTriplet triplet : triplets) {
+            sb.append("[")
+                    .append(triplet.getField())
+                    .append(" ")
+                    .append(triplet.getPredicate())
+                    .append(" ")
+                    .append(triplet.getValue())
+                    .append("] ");
+        }
+        sb.append(")\n");
+        return sb.toString();
+    }
+
+    public static class Serializer extends StdSerializer<SearchCriteria> {
+
+        public Serializer() {
+            super(SearchCriteria.class);
+        }
+
+        @Override
+        public void serialize(SearchCriteria value,
+                              JsonGenerator jgen,
+                              SerializerProvider provider) throws IOException {
+
+            jgen.writeStartObject();
+
+            String fieldPrefix = SearchCriteriaParser.FIELD_KEY + SearchCriteriaParser.SEPARATOR;
+            String predicatePrefix = SearchCriteriaParser.PREDICATE_KEY + SearchCriteriaParser.SEPARATOR;
+            String valuePrefix = SearchCriteriaParser.VALUE_KEY + SearchCriteriaParser.SEPARATOR;
+
+            int idx = 0;
+
+            for (CriteriaTriplet triplet : value.getTriplets()) {
+                jgen.writeStringField(fieldPrefix + idx, triplet.getField());
+                jgen.writeStringField(predicatePrefix + idx, triplet.getPredicate());
+                jgen.writeStringField(valuePrefix + idx, triplet.getValue());
+                idx++;
+            }
+
+            jgen.writeEndObject();
+        }
     }
 }

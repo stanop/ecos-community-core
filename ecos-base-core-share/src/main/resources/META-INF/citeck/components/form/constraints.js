@@ -178,17 +178,27 @@
     };
 
     // duplicate item on table template
-    Citeck.forms.duplicateValue = function (record, parent) {
+    Citeck.forms.duplicateValue = function (record, parent, params) {
+        params = params || {};
+        var showDialogAfterDuplicate = params.showDialogAfterDuplicate || false;
+        var needPullForDuplicate = params.needPullForDuplicate || "";
+        var cloneParent = params.cloneParent || false;
+
         var attributes =  record.resolve('allData.attributes');
         if (attributes && record && record.typeShort()) {
 
             record.inSubmitProcess(true);
+            var data = {
+                attributes: {},
+                view: {'class': record.typeShort(), id: "", kind: "", mode: "create", template: "table", params: {}}
+            };
 
-            var url = Alfresco.constants.PROXY_URI + "citeck/invariants/view?type=" + record.typeShort(),
-                data = { attributes: {}, view: {'class': record.typeShort(), id: "", kind: "", mode: "create", template: "table", params: {}}};
-
+            var ignoredAttributes = ["attr:noderef", "attr:parentassoc", "attr:aspects"];
+            if (!cloneParent) {
+                ignoredAttributes.push("attr:parent");
+            }
             for (var key in attributes) {
-                if (attributes[key] && ["attr:noderef", "attr:parent", "attr:parentassoc", "attr:aspects"].indexOf(key) == -1) {
+                if (attributes[key] && ignoredAttributes.indexOf(key) == -1) {
                     if (key == 'attr:types') {
                         data.attributes[key] = [record.typeShort()]
                     } else {
@@ -197,30 +207,105 @@
                 }
             }
 
-            Alfresco.util.Ajax.jsonPost({
-                url: url,
-                dataObj: data,
-                requestContentType: Alfresco.util.Ajax.JSON,
-                successCallback: {
-                    fn: function (response) {
-                        if (response && response.json && response.json.result) {
-                            var arr = parent.value();
-                            arr.push(response.json.result);
-                            parent.value(arr);
-
-                        }
-                        record.inSubmitProcess(false);
-                    }
-                },
-                failureCallback: {
-                    fn: function (response) {
-                        Alfresco.util.PopupManager.displayMessage({
-                            text: Alfresco.util.message("message.request-error")
-                        });
-                        record.inSubmitProcess(false);
-                    }
+            var requests = {requests: []};
+            if (needPullForDuplicate) {
+                var attributeKeysForPull = needPullForDuplicate.split(",");
+                for (var j = 0; j < attributeKeysForPull.length; j ++) {
+                    var attributeKeyForPull = attributeKeysForPull[j];
+                    var request = {
+                        nodeRef: record.nodeRef(),
+                        attribute: attributeKeyForPull
+                    };
+                    requests.requests.push(request);
                 }
-            });
+            }
+
+            var addVariant = function () {
+                var url = Alfresco.constants.PROXY_URI + "citeck/invariants/view?type=" + record.typeShort();
+                Alfresco.util.Ajax.jsonPost({
+                    url: url,
+                    dataObj: data,
+                    requestContentType: Alfresco.util.Ajax.JSON,
+                    successCallback: {
+                        fn: function (response) {
+                            if (response && response.json && response.json.result) {
+                                if (showDialogAfterDuplicate) {
+                                    Citeck.forms.dialog(
+                                        response.json.result,
+                                        null,
+                                        function () {
+                                            var arr = parent.value();
+                                            arr.push(response.json.result);
+                                            parent.value(arr);
+                                        },
+                                        {
+                                            baseRef: params.baseRef,
+                                            rootAttributeName: params.rootAttributeName,
+                                            parentRuntime: params.parentRuntime,
+                                            virtualParent: params.virtualParent
+                                        }
+                                    );
+                                } else {
+                                    var arr = parent.value();
+                                    arr.push(response.json.result);
+                                    parent.value(arr);
+                                }
+                            }
+                            record.inSubmitProcess(false);
+                        }
+                    },
+                    failureCallback: {
+                        fn: function (response) {
+                            Alfresco.util.PopupManager.displayMessage({
+                                text: Alfresco.util.message("message.request-error")
+                            });
+                            record.inSubmitProcess(false);
+                        }
+                    }
+                });
+            };
+
+            if (requests.requests.length > 0) {
+                Alfresco.util.Ajax.jsonPost({
+                    url: Alfresco.constants.PROXY_URI + "citeck/attributes/values",
+                    dataObj: requests,
+                    requestContentType: Alfresco.util.Ajax.JSON,
+                    successCallback: {
+                        fn: function (response) {
+                            var pulledAttributes = response.json.attributes;
+                            for (var i = 0; i < pulledAttributes.length; i++) {
+                                var pulledAttribute = pulledAttributes[i];
+                                if (pulledAttribute && pulledAttribute.persisted) {
+                                    if (typeof pulledAttribute.value === 'object') {
+                                        if (Array.isArray(pulledAttribute.value)) {
+                                            if (pulledAttribute.value.length === 1) {
+                                                data.attributes[pulledAttribute.attribute] = pulledAttribute.value[0].nodeRef;
+                                            } else {
+                                                var pulledAttributeValue = [];
+                                                for (var ii = 0; ii < pulledAttribute.value.length; ii++) {
+                                                    pulledAttributeValue.push(pulledAttribute.value[ii].nodeRef);
+                                                }
+                                                data.attributes[pulledAttribute.attribute] = pulledAttributeValue;
+                                            }
+                                        } else if (pulledAttribute.value.shortQName) {
+                                            data.attributes[pulledAttribute.attribute] = pulledAttribute.value.shortQName;
+                                        } else {
+                                            data.attributes[pulledAttribute.attribute] = pulledAttribute.nodeRef;
+                                        }
+                                    } else {
+                                        data.attributes[pulledAttribute.attribute] = pulledAttribute.value;
+                                    }
+                                }
+                            }
+                            addVariant();
+                            record.inSubmitProcess(false);
+                        }
+                    }
+                });
+            } else {
+                addVariant();
+                record.inSubmitProcess(false);
+            }
         }
     };
 
@@ -333,7 +418,9 @@
         formId = formId || "";
         params = params || {};
 
-        if(Citeck.utils.isNodeRef(itemId)) {
+        var withoutSaving = params.withoutSaving;
+
+        if (Citeck.utils.isNodeRef(itemId)) {
             paramName = 'nodeRef';
             itemKind = 'node';
             if (params.mode === 'view') {
@@ -342,8 +429,13 @@
                 mode = 'edit';
             }
         } else if (Citeck.utils.isShortQName(itemId)) {
-            paramName = 'type';
-            itemKind = 'type';
+            if (withoutSaving == true) {
+                paramName = 'withoutSavingType';
+                itemKind = 'withoutSavingType';
+            } else {
+                paramName = 'type';
+                itemKind = 'type';
+            }
             mode = 'create';
         } else {
             paramName = 'groupAction';

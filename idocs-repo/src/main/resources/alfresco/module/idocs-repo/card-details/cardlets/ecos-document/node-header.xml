@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
+    <id>ecos-document-node-header</id>
+    <regionId>node-header</regionId>
+    <allowed-type>{http://www.citeck.ru/model/content/ecos/1.0}document</allowed-type>
+    <position>
+        <card-mode>all</card-mode>
+        <column>top</column>
+        <order>a5</order>
+        <mobile-order>0</mobile-order>
+    </position>
+    <control url="js/citeck/modules/cardlets/node-header/node-header">
+        <prop name="show-path">true</prop>
+    </control>
+</cardlet>

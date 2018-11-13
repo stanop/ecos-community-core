@@ -427,8 +427,45 @@ ${key} = somewhat
 
                 runtime.setShowSubmitStateDynamically(true);
             });
-        //]]></script>
 
-        <@formLib.renderFormsRuntime formId=formId />
+            require(['components/form/form'], function () {
+                new Alfresco.FormUI("${formId}", "${args.htmlid?js_string}").setOptions({
+                       mode: "${form.mode}",
+                    <#if form.mode == "view">
+                        arguments:
+                                {
+                                    itemKind: "${(form.arguments.itemKind!"")?js_string}",
+                                    itemId: "${(form.arguments.itemId!"")?js_string}",
+                                    formId: "${(form.arguments.formId!"")?js_string}"
+                                }
+                    <#else>
+                        enctype: "${form.enctype}",
+                        fields:
+                                [
+                                 <#list form.fields?keys as field>
+                                     {
+                                         id : "${form.fields[field].id}"
+                                     }
+                                  <#if field_has_next>,</#if>
+                                 </#list>
+                                ],
+                        fieldConstraints:
+                                [
+                                 <#list form.constraints as constraint>
+                                     {
+                                         fieldId : "${args.htmlid?js_string}_${constraint.fieldId}",
+                                         handler : ${constraint.validationHandler},
+                                         params : ${constraint.params},
+                                         event : "${constraint.event}",
+                                     message : <#if constraint.message??>"${constraint.message?js_string}"<#else>null</#if>
+                                     }
+                                  <#if constraint_has_next>,</#if>
+                                 </#list>
+                                ],
+                    disableSubmitButton: <#if args.disableSubmitButton??>${args.disableSubmitButton?js_string}<#else>false</#if>
+                    </#if>
+                }).setMessages(${messages});
+            });
+        //]]></script>
     </#if>
 </#macro>

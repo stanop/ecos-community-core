@@ -1,13 +1,12 @@
 package ru.citeck.ecos.journals;
 
 import org.alfresco.service.ServiceRegistry;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.journals.xml.GroupAction;
+import ru.citeck.ecos.journals.xml.GroupActionType;
 import ru.citeck.ecos.journals.xml.Option;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,6 +22,7 @@ public class JournalGroupAction {
     private String title;
     private String journalId;
     private String viewClass;
+    private GroupActionType type;
 
     public JournalGroupAction(GroupAction action, String journalId, ServiceRegistry serviceRegistry) {
         id    = action.getId();
@@ -39,6 +39,7 @@ public class JournalGroupAction {
         viewClass = options.get(VIEW_PARAM_NAME);
 
         this.journalId = journalId;
+        this.type = action.getType();
     }
 
     /* Setters and Getters */
@@ -61,6 +62,10 @@ public class JournalGroupAction {
         return localizedTitle != null
                 ? localizedTitle
                 : title;
+    }
+
+    public String getType() {
+        return type.value();
     }
 
     public String getJournalId() {

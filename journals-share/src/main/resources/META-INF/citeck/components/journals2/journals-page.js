@@ -271,7 +271,10 @@ define([
                 var dataObj = {
                     nodes: _.map(records, function(record) { return record.nodeRef(); }),
                     actionId: action.settings().actionId,
-                    params: action.settings()
+                    params: action.settings(),
+                    groupType: action.groupType(),
+                    journalId: this.viewModel.journal().type().id(),
+                    query: this.viewModel.recordsQuery()
                 };
 
                 var groupActionPost = function () {

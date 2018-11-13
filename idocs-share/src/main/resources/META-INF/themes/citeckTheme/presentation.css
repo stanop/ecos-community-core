@@ -2223,7 +2223,8 @@ table td.thumbnail img
 .fa.HEADER_TEMPLATES:before,
 .fa.HEADER_MORE:before,
 .fa.HEADER_LIFECYCLE_EDITOR:before,
-.fa.HEADER_FLOWABLE_MODELER:before {
+.fa.HEADER_FLOWABLE_MODELER:before,
+.fa.HEADER_TASKS_TASK_STATISTIC_JOURNAL:before {
     color: inherit;
 }
 
@@ -2245,6 +2246,10 @@ table td.thumbnail img
 
 .yui-skin-citeckTheme .fa.HEADER_TASKS_INITIATOR_TASKS_JOURNAL:before {
     content: "\f0fe";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_TASKS_TASK_STATISTIC_JOURNAL:before {
+    content: "\f080";
 }
 
 .yui-skin-citeckTheme .fa.HEADER_TASKS_INCOME_PACKAGE_TASKS_JOURNAL:before {
@@ -2852,6 +2857,11 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
    width: 66%;
    background-color: white;
    border-right: 1px solid #ccc;
+}
+
+#bd #card-mode-documents .card-details-mode-body > .yui-gc:not(.grid) > .yui-u.first {
+    width:100%;
+    border: none;
 }
 
 #bd .yui-gc:not(.grid) > .yui-u .document-details-panel {
@@ -3561,7 +3571,8 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 .share-form .form-container .form-fields .yui-u .form-field > .object-finder .dynamic-list,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > label,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > select,
-.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"]:not(.date-entry, .time-entry),
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"]:not(.date-entry),
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"]:not(.time-entry),
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .format-info,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > .object-finder .show-picker,
@@ -4995,7 +5006,8 @@ body:not(.mobile).yui-skin-citeckTheme #bd .site-document-types {
     padding-left: 15px;
 }
 
-body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="SurfRegion"] > div[id*="case-documents"] {
+body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="SurfRegion"] > div[id*="case-documents"],
+body:not(.mobile).yui-skin-citeckTheme #bd .cardlet #cardlet-remote-case-documents-container {
     box-shadow: inset 15px -1px 10px -15px grey;
     padding-left: 4px;
 }

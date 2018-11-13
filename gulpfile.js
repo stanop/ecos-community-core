@@ -82,7 +82,8 @@ gulp.task('process-jsx', function() {
                 ['env', {
                     modules: 'amd'
                 }],
-                'react'
+                'react',
+                'stage-2'
             ]
         }),
         skipCompression ? through2.obj() : uglify()

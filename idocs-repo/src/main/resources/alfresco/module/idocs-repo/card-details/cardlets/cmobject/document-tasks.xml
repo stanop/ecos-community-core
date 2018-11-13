@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
+    <id>common-document-tasks</id>
+    <regionId>document-tasks</regionId>
+    <allowed-type>{http://www.alfresco.org/model/content/1.0}cmobject</allowed-type>
+    <position>
+        <column>left</column>
+        <order>a1</order>
+        <mobile-order>2</mobile-order>
+    </position>
+    <control url="js/citeck/modules/cardlets/document-children/document-children">
+        <prop name="header">doctasks.header</prop>
+        <prop name="childrenFormat">task</prop>
+        <prop name="childrenUrl">Alfresco.constants.PROXY_URI + "citeck/tasks/document?nodeRef=${nodeRef}"</prop>
+        <prop name="columns">[{key: 'taskType', label: Alfresco.util.message("doctasks.header.taskType"), formatter: Citeck.format.typeName()},
+            {key: 'startDate', label: Alfresco.util.message("doctasks.header.startDate"), formatter: Citeck.format.datetime('dd.MM.yyyy')},
+            {key: 'dueDate', label: Alfresco.util.message("doctasks.header.dueDate"), formatter: Citeck.format.datetime('dd.MM.yyyy')},
+            {key: 'sender', label: Alfresco.util.message("doctasks.header.sender")},
+            {key: 'lastComment', label: Alfresco.util.message("doctasks.header.lastComment"), formatter: Citeck.format.encodeHTML()},
+            {key: 'outcome', label: "", formatter: Citeck.format.taskOutcome() },
+            {key: 'taskButtons', label: "", formatter: Citeck.format.taskButtons() }]
+        </prop>
+        <prop name="responseSchema">{resultsList: 'documentTasks',
+            fields: [
+            {key: 'dueDate'},
+            {key: 'startDate'},
+            {key: 'taskType'},
+            {key: 'sender'},
+            {key: 'lastComment'},
+            {key: 'taskId'},
+            {key: 'outcomePropertyName'},
+            {key: 'outcome'},
+            {key: 'reassignable'},
+            {key: 'releasable'},
+            {key: 'claimable'},
+            {key: 'comment'}
+            ]}
+        </prop>
+        <prop name="hideEmpty">true</prop>
+        <prop name="twisterKey">document-tasks</prop>
+    </control>
+</cardlet>

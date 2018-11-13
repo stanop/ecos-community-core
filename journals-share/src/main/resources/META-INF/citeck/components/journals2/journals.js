@@ -21,13 +21,15 @@ define([
     'citeck/utils/knockout.utils',
     'citeck/components/invariants/invariants',
     'citeck/components/dynamic-tree/cell-formatters',
-    'citeck/components/dynamic-tree/action-renderer'
+    'citeck/components/dynamic-tree/action-renderer',
+    'lib/underscore'
 ], function(ko, koutils) {
 
 var logger = Alfresco.logger,
         noneActionGroupId = "none",
         buttonsActionGroupId = "buttons",
         defaultActionGroupId = "injournal",
+        defaultActionFormatter = null,
         customRecordLoader = ko.observable(),
         BulkLoader = Citeck.utils.BulkLoader,
         journalsListIdRegexp = new RegExp('^([^-]+)(-(.+))?-([^-]+)$'),
@@ -169,6 +171,9 @@ CreateVariant
         .shortcut('datatype', 'attribute._info.datatype')
         .shortcut('journalType', 'attribute._info.journalType')
         .shortcut('title', 'attribute._info.customDisplayName')
+        .shortcut('separator', 'attribute._info.separator')
+        .shortcut('allowMultipleFilterValue', 'attribute._info.allowMultipleFilterValue') // multiple value, using separator
+        .shortcut('allowableMultipleFilterPredicates', 'attribute._info.allowableMultipleFilterPredicates')
         .shortcut('name', 'field.name')
 
         /*====== Value ======*/
@@ -441,12 +446,33 @@ CreateVariant
             return this._id;
         })
         .computed('query', function() {
-            var id = this.id(),
-                result = {};
+            var id                                = this.id(),
+                name                              = this.name(),
+                textValue                         = this.textValue(),
+                result                            = {},
+                separator                         = this.separator(),
+                predicateId                       = this.resolve('predicate.id'),
+                allowableMultipleFilterPredicates = this.allowableMultipleFilterPredicates();
 
-            result['field_' + id] = this.name();
-            result['predicate_' + id] = this.resolve('predicate.id');
-            result['value_' + id] = this.textValue();
+            if (textValue &&
+                this.allowMultipleFilterValue() &&
+                textValue.indexOf(separator) != -1 &&
+                allowableMultipleFilterPredicates.indexOf(predicateId) != -1) {
+
+                var values = _.uniq((textValue.split(separator)).filter(Boolean));
+
+                _.each(values, function(value) {
+                    var criteriaId = criteriaCounter++;
+                    result['field_' + criteriaId] = name;
+                    result['predicate_' + criteriaId] = predicateId;
+                    result['value_' + criteriaId] = value.trim();
+                });
+                return result;
+            }
+
+            result['field_' + id] = name;
+            result['predicate_' + id] = predicateId;
+            result['value_' + id] = textValue;
             return result;
         })
         .init(function() {
@@ -683,6 +709,8 @@ AttributeInfo
     .property('journalType', JournalType)
     .property('attribute', Attribute)
 
+    .shortcut('separator', 'attribute.settings.separator', ';')
+
     .method('customDisplayName', function() {
         var optionLabel = null;
         if (this.attribute() && this.attribute().settings()) {
@@ -692,6 +720,20 @@ AttributeInfo
             return Alfresco.util.message(optionLabel);
         }
         return this.displayName();
+    })
+    .method('allowMultipleFilterValue', function() {
+        return this.resolve('attribute.settings.allowMultipleFilterValue') == 'true';
+    })
+    .method('allowableMultipleFilterPredicates', function() {
+        var allowableMultipleFilterPredicates = ["string-equals", "string-not-equals"];
+
+        if (this.resolve('attribute.settings.allowableMultipleFilterPredicates')) {
+            allowableMultipleFilterPredicates = _.map(this.resolve('attribute.settings.allowableMultipleFilterPredicates').split(','), function (item) {
+                return item.trim();
+            });
+        }
+
+        return allowableMultipleFilterPredicates;
     })
     ;
 
@@ -764,8 +806,17 @@ Record
         var resAspectList = this.attributes()['attr:aspects'] || [];
         var aspectList = [];
         for (var i = 0; i < resAspectList.length; i++) {
-            for (var attr in resAspectList[i]) {
-                aspectList.push(resAspectList[i][attr].val[0].str);
+            var list = resAspectList[i];
+            for (var attrKey in list) {
+                if (list.hasOwnProperty(attrKey)) {
+                    var attr = list[attrKey];
+                    if (attr && attr.name == 'shortName' && attr.val) {
+                        var value = attr.val[0];
+                        if (value && value.str) {
+                            aspectList.push(value.str);
+                        }
+                    }
+                }
             }
         }
         return aspectList;
@@ -817,6 +868,7 @@ Column
 Action
     .key('id', s)
     .property('attribute', Attribute)
+    .property('groupType', s)
     .property('func', s)
     .property('label', s)
     .property('isDoclib', b)
@@ -947,6 +999,35 @@ JournalsWidget
     .computed('maxItemsId', koutils.numberSerializer('maxItems'))
     .property('records', [ Record ])
 
+    .computed('recordsQuery', function() {
+
+        var journal = this.journal();
+        if (!journal) {
+            return null;
+        }
+        var journalCriteria = journal.criteria();
+        if (!journalCriteria) {
+            return null;
+        }
+        var filter = this.currentFilter();
+        if (!filter) {
+            return null;
+        }
+        var filterCriteria = filter.usableCriteria();
+        if (!filterCriteria) {
+            return null;
+        }
+
+        var query = _.reduce(_.flatten([
+            journalCriteria,
+            filterCriteria
+        ]), function(query, criterion) {
+            return _.extend(query, criterion.query());
+        }, {});
+
+        return JSON.stringify(query);
+    })
+
     // selected records
     .computed('selectedRecords', function() {
         return _.filter(this.records(), function(record) {
@@ -973,6 +1054,7 @@ JournalsWidget
 
     // datatable interface: fields, columns, records
     .shortcut('actionGroupId', 'journal.type.options.actionGroupId', defaultActionGroupId)
+    .shortcut('actionFormatter', 'journal.type.options.actionFormatter', defaultActionFormatter)
     .computed('columns', function() {
         var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'),
                 recordUrl = this.recordUrl(), linkSupplied = recordUrl == null,
@@ -1053,7 +1135,14 @@ JournalsWidget
         // init action column. Not for mobile version
         if (!Citeck.mobile.isMobileDevice() && !Citeck.mobile.hasTouchEvent()) {
             var actionGroupId = this.actionGroupId();
-            if(actionGroupId == buttonsActionGroupId) {
+            var actionFormatter = this.actionFormatter();
+            if (actionFormatter) {
+                columns.unshift(new ActionsColumn({
+                    id: 'actions',
+                    label: this.msg("column.actions"),
+                    formatter: formatters.jsActionsFormatter(actionFormatter)
+                }));
+            } else if(actionGroupId == buttonsActionGroupId) {
                 columns.unshift(new ActionsColumn({
                     id: 'actions',
                     label: this.msg("column.actions"),
@@ -1063,7 +1152,7 @@ JournalsWidget
                 columns.unshift(new ActionsColumn({
                     id: 'actions',
                     label: this.msg("column.actions"),
-                    formatter: formatters.journalActions(this.records())
+                    formatter: formatters.journalActions()
                 }));
             }
         }
@@ -1137,8 +1226,9 @@ JournalsWidget
         }
     })
     .computed('loading', function() {
-        return !this.records.loaded();
+        return !this.recordsLoaded() || this.externalLoading();
     })
+    .property('externalLoading', b, false)
     .property('selectedId', s)
     .shortcut('recordIdField', 'journal.type.options.doubleClickId', 'nodeRef')
     .shortcut('recordUrl', 'journal.type.options.doubleClickLink', null)
@@ -1158,6 +1248,19 @@ JournalsWidget
         return _.compact([ journalOptions.js, journalOptions.css ]);
     })
     .property('multiActions', [ Action ])
+    .computed('actionsOnFiltered', function() {
+
+        var journalType = this.resolve('journal.type');
+
+        if (journalType) {
+            var groupActions = journalType.groupActions();
+            return (groupActions || []).filter(function (action) {
+                return action.groupType() == 'filtered';
+            });
+        }
+
+        return [];
+    })
     .computed('allowedMultiActions', function() {
         var records = this.selectedRecords(),
             doclibMode = _.all(records, function(record) {
@@ -1191,6 +1294,8 @@ JournalsWidget
         var filteredActions = _.filter(actions, function(action) {
             // sync mode check:
             if (action.syncMode() != null) return false;
+
+            if (action.groupType() == 'filtered') return false;
 
             // doclib mode check:
             if (!doclibMode && action.isDoclib()) return false;
@@ -1258,8 +1363,16 @@ JournalsWidget
     })
 
     .init(function() {
+
         this.columns.extend({ rateLimit: 100 });
         this.records.extend({ rateLimit: 100 });
+        this.recordsQueryDataImpl.extend({
+            rateLimit: {
+                timeout: 100,
+                method: "notifyWhenChangesStop"
+            }
+        });
+
         this.journal.subscribe(function() {
             // reset filter and settings
             this.filter(null);
@@ -1268,26 +1381,46 @@ JournalsWidget
             this.skipCount(0);
             this.selectedId(null);
             this.maxItems(this.defaultMaxItems() || 10);
-            this.performSearch();
         }, this);
         this.currentFilter.subscribe(function() {
             this.skipCount(0);
             this._filter(this.resolve('currentFilter.clone'));
-            this.performSearch();
         }, this);
         this.currentSettings.subscribe(function() {
             this._settings(this.resolve('currentSettings.clone'));
         }, this);
 
-        this.skipCount.subscribe(this.performSearch, this);
-        this.maxItems.subscribe(this.performSearch, this);
-        this.sortByQuery.subscribe(this.performSearch, this);
+        this.recordsQueryData.subscribe(this.performSearch, this);
+    })
+
+    // required to allow setup rateLimit
+    .computed('recordsQueryData', function() {
+        return this.recordsQueryDataImpl();
+    })
+
+    .computed('recordsQueryDataImpl', function() {
+
+        var recordsQuery = this.recordsQuery();
+
+        if (!recordsQuery) {
+            return null;
+        }
+
+        return {
+            query: recordsQuery,
+            pageInfo: {
+                sortBy: this.sortByQuery(),
+                skipCount: this.skipCount() || 0,
+                maxItems: this.maxItems() || this.defaultMaxItems() || 10
+            }
+        };
     })
 
     .method('performSearch', function() {
+        this.recordsLoaded(false);
         this.records.reload();
     })
-
+    .property('recordsLoaded', b, false)
     .property('createReportType', s)
     .property('createReportDownload', b)
     .property('createReportFormId', s)
@@ -1639,63 +1772,45 @@ JournalsWidget
         resultsMap: { journals: 'journals' }
     }))
     .load('records', function() {
-        var load = function() {
-            if(this.records.loaded()) {
+
+        var self = this;
+
+        var load = function(iteration) {
+
+            if (!iteration) {
+                iteration = 1;
+            }
+
+            if (self.records.loaded()) {
                 logger.debug("Records are already loaded, skipping");
                 return;
             }
 
-            var journal = this.journal();
-            if(!journal) {
-                logger.debug("Journal is not loaded, deferring search");
-                koutils.subscribeOnce(this.journal, load, this);
+            var recordsQuery = this.recordsQueryData();
+            if (!recordsQuery) {
+                logger.debug("Records query data is not ready, skipping");
+                koutils.subscribeOnce(this.recordsQueryData, function() { load.call(self, iteration); });
                 return;
             }
-
-            var journalCriteria = journal.criteria();
-            if(!journal.criteria.loaded()) {
-                logger.debug("Journal criteria are not loaded, deferring search");
-                koutils.subscribeOnce(journal.criteria, load, this);
-                return;
-            }
-
-            var filter = this.currentFilter();
-            if (!filter) {
-                logger.debug("Filter is not loaded, deferring search");
-                koutils.subscribeOnce(this.currentFilter, load, this);
-                return;
-            }
-
-            var filterCriteria = filter.usableCriteria();
-            if(!filter.criteria.loaded()) {
-                logger.debug("Filter criteria are not loaded, deferring search");
-                koutils.subscribeOnce(filter.criteria, load, this);
-                return;
-            }
-
-            var query = _.reduce(_.flatten([
-                journalCriteria,
-                filterCriteria
-            ]), function(query, criterion) {
-                return _.extend(query, criterion.query());
-            }, {});
-
-            var queryData = {
-                query: JSON.stringify(query),
-                pageInfo: {
-                    sortBy: this.sortByQuery(),
-                    skipCount: this.skipCount() || 0,
-                    maxItems: this.maxItems() || this.defaultMaxItems() || 10
-                }
-            };
 
             Alfresco.util.Ajax.jsonPost({
-                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journal.type().id(),
-                dataObj: queryData,
+                url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + this.journal().type().id(),
+                dataObj: recordsQuery,
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        var data = response.json.data.journalRecords, self = this,
+
+                        var actualQuery = self.recordsQueryData();
+                        if (iteration < 4 && !_.isEqual(recordsQuery, actualQuery)) {
+                            load.call(self, iteration + 1);
+                            return;
+                        }
+         
+                        if (iteration >= 4) {
+                            console.error("Infinite loop? Iterations: " + iteration);
+                        }
+
+                        var data = response.json.data.journalRecords,
                             records = data.records;
 
                         records = _.map(records, function(node) {
@@ -1713,7 +1828,11 @@ JournalsWidget
 
                         customRecordLoader(new Citeck.utils.DoclibRecordLoader(self.actionGroupId()));
 
-                        this.model({
+                        koutils.subscribeOnce(self.records, function() {
+                            self.recordsLoaded(true);
+                        }, this);
+
+                        self.model({
                             records: records,
                             skipCount: data.pageInfo.skipCount,
                             maxItems: data.pageInfo.maxItems,

@@ -2,7 +2,7 @@
 
 
 <script type="text/javascript">//<![CDATA[
-(function() {
+require(['citeck/components/form/controls/boolean-richsearch'], function() {
     new Citeck.BooleanRichSearch("${fieldHtmlId}").setOptions({
         field: "${field.name}",
     <#if field.mandatory??>
@@ -15,7 +15,7 @@
     }).setMessages(
         ${messages}
     );
-})();
+});
 //]]></script>
 
 <div class="form-field search-field">

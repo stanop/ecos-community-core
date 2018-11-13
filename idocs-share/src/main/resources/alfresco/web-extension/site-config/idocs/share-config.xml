@@ -30,9 +30,6 @@
         <js src="/yui/datasource/datasource.js" />
         <js src="/yui/datatable/datatable.js" />
         <js src="/citeck/components/related-workflows/related-workflows-form-validation.js" />
-
-        <js src="/citeck/components/form/controls/types-and-kinds.js" />
-        <css src="/citeck/components/form/controls/types-and-kinds.css" />
       </dependencies>
       <constraint-handlers>
         <constraint

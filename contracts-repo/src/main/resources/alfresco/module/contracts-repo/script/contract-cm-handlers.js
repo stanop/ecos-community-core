@@ -76,6 +76,47 @@ function isContractActive() {
     return document.properties['contracts:agreementStartDate'] <= new Date();
 }
 
+function isDigiSigning() {
+    return document.properties["contracts:digiSign"] != null ? document.properties["contracts:digiSign"] : false;
+}
+
+function setEdiWorkflowProperty() {
+    document.properties['ufrm:firEWorkFlow'] = true;
+    document.save();
+}
+
+function doNotSendContractToEdiFlag() {
+    var digiSigning = document.properties["contracts:digiSign"],
+    result = false;
+    if (digiSigning) {
+        var contractor = document.assocs['contracts:contractor'] != null ? document.assocs['contracts:contractor'][0] : null;
+        var contractorDoNotSendContractToEdiFlag;
+        if (contractor) {
+            contractorDoNotSendContractToEdiFlag  = contractor.properties['idocs:doNotSendContractToEdiFlag'];
+            if (contractorDoNotSendContractToEdiFlag) {
+            result = contractorDoNotSendContractToEdiFlag;
+            setEdiWorkflowProperty();
+            }
+        }
+    }
+    return result;
+}
+
+function isEdiConterpartyDocumentReceived() {
+    var caseDocuments = document.childAssocs['icase:documents'] != null ? document.childAssocs['icase:documents'] : null;
+    for each (var attachment in caseDocuments) {
+        var status = attachment.properties['sam:packageAttachmentStatus'];
+        if (attachment.properties['sam:messageId'] != null && attachment.properties['sam:messageId'] !== ""
+        && attachment.properties['tk:kind'] != null && attachment.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/kind-d-counterparty-documents'
+        && attachment.properties['tk:type'] && attachment.properties['tk:type'].nodeRef == 'workspace://SpacesStore/category-document-type'
+            && ['BUYER_TITLE_SIGNED', 'SIGNED', 'SIGN_SENT', 'REJECTED', 'REJECTION_SENT', 'DELIVERED', 'DELIVERY_FAILED'].indexOf(status) == -1
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function cancelRepeal() {
     utils.runAsSystem(function() {
         var startedNow = document.assocs['contracts:repealedActivity'];

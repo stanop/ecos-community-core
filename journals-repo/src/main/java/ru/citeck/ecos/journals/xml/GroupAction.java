@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence>
  *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="title" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="type" type="{http://www.citeck.ru/ecos/journals/1.0}groupActionType" default="selected" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -44,6 +45,8 @@ public class GroupAction {
     protected String id;
     @XmlAttribute(name = "title", required = true)
     protected String title;
+    @XmlAttribute(name = "type")
+    protected GroupActionType type;
 
     /**
      * Gets the value of the param property.
@@ -144,6 +147,34 @@ public class GroupAction {
      */
     public void setTitle(String value) {
         this.title = value;
+    }
+
+    /**
+     * Gets the value of the type property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link GroupActionType }
+     *     
+     */
+    public GroupActionType getType() {
+        if (type == null) {
+            return GroupActionType.SELECTED;
+        } else {
+            return type;
+        }
+    }
+
+    /**
+     * Sets the value of the type property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link GroupActionType }
+     *     
+     */
+    public void setType(GroupActionType value) {
+        this.type = value;
     }
 
 }

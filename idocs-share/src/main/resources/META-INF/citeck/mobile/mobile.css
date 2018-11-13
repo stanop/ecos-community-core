@@ -383,10 +383,13 @@
     padding: 7px 10px;
 }
 
-.mobile  .journal-capture {
+.mobile .journal-capture {
     padding: 10px;
 }
 
+.mobile #share-header {
+    margin: 0;
+}
 
 /* YUI */
 
@@ -397,8 +400,9 @@
 
 /* CARD */
 
-.mobile #bd > .yui-gc > .yui-u {
+.mobile #bd .yui-gc .yui-u {
     width: 100% !important;
+    overflow-x: auto !important;
     margin: 0;
     float: none;
 }
@@ -409,3 +413,149 @@
     float: none;
 }
 
+/* TOOLS  */
+
+.mobile #alfresco-repository .documents.yui-dt,
+.mobile #alfresco-console .category-manager .ygtvitem,
+.mobile .finder-wrapper .results,
+.mobile #alfresco-console .node-browser > div[id*="search"] .search-main .results {
+    overflow-x: auto;
+}
+
+.mobile #alfresco-console .node-browser .search-text textarea,
+.mobile .site-members .finder-wrapper .results td.yui-dt-col-role .yui-dt-liner {
+    width: auto;
+}
+
+.mobile #alfresco-console .groups .yui-g.separator .yui-u.align-right {
+    padding-top: 10px;
+}
+
+.mobile #alfresco-console .replication div[id*="jobs"] .yui-gd .yui-u,
+.mobile #alfresco-console #share-javascript-console {
+    width: auto !important;
+    padding: 10px;
+}
+
+.mobile #alfresco-console .yui-resize-handle,
+.mobile #alfresco-repository .yui-resize-handle,
+.mobile #alfresco-documentlibrary .yui-resize-handle,
+.mobile .orgstruct-console .yui-resize-handle {
+    display: none;
+}
+
+.mobile #alfresco-documentlibrary .doclist .doclist-bar-bottom,
+.mobile #alfresco-console .groups > div:first-child > div:not(:first-child) {
+    margin: 0;
+}
+
+.mobile .orgstruct-console {
+    display: block;
+}
+
+
+.mobile #bd [id$="orgstruct"] .orgstruct-console .orgstruct-tree-resizer {
+    width: auto !important;
+    min-width: 100px !important;
+    height: 250px;
+    min-height: 100px;
+    overflow-y: auto;
+}
+
+.mobile #bd .orgstruct-console .selected-item-details {
+    min-height: 200px;
+    width: 100%;
+}
+
+.mobile #alfresco-console #alf-filters {
+    min-height: 200px;
+    margin-bottom: 20px;
+}
+
+.mobile #alfresco-console .groups .browse-main {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.mobile #alfresco-console .users > div:first-child > div:first-child > .yui-u:last-child {
+    padding-right: 0;
+}
+
+.mobile span.insitu-edit-category,
+.mobile span.insitu-add-category,
+.mobile span.insitu-delete-category {
+    position: static;
+    display: inline-block;
+    margin-left: 15px;
+}
+
+.mobile .profile.password .row .label {
+    width: 40%;
+}
+
+.mobile .profile.password .row input[type*="password"] {
+    width: 50%;
+}
+
+.mobile #bd .yui-t1 > .yui-b,
+.mobile #alfresco-console #SHARE_VERTICAL_LAYOUT .center-container .centered-widget {
+    width: 100% !important;
+}
+
+.mobile .alf-invite-direct-add .yui-gb .yui-u {
+    width: 99%;
+}
+
+.mobile #alfresco-console .groups .yui-g.separator .yui-u,
+.mobile .site-document-types .available-types,
+.mobile .sticky-wrapper #bd .yui-g.grid .yui-u,
+.mobile #bd .search-bar .search-term,
+.mobile #bd .group-finder .search-bar .search-text > input ,
+.mobile #DOCLIB_DOCUMENT_LIST,
+.mobile #bd .search-controls .search-term {
+    width: 100%;
+}
+
+.mobile #bd .yui-t1 #yui-main,
+.mobile div[id*="customise-site-dashboard"] .customise-layout .layouts,
+.mobile div[id*="customise-site-dashboard"] .customise-dashlets .dashlets {
+    width: 100%;
+    margin: 0;
+}
+
+.mobile #bd .yui-t1 #yui-main .yui-b {
+    margin-left: 10px !important;
+}
+
+.mobile .site-members .links,
+.mobile .site-groups .add-groups {
+    padding-top: 4px;
+}
+
+.mobile div[id*="customise-site-dashboard"] .information {
+    width: 100%;
+    padding-bottom: 5px;
+}
+
+.mobile .toolbar.userprofile .members-bar-links .separator {
+    padding-top: 5px;
+    margin: 0;
+}
+
+@media (max-width: 375px) {
+    .mobile .yui-module.yui-overlay {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    .mobile .yui-module.yui-overlay {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 320px) {
+    .mobile .yui-module.yui-overlay {
+        font-size: 10px;
+    }
+}

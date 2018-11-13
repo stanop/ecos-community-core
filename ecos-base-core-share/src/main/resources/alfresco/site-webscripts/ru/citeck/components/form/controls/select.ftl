@@ -3,7 +3,7 @@
 <script type="text/javascript">//<![CDATA[
 <#assign params = field.control.params />
 
-(function() {
+require(['citeck/components/form/select'], function() {
 	var select = new Alfresco.SelectControl("${fieldHtmlId}").setOptions({
 		optionsUrl: "${params.optionsUrl}",
 		mode: "${form.mode}",
@@ -17,7 +17,7 @@
 		<#if params.sortKey??>sortKey: "${params.sortKey}",</#if>
 		<#if params.resultsList??>resultsList: "${params.resultsList}",</#if>
 	}).setMessages(${messages});
-})();
+});
 //]]></script>
 
 <@selectFieldHTML "${fieldHtmlId}" field/>

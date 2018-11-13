@@ -451,7 +451,6 @@
 
 	<bean id="historyGetService" class="ru.citeck.ecos.history.impl.HistoryGetServiceImpl">
 		<property name="nodeService" ref="NodeService"/>
-		<property name="personService" ref="PersonService"/>
 	</bean>
 
     <bean id="historyServiceJS" class="ru.citeck.ecos.history.HistoryServiceJS" parent="baseJavaScriptExtension">
@@ -459,6 +458,8 @@
         <property name="historyService" ref="historyService"/>
         <property name="namespaceService" ref="namespaceService"/>
     </bean>
+
+    <bean id="historyFilter.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
 
     <bean id="VersionsCommentFormEditFilter" class="ru.citeck.ecos.template.VersionsCommentFormFilter" parent="baseFormFilter">
         <property name="filterRegistry" ref="nodeFilterRegistry" />
@@ -536,8 +537,7 @@
           destroy-method="destroy"/>
 
 	<bean id="journals.group.action.CompleteTaskByMirror"
-		  class="ru.citeck.ecos.journals.group.evaluator.CompleteTaskByMirrorEvaluator"
-		  parent="journals.groupActionEvaluator">
+		  class="ru.citeck.ecos.journals.group.action.CompleteTaskByMirrorExecutor">
 	</bean>
 
 	<bean id="historyEventTitleMapperService" init-method="init" depends-on="applicationContextProvider"

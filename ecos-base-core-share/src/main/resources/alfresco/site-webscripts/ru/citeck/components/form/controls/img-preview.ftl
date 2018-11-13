@@ -6,6 +6,7 @@ function loadFail(e) {
     var preview =  YAHOO.util.Dom.get("${args.htmlid}-img-preview");
     preview.className = 'img-preview-fail';
 };
+require(['xstyle!citeck/components/form/controls/img-preview.css']);
 //]]></script>
 
 <div id="${args.htmlid}-img-preview">

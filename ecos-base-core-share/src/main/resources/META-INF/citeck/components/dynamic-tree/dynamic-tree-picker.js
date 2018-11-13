@@ -118,9 +118,6 @@ define([
 
             this.widgets.buttonOK = Alfresco.util.createYUIButton(this, "ok", this.onButtonOKClick, {}, this.id.replace(/picker$/,"ok"));
             this.widgets.buttonCancel = Alfresco.util.createYUIButton(this, "cancel", this.onButtonCancelClick, {}, this.id.replace(/picker$/,"cancel"));
-            this.widgets.resizer = new YAHOO.util.Resize(this.id + "-left", {
-                handles: ["r"],
-            });
             this.widgets.buttonSearch = Alfresco.util.createYUIButton(this, "searchButton", this.onSearch);
 
             // subscribe on model updates:
@@ -308,6 +305,9 @@ define([
         show: function() {
             if (!this.widgets.dialog._rendered) {
                 this.widgets.dialog.render(document.body);
+                this.widgets.resizer = new YAHOO.util.Resize(this.id + "-left", {
+                    handles: ["r"],
+                });
             }
 
             if(this.options.multipleSelectMode) {

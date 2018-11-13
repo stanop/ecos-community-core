@@ -131,6 +131,13 @@
 		<property name="resourceResolver" ref="resourceResolver" />
 	</bean>
 
+    <bean id="webscript.ru.citeck.utils.execute-script.post"
+           class="ru.citeck.ecos.webscripts.ExecuteScriptPost"
+           parent="webscript">
+        <property name="scriptProcessor" ref="webscripts.scriptprocessor.javascript" />
+        <property name="scriptConfigModel" ref="script.config.model.instance" />
+    </bean>
+
 	<!-- global 'messages' object -->
 	<bean id="slingshot.scriptprocessor.messages" parent="baseScriptExtension" class="ru.citeck.ecos.webscripts.MessagesProcessorExtension">
 		<property name="extensionName" value="messages" />

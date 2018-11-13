@@ -8,7 +8,7 @@
         <nodeRef>{nodeRef}</nodeRef>
         <columns>
         	[
-        		{ attribute: "cm:title" },
+        		{ attribute: "cm:title", formatter: Citeck.format.documentLink() },
         		{ attribute: "cm:created", formatter: Citeck.format.date('dd.MM.yyyy HH:mm')}
         	]
         </columns>

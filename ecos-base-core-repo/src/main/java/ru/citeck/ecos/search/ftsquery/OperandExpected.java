@@ -168,6 +168,11 @@ public interface OperandExpected {
     OperatorExpected type(QName typeName);
 
     /**
+     * Search by aspect
+     */
+    OperatorExpected aspect(QName aspectName);
+
+    /**
      * Operator NOT
      */
     OperandExpected not();

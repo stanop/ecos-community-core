@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>Share Javascript Console</shortname>
+    <description>Share javascript console</description>
+    <url>/components/console/ecos/share/javascript</url>
+    <family>admin-console</family>
+</webscript>

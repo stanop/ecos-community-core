@@ -17,6 +17,9 @@
         } else if (args.groupAction) {
             formType = "groupAction";
             formKey = args.groupAction;
+        } else if (args.withoutSavingType) {
+            formType = "withoutSavingType";
+            formKey = args.withoutSavingType;
         }
     }
 
