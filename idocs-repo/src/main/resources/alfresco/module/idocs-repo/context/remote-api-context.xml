@@ -442,4 +442,8 @@
           class="ru.citeck.ecos.webscripts.image.ImageThumbnailGet"
           parent="webscript" />
 
+    <bean id="webscript.ru.citeck.menu.menuconfig.get"
+          class="ru.citeck.ecos.webscripts.menu.MenuConfigGet"
+          parent="webscript" />
+
 </beans>
