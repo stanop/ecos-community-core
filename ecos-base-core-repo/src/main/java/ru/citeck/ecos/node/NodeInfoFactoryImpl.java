@@ -28,6 +28,7 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.cmr.security.MutableAuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
@@ -267,13 +268,18 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
             RepoUtils.setChildAssocs(nodeRef, childAssocs, primary, full, nodeService);
         }
 
-        NodeRef parent = nodeInfo.getParent();
-        QName parentAssoc = nodeInfo.getParentAssoc();
-        if (parent != null && parentAssoc != null) {
-            ChildAssociationRef primaryParent = nodeService.getPrimaryParent(nodeRef);
-            if (!primaryParent.getParentRef().equals(parent)
-                    || !primaryParent.getTypeQName().equals(parentAssoc)) {
-                nodeService.moveNode(nodeRef, parent, parentAssoc, primaryParent.getQName());
+        boolean isAuthorityContainer =
+                requiredType != null ? requiredType.equals(ContentModel.TYPE_AUTHORITY_CONTAINER) : false;
+
+        if (!isAuthorityContainer) {
+            NodeRef parent = nodeInfo.getParent();
+            QName parentAssoc = nodeInfo.getParentAssoc();
+            if (parent != null && parentAssoc != null) {
+                ChildAssociationRef primaryParent = nodeService.getPrimaryParent(nodeRef);
+                if (!primaryParent.getParentRef().equals(parent)
+                        || !primaryParent.getTypeQName().equals(parentAssoc)) {
+                    nodeService.moveNode(nodeRef, parent, parentAssoc, primaryParent.getQName());
+                }
             }
         }
     }
@@ -324,7 +330,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
         QName parentAssoc = null;
         QName parentAssocName = null;
 
-        if (!nodeType.equals(ContentModel.TYPE_PERSON)) {
+        if (!nodeType.equals(ContentModel.TYPE_PERSON) && !nodeType.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
             parent = nodeInfo.getParent();
             parentAssoc = nodeInfo.getParentAssoc();
 
@@ -368,6 +374,18 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
                 String authName = (String) nodeService.getProperty(parent, ContentModel.PROP_AUTHORITY_NAME);
                 authorityService.addAuthority(authName, userName);
             }
+        } else if (nodeType.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
+            Map<QName, Serializable> authProperties = nodeInfo.getProperties();
+            NodeRef authorityContainerParent = nodeInfo.getParent();
+
+            String authorityContainerParentName = RepoUtils.getProperty(authorityContainerParent,
+                    ContentModel.PROP_AUTHORITY_NAME, nodeService);
+            String authorityContainerName = String.valueOf(authProperties.get(ContentModel.PROP_AUTHORITY_NAME));
+
+            String fullName = authorityService.createAuthority(AuthorityType.GROUP, authorityContainerName);
+            authorityService.addAuthority(authorityContainerParentName, fullName);
+
+            nodeRef = authorityService.getAuthorityNodeRef(fullName);
         } else {
             ChildAssociationRef childAssocRef = nodeService.createNode(parent, parentAssoc, parentAssocName, nodeType);
             nodeRef = childAssocRef.getChildRef();
