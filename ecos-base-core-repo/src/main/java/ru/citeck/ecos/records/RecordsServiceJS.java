@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.repo.jscript.ValueConverter;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.records.query.RecordsQuery;
+import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
@@ -30,6 +32,21 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
         GroupActionConfig actionConfig = convertConfig(config, GroupActionConfig.class);
 
         return toArray(recordsService.executeAction(records, actionConfig));
+    }
+
+    public RecordsResult<RecordRef> getRecords(Object recordsQuery) {
+        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
+        return recordsService.getRecords(convertedQuery);
+    }
+
+    public RecordsResult<ObjectNode> getRecords(Object recordsQuery, String metaSchema) {
+        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
+        return recordsService.getRecords(convertedQuery, metaSchema);
+    }
+
+    public <T> RecordsResult<T> getRecords(Object recordsQuery, Class<T> schemaClass) {
+        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
+        return recordsService.getRecords(convertedQuery, schemaClass);
     }
 
     public Iterable<RecordRef> getIterableRecords(Object recordsQuery) {

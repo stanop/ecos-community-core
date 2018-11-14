@@ -73,6 +73,10 @@
         <property name="subGroupType" value="{http://www.citeck.ru/model/orgstruct/1.0}roleType"/>
     </bean>
 
+    <bean id="orgstruct.OrgstructItemsAssocsBehaviour" class="ru.citeck.ecos.behavior.orgstruct.OrgstructItemsAssocsBehaviour" init-method="init">
+        <property name="nodeService" ref="nodeService" />
+        <property name="policyComponent" ref="policyComponent" />
+    </bean>
 
     <bean id="MapParentPropsAssocsBehaviour"
           class="ru.citeck.ecos.behavior.common.MapParentPropsAssocsBehaviour"

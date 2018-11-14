@@ -20,6 +20,9 @@
         } else if (args.withoutSavingType) {
             formType = "withoutSavingType";
             formKey = args.withoutSavingType;
+        } else if (args.workflowId) {
+            formType = "workflowId";
+            formKey = args.workflowId;
         }
     }
 

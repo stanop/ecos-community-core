@@ -4,7 +4,9 @@ function createOrUpdateLevels(models) {
     var levelsRoot = search.selectNodes("/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:case-completeness-levels/journal:default")[0].assocs["journal:destination"][0];
     var defaultScope = search.selectNodes("/app:company_home/app:dictionary/cm:case-element-configs/cm:documents")[0];
 
-    for(var i in models) {
+    var behavioursFilter = services.get("policyBehaviourFilter");
+
+    for (var i in models) {
         var model = models[i];
         var titles = model.titles;
         if (!titles || titles.length == 0) titles = {locale: "en", value: model.name};
@@ -18,7 +20,7 @@ function createOrUpdateLevels(models) {
             level = levelsRoot.childByNamePath(model.name);
         }
 
-        if(!level) {
+        if (!level) {
             logger.warn("+ Not found. Creating...");
 
             properties = {
@@ -29,22 +31,19 @@ function createOrUpdateLevels(models) {
             }
 
             level = levelsRoot.createNode(null, "req:completenessLevel", properties, "cm:contains", "cm:"+model.name);
-            for(var ti in titles) {
-                utils.setLocale(titles[ti].locale);
-                level = search.findNode(level.nodeRef);
-                level.properties["cm:title"] = titles[ti].value;
-            }
-            level.save();
+            setTitles(level, titles);
         } else {
             logger.warn("- Found. Updating.");
-            level.properties['cm:name'] = model.name;
-
-            for(var ti in titles) {
-                utils.setLocale(titles[ti].locale);
-                level = search.findNode(level.nodeRef);
-                level.properties["cm:title"] = titles[ti].value;
+            behavioursFilter.disableBehaviour();
+            try {
+                if (level.properties['cm:name'] != model.name) {
+                    level.properties['cm:name'] = model.name;
+                    level.save();
+                }
+                setTitles(level, titles);
+            } finally {
+                behavioursFilter.enableBehaviour();
             }
-            level.save();
         }
 
         for(var j in model.req) {
