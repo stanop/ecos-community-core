@@ -31,6 +31,7 @@ import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
 import ru.citeck.ecos.flowable.services.impl.ModelMapper;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
 import ru.citeck.ecos.flowable.variable.FlowableEcosPojoTypeHandler;
+import ru.citeck.ecos.flowable.variable.FlowableScriptNodeListVariableType;
 import ru.citeck.ecos.flowable.variable.FlowableScriptNodeVariableType;
 import ru.citeck.ecos.icase.CaseStatusServiceJS;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessServiceJS;
@@ -162,7 +163,9 @@ public class FlowableConfiguration {
                                                                           EcosPojoTypeHandler<?> ecosPojoTypeHandler,
                                                                   ServiceDescriptorRegistry descriptorRegistry,
                                                                   @Qualifier("flowableScriptNodeType") FlowableScriptNodeVariableType
-                                                                          flowableScriptNodeVariableType) {
+                                                                          flowableScriptNodeVariableType,
+                                                                  @Qualifier("flowableScriptNodeListType") FlowableScriptNodeListVariableType
+                                                                          flowableScriptNodeListVariableType) {
         if (dataSource != null) {
             StandaloneProcessEngineConfiguration engineConfiguration = new StandaloneProcessEngineConfiguration();
             engineConfiguration.setDataSource(dataSource);
@@ -186,6 +189,7 @@ public class FlowableConfiguration {
             types = types != null ? new ArrayList<>(types) : new ArrayList<>();
             types.add(new FlowableEcosPojoTypeHandler(ecosPojoTypeHandler));
             types.add(flowableScriptNodeVariableType);
+            types.add(flowableScriptNodeListVariableType);
             engineConfiguration.setCustomPreVariableTypes(types);
 
             return engineConfiguration;

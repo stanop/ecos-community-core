@@ -330,4 +330,8 @@
 		<property name="serviceRegistry" ref="ServiceRegistry"/>
 	</bean>
 
+	<bean id="flowableScriptNodeListType" class="ru.citeck.ecos.flowable.variable.FlowableScriptNodeListVariableType">
+		<property name="serviceRegistry" ref="ServiceRegistry"/>
+	</bean>
+
 </beans>
