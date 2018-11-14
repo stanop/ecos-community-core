@@ -6,8 +6,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.flowable.engine.common.api.FlowableException;
 import org.flowable.variable.api.types.ValueFields;
 import org.flowable.variable.api.types.VariableType;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
 
 /**
  * @author Roman Makarskiy
@@ -41,10 +39,11 @@ public class FlowableScriptNodeVariableType implements VariableType {
     public void setValue(Object value, ValueFields valueFields) {
         String textValue = null;
         if (value != null) {
-            if (!(value instanceof FlowableActivitiScriptNode)) {
-                throw new FlowableException("Passed value is not an instance of FlowableActivitiScriptNode, cannot set variable value.");
+            if (!(value instanceof FlowableScriptNode)) {
+                throw new FlowableException("Passed value is not an instance of FlowableScriptNode, cannot " +
+                        "set variable value.");
             }
-            NodeRef reference = (((FlowableActivitiScriptNode) value).getNodeRef());
+            NodeRef reference = (((FlowableScriptNode) value).getNodeRef());
             if (reference != null) {
                 // Use the string representation of the NodeRef
                 textValue = reference.toString();
@@ -58,18 +57,7 @@ public class FlowableScriptNodeVariableType implements VariableType {
         ScriptNode scriptNode = null;
         String nodeRefString = valueFields.getTextValue();
         if (nodeRefString != null) {
-
-            Context context = Context.enter();
-            Scriptable scope = context.initStandardObjects();
-
-            FlowableActivitiScriptNode node;
-            try {
-                node = new FlowableActivitiScriptNode((new NodeRef(nodeRefString)), serviceRegistry, scope);
-            } finally {
-                Context.exit();
-            }
-
-            scriptNode = node;
+            scriptNode = new FlowableScriptNode((new NodeRef(nodeRefString)), serviceRegistry);
         }
         return scriptNode;
     }

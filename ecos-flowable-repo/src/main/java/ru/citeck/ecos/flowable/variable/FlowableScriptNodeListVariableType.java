@@ -1,13 +1,10 @@
 package ru.citeck.ecos.flowable.variable;
 
-import org.alfresco.repo.workflow.activiti.ActivitiScriptNodeList;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.flowable.engine.common.api.FlowableException;
 import org.flowable.variable.api.types.ValueFields;
 import org.flowable.variable.service.impl.types.SerializableType;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
 
 import java.util.List;
 
@@ -16,7 +13,7 @@ import java.util.List;
  */
 public class FlowableScriptNodeListVariableType extends SerializableType {
 
-    public static final String TYPE = "flwAlfrescoScriptNodeList";
+    private static final String TYPE = "flwAlfrescoScriptNodeList";
 
     private ServiceRegistry serviceRegistry;
 
@@ -27,7 +24,7 @@ public class FlowableScriptNodeListVariableType extends SerializableType {
 
     @Override
     public boolean isCachable() {
-        // The FlowableActivitiScriptNodeList can be cached since it uses the serviceRegistry internally
+        // The FlowableScriptNodeList can be cached since it uses the serviceRegistry internally
         // for resolving actual values.
         return true;
     }
@@ -37,18 +34,19 @@ public class FlowableScriptNodeListVariableType extends SerializableType {
         if (value == null) {
             return true;
         }
-        return FlowableActivitiScriptNodeList.class.isAssignableFrom(value.getClass());
+        return FlowableScriptNodeList.class.isAssignableFrom(value.getClass());
     }
 
     @Override
     public void setValue(Object value, ValueFields valueFields) {
         if (value != null) {
-            if (!(value instanceof FlowableActivitiScriptNodeList)) {
-                throw new FlowableException("Passed value is not an instance of FlowableActivitiScriptNodeList, cannot set variable value.");
+            if (!(value instanceof FlowableScriptNodeList)) {
+                throw new FlowableException("Passed value is not an instance of FlowableScriptNodeList, cannot set " +
+                        "variable value.");
             }
 
             // Extract all node references
-            List<NodeRef> nodeRefs = ((FlowableActivitiScriptNodeList) value).getNodeReferences();
+            List<NodeRef> nodeRefs = ((FlowableScriptNodeList) value).getNodeReferences();
             // Save the list as a serializable
             super.setValue(nodeRefs, valueFields);
         }
@@ -63,27 +61,16 @@ public class FlowableScriptNodeListVariableType extends SerializableType {
         }
 
         if (!(serializable instanceof List<?>)) {
-            throw new FlowableException("Serializable stored in variable is not instance of List<NodeRef>, cannot get value.");
+            throw new FlowableException("Serializable stored in variable is not instance of List<NodeRef>, " +
+                    "cannot get value.");
         }
 
-        FlowableActivitiScriptNodeList scriptNodes = new FlowableActivitiScriptNodeList();
-        // Wrap all node references in an FlowableActivitiScriptNodeList
+        FlowableScriptNodeList scriptNodes = new FlowableScriptNodeList();
+        // Wrap all node references in an FlowableScriptNodeList
         List<NodeRef> nodeRefs = (List<NodeRef>) serializable;
         for (NodeRef ref : nodeRefs) {
-
-            Context context = Context.enter();
-            Scriptable scope = context.initStandardObjects();
-
-            FlowableActivitiScriptNode node;
-            try {
-                node = new FlowableActivitiScriptNode(ref, serviceRegistry, scope);
-            } finally {
-                Context.exit();
-            }
-
+            FlowableScriptNode node = new FlowableScriptNode(ref, serviceRegistry);
             scriptNodes.add(node);
-
-
         }
         return scriptNodes;
     }
