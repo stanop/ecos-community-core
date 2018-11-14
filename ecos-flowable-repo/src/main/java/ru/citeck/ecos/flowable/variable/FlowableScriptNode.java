@@ -41,7 +41,8 @@ public class FlowableScriptNode extends ScriptNode {
         }
 
         @Override
-        public Serializable convertValueForScript(ServiceRegistry serviceRegistry, Scriptable theScope, QName qname, Serializable value) {
+        public Serializable convertValueForScript(ServiceRegistry serviceRegistry, Scriptable theScope, QName qname,
+                                                  Serializable value) {
             ensureScopePresent();
             if (theScope == null) {
                 theScope = scope;
@@ -58,8 +59,10 @@ public class FlowableScriptNode extends ScriptNode {
 
         private void ensureScopePresent() {
             if (scope == null) {
-                // Create a scope for the value conversion. This scope will be an empty scope exposing basic Object and Function, sufficient for value-conversion.
-                // In case no context is active for the current thread, we can safely enter end exit one to get hold of a scope
+                // Create a scope for the value conversion. This scope will be an empty scope exposing basic Object
+                // and Function, sufficient for value-conversion.
+                // In case no context is active for the current thread, we can safely enter end exit one to get hold
+                // of a scope
                 Context ctx = Context.getCurrentContext();
                 boolean closeContext = false;
                 if (ctx == null) {
