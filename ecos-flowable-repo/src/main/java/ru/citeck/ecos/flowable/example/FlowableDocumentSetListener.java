@@ -1,5 +1,6 @@
 package ru.citeck.ecos.flowable.example;
 
+import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -21,8 +22,8 @@ public class FlowableDocumentSetListener extends AbstractExecutionListener {
     @Override
     protected void notifyImpl(DelegateExecution execution) {
         NodeRef document = FlowableListenerUtils.getDocument(execution, nodeService);
-        if(document != null) {
-            execution.setVariable(VAR_DOCUMENT, document);
+        if (document != null) {
+            execution.setVariable(VAR_DOCUMENT, new ActivitiScriptNode(document, serviceRegistry));
         } else {
             execution.setVariable(VAR_DOCUMENT, null);
         }

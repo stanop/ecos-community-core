@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
@@ -30,6 +31,7 @@ import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
 import ru.citeck.ecos.flowable.services.impl.ModelMapper;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
 import ru.citeck.ecos.flowable.variable.FlowableEcosPojoTypeHandler;
+import ru.citeck.ecos.flowable.variable.FlowableScriptNodeVariableType;
 import ru.citeck.ecos.icase.CaseStatusServiceJS;
 import ru.citeck.ecos.icase.completeness.CaseCompletenessServiceJS;
 import ru.citeck.ecos.workflow.variable.handler.EcosPojoTypeHandler;
@@ -137,7 +139,9 @@ public class FlowableConfiguration {
             dataSource.setMaxActive(maxActive);
             dataSource.setMaxOpenPreparedStatements(maxOpenPreparedStatements);
 
-            return dataSource;
+            TransactionAwareDataSourceProxy wrappedDataSource = new TransactionAwareDataSourceProxy(dataSource);
+
+            return wrappedDataSource;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -155,8 +159,10 @@ public class FlowableConfiguration {
     @Bean(name = "flowableEngineConfiguration")
     public ProcessEngineConfiguration flowableEngineConfiguration(@Qualifier("flowableDataSource") DataSource dataSource,
                                                                   @Qualifier("workflow.variable.EcosPojoTypeHandler")
-                                                                  EcosPojoTypeHandler<?> ecosPojoTypeHandler,
-                                                                  ServiceDescriptorRegistry descriptorRegistry) {
+                                                                          EcosPojoTypeHandler<?> ecosPojoTypeHandler,
+                                                                  ServiceDescriptorRegistry descriptorRegistry,
+                                                                  @Qualifier("flowableScriptNodeType") FlowableScriptNodeVariableType
+                                                                          flowableScriptNodeVariableType) {
         if (dataSource != null) {
             StandaloneProcessEngineConfiguration engineConfiguration = new StandaloneProcessEngineConfiguration();
             engineConfiguration.setDataSource(dataSource);
@@ -179,6 +185,7 @@ public class FlowableConfiguration {
             List<VariableType> types = engineConfiguration.getCustomPreVariableTypes();
             types = types != null ? new ArrayList<>(types) : new ArrayList<>();
             types.add(new FlowableEcosPojoTypeHandler(ecosPojoTypeHandler));
+            types.add(flowableScriptNodeVariableType);
             engineConfiguration.setCustomPreVariableTypes(types);
 
             return engineConfiguration;
