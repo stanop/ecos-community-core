@@ -9,8 +9,8 @@ public class Item {
     private String label;
     private String icon;
     private Boolean mobileVisible;
-    private List<Item> items;
     private Action action;
+    private List<Item> items;
 
     public void setId(String id) {
         this.id = id;

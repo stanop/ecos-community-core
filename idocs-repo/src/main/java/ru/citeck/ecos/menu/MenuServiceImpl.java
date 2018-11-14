@@ -3,7 +3,7 @@ package ru.citeck.ecos.menu;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.content.ContentData;
 import ru.citeck.ecos.content.RepoContentDAOImpl;
-import ru.citeck.ecos.menu.dto.MenuConfigFactory;
+import ru.citeck.ecos.menu.dto.ResolvedMenuConfigFactory;
 import ru.citeck.ecos.menu.dto.ResolvedMenuConfig;
 import ru.citeck.ecos.menu.xml.MenuConfig;
 import ru.citeck.ecos.model.MenuConfigModel;
@@ -16,9 +16,11 @@ public class MenuServiceImpl implements MenuService {
 
     private AuthorityUtils authorityUtils;
     private RepoContentDAOImpl<MenuConfig> registry;
-    private MenuConfigFactory factory;
+    private ResolvedMenuConfigFactory factory;
 
     private static final String DEFAULT_AUTHORITY = "GROUP_EVERYONE";
+    private static final String ADMIN_AUTHORITY = "GROUP_ALFRESCO_ADMINISTRATORS";
+
 
     @Override
     public ResolvedMenuConfig queryMenuConfig(String userName) {
@@ -29,11 +31,8 @@ public class MenuServiceImpl implements MenuService {
 
     private String getUserAuthority(String userName) {
         Set<String> result = authorityUtils.getUserAuthorities(userName);
-//        TODO: which authority is needed? selecting the first one for now
-        return result.stream()
-                /* authorityUtils adds userName to result set, we don't need it here */
-                .filter(auth -> !auth.equals(userName))
-                .findFirst().orElse(DEFAULT_AUTHORITY);
+        return result.contains(ADMIN_AUTHORITY) ? ADMIN_AUTHORITY : DEFAULT_AUTHORITY;
+//        TODO: which authority is needed? selecting admin or default for now
     }
 
     private MenuConfig queryMenuConfigByAuth(String authority) {
@@ -43,7 +42,7 @@ public class MenuServiceImpl implements MenuService {
                 .stream().findFirst()
                 .flatMap(ContentData::getData)
                 .orElseThrow(() -> new RuntimeException(
-                        String.format("MenuConfig with \"%s\" authority is not found",authority)));
+                        String.format("MenuConfig with %s authority is not found", authority)));
     }
 
     public void setAuthorityUtils(AuthorityUtils authorityUtils) {
@@ -54,7 +53,7 @@ public class MenuServiceImpl implements MenuService {
         this.registry = registry;
     }
 
-    public void setFactory(MenuConfigFactory factory) {
+    public void setFactory(ResolvedMenuConfigFactory factory) {
         this.factory = factory;
     }
 
@@ -62,7 +61,7 @@ public class MenuServiceImpl implements MenuService {
         return registry;
     }
 
-    public MenuConfigFactory getFactory() {
+    public ResolvedMenuConfigFactory getFactory() {
         return factory;
     }
 }
