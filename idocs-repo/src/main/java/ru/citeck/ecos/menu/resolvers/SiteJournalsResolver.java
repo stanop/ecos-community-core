@@ -7,7 +7,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.journals.JournalService;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SiteJournalsResolver implements MenuItemsResolver {
+@Component
+public class SiteJournalsResolver extends AbstractMenuItemsResolver {
 
     private static final String ID = "SITE_JOURNALS";
     private SearchService searchService;
     private NodeService nodeService;
-    private JournalService journalService;
     private static final String JOURNAL_REF_KEY = "journalRef";
     private static final String JOURNAL_LINK_KEY = "JOURNAL_LINK";
 
@@ -65,11 +65,6 @@ public class SiteJournalsResolver implements MenuItemsResolver {
     @Override
     public String getId() {
         return ID;
-    }
-
-    @Autowired
-    public void setJournalService(JournalService journalService) {
-        this.journalService = journalService;
     }
 
     @Autowired

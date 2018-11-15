@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.site.SiteInfo;
 import org.alfresco.service.cmr.site.SiteService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.menu.dto.Element;
 
 import java.util.Collections;
@@ -13,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class UserSitesResolver implements MenuItemsResolver {
+@Component
+public class UserSitesResolver extends AbstractMenuItemsResolver {
 
     private static final String ID = "USER_SITES";
     private static final String SITE_NAME_KEY = "siteName";

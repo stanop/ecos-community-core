@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
@@ -13,7 +14,8 @@ import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.*;
 
-public class JournalFiltersResolver implements MenuItemsResolver {
+@Component
+public class JournalFiltersResolver extends AbstractMenuItemsResolver {
 
     private static final String ID = "JOURNAL_FILTERS";
     private static final String FILTER_REF_KEY = "filterRef";

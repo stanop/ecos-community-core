@@ -20,7 +20,12 @@ public class MenuGet extends AbstractWebScript {
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
         String userName = req.getParameter(PARAM_USERNAME);
-        Menu menuConfig = menuService.queryMenuConfig(userName);
+        Menu menuConfig;
+        if (userName == null) {
+            menuConfig = menuService.queryMenu();
+        } else {
+            menuConfig = menuService.queryMenu(userName);
+        }
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getOutputStream(), menuConfig);
         res.setStatus(Status.STATUS_OK);
