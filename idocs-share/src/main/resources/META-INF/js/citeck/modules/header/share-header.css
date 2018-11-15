@@ -129,6 +129,59 @@
     font-size: 13px;
 }
 
+.custom-dropdown-menu-cascad {
+    position: relative;
+}
+
+.custom-dropdown-menu-cascad__label {
+    color: #333;
+    font-family: Open Sans,arial,helvetica,clean,sans-serif !important;
+    font-size: 13px;
+    line-height: 26px;
+    padding: 0 30px 0 4px!important;
+    display: block;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.custom-dropdown-menu-cascad__label:after {
+    content: "\f105";
+    font-family: FontAwesome;
+    font-size: 15px;
+    color: #333;
+    position: absolute;
+    right: 5px;
+}
+
+.custom-dropdown-menu-cascad__label:focus,
+.custom-dropdown-menu-cascad__label:hover {
+    background-color: #ced2d5;
+    color: #333;
+}
+
+.custom-dropdown-menu-cascad__list {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    border-radius: 0;
+    color: #333;
+    background-color: #f1f1f1;
+    box-shadow: 0 0 9px 1px rgba(0,0,0,.3);
+    border-color: #f3f3f3;
+    padding: 6px!important;
+    z-index: 10;
+    max-height: calc(100vh - 40px);
+    box-sizing: border-box;
+    display: none;
+}
+
+.custom-dropdown-menu__body.cascade {
+    overflow-y: visible;
+}
+
+.custom-dropdown-menu-cascad:hover .custom-dropdown-menu-cascad__list {
+    display: block;
+}
 
 .fa-custom:before {
     padding: 4px 0;

@@ -30,6 +30,7 @@ import ru.citeck.ecos.records.query.RecordsResult;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface JournalService {
     
@@ -40,7 +41,9 @@ public interface JournalService {
     JournalType getJournalType(String id);
 
     JournalType needJournalType(String journalId);
-    
+
+    Optional<JournalType> getJournalForType(QName typeName);
+
     Collection<JournalType> getAllJournalTypes();
 
     void clearCache();

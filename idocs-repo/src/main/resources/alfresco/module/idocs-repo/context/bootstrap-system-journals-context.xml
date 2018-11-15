@@ -560,4 +560,100 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.journals-orgstruct-simple-role-type" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="orgstruct-simple-role-type" />
+        <property name="description" value="Orgstruct role type" />
+        <property name="sinceVersion" value="3.2.0.2" />
+        <property name="appliesFromVersion" value="3.2.0.2" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+                <ref bean="idocs.module-component.system-journals-list" />
+                <ref bean="idocs.module-component.orgstructMetaRoot" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/orgstruct-simple-role-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/orgstruct-simple-role-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:orgstruct-simple-role-type</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/orgstruct-simple-role-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/orgstruct-simple-role-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:orgstruct-simple-role-type</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/orgstruct-simple-role-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.journals-orgstruct-simple-branch-type" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="orgstruct-simple-branch-type" />
+        <property name="description" value="Orgstruct branch type" />
+        <property name="sinceVersion" value="3.2.0.2" />
+        <property name="appliesFromVersion" value="3.2.0.2" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+                <ref bean="idocs.module-component.system-journals-list" />
+                <ref bean="idocs.module-component.orgstructMetaRoot" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:dataLists</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/datalist.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/orgstruct-simple-branch-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/orgstruct-simple-branch-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:orgstruct-simple-branch-type</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/orgstruct-simple-branch-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/orgstruct-simple-branch-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:orgstruct-simple-branch-type</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant1.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/orgstruct-simple-branch-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>

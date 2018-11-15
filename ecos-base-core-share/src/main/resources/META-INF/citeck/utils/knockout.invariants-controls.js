@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/utils/knockout.components', 'citeck/components/invariants/invariants', 'citeck/components/journals2/journals', 'lib/moment'], function(ko, koutils, kocomponents, invariants, journals, moment) {
+define(['jquery', 'lib/knockout', 'citeck/utils/knockout.utils', 'citeck/utils/knockout.components', 'citeck/components/invariants/invariants', 'citeck/components/journals2/journals', 'lib/moment'], function ($, ko, koutils, kocomponents, invariants, journals, moment) {
 
 // ----------------
 // GLOBAL FUNCTIONS
@@ -31,7 +31,6 @@ var Event = YAHOO.util.Event,
 
 var JournalType = koclass('JournalType'),
     Node = koclass('invariants.Node');
-
 
 // TODO: refactoring
 // - integrate the calendar into a single function for the date and datetime controls
@@ -169,7 +168,6 @@ ko.components.register("select", {
         <!-- /ko -->'
 });
 
-
 // ---------------
 // NUMBER-GENERATE
 // ---------------
@@ -260,7 +258,7 @@ ko.components.register("number", {
 // TASK-BUTTONS
 // ---------------
 
-    ko.components.register("task-buttons", {
+ko.components.register("task-buttons", {
         viewModel: function(params) {
             var self = this;
 
@@ -313,7 +311,7 @@ ko.components.register("number", {
 // CUSTOM-ACTION-BUTTON
 // ---------------
 
-    ko.components.register("custom-action-button", {
+ko.components.register("custom-action-button", {
         viewModel: function (params) {
             kocomponents.initializeParameters.call(this, params);
             var self = this;
@@ -374,7 +372,6 @@ ko.components.register("free-content", {
     template:
        '<div data-bind="html: content">'
 })
-
 
 // ---------------
 // MULTIPLE-TEXT
@@ -729,7 +726,6 @@ ko.components.register("datetime", {
         <!-- /ko -->'
 });
 
-
 // ---------------
 // DATE
 // ---------------
@@ -839,12 +835,309 @@ ko.bindingHandlers.dateControl = {
     }
 };
 
+// -------------
+// DOCUMENT-SELECT
+// -------------
+
+ko.components.register('documentSelect', {
+    viewModel: function (params) {
+        var that = this;
+        var Dom = YAHOO.util.Dom;
+        var Event = YAHOO.util.Event;
+        var createContextMenu;
+
+        var ID = params['id'];
+        var CONTEXT_MENU_ID = ID + '-context-menu';
+        var CONTEXT_MENU_BUTTON_ID = CONTEXT_MENU_ID + '-button';
+        var JOURNAL_SELECT_ID = ID + '-journal-select';
+        var JOURNAL_SELECT_CONTAINER_ID = JOURNAL_SELECT_ID + '-container';
+        var JOURNAL_SELECT_BUTTON_ID = JOURNAL_SELECT_ID + '-button';
+        var FILE_UPLOAD_ID = ID + '-file-upload';
+        var FILE_UPLOAD_INPUT_ID = FILE_UPLOAD_ID + '-fileInput';
+        var FILE_UPLOAD_BUTTON_ID = FILE_UPLOAD_ID + '-openFileUploadDialogButton';
+
+        this.contextMenuButtonId = CONTEXT_MENU_BUTTON_ID;
+        this.journalSelectContainerId = JOURNAL_SELECT_CONTAINER_ID;
+        this.journalSelectId = JOURNAL_SELECT_ID;
+        this.journalSelectButtonId = JOURNAL_SELECT_BUTTON_ID;
+        this.fileUploadId = FILE_UPLOAD_ID;
+        this.fileUploadInputId = FILE_UPLOAD_INPUT_ID;
+        this.fileUploadButtonId = FILE_UPLOAD_BUTTON_ID;
+
+        this.value = params.value;
+        this.journalValue = ko.observable();
+        this.multiple = params.multiple;
+        this.options = params.options;
+        this.protected = params.protected;
+        this.maxCount = params.maxCount;
+        this.maxSize = params.maxSize;
+        this.alowedFileTypes = params.alowedFileTypes;
+        this.type = params.type;
+        this.info = params.info;
+        this.journalId = ko.observable();
+        this.createVariantsVisibility = params.createVariantsVisibility;
+        this.journalSelectButtonText = Alfresco.util.message('journal.select-button');
+        this.journalLoadButtonText = Alfresco.util.message('journal.load-button');
+        this.visibleJournalButton = false;
+        this.nodetype = ko.observable();
+        this.filterOptions = function (criteria, pagination) {
+            if (!this.cache) this.cache = {};
+
+            if (!this.cache.result) {
+                this.cache.result = ko.observable([]);
+                this.cache.result.extend({notify: 'always'});
+            }
+
+            var query = {
+                skipCount: 0,
+                maxItems: 10
+            };
+
+            if (!_.find(criteria, function (criterion) {
+                return criterion.predicate === 'journal-id';
+            })
+            ) {
+                if (!this.nodetype()) {
+                    return [];
+                }
+
+                query['field_1'] = 'type';
+                query['predicate_1'] = 'type-equals';
+                query['value_1'] = this.nodetype();
+            }
+
+            if (pagination) {
+                if (pagination.maxItems) query.maxItems = pagination.maxItems;
+                if (pagination.skipCount) query.skipCount = pagination.skipCount;
+            }
+
+            _.each(criteria, function (criterion, index) {
+                query['field_' + (index + 2)] = criterion.attribute;
+                query['predicate_' + (index + 2)] = criterion.predicate;
+                query['value_' + (index + 2)] = criterion.value;
+            });
+
+            if (this.cache.query) {
+                if (_.isEqual(query, this.cache.query)) return this.cache.result();
+            }
+
+            this.cache.query = query;
+            if (_.some(_.keys(query), function (p) {
+                return _.some(['field', 'predicate', 'value'], function (ci) {
+                    return p.indexOf(ci) !== -1;
+                });
+            })
+            ) {
+                Alfresco.util.Ajax.jsonPost({
+                    url: Alfresco.constants.PROXY_URI + 'search/criteria-search',
+                    dataObj: query,
+                    successCallback: {
+                        scope: this.cache,
+                        fn: function (response) {
+                            var result = _.map(response.json.results, function (node) {
+                                return new Node(node);
+                            });
+                            result.pagination = response.json.paging;
+                            result.query = response.json.query;
+                            this.result(result);
+                        }
+                    }
+                });
+            }
+
+            return this.cache.result();
+        };
+
+        this.journalValue.subscribe(function(journalValue) {
+            var currentValue = that.value() || [];
+            if(journalValue){
+                that.value(currentValue.concat(journalValue));
+                that.journalValue(null);
+            }
+        });
+
+        createContextMenu = function (params) {
+            var siteId = params['siteId'];
+            var addable = params['addable'];
+
+            var assocTypeMenu = new YAHOO.widget.ContextMenu(
+                CONTEXT_MENU_ID,
+                {
+                    trigger: CONTEXT_MENU_BUTTON_ID,
+                    lazyLoad: true
+                }
+            );
+
+            var onMenuItemClick = function (journalId) {
+                that.journalId(journalId);
+                $('#' + JOURNAL_SELECT_BUTTON_ID).click();
+            };
+
+            var getMenuItemsByAddable = function (addable, sites) {
+                var menuItems = [];
+                var assoc;
+                var type;
+                var text;
+
+                for (var j = 0; j < addable.length; j++) {
+                    assoc = addable[j];
+                    type = assoc.name;
+
+                    if (type !== '') {
+                        if (assoc.direction === 'both' || assoc.direction === 'target' || assoc.direction === 'undirected') {
+                            text = Alfresco.util.message('association.' + type.replace(':', '_') + '.target');
+                        }
+                        if (assoc.direction === 'source') {
+                            text = Alfresco.util.message('association.' + type.replace(':', '_') + '.source');
+                        }
+
+                        if (text) {
+                            menuItems.push({
+                                text: text,
+                                submenu: getSubmenu(type, sites)
+                            });
+                        }
+                    }
+                }
+
+                return menuItems;
+            };
+
+            var getSiteItems = function (sites, parentId) {
+
+                parentId = parentId ? ('-' + parentId) : '';
+
+                var menuItems = sites.map(function (item) {
+                    var siteId = item.siteId + parentId;
+
+                    return {
+                        text: item.siteName,
+                        submenu: {
+                            id: siteId,
+                            itemdata: getJournalsItemdata(item.journals, siteId)
+                        }
+                    }
+                })
+
+                return menuItems;
+            };
+
+            var getMenuItemsBySiteId = function (siteId, sites) {
+                var menuItems = [];
+                var site = sites.filter(function (site) {
+                    return site.siteId === siteId;
+                })[0];
+
+                if (site) {
+                    menuItems = getJournalsItemdata(site.journals, siteId);
+                }
+
+                return menuItems;
+            };
+
+            var getJournalsItemdata = function (journals, parentId) {
+                journals = journals || [];
+
+                parentId = parentId ? ('-' + parentId) : '';
+
+                return journals.map(function (journal) {
+                    return {
+                        id: ID + parentId + '-' + journal.journalId,
+                        text: journal.journalName,
+                        onclick: {fn: onMenuItemClick.bind(this, journal.journalId)}
+                    }
+                })
+            };
+
+            var getSubmenu = function (type, sites) {
+                var submenu = {
+                    id: type.replace(':', '_'),
+                    itemdata: getSiteItems(sites, type.replace(':', '-'))
+                };
+
+                return submenu;
+            };
+
+            YAHOO.util.Connect.asyncRequest(
+                'GET',
+                Alfresco.constants.PROXY_URI + 'citeck/cardlets/sites-and-journals',
+                {
+                    success: function (response) {
+                        if (response.responseText) {
+                            var data = eval('(' + response.responseText + ')');
+                            var menuItems = [];
+                            var sites;
+
+                            if (data && data.sites && data.sites.length) {
+                                sites = data.sites;
+
+                                if (addable.length) {
+                                    menuItems = getMenuItemsByAddable(addable, sites);
+                                } else if (siteId) {
+                                    menuItems = getMenuItemsBySiteId(siteId, sites);
+                                } else {
+                                    menuItems = getSiteItems(sites);
+                                }
+
+                                assocTypeMenu.addItems(menuItems);
+                                assocTypeMenu.render(CONTEXT_MENU_BUTTON_ID);
+                            }
+                        }
+                    },
+                    failure: function () {
+                        var messageEl = Dom.get(this.id + "-message");
+                        messageEl.innerHTML = Alfresco.util.message("assocs-load-error");
+                    },
+                    scope: this
+                }
+            );
+
+            Event.addListener(
+                CONTEXT_MENU_BUTTON_ID,
+                'click', function (event) {
+                    var xy = YAHOO.util.Event.getXY(event);
+                    assocTypeMenu.cfg.setProperty('xy', xy);
+                    assocTypeMenu.show();
+                }
+            );
+        };
+
+        createContextMenu(params);
+    },
+    template: '\
+        <a data-bind = "attr: { id: contextMenuButtonId }, text: journalSelectButtonText, disable: protected" class="context-menu-button" ></a>\
+        <button data-bind = "attr: { id: fileUploadButtonId }, text: journalLoadButtonText, disable: protected" class="file-upload-open-dialog-button" ></button>\
+        <button data-bind="attr: { id: journalSelectButtonId }, text: journalSelectButtonText, visible: visibleJournalButton, disable: protected"></button>\
+        <div data-bind = "attr: { id: journalSelectContainerId }" >\
+            <div data-bind = \'\
+                attr: { id: journalSelectId },\
+                journalControl: { value: journalValue, multiple: multiple, options: options }, params: function() {\
+                    return {\
+                        mode: "collapse",\
+                        hightlightSelection: true,\
+                        removeSelection: true,\
+                        createVariantsSource: "journal-create-variants",\
+                        createVariantsVisibility: createVariantsVisibility\
+                    }\
+                }\
+            \'></div>\
+        </div>\
+        <input data-bind="attr: { id: fileUploadInputId, multiple: multiple }" class="hidden" type="file" />\
+        <div data-bind=\'attr: { id: fileUploadId }, fileUploadControl: {\
+            type: type,\
+            multiple: multiple,\
+            value: value,\
+            maxCount: maxCount,\
+            maxSize: maxSize,\
+            alowedFileTypes: alowedFileTypes,\
+            draggable: true\
+        }\' class="file-upload-control"></div>\
+    '
+});
 
 // -------------
 // JOURNAL
 // -------------
-
-
 
 ko.bindingHandlers.journalControl = {
   init: function(element, valueAccessor, allBindings, data, context) {
@@ -1698,7 +1991,6 @@ ko.components.register('createObjectButton', {
             </span> \
         <!-- /ko -->'
 });
-
 
 // ------------
 // AUTOCOMPLETE
@@ -2774,13 +3066,12 @@ ko.components.register("select2", {
         <!-- /ko -->'
 });
 
-
 // -----------
 // FILE UPLOAD
 // -----------
 
 ko.bindingHandlers.fileUploadControl = {
-    init: function(element, valueAccessor, allBindings, data, context) {
+    init: function (element, valueAccessor, allBindings, data, context) {
         var settings = valueAccessor(),
             value = settings.value,
             multiple = settings.multiple,
@@ -2789,101 +3080,31 @@ ko.bindingHandlers.fileUploadControl = {
             maxSize = settings.maxSize || '',
             maxCount = settings.maxCount || '',
             properties = settings.properties,
-            importUrl = settings.importUrl;
+            importUrl = settings.importUrl,
+            draggable = settings.draggable;
 
-        if (_.isNumber(maxSize)) {
-            maxSize = +maxSize;
-        } else {
-            maxSize = 0;
-        }
-
-        if (_.isNumber(maxCount)) {
-            maxCount = +maxCount;
-        } else {
-            maxCount = 0;
-        }
-
-        // Invariants global object
-        var Node = koutils.koclass('invariants.Node');
-
-        // check browser support
-        if (!window.File && !window.FileList) {
-          throw new Error("The File APIs are not supported in this browser.")
-          return;
-        }
-
-        // elements
-        var input = Dom.get(element.id + "-fileInput"),
-            openFileUploadDialogButton = Dom.get(element.id + "-openFileUploadDialogButton");
-
-        // click on input[file] button
-        Event.on(openFileUploadDialogButton, 'click', function(event) {
-            $(input).click();
-        });
-
-        function checkFile(file) {
-            function b2mb(val) {
-                if (!val) return '';
-                var res = Math.round((val / 1024 / 1024) * 1000) / 1000;
-                if (res < 1) {
-                    res = Math.round((val / 1024) * 1000) / 1000;
-                    return res + ' Kb'
-                };
-                return res + ' Mb'
-            };
-
-            if (!file) return false;
-
-            var result = true,
-                ext = '',
-                arr = [];
-
-            // check file type
-            arr = file.name.split('.');
-            ext = (arr.length > 1 ? arr[arr.length-1] : "").toLowerCase();
-
-            result = alowedFileTypes[0] == '' || !!~alowedFileTypes.indexOf(ext);
-            if (!result) {
-                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('incorrect-file-type')});
-                return false;
-            }
-
-            // check file size
-            if (file.size && file.size > 0 && maxSize > 0) {
-                result = file.size <= maxSize;
-            } else {
-                result = true;
-            }
-
-            if (!result) {
-                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('file-larger-than-allowed') + ' ' + b2mb(maxSize) });
-                return false;
-            }
-
-            return true;
-        }
-
-        // get files from input[file]
-        Event.on(input, 'change', function(event) {
-            var files = event.target.files,
-                loadedFiles = ko.observable(0);
+        var uploadFiles = function (files) {
+            var loadedFiles = ko.observable(0);
 
             if (files.length === 0) {
                 return;
             }
 
             if (maxCount > 0 && files.length > maxCount) {
-                Alfresco.util.PopupManager.displayPrompt({ title: 'Error', text: Alfresco.util.message('file-count-restrict') + ': ' + maxCount });
+                Alfresco.util.PopupManager.displayPrompt({
+                    title: 'Error',
+                    text: Alfresco.util.message('file-count-restrict') + ': ' + maxCount
+                });
             }
 
             for (var i = 0, count = files.length; i < count; i++) {
-                    if (!checkFile(files[i])) {
-                        event.target.value = '';
-                        return;
-                    }
+                if (!checkFile(files[i])) {
+                    event.target.value = '';
+                    return;
+                }
             }
 
-            loadedFiles.subscribe(function(newValue) {
+            loadedFiles.subscribe(function (newValue) {
                 if (newValue == files.length) {
                     // enable button
                     $(element).removeClass("loading");
@@ -2901,15 +3122,15 @@ ko.bindingHandlers.fileUploadControl = {
             for (var i = 0; i < files.length; i++) {
                 var request = new XMLHttpRequest();
 
-                (function(file){
+                (function (file) {
                     // loading failure.
-                    request.addEventListener("error", function(event) {
+                    request.addEventListener("error", function (event) {
                         console.log("loaded failure")
                         loadedFiles(loadedFiles() + 1);
                     }, false);
 
                     // request finished
-                    request.addEventListener("readystatechange", function(event) {
+                    request.addEventListener("readystatechange", function (event) {
                         var target = event.target;
                         if (target.readyState == 4) {
                             var result = JSON.parse(target.responseText || "{}");
@@ -2919,14 +3140,15 @@ ko.bindingHandlers.fileUploadControl = {
                                 if (multiple()) {
                                     var currentValues = value();
                                     if (result.strings && result.strings.length) {
-                                        result.strings.forEach(function(item) {
+                                        result.strings.forEach(function (item) {
                                             currentValues.push(item);
                                         });
                                         value(currentValues);
                                     } else if (result.errorMessage) {
                                         Alfresco.util.PopupManager.displayPrompt({
                                             title: Alfresco.util.message("message.import-errors"),
-                                            text: result.errorMessage });
+                                            text: result.errorMessage
+                                        });
                                     } else if (result.nodeRef) {
                                         currentValues.push(result.nodeRef);
                                         value(currentValues);
@@ -2940,12 +3162,15 @@ ko.bindingHandlers.fileUploadControl = {
 
                             if (target.status == 500) {
                                 var errorMessage = result.message ? result.message : Alfresco.util.message("message.load-failed");
-                                Alfresco.util.PopupManager.displayPrompt({ title: target.statusText, text: errorMessage });
+                                Alfresco.util.PopupManager.displayPrompt({
+                                    title: target.statusText,
+                                    text: errorMessage
+                                });
                             }
 
                             loadedFiles(loadedFiles() + 1);
 
-                            YAHOO.Bubbling.fire('file-uploaded-'+data.info().name().replace(':','_'), file);
+                            YAHOO.Bubbling.fire('file-uploaded-' + data.info().name().replace(':', '_'), file);
                         }
                     }, false)
                 })(files[i]);
@@ -2973,10 +3198,118 @@ ko.bindingHandlers.fileUploadControl = {
                 request.open("POST", href, true);
                 request.send(formData);
             }
+        };
+
+        if (_.isNumber(maxSize)) {
+            maxSize = +maxSize;
+        } else {
+            maxSize = 0;
+        }
+
+        if (_.isNumber(maxCount)) {
+            maxCount = +maxCount;
+        } else {
+            maxCount = 0;
+        }
+
+        // Invariants global object
+        var Node = koutils.koclass('invariants.Node');
+
+        // check browser support
+        if (!window.File && !window.FileList) {
+            throw new Error("The File APIs are not supported in this browser.")
+            return;
+        }
+
+        // elements
+        var input = Dom.get(element.id + "-fileInput"),
+            openFileUploadDialogButton = Dom.get(element.id + "-openFileUploadDialogButton");
+        var $field = $(input).closest('.form-field');
+
+        if (draggable) {
+            Event.addListener($field, "dragover", function (e) {
+                e.dataTransfer.dropEffect = Math.floor(YAHOO.env.ua.gecko) === 1 ? "move" : "copy";
+                e.stopPropagation();
+                e.preventDefault();
+            }, this, true);
+            Event.addListener($field, "dragleave", function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }, this, true);
+            Event.addListener($field, "drop", function (e) {
+                try {
+                    if (e.dataTransfer.files !== undefined && e.dataTransfer.files !== null && e.dataTransfer.files.length > 0) {
+                        uploadFiles(e.dataTransfer.files);
+                    }
+                }
+                catch (exception) {
+                    Alfresco.logger.error("fileUploadControl: The following error occurred when files were dropped onto the Document List: ", exception);
+                }
+                e.stopPropagation();
+                e.preventDefault();
+            }, this, true);
+        }
+
+        // click on input[file] button
+        Event.on(openFileUploadDialogButton, 'click', function (event) {
+            $(input).click();
+        });
+
+        function checkFile(file) {
+            function b2mb(val) {
+                if (!val) return '';
+                var res = Math.round((val / 1024 / 1024) * 1000) / 1000;
+                if (res < 1) {
+                    res = Math.round((val / 1024) * 1000) / 1000;
+                    return res + ' Kb'
+                }
+                ;
+                return res + ' Mb'
+            };
+
+            if (!file) return false;
+
+            var result = true,
+                ext = '',
+                arr = [];
+
+            // check file type
+            arr = file.name.split('.');
+            ext = (arr.length > 1 ? arr[arr.length - 1] : "").toLowerCase();
+
+            result = alowedFileTypes[0] == '' || !!~alowedFileTypes.indexOf(ext);
+            if (!result) {
+                Alfresco.util.PopupManager.displayPrompt({
+                    title: 'Error',
+                    text: Alfresco.util.message('incorrect-file-type')
+                });
+                return false;
+            }
+
+            // check file size
+            if (file.size && file.size > 0 && maxSize > 0) {
+                result = file.size <= maxSize;
+            } else {
+                result = true;
+            }
+
+            if (!result) {
+                Alfresco.util.PopupManager.displayPrompt({
+                    title: 'Error',
+                    text: Alfresco.util.message('file-larger-than-allowed') + ' ' + b2mb(maxSize)
+                });
+                return false;
+            }
+
+            return true;
+        }
+
+        // get files from input[file]
+        Event.on(input, 'change', function (event) {
+            uploadFiles(event.target.files);
         });
     }
 };
-
 
 // ---------
 // ORGSTRUCT
@@ -3009,6 +3342,9 @@ ko.bindingHandlers.orgstructControl = {
         var rootGroupFunction;
         if (!params.rootGroup && params.rootGroupFunction && _.isFunction(params.rootGroupFunction)) {
             rootGroupFunction = ko.computed(params.rootGroupFunction);
+
+            options.rootGroup(rootGroupFunction());
+
             rootGroupFunction.subscribe(function (newValue) { options.rootGroup(newValue) });
         }
 
@@ -3340,7 +3676,6 @@ ko.bindingHandlers.orgstructControl = {
         })
     }
 }
-
 
 // ----------------
 // PRIVATE FUNCTION

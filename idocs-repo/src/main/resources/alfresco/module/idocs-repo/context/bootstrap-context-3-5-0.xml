@@ -45,6 +45,12 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.script.fillRoleAndBranchAssocs" parent="idocs.import-scripts.3-5-0">
+        <property name="name" value="fillRoleAndBranchAssocs" />
+        <property name="description" value="fill Role And Branch Assocs" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/fill-role-and-branch-assocs.js"/>
+    </bean>
+
     <bean id="idocs.module-component.menu-configs" parent="idocs.import-spaces.3-5-0">
         <property name="name" value="menu-configs"/>
         <property name="description" value="Root for ecos menu-configs"/>

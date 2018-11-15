@@ -44,6 +44,7 @@
                     isExternalAuthentication: "${((context.externalAuthentication)!"")?string}",
                     slideMenuConfig: ${jsonUtils.toJSONString(slideMenuConfig)},
                     siteMenuItems: ${jsonUtils.toJSONString(siteMenuItems)},
+                    isCascadeCreateMenu: "${isCascadeCreateMenu?string}",
                     isMobile: "${isMobile?string}"
                 });
             });

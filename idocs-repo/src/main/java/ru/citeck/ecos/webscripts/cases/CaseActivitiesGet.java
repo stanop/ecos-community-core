@@ -1,5 +1,6 @@
 package ru.citeck.ecos.webscripts.cases;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -12,10 +13,9 @@ import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
 import ru.citeck.ecos.dto.CaseModelDto;
 import ru.citeck.ecos.model.ActionModel;
 import ru.citeck.ecos.model.IdocsModel;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * Case activities get web-script
@@ -80,10 +80,22 @@ public class CaseActivitiesGet extends CaseActivityGet {
      * @return Array node
      */
     private ArrayNode createArrayNodeFromNodeRefs(List<NodeRef> nodeRefs) {
+
         ArrayNode result = objectMapper.createArrayNode();
-        for (NodeRef nodeRef : nodeRefs) {
-            result.add(createFromNodeReference(nodeRef));
-        }
+
+        final Function<ObjectNode, Integer> getIndex = n -> {
+            JsonNode idxNode = n.get("index");
+            if (idxNode != null && idxNode.isInt()) {
+                return idxNode.asInt();
+            }
+            return 0;
+        };
+
+        nodeRefs.stream()
+                .map(this::createFromNodeReference)
+                .sorted(Comparator.comparing(getIndex))
+                .forEachOrdered(result::add);
+
         return result;
     }
 

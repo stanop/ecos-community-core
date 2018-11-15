@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import {
     CREATE_CASE_WIDGET_SET_ITEMS,
+    CREATE_CASE_WIDGET_SET_IS_CASCADE,
 
     USER_SET_PHOTO,
     USER_SET_FULLNAME,
@@ -22,6 +23,7 @@ import {
 
 /* caseMenuReducer */
 const caseMenuInitialState = {
+    isCascade: false,
     items: [],
 };
 
@@ -33,6 +35,12 @@ function caseMenuReducer(state = caseMenuInitialState, action) {
             return {
                 ...state,
                 items: action.payload
+            };
+
+        case CREATE_CASE_WIDGET_SET_IS_CASCADE:
+            return {
+                ...state,
+                isCascade: action.payload
             };
 
         default:

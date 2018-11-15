@@ -53,7 +53,7 @@ public class ScriptRoleDAO implements RoleDAO {
             logger.warn("Script role evaluation failed", e);
         }
 
-        return Collections.emptySet();
+        return null;
     }
 
     @Autowired
