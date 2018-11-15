@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.menu.dto.Element;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 public class UserSitesResolver implements MenuItemsResolver {
 
     private static final String ID = "USER_SITES";
+    private static final String SITE_NAME_KEY = "siteName";
+    private static final String SITE_LINK_KEY = "SITE_LINK";
     private SiteService siteService;
 
     @Override
@@ -27,9 +30,12 @@ public class UserSitesResolver implements MenuItemsResolver {
     private Element constructItem(SiteInfo site) {
         String name = site.getShortName();
         Element element = new Element();
+        Map<String, String> actionParams = new HashMap<>();
+        actionParams.put(SITE_NAME_KEY, name);
         element.setLabel(site.getTitle());
         element.setContextId(name);
-        element.setId(name.toUpperCase());
+        element.setId(name);
+        element.setAction(SITE_LINK_KEY, actionParams);
         return element;
     }
 

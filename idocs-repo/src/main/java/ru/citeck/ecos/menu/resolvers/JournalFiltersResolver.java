@@ -11,14 +11,13 @@ import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JournalFiltersResolver implements MenuItemsResolver {
 
     private static final String ID = "JOURNAL_FILTERS";
+    private static final String FILTER_REF_KEY = "filterRef";
+    private static final String FILTER_LINK_KEY = "FILTER_LINK";
 
     private SearchService searchService;
     private NodeService nodeService;
@@ -39,8 +38,11 @@ public class JournalFiltersResolver implements MenuItemsResolver {
         Element element = new Element();
         String title = RepoUtils.getProperty(filterRef, ContentModel.PROP_TITLE, nodeService);
         String filterName = RepoUtils.getProperty(filterRef, ContentModel.PROP_NAME, nodeService);
+        Map<String, String> actionParams = new HashMap<>();
+        actionParams.put(FILTER_REF_KEY, filterRef.toString());
         element.setLabel(title);
         element.setContextId(filterName);
+        element.setAction(FILTER_LINK_KEY, actionParams);
         return element;
     }
 

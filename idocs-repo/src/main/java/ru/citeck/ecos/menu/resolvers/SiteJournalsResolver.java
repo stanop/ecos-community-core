@@ -14,6 +14,7 @@ import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,6 +25,8 @@ public class SiteJournalsResolver implements MenuItemsResolver {
     private SearchService searchService;
     private NodeService nodeService;
     private JournalService journalService;
+    private static final String JOURNAL_REF_KEY = "journalRef";
+    private static final String JOURNAL_LINK_KEY = "JOURNAL_LINK";
 
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
@@ -37,9 +40,12 @@ public class SiteJournalsResolver implements MenuItemsResolver {
         Element element = new Element();
         String title = RepoUtils.getProperty(journalRef, ContentModel.PROP_TITLE , nodeService);
         String name = RepoUtils.getProperty(journalRef, ContentModel.PROP_NAME , nodeService);
+        Map<String, String> actionParams = new HashMap<>();
+        actionParams.put(JOURNAL_REF_KEY, journalRef.toString());
         element.setId(name);
         element.setLabel(title);
         element.setContextId(name);
+        element.setAction(JOURNAL_LINK_KEY, actionParams);;
         return element;
     }
 

@@ -19,6 +19,8 @@ public class JournalsResolver implements MenuItemsResolver {
 
     private static final String ID = "JOURNALS";
     private static final String LIST_ID_KEY = "listId";
+    private static final String JOURNAL_REF_KEY = "journalRef";
+    private static final String JOURNAL_LINK_KEY = "JOURNAL_LINK";
 
     private NodeService nodeService;
     private SearchService searchService;
@@ -35,9 +37,12 @@ public class JournalsResolver implements MenuItemsResolver {
         Element element = new Element();
         String title = RepoUtils.getProperty(journalRef, ContentModel.PROP_TITLE , nodeService);
         String name = RepoUtils.getProperty(journalRef, ContentModel.PROP_NAME , nodeService);
+        Map<String, String> actionParams = new HashMap<>();
+        actionParams.put(JOURNAL_REF_KEY, journalRef.toString());
         element.setId(name);
         element.setLabel(title);
         element.setContextId(name);
+        element.setAction(JOURNAL_LINK_KEY, actionParams);
         return element;
     }
 
