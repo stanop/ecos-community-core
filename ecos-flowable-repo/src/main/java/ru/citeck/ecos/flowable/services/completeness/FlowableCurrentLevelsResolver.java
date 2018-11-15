@@ -1,5 +1,6 @@
 package ru.citeck.ecos.flowable.services.completeness;
 
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowPackageComponent;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
@@ -36,6 +37,10 @@ public class FlowableCurrentLevelsResolver extends AbstractCurrentLevelsResolver
 
     @Override
     public Set<NodeRef> getCurrentLevels(NodeRef caseNode) {
+        return AuthenticationUtil.runAsSystem(() -> getCurrentLevelsImpl(caseNode));
+    }
+
+    private Set<NodeRef> getCurrentLevelsImpl(NodeRef caseNode) {
 
         List<WorkflowInstance> workflows = workflowPackageComponent.getWorkflowIdsForContent(caseNode)
                                                                    .stream()
