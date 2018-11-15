@@ -1,4 +1,4 @@
-package ru.citeck.ecos.menu.config;
+package ru.citeck.ecos.menu.deployer;
 
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
