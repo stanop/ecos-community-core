@@ -2,11 +2,11 @@ package ru.citeck.ecos.menu.dto;
 
 import java.util.List;
 
-public class ResolvedMenuConfig {
+public class Menu {
 
     private String id;
     private String type;
-    private List<Item> items;
+    private List<Element> items;
 
     public void setId(String id) {
         this.id = id;
@@ -16,8 +16,8 @@ public class ResolvedMenuConfig {
         this.type = type;
     }
 
-    public void setItems(List<Item> items) {
-        this.items = items;
+    public void setItems(List<Element> elements) {
+        this.items = elements;
     }
 
     public String getId() {
@@ -28,7 +28,7 @@ public class ResolvedMenuConfig {
         return type;
     }
 
-    public List<Item> getItems() {
+    public List<Element> getItems() {
         return items;
     }
 }

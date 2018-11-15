@@ -1,9 +1,9 @@
 package ru.citeck.ecos.menu;
 
-import ru.citeck.ecos.menu.dto.ResolvedMenuConfig;
+import ru.citeck.ecos.menu.dto.Menu;
 
 public interface MenuService {
 
-    ResolvedMenuConfig queryMenuConfig(String userName);
+    Menu queryMenuConfig(String userName);
 
 }

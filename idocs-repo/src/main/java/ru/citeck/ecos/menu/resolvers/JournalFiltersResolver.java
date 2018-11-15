@@ -4,13 +4,15 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.menu.dto.Item;
+import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -22,28 +24,33 @@ public class JournalFiltersResolver implements MenuItemsResolver {
     private NodeService nodeService;
 
     @Override
-    public List<Item> resolve(Map<String, String> params) {
-        String context = params.get(CONTEXT_PARAM_KEY);
-        return constructItems(queryFilterRefs(context));
+    public List<Element> resolve(Map<String, String> params, Element context) {
+        String journal = context.getContextId();
+        return constructItems(queryFilterRefs(journal));
     }
 
-    private List<Item> constructItems(List<NodeRef> filterRefs) {
-        List<Item> items = new ArrayList<>();
-        filterRefs.forEach(filterRef -> items.add(constructItem(filterRef)));
-        return items;
+    private List<Element> constructItems(List<NodeRef> filterRefs) {
+        List<Element> elements = new ArrayList<>();
+        filterRefs.forEach(filterRef -> elements.add(constructItem(filterRef)));
+        return elements;
     }
 
-    private Item constructItem(NodeRef filterRef) {
-        Item item = new Item();
+    private Element constructItem(NodeRef filterRef) {
+        Element element = new Element();
         String title = RepoUtils.getProperty(filterRef, ContentModel.PROP_TITLE, nodeService);
-        item.setLabel(title);
-        return item;
+        String filterName = RepoUtils.getProperty(filterRef, ContentModel.PROP_NAME, nodeService);
+        element.setLabel(title);
+        element.setContextId(filterName);
+        return element;
     }
 
-    private List<NodeRef> queryFilterRefs(String journalType) {
+    private List<NodeRef> queryFilterRefs(String journal) {
+        if (StringUtils.isEmpty(journal)) {
+            return Collections.emptyList();
+        }
         return FTSQuery.create()
                 .type(JournalsModel.TYPE_FILTER).and()
-                .exact(JournalsModel.PROP_JOURNAL_TYPES, journalType)
+                .exact(JournalsModel.PROP_JOURNAL_TYPES, journal)
                 .transactional().query(searchService);
     }
 

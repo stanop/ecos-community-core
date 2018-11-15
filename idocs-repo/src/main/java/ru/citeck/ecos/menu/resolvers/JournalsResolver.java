@@ -5,11 +5,12 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.journals.JournalService;
-import ru.citeck.ecos.menu.dto.Item;
+import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,42 +22,29 @@ public class JournalsResolver implements MenuItemsResolver {
 
     private NodeService nodeService;
     private SearchService searchService;
-    private JournalService journalService;
 
     @Override
-    public List<Item> resolve(Map<String, String> params) {
-        String listId = params.get(LIST_ID_KEY);
-        return queryJournalsRefs(listId)
-                .map(this::getJournals)
-                .map(this::constructItems)
-                .orElse(new ArrayList<>());
-    }
-
-    private List<String> getJournals(List<NodeRef> nodeRefs) {
-        return nodeRefs.stream()
-                .map(this::getJournalName)
-                .filter(Objects::nonNull)
+    public List<Element> resolve(Map<String, String> params, Element context) {
+        String journalsListId = params.get(LIST_ID_KEY);
+        return queryJournalsRefs(journalsListId).stream()
+                .map(this::constructItem)
                 .collect(Collectors.toList());
     }
 
-    private String getJournalName(NodeRef nodeRef) {
-        return (String) nodeService.getProperty(nodeRef, JournalsModel.PROP_JOURNAL_TYPE);
+    private Element constructItem(NodeRef journalRef) {
+        Element element = new Element();
+        String title = RepoUtils.getProperty(journalRef, ContentModel.PROP_TITLE , nodeService);
+        String name = RepoUtils.getProperty(journalRef, ContentModel.PROP_NAME , nodeService);
+        element.setId(name);
+        element.setLabel(title);
+        element.setContextId(name);
+        return element;
     }
 
-    private List<Item> constructItems(List<String> journals) {
-        List<Item> items = new ArrayList<>();
-        journals.forEach(journal -> items.add(constructItem(journal)));
-        return items;
-    }
-
-    private Item constructItem(String journal) {
-        Item item = new Item();
-        String id = journalService.getJournalType(journal).getId();
-        item.setId(id);
-        return item;
-    }
-
-    private Optional<List<NodeRef>> queryJournalsRefs(String journalList) {
+    private List<NodeRef> queryJournalsRefs(String journalList) {
+        if (StringUtils.isEmpty(journalList)) {
+            return Collections.emptyList();
+        }
         NodeRef parent = new NodeRef("workspace://SpacesStore/journal-meta-f-lists");
         return FTSQuery.create()
                 .parent(parent).and()
@@ -64,7 +52,8 @@ public class JournalsResolver implements MenuItemsResolver {
                 .exact(ContentModel.PROP_NAME, journalList)
                 .transactional().query(searchService)
                 .stream().findFirst()
-                .map(this::journalsFromList);
+                .map(this::journalsFromList)
+                .orElse(Collections.emptyList());
     }
 
     private List<NodeRef> journalsFromList(NodeRef nodeRef) {
@@ -86,11 +75,6 @@ public class JournalsResolver implements MenuItemsResolver {
     @Autowired
     public void setSearchService(SearchService searchService) {
         this.searchService = searchService;
-    }
-
-    @Autowired
-    public void setJournalService(JournalService journalService) {
-        this.journalService = journalService;
     }
 
 }

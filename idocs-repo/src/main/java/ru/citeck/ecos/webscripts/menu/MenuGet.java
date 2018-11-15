@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.menu.MenuService;
-import ru.citeck.ecos.menu.dto.ResolvedMenuConfig;
+import ru.citeck.ecos.menu.dto.Menu;
 
 import java.io.IOException;
 
-public class MenuConfigGet extends AbstractWebScript {
+public class MenuGet extends AbstractWebScript {
 
     private MenuService menuService;
 
@@ -20,7 +20,7 @@ public class MenuConfigGet extends AbstractWebScript {
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
         String userName = req.getParameter(PARAM_USERNAME);
-        ResolvedMenuConfig menuConfig = menuService.queryMenuConfig(userName);
+        Menu menuConfig = menuService.queryMenuConfig(userName);
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getOutputStream(), menuConfig);
         res.setStatus(Status.STATUS_OK);
