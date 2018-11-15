@@ -3,6 +3,8 @@ package ru.citeck.ecos.flowable.listeners.global.impl.variables;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.task.service.delegate.DelegateTask;
@@ -22,6 +24,8 @@ import ru.citeck.ecos.flowable.utils.FlowableListenerUtils;
  */
 public abstract class AbstractFlowableSaveToExecutionListener implements GlobalStartExecutionListener, GlobalEndExecutionListener,
         GlobalTakeExecutionListener, GlobalAllTaskListener, SaveToExecutionProcessor {
+
+    private static final Log logger = LogFactory.getLog(AbstractFlowableSaveToExecutionListener.class);
 
     @Autowired
     protected NodeService nodeService;
@@ -55,6 +59,10 @@ public abstract class AbstractFlowableSaveToExecutionListener implements GlobalS
 
     @Override
     public void setVariable(String executionId, String variableName, Object value) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Set variable: <" + variableName + "> value: <" + value + "> executionId: <" + executionId
+                    + ">");
+        }
         runtimeService.setVariable(executionId, variableName, value);
     }
 }
