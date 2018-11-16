@@ -20,13 +20,14 @@ public class JournalFiltersResolver extends AbstractMenuItemsResolver {
     private static final String ID = "JOURNAL_FILTERS";
     private static final String FILTER_REF_KEY = "filterRef";
     private static final String FILTER_LINK_KEY = "FILTER_LINK";
+    private static final String FILTER_ID_KEY = "filterId";
 
     private SearchService searchService;
     private NodeService nodeService;
 
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
-        String journal = context.getContextId();
+        String journal = getParam(params, context, JOURNAL_ID_KEY);
         return constructItems(queryFilterRefs(journal));
     }
 
@@ -43,7 +44,9 @@ public class JournalFiltersResolver extends AbstractMenuItemsResolver {
         Map<String, String> actionParams = new HashMap<>();
         actionParams.put(FILTER_REF_KEY, filterRef.toString());
         element.setLabel(title);
-        element.setContextId(filterName);
+        Map<String, String> elementParams = new HashMap<>();
+        elementParams.put(FILTER_ID_KEY, filterName);
+        element.setParams(elementParams);
         element.setAction(FILTER_LINK_KEY, actionParams);
         return element;
     }

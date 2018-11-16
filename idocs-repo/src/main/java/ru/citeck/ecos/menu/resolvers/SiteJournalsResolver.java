@@ -30,7 +30,7 @@ public class SiteJournalsResolver extends AbstractMenuItemsResolver {
 
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
-        String siteId = context.getContextId();
+        String siteId = getParam(params, context, SITE_ID_KEY);
         return getJournalsBySiteId(siteId).stream()
                 .map(this::constructItem)
                 .collect(Collectors.toList());
@@ -44,8 +44,10 @@ public class SiteJournalsResolver extends AbstractMenuItemsResolver {
         actionParams.put(JOURNAL_REF_KEY, journalRef.toString());
         element.setId(name);
         element.setLabel(title);
-        element.setContextId(name);
-        element.setAction(JOURNAL_LINK_KEY, actionParams);;
+        element.setAction(JOURNAL_LINK_KEY, actionParams);
+        Map<String, String> elementParams = new HashMap<>();
+        elementParams.put(JOURNAL_ID_KEY, name);
+        element.setParams(elementParams);
         return element;
     }
 

@@ -1,23 +1,25 @@
 package ru.citeck.ecos.menu.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.List;
 import java.util.Map;
 
 public class Element {
 
     private String id;
+    private String type;
     private String label;
     private String icon;
     private Boolean mobileVisible;
     private Action action;
     private List<Element> items;
-    @JsonIgnore
-    private String contextId;
+    private Map<String, String> params;
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public void setLabel(String label) {
@@ -43,12 +45,16 @@ public class Element {
         this.items = items;
     }
 
-    public void setContextId(String contextId) {
-        this.contextId = contextId;
+    public void setParams(Map<String, String> params) {
+        this.params = params;
     }
 
     public String getId() {
         return id;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getLabel() {
@@ -71,8 +77,8 @@ public class Element {
         return items;
     }
 
-    public String getContextId() {
-        return contextId;
+    public Map<String, String> getParams() {
+        return params;
     }
 
     public static class Action {
