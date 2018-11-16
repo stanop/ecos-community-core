@@ -113,7 +113,7 @@ var contractRoot = getDataListRootByXpath(CONTRACT_PATH);
 var contract = contractRoot.createNode(null, CONTRACT_TYPE, {
     "contracts:contractWith": "client",
     "contracts:agreementNumber": "111-forFitNesse",
-    "tk:kind": "workspace://SpacesStore/contracts-cat-contract-rent"
+    "tk:kind": "workspace://SpacesStore/contracts-cat-contract-services"
 }, ASSOC_TYPE_CONTAINS);
 
 contract.createAssociation(techComplLegalEntity, "contracts:agreementLegalEntity");

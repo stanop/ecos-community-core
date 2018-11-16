@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
+        <import uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org" />
+    </imports>
+
+    <type name="cm:authorityContainer">
+
+        <property name="cm:authorityName">
+            <invariant on="default" language="javascript">
+                <![CDATA[(function() {
+                    if (view.mode != "create" && value) {
+                        return value;
+                    }
+
+                    var sourceNode = getSourceNode(),
+                        department,
+                        type;
+
+                    if (sourceNode) {
+                        var departmentFullName = sourceNode.properties['cm:authorityName'];
+                        department = departmentFullName ? departmentFullName.replace('GROUP_', '') : 'department';
+                    }
+
+                    function getSourceNode() {
+                        var destinationNode = (view.params && view.params.destination) ? new Node(view.params.destination) : null;
+                        return destinationNode || node.parent;
+                    }
+
+                    if (node.assocs['org:branchTypeAssoc'] != null && node.assocs['org:branchTypeAssoc'].length > 0) {
+                        type = node.assocs['org:branchTypeAssoc'][0].properties['cm:name'];
+                    } else if (node.assocs['org:roleTypeAssoc'] != null && node.assocs['org:roleTypeAssoc'].length > 0) {
+                        type = node.assocs['org:roleTypeAssoc'][0].properties['cm:name'];
+                    }
+
+                    if (department && type) {
+                        Alfresco.util.Ajax.jsonGet({
+                            url: Alfresco.constants.PROXY_URI + "/citeck/authority/name/with/counter",
+                            dataObj: {
+                                department: department,
+                                typeValue: type
+                            },
+                            successCallback: {
+                                scope: node.impl().attribute('cm:authorityName'),
+                                fn: function (response) {
+                                    var resultValue = response.json.value;
+                                    this.value(resultValue);
+                                }
+                            },
+                            failureCallback: {
+                                scope: node.impl().attribute('cm:authorityName'),
+                                fn: function (response) {
+                                    this.value('');
+                                }
+                            }
+                        });
+                    }
+                    return '';
+                })()]]>
+            </invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="protected" language="javascript">view.mode != "create"</invariant>
+        </property>
+
+
+        <property name="cm:authorityDisplayName">
+            <invariant on="default" language="javascript">
+                <![CDATA[(function() {
+                    var displayName = '';
+                    if (node.assocs['org:roleTypeAssoc'] != null && node.assocs['org:roleTypeAssoc'].length > 0) {
+                        displayName = node.assocs['org:roleTypeAssoc'][0].properties['cm:title'];
+                    } else if (node.assocs['org:branchTypeAssoc'] != null && node.assocs['org:branchTypeAssoc'].length > 0) {
+                        displayName = node.assocs['org:branchTypeAssoc'][0].properties['cm:title'];
+                    }
+                    return displayName;
+                })()]]>
+            </invariant>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+
+        <association name="org:legalEntity">
+            <invariant on="relevant" language="javascript">node.properties['org:branchType'] == "company"</invariant>
+        </association>
+
+        <association name="org:roleTypeAssoc">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+
+        <association name="org:branchTypeAssoc">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </association>
+
+    </type>
+
+</invariants>
