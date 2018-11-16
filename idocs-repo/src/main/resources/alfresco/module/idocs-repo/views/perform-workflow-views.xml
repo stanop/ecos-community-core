@@ -19,7 +19,11 @@
         </field>
         <view template="row">
             <field prop="bpm:workflowDueDate"/>
-            <field prop="bpm:workflowPriority"/>
+            <field prop="bpm:workflowPriority">
+                <region name="input" template="select" />
+                <invariant on="default" language="explicit">2</invariant>
+                <invariant on="options" language="javascript">[1,2,3]</invariant>
+            </field>
         </view>
         <field assoc="wfperf:performers">
             <regions name="select" template="select-orgstruct"/>
