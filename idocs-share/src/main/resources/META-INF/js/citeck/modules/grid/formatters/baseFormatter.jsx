@@ -1,15 +1,19 @@
-import React, {Component} from 'react';
+import React, {Fragment, Component} from 'react';
 
 export default class BaseFormatter extends Component {
-    value(){
-        return this.props.cell || '';
+    static getFilterValue(cell){
+        return this.prototype.value(cell);
+    }
+
+    value(cell){
+        return cell || '';
     }
 
     render() {
         return (
-            <span>
-                {`${this.value()}`}
-            </span>
+            <Fragment>
+                {this.value(this.props.cell)}
+            </Fragment>
         );
     }
 }

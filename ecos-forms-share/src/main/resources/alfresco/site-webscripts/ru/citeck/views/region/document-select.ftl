@@ -15,6 +15,9 @@
         maxCount: ${params.maxCount!'0'},
         maxSize: ${params.maxSize!'0'},
         alowedFileTypes: '${params.alowedFileTypes!""}',
+        destination: '${params.destination!""}',
+        destinationType: '${params.destinationType!""}',
+        assocType: '${params.assocType!""}',
         type: '${params.type!"ecos:document"}'
     }}">
 </div>

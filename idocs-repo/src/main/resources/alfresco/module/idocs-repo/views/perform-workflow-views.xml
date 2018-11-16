@@ -19,7 +19,11 @@
         </field>
         <view template="row">
             <field prop="bpm:workflowDueDate"/>
-            <field prop="bpm:workflowPriority"/>
+            <field prop="bpm:workflowPriority">
+                <region name="input" template="select" />
+                <invariant on="default" language="explicit">2</invariant>
+                <invariant on="options" language="javascript">[1,2,3]</invariant>
+            </field>
         </view>
         <field assoc="wfperf:performers">
             <regions name="select" template="select-orgstruct"/>
@@ -39,7 +43,9 @@
         </field>
         <field assoc="cwf:targetItems">
             <region name="input" template="view" />
-            <region name="select" template="select-document" />
+            <region name="select" template="select-document">
+                <param name="destinationType">USER_FOLDER</param>
+            </region>
         </field>
 
         <field prop="bpm:sendEMailNotifications"/>

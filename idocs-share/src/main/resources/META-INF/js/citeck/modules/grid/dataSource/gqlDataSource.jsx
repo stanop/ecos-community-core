@@ -8,8 +8,8 @@ export default class GqlDataSource extends BaseDataSource {
     constructor(options) {
         super(options);
 
+        this.options.ajax.body = this._getBodyJson(this.options.ajax.body, this.options.columns);
         this._columns = this._getColumns(this.options.columns);
-        this.options.ajax.body = this._getBodyJson(this.options.ajax.body, this._columns);
     }
 
     getColumns(){
@@ -24,9 +24,14 @@ export default class GqlDataSource extends BaseDataSource {
     _getColumns(columns){
         columns = columns.map((column, idx) => {
             column.dataField = column.id || this._getIdByIdx(idx);
-            column.formatterName = column.formatter;
-            column.formatter = this._setFormatter(column.formatter);
-            column.text = column.text || column.Header;
+
+            let {formatter, params} = this._getFormatter(column.formatter);
+            column.formatter = (cell, row) => {
+                let Formatter = formatter;
+                return <Formatter row = {row} cell = {cell} params = {params}/>
+            };
+
+            column.filterValue = (cell, row) => formatter.getFilterValue(cell, row, params);
 
             return column;
         });
@@ -44,8 +49,8 @@ export default class GqlDataSource extends BaseDataSource {
 
     _getSchema(columns){
         let gqlSchemes = columns.map((column, idx) => {
-            let formatter = this._getFormatter(column.formatterName);
-            let str = formatter ? formatter.getQueryString() : 'str';
+            let {formatter} = this._getFormatter(column.formatter);
+            let str = formatter.getQueryString();
 
             return `id, ${this._getIdByIdx(idx)}: att(name: "${column.field}") {name, val {${str}}}`;
         });
@@ -53,38 +58,22 @@ export default class GqlDataSource extends BaseDataSource {
         return gqlSchemes.join(',');
     }
 
-    _getNestedValue(cell){
-        const val = cell ? cell.val[0] : null;
-        return val ? val.str : '';
-    }
+    _getFormatter(options){
+        let name;
+        let params;
 
-    _setFormatter(columnFormatter){
-        let that = this;
-        let formatter;
-        let Formatter = this._getFormatter(columnFormatter || DEFAULT_FORMATTER);
-
-        if(Formatter){
-            formatter = (cell, row) => {
-                return <Formatter row = {row} cell = {cell} />
-            };
-        }else if(typeof columnFormatter === 'function'){
-            formatter = (cell) => {
-                let elCell = {};
-                let oRecord = {};
-                let oColumn = {};
-                let sData = that._getNestedValue(cell);
-
-                columnFormatter(elCell, oRecord, oColumn, sData);
-
-                return <div dangerouslySetInnerHTML={{__html: elCell.innerHTML}} />;
-            };
+        if(options){
+            ({name, params} = options);
         }
 
-        return formatter
-    }
+        let formatter = formatterStore[name || options || DEFAULT_FORMATTER];
 
-    _getFormatter(name){
-        return formatterStore[name];
+        params = params || {};
+
+        return {
+            formatter,
+            params
+        };
     }
 
     _getIdByIdx(idx){
