@@ -64,7 +64,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsW
     private NamespaceService namespaceService;
     private SearchCriteriaParser criteriaParser;
     private AuthorityUtils authorityUtils;
-    private FtsAlfrescoQuery queryBuilder;
+    private FTSQueryBuilder queryBuilder;
     private SearchUtils searchUtils;
     private GraphQLMetaService metaService;
 
@@ -72,7 +72,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsW
     public TaskStatisticRecords(ServiceRegistry serviceRegistry,
                                 SearchCriteriaParser criteriaParser,
                                 AuthorityUtils authorityUtils,
-                                FtsAlfrescoQuery queryBuilder,
+                                FTSQueryBuilder queryBuilder,
                                 SearchUtils searchUtils,
                                 GraphQLMetaService metaService) {
         setId(ID);

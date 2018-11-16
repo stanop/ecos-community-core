@@ -109,6 +109,123 @@ public class LuceneQuery implements SearchQueryBuilder {
         this.searchCriteriaSettingsRegistry = searchCriteriaSettingsRegistry;
     }
 
+    /**
+     * Expand folder nodeRefs if it have class which doesn't match to association target class
+     */
+    String buildAssocValue(String field, String fieldValue) {
+
+        if (fieldValue.isEmpty()) {
+            return fieldValue;
+        }
+
+        QName fieldQName = QName.resolveToQName(namespaceService, field);
+        AssociationDefinition assocDefinition = dictionaryService.getAssociation(fieldQName);
+        if (assocDefinition == null) {
+            return fieldValue;
+        }
+        QName targetClassName = assocDefinition.getTargetClass().getName();
+
+        List<NodeRef> result = new ArrayList<>();
+        String[] values = fieldValue.split("\\,");
+
+        for (String value : values) {
+
+            NodeRef valueRef = new NodeRef(value);
+            QName valueTypeName = nodeService.getType(valueRef);
+
+            if (!dictionaryService.isSubClass(valueTypeName, targetClassName)
+                    && dictionaryService.isSubClass(valueTypeName, ContentModel.TYPE_FOLDER)) {
+                result.addAll(expandAssocValue(valueRef, targetClassName));
+            } else {
+                result.add(new NodeRef(value));
+            }
+        }
+        return joinToString(result);
+    }
+
+    List<NodeRef> expandAssocValue(NodeRef valueRef, QName valueType) {
+        Path path = nodeService.getPath(valueRef);
+        String query = "PATH:\"" + path.toPrefixString(namespaceService) + "//.\" " +
+                       "AND TYPE:\"" + valueType.toPrefixString(namespaceService) + "\"";
+        ResultSet queryResults = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
+                                                     SearchService.LANGUAGE_FTS_ALFRESCO,
+                                                     query);
+        return queryResults.getNodeRefs();
+    }
+
+    String getAssocIndexProp(String assocName) {
+        return associationIndexPropertyRegistry.getAssociationIndexProperty(assocName, namespaceService);
+    }
+
+    CriteriaTriplet convertAssocTriplet(CriteriaTriplet triplet) {
+
+        SearchPredicate criterion = SearchPredicate.forName(triplet.getPredicate());
+
+        String newValue = null;
+        String newField = null;
+
+        switch (criterion) {
+            case ASSOC_CONTAINS:
+            case ASSOC_NOT_CONTAINS:
+                try {
+                    newValue = buildAssocValue(triplet.getField(), triplet.getValue());
+                } catch (Exception e) {
+                    logger.warn(String.format("Association value building failed! field is '%s' and value is '%s'",
+                                triplet.getField(), triplet.getValue()), e);
+                }
+                break;
+            case ASSOC_NOT_EMPTY:
+            case ASSOC_EMPTY:
+                newField = getAssocIndexProp(triplet.getField());
+                break;
+            default:
+                break;
+        }
+
+        if (newValue != null || newField != null) {
+
+            String field = newField != null ? newField : triplet.getField();
+            String predicate = triplet.getPredicate();
+            String value = newValue != null ? newValue : triplet.getValue();
+
+            return new CriteriaTriplet(field, predicate, value);
+        }
+
+        return triplet;
+    }
+
+    static String escapeField(String string) {
+        StringBuilder result = new StringBuilder(string);
+        int iSeparator = 0;
+        while ((iSeparator = result.indexOf(NAME_SEPARATOR, iSeparator)) != -1) {
+            result.insert(iSeparator, ESCAPE);
+            iSeparator +=2;
+        }
+        iSeparator = result.indexOf(SEPARATOR, iSeparator);
+        if (iSeparator != -1) {
+            result.insert(iSeparator, ESCAPE);
+        }
+        return result.toString();
+    }
+
+    static String joinToString(List<NodeRef> nodeRefs) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < nodeRefs.size(); i++) {
+            if (i > 0) result.append(",");
+            result.append(nodeRefs.get(i));
+        }
+        return result.toString();
+    }
+
+    static String buildField(String field) {
+        try {
+            return FieldType.forName(field).toString();
+        } catch (IllegalArgumentException e) {
+            return "@" + escapeField(field);
+        }
+    }
+
+
     protected class QueryBuilder {
 
         protected StringBuilder query = new StringBuilder();
@@ -208,10 +325,11 @@ public class LuceneQuery implements SearchQueryBuilder {
         }
 
         private void buildSearchTerm(CriteriaTriplet triplet) {
+
             SearchPredicate criterion = SearchPredicate.forName(triplet.getPredicate());
 
             String value = triplet.getValue();
-            String field;
+
             if (SearchPredicate.JOURNAL_ID.equals(criterion)) {
                 String nodeType = getNodeType(value);
                 if (!isSafeEmpty(nodeType)) {
@@ -223,27 +341,10 @@ public class LuceneQuery implements SearchQueryBuilder {
                     }
                 }
                 return;
-            } else {
-                field = buildField(triplet.getField());
             }
 
-            switch (criterion) {
-                case ASSOC_CONTAINS:
-                case ASSOC_NOT_CONTAINS:
-                    try {
-                        value = buildAssocValue(triplet.getField(), triplet.getValue());
-                    } catch (Exception e) {
-                        logger.warn(String.format("Association value building failed! field is '%s' and value is '%s'",
-                                triplet.getField(), triplet.getValue()), e);
-                    }
-                case ASSOC_NOT_EMPTY:
-                case ASSOC_EMPTY:
-                    field = buildField(getAssocIndexProp(triplet.getField()));
-                    break;
-                default:
-                    break;
-            }
-
+            triplet = convertAssocTriplet(triplet);
+            String field = buildField(triplet.getField());
 
             switch (criterion) {
                 case STRING_CONTAINS:
@@ -343,75 +444,6 @@ public class LuceneQuery implements SearchQueryBuilder {
             }
         }
 
-        /**
-         * Expand folder nodeRefs if it have class which doesn't match to association target class
-         */
-        private String buildAssocValue(String field, String fieldValue) {
-            if (fieldValue.isEmpty()) return fieldValue;
-
-            QName fieldQName = QName.resolveToQName(namespaceService, field);
-            AssociationDefinition assocDefinition = dictionaryService.getAssociation(fieldQName);
-            if (assocDefinition == null) return fieldValue;
-            QName targetClassName = assocDefinition.getTargetClass().getName();
-
-            List<NodeRef> result = new ArrayList<>();
-            String[] values = fieldValue.split("\\,");
-
-            for (String value : values) {
-
-                NodeRef valueRef = new NodeRef(value);
-                QName valueTypeName = nodeService.getType(valueRef);
-
-                if (!dictionaryService.isSubClass(valueTypeName, targetClassName)
-                        && dictionaryService.isSubClass(valueTypeName, ContentModel.TYPE_FOLDER)) {
-                    result.addAll(expandAssocValue(valueRef, targetClassName));
-                } else {
-                    result.add(new NodeRef(value));
-                }
-            }
-            return joinToString(result);
-        }
-
-        private String joinToString(List<NodeRef> nodeRefs) {
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < nodeRefs.size(); i++) {
-                if (i > 0) result.append(",");
-                result.append(nodeRefs.get(i));
-            }
-            return result.toString();
-        }
-
-        private List<NodeRef> expandAssocValue(NodeRef valueRef, QName valueType) {
-            Path path = nodeService.getPath(valueRef);
-            String query = "PATH:\"" + path.toPrefixString(namespaceService) + "//.\" " +
-                    "AND TYPE:\"" + valueType.toPrefixString(namespaceService) + "\"";
-            ResultSet queryResults =
-                    searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, query);
-            return queryResults.getNodeRefs();
-        }
-
-        private String buildField(String field) {
-            try {
-                return FieldType.forName(field).toString();
-            } catch (IllegalArgumentException e) {
-                return "@" + escape(field);
-            }
-        }
-
-        private String escape(String string) {
-            StringBuilder result = new StringBuilder(string);
-            int iSeparator = 0;
-            while ((iSeparator = result.indexOf(NAME_SEPARATOR, iSeparator)) != -1) {
-                result.insert(iSeparator, ESCAPE);
-                iSeparator +=2;
-            }
-            iSeparator = result.indexOf(SEPARATOR, iSeparator);
-            if (iSeparator != -1) {
-                result.insert(iSeparator, ESCAPE);
-            }
-            return result.toString();
-        }
-
         private boolean ignoreIfValueEmpty(CriteriaTriplet triplet) {
             boolean ignore = false;
             SearchPredicate criterion = SearchPredicate.forName(triplet.getPredicate());
@@ -479,7 +511,9 @@ public class LuceneQuery implements SearchQueryBuilder {
         }
 
         private void buildEqualsTerm(String field, String value) {
+
             if (FieldType.ALL.name().equals(field)) {
+
                 Collection<QName> contentAttributes;
                 QName type = null;
                 if (typeName != null) {
@@ -494,7 +528,7 @@ public class LuceneQuery implements SearchQueryBuilder {
                 StringBuilder allQuery = new StringBuilder();
 
                 for (QName qname : contentAttributes) {
-                    allQuery.append(QueryConstants.PROPERTY_FIELD_PREFIX).append(escape(qname.toPrefixString()))
+                    allQuery.append(QueryConstants.PROPERTY_FIELD_PREFIX).append(escapeField(qname.toPrefixString()))
                             .append(SEPARATOR).append(QUOTE)
                             .append(value)
                             .append(QUOTE).append(OR);
@@ -507,10 +541,19 @@ public class LuceneQuery implements SearchQueryBuilder {
                             .append(allQuery)
                             .append(CLOSING_ROUND_BRACKET);
                 }
+
             } else {
+
                 StringBuilder term = new StringBuilder();
-                term.append(field).append(SEPARATOR).append(QUOTE).append(value.replace("\"", "\\\"")).append(QUOTE);
+
+                term.append(field)
+                    .append(SEPARATOR)
+                    .append(QUOTE)
+                    .append(value.replace("\"", "\\\""))
+                    .append(QUOTE);
+
                 queryElement.setQueryPart(term.toString());
+
                 if (shouldAppendQuery) {
                     query.append(term);
                 }
@@ -640,9 +683,7 @@ public class LuceneQuery implements SearchQueryBuilder {
             appendQuery(CLOSING_ROUND_BRACKET);
         }
 
-        protected String getAssocIndexProp(String assocName) {
-            return associationIndexPropertyRegistry.getAssociationIndexProperty(assocName, namespaceService);
-        }
+
 
         private void buildListContainsTerm(String field, String value) {
             List<String> listItems = Arrays.asList(value.split("\\,"));
