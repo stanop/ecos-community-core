@@ -31,48 +31,45 @@
             [
             {
             field: 'event:date',
-            formatter: Citeck.format.datetime(),
-            Header: Alfresco.util.message("dochist.header.date"),
-            width: 150
+            formatter: 'DateTimeFormatter',
+            text: Alfresco.util.message("dochist.header.date"),
+            type: 'date'
             },
             {
             field: 'event:name',
-            formatter: Citeck.format.message('dochist.'),
-            Header: Alfresco.util.message("dochist.header.name"),
-            width: 150
+            formatter: {name: 'FunctionFormatter', params: {fn: Citeck.format.message('dochist.')}},
+            text: Alfresco.util.message("dochist.header.name"),
             },
             {
             field: 'event:documentVersion',
-            Header: Alfresco.util.message("dochist.header.version"),
-            width: 70
+            text: Alfresco.util.message("dochist.header.version"),
             },
             {
             field: 'event:initiator',
-            formatter: 'UserNameLink',
-            Header: Alfresco.util.message("dochist.header.person")
+            formatter: 'UserNameLinkFormatter',
+            text: Alfresco.util.message("dochist.header.person")
             },
             {
             field: 'taskOriginalOwner',
-            formatter: 'UserNameLink',
-            Header: Alfresco.util.message("dochist.header.fromName")
+            formatter: 'UserNameLinkFormatter',
+            text: Alfresco.util.message("dochist.header.fromName")
             },
             {
             field: 'event:taskRole',
-            Header: Alfresco.util.message("dochist.header.group")
+            text: Alfresco.util.message("dochist.header.group")
             },
             {
             field: 'event:taskType',
-            Header: Alfresco.util.message("dochist.header.task")
+            text: Alfresco.util.message("dochist.header.task")
             },
             {
             field: 'event:taskOutcomeTitle',
-            Header: Alfresco.util.message("dochist.header.outcome"),
-            width: 180
+            text: Alfresco.util.message("dochist.header.outcome"),
             },
             {
             field: 'event:taskComment',
-            Header: Alfresco.util.message("dochist.header.comment"),
-            width: 220
+            text: Alfresco.util.message("dochist.header.comment"),
+            width: 230
             }
             ]
         </prop>

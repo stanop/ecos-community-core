@@ -6,8 +6,7 @@ export default class DefaultGqlFormatter extends BaseFormatter {
         return 'str';
     }
 
-    value(){
-        const cell = this.props.cell;
+    value(cell){
         const val = cell ? cell.val[0] : {};
         return val.str || '';
     }
