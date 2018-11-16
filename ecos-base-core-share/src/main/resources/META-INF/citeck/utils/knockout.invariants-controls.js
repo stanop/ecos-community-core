@@ -874,6 +874,9 @@ ko.components.register('documentSelect', {
         this.alowedFileTypes = params.alowedFileTypes;
         this.type = params.type;
         this.info = params.info;
+        this.destinationType = params.destinationType;
+        this.destination = this.destinationType === 'USER_FOLDER' ? '/app:company_home/app:user_homes/cm:' + Alfresco.constants.USERNAME : params.destination;
+        this.assocType = params.assocType || (this.destinationType === 'USER_FOLDER' ? 'cm:contains' : '');
         this.journalId = ko.observable();
         this.createVariantsVisibility = params.createVariantsVisibility;
         this.journalSelectButtonText = Alfresco.util.message('journal.select-button');
@@ -1130,7 +1133,9 @@ ko.components.register('documentSelect', {
             maxCount: maxCount,\
             maxSize: maxSize,\
             alowedFileTypes: alowedFileTypes,\
-            draggable: true\
+            draggable: true,\
+            destination: destination,\
+            assocType: assocType\
         }\' class="file-upload-control"></div>\
     '
 });
@@ -3081,7 +3086,9 @@ ko.bindingHandlers.fileUploadControl = {
             maxCount = settings.maxCount || '',
             properties = settings.properties,
             importUrl = settings.importUrl,
-            draggable = settings.draggable;
+            draggable = settings.draggable,
+            destination = settings.destination || "workspace://SpacesStore/attachments-root",
+            assocType = settings.assocType || "sys:children";
 
         var uploadFiles = function (files) {
             var loadedFiles = ko.observable(0);
@@ -3178,7 +3185,7 @@ ko.bindingHandlers.fileUploadControl = {
                 var formData = new FormData;
                 formData.append("filedata", files[i]);
                 formData.append("filename", files[i].name);
-                formData.append("destination", "workspace://SpacesStore/attachments-root");
+                formData.append("destination", destination);
                 formData.append("siteId", null);
                 formData.append("containerId", null);
                 formData.append("uploaddirectory", null);
@@ -3192,7 +3199,7 @@ ko.bindingHandlers.fileUploadControl = {
                     }
                 }
 
-                var href = Alfresco.constants.PROXY_URI + (importUrl ? importUrl : "api/citeck/upload?assoctype=sys:children&details=true");
+                var href = Alfresco.constants.PROXY_URI + (importUrl ? importUrl : "api/citeck/upload?assoctype=" + assocType + "&details=true");
                 if (type) href += "&contenttype=" + type;
 
                 request.open("POST", href, true);

@@ -39,7 +39,9 @@
         </field>
         <field assoc="cwf:targetItems">
             <region name="input" template="view" />
-            <region name="select" template="select-document" />
+            <region name="select" template="select-document">
+                <param name="destinationType">USER_FOLDER</param>
+            </region>
         </field>
 
         <field prop="bpm:sendEMailNotifications"/>
