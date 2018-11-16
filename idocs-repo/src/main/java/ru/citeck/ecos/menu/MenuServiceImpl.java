@@ -16,7 +16,6 @@ import java.util.*;
 
 public class MenuServiceImpl implements MenuService {
 
-    private final Map<String, MenuItemsResolver> resolvers = new HashMap<>();
     private AuthorityUtils authorityUtils;
     private RepoContentDAOImpl<MenuConfig> registry;
     private MenuFactory factory;
@@ -40,16 +39,6 @@ public class MenuServiceImpl implements MenuService {
                 .map(mc -> factory.getResolvedMenu(mc))
                 .findFirst()
                 .orElse(defaultMenu());
-    }
-
-    @Override
-    public void addResolver(MenuItemsResolver menuItemsResolver) {
-        this.resolvers.put(menuItemsResolver.getId(), menuItemsResolver);
-    }
-
-    @Override
-    public Map<String, MenuItemsResolver> getResolvers() {
-        return this.resolvers;
     }
 
     private Menu defaultMenu() {

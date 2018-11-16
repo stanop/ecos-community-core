@@ -2,23 +2,23 @@ package ru.citeck.ecos.menu.resolvers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.citeck.ecos.menu.MenuService;
+import ru.citeck.ecos.menu.dto.MenuFactory;
 
 import javax.annotation.PostConstruct;
 
 public abstract class AbstractMenuItemsResolver implements MenuItemsResolver {
 
-    private MenuService menuService;
+    private MenuFactory menuFactory;
 
     @PostConstruct
     public void registerResolver() {
-        menuService.addResolver(this);
+        menuFactory.addResolver(this);
     }
 
     @Autowired
-    @Qualifier("menuService")
-    public void setMenuService(MenuService menuService) {
-        this.menuService = menuService;
+    @Qualifier("ecos.menu.menuFactory")
+    public void setMenuFactory(MenuFactory menuFactory) {
+        this.menuFactory = menuFactory;
     }
 
 }

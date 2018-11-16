@@ -1,10 +1,7 @@
 package ru.citeck.ecos.menu.dto;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.surf.util.I18NUtil;
-import ru.citeck.ecos.menu.MenuService;
 import ru.citeck.ecos.menu.resolvers.MenuItemsResolver;
 import ru.citeck.ecos.menu.xml.*;
 
@@ -13,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class MenuFactory {
 
-    private Map<String, MenuItemsResolver> resolvers;
+    private final Map<String, MenuItemsResolver> resolvers = new HashMap<>();
 
     public Menu getResolvedMenu(MenuConfig menuConfigContentData) {
         Menu menu = new Menu();
@@ -112,9 +109,8 @@ public class MenuFactory {
         return result;
     }
 
-    @Autowired
-    @Qualifier("menuService")
-    public void setResolvers(MenuService menuService) {
-        this.resolvers = menuService.getResolvers();
+    public void addResolver(MenuItemsResolver menuItemsResolver) {
+        this.resolvers.put(menuItemsResolver.getId(), menuItemsResolver);
     }
+
 }
