@@ -1,5 +1,11 @@
 package ru.citeck.ecos.records.query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +18,9 @@ public class RecordsResult<T> {
     private boolean hasMore = false;
     private long totalCount = 0;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private ObjectNode debug = null;
+
     public RecordsResult() {
     }
 
@@ -19,12 +28,14 @@ public class RecordsResult<T> {
         records = new ArrayList<>(other.getRecords());
         hasMore = other.hasMore;
         totalCount = other.totalCount;
+        debug = other.debug;
     }
 
     public <K> RecordsResult(RecordsResult<K> other, Function<K, T> mapper) {
         records = other.getRecords().stream().map(mapper).collect(Collectors.toList());
         hasMore = other.hasMore;
         totalCount = other.totalCount;
+        debug = other.debug;
     }
 
     public void merge(RecordsResult<T> other) {
@@ -36,6 +47,25 @@ public class RecordsResult<T> {
 
         hasMore = other.getHasMore();
         totalCount += other.getTotalCount();
+    }
+
+    public void setDebugInfo(String key, String value) {
+        setDebugInfo(key, TextNode.valueOf(value));
+    }
+
+    public void setDebugInfo(String key, JsonNode value) {
+        if (debug == null) {
+            debug = JsonNodeFactory.instance.objectNode();
+        }
+        debug.set(key, value);
+    }
+
+    public ObjectNode getDebug() {
+        return debug;
+    }
+
+    public void setDebug(ObjectNode debug) {
+        this.debug = debug;
     }
 
     public List<T> getRecords() {

@@ -120,15 +120,49 @@ public class LuceneQuery implements SearchQueryBuilder {
         public String buildQuery(SearchCriteria criteria) {
             Iterator<CriteriaTriplet> iterator = criteria.getTripletsIterator();
             extractType(criteria);
+
+            String joinOperator = AND;
+            boolean joinBracketOpened = false;
+            boolean hasLeftOperand = false;
+
             while (iterator.hasNext()) {
+
                 CriteriaTriplet criteriaTriplet = iterator.next();
+
+                String predicate = criteriaTriplet.getPredicate();
+                String newJoinOperator = null;
+                if (SearchPredicate.JOIN_BY_AND.getValue().equals(predicate)) {
+                    newJoinOperator = AND;
+                } else if (SearchPredicate.JOIN_BY_OR.getValue().equals(predicate)) {
+                    newJoinOperator = OR;
+                }
+                if (newJoinOperator != null) {
+                    if (!newJoinOperator.equals(joinOperator)) {
+                        if (joinBracketOpened) {
+                            query.append(CLOSING_ROUND_BRACKET);
+                            joinBracketOpened = false;
+                        }
+                        if (iterator.hasNext()) {
+                            joinBracketOpened = true;
+                            query.append(OPENING_ROUND_BRACKET);
+                            joinOperator = newJoinOperator;
+                        }
+                    }
+                    continue;
+                }
+
                 boolean ignore = ignoreIfValueEmpty(criteriaTriplet);
                 if (!ignore) {
+
                     shouldAppendQuery = true;
                     queryElement = new QueryElement(criteriaTriplet);
 
                     if (queryElementList.contains(queryElement) && logicOrEnabled(criteriaTriplet)) {
                         shouldAppendQuery = false;
+                    }
+
+                    if (hasLeftOperand) {
+
                     }
 
                     buildSearchTerm(criteriaTriplet);
@@ -140,9 +174,12 @@ public class LuceneQuery implements SearchQueryBuilder {
                     queryElementList.add(queryElement);
 
                     if (iterator.hasNext() && shouldAppendQuery) {
-                        query.append(AND);
+                        query.append(joinOperator);
                     }
                 }
+            }
+            if (joinBracketOpened) {
+                query.append(CLOSING_ROUND_BRACKET);
             }
             String finalQuery = toCorrectQuery(query.toString());
 
