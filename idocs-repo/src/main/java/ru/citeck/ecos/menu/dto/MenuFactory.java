@@ -1,7 +1,10 @@
 package ru.citeck.ecos.menu.dto;
 
+import org.alfresco.service.cmr.action.ActionService;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
+import ru.citeck.ecos.menu.resolvers.MenuEvaluator;
 import ru.citeck.ecos.menu.resolvers.MenuItemsResolver;
 import ru.citeck.ecos.menu.xml.*;
 
@@ -11,13 +14,14 @@ import java.util.stream.Collectors;
 public class MenuFactory {
 
     private final Map<String, MenuItemsResolver> resolvers = new HashMap<>();
+    private ActionService actionService;
 
     public Menu getResolvedMenu(MenuConfig menuConfigContentData) {
         Menu menu = new Menu();
         menu.setId(menuConfigContentData.getId());
         menu.setType(menuConfigContentData.getType());
 
-        List<Element> elements = constructItems(menuConfigContentData.getItems(), new Element());
+        List<Element> elements = constructItems(menuConfigContentData.getItems(), null);
         menu.setItems(elements);
         return menu;
     }
@@ -29,7 +33,7 @@ public class MenuFactory {
         List<Element> result = new ArrayList<>();
         items.getItemsChildren()
                 .forEach(obj -> {
-                    if (obj instanceof Item) {
+                    if (obj instanceof Item && evaluate((Item) obj)) {
                         Element newElement = new Element();
                         result.add(updateItem(newElement, (Item) obj));
                     } else if (obj instanceof ItemsResolver) {
@@ -37,6 +41,15 @@ public class MenuFactory {
                     }
                 });
         return result;
+    }
+
+    private boolean evaluate(Item item) {
+        Evaluator evaluator = item.getEvaluator();
+        if (evaluator == null) {
+            return true;
+        }
+        MenuEvaluator eval = new MenuEvaluator(item.getEvaluator(), actionService);
+        return eval.evaluate();
     }
 
     private List<Element> resolve(ItemsResolver child, Element context) {
@@ -113,4 +126,8 @@ public class MenuFactory {
         this.resolvers.put(menuItemsResolver.getId(), menuItemsResolver);
     }
 
+    @Autowired
+    public void setActionService(ActionService actionService) {
+        this.actionService = actionService;
+    }
 }
