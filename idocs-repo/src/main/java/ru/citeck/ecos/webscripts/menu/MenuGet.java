@@ -8,6 +8,7 @@ import ru.citeck.ecos.menu.MenuService;
 import ru.citeck.ecos.menu.dto.Menu;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class MenuGet extends AbstractWebScript {
 
@@ -18,17 +19,28 @@ public class MenuGet extends AbstractWebScript {
             .setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
     @Override
-    public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
+    public void execute(WebScriptRequest req, WebScriptResponse resp) throws IOException {
         String userName = req.getParameter(PARAM_USERNAME);
         Menu menuConfig;
-        if (userName == null) {
-            menuConfig = menuService.queryMenu();
-        } else {
-            menuConfig = menuService.queryMenu(userName);
+
+        try {
+            if (userName == null) {
+                menuConfig = menuService.queryMenu();
+            } else {
+                menuConfig = menuService.queryMenu(userName);
+            }
+        } catch (RuntimeException re) {
+            throw new WebScriptException(Status.STATUS_NO_CONTENT, "Error getting menu data.", re);
         }
-        res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
-        objectMapper.writeValue(res.getOutputStream(), menuConfig);
-        res.setStatus(Status.STATUS_OK);
+
+        resp.setContentType("application/json");
+        resp.setContentEncoding("UTF-8");
+
+        try (OutputStream os = resp.getOutputStream()) {
+            objectMapper.writeValue(os, menuConfig);
+        } catch (RuntimeException re) {
+            throw new WebScriptException(Status.STATUS_INTERNAL_SERVER_ERROR, "Error writing JSON response.", re);
+        }
     }
 
     @Autowired
