@@ -71,6 +71,10 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
 
         RecordsResult<RecordRef> result = new RecordsResult<>();
 
+        if (query.isDebug()) {
+            result.setDebugInfo(getClass(), "query", criteriaResults.getQuery());
+        }
+
         result.setRecords(criteriaResults.getResults()
                                          .stream()
                                          .map(RecordRef::new)

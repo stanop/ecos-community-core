@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.group.*;
@@ -19,6 +21,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class RecordsServiceImpl implements RecordsService {
+
+    private static final String DEBUG_QUERY_TIME = "queryTimeMs";
+    private static final String DEBUG_RECORDS_QUERY_TIME = "recordsQueryTimeMs";
+    private static final String DEBUG_META_QUERY_TIME = "metaQueryTimeMs";
+
+    private static final Log logger = LogFactory.getLog(RecordsService.class);
 
     private Map<String, RecordsDAO> sources = new ConcurrentHashMap<>();
     private GraphQLMetaService graphQLMetaService;
@@ -83,17 +91,59 @@ public class RecordsServiceImpl implements RecordsService {
         if (recordsDAO instanceof RecordsWithMetaDAO) {
 
             RecordsWithMetaDAO recordsWithMetaDAO = (RecordsWithMetaDAO) recordsDAO;
-            return recordsWithMetaDAO.getRecords(query, metaSchema);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Start records with meta query: " + query.getQuery() + "\n" + metaSchema);
+            }
+
+            long queryStart = System.currentTimeMillis();
+            RecordsResult<ObjectNode> records = recordsWithMetaDAO.getRecords(query, metaSchema);
+            long queryDuration = System.currentTimeMillis() - queryStart;
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Stop records with meta query. Duration: " + queryDuration);
+            }
+
+            if (query.isDebug()) {
+                records.setDebugInfo(getClass(), DEBUG_QUERY_TIME, queryDuration);
+            }
+
+            return records;
 
         } else {
 
+            if (logger.isDebugEnabled()) {
+                logger.debug("Start records query: " + query.getQuery());
+            }
+
+            long recordsQueryStart = System.currentTimeMillis();
             RecordsResult<RecordRef> records = recordsDAO.getRecords(query);
+            long recordsTime = System.currentTimeMillis() - recordsQueryStart;
+
+            if (logger.isDebugEnabled()) {
+                int found = records.getRecords().size();
+                logger.debug("Stop records query. Found: " + found + "Duration: " + recordsTime);
+                logger.debug("Start meta query: " + metaSchema);
+            }
+
+            long metaQueryStart = System.currentTimeMillis();
             List<ObjectNode> meta = getMeta(records.getRecords(), metaSchema);
+            long metaTime = System.currentTimeMillis() - metaQueryStart;
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Stop meta query. Duration: " + metaTime);
+            }
 
             RecordsResult<ObjectNode> recordsWithMeta = new RecordsResult<>();
             recordsWithMeta.setHasMore(records.getHasMore());
             recordsWithMeta.setTotalCount(records.getTotalCount());
+            recordsWithMeta.setDebug(records.getDebug());
             recordsWithMeta.setRecords(meta);
+
+            if (query.isDebug()) {
+                recordsWithMeta.setDebugInfo(getClass(), DEBUG_RECORDS_QUERY_TIME, recordsTime);
+                recordsWithMeta.setDebugInfo(getClass(), DEBUG_META_QUERY_TIME, metaTime);
+            }
 
             return recordsWithMeta;
         }

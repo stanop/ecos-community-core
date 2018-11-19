@@ -372,43 +372,76 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 }
                 return true;
             };
-            if (!this.attribute() || !this.journalType) {
+
+            if (!this.journalType) {
                 return;
             }
 
             this.criterion.removeCriterion = this.removeCriterion;
             this.criterion.containerId = this.containerId;
-            this.criterion.attributeProperty(this.attribute());
             this.criterion.applyCriteria = this.applyCriteria;
             this.criterion.keyDownManagment = this.keyDownManagment;
 
-            var urlArgs = [
-                'htmlid=' + this.fieldId,
-                'attribute=' + this.attribute().name(),
-                'journalId=' + this.journalType.id()
-            ];
-
             this.containerContent = ko.observable("");
 
-            Alfresco.util.Ajax.request({
-                url: Alfresco.constants.URL_PAGECONTEXT + "api/journals/filter/criterion?" + urlArgs.join('&'),
-                successCallback: {
-                    scope: this,
-                    fn: function(response) {
-                        self.containerContent(response.serverResponse.responseText);
-                    }
-                }
-            });
-
             this.containerContent.subscribe(function(newValue) {
-                var contentContainer = $("#" + self.containerId);
-                if (contentContainer.length > 0) {
-                    contentContainer.html(newValue);
-                    ko.cleanNode(contentContainer[0]);
-                    ko.applyBindings(self.criterion, contentContainer[0]);
-                }
+
+                var setValue = function (counter) {
+
+                    var contentContainer = $("#" + self.containerId);
+                    
+                    if (contentContainer.length > 0) {
+                        contentContainer.html(newValue);
+                        ko.cleanNode(contentContainer[0]);
+                        ko.applyBindings(self.criterion, contentContainer[0]);
+                    } else {
+                        setTimeout(function() {
+                            if (counter > 0) {
+                                setValue(counter - 1);
+                            }
+                        }, 100);
+                    }
+                };
+
+                setValue(5);
             });
 
+            if (this.attribute()) {
+
+                this.criterion.attributeProperty(this.attribute());
+
+                var urlArgs = [
+                    'htmlid=' + this.fieldId,
+                    'attribute=' + this.attribute().name(),
+                    'journalId=' + this.journalType.id()
+                ];
+
+                Alfresco.util.Ajax.request({
+                    url: Alfresco.constants.URL_PAGECONTEXT + "api/journals/filter/criterion?" + urlArgs.join('&'),
+                    successCallback: {
+                        scope: this,
+                        fn: function(response) {
+                            self.containerContent(response.serverResponse.responseText);
+                        }
+                    }
+                });
+
+            } else {
+
+                var predicate = this.criterion.predicate();
+                var predicateId = predicate ? predicate.id() : "unknown";
+                var labelText = Alfresco.util.message('custom-criterion.' + predicateId + ".label");
+
+                self.containerContent(
+                   '<div class="criterion-actions">' +
+                   '    <a class="criterion-remove\" data-bind="click: removeCriterion,' +
+                   '              attr: { title: Alfresco.util.message(\'button.remove-criterion\') }" title="button.remove-criterion">' +
+                   '    </a>' +
+                   '</div>' +
+                   '<div class="criterion-label">' +
+                   '    <label>' + labelText + '</label>' +
+                   '</div>');
+            }
         },
         template:
             '<div class="criterion" data-bind="attr: { id: containerId }, event: {keydown: keyDownManagment }, mousedownBubble: false"></div>'
