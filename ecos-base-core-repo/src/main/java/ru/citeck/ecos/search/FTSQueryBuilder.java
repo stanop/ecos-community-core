@@ -246,12 +246,12 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
         StringBuilder term = new StringBuilder();
         if (isNull) {
             term.append('(');
-            buildEqualsTerm("ISNULL", field);
+            term.append(buildEqualsTerm("ISNULL", field));
             term.append(" OR ");
-            buildEqualsTerm("ISUNSET", field);
+            term.append(buildEqualsTerm("ISUNSET", field));
             term.append(')');
         } else {
-            buildEqualsTerm("ISNOTNULL", field);
+            term.append(buildEqualsTerm("ISNOTNULL", field));
         }
         return term.toString();
     }
@@ -293,7 +293,6 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
         final String field;
         final String value;
         final boolean exact;
-
         public FieldTerm(String field, String value, boolean exact) {
             this.field = field;
             this.value = value;
