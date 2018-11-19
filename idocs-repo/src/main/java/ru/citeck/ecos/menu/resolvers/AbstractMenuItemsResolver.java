@@ -36,21 +36,21 @@ public abstract class AbstractMenuItemsResolver implements MenuItemsResolver {
      * @return parameter or empty String
      */
     static String getParam(Map<String, String> params, Element context, String key) {
-        String journal = null;
+        String result = null;
         if (context == null) {
             return "";
         }
         Map<String, String> contextParams = context.getParams();
         if (MapUtils.isNotEmpty(contextParams)) {
-            journal = contextParams.get(key);
+            result = contextParams.get(key);
         }
-        if (StringUtils.isEmpty(journal) && MapUtils.isNotEmpty(params)) {
-            journal = params.get(key);
+        if (StringUtils.isEmpty(result) && MapUtils.isNotEmpty(params)) {
+            result = params.get(key);
         }
-        if (journal == null) {
+        if (result == null) {
             return "";
         }
-        return journal;
+        return result;
     }
 
 }
