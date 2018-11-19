@@ -1,24 +1,14 @@
 package ru.citeck.ecos.search;
 
 import org.alfresco.service.cmr.search.SearchService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@Component
+@Component("ftsQueryBuilder")
 public class FTSQueryBuilder implements SearchQueryBuilder {
-
-    private static final Log logger = LogFactory.getLog(FTSQueryBuilder.class);
-
-    private static final String WILD = "*";
-    private static final String NOT = " NOT ";
-    private static final String AND = " AND ";
-    private static final String OR = " OR ";
 
     private FtsAlfrescoQueryMigration legacyBuilder;
 
@@ -33,7 +23,26 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
             return legacyBuilder.buildQuery(criteria);
         }
 
-        return null;
+        TermGroup group = new TermGroup(JoinOperator.AND, false);
+
+        for (CriteriaTriplet triplet : criteria.getTriplets()) {
+            if (triplet.getPredicate().equals(SearchPredicate.JOIN_BY_AND.getValue())) {
+                group.stopGroup();
+                group.startGroup(JoinOperator.AND);
+            } else if (triplet.getPredicate().equals(SearchPredicate.JOIN_BY_OR.getValue())) {
+                group.stopGroup();
+                group.startGroup(JoinOperator.OR);
+            } else {
+                Optional<Term> term = buildSearchTerm(triplet);
+                term.ifPresent(group::add);
+            }
+        }
+
+        group.stopAll();
+
+        StringBuilder searchString = new StringBuilder();
+        group.append(searchString);
+        return searchString.toString();
     }
 
     private Optional<Term> buildSearchTerm(CriteriaTriplet triplet) {
@@ -41,26 +50,28 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
         triplet = legacyBuilder.convertAssocTriplet(triplet);
         SearchPredicate criterion = SearchPredicate.forName(triplet.getPredicate());
 
+        String field = triplet.getField();
         String value = triplet.getValue();
-        String field = buildField(triplet.getField());
+
+        String term = null;
+        boolean inverse = false;
 
         switch (criterion) {
             case STRING_CONTAINS:
-                //buildEqualsTerm(field, WILD + value + WILD);
-                break;
-            case QUERY_OR:
-                //buildQueryOr(triplet.getField(), value);
+                term = buildEqualsTerm(field, '*' + value + '*');
                 break;
             case STRING_NOT_EQUALS:
             case NUMBER_NOT_EQUALS:
             case DATE_NOT_EQUALS:
             case TYPE_NOT_EQUALS:
             case ASPECT_NOT_EQUALS:
-                //query.append(NOT);
+                inverse = true;
             case STRING_EQUALS:
+                term = buildExactValueTerm(field, value);
+                break;
             case NUMBER_EQUALS:
             case DATE_EQUALS:
-                //buildEqualsTermWithRoundBracket(field, value);
+                term = buildEqualsTerm(field, value);
                 break;
             case TYPE_EQUALS:
             case ASPECT_EQUALS:
@@ -68,13 +79,13 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
             case PATH_EQUALS:
             case LIST_EQUALS:
             case LIST_NOT_EQUALS:
-                //buildEqualsTerm(field, value);
+                term = buildEqualsTerm(field, value);
                 break;
             case STRING_STARTS_WITH:
-                //buildEqualsTerm(field, value + WILD);
+                term = buildEqualsTerm(field, value + '*');
                 break;
             case STRING_ENDS_WITH:
-                //buildEqualsTerm(field, WILD + value);
+                term = buildEqualsTerm(field, '*' + value);
                 break;
             case DATE_NOT_EMPTY:
             case BOOLEAN_NOT_EMPTY:
@@ -83,69 +94,166 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
             case FLOAT_NOT_EMPTY:
             case INT_NOT_EMPTY:
             case STRING_NOT_EMPTY:
-                //buildEmptyCheckTerm(field, false);
+                term = buildEmptyCheckTerm(field, false);
                 break;
             case DATE_EMPTY:
             case BOOLEAN_EMPTY:
             case NODEREF_EMPTY:
             case ASSOC_EMPTY:
-                //buildNullCheckTerm(field, true);
+                term = buildNullCheckTerm(field, true);
                 break;
             case STRING_EMPTY:
-                //buildEmptyCheckTerm(field, true);
+                term = buildEmptyCheckTerm(field, true);
                 break;
             case NUMBER_LESS_THAN:
-                //buildLessThanTerm(field, value, false);
+                term = buildLessThanTerm(field, value, false);
                 break;
             case NUMBER_GREATER_THAN:
-                //buildGreaterThanTerm(field, value, false);
+                term = buildGreaterThanTerm(field, value, false);
                 break;
             case NUMBER_LESS_OR_EQUAL:
             case DATE_LESS_OR_EQUAL:
             case DATE_LESS_THAN:
-                //buildLessThanTerm(field, value, true);
+                term = buildLessThanTerm(field, value, true);
                 break;
             case NUMBER_GREATER_OR_EQUAL:
             case DATE_GREATER_OR_EQUAL:
-                //buildGreaterThanTerm(field, value, true);
+                term = buildGreaterThanTerm(field, value, true);
                 break;
             case BOOLEAN_TRUE:
-                //buildEqualsTerm(field, "true");
+                term = buildEqualsTerm(field, "true");
                 break;
             case BOOLEAN_FALSE:
-                //buildEqualsTerm(field, "false");
+                term = buildEqualsTerm(field, "false");
                 break;
             case ANY:
-                //buildEqualsTerm(field, WILD);
+                term = buildEqualsTerm(field, "*");
                 break;
             case NODEREF_NOT_CONTAINS:
             case ASSOC_NOT_CONTAINS:
             case QNAME_NOT_CONTAINS:
-                //query.append(NOT);
+                inverse = true;
             case NODEREF_CONTAINS:
             case ASSOC_CONTAINS:
             case QNAME_CONTAINS:
-                //buildListContainsTerm(field, value);
+                term = buildListContainsTerm(field, value);
                 break;
             case PATH_CHILD:
-                //buildEqualsTerm(field, value + "/*");
+                term = buildEqualsTerm(field, value + "/*");
                 break;
             case PATH_DESCENDANT:
-                //buildEqualsTerm(field, value + "//*");
+                term = buildEqualsTerm(field, value + "//*");
                 break;
             case ID_EQUALS:
                 break;
         }
 
+        if (term != null) {
+            return Optional.of(new FixedTerm(term, inverse));
+        }
+
         return Optional.empty();
     }
 
-    private String buildField(String field) {
+    private String buildListContainsTerm(String field, String value) {
+
+        StringBuilder term = new StringBuilder();
+
+        List<String> listItems = Arrays.asList(value.split(","));
+        if (!listItems.isEmpty()) {
+
+            term.append('(');
+
+            Iterator<String> iterator = listItems.iterator();
+            while (iterator.hasNext()) {
+                String item = iterator.next();
+                term.append(buildEqualsTerm(field, item.trim()));
+                if (iterator.hasNext()) {
+                    term.append(" OR ");
+                }
+            }
+            term.append(')');
+        }
+
+        return term.toString();
+    }
+
+    private String buildRangeTerm(String field, String value, boolean inclusive, boolean lessThan) {
+
+        StringBuilder term = new StringBuilder();
+
+        term.append(buildSearchField(field));
+        term.append(':');
+        if (lessThan) {
+
+            term.append("[MIN TO \"")
+                .append(value)
+                .append("\"")
+                .append(inclusive ? "]" : ">");
+
+        } else {
+
+            term.append(inclusive ? "[" : "<")
+                .append("\"")
+                .append(value)
+                .append("\" TO MAX]");
+        }
+
+        return term.toString();
+    }
+
+    private String buildLessThanTerm(String field, String value, boolean inclusive) {
+        return buildRangeTerm(field, value, inclusive, true);
+    }
+
+    private String buildGreaterThanTerm(String field, String value, boolean inclusive) {
+        return buildRangeTerm(field, value, inclusive, false);
+    }
+
+    private String escapeValue(String value) {
+        return value.replace("\"", "\\\"");
+    }
+
+    private String buildExactValueTerm(String field, String value) {
+        return "=" + field + ":\"" + escapeValue(value) + "\"";
+    }
+
+    private String buildEqualsTerm(String field, String value) {
+        return buildSearchField(field) + ":\"" + escapeValue(value) + '"';
+    }
+
+    private String buildSearchField(String field) {
         try {
             return FieldType.forName(field).toString();
         } catch (IllegalArgumentException e) {
             return "@" + LuceneQuery.escapeField(field);
         }
+    }
+
+    private String buildEmptyCheckTerm(String field, boolean isEmpty) {
+
+        StringBuilder term = new StringBuilder();
+        term.append('(');
+        term.append(buildNullCheckTerm(field, isEmpty));
+        term.append(isEmpty ? " OR " : " AND NOT ");
+        buildEqualsTerm(field, "");
+        term.append(')');
+
+        return term.toString();
+    }
+
+    private String buildNullCheckTerm(String field, boolean isNull) {
+        StringBuilder term = new StringBuilder();
+        if (isNull) {
+            term.append('(');
+            buildEqualsTerm("ISNULL", field);
+            term.append(" OR ");
+            buildEqualsTerm("ISUNSET", field);
+            term.append(')');
+        } else {
+            buildEqualsTerm("ISNOTNULL", field);
+        }
+        return term.toString();
     }
 
     @Override
@@ -158,20 +266,20 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
         this.legacyBuilder = legacyBuilder;
     }
 
-    private class QueryBuilder {
-
-    }
-
     interface Term {
         void append(StringBuilder sb);
+
+        default boolean isEmpty() {
+            return false;
+        }
     }
 
     static class FixedTerm implements Term {
 
         final String value;
 
-        public FixedTerm(String value) {
-            this.value = value;
+        FixedTerm(String value, boolean inverse) {
+            this.value = inverse ? "NOT " + value : value;
         }
 
         @Override
@@ -180,58 +288,120 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
         }
     }
 
+    static class FieldTerm implements Term {
+
+        final String field;
+        final String value;
+        final boolean exact;
+
+        public FieldTerm(String field, String value, boolean exact) {
+            this.field = field;
+            this.value = value;
+            this.exact = exact;
+        }
+
+        @Override
+        public void append(StringBuilder sb) {
+            sb.append(exact ? '=' : '@')
+              .append(field)
+              .append(":\"")
+              .append(value)
+              .append("\"");
+        }
+    }
+
+    enum JoinOperator {
+        OR, AND
+    }
+
     static class TermGroup implements Term {
 
-        private final String joinDelim;
+        private final JoinOperator joinBy;
         private final List<Term> terms = new ArrayList<>();
         private final boolean withBrackets;
 
         private TermGroup childGroup = null;
 
-        TermGroup(String joinDelim) {
-            this(joinDelim, true);
+        TermGroup(JoinOperator joinBy) {
+            this(joinBy, true);
         }
 
-        TermGroup(String joinDelim, boolean withBrackets) {
-            this.joinDelim = joinDelim;
+        TermGroup(JoinOperator joinBy, boolean withBrackets) {
+            this.joinBy = joinBy;
             this.withBrackets = withBrackets;
         }
 
-        void startGroup(String joinDelim) {
+        void startGroup(JoinOperator joinBy) {
             if (childGroup != null) {
-                childGroup.startGroup(joinDelim);
+                childGroup.startGroup(joinBy);
             } else {
-                childGroup = new TermGroup(joinDelim);
+                childGroup = new TermGroup(joinBy);
             }
         }
 
-        void stopGroup() {
+        boolean stopGroup() {
             if (childGroup != null) {
                 if (childGroup.childGroup != null) {
                     childGroup.stopGroup();
+                } else {
+                    terms.add(childGroup);
+                    childGroup = null;
                 }
-                terms.add(childGroup);
-                childGroup = null;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        void stopAll() {
+            int groupsCounter = 5;
+            while (groupsCounter > 0 && stopGroup()) {
+                groupsCounter--;
             }
         }
 
         void add(Term term) {
-            terms.add(term);
+            if (childGroup != null) {
+                childGroup.add(term);
+            } else {
+                terms.add(term);
+            }
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return terms.isEmpty();
         }
 
         @Override
         public void append(StringBuilder sb) {
-            if (terms.size() == 0) {
+
+            List<Term> nonEmptyTerms = terms.stream()
+                                            .filter(t -> !t.isEmpty())
+                                            .collect(Collectors.toList());
+
+            if (nonEmptyTerms.size() == 0) {
                 return;
             }
+
+            if (nonEmptyTerms.size() == 1) {
+                nonEmptyTerms.get(0).append(sb);
+                return;
+            }
+
             if (withBrackets) {
                 sb.append('(');
             }
-            terms.get(0).append(sb);
-            for (int i = 1; i < terms.size(); i++) {
-                sb.append(joinDelim);
-                terms.get(i).append(sb);
+
+            boolean queryIsEmpty = true;
+            for (Term term : nonEmptyTerms) {
+                if (!queryIsEmpty) {
+                    sb.append(' ').append(joinBy).append(' ');
+                }
+                term.append(sb);
+                queryIsEmpty = false;
             }
+
             if (withBrackets) {
                 sb.append(')');
             }

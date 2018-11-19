@@ -93,6 +93,7 @@ public class RecordsServiceImpl implements RecordsService {
             RecordsResult<ObjectNode> recordsWithMeta = new RecordsResult<>();
             recordsWithMeta.setHasMore(records.getHasMore());
             recordsWithMeta.setTotalCount(records.getTotalCount());
+            recordsWithMeta.setDebug(records.getDebug());
             recordsWithMeta.setRecords(meta);
 
             return recordsWithMeta;

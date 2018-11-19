@@ -396,16 +396,14 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                         ko.applyBindings(self.criterion, contentContainer[0]);
                     } else {
                         setTimeout(function() {
-                            if (counter < 5) {
-                                setValue(counter + 1);
-                            } else {
-                                console.error("contrainer " + self.containerId + " not found");
+                            if (counter > 0) {
+                                setValue(counter - 1);
                             }
                         }, 100);
                     }
                 };
 
-                setValue(0);
+                setValue(5);
             });
 
             if (this.attribute()) {

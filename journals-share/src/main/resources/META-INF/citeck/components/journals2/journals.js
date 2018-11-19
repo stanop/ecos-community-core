@@ -25,6 +25,9 @@ define([
     'lib/underscore'
 ], function(ko, koutils) {
 
+    if (!Citeck) Citeck = {};
+    if (!Citeck.constants) Citeck.constants = {};
+
 var logger = Alfresco.logger,
         noneActionGroupId = "none",
         buttonsActionGroupId = "buttons",
@@ -1429,7 +1432,7 @@ JournalsWidget
             return null;
         }
 
-        return {
+        var result = {
             query: recordsQuery,
             pageInfo: {
                 sortBy: this.sortByQuery(),
@@ -1437,6 +1440,11 @@ JournalsWidget
                 maxItems: this.maxItems() || this.defaultMaxItems() || 10
             }
         };
+
+        if (Citeck.constants.DEBUG) {
+            result.debug = true;
+        }
+        return result;
     })
 
     .method('performSearch', function() {

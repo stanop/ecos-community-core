@@ -109,7 +109,7 @@
         <property name="searchService" ref="SearchService" />
         <property name="queryBuilders">
             <list value-type="ru.citeck.ecos.search.SearchQueryBuilder">
-                <ref bean="fTSQueryBuilder" />
+                <ref bean="ftsQueryBuilder" />
                 <ref bean="luceneQueryBuilder" />
             </list>
         </property>

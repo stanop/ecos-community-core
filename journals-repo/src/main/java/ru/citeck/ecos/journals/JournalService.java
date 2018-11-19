@@ -54,13 +54,31 @@ public interface JournalService {
 
     NodeRef getJournalRef(String id);
 
+    default RecordsResult<RecordRef> getRecords(String journalId,
+                                                String query,
+                                                String language,
+                                                JGqlPageInfoInput pageInfo) {
+
+        return getRecords(journalId, query, language, pageInfo, false);
+    }
+
     RecordsResult<RecordRef> getRecords(String journalId,
                                         String query,
                                         String language,
-                                        JGqlPageInfoInput pageInfo);
+                                        JGqlPageInfoInput pageInfo,
+                                        boolean debug);
+
+    default RecordsResult<ObjectNode> getRecordsWithData(String journalId,
+                                                 String query,
+                                                 String language,
+                                                 JGqlPageInfoInput pageInfo) {
+
+        return getRecordsWithData(journalId, query, language, pageInfo, false);
+    }
 
     RecordsResult<ObjectNode> getRecordsWithData(String journalId,
                                                  String query,
                                                  String language,
-                                                 JGqlPageInfoInput pageInfo);
+                                                 JGqlPageInfoInput pageInfo,
+                                                 boolean debug);
 }

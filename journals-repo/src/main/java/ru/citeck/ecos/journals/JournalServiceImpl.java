@@ -191,24 +191,26 @@ class JournalServiceImpl implements JournalService {
     public RecordsResult<RecordRef> getRecords(String journalId,
                                                String query,
                                                String language,
-                                               JGqlPageInfoInput pageInfo) {
+                                               JGqlPageInfoInput pageInfo,
+                                               boolean debug) {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }
         JournalType journalType = needJournalType(journalId);
-        return recordsDAO.getRecords(journalType, query, language, pageInfo);
+        return recordsDAO.getRecords(journalType, query, language, pageInfo, debug);
     }
 
     @Override
     public RecordsResult<ObjectNode> getRecordsWithData(String journalId,
                                                         String query,
                                                         String language,
-                                                        JGqlPageInfoInput pageInfo) {
+                                                        JGqlPageInfoInput pageInfo,
+                                                        boolean debug) {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }
         JournalType journalType = needJournalType(journalId);
-        return recordsDAO.getRecordsWithData(journalType, query, language, pageInfo);
+        return recordsDAO.getRecordsWithData(journalType, query, language, pageInfo, debug);
     }
 
     @Override
