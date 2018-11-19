@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import NodeCardlet from '../node-cardlet';
 import {utils as CiteckUtils} from 'js/citeck/modules/utils/citeck';
 
+import 'xstyle!./remote.css';
+
 export default class RemoteCardlet extends NodeCardlet {
 
     static getFetchKey(ownProps) {
@@ -52,6 +54,7 @@ export default class RemoteCardlet extends NodeCardlet {
     render() {
         let html = this.props.data.htmlText;
         let htmlid = this.props.data.htmlid;
+
         return <div id={htmlid + '-container'} dangerouslySetInnerHTML={{__html: html}} />;
     }
 };
