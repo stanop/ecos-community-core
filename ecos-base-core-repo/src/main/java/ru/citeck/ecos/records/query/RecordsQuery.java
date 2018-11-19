@@ -39,6 +39,7 @@ public class RecordsQuery {
         this.afterIdMode = other.afterIdMode;
         this.consistency = other.consistency;
         this.sortBy = new ArrayList<>(other.sortBy);
+        this.debug = other.debug;
     }
 
     public String getSourceId() {
