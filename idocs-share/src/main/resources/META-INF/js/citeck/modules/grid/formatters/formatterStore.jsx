@@ -1,8 +1,12 @@
-import UserNameLink from "./gql/userNameLink";
+import UserNameLinkFormatter from "./gql/userNameLinkFormatter";
+import FunctionFormatter from "./gql/functionFormatter";
+import DateTimeFormatter from "./gql/dateTimeFormatter";
 import DefaultGqlFormatter from "./gql/defaultGqlFormatter";
 
 const formatterStore = {
-    UserNameLink,
+    UserNameLinkFormatter,
+    FunctionFormatter,
+    DateTimeFormatter,
     DefaultGqlFormatter
 };
 

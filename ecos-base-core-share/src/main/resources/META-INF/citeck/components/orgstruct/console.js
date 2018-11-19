@@ -421,16 +421,52 @@ define([
          * Show create form.
          */
         onCreateItem: function(args) {
-            var itemId = args.itemId,
-                formId = args.formId,
-                parentId = args.item,
-                parent = this.model.getItem(parentId),
-                htmlid = this.id + "-form-" + Alfresco.util.generateDomId(),
-                destination = this.model.getItemProperty(parent, this.config.forms.destination, true);
-            this.widgets.createItemDialog = new Citeck.widget.CreateFormDialog(htmlid, itemId, formId, destination, null, parent, this.name);
-            this.widgets.createItemDialog.setOptions(this.config.forms);
-            this.widgets.createItemDialog.show();
-            this.widgets.createItemDialog.subscribe("itemCreated", this.onItemCreated, this, true);
+            var itemId = args.itemId;
+            if (itemId == 'cm:authorityContainer') {
+                var self = this,
+                    formId = args.formId,
+                    parentId = args.item,
+                    parent = this.model.getItem(parentId),
+                    destination = this.model.getItemProperty(parent, this.config.forms.destination, true),
+                    destinationAssoc = 'cm:member',
+                    header = this.msg('panel.create.' + (formId || 'default') + '.header'),
+                    mode = 'create';
+
+                Alfresco.util.Ajax.jsonGet({
+                    url: Alfresco.constants.PROXY_URI + 'citeck/authority/getGroupNodeRef',
+                    dataObj: {
+                        groupFullName: destination
+                    },
+                    successCallback: {
+                        fn: function(response) {
+                            var destinationNodeRef = response.json.nodeRef;
+                            if (destinationNodeRef) {
+                                self.widgets.createItemDialog = new Citeck.forms.dialog(itemId, formId, function () {
+                                    self.onItemCreated(parent);
+                                }, {
+                                    width: '800px',
+                                    mode: mode,
+                                    destination: destinationNodeRef,
+                                    destinationAssoc: destinationAssoc,
+                                    title: header
+                                });
+                            }
+                        },
+                        scope: this
+                    },
+                    failureMessage: 'Group nodeRef receive failed!'
+                });
+            } else {
+                var formId = args.formId,
+                    parentId = args.item,
+                    parent = this.model.getItem(parentId),
+                    htmlid = this.id + "-form-" + Alfresco.util.generateDomId(),
+                    destination = this.model.getItemProperty(parent, this.config.forms.destination, true);
+                this.widgets.createItemDialog = new Citeck.widget.CreateFormDialog(htmlid, itemId, formId, destination, null, parent, this.name);
+                this.widgets.createItemDialog.setOptions(this.config.forms);
+                this.widgets.createItemDialog.show();
+                this.widgets.createItemDialog.subscribe("itemCreated", this.onItemCreated, this, true);
+            }
         },
 
         /**
@@ -438,22 +474,23 @@ define([
          * Show edit form
          */
         onEditItem: function(args) {
+            var self = this;
             var mode = args.mode;
-            var formId = args.type;
             var itemId = args.item;
             var item = this.model.getItem(itemId);
+            var type = args.type;
+            var formId = (type && type != 'orgstruct' ) ? type : item.groupType;
 
             // clear junc created by onViewItem
             this._clearViewJunk();
 
             itemId = this.model.getItemProperty(item, this.config.forms.nodeId, true);
-            // var htmlid = this.id + "-form-" + Alfresco.util.generateDomId();
-            // this.widgets.editItemDialog = new Citeck.widget.EditFormDialog(htmlid, itemId, formId, item, this.name);
-            // this.widgets.editItemDialog.options.width = '50em';
-            this.widgets.editItemDialog = new Citeck.forms.dialog(itemId, formId, function () {}, {width: "800px", mode: mode});
-            this.widgets.editItemDialog.setOptions(this.config.forms);
-            this.widgets.editItemDialog.show();
-            this.widgets.editItemDialog.subscribe("itemEdited", this.onItemEdited, this, true);
+            self.widgets.editItemDialog = new Citeck.forms.dialog(itemId, formId, function () {
+                    self.onItemEdited(item);
+                }, {
+                width: "800px",
+                mode: mode
+            });
         },
 
         /**

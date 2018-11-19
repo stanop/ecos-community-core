@@ -30,6 +30,7 @@ import ru.citeck.ecos.records.query.RecordsResult;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface JournalService {
     
@@ -40,7 +41,9 @@ public interface JournalService {
     JournalType getJournalType(String id);
 
     JournalType needJournalType(String journalId);
-    
+
+    Optional<JournalType> getJournalForType(QName typeName);
+
     Collection<JournalType> getAllJournalTypes();
 
     void clearCache();
@@ -51,13 +54,31 @@ public interface JournalService {
 
     NodeRef getJournalRef(String id);
 
+    default RecordsResult<RecordRef> getRecords(String journalId,
+                                                String query,
+                                                String language,
+                                                JGqlPageInfoInput pageInfo) {
+
+        return getRecords(journalId, query, language, pageInfo, false);
+    }
+
     RecordsResult<RecordRef> getRecords(String journalId,
                                         String query,
                                         String language,
-                                        JGqlPageInfoInput pageInfo);
+                                        JGqlPageInfoInput pageInfo,
+                                        boolean debug);
+
+    default RecordsResult<ObjectNode> getRecordsWithData(String journalId,
+                                                 String query,
+                                                 String language,
+                                                 JGqlPageInfoInput pageInfo) {
+
+        return getRecordsWithData(journalId, query, language, pageInfo, false);
+    }
 
     RecordsResult<ObjectNode> getRecordsWithData(String journalId,
                                                  String query,
                                                  String language,
-                                                 JGqlPageInfoInput pageInfo);
+                                                 JGqlPageInfoInput pageInfo,
+                                                 boolean debug);
 }

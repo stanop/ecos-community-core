@@ -52,6 +52,7 @@ public final class JournalsModel {
     public static final QName PROP_JOURNAL_TYPE = QName.createQName(JOURNAL_NAMESPACE, "journalType");
     public static final QName PROP_FIELD_QNAME = QName.createQName(JOURNAL_NAMESPACE, "fieldQName");
     public static final QName PROP_IS_DEFAULT = QName.createQName(JOURNAL_NAMESPACE, "isDefault");
+    public static final QName PROP_JOURNAL_TYPES = QName.createQName(JOURNAL_NAMESPACE, "journalTypes");
 
 
     //associations

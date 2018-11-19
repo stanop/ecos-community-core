@@ -2227,7 +2227,8 @@ table td.thumbnail img
 .fa.HEADER_TEMPLATES:before,
 .fa.HEADER_MORE:before,
 .fa.HEADER_LIFECYCLE_EDITOR:before,
-.fa.HEADER_FLOWABLE_MODELER:before {
+.fa.HEADER_FLOWABLE_MODELER:before,
+.fa.HEADER_TASKS_TASK_STATISTIC_JOURNAL:before {
     color: inherit;
 }
 
@@ -2249,6 +2250,10 @@ table td.thumbnail img
 
 .yui-skin-citeckTheme .fa.HEADER_TASKS_INITIATOR_TASKS_JOURNAL:before {
     content: "\f0fe";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_TASKS_TASK_STATISTIC_JOURNAL:before {
+    content: "\f080";
 }
 
 .yui-skin-citeckTheme .fa.HEADER_TASKS_INCOME_PACKAGE_TASKS_JOURNAL:before {

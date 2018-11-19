@@ -2,9 +2,17 @@ package ru.citeck.ecos.flowable.form;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.AssociationRef;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,7 +24,9 @@ import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
+import ru.citeck.ecos.flowable.form.view.AssocFieldConverter;
 import ru.citeck.ecos.flowable.form.view.FieldConverter;
 import ru.citeck.ecos.flowable.services.FlowableCustomCommentService;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskServiceImpl;
@@ -35,12 +45,14 @@ import ru.citeck.ecos.utils.ConvertUtils;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixProvider {
 
     public static final String NS_URI_DEFAULT = "http://www.flowable.org";
     public static final String NS_PREFIX_DEFAULT = "flb";
+    public static final String DOCUMENT_FIELD_PREFIX = "_ECM_";
 
     private static final String OUTCOME_LABEL_KEY_DEFAULT = "flowable.task.button.default-complete.label";
     private static final String OUTCOME_LABEL_KEY_TEMPLATE = "flowable.form.button.%s.%s.label";
@@ -67,6 +79,14 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     private org.activiti.engine.TaskService activitiTaskService;
     @Autowired
     private WorkflowFormProvider workflowFormProvider;
+    @Autowired
+    private NodeService nodeService;
+    @Autowired
+    private DictionaryService dictionaryService;
+    @Autowired
+    private NamespaceService namespaceService;
+    @Autowired
+    private NodeAttributeService nodeAttributeService;
 
     private Map<String, FieldConverter<FormField>> fieldConverters = new HashMap<>();
 
@@ -74,8 +94,13 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
     @Override
     public NodeViewDefinition getNodeView(String taskId, String formId, FormMode mode, Map<String, Object> params) {
-        NodeViewDefinition definition = new NodeViewDefinition();
+
+        NodeViewDefinition definition = null;
+
         if (taskId.startsWith(FlowableWorkflowComponent.ENGINE_PREFIX)) {
+
+            definition = new NodeViewDefinition();
+
             definition.canBeDraft = false;
 
             Optional<SimpleFormModel> formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey);
@@ -89,11 +114,16 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
                 });
                 definition.nodeView = getNodeView(formModel.get(), mode, variables);
             }
+
         } else if (taskId.startsWith(ACTIVITI_PREFIX)) {
-            String formKey = getFormKey(taskId).get();
-            definition = workflowFormProvider.formNodeView(formKey, formId, mode, params);
+
+            Optional<String> formKey = getFormKey(taskId);
+            if (formKey.isPresent()) {
+                definition = workflowFormProvider.formNodeView(formKey.get(), formId, mode, params);
+            }
         }
-        return definition;
+
+        return definition != null ? definition : new NodeViewDefinition();
     }
 
     private NodeView getNodeView(SimpleFormModel model, FormMode mode, Map<String, Object> variables) {
@@ -164,6 +194,31 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
                 }
                 taskAttributes.put(field.getAttributeName().getLocalName(), taskValue);
             }
+
+            Map<QName, Object> documentAttributes = new HashMap<>();
+            taskAttributes.forEach((name, value) -> {
+                if (name.startsWith(DOCUMENT_FIELD_PREFIX)) {
+                    String docFieldName = name.replace(DOCUMENT_FIELD_PREFIX, "")
+                                              .replace('_', ':');
+
+                    QName docFieldQName = QName.resolveToQName(namespaceService, docFieldName);
+
+                    documentAttributes.put(docFieldQName, value);
+                }
+            });
+
+            if (!documentAttributes.isEmpty()) {
+
+                String taskLocalId = taskId.substring(taskId.indexOf("$") + 1);
+                Object bpmPackage = taskService.getVariable(taskLocalId, "bpm_package");
+
+                NodeRef documentRef = getTaskDocument(bpmPackage);
+
+                if (documentRef != null) {
+                    nodeAttributeService.setAttributes(documentRef, documentAttributes);
+                }
+            }
+
             //TODO: rework with formService
             String id = taskId.substring(taskId.indexOf("$") + 1);
             taskService.complete(id, taskAttributes, Collections.emptyMap());
@@ -183,12 +238,63 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     private List<NodeField> getFields(SimpleFormModel model, FormMode mode, Map<String, Object> values) {
 
         List<NodeField> fields = new ArrayList<>();
+        Map<String, Object> fieldsValues = new HashMap<>(values);
+
+        boolean documentNotReady = true;
+        NodeRef documentRef = null;
+        Map<QName, Serializable> properties = null;
 
         for (FormField field : model.getFields()) {
 
-            FieldConverter<FormField> converter = fieldConverters.get(field.getType());
+            String id = field.getId();
+            String fieldType = field.getType();
+
+            if (id.startsWith(DOCUMENT_FIELD_PREFIX)) {
+
+                if (documentNotReady) {
+                    documentRef = getTaskDocument(values);
+                    documentNotReady = false;
+                }
+
+                String attName = id.substring(DOCUMENT_FIELD_PREFIX.length()).replace("_", ":");
+                QName attQName = QName.resolveToQName(namespaceService, attName);
+
+                Object defaultValue;
+
+                if (dictionaryService.getProperty(attQName) != null) {
+
+                    if (properties == null) {
+                        if (documentRef != null) {
+                            properties = nodeService.getProperties(documentRef);
+                        } else {
+                            properties = Collections.emptyMap();
+                        }
+                    }
+
+                    defaultValue = properties.get(attQName);
+
+                } else {
+
+                    fieldType = AssocFieldConverter.TYPE;
+
+                    if (documentRef != null) {
+                        List<AssociationRef> assocs = nodeService.getTargetAssocs(documentRef, attQName);
+                        defaultValue = assocs.stream()
+                                             .map(AssociationRef::getTargetRef)
+                                             .collect(Collectors.toList());
+                    } else {
+                        defaultValue = Collections.emptyList();
+                    }
+                }
+
+                if (defaultValue != null) {
+                    fieldsValues.put(id, defaultValue);
+                }
+            }
+
+            FieldConverter<FormField> converter = fieldConverters.get(fieldType);
             if (converter != null) {
-                fields.add(converter.convertField(field, values));
+                fields.add(converter.convertField(field, fieldsValues));
             } else {
                 logger.error("Unregistered datatype " + field.getType());
             }
@@ -200,6 +306,41 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         }
 
         return fields;
+    }
+
+    private NodeRef getTaskDocument(Map<String, Object> props) {
+        return getTaskDocument(props.get("bpm_package"));
+    }
+
+    private NodeRef getTaskDocument(Object bpmPackage) {
+
+        NodeRef documentRef = null;
+        NodeRef packageRef = null;
+
+        if (bpmPackage instanceof NodeRef) {
+            packageRef = (NodeRef) bpmPackage;
+        } else if (bpmPackage instanceof String) {
+            String packageStr = (String) bpmPackage;
+            if (NodeRef.isNodeRef(packageStr)) {
+                packageRef = new NodeRef(packageStr);
+            }
+        }
+
+        if (packageRef != null) {
+
+            List<ChildAssociationRef> packageContent;
+
+            packageContent = nodeService.getChildAssocs(packageRef,
+                    WorkflowModel.ASSOC_PACKAGE_CONTAINS,
+                    RegexQNamePattern.MATCH_ALL);
+
+            if (packageContent != null && packageContent.size() > 0) {
+
+                documentRef = packageContent.get(0).getChildRef();
+            }
+        }
+
+        return documentRef;
     }
 
     private NodeField getOutcomeField(SimpleFormModel formModel) {

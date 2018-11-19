@@ -2,13 +2,11 @@ package ru.citeck.ecos.icase.completeness;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.icase.completeness.current.CurrentLevelsResolver;
 import ru.citeck.ecos.icase.element.CaseElementDAO;
 import ru.citeck.ecos.icase.element.CaseElementServiceImpl;
 import ru.citeck.ecos.icase.CaseUtils;
 import ru.citeck.ecos.icase.element.config.ElementConfigDto;
-import ru.citeck.ecos.model.PredicateModel;
 import ru.citeck.ecos.model.RequirementModel;
 import ru.citeck.ecos.pred.PredicateService;
 import ru.citeck.ecos.utils.RepoUtils;
@@ -18,8 +16,6 @@ import java.util.stream.Collectors;
 
 public class CaseCompletenessServiceImpl implements CaseCompletenessService {
 
-    private static final Log LOGGER = LogFactory.getLog(CaseCompletenessService.class);
-
     private static final String MODEL_CONTAINER = "space";
     private static final String MODEL_ELEMENT = "document";
 
@@ -27,7 +23,28 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
     private PredicateService predicateService;
     private CaseElementServiceImpl caseElementService;
 
+    private final List<CurrentLevelsResolver> currentLevelsResolvers = new ArrayList<>();
+
     public void init() {
+    }
+
+    @Override
+    public Set<NodeRef> getUncompletedLevels(NodeRef caseRef) {
+        return getUncompletedLevels(caseRef, getCompletedLevels(caseRef));
+    }
+
+    @Override
+    public Set<NodeRef> getUncompletedLevels(NodeRef caseRef, Collection<NodeRef> levelsToCheck) {
+
+        Set<NodeRef> result = new HashSet<>();
+
+        for (NodeRef level : levelsToCheck) {
+            if (!isLevelCompleted(caseRef, level)) {
+                result.add(level);
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -70,19 +87,13 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
 
     @Override
     public Set<NodeRef> getCurrentLevels(NodeRef caseNode) {
-
-        Set<NodeRef> completedLevels = getCompletedLevels(caseNode);
-        Set<NodeRef> allLevels = getAllLevels(caseNode);
-        Set<NodeRef> incompletedLevels = new HashSet<>(allLevels);
-        incompletedLevels.removeAll(completedLevels);
-
-        Set<NodeRef> currentLevels = new HashSet<>();
-        for (NodeRef level : incompletedLevels) {
-            if (isCurrent(level, completedLevels)) {
-                currentLevels.add(level);
+        for (CurrentLevelsResolver resolver : currentLevelsResolvers) {
+            Set<NodeRef> currentLevels = resolver.getCurrentLevels(caseNode);
+            if (currentLevels != null) {
+                return currentLevels;
             }
         }
-        return currentLevels;
+        return Collections.emptySet();
     }
 
     @Override
@@ -146,46 +157,9 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
         return new HashSet<>(list);
     }
 
-    private boolean isCurrent(NodeRef level, Set<NodeRef> completedLevels) {
-
-        Set<NodeRef> requirements = getLevelRequirements(level);
-
-        for (NodeRef requirement : requirements) {
-
-            List<?> requirementScope = nodeService.getTargetAssocs(requirement,
-                                                                   RequirementModel.ASSOC_REQUIREMENT_SCOPE);
-
-            // empty requirement scope means that it is requirement on case itself
-            // only such requirements are relevant here
-            if (!requirementScope.isEmpty()) {
-                continue;
-            }
-
-            List<NodeRef> consequents = RepoUtils.getChildrenByAssoc(requirement,
-                                                                     PredicateModel.ASSOC_CONSEQUENT,
-                                                                     nodeService);
-            for (NodeRef consequent : consequents) {
-                Boolean levelRequired = RepoUtils.getProperty(consequent,
-                                                              RequirementModel.PROP_LEVEL_REQUIRED,
-                                                              nodeService);
-                if (levelRequired == null) {
-                    continue;
-                }
-                List<NodeRef> requiredLevels = RepoUtils.getTargetAssoc(consequent,
-                                                                        RequirementModel.ASSOC_REQUIRED_LEVELS,
-                                                                        nodeService);
-                for (NodeRef requiredLevel : requiredLevels) {
-                    if (completedLevels.contains(requiredLevel) != levelRequired) {
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("Level " + level + " is locked by level " + requiredLevel +
-                                         ", as it is " + (levelRequired ? "not completed" : "completed"));
-                        }
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+    @Override
+    public void register(CurrentLevelsResolver resolver) {
+        this.currentLevelsResolvers.add(resolver);
     }
 
     public void setNodeService(NodeService nodeService) {

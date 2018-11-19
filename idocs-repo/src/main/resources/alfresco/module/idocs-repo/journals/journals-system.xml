@@ -11,6 +11,7 @@
         <import uri="http://www.citeck.ru/model/case/requirement/1.0" prefix="req"/>
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
         <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
+        <import uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org"/>
     </imports>
 
     <journal id="cardlets">
@@ -155,6 +156,27 @@
         <headers>
             <header key="cwf:processDefinitionKey" default="true"/>
             <header key="cwf:customCommentFieldId" default="true"/>
+        </headers>
+    </journal>
+
+    <journal id="orgstruct-simple-role-type">
+        <option name="type">org:simpleRoleType</option>
+        <option name="doubleClickId">nodeRef</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <headers>
+            <header key="cm:name" default="true"/>
+            <header key="cm:title" default="true"/>
+            <header key="org:roleIsManager" default="true"/>
+        </headers>
+    </journal>
+
+    <journal id="orgstruct-simple-branch-type">
+        <option name="type">org:simpleBranchType</option>
+        <option name="doubleClickId">nodeRef</option>
+        <option name="doubleClickLink">card-details?nodeRef={id}</option>
+        <headers>
+            <header key="cm:name" default="true"/>
+            <header key="cm:title" default="true"/>
         </headers>
     </journal>
 
