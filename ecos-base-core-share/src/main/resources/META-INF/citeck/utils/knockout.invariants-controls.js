@@ -1194,6 +1194,69 @@ ko.bindingHandlers.journalControl = {
         createVariantsVisibility    = params.createVariantsVisibility,
         filterCriteriaVisibility    = ko.observable(false);
 
+      var searchManager = {
+          criterias: undefined,
+          searchMinQueryLength: undefined,
+          criteria: undefined,
+          journalType: undefined,
+          searchDom: undefined,
+          store: {},
+
+          init: function(options){
+              var lastValue;
+
+              options = options || {};
+              $.extend(this, options);
+
+              lastValue = this.getLast(this.journalType);
+
+              this.setSearchString(lastValue);
+              this.search(lastValue);
+          },
+
+          save: function(value){
+              this.store[this.journalType] = value || '';
+          },
+
+          getLast: function(id){
+              return this.store[id] || '';
+          },
+
+          setSearchString: function(str){
+              if(this.searchDom){
+                  this.searchDom.value = str;
+              }
+          },
+
+          search: function(value){
+              var searchValue = value ? value.trim() : value;
+
+              this.save(searchValue);
+
+              if (searchValue) {
+                  if (this.searchMinQueryLength && searchValue.length < this.searchMinQueryLength) {
+                      return false;
+                  }
+
+                  if (this.criterias && this.criterias.length > 0) {
+                      this.criteria(_.map(this.criterias, function (item) {
+                          return _.defaults(_.clone(item), {value: searchValue});
+                      }));
+                  } else {
+                      this.criteria([{attribute: 'cm:name', predicate: 'string-contains', value: searchValue}]);
+                  }
+              } else {
+                  if (this.criterias && this.criterias.length > 0) {
+                      this.criteria(_.filter(this.criterias, function (item) {
+                          return (item && item.value && item.predicate && item.attribute);
+                      }));
+                  } else {
+                      this.criteria([]);
+                  }
+              }
+          }
+      };
+
     if (defaultVisibleAttributes) {
         defaultVisibleAttributes = _.map(defaultVisibleAttributes.split(","), function(item) { return trim(item) });
     }
@@ -1615,35 +1678,21 @@ ko.bindingHandlers.journalControl = {
 
                 // search listener
                 if (searchBar) {
+                    var searchDom = Dom.get(searchId);
+
+                    searchManager.init({
+                        criterias: _.isFunction(searchCriteria) ? searchCriteria() : searchCriteria,
+                        searchMinQueryLength: searchMinQueryLength,
+                        criteria: criteria,
+                        journalType: data.journalId && data.journalId() || params.journalType,
+                        searchDom: searchDom
+                    });
+
                     Event.on(searchId, "keypress", function (event) {
                         if (event.keyCode == 13) {
                             event.stopPropagation();
 
-                            var criterias = _.isFunction(searchCriteria) ? searchCriteria() : searchCriteria;
-
-                            var search = Dom.get(searchId);
-                            if (search.value) {
-                                var searchValue = search.value.trim();
-                                if (searchMinQueryLength && searchValue.length < searchMinQueryLength) {
-                                    return false;
-                                }
-
-                                if (criterias && criterias.length > 0) {
-                                    criteria(_.map(criterias, function (item) {
-                                        return _.defaults(_.clone(item), {value: searchValue});
-                                    }));
-                                } else {
-                                    criteria([{attribute: "cm:name", predicate: "string-contains", value: searchValue}]);
-                                }
-                            } else {
-                                if (criterias && criterias.length > 0) {
-                                    criteria(_.filter(criterias, function (item) {
-                                        return (item && item.value && item.predicate && item.attribute);
-                                    }));
-                                } else {
-                                    criteria([]);
-                                }
-                            }
+                            searchManager.search(searchDom.value);
                         }
                     });
                 }
