@@ -49,15 +49,40 @@ public class RecordsResult<T> {
         totalCount += other.getTotalCount();
     }
 
+    public void setDebugInfo(Class<?> clazz, String key, String value) {
+        setDebugInfo(clazz.getSimpleName(), key, value);
+    }
+
+    public void setDebugInfo(Class<?> clazz, String key, Object value) {
+        setDebugInfo(clazz.getSimpleName(), key, String.valueOf(value));
+    }
+
+    public void setDebugInfo(String sourceKey, String key, String value) {
+        ObjectNode debug = getNotNullDebug();
+        JsonNode sourceNode = debug.get(sourceKey);
+        ObjectNode target;
+        if (sourceNode == null || !sourceNode.isObject()) {
+            target = JsonNodeFactory.instance.objectNode();
+            debug.put(sourceKey, target);
+        } else {
+            target = (ObjectNode) sourceNode;
+        }
+        target.put(key, TextNode.valueOf(value));
+    }
+
     public void setDebugInfo(String key, String value) {
         setDebugInfo(key, TextNode.valueOf(value));
     }
 
     public void setDebugInfo(String key, JsonNode value) {
+        getNotNullDebug().set(key, value);
+    }
+
+    private ObjectNode getNotNullDebug() {
         if (debug == null) {
             debug = JsonNodeFactory.instance.objectNode();
         }
-        debug.set(key, value);
+        return debug;
     }
 
     public ObjectNode getDebug() {

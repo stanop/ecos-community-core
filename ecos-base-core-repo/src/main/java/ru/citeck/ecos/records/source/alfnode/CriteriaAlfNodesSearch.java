@@ -1,8 +1,5 @@
 package ru.citeck.ecos.records.source.alfnode;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.search.SearchService;
@@ -75,7 +72,7 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
         RecordsResult<RecordRef> result = new RecordsResult<>();
 
         if (query.isDebug()) {
-            result.setDebugInfo("query", criteriaResults.getQuery());
+            result.setDebugInfo(getClass(), "query", criteriaResults.getQuery());
         }
 
         result.setRecords(criteriaResults.getResults()
