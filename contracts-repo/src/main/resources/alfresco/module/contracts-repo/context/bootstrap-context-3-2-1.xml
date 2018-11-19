@@ -95,7 +95,7 @@
 
     <bean id="contracts.module-component.integrationSettings" parent="contracts.import-spaces.3-2-1">
         <property name="name" value="integrationSettings"/>
-        <property name="description" value="integration unilever types settings"/>
+        <property name="description" value="integration types settings"/>
         <property name="bootstrapViews">
             <list>
                 <props>
