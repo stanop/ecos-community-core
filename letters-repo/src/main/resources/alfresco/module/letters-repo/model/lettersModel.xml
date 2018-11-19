@@ -2,7 +2,7 @@
 
 <model name="letters:lettersModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
 
-	<description>Citeck EcoS letters model</description>
+	<description>Citeck ECOS letters model</description>
 	<author>Citeck</author>
 	<version>1.0</version>
 
