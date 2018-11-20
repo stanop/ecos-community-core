@@ -485,7 +485,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
             Alfresco.util.PopupManager.displayPrompt(
                 {
                     title: me.msg("delete-button.label"),
-                    text: me.msg("delete-confirmation") + " '" + (obj._oData.attributes["cm:title"] || "no-title") + "' ?",
+                    text: me.msg("delete-confirmation") + " '" + (obj._oData.attributes["cm:title"] || obj._oData.attributes["cm:name"]) + "' ?",
                     nodeRef : this.options.nodeRef,
                     noEscape: true,
                     buttons: [
@@ -558,7 +558,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                             documentsNodeRefs += documentsNodeRefs == "" ? currentNodeRef : "," + currentNodeRef;
                         }
                         if (isAdded) {
-                            reAddingDocument += "<br>" + (obj[j].properties["cm:title"] || "no-title");
+                            reAddingDocument += "<br>" + (obj[j].properties["cm:title"] || obj[j].properties["cm:name"]);
                         }
                     }
 
