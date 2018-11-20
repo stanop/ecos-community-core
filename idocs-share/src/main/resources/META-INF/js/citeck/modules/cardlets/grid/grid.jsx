@@ -21,17 +21,19 @@ export default class GridCardlet extends NodeCardlet {
                 columns: columns
             });
 
-            dataSource.load().then(function (data) {
-                let headerId = controlProps.header;
+            let success = (data) => onSuccess({
+                data: data,
+                columns: dataSource.getColumns(),
+                htmlId: htmlId,
+                header: Alfresco.util.message(controlProps.header),
+                hideTwister: controlProps.hideTwister,
+                twisterKey: controlProps.twisterKey
+            });
 
-                onSuccess({
-                    data: data.records,
-                    columns: dataSource.getColumns(),
-                    htmlId: htmlId,
-                    header: Alfresco.util.message(headerId),
-                    hideTwister: controlProps.hideTwister,
-                    twisterKey: controlProps.twisterKey
-                });
+            dataSource.load().then(function (data) {
+                success(data.records || []);
+            }).catch(function(){
+                success([]);
             });
         });
     }
