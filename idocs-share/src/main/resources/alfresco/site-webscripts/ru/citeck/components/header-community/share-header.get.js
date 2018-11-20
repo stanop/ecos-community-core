@@ -25,7 +25,8 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
     customizeUserDashboard = findObjectById(model.jsonModel.widgets, "HEADER_CUSTOMIZE_USER_DASHBOARD"),
     currentSite = page.url.templateArgs.site || getLastSiteFromCookie(),
     accessibleSites = getSitesForUser(user.name),
-    isSlideMenu = getMenuConfig("default-ui-main-menu") == "left",
+    userGroups = getGroupsForUser(user.name),
+    isSlideMenu = (getMenuConfig("default-ui-main-menu") == "left") && isShouldDisplayLeftMenu(userGroups),
     isCascadCreateMenu = getMenuConfig("default-ui-create-menu") == "cascad",
     siteData = getSiteData(),
     myTools = [
@@ -772,6 +773,35 @@ if (isSlideMenu) {
 // ---------------------
 // FUNCTIONS
 // ---------------------
+
+function isShouldDisplayLeftMenu(userGroups) {
+    var leftMenuAccessGroups = getMenuConfig("default-ui-left-menu-access-groups");
+    if (!leftMenuAccessGroups) {
+        // allow if the "default-ui-left-menu-access-group" config is not defined or empty
+        return true;
+    }
+
+    userGroups = userGroups.map(function (item) {
+        return item.fullName;
+    });
+
+    var shouldDisplay = leftMenuAccessGroups.split(',').map(function (item) {
+        return item.trim();
+    }).some(function (item) {
+        return userGroups.indexOf(item) >= 0;
+    });
+
+    // debugger;
+    return shouldDisplay;
+}
+
+function getGroupsForUser(username) {
+    var result = remote.call("/api/orgstruct/people/" + encodeURIComponent(username) + "/groups");
+    if (result.status == 200 && result != "{}") {
+        return eval('(' + result + ')');
+    }
+    return [];
+}
 
 function getSitesForUser(username) {
     var result = remote.call("/api/people/" + encodeURIComponent(username) + "/sites");
