@@ -335,19 +335,25 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                 column = me.options.columns[_.findIndex(this.options.columns, { attribute: attributeName })];
 
             return function(elCell, oRecord, oColumn, oData) {
-                if (!oRecord._oData.attributes[attributeName]) {
+                var value = oRecord._oData.attributes[attributeName];
+
+                if(!value && attributeName === "cm:title"){
+                    value = oRecord._oData.attributes["cm:name"];
+                }
+
+                if (!value) {
                     elCell.innerHTML = '<span>-</span>';
                     return;
                 }
 
                 if (column.formatter) {
-                    column.formatter(elCell, oRecord, oColumn, oRecord._oData.attributes[attributeName]);
+                    column.formatter(elCell, oRecord, oColumn, value);
                     return;
                 }
 
                 var openId = Alfresco.util.generateDomId(),
-                    label = oRecord._oData.attributes[attributeName];
-                html = '<span>' + label + '</span>',
+                    label = value,
+                    html = '<span>' + label + '</span>',
                     page = "";
 
                 if (oRecord._oData.isFolder == "true") { page = "folder"; }

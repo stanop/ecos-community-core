@@ -242,7 +242,7 @@ export class JournalsSelector extends Component {
                 },
                 failure: function() {
                     let messageEl = Dom.get(this.id + "-message");
-                    messageEl.innerHTML = Alfresco.util.message("assocs-load-error");
+                    messageEl.innerHTML = Alfresco.util.message("journals-selector.assocs-load-error");
                 },
                 scope: this
             }
@@ -266,7 +266,7 @@ export class JournalsSelector extends Component {
         let Dom = YAHOO.util.Dom;
         let createButton = Dom.get(CREATE_BUTTON_ID);
 
-        createButton.setAttribute('title', Alfresco.util.message('create-button.label'));
+        createButton.setAttribute('title', Alfresco.util.message('journals-selector.create-button.label'));
         createButton.setAttribute('class', 'create-link alfresco-twister-actions');
     }
 
