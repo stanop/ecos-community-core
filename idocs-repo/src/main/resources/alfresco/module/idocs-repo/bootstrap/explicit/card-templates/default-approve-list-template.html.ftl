@@ -30,29 +30,37 @@ table, tr, td
 
 <#-- get list of all decisions -->
 <#assign allDecisions = [] />
-<#list nodeService.getParentAssocs(document, "bpm:packageContains")![] as parent>
-    <#assign decisions = parent.childAssocs["wfcf:confirmDecisions"]![] />
-    <#list decisions as decision>
-        <#assign task = workflow.getTaskById(decision.properties["wfcf:confirmTaskId"]) />
-        <#assign outcomeProperty = task.properties["bpm:activitiOutcomeProperty"]!"bpm:outcome" />
-        <#assign outcome = task.properties[outcomeProperty] />
-        <#assign role = people.getGroup (decision.properties["wfcf:confirmerRole"]) />
-        <#assign user = people.getPerson(task.properties["cm:owner"]) />
-        
-        <#assign allDecisions = allDecisions + [ {
-            "date": task.properties["bpm:completionDate"],
-            "task": task,
-            "outcome": outcome,
-            "role": role,
-            "user": user
-        } ] />
-    </#list>
+<#assign clazz = "ru.citeck.ecos.history.records.model.HistoryRecordModel" />
+<#assign query = "{\"sourceId\": \"history\", \"language\": \"document\", \"query\": \"{\\\"nodeRef\\\":\\\"" + document.nodeRef + "\\\",\\\"events\\\":\\\"task.complete\\\",\\\"taskTypes\\\": \\\"wfcf:confirmTask\\\"}\"}" />
+<#assign records = recordsService.getRecordsForClass(query, clazz).records![] />
+
+<#list records as record>
+    <#assign type = record.taskType!"" />
+    <#assign date = record.date!"" />
+    <#assign comment = record.taskComment!"" />
+    <#assign outcome = record.taskOutcomeTitle!"" />
+    <#if record.taskPooledActors?? && record.taskPooledActors[0]??>
+        <#assign role=record.taskPooledActors[0].authorityName!""
+                 user=record.taskPooledActors[0].userName!"" />
+    </#if>
+<#-- User in taskPooledActors authority container is not available for now.
+    Trying to get it from taskRole -->
+    <#if !user?has_content && record.taskRole?has_content>
+        <#assign user = record.taskRole!"" />
+    </#if>
+    <#assign allDecisions = allDecisions + [ {
+        "date": date,
+        "comment": comment,
+        "outcome": outcome,
+        "role": role!"",
+        "user": user!""
+    } ] />
 </#list>
 
 <#-- leave the latest decision for each role -->
 <#assign decisionMap = {} />
 <#list allDecisions?sort_by("date") as decision>
-    <#assign decisionMap = decisionMap + { decision.role.properties.authorityName!decision.user.properties.userName : decision } />
+    <#assign decisionMap = decisionMap + { decision.role!decision.user : decision } />
 </#list>
 
 <table width="${tableWidth}">
@@ -67,16 +75,16 @@ table, tr, td
 
 <#list decisionMap?values as decision>
     <tr>
-        <td>${decision.date?string(dateFormat)}</td>
-        <td>${decision.role.properties.authorityDisplayName!}</td>
-        <td>${decision.user.properties.firstName!} ${decision.user.properties.lastName!}</td>
-        <td>${message("workflowtask.outcome." + decision.outcome)}</td>
-        <td>${decision.task.properties["bpm:comment"]!}</td>
-        <td>&nbsp;</td>
+        <td>${decision.date?string[dateFormat]}</td>
+        <td><#if decision.role?has_content && people.getGroup(decision.role)??>${people.getGroup(decision.role).properties.authorityDisplayName!""}</#if></td>
+        <td><#if decision.user?has_content && people.getPerson(decision.user)??>${people.getPerson(decision.user).properties.firstName!""} ${people.getPerson(decision.user).properties.lastName!""}</#if></td>
+        <td>${decision.outcome}</td>
+        <td>${decision.comment}</td>
+        <td> &nbsp;</td>
     </tr>
 </#list>
 </table>
-	
+
 </body>
 </html>
 </#escape>
