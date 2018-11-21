@@ -4,6 +4,8 @@ import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
@@ -16,6 +18,7 @@ import java.util.Date;
 public class FlowableScriptNode extends ScriptNode {
 
     private static final long serialVersionUID = 6650246004049727492L;
+    private static final Log logger = LogFactory.getLog(FlowableScriptNode.class);
 
     public FlowableScriptNode(NodeRef nodeRef, ServiceRegistry services) {
         super(nodeRef, services, null);
@@ -50,10 +53,16 @@ public class FlowableScriptNode extends ScriptNode {
 
             if (value instanceof NodeRef) {
                 return new FlowableScriptNode(((NodeRef) value), serviceRegistry);
-            } else if (value instanceof Date) {
-                return value;
             } else {
-                return super.convertValueForScript(serviceRegistry, theScope, qname, value);
+                try {
+                    return super.convertValueForScript(serviceRegistry, theScope, qname, value);
+                } catch (Exception e) {
+                    logger.error("Error converting value for script", e);
+                    if (value instanceof Date) {
+                        return value;
+                    }
+                    throw e;
+                }
             }
         }
 
