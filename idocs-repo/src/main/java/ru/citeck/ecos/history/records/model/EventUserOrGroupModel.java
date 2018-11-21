@@ -12,4 +12,16 @@ public class EventUserOrGroupModel {
 
     @MetaAtt(name = "cm:userName")
     public String userName;
+
+    public NodeRef getId() {
+        return id;
+    }
+
+    public String getAuthorityName() {
+        return authorityName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
 }
