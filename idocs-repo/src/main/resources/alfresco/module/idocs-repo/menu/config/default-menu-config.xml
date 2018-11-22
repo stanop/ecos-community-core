@@ -34,14 +34,14 @@
                                     </items>
                                 </item>
                             </resolver>
-                            <item>
+                            <item id="HEADER_ORDERS_DOCUMENTLIBRARY">
                                 <label>menu.item.documentlibrary</label>
                                 <action type="PAGE_LINK">
                                     <param name="pageId">site/common-documents</param>
                                     <param name="context">documentlibrary</param>
                                 </action>
                             </item>
-                            <item>
+                            <item id="HEADER_ORDERS_SITE_CALENDAR">
                                 <label>menu.item.calendar</label>
                                 <action type="PAGE_LINK">
                                     <param name="pageId">site/common-documents</param>
@@ -52,14 +52,14 @@
                     </item>
                 </resolver>
                 <item id="HEADER_SITES_SEARCH">
-                    <label>header.find-sites.label</label>
+                    <label>menu.item.find-sites</label>
                     <icon>workflows/find-site</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">custom-site-finder</param>
                     </action>
                 </item>
                 <item id="HEADER_SITES_CREATE">
-                    <label>Создать сайт</label>
+                    <label>menu.item.create-site</label>
                     <icon>create-site</icon>
                     <action type="CREATE_SITE" />
                 </item>
@@ -79,44 +79,44 @@
         <item id="HEADER_MORE_MY_GROUP">
             <label>menu.header.my</label>
             <items>
-                <item>
+                <item id="HEADER_MY_WORKFLOWS">
                     <label>menu.item.my-workflows</label>
                     <icon>cp:header/icons/started-workflows</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">my-workflows</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_COMPLETED_WORKFLOWS">
                     <label>menu.item.completed-workflows</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">completed-workflows</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_MY_CONTENT">
                     <label>menu.item.my-content</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">user/user-content</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_MY_SITES">
                     <label>menu.item.my-sites</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">user/user-sites</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_MY_FILES">
                     <label>menu.item.my-files</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">context/mine/myfiles</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_GLOBAL_JOURNALS">
                     <label>menu.item.data-lists</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">journals2/list/main</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_MORE_FINANCE_JOURNALS">
                     <label>menu.item.finance-data-lists</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">site/ecos-finance/journals2/list/references</param>
@@ -132,65 +132,65 @@
                 <param name="groupName">GROUP_ALFRESCO_ADMINISTRATORS</param>
             </evaluator>
             <items>
-                <item>
+                <item id="HEADER_REPOSITORY">
                     <label>menu.item.repository</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">repository</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_APPLICATION">
                     <label>menu.item.application</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">console/admin-console/application</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_FLOWABLE_MODELER">
                     <label>menu.item.bpmn-modeler</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">flowable-modeler</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_GROUPS">
                     <label>menu.item.groups</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">console/admin-console/groups</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_USERS">
                     <label>menu.item.users</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">console/admin-console/users</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_TYPES">
                     <label>menu.item.types</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">console/admin-console/type-manager</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_SYSTEM_JOURNALS">
                     <label>menu.item.system-journals</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">journals2/list/system</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_META_JOURNALS">
                     <label>menu.item.journal-setup</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">journals2/list/meta</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_TEMPLATES">
                     <label>menu.item.templates</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">journals2/list/templates</param>
                     </action>
                 </item>
-                <item>
+                <item id="HEADER_MORE">
                     <label>menu.item.more</label>
                     <action type="PAGE_LINK">
                         <param name="pageId">console/admin-console/</param>
-                        <param name="context">javascript-console</param>
+                        <param name="section">javascript-console</param>
                     </action>
                 </item>
             </items>
