@@ -13,6 +13,7 @@ import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -85,6 +86,13 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
             return null;
         }
         Object configObj = converter.convertValueForJava(config);
+        if (configObj instanceof String) {
+            try {
+                configObj = objectMapper.readTree((String) configObj);
+            } catch (IOException e) {
+                throw new RuntimeException("Can't cast config to type: " + type, e);
+            }
+        }
         return objectMapper.convertValue(configObj, type);
     }
 
