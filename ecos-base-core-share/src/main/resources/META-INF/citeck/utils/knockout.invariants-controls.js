@@ -1336,6 +1336,27 @@ ko.bindingHandlers.journalControl = {
                     options = ko.computed(function (page) {
                         var journalTypeId = data.journalId && data.journalId() || params.journalType;
                         var actualCriteria = criteria();
+
+                        var optionsFilters;
+                        var optionsFiltersTemp = [];
+
+                        if (_.isFunction(optionsFilter)) {
+                            optionsFilters = optionsFilter() || [];
+
+                            optionsFilters.forEach(function(optionsFilter) {
+                                var match = _.find(actualCriteria, function(actualCriterion) {
+                                    return optionsFilter.attribute == actualCriterion.attribute;
+                                });
+                                if (!match) {
+                                    optionsFiltersTemp.push(optionsFilter);
+                                }
+                            });
+
+                            if(optionsFiltersTemp.length){
+                                criteria(optionsFiltersTemp);
+                            }
+                        }
+
                         if (hiddenCriteria) {
                             for (var hc in hiddenCriteria) {
                                 if (!_.some(actualCriteria, function (criterion) {
