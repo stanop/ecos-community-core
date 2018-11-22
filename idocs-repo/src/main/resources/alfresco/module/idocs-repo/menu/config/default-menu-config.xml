@@ -26,11 +26,33 @@
                 <resolver id="USER_SITES">
                     <item>
                         <items>
-                            <resolver id="SITE_JOURNALS" />
+                            <resolver id="SITE_JOURNALS">
+                                <item>
+                                    <mobile-visible>false</mobile-visible>
+                                    <items>
+                                        <resolver id="JOURNAL_FILTERS" />
+                                    </items>
+                                </item>
+                            </resolver>
+                            <item>
+                                <label>menu.item.documentlibrary</label>
+                                <action type="PAGE_LINK">
+                                    <param name="pageId">site/common-documents</param>
+                                    <param name="context">documentlibrary</param>
+                                </action>
+                            </item>
+                            <item>
+                                <label>menu.item.calendar</label>
+                                <action type="PAGE_LINK">
+                                    <param name="pageId">site/common-documents</param>
+                                    <param name="context">calendar</param>
+                                </action>
+                            </item>
                         </items>
                     </item>
                 </resolver>
                 <item id="HEADER_SITES_SEARCH">
+                    <label>header.find-sites.label</label>
                     <icon>workflows/find-site</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">custom-site-finder</param>
@@ -58,6 +80,7 @@
             <label>menu.header.my</label>
             <items>
                 <item>
+                    <label>menu.item.my-workflows</label>
                     <icon>cp:header/icons/started-workflows</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">my-workflows</param>
@@ -105,9 +128,6 @@
         <item id="HEADER_MORE_TOOLS_GROUP">
             <label>menu.header.admin-tools</label>
             <icon>admin-tools</icon>
-            <action type="LINK">
-                <param name="test">Test11231</param>
-            </action>
             <evaluator id="user-in-group">
                 <param name="groupName">GROUP_ALFRESCO_ADMINISTRATORS</param>
             </evaluator>
@@ -169,8 +189,8 @@
                 <item>
                     <label>menu.item.more</label>
                     <action type="PAGE_LINK">
-                        <param name="pageId">console</param>
-                        <param name="context">admin-console</param>
+                        <param name="pageId">console/admin-console/</param>
+                        <param name="context">javascript-console</param>
                     </action>
                 </item>
             </items>
