@@ -126,6 +126,41 @@ define(['lib/knockout', 'lib/underscore'], function(ko) {
             userPrompts = false;
         },
 
+        ensureAttributeValue: function(objects, names, callback) {
+            objects = objects || [];
+            names = names || [];
+
+            var countObjects = objects.length;
+            var countNames = names.length;
+            var count = countObjects * countNames;
+
+            var checkCount = function(){
+                count--;
+
+                if(count === 0 && typeof callback === 'function'){
+                    callback(objects);
+                }
+            };
+
+            objects.forEach(function(obj){
+                names.forEach(function(name){
+                    var attr  = obj.impl().getAttribute(name);
+                    var isLoaded = attr.persisted.loaded();
+
+                    if(isLoaded){
+                        checkCount();
+                    }else{
+                        koutils.subscribeOnce(attr.value, function(){
+                            checkCount();
+                        });
+                        attr.value();
+                    }
+                });
+            });
+
+            return null;
+        },
+
         renderTemplate: function(template, viewModel) {
             return YAHOO.lang.substitute(template, viewModel, function(key, accessor) {
                 var value = accessor();
