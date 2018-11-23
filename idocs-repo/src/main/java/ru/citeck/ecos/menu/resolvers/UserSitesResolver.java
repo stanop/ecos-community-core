@@ -38,7 +38,7 @@ public class UserSitesResolver extends AbstractMenuItemsResolver {
         Map<String, String> elementParams = new HashMap<>();
         elementParams.put(SITE_ID_KEY, name);
         element.setParams(elementParams);
-        element.setId(name);
+        element.setId("HEADER_" + name.toUpperCase());
         element.setAction(SITE_LINK_KEY, actionParams);
         return element;
     }

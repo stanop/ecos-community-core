@@ -2,10 +2,7 @@ package ru.citeck.ecos.menu.resolvers;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.search.SearchService;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
@@ -23,9 +20,6 @@ public class JournalFiltersResolver extends AbstractMenuItemsResolver {
     private static final String FILTER_LINK_KEY = "FILTER_LINK";
     private static final String FILTER_ID_KEY = "filterId";
 
-//    private SearchService searchService;
-//    private NodeService nodeService;
-
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
         String journal = getParam(params, context, JOURNAL_ID_KEY);
@@ -34,15 +28,7 @@ public class JournalFiltersResolver extends AbstractMenuItemsResolver {
         return queryFilterRefs(journal).stream()
                 .map(filterRef -> constructItem(filterRef, context, engJournalTitle))
                 .collect(Collectors.toList());
-
-//        return constructItems(queryFilterRefs(journal));
     }
-
-//    private List<Element> constructItems(List<NodeRef> filterRefs) {
-//        List<Element> elements = new ArrayList<>();
-//        filterRefs.forEach(filterRef -> elements.add(constructItem(filterRef, context)));
-//        return elements;
-//    }
 
     private Element constructItem(NodeRef filterRef, Element context, String engJournalTitle) {
 
@@ -81,15 +67,5 @@ public class JournalFiltersResolver extends AbstractMenuItemsResolver {
     public String getId() {
         return ID;
     }
-
-//    @Autowired
-//    public void setSearchService(SearchService searchService) {
-//        this.searchService = searchService;
-//    }
-//
-//    @Autowired
-//    public void setNodeService(NodeService nodeService) {
-//        this.nodeService = nodeService;
-//    }
 
 }

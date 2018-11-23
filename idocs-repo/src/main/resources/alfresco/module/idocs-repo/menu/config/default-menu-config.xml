@@ -8,7 +8,6 @@
     <items>
         <item id="HEADER_MENU_TASKS">
             <label>menu.header.tasks</label>
-            <icon type="fa">fa-tasks</icon>
             <items>
                 <resolver id="JOURNALS">
                     <param name="listId">global-tasks</param>
