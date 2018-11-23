@@ -55,7 +55,8 @@ public class HistoryRecordsDAO extends AbstractRecordsDAO implements RecordsWith
 
         List<ObjectNode> events = historyGet.getHistoryEvents(queryData.nodeRef,
                                                               queryData.filter,
-                                                              queryData.events);
+                                                              queryData.events,
+                                                              queryData.taskTypes);
 
         List<ObjectNode> nodes = graphQLMetaService.getMeta(context -> getMetaValues(events, context), metaSchema);
 
@@ -87,5 +88,6 @@ public class HistoryRecordsDAO extends AbstractRecordsDAO implements RecordsWith
         public String nodeRef;
         public String filter;
         public String events;
+        public String taskTypes;
     }
 }

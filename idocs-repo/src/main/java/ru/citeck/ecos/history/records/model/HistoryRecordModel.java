@@ -27,12 +27,68 @@ public class HistoryRecordModel {
     public String taskOutcome;
     @MetaAtt(name = "event:taskOutcomeTitle")
     public String taskOutcomeTitle;
-    @MetaAtt(name = "taskType")
-    public String taskType;
+    @MetaAtt(name = "event:taskType")
+    public TaskType taskType;
     @MetaAtt(name = "event:taskAttachments")
     public List<TaskAttachmentModel> taskAttachments;
     @MetaAtt(name = "event:taskInstanceId")
     public String taskInstanceId;
     @MetaAtt(name = "event:taskPooledActors")
     public List<EventUserOrGroupModel> taskPooledActors;
+
+    public String getNodeRef() {
+        return nodeRef;
+    }
+
+    public EventUserModel getInitiator() {
+        return initiator;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getDocumentVersion() {
+        return documentVersion;
+    }
+
+    public String getTaskComment() {
+        return taskComment;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public String getTaskRole() {
+        return taskRole;
+    }
+
+    public String getTaskOutcome() {
+        return taskOutcome;
+    }
+
+    public String getTaskOutcomeTitle() {
+        return taskOutcomeTitle;
+    }
+
+    public TaskType getTaskType() {
+        return taskType;
+    }
+
+    public List<TaskAttachmentModel> getTaskAttachments() {
+        return taskAttachments;
+    }
+
+    public String getTaskInstanceId() {
+        return taskInstanceId;
+    }
+
+    public List<EventUserOrGroupModel> getTaskPooledActors() {
+        return taskPooledActors;
+    }
 }
