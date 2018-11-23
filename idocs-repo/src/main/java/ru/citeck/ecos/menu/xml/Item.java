@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="type" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="label" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="icon" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="icon" type="{http://www.citeck.ru/menu/config/1.0}icon" minOccurs="0"/>
  *         &lt;element name="mobile-visible" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="param" type="{http://www.citeck.ru/menu/config/1.0}parameter" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="action" type="{http://www.citeck.ru/menu/config/1.0}action" minOccurs="0"/>
@@ -55,7 +55,7 @@ public class Item {
     @XmlElement(namespace = "http://www.citeck.ru/menu/config/1.0")
     protected String label;
     @XmlElement(namespace = "http://www.citeck.ru/menu/config/1.0")
-    protected String icon;
+    protected Icon icon;
     @XmlElement(name = "mobile-visible", namespace = "http://www.citeck.ru/menu/config/1.0")
     protected Boolean mobileVisible;
     @XmlElement(namespace = "http://www.citeck.ru/menu/config/1.0")
@@ -122,10 +122,10 @@ public class Item {
      *
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Icon }
      *
      */
-    public String getIcon() {
+    public Icon getIcon() {
         return icon;
     }
 
@@ -134,10 +134,10 @@ public class Item {
      *
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Icon }
      *
      */
-    public void setIcon(String value) {
+    public void setIcon(Icon value) {
         this.icon = value;
     }
 
