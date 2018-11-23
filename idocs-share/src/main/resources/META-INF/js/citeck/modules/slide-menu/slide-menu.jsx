@@ -16,7 +16,8 @@ import {
 import {
     selectedMenuItemIdKey,
     fetchExpandableItems,
-    processApiData
+    processApiData,
+    processSlideMenuApiData
 } from './util';
 import "xstyle!./slide-menu.css";
 
@@ -33,23 +34,41 @@ const store = createStore(rootReducer, {}, composeEnhancers(
 );
 
 export const render = (elementId, props) => {
-    // TODO use api
-    new Promise(resolve => {
-        const apiData = processApiData(props.slideMenuConfig.widgets);
-        // console.log(apiData);
-        resolve(apiData);
-    }).then(menuItems => {
+    api.getSlideMenuItems().then(apiData => {
+        console.log('apiData', apiData);
+        const slideMenuData = processSlideMenuApiData(apiData.items);
+        console.log('slideMenuData', slideMenuData);
+
         let selectedId = null;
         if (sessionStorage && sessionStorage.getItem) {
             selectedId = sessionStorage.getItem(selectedMenuItemIdKey);
             store.dispatch(setSelectedId(selectedId));
         }
 
-        const expandableItems = fetchExpandableItems(menuItems, selectedId);
+        const expandableItems = fetchExpandableItems(slideMenuData, selectedId);
 
-        store.dispatch(setLeftMenuItems(menuItems));
+        store.dispatch(setLeftMenuItems(slideMenuData));
         store.dispatch(setLeftMenuExpandableItems(expandableItems));
+
     });
+
+    // // TODO use api
+    // new Promise(resolve => {
+    //     const apiData = processApiData(props.slideMenuConfig.widgets);
+    //     // console.log(apiData);
+    //     resolve(apiData);
+    // }).then(menuItems => {
+    //     let selectedId = null;
+    //     if (sessionStorage && sessionStorage.getItem) {
+    //         selectedId = sessionStorage.getItem(selectedMenuItemIdKey);
+    //         store.dispatch(setSelectedId(selectedId));
+    //     }
+    //
+    //     const expandableItems = fetchExpandableItems(menuItems, selectedId);
+    //
+    //     store.dispatch(setLeftMenuItems(menuItems));
+    //     store.dispatch(setLeftMenuExpandableItems(expandableItems));
+    // });
 
     // TODO use api
     store.dispatch(setSmallLogo(props.slideMenuConfig.logoSrcMobile));

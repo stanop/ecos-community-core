@@ -78,4 +78,9 @@ export default class {
         const url = "slingshot/live-search-people?t=" + generateSearchTerm(terms) + "&maxResults=5";
         return this.getJSON(url).catch(() => {});
     };
+
+    getSlideMenuItems = () => {
+        const url = "citeck/menu/menu";
+        return this.getJSON(url).catch(() => []);
+    };
 }

@@ -1,20 +1,13 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { toggleExpanded } from "../actions";
 import ListItem from './list-item';
 
 const mapStateToProps = (state) => ({
     expandableItems: state.leftMenu.expandableItems
 });
 
-const mapDispatchToProps = dispatch => ({
-    setExpanded: id => dispatch(toggleExpanded(id))
-});
-
-const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, setExpanded, expandableItems}) => {
+const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, expandableItems, parentParams}) => {
     const listContent = items.map(item => {
-        const isSelected = false;
-
         let nestedList = null;
         let isNestedListExpanded = false;
         if (item.items && item.items.length > 0) {
@@ -23,24 +16,20 @@ const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, setExpanded, ex
                 isNestedListExpanded = expandableItem.isNestedListExpanded;
             }
 
+            let pp = item.action;
+            if (parentParams) {
+                pp.parent = parentParams;
+            }
+
             nestedList = (
                 <List
                     items={item.items}
+                    parentParams={pp}
                     toggleSlideMenu={toggleSlideMenu}
-                    isNested={!item.sectionTitle}
+                    isNested={true}
                     isExpanded={isNestedListExpanded}
                 />
             );
-        }
-
-        let toggleCollapse = null;
-        if (nestedList) {
-            let classes = ['slide-menu-list__toggle-collapse'];
-            if (isNestedListExpanded) {
-                classes.push('slide-menu-list__toggle-collapse_expanded');
-            }
-
-            toggleCollapse = <a className={classes.join(' ')} href='#' onClick={() => setExpanded(item.id)} />;
         }
 
         return (
@@ -48,9 +37,9 @@ const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, setExpanded, ex
                 key={item.id}
                 toggleSlideMenu={toggleSlideMenu}
                 item={item}
-                isSelected={isSelected}
                 nestedList={nestedList}
-                toggleCollapse={toggleCollapse}
+                isNestedListExpanded={isNestedListExpanded}
+                parentParams={parentParams}
             />
         );
     });
@@ -72,5 +61,5 @@ const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, setExpanded, ex
     );
 };
 
-const List = connect(mapStateToProps, mapDispatchToProps)(ListPure);
+const List = connect(mapStateToProps)(ListPure);
 export default List;

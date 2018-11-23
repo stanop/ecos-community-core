@@ -219,6 +219,7 @@
     padding: 12px 10px 12px 20px;
     font-weight: 600;
     color: #52759d;
+    cursor: default;
 }
 
 .slide-menu-list__item.list-divider:before {
@@ -304,6 +305,14 @@
 #slide-menu-checkbox:checked ~ .slide-menu .slide-menu-collapsible-list_nested {
     background: rgba(255,255,255,.4);
     padding: 10px 0 10px 10px;
+}
+
+.yui-skin-citeckTheme .fa.HEADER_APPLICATION:before {
+    content: "\f108";
+}
+
+.yui-skin-citeckTheme .fa.HEADER_TYPES:before {
+    content: "\f2a1";
 }
 
 /**

@@ -5,7 +5,6 @@ import LogoBlock from "./logo-block";
 import RootList from "./root-list";
 
 const mapStateToProps = (state) => ({
-    items: state.leftMenu.items,
     smallLogo: state.leftMenu.smallLogo,
     largeLogo: state.leftMenu.largeLogo
 });
@@ -54,8 +53,12 @@ class SlideMenu extends React.Component {
         this.slideMenuToggle && this.slideMenuToggle.click();
     };
 
+    // componentDidCatch(error, info) {
+    //     console.log(error, info);
+    // }
+
     render() {
-        const { items, smallLogo, largeLogo } = this.props;
+        const { smallLogo, largeLogo } = this.props;
 
         return ReactDOM.createPortal(
             <Fragment>
@@ -65,7 +68,7 @@ class SlideMenu extends React.Component {
                     htmlFor="slide-menu-checkbox"
                 />
                 <LogoBlock smallLogo={smallLogo} largeLogo={largeLogo} />
-                <RootList toggleSlideMenu={this.toggleSlideMenu} items={items} />
+                <RootList toggleSlideMenu={this.toggleSlideMenu} />
             </Fragment>,
             this.menu,
         );
