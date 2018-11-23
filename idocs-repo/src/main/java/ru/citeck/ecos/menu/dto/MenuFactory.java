@@ -81,7 +81,14 @@ public class MenuFactory {
 
         String label = getLocalizedMessage(newData.getLabel());
         String id = newData.getId();
-        String icon = newData.getIcon();
+
+        Icon icon = newData.getIcon();
+        String iconType= null, iconValue = null;
+        if (icon != null) {
+            iconType = icon.getType();
+            iconValue = icon.getValue();
+        }
+
         Boolean mobileVisible = newData.isMobileVisible();
 
         Action xmlAction = newData.getAction();
@@ -99,8 +106,8 @@ public class MenuFactory {
         if (!StringUtils.isEmpty(label)) {
             targetElement.setLabel(label);
         }
-        if (!StringUtils.isEmpty(icon)) {
-            targetElement.setIcon(icon);
+        if (!StringUtils.isEmpty(iconType) && !StringUtils.isEmpty(iconValue)) {
+            targetElement.setIcon(iconType, iconValue);
         }
         if (mobileVisible != null) {
             targetElement.setMobileVisible(mobileVisible);

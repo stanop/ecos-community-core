@@ -1,5 +1,12 @@
 package ru.citeck.ecos.menu.resolvers;
 
+import org.alfresco.model.ContentModel;
+import org.alfresco.repo.node.MLPropertyInterceptor;
+import org.alfresco.service.cmr.repository.MLText;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.search.SearchService;
+import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,13 +15,19 @@ import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.menu.dto.MenuFactory;
 
 import javax.annotation.PostConstruct;
+import java.util.Locale;
 import java.util.Map;
 
 public abstract class AbstractMenuItemsResolver implements MenuItemsResolver {
 
     protected static final String JOURNAL_ID_KEY = "journalId";
     protected static final String SITE_ID_KEY = "siteId";
+    protected static final String ENG_JOURNAL_TITLE_KEY = "engJournalTitle";
 
+    private static final Locale engLocale = Locale.forLanguageTag("EN-us");
+
+    protected NodeService nodeService;
+    protected SearchService searchService;
     private MenuFactory menuFactory;
 
     @PostConstruct
@@ -53,4 +66,29 @@ public abstract class AbstractMenuItemsResolver implements MenuItemsResolver {
         return result;
     }
 
+    protected String getUppercaseEngTitle(NodeRef nodeRef) {
+        String result = getEngValue(nodeRef, ContentModel.PROP_TITLE, nodeService)
+                .replaceAll("[^a-zA-Z0-9]", "_");
+        return result.toUpperCase();
+    }
+
+    private String getEngValue(NodeRef nodeRef, QName qName, NodeService nodeService) {
+        MLPropertyInterceptor.setMLAware(true);
+        MLText mlProp = (MLText) nodeService.getProperty(nodeRef, qName);
+        MLPropertyInterceptor.setMLAware(false);
+        if (mlProp == null) {
+            return "";
+        }
+        return mlProp.getValue(engLocale);
+    }
+
+    @Autowired
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
+
+    @Autowired
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
 }
