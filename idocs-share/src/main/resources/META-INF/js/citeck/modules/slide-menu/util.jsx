@@ -17,52 +17,6 @@ export function processApiData(oldItems) {
     });
 }
 
-export function processSlideMenuApiData(oldItems, parent) {
-    if (!oldItems) {
-        return [];
-    }
-
-    return oldItems.map(item => {
-        let newItem = { ...item };
-
-        let itemId = item.id || '';
-
-        if (item.action) {
-            switch (item.action.type) {
-                case 'CREATE_SITE':
-                    break;
-                case 'FILTER_LINK':
-                    if (parent && parent.action && parent.action.type === 'JOURNAL_LINK') {
-                        itemId = `HEADER_${(`${parent.id}_${item.label}`.replace(/-/g, "_")).toUpperCase()}_FILTER`;
-                    }
-                    break;
-                case 'JOURNAL_LINK':
-                    if (parent && parent.action && parent.action.type === 'SITE_LINK') {
-                        // HEADER_ORDERS_ORDERS_INTERNAL_JOURNAL
-                        itemId = `HEADER_${(`${parent.action.params.siteName}_${item.id}`.replace(/-/g, "_")).toUpperCase()}_JOURNAL`;
-                    } else {
-                        // HEADER_TASKS_ACTIVE_TASKS_JOURNAL
-                        itemId = `HEADER_TASKS_${(`${itemId}`.replace(/-/g, "_")).toUpperCase()}_JOURNAL`;
-                    }
-                    break;
-                case 'PAGE_LINK':
-                    if (item.action.params.context) {
-
-                    }
-                    break;
-                case 'SITE_LINK':
-                    itemId = `HEADER_${(`${itemId}`.replace(/-/g, "_")).toUpperCase()}`;
-                    break;
-            }
-        }
-
-        newItem.id = itemId.split(' ').join('_');
-
-        newItem.items = processSlideMenuApiData(item.items, item);
-        return newItem;
-    });
-}
-
 export function fetchExpandableItems(items, selectedId) {
     let flatList = [];
     items.map(item => {

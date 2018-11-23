@@ -15,9 +15,7 @@ import {
 } from './actions';
 import {
     selectedMenuItemIdKey,
-    fetchExpandableItems,
-    processApiData,
-    processSlideMenuApiData
+    fetchExpandableItems
 } from './util';
 import "xstyle!./slide-menu.css";
 
@@ -35,8 +33,7 @@ const store = createStore(rootReducer, {}, composeEnhancers(
 
 export const render = (elementId, props) => {
     api.getSlideMenuItems().then(apiData => {
-        console.log('apiData', apiData);
-        const slideMenuData = processSlideMenuApiData(apiData.items);
+        const slideMenuData = apiData.items;
         console.log('slideMenuData', slideMenuData);
 
         let selectedId = null;
@@ -51,24 +48,6 @@ export const render = (elementId, props) => {
         store.dispatch(setLeftMenuExpandableItems(expandableItems));
 
     });
-
-    // // TODO use api
-    // new Promise(resolve => {
-    //     const apiData = processApiData(props.slideMenuConfig.widgets);
-    //     // console.log(apiData);
-    //     resolve(apiData);
-    // }).then(menuItems => {
-    //     let selectedId = null;
-    //     if (sessionStorage && sessionStorage.getItem) {
-    //         selectedId = sessionStorage.getItem(selectedMenuItemIdKey);
-    //         store.dispatch(setSelectedId(selectedId));
-    //     }
-    //
-    //     const expandableItems = fetchExpandableItems(menuItems, selectedId);
-    //
-    //     store.dispatch(setLeftMenuItems(menuItems));
-    //     store.dispatch(setLeftMenuExpandableItems(expandableItems));
-    // });
 
     // TODO use api
     store.dispatch(setSmallLogo(props.slideMenuConfig.logoSrcMobile));

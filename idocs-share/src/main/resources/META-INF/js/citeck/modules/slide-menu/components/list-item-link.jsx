@@ -62,6 +62,11 @@ const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, 
         }
     }
 
+    let counter = null;
+    if (item.count) {
+        counter = <span className={'slide-menu-list__link-badge'}>{item.count}</span>;
+    }
+
     return (
         <a
             href={targetUrl}
@@ -74,7 +79,11 @@ const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, 
             className={classes.join(' ')}
         >
             <ListItemIcon item={item} />
-            <span className={'slide-menu-list__link-label'}>{label}</span>
+            <span className={'slide-menu-list__link-label'}>
+                {label}
+                {counter}
+            </span>
+
         </a>
     );
 };
