@@ -8,6 +8,7 @@
     <items>
         <item id="HEADER_MENU_TASKS">
             <label>menu.header.tasks</label>
+            <icon type="fa">fa-tasks</icon>
             <items>
                 <resolver id="JOURNALS">
                     <param name="listId">global-tasks</param>
@@ -32,35 +33,22 @@
                                     <items>
                                         <resolver id="JOURNAL_FILTERS" />
                                     </items>
+
                                 </item>
                             </resolver>
-                            <item id="HEADER_ORDERS_DOCUMENTLIBRARY">
-                                <label>menu.item.documentlibrary</label>
-                                <action type="PAGE_LINK">
-                                    <param name="pageId">site/common-documents</param>
-                                    <param name="context">documentlibrary</param>
-                                </action>
-                            </item>
-                            <item id="HEADER_ORDERS_SITE_CALENDAR">
-                                <label>menu.item.calendar</label>
-                                <action type="PAGE_LINK">
-                                    <param name="pageId">site/common-documents</param>
-                                    <param name="context">calendar</param>
-                                </action>
-                            </item>
                         </items>
                     </item>
                 </resolver>
                 <item id="HEADER_SITES_SEARCH">
                     <label>menu.item.find-sites</label>
-                    <icon>workflows/find-site</icon>
+                    <icon type="fa">fa-search</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">custom-site-finder</param>
                     </action>
                 </item>
                 <item id="HEADER_SITES_CREATE">
                     <label>menu.item.create-site</label>
-                    <icon>create-site</icon>
+                    <icon type="fa">fa-plus-circle</icon>
                     <action type="CREATE_SITE" />
                 </item>
             </items>
@@ -70,6 +58,7 @@
             <items>
                 <item id="HEADER_MENU_ORGSTRUCT_WIDGET">
                     <label>menu.header.orgstructure</label>
+                    <icon type="fa">fa-sitemap</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">orgstruct</param>
                     </action>
@@ -81,7 +70,7 @@
             <items>
                 <item id="HEADER_MY_WORKFLOWS">
                     <label>menu.item.my-workflows</label>
-                    <icon>cp:header/icons/started-workflows</icon>
+                    <!--<icon type="fa"></icon>-->
                     <action type="PAGE_LINK">
                         <param name="pageId">my-workflows</param>
                     </action>
@@ -89,105 +78,124 @@
                 <item id="HEADER_COMPLETED_WORKFLOWS">
                     <label>menu.item.completed-workflows</label>
                     <action type="PAGE_LINK">
+                        <!--<icon type="fa"></icon>-->
                         <param name="pageId">completed-workflows</param>
                     </action>
                 </item>
                 <item id="HEADER_MY_CONTENT">
                     <label>menu.item.my-content</label>
+                    <!--<icon type="fa"></icon>-->
                     <action type="PAGE_LINK">
                         <param name="pageId">user/user-content</param>
                     </action>
                 </item>
                 <item id="HEADER_MY_SITES">
                     <label>menu.item.my-sites</label>
+                    <!--<icon type="fa"></icon>-->
                     <action type="PAGE_LINK">
                         <param name="pageId">user/user-sites</param>
                     </action>
                 </item>
                 <item id="HEADER_MY_FILES">
                     <label>menu.item.my-files</label>
+                    <!--<icon type="fa"></icon>-->
                     <action type="PAGE_LINK">
                         <param name="pageId">context/mine/myfiles</param>
                     </action>
                 </item>
                 <item id="HEADER_GLOBAL_JOURNALS">
                     <label>menu.item.data-lists</label>
+                    <!--<icon type="fa"></icon>-->
                     <action type="PAGE_LINK">
                         <param name="pageId">journals2/list/main</param>
                     </action>
                 </item>
                 <item id="HEADER_MORE_FINANCE_JOURNALS">
                     <label>menu.item.finance-data-lists</label>
+                    <!--<icon type="fa"></icon>-->
                     <action type="PAGE_LINK">
                         <param name="pageId">site/ecos-finance/journals2/list/references</param>
                     </action>
+                    <evaluator id="site-member">
+                        <param name="siteName">ecos-finance</param>
+                    </evaluator>
                 </item>
 
             </items>
         </item>
         <item id="HEADER_MORE_TOOLS_GROUP">
             <label>menu.header.admin-tools</label>
-            <icon>admin-tools</icon>
+            <!--<icon type="fa"></icon>-->
             <evaluator id="user-in-group">
                 <param name="groupName">GROUP_ALFRESCO_ADMINISTRATORS</param>
             </evaluator>
             <items>
                 <item id="HEADER_REPOSITORY">
                     <label>menu.item.repository</label>
+                    <icon type="fa">fa-tasks</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">repository</param>
                     </action>
                 </item>
                 <item id="HEADER_APPLICATION">
                     <label>menu.item.application</label>
+                    <!--<icon type="fa"></icon>-->
                     <action type="PAGE_LINK">
                         <param name="pageId">console/admin-console/application</param>
                     </action>
                 </item>
                 <item id="HEADER_FLOWABLE_MODELER">
                     <label>menu.item.bpmn-modeler</label>
+                    <icon type="fa">fa-retweet</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">flowable-modeler</param>
                     </action>
                 </item>
                 <item id="HEADER_GROUPS">
                     <label>menu.item.groups</label>
+                    <icon type="fa">fa-clone</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">console/admin-console/groups</param>
                     </action>
                 </item>
                 <item id="HEADER_USERS">
                     <label>menu.item.users</label>
+                    <icon type="fa">fa-user</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">console/admin-console/users</param>
                     </action>
                 </item>
                 <item id="HEADER_TYPES">
                     <label>menu.item.types</label>
+                    <icon type="fa">fa-braille</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">console/admin-console/type-manager</param>
                     </action>
                 </item>
                 <item id="HEADER_SYSTEM_JOURNALS">
                     <label>menu.item.system-journals</label>
+                    <icon type="fa">fa-cogs</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">journals2/list/system</param>
                     </action>
                 </item>
                 <item id="HEADER_META_JOURNALS">
                     <label>menu.item.journal-setup</label>
+                    <icon type="fa">fa-newspaper-o</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">journals2/list/meta</param>
                     </action>
                 </item>
                 <item id="HEADER_TEMPLATES">
                     <label>menu.item.templates</label>
+                    <icon type="fa">fa-code</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">journals2/list/templates</param>
                     </action>
                 </item>
                 <item id="HEADER_MORE">
                     <label>menu.item.more</label>
+                    <icon type="fa">fa-ellipsis-h</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">console/admin-console/</param>
                         <param name="section">javascript-console</param>

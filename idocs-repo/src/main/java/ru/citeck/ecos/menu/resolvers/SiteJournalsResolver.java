@@ -23,31 +23,78 @@ import java.util.stream.Collectors;
 public class SiteJournalsResolver extends AbstractMenuItemsResolver {
 
     private static final String ID = "SITE_JOURNALS";
-    private SearchService searchService;
-    private NodeService nodeService;
+
+//    private SearchService searchService;
+//    private NodeService nodeService;
     private static final String JOURNAL_REF_KEY = "journalRef";
     private static final String JOURNAL_LINK_KEY = "JOURNAL_LINK";
+    private static final String PAGE_LINK_KEY = "PAGE_LINK";
+    private static final String PAGE_ID_KEY = "pageId";
 
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
         String siteId = getParam(params, context, SITE_ID_KEY);
-        return getJournalsBySiteId(siteId).stream()
-                .map(this::constructItem)
+        List<Element> result = getJournalsBySiteId(siteId).stream()
+                .map(nodeRef -> constructItem(nodeRef, context, siteId))
                 .collect(Collectors.toList());
+        result.add(docLibElement(siteId));
+        result.add(calendarElement(siteId));
+        return result;
     }
 
-    private Element constructItem(NodeRef journalRef) {
-        Element element = new Element();
+    private Element constructItem(NodeRef journalRef, Element context, String siteId) {
+        /* get data */
         String title = RepoUtils.getProperty(journalRef, ContentModel.PROP_TITLE , nodeService);
         String name = RepoUtils.getProperty(journalRef, ContentModel.PROP_NAME , nodeService);
-        Map<String, String> actionParams = new HashMap<>();
+
+        String engJournalTitle = getUppercaseEngTitle(journalRef);
+        String id = String.format("HEADER_%s_%s_JOURNAL", siteId.toUpperCase(), engJournalTitle);
+
+//        String id = buildId(journalRef, siteId);
+        Map<String, String> parentActionParams = context.getAction().getParams();
+        Map<String, String> actionParams = new HashMap<>(parentActionParams);
         actionParams.put(JOURNAL_REF_KEY, journalRef.toString());
-        element.setId(name);
+        /* write to element */
+        Element element = new Element();
+        element.setId(id);
         element.setLabel(title);
         element.setAction(JOURNAL_LINK_KEY, actionParams);
+        /* additional params for constructing child items */
         Map<String, String> elementParams = new HashMap<>();
         elementParams.put(JOURNAL_ID_KEY, name);
+        elementParams.put(ENG_JOURNAL_TITLE_KEY, engJournalTitle);
         element.setParams(elementParams);
+        return element;
+    }
+
+//    private String buildId(NodeRef journalRef, String siteId) {
+//        String engJournalTitle = getEngValue(journalRef, ContentModel.PROP_TITLE)
+//                .replaceAll("[^a-zA-Z0-9]", "_");
+//        String result = String.format("HEADER_%s_%s_JOURNAL", siteId, engJournalTitle);
+//        return result.toUpperCase();
+//    }
+
+    private Element docLibElement(String siteId) {
+        String id = String.format("HEADER_%s_DOCUMENTLIBRARY", siteId.toUpperCase());
+        String pageId = String.format("site/%s/documentlibrary", siteId);
+        Map<String, String> actionParams = new HashMap<>();
+        actionParams.put(PAGE_ID_KEY, pageId);
+        Element element = new Element();
+        element.setId(id);
+        element.setLabel("menu.item.documentlibrary");
+        element.setAction(PAGE_LINK_KEY, actionParams);
+        return element;
+    }
+
+    private Element calendarElement(String siteId) {
+        String id = String.format("HEADER_%s_SITE_CALENDAR", siteId.toUpperCase());
+        String pageId = String.format("site/%s/calendar", siteId);
+        Map<String, String> actionParams = new HashMap<>();
+        actionParams.put(PAGE_ID_KEY, pageId);
+        Element element = new Element();
+        element.setId(id);
+        element.setLabel("menu.item.calendar");
+        element.setAction(PAGE_LINK_KEY, actionParams);
         return element;
     }
 
@@ -69,13 +116,13 @@ public class SiteJournalsResolver extends AbstractMenuItemsResolver {
         return ID;
     }
 
-    @Autowired
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    @Autowired
-    public void setSearchService(SearchService searchService) {
-        this.searchService = searchService;
-    }
+//    @Autowired
+//    public void setNodeService(NodeService nodeService) {
+//        this.nodeService = nodeService;
+//    }
+//
+//    @Autowired
+//    public void setSearchService(SearchService searchService) {
+//        this.searchService = searchService;
+//    }
 }
