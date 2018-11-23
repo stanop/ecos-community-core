@@ -16,4 +16,28 @@ public class EventUserModel {
     public String lastName;
     @MetaAtt(name = "cm:middleName")
     public String middleName;
+
+    public String getId() {
+        return id;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
 }

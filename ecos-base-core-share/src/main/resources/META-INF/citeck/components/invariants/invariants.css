@@ -1296,6 +1296,11 @@
   background-image: url(../orgstruct/icons/user-deputy-assistant-add-16.png)
 }
 
+.orgstruct-tree .ygtvcontent.authorityType-USER.available-false .ygtvlabel,
+.orgstruct-layout .selected-object.authorityType-USER.available-false {
+  background-image: url(../orgstruct/icons/user-deputy-assistant-unavailable-16.png)
+}
+
 .orgstruct-tree .ygtvcontent.authorityType-GROUP .ygtvlabel,
 .orgstruct-layout .selected-object.authorityType-GROUP {
   background-image: url(images/group.png)

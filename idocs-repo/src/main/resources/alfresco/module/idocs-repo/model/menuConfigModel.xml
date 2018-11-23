@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="menuconfig:menuconfig" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+    <description>Menu configurations model</description>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/menu/config/1.0" prefix="menuconfig" />
+    </namespaces>
+
+    <!-- Left menu configs model -->
+
+    <types>
+        <type name="menuconfig:menuConfig">
+            <title>Menu configuration</title>
+            <parent>cm:content</parent>
+            <properties>
+                <property name="menuconfig:id">
+                    <title>Id</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="menuconfig:type">
+                    <title>Type</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+                <property name="menuconfig:authorities">
+                    <title>Authorities</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                    <multiple>true</multiple>
+                </property>
+            </properties>
+        </type>
+    </types>
+
+</model>

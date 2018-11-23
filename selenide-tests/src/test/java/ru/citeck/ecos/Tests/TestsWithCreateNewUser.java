@@ -10,8 +10,8 @@ import static com.codeborne.selenide.Selenide.sleep;
 
 public class TestsWithCreateNewUser extends ContractsModuleTestBase{
 
-    static private String titleLoginPageRUS = "Citeck EcoS » Войти";
-    static private String titleLoginPageEN = "Citeck EcoS » Login";
+    static private String titleLoginPageRUS = "Citeck ECOS » Войти";
+    static private String titleLoginPageEN = "Citeck ECOS » Login";
 
     static private String userName = "TestUser";
     static private String login = "user1";
@@ -29,8 +29,8 @@ public class TestsWithCreateNewUser extends ContractsModuleTestBase{
     private String statusPaid = "Paid";
     private String statusApproved = "Approved";
 
-    private String titleCardDetailsRUS = "Citeck EcoS » Карточка";
-    private String titleCardDetailsEN = "Citeck EcoS » Card details";
+    private String titleCardDetailsRUS = "Citeck ECOS » Карточка";
+    private String titleCardDetailsEN = "Citeck ECOS » Card details";
 
     private String valueContractWith = "performer";
     private String valueKindDocument = "Services";

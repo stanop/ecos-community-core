@@ -1336,6 +1336,27 @@ ko.bindingHandlers.journalControl = {
                     options = ko.computed(function (page) {
                         var journalTypeId = data.journalId && data.journalId() || params.journalType;
                         var actualCriteria = criteria();
+
+                        var optionsFilters;
+                        var optionsFiltersTemp = [];
+
+                        if (_.isFunction(optionsFilter)) {
+                            optionsFilters = optionsFilter() || [];
+
+                            optionsFilters.forEach(function(optionsFilter) {
+                                var match = _.find(actualCriteria, function(actualCriterion) {
+                                    return optionsFilter.attribute == actualCriterion.attribute;
+                                });
+                                if (!match) {
+                                    optionsFiltersTemp.push(optionsFilter);
+                                }
+                            });
+
+                            if(optionsFiltersTemp.length){
+                                criteria(optionsFiltersTemp);
+                            }
+                        }
+
                         if (hiddenCriteria) {
                             for (var hc in hiddenCriteria) {
                                 if (!_.some(actualCriteria, function (criterion) {
@@ -3554,11 +3575,15 @@ ko.bindingHandlers.orgstructControl = {
                                 fullName: p_oItem.fullName,
                                 authorityType: p_oItem.authorityType,
                                 groupType: p_oItem.groupType,
+                                available: p_oItem.available,
                                 editable : false
                         }, p_oParent, p_expanded);
 
                         // add nessesary classes
-                        if (p_oItem.authorityType) textNode.contentStyle += " authorityType-" + p_oItem.authorityType;
+                        if (p_oItem.authorityType) {
+                            textNode.contentStyle += " authorityType-" + p_oItem.authorityType;
+                            textNode.contentStyle += " available-" + p_oItem.available;
+                        }
                         if (p_oItem.groupType) textNode.contentStyle += " groupType-" + p_oItem.groupType.toUpperCase();
 
                         // selectable elements
@@ -3619,7 +3644,8 @@ ko.bindingHandlers.orgstructControl = {
                                     id: object.nodeRef,
                                     label: object[tree.fn.getNodeLabelKey(object)] || object.displayName,
                                     aType: textNode.data.authorityType,
-                                    gType: textNode.data.groupType
+                                    gType: textNode.data.groupType,
+                                    available: textNode.data.available
                                 }));
 
                                 // remove selectable state
@@ -3806,7 +3832,10 @@ function createSelectedObject(options) {
     var li = $("<li>", { "class": "selected-object", html: options.label, id: options.id });
     li.click(function() { $(this).remove() });
 
-    if (options.aType) li.addClass("authorityType-" + options.aType);
+    if (options.aType) {
+        li.addClass("authorityType-" + options.aType);
+        li.addClass("available-" + options.available);
+    }
     if (options.gType) li.addClass("groupType-" + options.gType.toUpperCase());
 
     return li;
