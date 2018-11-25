@@ -52,6 +52,7 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
     ];
 
     model.isReactMenu = isSlideMenu;
+    model.isCascadeCreateMenu = isCascadCreateMenu;
 
 // ---------------------
 // General code
@@ -438,7 +439,7 @@ userMenuItems.push(
             id: "HEADER_USER_MENU_REPORTISSUE",
             label: "header.reportIssue.label",
             iconImage: "/share/res/components/images/header/default-feedback-16.png",
-            targetUrl: "mailto:support@citeck.ru?subject=Ошибка в работе Citeck EcoS: краткое описание&body=Summary: Короткое описание проблемы (продублировать в теме письма)%0A%0ADescription:%0AПожалуйста, детально опишите возникшую проблему, последовательность действий, которая привела к ней. При необходимости приложите скриншоты.",
+            targetUrl: "mailto:support@citeck.ru?subject=Ошибка в работе Citeck ECOS: краткое описание&body=Summary: Короткое описание проблемы (продублировать в теме письма)%0A%0ADescription:%0AПожалуйста, детально опишите возникшую проблему, последовательность действий, которая привела к ней. При необходимости приложите скриншоты.",
             targetUrlType: "FULL_PATH",
             targetUrlLocation: "NEW"
         }
@@ -564,7 +565,7 @@ var HEADER_SITES_VARIANTS = {
                     config: {
                         id: "HEADER_CREATE_WORKFLOW_ADHOC",
                         label: "header.create-workflow-adhoc.label",
-                        targetUrl: "start-specified-workflow?workflowId=activiti$perform"
+                        targetUrl: "workflow-start-page?formType=workflowId&formKey=activiti$perform"
                     }
                 },
                 {
@@ -890,7 +891,7 @@ function buildCreateVariants(sites) {
                 widgets: buildItems([{
                         id: "HEADER_CREATE_WORKFLOW_ADHOC",
                         label: "header.create-workflow-adhoc.label",
-                        url: "start-specified-workflow?workflowId=activiti$perform"
+                        url: "workflow-start-page?formType=workflowId&formKey=activiti$perform"
                     },
                     {
                         id: "HEADER_CREATE_WORKFLOW_CONFIRM",

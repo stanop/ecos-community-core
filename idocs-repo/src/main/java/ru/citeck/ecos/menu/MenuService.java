@@ -4,6 +4,8 @@ import ru.citeck.ecos.menu.dto.Menu;
 
 public interface MenuService {
 
-    Menu queryMenuConfig(String userName);
+    Menu queryMenu();
+
+    Menu queryMenu(String userName);
 
 }

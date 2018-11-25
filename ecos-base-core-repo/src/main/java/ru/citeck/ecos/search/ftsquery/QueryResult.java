@@ -1,6 +1,7 @@
 package ru.citeck.ecos.search.ftsquery;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import ru.citeck.ecos.utils.search.SearchResult;
 
 import java.util.List;
 
@@ -17,6 +18,12 @@ public class QueryResult {
         this.nodeRefs = nodeRefs;
         this.hasMore = hasMore;
         this.totalCount = totalCount;
+    }
+
+    QueryResult(SearchResult<NodeRef> result) {
+        this.nodeRefs = result.getItems();
+        this.hasMore = result.getHasMore();
+        this.totalCount = result.getTotalCount();
     }
 
     public List<NodeRef> getNodeRefs() {

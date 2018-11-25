@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,7 +21,6 @@ import ru.citeck.ecos.history.filter.Criteria;
 import ru.citeck.ecos.history.impl.HistoryGetService;
 import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.spring.registry.MappingRegistry;
-import ucar.nc2.util.HashMapLRU;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -47,6 +47,7 @@ public class DocumentHistoryGet extends AbstractWebScript {
     private static final String PARAM_DOCUMENT_NODE_REF = "nodeRef";
     private static final String PARAM_EVENTS = "events";
     private static final String PARAM_FILTER = "filter";
+    private static final String PARAM_TASK_TYPES = "taskTypes";
 
     /**
      * Global properties
@@ -79,11 +80,12 @@ public class DocumentHistoryGet extends AbstractWebScript {
         String nodeRefUuid = req.getParameter(PARAM_DOCUMENT_NODE_REF);
         String eventsParam = req.getParameter(PARAM_EVENTS);
         String filterParam = req.getParameter(PARAM_FILTER);
+        String taskTypeParam = req.getParameter(PARAM_TASK_TYPES);
 
         /* Check history event status */
 
 
-        List<ObjectNode> events = getHistoryEvents(nodeRefUuid, filterParam, eventsParam);
+        List<ObjectNode> events = getHistoryEvents(nodeRefUuid, filterParam, eventsParam, taskTypeParam);
 
         try (Writer writer = res.getWriter()) {
             res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
@@ -92,15 +94,11 @@ public class DocumentHistoryGet extends AbstractWebScript {
         }
     }
 
-    public List<ObjectNode> getHistoryEvents(String nodeRef, String filter, String events) {
+    public List<ObjectNode> getHistoryEvents(String nodeRef, String filter, String events, String taskTypes) {
 
         NodeRef documentRef = new NodeRef(nodeRef);
-
-        Set<String> includeEvents = Collections.emptySet();
-        if (StringUtils.isNotBlank(events)) {
-            includeEvents = Arrays.stream(events.split(",")).collect(Collectors.toSet());
-        }
-
+        Set<String> includeEvents = split(events);
+        Set<String> includeTypes = split(taskTypes);
         Criteria filterCriteria = null;
 
         if (StringUtils.isNotBlank(filter)) {
@@ -126,7 +124,7 @@ public class DocumentHistoryGet extends AbstractWebScript {
             historyRecordMaps = filterCriteria.meetCriteria(historyRecordMaps);
         }
 
-        return formatHistoryNodes(historyRecordMaps, includeEvents);
+        return formatHistoryNodes(historyRecordMaps, includeEvents, includeTypes);
     }
 
     /**
@@ -150,7 +148,7 @@ public class DocumentHistoryGet extends AbstractWebScript {
      * @return Json string
      */
     @SuppressWarnings("unchecked")
-    private List<ObjectNode> formatHistoryNodes(List<Map> historyRecordMaps, Set<String> includeEvents) {
+    private List<ObjectNode> formatHistoryNodes(List<Map> historyRecordMaps, Set<String> includeEvents, Set<String> includeTaskTypes) {
 
         List<ObjectNode> result = new ArrayList<>();
 
@@ -183,6 +181,11 @@ public class DocumentHistoryGet extends AbstractWebScript {
                 taskTypeShort = taskTypeValue.toPrefixString(serviceRegistry.getNamespaceService());
                 taskTypeNode.put("shortQName", taskTypeShort);
 
+                /* filter out records by taskTypes if specified */
+                if (CollectionUtils.isNotEmpty(includeTaskTypes) && !includeTaskTypes.contains(taskTypeShort)) {
+                    continue;
+                }
+
                 attributesNode.put(DocumentHistoryConstants.TASK_TYPE.getKey(), taskTypeNode);
             }
 
@@ -209,8 +212,6 @@ public class DocumentHistoryGet extends AbstractWebScript {
             attributesNode.put(DocumentHistoryConstants.TASK_INSTANCE_ID.getKey(),
                     (String) historyRecordMap.get(DocumentHistoryConstants.TASK_INSTANCE_ID.getValue()));
 
-
-
             ArrayList<NodeRef> attachments = (ArrayList<NodeRef>) historyRecordMap.get(
                     DocumentHistoryConstants.TASK_ATTACHMENTS.getValue());
             if (attachments != null) {
@@ -226,11 +227,21 @@ public class DocumentHistoryGet extends AbstractWebScript {
             }
 
             /* User */
-            NodeRef userNodeRef = personService.getPerson((String) historyRecordMap.get(
-                    DocumentHistoryConstants.EVENT_INITIATOR.getValue())
-            );
-            if (userNodeRef != null) {
-                attributesNode.put(DocumentHistoryConstants.EVENT_INITIATOR.getKey(), createUserNode(userNodeRef));
+
+            Object initiatorObj = historyRecordMap.get(DocumentHistoryConstants.EVENT_INITIATOR.getValue());
+            NodeRef initiatorRef = null;
+            if (initiatorObj instanceof NodeRef) {
+                initiatorRef = (NodeRef) initiatorObj;
+            } else if (initiatorObj instanceof String) {
+                String initiatorStr = (String) initiatorObj;
+                if (initiatorStr.startsWith("workspace://")) {
+                    initiatorRef = new NodeRef(initiatorStr);
+                } else {
+                    initiatorRef = personService.getPersonOrNull(initiatorStr);
+                }
+            }
+            if (initiatorRef != null) {
+                attributesNode.put(DocumentHistoryConstants.EVENT_INITIATOR.getKey(), createUserNode(initiatorRef));
             }
 
             /* Add history node to result */
@@ -318,6 +329,19 @@ public class DocumentHistoryGet extends AbstractWebScript {
         result.add(userNode);
         return result;
 
+    }
+
+    /**
+     * Split comma separated parameters string to Set of parameters
+     * @param csv Comma separated values
+     * @return Set of parameters
+     */
+    private Set<String> split(String csv) {
+        Set<String> result = Collections.emptySet();
+        if (StringUtils.isNotBlank(csv)) {
+            result = Arrays.stream(csv.split(",")).collect(Collectors.toSet());
+        }
+        return result;
     }
 
     public void setHistoryRemoteService(HistoryRemoteService historyRemoteService) {

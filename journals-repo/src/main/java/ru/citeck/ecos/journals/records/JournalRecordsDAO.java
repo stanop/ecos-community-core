@@ -23,10 +23,11 @@ public class JournalRecordsDAO {
     public RecordsResult<ObjectNode> getRecordsWithData(JournalType journalType,
                                                         String query,
                                                         String language,
-                                                        JGqlPageInfoInput pageInfo) {
+                                                        JGqlPageInfoInput pageInfo,
+                                                        boolean debug) {
 
         String gqlQuery = gqlQueryGenerator.generate(journalType);
-        RecordsQuery recordsQuery = createQuery(journalType.getDataSource(), query, language, pageInfo);
+        RecordsQuery recordsQuery = createQuery(journalType.getDataSource(), query, language, pageInfo, debug);
 
         return recordsService.getRecords(recordsQuery, gqlQuery);
     }
@@ -34,13 +35,18 @@ public class JournalRecordsDAO {
     public RecordsResult<RecordRef> getRecords(JournalType journalType,
                                                String query,
                                                String language,
-                                               JGqlPageInfoInput pageInfo) {
+                                               JGqlPageInfoInput pageInfo,
+                                               boolean debug) {
 
-        RecordsQuery recordsQuery = createQuery(journalType.getDataSource(), query, language, pageInfo);
+        RecordsQuery recordsQuery = createQuery(journalType.getDataSource(), query, language, pageInfo, debug);
         return recordsService.getRecords(recordsQuery);
     }
 
-    public RecordsQuery createQuery(String sourceId, String query, String language, JGqlPageInfoInput pageInfo) {
+    public RecordsQuery createQuery(String sourceId,
+                                    String query,
+                                    String language,
+                                    JGqlPageInfoInput pageInfo,
+                                    boolean debug) {
 
         RecordsQuery recordsQuery = new RecordsQuery();
         recordsQuery.setQuery(query);
@@ -57,6 +63,7 @@ public class JournalRecordsDAO {
         recordsQuery.setSkipCount(pageInfo.getSkipCount());
         recordsQuery.setConsistency(QueryConsistency.EVENTUAL);
         recordsQuery.setSourceId(sourceId);
+        recordsQuery.setDebug(debug);
 
         return recordsQuery;
     }

@@ -614,11 +614,4 @@
         </property>
     </bean>
 
-    <bean id="ru.citeck.ecos.records.taskStatistic" class="ru.citeck.ecos.graphql.journal.datasource.JournalDatasourceRecordsDAO">
-        <property name="id" value="journal.datasource.taskStatisticDatasource" />
-    </bean>
-
-    <bean id="journal.datasource.taskStatisticDatasource" class="ru.citeck.ecos.journals.datasource.TaskStatisticDatasource">
-    </bean>
-
 </beans>

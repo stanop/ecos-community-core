@@ -45,7 +45,30 @@
     </views>
 
     <view class="icaseTask:simpleTask">
-        <view class="icaseTask:task"/>
+
+        <field prop="cm:title">
+            <region name="input" template="text"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="activ:plannedStartDate">
+            <region name="input" template="datetime"/>
+        </field>
+        <field prop="activ:plannedEndDate">
+            <region name="input" template="datetime"/>
+        </field>
+        <field prop="activ:expectedPerformTime" />
+        <field prop="icaseTask:priority">
+            <region name="input" template="select"/>
+        </field>
+
+        <field prop="activ:repeatable" />
+        <field prop="activ:autoEvents" />
+        <field prop="activ:manualStarted" />
+        <field assoc="icaseEvent:activityStartEvents" />
+        <field assoc="icaseEvent:activityRestartEvents" />
+        <field assoc="stages:startCompletenessLevelsRestriction"/>
+        <field assoc="stages:stopCompletenessLevelsRestriction"/>
+
         <field prop="icaseTask:workflowDefinitionName">
             <region name="input" template="select"/>
         </field>
@@ -56,14 +79,37 @@
                     while (parent &amp;&amp; parent.isSubType("activ:activity")) {
                         parent = parent.parent;
                     }
-                    return parent.childAssocs["icaseRole:roles"] || [];
+                    return parent.impl().attribute("icaseRole:roles").value() || [];
                 })()
             </invariant>
         </field>
     </view>
 
     <view class="icaseTask:confirmTask">
-        <view class="icaseTask:task"/>
+
+        <field prop="cm:title">
+            <region name="input" template="text"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="activ:plannedStartDate">
+            <region name="input" template="datetime"/>
+        </field>
+        <field prop="activ:plannedEndDate">
+            <region name="input" template="datetime"/>
+        </field>
+        <field prop="activ:expectedPerformTime" />
+        <field prop="icaseTask:priority">
+            <region name="input" template="select"/>
+        </field>
+
+        <field prop="activ:repeatable" />
+        <field prop="activ:autoEvents" />
+        <field prop="activ:manualStarted" />
+        <field assoc="icaseEvent:activityStartEvents" />
+        <field assoc="icaseEvent:activityRestartEvents" />
+        <field assoc="stages:startCompletenessLevelsRestriction"/>
+        <field assoc="stages:stopCompletenessLevelsRestriction"/>
+
         <field assoc="icaseTask:confirmers">
             <region name="input" template="checkbox"/>
             <invariant on="options" language="javascript" final="true">
@@ -72,8 +118,7 @@
                     while (parent &amp;&amp; parent.isSubType("activ:activity")) {
                         parent = parent.parent;
                     }
-                    var roles = parent ? parent.impl().getAttribute("icaseRole:roles") : {};
-                    return roles &amp;&amp; roles.value() ? roles.value() : [];
+                    return parent.impl().attribute("icaseRole:roles").value() || [];
                 })()
             </invariant>
         </field>
@@ -89,7 +134,30 @@
     </view>
 
     <view class="icaseTask:performTask">
-        <view class="icaseTask:task"/>
+
+        <field prop="cm:title">
+            <region name="input" template="text"/>
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="activ:plannedStartDate">
+            <region name="input" template="datetime"/>
+        </field>
+        <field prop="activ:plannedEndDate">
+            <region name="input" template="datetime"/>
+        </field>
+        <field prop="activ:expectedPerformTime" />
+        <field prop="icaseTask:priority">
+            <region name="input" template="select"/>
+        </field>
+
+        <field prop="activ:repeatable" />
+        <field prop="activ:autoEvents" />
+        <field prop="activ:manualStarted" />
+        <field assoc="icaseEvent:activityStartEvents" />
+        <field assoc="icaseEvent:activityRestartEvents" />
+        <field assoc="stages:startCompletenessLevelsRestriction"/>
+        <field assoc="stages:stopCompletenessLevelsRestriction"/>
+
         <field assoc="icaseTask:performers">
             <region name="input" template="checkbox"/>
             <invariant on="options" language="javascript" final="true">
@@ -98,7 +166,7 @@
                     while (parent &amp;&amp; parent.isSubType("activ:activity")) {
                         parent = parent.parent;
                     }
-                    return parent.childAssocs["icaseRole:roles"] || [];
+                    return parent.impl().attribute("icaseRole:roles").value() || [];
                 })()
             </invariant>
         </field>
@@ -110,11 +178,11 @@
             <region name="input" template="checkbox"/>
             <invariant on="options" language="javascript" final="true">
                 (function () {
-                var parent = node.parent;
-                while (parent &amp;&amp; parent.isSubType("activ:activity")) {
-                parent = parent.parent;
-                }
-                return parent.childAssocs["icaseRole:roles"] || [];
+                    var parent = node.parent;
+                    while (parent &amp;&amp; parent.isSubType("activ:activity")) {
+                        parent = parent.parent;
+                    }
+                    return parent.impl().attribute("icaseRole:roles").value() || [];
                 })()
             </invariant>
         </field>
@@ -142,6 +210,12 @@
                     return parent.impl().attribute("icaseRole:roles").value() || [];
                 })()
             </invariant>
+        </field>
+        <field prop="activ:plannedStartDate">
+            <region name="input" template="datetime"/>
+        </field>
+        <field prop="activ:plannedEndDate">
+            <region name="input" template="datetime"/>
         </field>
         <field prop="activ:expectedPerformTime" />
         <field prop="wfcp:performOutcomes" />

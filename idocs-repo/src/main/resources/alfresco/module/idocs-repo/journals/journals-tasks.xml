@@ -153,18 +153,19 @@
     </journal>
 
     <journal id="task-statistic">
-        <datasource>journal.datasource.taskStatisticDatasource</datasource>
+        <datasource>task-statistic</datasource>
         <option name="actionGroupId">none</option>
+        <option name="defaultSortBy">[{id: 'event:date', order: 'desc'}]</option>
         <headers>
-            <header key="event:taskType" default="true" searchable="false">
+            <header key="event:taskType" default="true" searchable="false" sortable="false">
                 <option name="customLabel">Тип задачи</option>
                 <option name="formatter">typeName</option>
             </header>
-            <header key="event:initiator" default="true">
+            <header key="event:initiator" default="true" sortable="false">
                 <option name="customLabel">Исполнитель</option>
                 <criterion>
                     <region name="select" template="orgstruct">
-                        <param name="allowedAuthorityType">USER</param>
+                        <param name="allowedAuthorityType">USER,GROUP</param>
                     </region>
                 </criterion>
             </header>
@@ -172,7 +173,7 @@
                 <option name="customLabel">Документ</option>
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="history:startedDate" default="true" searchable="false" sortable="false">
+            <header key="event:date" default="true">
                 <option name="customLabel">Дата начала</option>
                 <option name="formatter">datetime</option>
             </header>

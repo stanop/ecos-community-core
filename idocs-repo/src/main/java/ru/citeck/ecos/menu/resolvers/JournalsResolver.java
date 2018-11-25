@@ -7,6 +7,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
@@ -15,7 +16,8 @@ import ru.citeck.ecos.utils.RepoUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class JournalsResolver implements MenuItemsResolver {
+@Component
+public class JournalsResolver extends AbstractMenuItemsResolver {
 
     private static final String ID = "JOURNALS";
     private static final String LIST_ID_KEY = "listId";
@@ -27,7 +29,7 @@ public class JournalsResolver implements MenuItemsResolver {
 
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
-        String journalsListId = params.get(LIST_ID_KEY);
+        String journalsListId = getParam(params, context, LIST_ID_KEY);
         return queryJournalsRefs(journalsListId).stream()
                 .map(this::constructItem)
                 .collect(Collectors.toList());
@@ -41,7 +43,9 @@ public class JournalsResolver implements MenuItemsResolver {
         actionParams.put(JOURNAL_REF_KEY, journalRef.toString());
         element.setId(name);
         element.setLabel(title);
-        element.setContextId(name);
+        Map<String, String> elementParams = new HashMap<>();
+        elementParams.put(JOURNAL_ID_KEY, name);
+        element.setParams(elementParams);
         element.setAction(JOURNAL_LINK_KEY, actionParams);
         return element;
     }

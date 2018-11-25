@@ -24,6 +24,7 @@ public class RecordsQuery {
     private QueryConsistency consistency = QueryConsistency.DEFAULT;
     private String language = SearchService.LANGUAGE_FTS_ALFRESCO;
     private String query;
+    private boolean debug = false;
 
     public RecordsQuery() {
     }
@@ -38,6 +39,7 @@ public class RecordsQuery {
         this.afterIdMode = other.afterIdMode;
         this.consistency = other.consistency;
         this.sortBy = new ArrayList<>(other.sortBy);
+        this.debug = other.debug;
     }
 
     public String getSourceId() {
@@ -83,6 +85,14 @@ public class RecordsQuery {
     public void setAfterId(RecordRef afterId) {
         this.afterId = afterId;
         afterIdMode = true;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public boolean isDebug() {
+        return debug;
     }
 
     public void setAfterIdMode(boolean afterIdMode) {

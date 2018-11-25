@@ -37,7 +37,8 @@ public class JournalRecordsPost extends AbstractWebScript {
                 journalId,
                 request.query,
                 request.language,
-                request.pageInfo
+                request.pageInfo,
+                request.debug
         ));
 
         res.setStatus(Status.STATUS_OK);
@@ -46,6 +47,7 @@ public class JournalRecordsPost extends AbstractWebScript {
     private static class RequestBody {
         public String query;
         public String language;
+        public boolean debug;
         public JGqlPageInfoInput pageInfo;
     }
 }

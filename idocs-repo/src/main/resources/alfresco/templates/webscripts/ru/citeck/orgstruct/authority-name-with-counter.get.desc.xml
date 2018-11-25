@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Authority name with counter</shortname>
+    <description>Authority name with counter</description>
+    <url>/citeck/authority/name/with/counter</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+    <transaction allow="readonly" buffersize="0">required</transaction>
+</webscript>

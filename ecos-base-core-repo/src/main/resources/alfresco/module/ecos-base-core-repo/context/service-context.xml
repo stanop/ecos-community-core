@@ -101,10 +101,6 @@
         <property name="searchCriteriaSettingsRegistry" ref="searchCriteriaSettingsRegistry" />
     </bean>
 
-    <bean id="ftsAlfrescoQueryBuilder" class="ru.citeck.ecos.search.FtsAlfrescoQuery">
-        <property name="ftsAlfrescoQueryMigration" ref="ftsAlfrescoQueryMigration" />
-    </bean>
-
     <bean id="searchCriteriaFactory" class="ru.citeck.ecos.search.SearchCriteriaFactory">
         <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
@@ -113,7 +109,7 @@
         <property name="searchService" ref="SearchService" />
         <property name="queryBuilders">
             <list value-type="ru.citeck.ecos.search.SearchQueryBuilder">
-                <ref bean="ftsAlfrescoQueryBuilder" />
+                <ref bean="ftsQueryBuilder" />
                 <ref bean="luceneQueryBuilder" />
             </list>
         </property>
@@ -420,6 +416,13 @@
           parent="baseJavaScriptExtension">
         <property name="extensionName" value="recordsService" />
         <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="RecordsServiceTemplate"
+          class="ru.citeck.ecos.records.RecordsServiceTemplate"
+          parent="baseTemplateImplementation">
+        <property name="extensionName" value="recordsService" />
+        <property name="recordsService" ref="ecos-base-core.recordsServiceJS" />
     </bean>
 
 </beans>

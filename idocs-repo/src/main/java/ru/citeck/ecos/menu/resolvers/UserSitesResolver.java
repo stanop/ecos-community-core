@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.site.SiteInfo;
 import org.alfresco.service.cmr.site.SiteService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.menu.dto.Element;
 
 import java.util.Collections;
@@ -13,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class UserSitesResolver implements MenuItemsResolver {
+@Component
+public class UserSitesResolver extends AbstractMenuItemsResolver {
 
     private static final String ID = "USER_SITES";
     private static final String SITE_NAME_KEY = "siteName";
@@ -33,7 +35,9 @@ public class UserSitesResolver implements MenuItemsResolver {
         Map<String, String> actionParams = new HashMap<>();
         actionParams.put(SITE_NAME_KEY, name);
         element.setLabel(site.getTitle());
-        element.setContextId(name);
+        Map<String, String> elementParams = new HashMap<>();
+        elementParams.put(SITE_ID_KEY, name);
+        element.setParams(elementParams);
         element.setId(name);
         element.setAction(SITE_LINK_KEY, actionParams);
         return element;

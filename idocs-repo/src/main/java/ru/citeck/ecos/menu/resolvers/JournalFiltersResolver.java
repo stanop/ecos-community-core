@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
@@ -13,18 +14,20 @@ import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.*;
 
-public class JournalFiltersResolver implements MenuItemsResolver {
+@Component
+public class JournalFiltersResolver extends AbstractMenuItemsResolver {
 
     private static final String ID = "JOURNAL_FILTERS";
     private static final String FILTER_REF_KEY = "filterRef";
     private static final String FILTER_LINK_KEY = "FILTER_LINK";
+    private static final String FILTER_ID_KEY = "filterId";
 
     private SearchService searchService;
     private NodeService nodeService;
 
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
-        String journal = context.getContextId();
+        String journal = getParam(params, context, JOURNAL_ID_KEY);
         return constructItems(queryFilterRefs(journal));
     }
 
@@ -41,7 +44,9 @@ public class JournalFiltersResolver implements MenuItemsResolver {
         Map<String, String> actionParams = new HashMap<>();
         actionParams.put(FILTER_REF_KEY, filterRef.toString());
         element.setLabel(title);
-        element.setContextId(filterName);
+        Map<String, String> elementParams = new HashMap<>();
+        elementParams.put(FILTER_ID_KEY, filterName);
+        element.setParams(elementParams);
         element.setAction(FILTER_LINK_KEY, actionParams);
         return element;
     }

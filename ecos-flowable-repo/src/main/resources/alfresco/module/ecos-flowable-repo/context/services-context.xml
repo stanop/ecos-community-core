@@ -326,4 +326,12 @@
         <property name="flowableRecipientsService" ref="flowableRecipientsService"/>
     </bean>
 
+	<bean id="flowableScriptNodeType" class="ru.citeck.ecos.flowable.variable.FlowableScriptNodeVariableType">
+		<property name="serviceRegistry" ref="ServiceRegistry"/>
+	</bean>
+
+	<bean id="flowableScriptNodeListType" class="ru.citeck.ecos.flowable.variable.FlowableScriptNodeListVariableType">
+		<property name="serviceRegistry" ref="ServiceRegistry"/>
+	</bean>
+
 </beans>
