@@ -6,7 +6,7 @@
     <authorities>GROUP_EVERYONE</authorities>
 
     <items>
-        <item id="HEADER_MENU_TASKS">
+        <item id="HEADER_TASKS">
             <label>menu.header.tasks</label>
             <items>
                 <resolver id="JOURNALS">
@@ -20,7 +20,7 @@
                 </resolver>
             </items>
         </item>
-        <item id="HEADER_MENU_SITES">
+        <item id="HEADER_SITES">
             <label>menu.header.sites</label>
             <items>
                 <resolver id="USER_SITES">
@@ -32,9 +32,10 @@
                                     <items>
                                         <resolver id="JOURNAL_FILTERS" />
                                     </items>
-
                                 </item>
                             </resolver>
+                            <resolver id="SITE_DOCUMENT_LIBRARY" />
+                            <resolver id="SITE_CALENDAR" />
                         </items>
                     </item>
                 </resolver>
@@ -52,10 +53,10 @@
                 </item>
             </items>
         </item>
-        <item id="HEADER_MENU_ORGSTRUCT">
+        <item id="HEADER_ORGSTRUCT">
             <label>menu.header.orgstructure</label>
             <items>
-                <item id="HEADER_MENU_ORGSTRUCT_WIDGET">
+                <item id="HEADER_HEADER_ORGSTRUCT_WIDGET">
                     <label>menu.header.orgstructure</label>
                     <icon type="fa">fa-sitemap</icon>
                     <action type="PAGE_LINK">
@@ -69,49 +70,49 @@
             <items>
                 <item id="HEADER_MY_WORKFLOWS">
                     <label>menu.item.my-workflows</label>
-                    <!--<icon type="fa"></icon>-->
+                    <icon type="fa">fa-object-group</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">my-workflows</param>
                     </action>
                 </item>
                 <item id="HEADER_COMPLETED_WORKFLOWS">
                     <label>menu.item.completed-workflows</label>
+                    <icon type="fa">fa-check-square</icon>
                     <action type="PAGE_LINK">
-                        <!--<icon type="fa"></icon>-->
                         <param name="pageId">completed-workflows</param>
                     </action>
                 </item>
                 <item id="HEADER_MY_CONTENT">
                     <label>menu.item.my-content</label>
-                    <!--<icon type="fa"></icon>-->
+                    <icon type="fa">fa-columns</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">user/user-content</param>
                     </action>
                 </item>
                 <item id="HEADER_MY_SITES">
                     <label>menu.item.my-sites</label>
-                    <!--<icon type="fa"></icon>-->
+                    <icon type="fa">fa-globe</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">user/user-sites</param>
                     </action>
                 </item>
                 <item id="HEADER_MY_FILES">
                     <label>menu.item.my-files</label>
-                    <!--<icon type="fa"></icon>-->
+                    <icon type="fa">fa-file</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">context/mine/myfiles</param>
                     </action>
                 </item>
                 <item id="HEADER_GLOBAL_JOURNALS">
                     <label>menu.item.data-lists</label>
-                    <!--<icon type="fa"></icon>-->
+                    <icon type="fa">fa-newspaper-o</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">journals2/list/main</param>
                     </action>
                 </item>
                 <item id="HEADER_MORE_FINANCE_JOURNALS">
                     <label>menu.item.finance-data-lists</label>
-                    <!--<icon type="fa"></icon>-->
+                    <icon type="fa">fa-newspaper-o</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">site/ecos-finance/journals2/list/references</param>
                     </action>
@@ -124,7 +125,6 @@
         </item>
         <item id="HEADER_MORE_TOOLS_GROUP">
             <label>menu.header.admin-tools</label>
-            <!--<icon type="fa"></icon>-->
             <evaluator id="user-in-group">
                 <param name="groupName">GROUP_ALFRESCO_ADMINISTRATORS</param>
             </evaluator>
@@ -138,7 +138,7 @@
                 </item>
                 <item id="HEADER_APPLICATION">
                     <label>menu.item.application</label>
-                    <!--<icon type="fa"></icon>-->
+                    <icon type="fa">fa-desktop</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">console/admin-console/application</param>
                     </action>

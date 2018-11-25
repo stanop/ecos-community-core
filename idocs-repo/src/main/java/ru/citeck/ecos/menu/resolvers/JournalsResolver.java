@@ -3,7 +3,7 @@ package ru.citeck.ecos.menu.resolvers;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
@@ -20,15 +20,16 @@ public class JournalsResolver extends AbstractJournalsResolver {
 
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
-        String journalsListId = getParam(params, context, LIST_ID_KEY);
-        /* put journalsListId to context */
+        String listId = getParam(params, context, LIST_ID_KEY);
+        /* put listId to context params */
         Map<String, String> contextParams = context.getParams();
         if (contextParams == null) {
             contextParams = new HashMap<>();
         }
-        contextParams.put(LIST_ID_KEY, journalsListId);
+        contextParams.put(LIST_ID_KEY, listId);
         context.setParams(contextParams);
-        return queryJournalsRefs(journalsListId).stream()
+
+        return queryJournalsRefs(listId).stream()
                 .map(nodeRef -> constructItem(nodeRef, context))
                 .collect(Collectors.toList());
     }
