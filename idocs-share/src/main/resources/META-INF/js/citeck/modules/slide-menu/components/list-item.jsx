@@ -33,7 +33,7 @@ const ListItem = (props) => {
             case 'PAGE_LINK':
             case 'SITE_LINK':
             default:
-                component = <ListItemLink {...props} />;
+                component = <ListItemLink {...props} withNestedList={nestedList} />;
                 break;
         }
     }

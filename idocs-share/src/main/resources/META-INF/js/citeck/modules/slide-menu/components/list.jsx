@@ -6,7 +6,7 @@ const mapStateToProps = (state) => ({
     expandableItems: state.leftMenu.expandableItems
 });
 
-const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, expandableItems, parentParams}) => {
+const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, expandableItems}) => {
     const listContent = items.map(item => {
         let nestedList = null;
         let isNestedListExpanded = false;
@@ -16,15 +16,9 @@ const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, expandableItems
                 isNestedListExpanded = expandableItem.isNestedListExpanded;
             }
 
-            let pp = item.action;
-            if (parentParams) {
-                pp.parent = parentParams;
-            }
-
             nestedList = (
                 <List
                     items={item.items}
-                    parentParams={pp}
                     toggleSlideMenu={toggleSlideMenu}
                     isNested={true}
                     isExpanded={isNestedListExpanded}
@@ -39,7 +33,6 @@ const ListPure = ({items, toggleSlideMenu, isExpanded, isNested, expandableItems
                 item={item}
                 nestedList={nestedList}
                 isNestedListExpanded={isNestedListExpanded}
-                parentParams={parentParams}
             />
         );
     });

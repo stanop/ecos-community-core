@@ -34,7 +34,7 @@ const store = createStore(rootReducer, {}, composeEnhancers(
 export const render = (elementId, props) => {
     api.getSlideMenuItems().then(apiData => {
         const slideMenuData = apiData.items;
-        console.log('slideMenuData', slideMenuData);
+        // console.log('slideMenuData', slideMenuData);
 
         let selectedId = null;
         if (sessionStorage && sessionStorage.getItem) {

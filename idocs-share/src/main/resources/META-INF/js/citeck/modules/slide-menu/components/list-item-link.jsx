@@ -20,7 +20,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     setExpanded: id => dispatch(toggleExpanded(id))
 });
 
-const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, isNestedListExpanded, parentParams}) => {
+const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, isNestedListExpanded, withNestedList}) => {
     let itemId = item.id;
     let label = t(item.label);
 
@@ -28,41 +28,39 @@ const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, 
     if (selectedId === itemId) {
         classes.push('slide-menu-list__link_selected');
     }
+    if (withNestedList) {
+        classes.push('slide-menu-list__link-with-nested-list');
+    }
 
     let targetUrl = null;
-    let clickHandler = null;
     if (item.action) {
+        const params = item.action.params;
+
         switch (item.action.type) {
             case 'FILTER_LINK':
-                // hack for journal filters
-                if (parentParams && parentParams.type === 'JOURNAL_LINK') {
-                    // /share/page/site/orders/journals2/list/main#journal=workspace://SpacesStore/journal-orders-internal&filter=workspace://SpacesStore/journal-internal-me-init
-                    if (parentParams && parentParams.parent && parentParams.parent.type === 'SITE_LINK') {
-                        targetUrl = `${PAGE_PREFIX}/site/${parentParams.parent.params.siteName}/journals2/list/main#journal=${parentParams.params.journalRef}&filter=${item.action.params.filterRef}`;
-                    } else {
-                        targetUrl = `${PAGE_PREFIX}/journals2/list/tasks#journal=${parentParams.params.journalRef}&filter=${item.action.params.filterRef}`;
-                    }
+                if (params.siteName) {
+                    targetUrl = `${PAGE_PREFIX}/site/${params.siteName}/journals2/list/main#journal=${params.journalRef}&filter=${params.filterRef}`;
+                } else if (params.listId === 'global-tasks') {
+                    targetUrl = `${PAGE_PREFIX}/journals2/list/tasks#journal=${params.journalRef}&filter=${params.filterRef}`;
                 }
                 break;
             case 'JOURNAL_LINK':
-                // hack for site journals
-                if (parentParams && parentParams.type === 'SITE_LINK') {
-                    targetUrl = `${PAGE_PREFIX}/site/${parentParams.params.siteName}/journals2/list/main#journal=${item.action.params.journalRef}&filter=`;
+                if (params.siteName) {
+                    targetUrl = `${PAGE_PREFIX}/site/${params.siteName}/journals2/list/main#journal=${params.journalRef}&filter=`;
                 } else {
-                    targetUrl = `${PAGE_PREFIX}/journals2/list/tasks#journal=${item.action.params.journalRef}&filter=`;
+                    targetUrl = `${PAGE_PREFIX}/journals2/list/tasks#journal=${params.journalRef}&filter=`;
                 }
                 break;
             case 'PAGE_LINK':
-                let sectionPostfix = item.action.params.section ? item.action.params.section : '';
-                targetUrl = `${PAGE_PREFIX}/${item.action.params.pageId}${sectionPostfix}`;
+                let sectionPostfix = params.section ? params.section : '';
+                targetUrl = `${PAGE_PREFIX}/${params.pageId}${sectionPostfix}`;
                 break;
             case 'SITE_LINK':
-                targetUrl = `${PAGE_PREFIX}?site=${item.action.params.siteName}`;
+                targetUrl = `${PAGE_PREFIX}?site=${params.siteName}`;
                 break;
         }
     }
 
-    item.count = 99;
     let counter = null;
     if (item.count) {
         counter = <span className={'slide-menu-list__link-badge'}>{item.count}</span>;
@@ -73,9 +71,7 @@ const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, 
             href={targetUrl}
             onClick={() => {
                 onSelectItem(itemId);
-                console.log('item, parentParams', item, parentParams);
-                // TODO
-                typeof clickHandler === 'function' && clickHandler();
+                // console.log('item', item);
             }}
             className={classes.join(' ')}
         >

@@ -1,28 +1,11 @@
 export const selectedMenuItemIdKey = 'selectedMenuItemId';
 
-// TODO delete
-export function processApiData(oldItems) {
-    if (!oldItems) {
-        return null;
-    }
-
-    return oldItems.map(item => {
-        let newItem = { ...item };
-        delete newItem['widgets'];
-        if (item.widgets) {
-            newItem.items = processApiData(item.widgets);
-        }
-
-        return newItem;
-    });
-}
-
 export function fetchExpandableItems(items, selectedId) {
     let flatList = [];
     items.map(item => {
         const hasNestedList = !!item.items;
         if (hasNestedList) {
-            let isNestedListExpanded = !!item.sectionTitle || hasChildWithId(item.items, selectedId); // TODO delete !!item.sectionTitle ||
+            let isNestedListExpanded = hasChildWithId(item.items, selectedId);
             flatList.push(
                 {
                     id: item.id,
