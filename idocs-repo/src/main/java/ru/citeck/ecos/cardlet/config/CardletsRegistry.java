@@ -12,11 +12,13 @@ import ru.citeck.ecos.model.CardletModel;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CardletsRegistry implements RepoContentDAO<Cardlet> {
 
     private RepoContentDAOImpl<Cardlet> repoContentDAO;
+    private List<String> registeredRegions = null;
 
     public List<Cardlet> getCardlets(List<QName> types, Collection<String> authorities, String mode) {
 
@@ -57,6 +59,25 @@ public class CardletsRegistry implements RepoContentDAO<Cardlet> {
             }
         }
         return false;
+    }
+
+    public List<String> getRegisteredRegions() {
+        if (registeredRegions != null) {
+            return registeredRegions;
+        }
+        synchronized (this) {
+            if (registeredRegions == null) {
+                Set<String> regions = new HashSet<>();
+                forEach(data -> data.getData().ifPresent(c -> regions.add(c.getRegionId())));
+                registeredRegions = new ArrayList<>(regions);
+            }
+        }
+        return registeredRegions;
+    }
+
+    @Override
+    public void forEach(Consumer<ContentData<Cardlet>> consumer) {
+        repoContentDAO.forEach(consumer);
     }
 
     @Override
@@ -109,6 +130,7 @@ public class CardletsRegistry implements RepoContentDAO<Cardlet> {
     @Override
     public void clearCache() {
         repoContentDAO.clearCache();
+        registeredRegions = null;
     }
 
     public void setRepoContentDAO(RepoContentDAOImpl<Cardlet> repoContentDAO) {
