@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>get registered regions</shortname>
+    <url>/citeck/cardlets/registered-regions</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>
