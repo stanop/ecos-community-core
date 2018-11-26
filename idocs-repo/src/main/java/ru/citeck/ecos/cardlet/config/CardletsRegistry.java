@@ -1,5 +1,6 @@
 package ru.citeck.ecos.cardlet.config;
 
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
@@ -68,7 +69,10 @@ public class CardletsRegistry implements RepoContentDAO<Cardlet> {
         synchronized (this) {
             if (registeredRegions == null) {
                 Set<String> regions = new HashSet<>();
-                forEach(data -> data.getData().ifPresent(c -> regions.add(c.getRegionId())));
+                AuthenticationUtil.runAsSystem(() -> {
+                    forEach(data -> data.getData().ifPresent(c -> regions.add(c.getRegionId())));
+                    return null;
+                });
                 registeredRegions = new ArrayList<>(regions);
             }
         }
