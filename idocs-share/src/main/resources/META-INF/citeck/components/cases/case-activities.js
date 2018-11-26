@@ -97,6 +97,8 @@ Activity
               activity.reload(recurse);
           });
         }
+
+        YAHOO.Bubbling.fire("activitiesWereReloaded");
     })
 
     .method('add', function(type, viewId, viewParams) {

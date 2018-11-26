@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.alfresco.service.cmr.repository.NodeRef;
+import ru.citeck.ecos.icase.completeness.current.CurrentLevelsResolver;
 
 public interface CaseCompletenessService {
 
@@ -33,6 +34,16 @@ public interface CaseCompletenessService {
     boolean isLevelsCompleted(NodeRef caseRef, Collection<NodeRef> levels);
 
     /**
+     * Check specified levels and return not completed levels
+     */
+    Set<NodeRef> getUncompletedLevels(NodeRef caseRef, Collection<NodeRef> levelsToCheck);
+
+    /**
+     * Get case levels, filter completed and return other
+     */
+    Set<NodeRef> getUncompletedLevels(NodeRef caseRef);
+
+    /**
      * Check that requirement is passed
      */
     boolean isRequirementPassed(NodeRef caseNode, NodeRef requirement);
@@ -46,5 +57,9 @@ public interface CaseCompletenessService {
      * Get current levels for the specified case.
      */
     Set<NodeRef> getCurrentLevels(NodeRef caseNode);
-    
+
+    /**
+     * Register new current levels resolver
+     */
+    void register(CurrentLevelsResolver resolver);
 }

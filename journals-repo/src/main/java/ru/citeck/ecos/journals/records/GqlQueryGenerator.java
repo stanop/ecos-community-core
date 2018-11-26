@@ -1,18 +1,21 @@
 package ru.citeck.ecos.journals.records;
 
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
-import ru.citeck.ecos.graphql.journal.datasource.JournalDataSource;
-import ru.citeck.ecos.graphql.journal.record.JGqlAttributeInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.journals.JournalType;
+import ru.citeck.ecos.model.AttributeModel;
+import ru.citeck.ecos.records.RecordsService;
+import ru.citeck.ecos.records.source.MetaAttributeDef;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class GqlQueryGenerator {
 
@@ -20,31 +23,42 @@ public class GqlQueryGenerator {
             "['\"]\\s*?(\\S+?:\\S+?\\s*?(,\\s*?\\S+?:\\S+?\\s*?)*?)['\"]"
     );
 
-    private ServiceRegistry serviceRegistry;
     private NamespaceService namespaceService;
+    private RecordsService recordsService;
 
     private ConcurrentHashMap<String, String> gqlQueryWithDataByJournalId = new ConcurrentHashMap<>();
 
-
-    public String generate(JournalType journalType, String baseQuery, JournalDataSource dataSource) {
+    public String generate(JournalType journalType) {
         return gqlQueryWithDataByJournalId.computeIfAbsent(journalType.getId(),
-                id -> generateGqlQueryWithData(journalType, baseQuery, dataSource));
+                id -> generateGqlQueryWithData(journalType));
     }
 
+    private String generateGqlQueryWithData(JournalType journalType) {
 
-    private String generateGqlQueryWithData(JournalType journalType, String baseQuery, JournalDataSource dataSource) {
+        String dataSource = journalType.getDataSource();
 
         StringBuilder schemaBuilder = new StringBuilder();
-        schemaBuilder.append(baseQuery).append(" ");
 
-        schemaBuilder.append("fragment recordsFields on JGqlAttributeValue {");
         schemaBuilder.append("id\n");
 
         int attrCounter = 0;
 
         List<QName> attributes = new ArrayList<>(journalType.getAttributes());
-        for (String defaultAttr : dataSource.getDefaultAttributes()) {
-            attributes.add(QName.resolveToQName(namespaceService, defaultAttr));
+        if (StringUtils.isEmpty(journalType.getDataSource())) {
+            attributes.add(AttributeModel.ATTR_ASPECTS);
+            attributes.add(AttributeModel.ATTR_IS_CONTAINER);
+            attributes.add(AttributeModel.ATTR_IS_DOCUMENT);
+        }
+
+        Set<String> strAtts = attributes.stream()
+                                        .map(a -> a.toPrefixString(namespaceService))
+                                        .collect(Collectors.toSet());
+
+        List<MetaAttributeDef> defs = recordsService.getAttsDefinition(dataSource, strAtts);
+
+        Map<String, MetaAttributeDef> defsByName = new HashMap<>();
+        for (MetaAttributeDef def : defs) {
+            defsByName.put(def.getName(), def);
         }
 
         for (QName attribute : attributes) {
@@ -54,23 +68,20 @@ public class GqlQueryGenerator {
 
             schemaBuilder.append("a")
                     .append(attrCounter++)
-                    .append(":attr(name:\"")
+                    .append(":att(name:\"")
                     .append(prefixedKey)
                     .append("\"){");
 
-            JGqlAttributeInfo info = dataSource.getAttributeInfo(prefixedKey).orElse(null);
+            MetaAttributeDef info = defsByName.get(prefixedKey);
             schemaBuilder.append(getAttributeSchema(attributeOptions, info));
 
             schemaBuilder.append("}");
         }
 
-        schemaBuilder.append("}");
-
         return schemaBuilder.toString();
     }
 
-
-    private String getAttributeSchema(Map<String, String> attributeOptions, JGqlAttributeInfo info) {
+    private String getAttributeSchema(Map<String, String> attributeOptions, MetaAttributeDef info) {
 
         String schema = attributeOptions.get("attributeSchema");
         if (StringUtils.isNotBlank(schema)) {
@@ -85,7 +96,9 @@ public class GqlQueryGenerator {
         // attributes
         Set<String> attributesToLoad = new HashSet<>();
         if (info != null) {
-            attributesToLoad.addAll(info.getDefaultInnerAttributes());
+            if (QName.class.isAssignableFrom(info.getDataType())) {
+                attributesToLoad.add("shortName");
+            }
         }
 
         Matcher attrMatcher = FORMATTER_ATTRIBUTES_PATTERN.matcher(formatter);
@@ -106,7 +119,7 @@ public class GqlQueryGenerator {
         for (String attrName : attributesToLoad) {
             schemaBuilder.append("a")
                     .append(attrCounter++)
-                    .append(":attr(name:\"")
+                    .append(":att(name:\"")
                     .append(attrName).append("\")")
                     .append("{name val{str}}")
                     .append(",");
@@ -115,9 +128,9 @@ public class GqlQueryGenerator {
         // inner fields
         List<String> innerFields = new ArrayList<>();
 
-        QName dataType = info != null ? info.getDataType() : DataTypeDefinition.ANY;
-        boolean isNode = dataType.equals(DataTypeDefinition.NODE_REF);
-        boolean isQName = dataType.equals(DataTypeDefinition.QNAME);
+        Class dataType = info != null ? info.getDataType() : Object.class;
+        boolean isNode = NodeRef.class.isAssignableFrom(dataType);
+        boolean isQName = QName.class.isAssignableFrom(dataType);
 
         if (formatter.contains("Link") || formatter.contains("nodeRef")) {
             innerFields.add("id");
@@ -140,8 +153,11 @@ public class GqlQueryGenerator {
     }
 
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
         this.namespaceService = serviceRegistry.getNamespaceService();
     }
 
+    @Autowired
+    public void setRecordsService(RecordsService recordsService) {
+        this.recordsService = recordsService;
+    }
 }

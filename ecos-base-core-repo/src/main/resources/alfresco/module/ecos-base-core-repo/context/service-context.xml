@@ -101,10 +101,6 @@
         <property name="searchCriteriaSettingsRegistry" ref="searchCriteriaSettingsRegistry" />
     </bean>
 
-    <bean id="ftsAlfrescoQueryBuilder" class="ru.citeck.ecos.search.FtsAlfrescoQuery">
-        <property name="ftsAlfrescoQueryMigration" ref="ftsAlfrescoQueryMigration" />
-    </bean>
-
     <bean id="searchCriteriaFactory" class="ru.citeck.ecos.search.SearchCriteriaFactory">
         <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
@@ -113,7 +109,7 @@
         <property name="searchService" ref="SearchService" />
         <property name="queryBuilders">
             <list value-type="ru.citeck.ecos.search.SearchQueryBuilder">
-                <ref bean="ftsAlfrescoQueryBuilder" />
+                <ref bean="ftsQueryBuilder" />
                 <ref bean="luceneQueryBuilder" />
             </list>
         </property>
@@ -328,8 +324,8 @@
     </bean>
 
     <bean id="ecosConfigService" class="ru.citeck.ecos.config.EcosConfigService">
-        <property name="searchService" ref="searchService"/>
-        <property name="nodeService" ref="nodeService"/>
+        <property name="nodeService" ref="nodeService" />
+        <property name="searchService" ref="searchService" />
     </bean>
 
     <bean id="ecosConfigServiceJS" class="ru.citeck.ecos.config.EcosConfigServiceJs" parent="baseJavaScriptExtension">
@@ -411,9 +407,22 @@
     <bean id="ecos-base-core.groupActionServiceJS"
           class="ru.citeck.ecos.action.group.GroupActionServiceJS"
           parent="baseJavaScriptExtension">
-        <property name="extensionName" value="groupActionService" />
-        <property name="groupActionService" ref="ecos-base-core.groupActionService" />
+        <property name="extensionName" value="groupActions" />
         <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="ecos-base-core.recordsServiceJS"
+          class="ru.citeck.ecos.records.RecordsServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="recordsService" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+    <bean id="RecordsServiceTemplate"
+          class="ru.citeck.ecos.records.RecordsServiceTemplate"
+          parent="baseTemplateImplementation">
+        <property name="extensionName" value="recordsService" />
+        <property name="recordsService" ref="ecos-base-core.recordsServiceJS" />
     </bean>
 
 </beans>

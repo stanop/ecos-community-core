@@ -5,7 +5,6 @@ import org.alfresco.repo.batch.BatchProcessWorkProvider;
 import org.alfresco.repo.batch.BatchProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
-import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -15,7 +14,6 @@ import org.alfresco.service.transaction.TransactionService;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.StatefulJob;
 import ru.citeck.ecos.icase.timer.CaseTimerService;
 import ru.citeck.ecos.model.CaseTimerModel;
 import ru.citeck.ecos.service.AlfrescoServices;
@@ -28,7 +26,7 @@ import java.util.List;
 /**
  * @author Pavel Simonov
  */
-public class CaseTimerJob extends AbstractScheduledLockedJob implements StatefulJob {
+public class CaseTimerJob extends AbstractLockedJob {
 
     private static final String PROCESS_NAME = "update-timers-process";
 

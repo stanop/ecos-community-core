@@ -1,7 +1,6 @@
 package ru.citeck.ecos.job;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.schedule.AbstractScheduledLockedJob;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -19,7 +18,7 @@ import ru.citeck.ecos.model.DeputyModel;
 
 import java.util.List;
 
-public class AvailabilityChangeJob extends AbstractScheduledLockedJob {
+public class AvailabilityChangeJob extends AbstractLockedJob {
     private static final Log logger = LogFactory.getLog(AvailabilityChangeJob.class);
     private NodeService nodeService;
     private SearchService searchService;

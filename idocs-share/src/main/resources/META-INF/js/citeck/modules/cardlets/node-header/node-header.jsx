@@ -70,7 +70,7 @@ export default class NodeHeader extends NodeCardlet {
 
         let result = [];
 
-        if (path[0].qname != 'app:company_home') {
+        if (path && path[0] && path[0].qname != 'app:company_home') {
             return result;
         }
 

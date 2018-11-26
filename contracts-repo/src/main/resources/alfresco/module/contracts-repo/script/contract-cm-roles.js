@@ -12,6 +12,7 @@ var roles = {
     rolesData: {},
 
     getConfirmersRefsFromRouting: function(type, kind) {
+
         var filterRoutings = function(routings) {
             var result = [];
             for (var i = 0; i < routings.length; i++) {
@@ -56,13 +57,31 @@ var roles = {
 
         var confirmers = new Packages.java.util.ArrayList();
 
-        var routings = getRouting(type, kind);
-        for (var i = 0; i < routings.length; i++) {
-            var precedence = routings[i].properties["route:precedence"];
+        var role = caseRoleService.getRole(document, ROLE_CONFIRMERS);
+        var routing = (role.assocs['route:routeAssoc'] || [])[0];
+        if (!routing) {
+            routing = (getRouting(type, kind) || [])[0];
+            if (routing) {
+                role.createAssociation(routing, "route:routeAssoc");
+            }
+        }
+        if (routing) {
+            var precedence = routing.properties["route:precedence"];
+
+            role.properties['route:precedence'] = precedence;
+            role.save();
+
             var routeData = Packages.ru.citeck.ecos.workflow.confirm.PrecedenceToJsonListener.convertPrecedence(precedence);
             try {
-                confirmers.addAll(routeData.stages.get(0).confirmers);
-            } catch (e) {}
+                if (routeData && routeData.stages) {
+                    var it = routeData.stages.iterator();
+                    while (it.hasNext()) {
+                        confirmers.addAll(it.next().confirmers);
+                    }
+                }
+            } catch (e) {
+                console.warn(e);
+            }
         }
 
         var confirmersRefs = {};

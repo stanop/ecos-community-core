@@ -56,4 +56,11 @@ public @interface PolicyMethod {
      * If this argument is false then last invocation of YourBehaviour in example above will be ignored
      */
     boolean recursive() default false;
+
+    /**
+     * When frequency is TRANSACTION_COMMIT check NodeRef, AssociationRef and ChildAssociationRef arguments
+     * before invoke behaviour method. If some node (source or target) doesn't exists method invocation
+     * will be skipped
+     */
+    boolean checkNodeRefs() default true;
 }

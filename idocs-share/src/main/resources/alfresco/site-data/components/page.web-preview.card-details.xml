@@ -21,13 +21,13 @@
                             </params>
                         </evaluator>
                     </evaluators>
-                    <url>/components/preview/web-preview</url>
+                    <url>/ru/citeck/components/web-preview</url>
                     <properties>
                         <nodeRef>{nodeRef}</nodeRef>
                     </properties>
                 </evaluation>
                 <evaluation id="versRef">
-                    <url>/components/preview/web-preview</url>
+                    <url>/ru/citeck/components/web-preview</url>
                     <properties>
                         <nodeRef>{versRef}</nodeRef>
                     </properties>

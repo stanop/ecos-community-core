@@ -9,6 +9,7 @@
 
 // GLOBAL VARIABLES
 var isMobile = isMobileDevice(context.headers["user-agent"]);
+model.isMobile = isMobile;
 
 // ---------------------
 // HEADER MENU
@@ -50,6 +51,9 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
         { id: "more", url: "console/admin-console/", iconImage: "/share/res/components/images/header/more.png" }
     ];
 
+    model.isReactMenu = isSlideMenu;
+    model.isCascadeCreateMenu = isCascadCreateMenu;
+
 // ---------------------
 // General code
 // ---------------------
@@ -71,6 +75,11 @@ if (shareVerticalLayout && shareVerticalLayout.config.widgets.length) {
         }
 
     })
+}
+
+// dirty hack: hide the old top menu on the faceted search page
+if (isSlideMenu) {
+    header.name = "js/citeck/header/emptyMenu";
 }
 
 
@@ -260,6 +269,8 @@ if (siteMenuItems.length) {
         }
     }];
 }
+
+model.siteMenuItems = siteMenuItems;
 
 
 // DEBUG MENU
@@ -554,7 +565,7 @@ var HEADER_SITES_VARIANTS = {
                     config: {
                         id: "HEADER_CREATE_WORKFLOW_ADHOC",
                         label: "header.create-workflow-adhoc.label",
-                        targetUrl: "start-specified-workflow?workflowId=activiti$perform"
+                        targetUrl: "workflow-start-page?formType=workflowId&formKey=activiti$perform"
                     }
                 },
                 {
@@ -634,17 +645,21 @@ if (isSlideMenu) {
     userMenuBar.config.widgets.push(HEADER_USER_MENU);
 
     // BUILD APP MENU
+    var slideMenuConfig = {
+        id: "HEADER_SLIDE_MENU",
+        isMobile: isMobile,
+        userName: user.name,
+        logoSrc: getHeaderLogoUrl(),
+        logoSrcMobile: getHeaderMobileLogoUrl(),
+        widgets: getWidgets()
+    };
+
+    model.slideMenuConfig = slideMenuConfig;
+
     appMenuBar.config.widgets.push({
         id: "HEADER_SLIDE_MENU",
         name: "js/citeck/header/citeckMainSlideMenu",
-        config: {
-            id: "HEADER_SLIDE_MENU",
-            isMobile: isMobile,
-            userName: user.name,
-            logoSrc: getHeaderLogoUrl(),
-            logoSrcMobile: getHeaderMobileLogoUrl(),
-            widgets: getWidgets()
-        }
+        config: slideMenuConfig
     },
         HEADER_CREATE_CASE);
 
@@ -876,7 +891,7 @@ function buildCreateVariants(sites) {
                 widgets: buildItems([{
                         id: "HEADER_CREATE_WORKFLOW_ADHOC",
                         label: "header.create-workflow-adhoc.label",
-                        url: "start-specified-workflow?workflowId=activiti$perform"
+                        url: "workflow-start-page?formType=workflowId&formKey=activiti$perform"
                     },
                     {
                         id: "HEADER_CREATE_WORKFLOW_CONFIRM",

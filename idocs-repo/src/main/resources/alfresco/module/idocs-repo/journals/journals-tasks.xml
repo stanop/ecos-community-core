@@ -8,9 +8,11 @@
         <import uri="http://www.citeck.ru/model/workflow-mirror/1.0" prefix="wfm" />
         <import uri="http://www.citeck.ru/model/event/1.0" prefix="event" />
         <import uri="http://www.citeck.ru/model/history/1.0" prefix="history" />
+        <import uri="http://www.citeck.ru/model/attribute/1.0" prefix="attr" />
     </imports>
 
     <journal id="active-tasks">
+        <datasource>workflow-tasks</datasource>
         <option name="type">bpm:workflowTask</option>
         <option name="formId">search</option>
         <option name="actionGroupId">task</option>
@@ -55,6 +57,9 @@
             <header key="bpm:startDate" />
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:comment" />
+            <header key="attr:aspects" visible="false" searchable="false" />
+            <header key="attr:isContainer" visible="false" searchable="false" />
+            <header key="attr:isDocument" visible="false" searchable="false" />
         </headers>
     </journal>
 
@@ -148,18 +153,19 @@
     </journal>
 
     <journal id="task-statistic">
-        <datasource>journal.datasource.taskStatisticDatasource</datasource>
+        <datasource>task-statistic</datasource>
         <option name="actionGroupId">none</option>
+        <option name="defaultSortBy">[{id: 'event:date', order: 'desc'}]</option>
         <headers>
-            <header key="event:taskType" default="true" searchable="false">
+            <header key="event:taskType" default="true" searchable="false" sortable="false">
                 <option name="customLabel">Тип задачи</option>
                 <option name="formatter">typeName</option>
             </header>
-            <header key="event:initiator" default="true">
+            <header key="event:initiator" default="true" sortable="false">
                 <option name="customLabel">Исполнитель</option>
                 <criterion>
                     <region name="select" template="orgstruct">
-                        <param name="allowedAuthorityType">USER</param>
+                        <param name="allowedAuthorityType">USER,GROUP</param>
                     </region>
                 </criterion>
             </header>
@@ -167,7 +173,7 @@
                 <option name="customLabel">Документ</option>
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="history:startedDate" default="true" searchable="false" sortable="false">
+            <header key="event:date" default="true">
                 <option name="customLabel">Дата начала</option>
                 <option name="formatter">datetime</option>
             </header>

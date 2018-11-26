@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="webscript.ru.citeck.flowable.tasks.document-tasks-manual.get"
+          class="ru.citeck.ecos.flowable.webscripts.tasks.DocumentTasksManualGet" parent="webscript">
+    </bean>
+
+</beans>

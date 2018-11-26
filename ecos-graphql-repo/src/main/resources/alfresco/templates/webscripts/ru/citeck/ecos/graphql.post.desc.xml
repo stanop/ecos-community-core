@@ -2,7 +2,7 @@
 <webscript>
     <shortname>Graphql</shortname>
     <description>Graphql</description>
-    <url>/ecos/graphql</url>
+    <url>/citeck/ecos/graphql</url>
     <format default="json"/>
     <authentication>user</authentication>
     <transaction allow="readonly">required</transaction>

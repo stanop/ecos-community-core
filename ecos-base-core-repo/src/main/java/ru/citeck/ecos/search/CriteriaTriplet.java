@@ -31,6 +31,12 @@ public class CriteriaTriplet {
 
     private final String value;
 
+    public CriteriaTriplet(CriteriaTriplet other) {
+        this.field = other.getField();
+        this.predicate = other.getPredicate();
+        this.value = other.getValue();
+    }
+
     public CriteriaTriplet(String field, String predicate, String value) {
         this.field = field;
         this.predicate = predicate;

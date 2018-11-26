@@ -7,6 +7,8 @@ import org.alfresco.service.cmr.search.*;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.utils.search.SearchResult;
+import ru.citeck.ecos.utils.search.SearchUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -396,17 +398,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
         searchParameters.setQuery(query);
 
-        ResultSet resultSet = null;
-        try {
-            resultSet = searchService.query(searchParameters);
-            return new QueryResult(resultSet.getNodeRefs(),
-                                   resultSet.hasMore(),
-                                   resultSet.getNumberFound());
-        } finally {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-        }
+        return new QueryResult(SearchUtils.query(searchParameters, searchService));
     }
 
     @Override

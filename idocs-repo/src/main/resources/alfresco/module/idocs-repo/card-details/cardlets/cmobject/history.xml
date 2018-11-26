@@ -8,30 +8,70 @@
         <order>h5</order>
         <mobile-order>-1</mobile-order>
     </position>
-    <control url="js/citeck/modules/cardlets/document-children/document-children">
+    <control url="js/citeck/modules/cardlets/grid/grid">
         <prop name="header">dochist.header</prop>
-        <prop name="childrenUrl">Alfresco.constants.PROXY_URI + "citeck/history/document?nodeRef=${nodeRef}&amp;events=node.created,node.updated,assoc.removed,assoc.added,task.complete,user.action,status.changed,role.changed"</prop>
-        <prop name="columns">[{key: 'attributes["event:date"]', label: Alfresco.util.message("dochist.header.date"), formatter: Citeck.format.datetime()},
-            {key: 'attributes["event:name"]', label: Alfresco.util.message("dochist.header.name"), formatter: Citeck.format.message('dochist.')},
-            {key: 'attributes["event:documentVersion"]', label: Alfresco.util.message("dochist.header.version")},
-            {key: 'attributes["event:initiator"][0]', label: Alfresco.util.message("dochist.header.person"), formatter: Citeck.format.node()},
-            {key: 'attributes["taskOriginalOwner"]', label: Alfresco.util.message("dochist.header.fromName"),
-            formatter: Citeck.format.node()},
-            {key: 'attributes["event:taskPooledActors"]', label: Alfresco.util.message("dochist.header.group"), formatter: Citeck.format.userOrGroup()},
-            {key: 'attributes["event:taskType"]', label: Alfresco.util.message("dochist.header.task"), formatter: Citeck.format.typeName('shortQName')},
-            {key: 'attributes["event:taskOutcome"]', label: Alfresco.util.message("dochist.header.outcome"), formatter: Citeck.format.taskHistoryOutcome()},
-            {key: 'attributes["event:taskComment"]', label: Alfresco.util.message("dochist.header.comment")}]</prop>
-        <prop name="responseSchema">{resultsList: 'history', fields: [{key: 'attributes["event:name"]'},
-            {key: 'attributes["event:date"]'},
-            {key: 'attributes["event:documentVersion"]'},
-            {key: 'attributes["event:initiator"][0]'},
-            {key: 'attributes["taskOriginalOwner"]'},
-            {key: 'attributes["event:taskPooledActors"]'},
-            {key: 'attributes["event:taskType"]'},
-            {key: 'attributes["event:taskOutcome"]'},
-            {key: 'attributes["event:taskComment"]'},
-            {key: 'attributes'}]}
+        <prop name="dataSourceName">
+            GqlDataSource
         </prop>
-        <prop name="twisterKey">history</prop>
+        <prop name="url">
+            Alfresco.constants.PROXY_URI  + '/citeck/ecos/records'
+        </prop>
+        <prop name="ajax">
+            {
+            body: {
+            query: {
+            'query': '{"nodeRef": "${nodeRef}", "events":"node.created,node.updated,assoc.updated,task.complete,user.action,status.changed,esign.signed,approval.cancelled,role.changed"}',
+            'sourceId': 'history',
+            'language': 'document'
+            }
+            }
+            }
+        </prop>
+        <prop name="columns">
+            [
+            {
+            field: 'event:date',
+            formatter: 'DateTimeFormatter',
+            text: Alfresco.util.message("dochist.header.date"),
+            type: 'date'
+            },
+            {
+            field: 'event:name',
+            formatter: {name: 'FunctionFormatter', params: {fn: Citeck.format.message('dochist.')}},
+            text: Alfresco.util.message("dochist.header.name"),
+            },
+            {
+            field: 'event:documentVersion',
+            text: Alfresco.util.message("dochist.header.version"),
+            },
+            {
+            field: 'event:initiator',
+            formatter: 'UserNameLinkFormatter',
+            text: Alfresco.util.message("dochist.header.person")
+            },
+            {
+            field: 'taskOriginalOwner',
+            formatter: 'UserNameLinkFormatter',
+            text: Alfresco.util.message("dochist.header.fromName")
+            },
+            {
+            field: 'event:taskRole',
+            text: Alfresco.util.message("dochist.header.group")
+            },
+            {
+            field: 'event:taskType',
+            text: Alfresco.util.message("dochist.header.task")
+            },
+            {
+            field: 'event:taskOutcomeTitle',
+            text: Alfresco.util.message("dochist.header.outcome"),
+            },
+            {
+            field: 'event:taskComment',
+            text: Alfresco.util.message("dochist.header.comment"),
+            width: 230
+            }
+            ]
+        </prop>
     </control>
 </cardlet>

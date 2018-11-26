@@ -278,10 +278,7 @@
 	<bean id="flowableFormCommentsListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.FormCommentsListener"/>
 
 	<!-- Example -->
-	<bean id="flowable-ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.flowable.example.FlowableCasePerformWorkflowHandler"
-		  init-method="init">
-		<property name="utils" ref="flowableCasePerformUtils" />
-		<property name="authorityService" ref="authorityService" />
+	<bean id="flowable-ecos.workflow.case-perform-events-handler" class="ru.citeck.ecos.flowable.example.FlowableCasePerformWorkflowHandler">
 	</bean>
 
 	<bean name="FlowableConfirmHelper" class="ru.citeck.ecos.flowable.example.FlowableConfirmHelper">
@@ -311,6 +308,30 @@
 		<property name="flowableProcessDefinitionService" ref="flowableCustomProcessDefinitionService"/>
 		<property name="searchService" ref="searchService"/>
 		<property name="nodeService" ref="nodeService"/>
+	</bean>
+
+	<bean id="abstractFlowableSaveToExecutionListener"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.variables.AbstractFlowableSaveToExecutionListener"
+		  abstract="true"/>
+
+	<bean id="flowableCaseStatusSetListener"
+		  class="ru.citeck.ecos.flowable.listeners.global.impl.variables.FlowableCaseStatusSetListener"/>
+
+    <bean id="flowableRecipientsService" class="ru.citeck.ecos.flowable.services.impl.FlowableRecipientsServiceImpl"/>
+
+    <bean id="flowableRecipientsServiceJS" name="flowableRecipientsServiceJS"
+          class="ru.citeck.ecos.flowable.services.FlowableRecipientsServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="flwRecipients"/>
+        <property name="flowableRecipientsService" ref="flowableRecipientsService"/>
+    </bean>
+
+	<bean id="flowableScriptNodeType" class="ru.citeck.ecos.flowable.variable.FlowableScriptNodeVariableType">
+		<property name="serviceRegistry" ref="ServiceRegistry"/>
+	</bean>
+
+	<bean id="flowableScriptNodeListType" class="ru.citeck.ecos.flowable.variable.FlowableScriptNodeListVariableType">
+		<property name="serviceRegistry" ref="ServiceRegistry"/>
 	</bean>
 
 </beans>

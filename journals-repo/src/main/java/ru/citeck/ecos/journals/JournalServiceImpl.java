@@ -18,26 +18,27 @@
  */
 package ru.citeck.ecos.journals;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
-import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.invariants.Feature;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
-import ru.citeck.ecos.journals.records.JournalRecords;
 import ru.citeck.ecos.journals.records.JournalRecordsDAO;
-import ru.citeck.ecos.journals.records.RecordsResult;
 import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
 import ru.citeck.ecos.model.JournalsModel;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.query.RecordsResult;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.NamespacePrefixResolverMapImpl;
@@ -50,6 +51,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 class JournalServiceImpl implements JournalService {
 
+    private static final String JOURNAL_OPTION_TYPE = "type";
+
     protected static final String JOURNALS_SCHEMA_LOCATION = "alfresco/module/journals-repo/schema/journals.xsd";
     protected static final String INVARIANTS_SCHEMA_LOCATION = "alfresco/module/ecos-forms-repo/schema/invariants.xsd";
 
@@ -57,6 +60,7 @@ class JournalServiceImpl implements JournalService {
     private ServiceRegistry serviceRegistry;
     private SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry;
     private JournalRecordsDAO recordsDAO;
+    private NamespaceService namespaceService;
 
     private LazyNodeRef journalsRoot;
     private Map<String, JournalType> journalTypes = new ConcurrentHashMap<>();
@@ -89,6 +93,20 @@ class JournalServiceImpl implements JournalService {
                 searchCriteriaSettingsRegistry.registerJournalStaticQuery(journal.getId(), staticQuery);
             }
         }
+    }
+
+    @Override
+    public Optional<JournalType> getJournalForType(QName typeName) {
+
+        String typeShortName = typeName.toPrefixString(namespaceService);
+
+        Collection<JournalType> types = getAllJournalTypes();
+        for (JournalType type : types) {
+            if (typeShortName.equals(type.getOptions().get("type"))) {
+                return Optional.of(type);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -170,40 +188,29 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public RecordsResult getRecords(String journalId,
-                                    String query,
-                                    String language,
-                                    JGqlPageInfoInput pageInfo) {
+    public RecordsResult<RecordRef> getRecords(String journalId,
+                                               String query,
+                                               String language,
+                                               JGqlPageInfoInput pageInfo,
+                                               boolean debug) {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }
         JournalType journalType = needJournalType(journalId);
-        return recordsDAO.getRecords(journalType, query, language, pageInfo);
+        return recordsDAO.getRecords(journalType, query, language, pageInfo, debug);
     }
 
     @Override
-    public JournalRecords getRecordsLazy(String journalId,
-                                         String query,
-                                         String language,
-                                         JGqlPageInfoInput pageInfo) {
-
-        if (pageInfo == null) {
-            pageInfo = new JGqlPageInfoInput(null, 0, Collections.emptyList(), 0);
-        }
-        JournalType journalType = needJournalType(journalId);
-        return new JournalRecords(recordsDAO, journalType, query, language, pageInfo);
-    }
-
-    @Override
-    public JournalData getRecordsWithData(String journalId,
-                                          String query,
-                                          String language,
-                                          JGqlPageInfoInput pageInfo) throws Exception {
+    public RecordsResult<ObjectNode> getRecordsWithData(String journalId,
+                                                        String query,
+                                                        String language,
+                                                        JGqlPageInfoInput pageInfo,
+                                                        boolean debug) {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }
         JournalType journalType = needJournalType(journalId);
-        return recordsDAO.getRecordsWithData(journalType, query, language, pageInfo);
+        return recordsDAO.getRecordsWithData(journalType, query, language, pageInfo, debug);
     }
 
     @Override
@@ -234,6 +241,10 @@ class JournalServiceImpl implements JournalService {
 
     public void setSearchCriteriaSettingsRegistry(SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
         this.searchCriteriaSettingsRegistry = searchCriteriaSettingsRegistry;
+    }
+
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
     }
 
     public SearchCriteriaSettingsRegistry getSearchCriteriaSettingsRegistry() {

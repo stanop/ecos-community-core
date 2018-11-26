@@ -26,10 +26,7 @@ import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
 import ru.citeck.ecos.icase.activity.CaseActivityService;
-import ru.citeck.ecos.model.ActivityModel;
-import ru.citeck.ecos.model.CiteckWorkflowModel;
-import ru.citeck.ecos.model.ICaseRoleModel;
-import ru.citeck.ecos.model.ICaseTaskModel;
+import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.config.EcosConfigService;
@@ -52,8 +49,9 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
     private final ValueConverter valueConverter = new ValueConverter();
 
-    private Map<String, Map<String, String>> attributesMappingByWorkflow;
-    private Map<String, List<String>> workflowTransmittedVariables;
+    private Map<String, Map<String, String>> attributesMappingByWorkflow = new HashMap<>();
+    private Map<String, List<String>> workflowTransmittedVariables = new HashMap<>();
+    private Map<String, CaseTaskAttributesConverter> attributesConverters = new HashMap<>();
 
     private CaseActivityService caseActivityService;
     private DictionaryService dictionaryService;
@@ -82,13 +80,6 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
                 ICaseTaskModel.TYPE_TASK,
                 new ChainingJavaBehaviour(this, "onCaseActivityReset", Behaviour.NotificationFrequency.EVERY_EVENT)
         );
-
-        if (attributesMappingByWorkflow == null) {
-            attributesMappingByWorkflow = new HashMap<>();
-        }
-        if (workflowTransmittedVariables == null) {
-            workflowTransmittedVariables = new HashMap<>();
-        }
         qnameConverter = new WorkflowQNameConverter(namespaceService);
     }
 
@@ -150,9 +141,21 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
         }
 
         workflowProperties.putAll(getTransmittedVariables(workflowDefinitionName));
+        workflowProperties = convertCollections(workflowProperties);
+
+        CaseTaskAttributesConverter converter = attributesConverters.get(workflowDefinitionName);
+        if (converter != null) {
+            workflowProperties = converter.convert(workflowProperties, taskRef);
+        }
+
+        return workflowProperties;
+    }
+
+    private Map<QName, Serializable> convertCollections(Map<QName, Serializable> attributes) {
 
         Map<QName, Serializable> result = new HashMap<>();
-        workflowProperties.forEach((k, v) -> {
+
+        attributes.forEach((k, v) -> {
             if (v instanceof List && ((List) v).size() > 0) {
                 Object value = ((List) v).get(0);
                 if (value instanceof NodeRef) {
@@ -166,7 +169,6 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
                 result.put(k, v);
             }
         });
-
         return result;
     }
 
@@ -258,7 +260,8 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     private int getDefaultSLA() {
         String rawSla = (String) ecosConfigService.getParamValue(DEFAULT_SLA_JOURNAL_ITEM_ID);
         if (rawSla == null) {
-            log.info("No default-sla-duration config found. Using 8 hours constant as an SLA");
+            log.info("No default-sla-duration config found. " +
+                     "Using " + DEFAULT_RAW_SLA + " hours constant as an SLA");
             rawSla = DEFAULT_RAW_SLA;
         }
         try {
@@ -352,6 +355,15 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
             }
         }
         nodeService.createAssociation(source, target, assocType);
+    }
+
+    @Autowired
+    public void setAttributesConverters(List<CaseTaskAttributesConverter> attributesConverters) {
+        attributesConverters.forEach(conveter -> {
+            for (String id : conveter.getWorkflowTypes()) {
+                this.attributesConverters.put(id, conveter);
+            }
+        });
     }
 
     public void registerAttributesMapping(Map<String, Map<String, String>> attributesMappingByWorkflow) {

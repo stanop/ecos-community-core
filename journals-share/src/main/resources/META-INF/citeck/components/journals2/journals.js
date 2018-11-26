@@ -25,6 +25,9 @@ define([
     'lib/underscore'
 ], function(ko, koutils) {
 
+    if (!Citeck) Citeck = {};
+    if (!Citeck.constants) Citeck.constants = {};
+
 var logger = Alfresco.logger,
         noneActionGroupId = "none",
         buttonsActionGroupId = "buttons",
@@ -446,10 +449,9 @@ CreateVariant
             return this._id;
         })
         .computed('query', function() {
-            var id                                = this.id(),
-                name                              = this.name(),
+            var name                              = this.name(),
                 textValue                         = this.textValue(),
-                result                            = {},
+                result                            = [],
                 separator                         = this.separator(),
                 predicateId                       = this.resolve('predicate.id'),
                 allowableMultipleFilterPredicates = this.allowableMultipleFilterPredicates();
@@ -462,17 +464,21 @@ CreateVariant
                 var values = _.uniq((textValue.split(separator)).filter(Boolean));
 
                 _.each(values, function(value) {
-                    var criteriaId = criteriaCounter++;
-                    result['field_' + criteriaId] = name;
-                    result['predicate_' + criteriaId] = predicateId;
-                    result['value_' + criteriaId] = value.trim();
+                    result.push({
+                        field: name,
+                        predicate: predicateId,
+                        value: value.trim()
+                    });
                 });
-                return result;
-            }
 
-            result['field_' + id] = name;
-            result['predicate_' + id] = predicateId;
-            result['value_' + id] = textValue;
+            } else {
+
+                result.push({
+                    field: name,
+                    predicate: predicateId,
+                    value: textValue
+                });
+            }
             return result;
         })
         .init(function() {
@@ -602,10 +608,14 @@ Filter
         };
     })
     .computed('usableCriteria', function() {
+
         return _.filter(this.criteria(), function(criterion) {
-            if (criterion.predicate().id().indexOf("choose") == -1 &&
-                (criterion.value() || criterion.predicate().id().indexOf("empty") != -1)) return true;
-            return false;
+
+            var predicateId = criterion.predicate().id();
+
+            return predicateId.indexOf('join-by') > -1 ||
+                !!(predicateId.indexOf("choose") == -1 && (criterion.value() || predicateId.indexOf("empty") != -1));
+
         });
     })
     .init(function() {
@@ -1018,14 +1028,30 @@ JournalsWidget
             return null;
         }
 
-        var query = _.reduce(_.flatten([
-            journalCriteria,
-            filterCriteria
-        ]), function(query, criterion) {
-            return _.extend(query, criterion.query());
-        }, {});
+        return JSON.stringify(
+            this.formatCriteria(_.flatten(_.flatten([
+                journalCriteria,
+                filterCriteria
+            ]).map(function(c) { return c.query(); })))
+        );
+    })
 
-        return JSON.stringify(query);
+    .method('formatCriteria', function(criteria) {
+
+        var query = {};
+
+        if (!criteria) {
+            return query;
+        }
+
+        for (var i = 0; i < criteria.length; i++) {
+            var criterion = criteria[i];
+            query['field_' + i] = criterion.field;
+            query['predicate_' + i] = criterion.predicate;
+            query['value_' + i] = criterion.value;
+        }
+
+        return query;
     })
 
     // selected records
@@ -1406,7 +1432,7 @@ JournalsWidget
             return null;
         }
 
-        return {
+        var result = {
             query: recordsQuery,
             pageInfo: {
                 sortBy: this.sortByQuery(),
@@ -1414,6 +1440,11 @@ JournalsWidget
                 maxItems: this.maxItems() || this.defaultMaxItems() || 10
             }
         };
+
+        if (Citeck.constants.DEBUG) {
+            result.debug = true;
+        }
+        return result;
     })
 
     .method('performSearch', function() {
@@ -1450,12 +1481,11 @@ JournalsWidget
                 if (filter) {
                     var filterCriteria = filter.usableCriteria();
                     if (filter.criteria.loaded()) {
-                        var query = _.reduce(_.flatten([
+
+                        var query = this.formatCriteria(_.flatten(_.flatten([
                             journalCriteria,
                             filterCriteria
-                        ]), function(query, criterion) {
-                            return _.extend(query, criterion.query());
-                        }, {});
+                        ]).map(function(c) { return c.query(); })));
 
                         query.sortBy = this.sortByQuery();
                         query.reportType = this.createReportType();
@@ -1810,7 +1840,7 @@ JournalsWidget
                             console.error("Infinite loop? Iterations: " + iteration);
                         }
 
-                        var data = response.json.data.journalRecords,
+                        var data = response.json,
                             records = data.records;
 
                         records = _.map(records, function(node) {
@@ -1834,10 +1864,10 @@ JournalsWidget
 
                         self.model({
                             records: records,
-                            skipCount: data.pageInfo.skipCount,
-                            maxItems: data.pageInfo.maxItems,
+                            skipCount: recordsQuery.pageInfo.skipCount,
+                            maxItems: recordsQuery.pageInfo.maxItems,
                             totalItems: data.totalCount,
-                            hasMore: data.pageInfo.hasNextPage
+                            hasMore: data.hasMore
                         });
                     }
                 }

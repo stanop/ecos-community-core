@@ -1,0 +1,9 @@
+<webscript>
+	<shortname>getGroupNodeRef</shortname>
+	<description>Get group nodeRef by groupFullName</description>
+	<url>/citeck/authority/getGroupNodeRef?groupFullName={groupFullName}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+	<lifecycle>public_api</lifecycle>
+</webscript>

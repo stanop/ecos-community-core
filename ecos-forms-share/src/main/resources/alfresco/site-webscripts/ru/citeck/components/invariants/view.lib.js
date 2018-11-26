@@ -150,6 +150,9 @@ function _convertNodeViewGetParams(args) {
         } else if (args.withoutSavingType) {
             params.formType = "withoutSavingType";
             params.formKey = args.withoutSavingType;
+        } else if (args.workflowId){
+            params.formType = "workflowId";
+            params.formKey = args.workflowId;
         } else {
             throw "Parameters must contain either type, nodeRef or taskId or groupAction or withoutSavingType";
         }

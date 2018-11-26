@@ -6,6 +6,10 @@ package ru.citeck.ecos.flowable.constants;
 public class FlowableConstants {
 
     public static final String SERVICE_REGISTRY_BEAN_KEY = "serviceRegistry";
+
+    public static final String COMPLETENESS_SERVICE_JS_KEY = "completeness";
+    public static final String CASE_STATUS_SERVICE_JS_KEY = "caseStatusService";
+
     public static final String DELETE_REASON_DELETED = "deleted";
     public static final String DELETE_REASON_CANCELLED = "cancelled";
 

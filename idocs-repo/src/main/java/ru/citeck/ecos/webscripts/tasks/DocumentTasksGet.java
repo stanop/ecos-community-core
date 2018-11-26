@@ -21,7 +21,6 @@ package ru.citeck.ecos.webscripts.tasks;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.i18n.MessageService;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.Constraint;
@@ -30,22 +29,19 @@ import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.security.AuthenticationService;
-import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.workflow.*;
-import org.alfresco.service.cmr.workflow.WorkflowTaskQuery.OrderBy;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.service.AlfrescoServices;
+import ru.citeck.ecos.utils.WorkflowUtils;
 
 import java.io.Serializable;
 import java.util.*;
-
 
 /**
  * @author Anton Fateev <anton.fateev@citeck.ru>
@@ -69,16 +65,9 @@ public class DocumentTasksGet extends DeclarativeWebScript {
     private static final QName MODEL_CLAIM_OWNER_PROP = QName.createQName(null, "claimOwner");
 
     private NodeService nodeService;
-
-    private AuthorityService authorityService;
-
-    private AuthenticationService authenticationService;
-
-    private DictionaryService dictionaryService;
-    
-    private WorkflowService workflowService;
-
+    private WorkflowUtils workflowUtils;
     private MessageService messageService;
+    private DictionaryService dictionaryService;
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest request, Status status, Cache cache) {
@@ -93,7 +82,7 @@ public class DocumentTasksGet extends DeclarativeWebScript {
             return null;
         }
         
-        List<WorkflowTask> tasks = getDocumentTasks(nodeRef);
+        List<WorkflowTask> tasks = workflowUtils.getDocumentUserTasks(nodeRef, true);
         
         List<Map<String, Object>> model = new ArrayList<>(tasks.size());
         for(WorkflowTask task : tasks) {
@@ -105,64 +94,6 @@ public class DocumentTasksGet extends DeclarativeWebScript {
         return result;
     }
 
-    private List<WorkflowTask> getDocumentTasks(NodeRef nodeRef) {
-        List<WorkflowTask> tasks = new LinkedList<>();
-        
-        String userName = AuthenticationUtil.getFullyAuthenticatedUser();
-        Set<NodeRef> authorities = getCurrentUserAuthorities();
-        
-        for(WorkflowInstance workflow : getDocumentWorkflows(nodeRef)) {
-            for(WorkflowTask task : getActiveWorkflowTasks(workflow)) {
-                if(isTaskActor(task, userName, authorities)) {
-                    tasks.add(task);
-                }
-            }
-        }
-        
-        return tasks;
-    }
-
-    private List<WorkflowInstance> getDocumentWorkflows(NodeRef nodeRef) {
-        List<WorkflowInstance> workflows = workflowService.getWorkflowsForContent(nodeRef, true);
-        return workflows;
-    }
-
-    private boolean isTaskActor(WorkflowTask task, String userName,
-            Set<NodeRef> authorities) {
-        boolean matches;
-        Map<QName, Serializable> properties = task.getProperties();
-        String actor = (String) properties.get(ContentModel.PROP_OWNER);
-        List<?> pooledActors = (List<?>) properties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
-        
-        if(actor != null) {
-            matches = actor.equals(userName);
-        } else {
-            matches = pooledActors != null && CollectionUtils.intersection(pooledActors, authorities).size() > 0;
-        }
-        return matches;
-    }
-
-    private List<WorkflowTask> getActiveWorkflowTasks(WorkflowInstance workflow) {
-        WorkflowTaskQuery query = new WorkflowTaskQuery();
-        query.setActive(true);
-        query.setTaskState(WorkflowTaskState.IN_PROGRESS);
-        query.setOrderBy(new OrderBy[]{OrderBy.TaskDue_Asc});
-        query.setProcessId(workflow.getId());
-        List<WorkflowTask> workflowTasks = workflowService.queryTasks(query, true);
-        return workflowTasks;
-    }
-
-    private Set<NodeRef> getCurrentUserAuthorities() {
-        String userName = authenticationService.getCurrentUserName();
-        Set<String> groups = authorityService.getAuthorities();
-        Set<NodeRef> authorities = new HashSet<>(groups.size() + 1);
-        for(String group : groups) {
-            authorities.add(authorityService.getAuthorityNodeRef(group));
-        }
-        authorities.add(authorityService.getAuthorityNodeRef(userName));
-        return authorities;
-    }
-    
     private Map<String, Object> generateTaskModel(WorkflowTask task) {
         Map<QName, Serializable> properties = task.getProperties();
         
@@ -173,7 +104,7 @@ public class DocumentTasksGet extends DeclarativeWebScript {
         model.put(MODEL_DUE_DATE, properties.get(WorkflowModel.PROP_DUE_DATE));
         model.put(MODEL_SENDER, properties.get(CiteckWorkflowModel.PROP_SENDER_NAME));
         model.put(MODEL_LAST_COMMENT, properties.get(CiteckWorkflowModel.PROP_LASTCOMMENT));
-        model.put(MODEL_TASK_TITLE, task.getTitle());
+        model.put(MODEL_TASK_TITLE, workflowUtils.getTaskTitle(task));
 
         List<?> pooledActors = (List<?>) properties.get(WorkflowModel.ASSOC_POOLED_ACTORS);
 
@@ -235,10 +166,12 @@ public class DocumentTasksGet extends DeclarativeWebScript {
 
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         nodeService = serviceRegistry.getNodeService();
-        authorityService = serviceRegistry.getAuthorityService();
-        authenticationService = serviceRegistry.getAuthenticationService();
         dictionaryService = serviceRegistry.getDictionaryService();
-        workflowService = serviceRegistry.getWorkflowService();
         messageService = (MessageService) serviceRegistry.getService(AlfrescoServices.MESSAGE_SERVICE);
+    }
+
+    @Autowired
+    public void setWorkflowUtils(WorkflowUtils workflowUtils) {
+        this.workflowUtils = workflowUtils;
     }
 }

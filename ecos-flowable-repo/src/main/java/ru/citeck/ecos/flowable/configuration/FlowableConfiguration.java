@@ -14,19 +14,28 @@ import org.apache.log4j.Logger;
 import org.flowable.engine.*;
 import org.flowable.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.flowable.engine.parse.BpmnParseHandler;
+import org.flowable.variable.api.types.VariableType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
 import ru.citeck.ecos.flowable.handlers.UserTaskBpmnParseHandler;
+import ru.citeck.ecos.flowable.services.FlowableEngineProcessService;
 import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
 import ru.citeck.ecos.flowable.services.impl.ModelMapper;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
+import ru.citeck.ecos.flowable.variable.FlowableEcosPojoTypeHandler;
+import ru.citeck.ecos.flowable.variable.FlowableScriptNodeListVariableType;
+import ru.citeck.ecos.flowable.variable.FlowableScriptNodeVariableType;
+import ru.citeck.ecos.icase.CaseStatusServiceJS;
+import ru.citeck.ecos.icase.completeness.CaseCompletenessServiceJS;
+import ru.citeck.ecos.workflow.variable.handler.EcosPojoTypeHandler;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -67,6 +76,10 @@ public class FlowableConfiguration {
     private static final String FLOWABLE_MAIL_SERVER_DEFAULT_FROM = "flowable.mail.server.default.from";
     private static final String FLOWABLE_MAIL_SERVER_USE_TLS = "flowable.mail.server.use.tls";
     private static final String FLOWABLE_MAIL_SERVER_USE_SSL = "flowable.mail.server.use.ssl";
+
+
+    private static final String BEAN_KEY_COMPLETENESS_SERVICE_JS = "caseCompletenessServiceJS";
+    private static final String BEAN_KEY_CASE_STATUS_SERVICE_JS = "caseStatusServiceJS";
 
     /**
      * Application context provider
@@ -127,7 +140,9 @@ public class FlowableConfiguration {
             dataSource.setMaxActive(maxActive);
             dataSource.setMaxOpenPreparedStatements(maxOpenPreparedStatements);
 
-            return dataSource;
+            TransactionAwareDataSourceProxy wrappedDataSource = new TransactionAwareDataSourceProxy(dataSource);
+
+            return wrappedDataSource;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -144,7 +159,13 @@ public class FlowableConfiguration {
      */
     @Bean(name = "flowableEngineConfiguration")
     public ProcessEngineConfiguration flowableEngineConfiguration(@Qualifier("flowableDataSource") DataSource dataSource,
-                                                                  ServiceDescriptorRegistry descriptorRegistry) {
+                                                                  @Qualifier("workflow.variable.EcosPojoTypeHandler")
+                                                                          EcosPojoTypeHandler<?> ecosPojoTypeHandler,
+                                                                  ServiceDescriptorRegistry descriptorRegistry,
+                                                                  @Qualifier("flowableScriptNodeType") FlowableScriptNodeVariableType
+                                                                          flowableScriptNodeVariableType,
+                                                                  @Qualifier("flowableScriptNodeListType") FlowableScriptNodeListVariableType
+                                                                          flowableScriptNodeListVariableType) {
         if (dataSource != null) {
             StandaloneProcessEngineConfiguration engineConfiguration = new StandaloneProcessEngineConfiguration();
             engineConfiguration.setDataSource(dataSource);
@@ -155,10 +176,7 @@ public class FlowableConfiguration {
             customMybatisMappers.add(ModelMapper.class);
             engineConfiguration.setCustomMybatisMappers(customMybatisMappers);
 
-            // Beans
-            Map<Object, Object> beans = new HashMap<>();
-            beans.put(FlowableConstants.SERVICE_REGISTRY_BEAN_KEY, descriptorRegistry);
-            engineConfiguration.setBeans(beans);
+            engineConfiguration.setBeans(getEngineBeans(descriptorRegistry));
 
             setMailConfiguration(engineConfiguration);
             // Listeners and handlers
@@ -166,10 +184,40 @@ public class FlowableConfiguration {
             parseHandlers.add(new ProcessBpmnParseHandler());
             parseHandlers.add(new UserTaskBpmnParseHandler());
             engineConfiguration.setPreBpmnParseHandlers(parseHandlers);
+
+            List<VariableType> types = engineConfiguration.getCustomPreVariableTypes();
+            types = types != null ? new ArrayList<>(types) : new ArrayList<>();
+            types.add(new FlowableEcosPojoTypeHandler(ecosPojoTypeHandler));
+            types.add(flowableScriptNodeVariableType);
+            types.add(flowableScriptNodeListVariableType);
+            engineConfiguration.setCustomPreVariableTypes(types);
+
             return engineConfiguration;
         } else {
             return null;
         }
+    }
+
+    private Map<Object, Object> getEngineBeans(ServiceDescriptorRegistry descriptorRegistry) {
+        Map<Object, Object> beans = new HashMap<>();
+
+        CaseCompletenessServiceJS caseCompletenessServiceJS = applicationContext.getBean(BEAN_KEY_COMPLETENESS_SERVICE_JS,
+                CaseCompletenessServiceJS.class);
+        CaseStatusServiceJS caseStatusServiceJS = applicationContext.getBean(BEAN_KEY_CASE_STATUS_SERVICE_JS,
+                CaseStatusServiceJS.class);
+
+        beans.put(FlowableConstants.SERVICE_REGISTRY_BEAN_KEY, descriptorRegistry);
+        beans.put(FlowableConstants.COMPLETENESS_SERVICE_JS_KEY, caseCompletenessServiceJS);
+        beans.put(FlowableConstants.CASE_STATUS_SERVICE_JS_KEY, caseStatusServiceJS);
+
+        Map<String, FlowableEngineProcessService> engineProcessServices = applicationContext.getBeansOfType(
+                FlowableEngineProcessService.class);
+        engineProcessServices.forEach((k, v) -> {
+            logger.info("Added flowable process engine service: " + v.getKey());
+            beans.put(v.getKey(), v);
+        });
+
+        return beans;
     }
 
     /**

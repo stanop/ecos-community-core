@@ -151,11 +151,17 @@ public class CaseActivityGet extends DeclarativeWebScript {
         Boolean repeatable = nodeService.getProperty(nodeRef, ActivityModel.PROP_REPEATABLE) != null ?
                 (Boolean) nodeService.getProperty(nodeRef, ActivityModel.PROP_REPEATABLE) : false;
 
-        objectNode.put("startable", (manualStarted && repeatable) || actualStartDate == null);
-        objectNode.put("stoppable", manualStopped && actualStartDate != null && actualEndDate == null);
-
         AccessStatus writePermission = permissionService.hasPermission(nodeRef, "Write");
-        objectNode.put("editable", writePermission != null && (writePermission == AccessStatus.ALLOWED));
+
+        boolean hasWritePermission = writePermission != null && (writePermission == AccessStatus.ALLOWED);
+        objectNode.put("editable", hasWritePermission);
+
+        boolean startable = hasWritePermission && ((manualStarted && repeatable) || actualStartDate == null);
+        objectNode.put("startable", startable);
+
+        boolean stoppable = hasWritePermission && manualStopped && actualStartDate != null && actualEndDate == null;
+        objectNode.put("stoppable", stoppable);
+
 
         AccessStatus deletePermission = permissionService.hasPermission(nodeRef, "Delete");
         objectNode.put("removable", deletePermission != null && (deletePermission == AccessStatus.ALLOWED));

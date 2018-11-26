@@ -146,7 +146,7 @@
                 <bean parent="dbp.filter.formtojson" />
                 <bean parent="dbp.report.filter" />
                 <bean parent="dbp.query.construct">
-                    <property name="builder" ref="ftsAlfrescoQueryBuilder"/>
+                    <property name="builder" ref="ftsQueryBuilder"/>
                 </bean>
                 <bean parent="dbp.query.execute">
                     <property name="language" value="fts-alfresco"/>
@@ -229,6 +229,21 @@
                 <property name="namespaceService" ref="namespaceService" />
             </bean>
         </property>
+    </bean>
+
+    <bean id="webscript.ru.citeck.ecos.records.post"
+          class="ru.citeck.ecos.records.RecordsPost"
+          parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.ecos.group-action.post"
+          class="ru.citeck.ecos.action.group.GroupActionPost"
+          parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.ecos.records-group-action.post"
+          class="ru.citeck.ecos.records.RecordsGroupActionPost"
+          parent="webscript">
     </bean>
 
 </beans>

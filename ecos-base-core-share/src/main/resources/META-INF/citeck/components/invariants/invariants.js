@@ -507,7 +507,7 @@ define([
                 successCallback: {
                     scope: this,
                     fn: function(response) {
-                        var data = response.json.data.journalRecords, self = this,
+                        var data = response.json, self = this,
                             records = data.records;
 
                         var results = _.map(records, function(node) {
@@ -549,9 +549,9 @@ define([
                         });
 
                         results.pagination = {
-                            hasMore: data.pageInfo.hasNextPage,
-                            maxItems: data.pageInfo.maxItems,
-                            skipCount: data.pageInfo.skipCount,
+                            hasMore: data.hasMore,
+                            maxItems: queryData.pageInfo.maxItems,
+                            skipCount: queryData.pageInfo.skipCount,
                             totalCount: data.totalCount,
                             totalItems: data.totalCount
                         };
@@ -955,6 +955,9 @@ define([
         'd:version': 'org.alfresco.util.VersionNumber',
         'd:period': 'org.alfresco.service.cmr.repository.Period'
     };
+
+    var numericDatatypes = ['d:int', 'd:long', 'd:float', 'd:double'];
+    var THOUSANDS_DELIMETER = ' ';
 
     var datatypeNodetypeMapping = {
         'd:noderef': 'sys:base',
@@ -1655,8 +1658,14 @@ define([
 
         // value title
         .method('getValueTitle', function(value, postprocessing) {
+            var lastValue = value;
             var value = this.valueTitleEvaluator(this.getInvariantsModel(value)).value;
             if (postprocessing) { return postprocessing(value);  }
+
+            if(numericDatatypes.includes(this.datatype()) && value == lastValue){
+                value = koutils.setThousandsDelimeter(value, THOUSANDS_DELIMETER);
+            }
+
             return value;
         })
         .computed('valueTitle', function() { return this.getValueTitle(this.singleValue()); })

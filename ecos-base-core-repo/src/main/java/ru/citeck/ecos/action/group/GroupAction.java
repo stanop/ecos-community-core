@@ -1,21 +1,31 @@
 package ru.citeck.ecos.action.group;
 
-import ru.citeck.ecos.repo.RemoteRef;
+import ru.citeck.ecos.action.group.impl.ResultsListener;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 
 /**
  * @author Pavel Simonov
  */
-public interface GroupAction {
+public interface GroupAction<T> extends ResultsListener<T>, Closeable {
 
-    void process(RemoteRef nodeRef);
+    boolean process(T nodeId);
 
-    List<ActionResult> complete();
+    ActionResults<T> complete();
 
-    List<ActionResult> cancel();
+    ActionResults<T> cancel(Throwable cause);
 
     boolean isAsync();
 
     long getTimeout();
+
+    boolean isReadOnly();
+
+    void addListener(ResultsListener<T> listener);
+
+    default void onProcessed(List<ActionResult<T>> results) {}
+
+    default void close() throws IOException {}
 }

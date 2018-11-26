@@ -89,7 +89,7 @@
         </type>
         
         <type name="icaseTask:confirmTask">
-            <parent>icaseTask:processTask</parent>
+            <parent>icaseTask:humanTask</parent>
             <associations>
                 <association name="icaseTask:confirmers">
                     <source>
@@ -111,7 +111,7 @@
         </type>
         
         <type name="icaseTask:performTask">
-            <parent>icaseTask:processTask</parent>
+            <parent>icaseTask:humanTask</parent>
             <associations>
                 <association name="icaseTask:performers">
                     <source>

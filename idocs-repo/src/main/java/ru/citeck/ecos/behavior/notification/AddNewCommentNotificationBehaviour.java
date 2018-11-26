@@ -21,7 +21,7 @@ import java.util.List;
 public class AddNewCommentNotificationBehaviour extends AbstractICaseDocumentNotificationBehaviour
         implements NodeServicePolicies.OnCreateChildAssociationPolicy {
 
-    private PersonService personService;
+    protected PersonService personService;
     private ContentService contentService;
     private String documentNamespace;
     private String documentType;
@@ -90,7 +90,7 @@ public class AddNewCommentNotificationBehaviour extends AbstractICaseDocumentNot
         return commentContent;
     }
 
-    private String getCommentCreatorName(NodeRef postRef) {
+    protected String getCommentCreatorName(NodeRef postRef) {
         String creatorName;
         String commentCreator = (String) nodeService.getProperty(postRef, ContentModel.PROP_CREATOR);
         NodeRef commentCreatorRef = personService.getPerson(commentCreator);

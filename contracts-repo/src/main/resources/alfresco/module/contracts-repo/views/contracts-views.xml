@@ -9,9 +9,9 @@
         <import uri="http://www.citeck.ru/model/payments/1.0" prefix="payments" />
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
         <import uri="http://www.citeck.ru/model/products-and-services/1.0" prefix="pas" />
-        <import uri="http://www.citeck.ru/model/contracts/event/1.0" prefix="ctrEvent"/>
-        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
-        <import uri="http://www.citeck.ru/model/iEvent/1.0" prefix="iEvent"/>
+        <import uri="http://www.citeck.ru/model/contracts/event/1.0" prefix="ctrEvent" />
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
+        <import uri="http://www.citeck.ru/model/iEvent/1.0" prefix="iEvent" />
     </imports>
 
     <views any="true">
@@ -78,6 +78,7 @@
             <field prop="tk:kind">
                 <region name="select" template="select-journal">
                     <param name="journalType">original-location</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="label" template="label">
                     <param name="key">agreement.form.tk_kind.title</param>
@@ -144,7 +145,7 @@
                 <region name="label" template="label">
                     <param name="key">idocs_idocsModel.property.idocs_appendixPagesNumber.title</param>
                 </region>
-                <region name="input" template="number" /> 
+                <region name="input" template="number" />
             </field>
             <field prop="idocs:pagesNumber">
                 <region name="label" template="label">
@@ -522,6 +523,7 @@
             <field prop="tk:kind">
                 <region name="select" template="select-journal">
                     <param name="journalType">original-location</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="label" template="label">
                     <param name="key">closing-document.form.prop_tk_kind.title</param>
@@ -565,6 +567,7 @@
             <field assoc="contracts:mainAgreement">
                 <region name="select" template="select-journal" >
                     <param name="journalType">contract-agreements</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -600,8 +603,9 @@
                 </region>
             </field>
             <field prop="tk:kind" kind="mode-view">
-                <region name="select" template="select-journal" >
-                     <param name="journalType">original-location</param>
+                <region name="select" template="select-journal">
+                    <param name="journalType">original-location</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="label" template="label">
                     <param name="key">sup-agreement.form.tk_kind.title</param>

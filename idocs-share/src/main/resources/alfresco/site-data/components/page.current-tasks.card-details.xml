@@ -9,7 +9,7 @@
         <childrenUrl>Alfresco.constants.PROXY_URI + "/citeck/tasks-active/document?nodeRef={nodeRef}"
         </childrenUrl>
         <columns>[{key: 'attributes["wfm:taskType"].shortQName', label: '${msg("cardlet.current-tasks.task.title")}', formatter: Citeck.format.taskTitle()},
-            {key: 'attributes["wfm:actors"][0].nodeRef', label: '${msg("cardlet.current-tasks.assignee.title")}', formatter: Citeck.format.userOrGroup()},
+            {key: 'attributes["wfm:actors"][0].nodeRef', label: '${msg("cardlet.current-tasks.assignee.title")}', formatter: Citeck.format.userOrGroup("true")},
             {key: 'attributes["bpm:dueDate"]', label: '${msg("cardlet.current-tasks.due-date.title")}', formatter: Citeck.format.date()}]
         </columns>
         <responseSchema>{resultsList: 'documentTasks',
@@ -18,7 +18,8 @@
             {key: 'attributes["bpm:description"]'},
             {key: 'attributes["wfm:actors"][0].nodeRef'}, 
             {key: 'attributes["bpm:dueDate"]'},
-            {key: 'attributes["cwf:taskTitle"]'}
+            {key: 'attributes["cwf:taskTitle"]'},
+            {key: 'taskTitle'}
 		]}
         </responseSchema>
         <twisterKey>current-tasks</twisterKey>

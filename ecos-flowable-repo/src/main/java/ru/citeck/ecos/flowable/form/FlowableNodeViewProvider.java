@@ -2,8 +2,18 @@ package ru.citeck.ecos.flowable.form;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.AssociationRef;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.namespace.RegexQNamePattern;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flowable.engine.TaskService;
@@ -14,7 +24,9 @@ import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
+import ru.citeck.ecos.flowable.form.view.AssocFieldConverter;
 import ru.citeck.ecos.flowable.form.view.FieldConverter;
 import ru.citeck.ecos.flowable.services.FlowableCustomCommentService;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskServiceImpl;
@@ -25,22 +37,29 @@ import ru.citeck.ecos.forms.NodeViewProvider;
 import ru.citeck.ecos.invariants.view.NodeField;
 import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewRegion;
+import ru.citeck.ecos.invariants.view.forms.TypeFormProvider;
+import ru.citeck.ecos.form.WorkflowFormProvider;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixProvider;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixResolver;
 import ru.citeck.ecos.utils.ConvertUtils;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixProvider {
 
     public static final String NS_URI_DEFAULT = "http://www.flowable.org";
     public static final String NS_PREFIX_DEFAULT = "flb";
+    public static final String DOCUMENT_FIELD_PREFIX = "_ECM_";
 
     private static final String OUTCOME_LABEL_KEY_DEFAULT = "flowable.task.button.default-complete.label";
+    private static final String OUTCOME_LABEL_KEY_TEMPLATE = "flowable.form.button.%s.%s.label";
     private static final String OUTCOME_ID_KEY_DEFAULT = "flowable.task.button.default-complete.id";
     private static final String OUTCOME_ACTION_SUBMIT = "submit";
+
+    private static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
 
     private static final Log logger = LogFactory.getLog(FlowableNodeViewProvider.class);
 
@@ -54,6 +73,20 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     private TaskService taskService;
     @Autowired
     private FlowableCustomCommentService flowableCustomCommentService;
+    @Autowired
+    private TypeFormProvider typeFormProvider;
+    @Autowired
+    private org.activiti.engine.TaskService activitiTaskService;
+    @Autowired
+    private WorkflowFormProvider workflowFormProvider;
+    @Autowired
+    private NodeService nodeService;
+    @Autowired
+    private DictionaryService dictionaryService;
+    @Autowired
+    private NamespaceService namespaceService;
+    @Autowired
+    private NodeAttributeService nodeAttributeService;
 
     private Map<String, FieldConverter<FormField>> fieldConverters = new HashMap<>();
 
@@ -62,23 +95,35 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     @Override
     public NodeViewDefinition getNodeView(String taskId, String formId, FormMode mode, Map<String, Object> params) {
 
+        NodeViewDefinition definition = null;
 
-        NodeViewDefinition definition = new NodeViewDefinition();
-        definition.canBeDraft = false;
+        if (taskId.startsWith(FlowableWorkflowComponent.ENGINE_PREFIX)) {
 
-        Optional<SimpleFormModel> formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey);
-        if (formModel.isPresent()) {
-            String id = taskId.substring(taskId.indexOf("$") + 1);
-            Map<String, Object> variables = taskService.getVariables(id);
-            List<String> commentFieldIds = flowableCustomCommentService.getFieldIdsByTaskId(id);
-            commentFieldIds.forEach(commentFieldId -> {
-                variables.remove(commentFieldId);
-                taskService.removeVariable(id, commentFieldId);
-            });
-            definition.nodeView = getNodeView(formModel.get(), mode, variables);
+            definition = new NodeViewDefinition();
+
+            definition.canBeDraft = false;
+
+            Optional<SimpleFormModel> formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey);
+            if (formModel.isPresent()) {
+                String id = taskId.substring(taskId.indexOf("$") + 1);
+                Map<String, Object> variables = taskService.getVariables(id);
+                List<String> commentFieldIds = flowableCustomCommentService.getFieldIdsByTaskId(id);
+                commentFieldIds.forEach(commentFieldId -> {
+                    variables.remove(commentFieldId);
+                    taskService.removeVariable(id, commentFieldId);
+                });
+                definition.nodeView = getNodeView(formModel.get(), mode, variables);
+            }
+
+        } else if (taskId.startsWith(ACTIVITI_PREFIX)) {
+
+            Optional<String> formKey = getFormKey(taskId);
+            if (formKey.isPresent()) {
+                definition = workflowFormProvider.formNodeView(formKey.get(), formId, mode, params);
+            }
         }
 
-        return definition;
+        return definition != null ? definition : new NodeViewDefinition();
     }
 
     private NodeView getNodeView(SimpleFormModel model, FormMode mode, Map<String, Object> variables) {
@@ -115,6 +160,14 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
             } else {
                 logger.warn("Task with id " + taskId + " not found!");
             }
+        } else if (taskId.startsWith(ACTIVITI_PREFIX)) {
+            String id = taskId.substring(taskId.indexOf("$") + 1);
+            org.activiti.engine.task.Task task = activitiTaskService.createTaskQuery().taskId(id).singleResult();
+            if (task != null) {
+                formKey = task.getFormKey();
+            } else {
+                logger.warn("Task with id " + taskId + " not found!");
+            }
         }
         return Optional.ofNullable(formKey);
     }
@@ -123,26 +176,61 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     public Map<String, Object> saveNodeView(String taskId, String formId, FormMode mode,
                                             Map<String, Object> params, Map<QName, Object> attributes) {
 
-        SimpleFormModel formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(taskId + " form not found"));
+        if (taskId.startsWith(FlowableWorkflowComponent.ENGINE_PREFIX)) {
+            SimpleFormModel formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey)
+                    .orElseThrow(() ->
+                            new IllegalArgumentException(taskId + " form not found"));
 
-        List<NodeField> fields = getFields(formModel, mode, Collections.emptyMap());
+            List<NodeField> fields = getFields(formModel, mode, Collections.emptyMap());
 
-        Map<String, Object> taskAttributes = new HashMap<>();
-        for (NodeField field : fields) {
-            Object value = attributes.get(field.getAttributeName());
-            Serializable taskValue = null;
-            try {
-                taskValue = (Serializable) ConvertUtils.convertSingleValue(value, Class.forName(field.getJavaclass()));
-            } catch (ClassNotFoundException | ClassCastException e) {
-                e.printStackTrace();
+            Map<String, Object> taskAttributes = new HashMap<>();
+            for (NodeField field : fields) {
+                Object value = attributes.get(field.getAttributeName());
+                Serializable taskValue = null;
+                try {
+                    taskValue = (Serializable) ConvertUtils.convertSingleValue(value, Class.forName(field.getJavaclass()));
+                } catch (ClassNotFoundException | ClassCastException e) {
+                    e.printStackTrace();
+                }
+                taskAttributes.put(field.getAttributeName().getLocalName(), taskValue);
             }
-            taskAttributes.put(field.getAttributeName().getLocalName(), taskValue);
+
+            Map<QName, Object> documentAttributes = new HashMap<>();
+            taskAttributes.forEach((name, value) -> {
+                if (name.startsWith(DOCUMENT_FIELD_PREFIX)) {
+                    String docFieldName = name.replace(DOCUMENT_FIELD_PREFIX, "")
+                                              .replace('_', ':');
+
+                    QName docFieldQName = QName.resolveToQName(namespaceService, docFieldName);
+
+                    documentAttributes.put(docFieldQName, value);
+                }
+            });
+
+            if (!documentAttributes.isEmpty()) {
+
+                String taskLocalId = taskId.substring(taskId.indexOf("$") + 1);
+                Object bpmPackage = taskService.getVariable(taskLocalId, "bpm_package");
+
+                NodeRef documentRef = getTaskDocument(bpmPackage);
+
+                if (documentRef != null) {
+                    nodeAttributeService.setAttributes(documentRef, documentAttributes);
+                }
+            }
+
+            //TODO: rework with formService
+            String id = taskId.substring(taskId.indexOf("$") + 1);
+            taskService.complete(id, taskAttributes, Collections.emptyMap());
+        } else if (taskId.startsWith(ACTIVITI_PREFIX)) {
+            Map<String, Object> taskAttributes = new HashMap<>();
+            for (Map.Entry<QName, Object> entry : attributes.entrySet()) {
+                taskAttributes.put(entry.getKey().toString(), entry.getValue());
+            }
+
+            String id = taskId.substring(taskId.indexOf("$") + 1);
+            activitiTaskService.complete(id, taskAttributes);
         }
-        //TODO: rework with formService
-        String id = taskId.substring(taskId.indexOf("$") + 1);
-        taskService.complete(id, taskAttributes, Collections.emptyMap());
 
         return Collections.emptyMap();
     }
@@ -150,12 +238,63 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     private List<NodeField> getFields(SimpleFormModel model, FormMode mode, Map<String, Object> values) {
 
         List<NodeField> fields = new ArrayList<>();
+        Map<String, Object> fieldsValues = new HashMap<>(values);
+
+        boolean documentNotReady = true;
+        NodeRef documentRef = null;
+        Map<QName, Serializable> properties = null;
 
         for (FormField field : model.getFields()) {
 
-            FieldConverter<FormField> converter = fieldConverters.get(field.getType());
+            String id = field.getId();
+            String fieldType = field.getType();
+
+            if (id.startsWith(DOCUMENT_FIELD_PREFIX)) {
+
+                if (documentNotReady) {
+                    documentRef = getTaskDocument(values);
+                    documentNotReady = false;
+                }
+
+                String attName = id.substring(DOCUMENT_FIELD_PREFIX.length()).replace("_", ":");
+                QName attQName = QName.resolveToQName(namespaceService, attName);
+
+                Object defaultValue;
+
+                if (dictionaryService.getProperty(attQName) != null) {
+
+                    if (properties == null) {
+                        if (documentRef != null) {
+                            properties = nodeService.getProperties(documentRef);
+                        } else {
+                            properties = Collections.emptyMap();
+                        }
+                    }
+
+                    defaultValue = properties.get(attQName);
+
+                } else {
+
+                    fieldType = AssocFieldConverter.TYPE;
+
+                    if (documentRef != null) {
+                        List<AssociationRef> assocs = nodeService.getTargetAssocs(documentRef, attQName);
+                        defaultValue = assocs.stream()
+                                             .map(AssociationRef::getTargetRef)
+                                             .collect(Collectors.toList());
+                    } else {
+                        defaultValue = Collections.emptyList();
+                    }
+                }
+
+                if (defaultValue != null) {
+                    fieldsValues.put(id, defaultValue);
+                }
+            }
+
+            FieldConverter<FormField> converter = fieldConverters.get(fieldType);
             if (converter != null) {
-                fields.add(converter.convertField(field, values));
+                fields.add(converter.convertField(field, fieldsValues));
             } else {
                 logger.error("Unregistered datatype " + field.getType());
             }
@@ -169,12 +308,52 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
         return fields;
     }
 
+    private NodeRef getTaskDocument(Map<String, Object> props) {
+        return getTaskDocument(props.get("bpm_package"));
+    }
+
+    private NodeRef getTaskDocument(Object bpmPackage) {
+
+        NodeRef documentRef = null;
+        NodeRef packageRef = null;
+
+        if (bpmPackage instanceof NodeRef) {
+            packageRef = (NodeRef) bpmPackage;
+        } else if (bpmPackage instanceof String) {
+            String packageStr = (String) bpmPackage;
+            if (NodeRef.isNodeRef(packageStr)) {
+                packageRef = new NodeRef(packageStr);
+            }
+        }
+
+        if (packageRef != null) {
+
+            List<ChildAssociationRef> packageContent;
+
+            packageContent = nodeService.getChildAssocs(packageRef,
+                    WorkflowModel.ASSOC_PACKAGE_CONTAINS,
+                    RegexQNamePattern.MATCH_ALL);
+
+            if (packageContent != null && packageContent.size() > 0) {
+
+                documentRef = packageContent.get(0).getChildRef();
+            }
+        }
+
+        return documentRef;
+    }
+
     private NodeField getOutcomeField(SimpleFormModel formModel) {
 
         List<Outcome> outcomes = new ArrayList<>();
+        String formKey = StringUtils.isNotBlank(formModel.getKey()) ? formModel.getKey() : formModel.getName();
         for (FormOutcome formOutcome : formModel.getOutcomes()) {
             String id = formOutcome.getId() != null ? formOutcome.getId() : formOutcome.getName();
-            outcomes.add(new Outcome(id, formOutcome.getName(), OUTCOME_ACTION_SUBMIT));
+            String outcomeLabel = I18NUtil.getMessage(String.format(OUTCOME_LABEL_KEY_TEMPLATE, formKey, id));
+            if (StringUtils.isBlank(outcomeLabel)) {
+                outcomeLabel = formOutcome.getName();
+            }
+            outcomes.add(new Outcome(id, outcomeLabel, OUTCOME_ACTION_SUBMIT));
         }
 
         if (outcomes.isEmpty()) {
@@ -220,7 +399,12 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
     @Override
     public boolean hasNodeView(String taskId, String formId, FormMode mode, Map<String, Object> params) {
-        return getFormKey(taskId).map(restFormService::hasFormWithKey).orElse(false);
+        if (taskId.startsWith(ACTIVITI_PREFIX)) {
+            return typeFormProvider.hasNodeView(getFormKey(taskId).get(), formId, mode, params);
+        } else if (taskId.startsWith(FlowableWorkflowComponent.ENGINE_PREFIX)) {
+            return getFormKey(taskId).map(restFormService::hasFormWithKey).orElse(false);
+        }
+        return false;
     }
 
     @Override

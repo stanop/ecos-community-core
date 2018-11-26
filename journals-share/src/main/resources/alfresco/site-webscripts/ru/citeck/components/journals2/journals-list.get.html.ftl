@@ -258,6 +258,24 @@
                                                 </ul>
                                             </div>
                                         </div>
+
+                                        <span class="add" data-bind="yuiButton: { type: 'menu', menu: '${id}-add-operator-menu' }">
+                                            <span class="first-child">
+                                                <button>${msg("button.add-operator")}</button>
+                                            </span>
+                                        </span>
+                                        <div id="${id}-add-operator-menu" class="yui-overlay yuimenu button-menu">
+                                            <div class="bd">
+                                                <ul class="first-of-type">
+                                                    <li class="yuimenuitem">
+                                                        <span class="yuimenuitemlabel" data-bind="click: $root.addCriterion.bind($root, 'join', 'join-by-and', '')">${msg("operator.and")}</span>
+                                                    </li>
+                                                    <li class="yuimenuitem">
+                                                        <span class="yuimenuitemlabel" data-bind="click: $root.addCriterion.bind($root, 'join', 'join-by-or', '')">${msg("operator.or")}</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
 
                                 

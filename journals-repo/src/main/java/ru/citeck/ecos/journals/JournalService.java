@@ -18,19 +18,19 @@
  */
 package ru.citeck.ecos.journals;
 
-import graphql.ExecutionResult;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
-import ru.citeck.ecos.graphql.journal.response.JournalData;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
-import ru.citeck.ecos.journals.records.JournalRecords;
-import ru.citeck.ecos.journals.records.RecordsResult;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.query.RecordsResult;
 
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface JournalService {
     
@@ -41,7 +41,9 @@ public interface JournalService {
     JournalType getJournalType(String id);
 
     JournalType needJournalType(String journalId);
-    
+
+    Optional<JournalType> getJournalForType(QName typeName);
+
     Collection<JournalType> getAllJournalTypes();
 
     void clearCache();
@@ -52,18 +54,31 @@ public interface JournalService {
 
     NodeRef getJournalRef(String id);
 
-    RecordsResult getRecords(String journalId,
-                             String query,
-                             String language,
-                             JGqlPageInfoInput pageInfo);
+    default RecordsResult<RecordRef> getRecords(String journalId,
+                                                String query,
+                                                String language,
+                                                JGqlPageInfoInput pageInfo) {
 
-    JournalRecords getRecordsLazy(String journalId,
-                                  String query,
-                                  String language,
-                                  JGqlPageInfoInput pageInfo);
+        return getRecords(journalId, query, language, pageInfo, false);
+    }
 
-    JournalData getRecordsWithData(String journalId,
-                                   String query,
-                                   String language,
-                                   JGqlPageInfoInput pageInfo) throws Exception;
+    RecordsResult<RecordRef> getRecords(String journalId,
+                                        String query,
+                                        String language,
+                                        JGqlPageInfoInput pageInfo,
+                                        boolean debug);
+
+    default RecordsResult<ObjectNode> getRecordsWithData(String journalId,
+                                                 String query,
+                                                 String language,
+                                                 JGqlPageInfoInput pageInfo) {
+
+        return getRecordsWithData(journalId, query, language, pageInfo, false);
+    }
+
+    RecordsResult<ObjectNode> getRecordsWithData(String journalId,
+                                                 String query,
+                                                 String language,
+                                                 JGqlPageInfoInput pageInfo,
+                                                 boolean debug);
 }

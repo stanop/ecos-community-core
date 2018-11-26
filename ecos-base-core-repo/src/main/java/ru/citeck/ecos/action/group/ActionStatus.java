@@ -1,5 +1,8 @@
 package ru.citeck.ecos.action.group;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
@@ -7,22 +10,26 @@ import org.apache.commons.lang.StringUtils;
 /**
  * @author Pavel Simonov
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActionStatus {
 
     public static final String STATUS_OK = "OK";
     public static final String STATUS_ERROR = "ERROR";
     public static final String STATUS_SKIPPED = "SKIPPED";
 
-    @Getter
-    @Setter
+    @Getter @Setter
     private String key = STATUS_OK;
-    @Getter
-    @Setter
+    @Getter @Setter
     private String message = "";
-    @Getter
-    @Setter
+    @Getter @Setter
     private String url;
 
+    @Setter
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,
+                  include = JsonTypeInfo.As.WRAPPER_OBJECT)
+    private Object data;
+
+    @JsonIgnore
     @Getter
     private Exception exception;
 
@@ -33,10 +40,79 @@ public class ActionStatus {
         this.key = statusKey;
     }
 
+    @JsonIgnore
+    public boolean isOk() {
+        return ActionStatus.STATUS_OK.equals(key);
+    }
+
+    @JsonIgnore
+    public boolean isSkipped() {
+        return ActionStatus.STATUS_SKIPPED.equals(key);
+    }
+
+    @JsonIgnore
+    public boolean isError() {
+        return ActionStatus.STATUS_ERROR.equals(key);
+    }
+
+    @JsonIgnore
+    public static ActionStatus ok() {
+        return new ActionStatus(ActionStatus.STATUS_OK);
+    }
+
+    @JsonIgnore
+    public static ActionStatus ok(Object data) {
+        ActionStatus status = ok();
+        status.setData(data);
+        return status;
+    }
+
+    @JsonIgnore
+    public static ActionStatus ok(String message) {
+        ActionStatus status = ok();
+        status.setMessage(message);
+        return status;
+    }
+
+    @JsonIgnore
+    public static ActionStatus error(Exception e) {
+        ActionStatus status = new ActionStatus(STATUS_ERROR);
+        status.setException(e);
+        return status;
+    }
+
+    @JsonIgnore
+    public static ActionStatus skipped() {
+        return new ActionStatus(STATUS_SKIPPED);
+    }
+
+    @JsonIgnore
+    public static ActionStatus skipped(String message) {
+        ActionStatus status = skipped();
+        status.setMessage(message);
+        return status;
+    }
+
+    public <T> T getData() {
+        return (T) data;
+    }
+
     public void setException(Exception e) {
+        if (e == null) {
+            return;
+        }
         this.exception = e;
         if (StringUtils.isBlank(message)) {
             this.message = e.getMessage();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ActionStatus{" +
+                "key='" + key + '\'' +
+                ", message='" + message + '\'' +
+                ", url='" + url +
+                "\'}";
     }
 }

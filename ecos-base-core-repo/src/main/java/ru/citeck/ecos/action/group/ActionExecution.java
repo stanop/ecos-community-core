@@ -1,53 +1,80 @@
 package ru.citeck.ecos.action.group;
 
-import ru.citeck.ecos.repo.RemoteRef;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.action.group.exception.ActionTimeoutException;
+import ru.citeck.ecos.action.group.exception.ManualCancelException;
 
+import java.io.IOException;
 import java.util.Date;
-import java.util.List;
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ActionExecution {
+public class ActionExecution<T> {
 
-    private Iterable<RemoteRef> nodes;
-    private GroupAction action;
+    private static final Log logger = LogFactory.getLog(ActionExecution.class);
 
-    private boolean cancelled = false;
+    private Iterable<T> nodes;
+    private GroupAction<T> action;
+
     private AtomicBoolean started = new AtomicBoolean();
 
     private long startedTime;
     private long timeoutTime;
     private String author;
 
-    ActionExecution(Iterable<RemoteRef> nodes, GroupAction action, String author) {
+    private Throwable cancelCause;
+
+    ActionExecution(Iterable<T> nodes, GroupAction<T> action, String author) {
         this.nodes = nodes;
         this.action = action;
         this.author = author;
     }
 
-    List<ActionResult> run() {
+    ActionResults<T> run() {
 
-        startedTime = System.currentTimeMillis();
-        long timeout = action.getTimeout();
-        timeoutTime = timeout > 0 ? startedTime + timeout : Long.MAX_VALUE;
+        try {
+            startedTime = System.currentTimeMillis();
+            long timeout = action.getTimeout();
+            timeoutTime = timeout > 0 ? startedTime + timeout : Long.MAX_VALUE;
 
-        if (!started.compareAndSet(false, true)) {
-            throw new IllegalStateException("Execution already started! " + toString());
-        }
-
-        for (RemoteRef ref : nodes) {
-            action.process(ref);
-            if (cancelled) {
-                break;
+            if (!started.compareAndSet(false, true)) {
+                throw new IllegalStateException("Execution already started! " + toString());
             }
-            if (isTimeoutReached()) {
-                throw new RuntimeException("Action timeout is reached. " + toString());
+
+            Iterator<T> it = nodes.iterator();
+            boolean hasNext = it.hasNext();
+            while (cancelCause == null && hasNext) {
+                try {
+                    boolean requireNext = action.process(it.next());
+                    if (isTimeoutReached()) {
+                        throw new ActionTimeoutException("Action timeout is reached");
+                    }
+                    hasNext = requireNext && it.hasNext();
+                } catch (Exception e) {
+                    cancelCause = e;
+                }
+            }
+            ActionResults<T> results = cancelCause != null ? action.cancel(cancelCause) : action.complete();
+            if (results.getCancelCause() != null) {
+                logger.error("Error while action executed. Action: " + action, results.getCancelCause());
+            }
+            return results;
+        } finally {
+            try {
+                action.close();
+            } catch (IOException e) {
+                //do nothing
             }
         }
-        return cancelled ? action.cancel() : action.complete();
+    }
+
+    public boolean isReadOnly() {
+        return action.isReadOnly();
     }
 
     public void cancel() {
-        cancelled = true;
+        cancelCause = new ManualCancelException();
     }
 
     public long getStartedTime() {
@@ -78,7 +105,7 @@ public class ActionExecution {
         return started.get();
     }
 
-    public GroupAction getAction() {
+    public GroupAction<T> getAction() {
         return action;
     }
 
