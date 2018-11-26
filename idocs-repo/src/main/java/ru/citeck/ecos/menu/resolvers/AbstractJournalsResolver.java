@@ -3,6 +3,7 @@ package ru.citeck.ecos.menu.resolvers;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -18,11 +19,11 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
         /* get data */
         String title = RepoUtils.getProperty(journalRef, ContentModel.PROP_TITLE , nodeService);
         String name = RepoUtils.getProperty(journalRef, ContentModel.PROP_NAME , nodeService);
+        String elemIdVar = toUpperCase(name);
+        String parentElemId = StringUtils.defaultString(context.getId());
+        String elemId = String.format("%s_%s_JOURNAL", parentElemId, elemIdVar);
 
-        String engJournalTitle = getUppercaseEngTitle(journalRef);
-        String parentId = context.getId();
-        String id = String.format("%s_%s_JOURNAL", parentId, engJournalTitle);
-
+        /* set action params from parent (siteName or listId) */
         Map<String, String> actionParams = new HashMap<>();
         if (context.getAction() != null) {
             Map<String, String> parentActionParams = context.getAction().getParams();
@@ -34,17 +35,28 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
             }
         }
         actionParams.put(JOURNAL_REF_KEY, journalRef.toString());
+
         /* write to element */
         Element element = new Element();
-        element.setId(id);
+        element.setId(elemId);
         element.setLabel(title);
         element.setAction(JOURNAL_LINK_KEY, actionParams);
+
+        /* set icon if journal element is placed in root category */
+        if (StringUtils.isNotEmpty(actionParams.get("listId"))) {
+            setIcon(journalRef, element);
+        }
+
         /* additional params for constructing child items */
         Map<String, String> elementParams = new HashMap<>();
         elementParams.put(JOURNAL_ID_KEY, name);
-        elementParams.put(ENG_JOURNAL_TITLE_KEY, engJournalTitle);
         element.setParams(elementParams);
         return element;
+    }
+
+    //    TODO: set icon for each journal
+    private void setIcon(NodeRef journalRef, Element element) {
+        element.setIcon("fa", "fa-list");
     }
 
 }

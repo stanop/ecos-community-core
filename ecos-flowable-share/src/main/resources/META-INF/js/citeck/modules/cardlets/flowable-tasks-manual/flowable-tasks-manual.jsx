@@ -1,5 +1,6 @@
 import React from "react";
 import NodeCardlet from '../node-cardlet';
+import 'xstyle!./flowable-tasks-manual.css';
 
 export default class FlowableTasksManual extends NodeCardlet {
 
@@ -46,7 +47,7 @@ export default class FlowableTasksManual extends NodeCardlet {
         }
 
         return (
-            <div id={`${htmlId}-panel`} className="document-children document-details-panel">
+            <div id={`${htmlId}-panel`} className="document-children document-details-panel flowable-tasks-manual">
                 <h2 id={`${htmlId}-heading`} className="thin dark">
                     {header}
                     <span id={`${htmlId}-heading-actions`} className="alfresco-twister-actions" style={{position: 'relative', float: 'right'}}/>

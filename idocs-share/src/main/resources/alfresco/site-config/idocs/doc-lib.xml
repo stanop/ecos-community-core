@@ -200,12 +200,14 @@
             <action id="document-download-confirm-list" type="link" label="actions.document.download-confirm-list" icon="document-approval-history">
                 <param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=confirm-list&amp;format=docx&amp;download=true</param>
                 <evaluator>evaluator.doclib.idocs.isConfirmedDocument</evaluator>
+                <evaluator>evaluator.doclib.idocs.isAgreementOrSuppAgreement</evaluator>
             </action>
 
             <action id="document-print-confirm-list" type="link" label="actions.document.print-confirm-list" icon="document-approval-history">
                 <param name="href">/share/proxy/alfresco/citeck/print/metadata-printpdf?nodeRef={node.nodeRef}&amp;templateType=confirm-list&amp;format=pdf&amp;download=false</param>
                 <param name="target">_blank</param>
                 <evaluator>evaluator.doclib.idocs.isConfirmedDocument</evaluator>
+                <evaluator>evaluator.doclib.idocs.isAgreementOrSuppAgreement</evaluator>
             </action>
 
             <!-- Update considerable document -->

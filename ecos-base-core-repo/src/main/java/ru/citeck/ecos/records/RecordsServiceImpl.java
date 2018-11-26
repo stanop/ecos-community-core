@@ -26,7 +26,7 @@ public class RecordsServiceImpl implements RecordsService {
     private static final String DEBUG_RECORDS_QUERY_TIME = "recordsQueryTimeMs";
     private static final String DEBUG_META_QUERY_TIME = "metaQueryTimeMs";
 
-    private static final Log logger = LogFactory.getLog(RecordsService.class);
+    private static final Log logger = LogFactory.getLog(RecordsServiceImpl.class);
 
     private Map<String, RecordsDAO> sources = new ConcurrentHashMap<>();
     private GraphQLMetaService graphQLMetaService;

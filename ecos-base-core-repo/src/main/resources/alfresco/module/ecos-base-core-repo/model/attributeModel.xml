@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <model name="attr:attributeModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
 
-    <description>Special data types and attributes in Citeck EcoS</description>
+    <description>Special data types and attributes in Citeck ECOS</description>
     <author>Citeck</author>
     <version>1.0</version>
 

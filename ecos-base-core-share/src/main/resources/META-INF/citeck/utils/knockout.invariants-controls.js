@@ -1194,6 +1194,69 @@ ko.bindingHandlers.journalControl = {
         createVariantsVisibility    = params.createVariantsVisibility,
         filterCriteriaVisibility    = ko.observable(false);
 
+      var searchManager = {
+          criterias: undefined,
+          searchMinQueryLength: undefined,
+          criteria: undefined,
+          journalType: undefined,
+          searchDom: undefined,
+          store: {},
+
+          init: function(options){
+              var lastValue;
+
+              options = options || {};
+              $.extend(this, options);
+
+              lastValue = this.getLast(this.journalType);
+
+              this.setSearchString(lastValue);
+              this.search(lastValue);
+          },
+
+          save: function(value){
+              this.store[this.journalType] = value || '';
+          },
+
+          getLast: function(id){
+              return this.store[id] || '';
+          },
+
+          setSearchString: function(str){
+              if(this.searchDom){
+                  this.searchDom.value = str;
+              }
+          },
+
+          search: function(value){
+              var searchValue = value ? value.trim() : value;
+
+              this.save(searchValue);
+
+              if (searchValue) {
+                  if (this.searchMinQueryLength && searchValue.length < this.searchMinQueryLength) {
+                      return false;
+                  }
+
+                  if (this.criterias && this.criterias.length > 0) {
+                      this.criteria(_.map(this.criterias, function (item) {
+                          return _.defaults(_.clone(item), {value: searchValue});
+                      }));
+                  } else {
+                      this.criteria([{attribute: 'cm:name', predicate: 'string-contains', value: searchValue}]);
+                  }
+              } else {
+                  if (this.criterias && this.criterias.length > 0) {
+                      this.criteria(_.filter(this.criterias, function (item) {
+                          return (item && item.value && item.predicate && item.attribute);
+                      }));
+                  } else {
+                      this.criteria([]);
+                  }
+              }
+          }
+      };
+
     if (defaultVisibleAttributes) {
         defaultVisibleAttributes = _.map(defaultVisibleAttributes.split(","), function(item) { return trim(item) });
     }
@@ -1273,6 +1336,27 @@ ko.bindingHandlers.journalControl = {
                     options = ko.computed(function (page) {
                         var journalTypeId = data.journalId && data.journalId() || params.journalType;
                         var actualCriteria = criteria();
+
+                        var optionsFilters;
+                        var optionsFiltersTemp = [];
+
+                        if (_.isFunction(optionsFilter)) {
+                            optionsFilters = optionsFilter() || [];
+
+                            optionsFilters.forEach(function(optionsFilter) {
+                                var match = _.find(actualCriteria, function(actualCriterion) {
+                                    return optionsFilter.attribute == actualCriterion.attribute;
+                                });
+                                if (!match) {
+                                    optionsFiltersTemp.push(optionsFilter);
+                                }
+                            });
+
+                            if(optionsFiltersTemp.length){
+                                criteria(optionsFiltersTemp);
+                            }
+                        }
+
                         if (hiddenCriteria) {
                             for (var hc in hiddenCriteria) {
                                 if (!_.some(actualCriteria, function (criterion) {
@@ -1615,35 +1699,21 @@ ko.bindingHandlers.journalControl = {
 
                 // search listener
                 if (searchBar) {
+                    var searchDom = Dom.get(searchId);
+
+                    searchManager.init({
+                        criterias: _.isFunction(searchCriteria) ? searchCriteria() : searchCriteria,
+                        searchMinQueryLength: searchMinQueryLength,
+                        criteria: criteria,
+                        journalType: data.journalId && data.journalId() || params.journalType,
+                        searchDom: searchDom
+                    });
+
                     Event.on(searchId, "keypress", function (event) {
                         if (event.keyCode == 13) {
                             event.stopPropagation();
 
-                            var criterias = _.isFunction(searchCriteria) ? searchCriteria() : searchCriteria;
-
-                            var search = Dom.get(searchId);
-                            if (search.value) {
-                                var searchValue = search.value.trim();
-                                if (searchMinQueryLength && searchValue.length < searchMinQueryLength) {
-                                    return false;
-                                }
-
-                                if (criterias && criterias.length > 0) {
-                                    criteria(_.map(criterias, function (item) {
-                                        return _.defaults(_.clone(item), {value: searchValue});
-                                    }));
-                                } else {
-                                    criteria([{attribute: "cm:name", predicate: "string-contains", value: searchValue}]);
-                                }
-                            } else {
-                                if (criterias && criterias.length > 0) {
-                                    criteria(_.filter(criterias, function (item) {
-                                        return (item && item.value && item.predicate && item.attribute);
-                                    }));
-                                } else {
-                                    criteria([]);
-                                }
-                            }
+                            searchManager.search(searchDom.value);
                         }
                     });
                 }
@@ -3505,11 +3575,15 @@ ko.bindingHandlers.orgstructControl = {
                                 fullName: p_oItem.fullName,
                                 authorityType: p_oItem.authorityType,
                                 groupType: p_oItem.groupType,
+                                available: p_oItem.available,
                                 editable : false
                         }, p_oParent, p_expanded);
 
                         // add nessesary classes
-                        if (p_oItem.authorityType) textNode.contentStyle += " authorityType-" + p_oItem.authorityType;
+                        if (p_oItem.authorityType) {
+                            textNode.contentStyle += " authorityType-" + p_oItem.authorityType;
+                            textNode.contentStyle += " available-" + p_oItem.available;
+                        }
                         if (p_oItem.groupType) textNode.contentStyle += " groupType-" + p_oItem.groupType.toUpperCase();
 
                         // selectable elements
@@ -3570,7 +3644,8 @@ ko.bindingHandlers.orgstructControl = {
                                     id: object.nodeRef,
                                     label: object[tree.fn.getNodeLabelKey(object)] || object.displayName,
                                     aType: textNode.data.authorityType,
-                                    gType: textNode.data.groupType
+                                    gType: textNode.data.groupType,
+                                    available: textNode.data.available
                                 }));
 
                                 // remove selectable state
@@ -3757,7 +3832,10 @@ function createSelectedObject(options) {
     var li = $("<li>", { "class": "selected-object", html: options.label, id: options.id });
     li.click(function() { $(this).remove() });
 
-    if (options.aType) li.addClass("authorityType-" + options.aType);
+    if (options.aType) {
+        li.addClass("authorityType-" + options.aType);
+        li.addClass("available-" + options.available);
+    }
     if (options.gType) li.addClass("groupType-" + options.gType.toUpperCase());
 
     return li;

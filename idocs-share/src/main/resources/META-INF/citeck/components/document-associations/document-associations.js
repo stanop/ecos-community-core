@@ -151,10 +151,12 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                         if(this.options.addable.length>0 && this.hasPermissionWrite) {
                             require([
                                 'citeck/components/journals2/journals-selector',
+                                'citeck/utils/knockout.utils',
                                 'react-dom',
                                 'react'
                             ], function(
                                 component,
+                                koutils,
                                 ReactDOM,
                                 React
                             ){
@@ -168,7 +170,11 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                                             if (newValue) {
                                                 me.selectedType = selectedType;
                                                 var isArray = _.isArray(newValue);
-                                                me.onAddAssociation(isArray ? newValue : [newValue]);
+                                                var newValues = isArray ? newValue : [newValue];
+
+                                                koutils.ensureAttributeValue(newValues, ['cm:name','cm:title'], function(newValues){
+                                                    me.onAddAssociation(newValues);
+                                                });
                                             }
                                         }
                                     }),
@@ -335,19 +341,25 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                 column = me.options.columns[_.findIndex(this.options.columns, { attribute: attributeName })];
 
             return function(elCell, oRecord, oColumn, oData) {
-                if (!oRecord._oData.attributes[attributeName]) {
+                var value = oRecord._oData.attributes[attributeName];
+
+                if(!value && attributeName === "cm:title"){
+                    value = oRecord._oData.attributes["cm:name"];
+                }
+
+                if (!value) {
                     elCell.innerHTML = '<span>-</span>';
                     return;
                 }
 
                 if (column.formatter) {
-                    column.formatter(elCell, oRecord, oColumn, oRecord._oData.attributes[attributeName]);
+                    column.formatter(elCell, oRecord, oColumn, value);
                     return;
                 }
 
                 var openId = Alfresco.util.generateDomId(),
-                    label = oRecord._oData.attributes[attributeName];
-                html = '<span>' + label + '</span>',
+                    label = value,
+                    html = '<span>' + label + '</span>',
                     page = "";
 
                 if (oRecord._oData.isFolder == "true") { page = "folder"; }
@@ -479,7 +491,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
             Alfresco.util.PopupManager.displayPrompt(
                 {
                     title: me.msg("delete-button.label"),
-                    text: me.msg("delete-confirmation") + " '" + (obj._oData.attributes["cm:title"] || "no-title") + "' ?",
+                    text: me.msg("delete-confirmation") + " '" + (obj._oData.attributes["cm:title"] || obj._oData.attributes["cm:name"]) + "' ?",
                     nodeRef : this.options.nodeRef,
                     noEscape: true,
                     buttons: [
@@ -552,7 +564,7 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                             documentsNodeRefs += documentsNodeRefs == "" ? currentNodeRef : "," + currentNodeRef;
                         }
                         if (isAdded) {
-                            reAddingDocument += "<br>" + (obj[j].properties["cm:title"] || "no-title");
+                            reAddingDocument += "<br>" + (obj[j].properties["cm:title"] || obj[j].properties["cm:name"]);
                         }
                     }
 

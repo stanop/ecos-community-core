@@ -1107,7 +1107,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
     }
 
     function isInvariantsObject(object) {
-        return object ? object.toString().toLowerCase().indexOf("invariants") != -1 : null;
+        var s;
+        return object ? ( (s = object.toString()) ? s.toLowerCase().indexOf("invariants") != -1 : null ) : null;
     }
 
     return {

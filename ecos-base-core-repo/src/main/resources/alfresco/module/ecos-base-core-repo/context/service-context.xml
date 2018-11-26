@@ -418,4 +418,11 @@
         <property name="serviceRegistry" ref="ServiceRegistry" />
     </bean>
 
+    <bean id="RecordsServiceTemplate"
+          class="ru.citeck.ecos.records.RecordsServiceTemplate"
+          parent="baseTemplateImplementation">
+        <property name="extensionName" value="recordsService" />
+        <property name="recordsService" ref="ecos-base-core.recordsServiceJS" />
+    </bean>
+
 </beans>

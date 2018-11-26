@@ -17,7 +17,7 @@ if (footer && footer.config.widgetsForFooter) {
         name: "alfresco/footer/AlfShareFooter",
         config: {
             semanticWrapper: "footer",
-            templateString: '<div class="footer footer-com"> <div class="footer-content"> <a href="http://citeck.ru/" class="contact-us-link">Контактная информация</a><div class="description">Citeck EcoS на платформе Alfresco™</div></div></div>'
+            templateString: '<div class="footer footer-com"> <div class="footer-content"> <a href="http://citeck.ru/" class="contact-us-link">Контактная информация</a><div class="description">Citeck ECOS на платформе Alfresco™</div></div></div>'
         }
     });
 }

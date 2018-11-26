@@ -3,7 +3,7 @@ package ru.citeck.ecos.menu.resolvers;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.action.ActionCondition;
 import org.alfresco.service.cmr.action.ActionService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import ru.citeck.ecos.menu.xml.Evaluator;
 import ru.citeck.ecos.menu.xml.Parameter;
 
