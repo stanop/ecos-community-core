@@ -34,6 +34,8 @@
     <#assign showWorkflowButton = true>
 </#if>
 
+<#assign adaptScroll = 'true' />
+
 <script type="text/javascript">//<![CDATA[
 require([
     'citeck/components/journals2/journals-dashlet',
@@ -68,7 +70,8 @@ var dashlet = new JournalsDashlet("${id}")
   dashletConfig: {
    <@journals.renderCurrentIds />
   },
-  mode: 'table'
+  mode: 'table',
+  adaptScroll: ${adaptScroll}
  },
  cache: <@journals.renderCacheJSON />
 }).setMessages(${messages});
@@ -126,7 +129,7 @@ editEvent.subscribe(dashlet.onEditConfig, dashlet, true);
   <span class="buttons align-right">
 
   <#assign pagingTemplate = '{PreviousPageLink} {CurrentPageReport} {NextPageLink}' />
-  <span id="${id}-paging" data-bind="<@journals.renderPaginatorBinding pagingTemplate pagingOptions />" >
+  <span id="${id}-paging" data-bind="<@journals.renderPaginatorBinding pagingTemplate pagingOptions adaptScroll/>" >
   </span>
 
   <span class="fullscreen" title="${msg("button.fullscreen")}" data-bind="yuiButton: {
