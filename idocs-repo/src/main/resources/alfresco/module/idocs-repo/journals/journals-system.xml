@@ -12,6 +12,7 @@
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
         <import uri="http://www.citeck.ru/model/workflow/1.1" prefix="cwf"/>
         <import uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org"/>
+        <import uri="http://www.citeck.ru/model/menu/config/1.0" prefix="menuconfig"/>
     </imports>
 
     <journal id="cardlets">
@@ -177,6 +178,18 @@
         <headers>
             <header key="cm:name" default="true"/>
             <header key="cm:title" default="true"/>
+        </headers>
+    </journal>
+
+    <journal id="menu-configs">
+        <option name="type">menuconfig:menuConfig</option>
+        <option name="actionGroupId">none</option>
+        <headers>
+            <header key="menuconfig:id" default="true" />
+            <header key="menuconfig:type" default="true" />
+            <header key="menuconfig:authorities" default="true" />
+            <header key="cm:created" default="true" />
+            <header key="cm:modified" default="true" />
         </headers>
     </journal>
 
