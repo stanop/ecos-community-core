@@ -1056,7 +1056,7 @@ JournalsWidget
     })
 
     .method('adaptScrollTop', function() {
-        if(this.view && this.view.id){
+        if (this.view && this.view.id) {
             var $dashlet = $(Dom.get(this.view.id));
             var skipCount = this.skipCount();
             var inWindow = function(element){
@@ -1067,7 +1067,7 @@ JournalsWidget
                 return (scrollTop <= elementTop && (element.height() + elementTop) < (scrollTop + windowHeight));
             };
 
-            if(!inWindow($dashlet) && this._lastSkipCount !== undefined && this._lastSkipCount !== skipCount){
+            if (!inWindow($dashlet) && this._lastSkipCount !== undefined && this._lastSkipCount !== skipCount) {
                 $('html, body').animate({
                     scrollTop: $dashlet.offset().top
                 }, 1000);
@@ -1856,7 +1856,7 @@ JournalsWidget
                         var actualQuery = self.recordsQueryData();
 
                         koutils.subscribeOnce(this.loading, function() {
-                            if(this.adaptScroll()){
+                            if (this.adaptScroll()) {
                                 this.adaptScrollTop();
                             }
                         }, this);
