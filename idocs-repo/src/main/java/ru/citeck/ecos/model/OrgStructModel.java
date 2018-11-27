@@ -44,4 +44,5 @@ public interface OrgStructModel {
 	public static final QName PROP_FIRST_NAME = QName.createQName(NAMESPACE, "firstName");
 	public static final QName PROP_LAST_NAME = QName.createQName(NAMESPACE, "lastName");
 
+	public static final QName ASSOC_LEGAL_ENTITY = QName.createQName(NAMESPACE, "legalEntity");
 }
