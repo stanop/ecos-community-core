@@ -32,7 +32,7 @@
         <xs:sequence>
             <xs:element name="type" type="xs:string" minOccurs="0" />
             <xs:element name="label" type="xs:string" minOccurs="0" />
-            <xs:element name="icon" type="menu:icon" minOccurs="0" />
+            <xs:element name="icon" type="xs:string" minOccurs="0" />
             <xs:element name="mobile-visible" type="xs:boolean" minOccurs="0" />
             <xs:element name="param" type="menu:parameter" minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="action" type="menu:action" minOccurs="0" />
@@ -70,14 +70,6 @@
             <xs:element name="param" type="menu:parameter" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="required" />
-    </xs:complexType>
-
-    <xs:complexType name="icon">
-        <xs:simpleContent>
-            <xs:extension base="xs:string">
-                <xs:attribute name="type" type="xs:string" use="required" />
-            </xs:extension>
-        </xs:simpleContent>
     </xs:complexType>
 
 </xs:schema>

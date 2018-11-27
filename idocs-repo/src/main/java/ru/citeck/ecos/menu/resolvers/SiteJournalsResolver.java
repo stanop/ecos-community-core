@@ -23,7 +23,7 @@ public class SiteJournalsResolver extends AbstractJournalsResolver {
     public List<Element> resolve(Map<String, String> params, Element context) {
         String siteId = getParam(params, context, SITE_ID_KEY);
         return getJournalsBySiteId(siteId).stream()
-                .map(nodeRef -> constructItem(nodeRef, context))
+                .map(nodeRef -> constructItem(nodeRef, params, context))
                 .collect(Collectors.toList());
     }
 

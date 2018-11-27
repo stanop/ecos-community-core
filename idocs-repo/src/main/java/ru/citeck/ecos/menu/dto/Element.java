@@ -8,7 +8,7 @@ public class Element {
     private String id;
     private String type;
     private String label;
-    private Icon icon;
+    private String icon;
     private Boolean mobileVisible;
     private Action action;
     private List<Element> items;
@@ -26,11 +26,8 @@ public class Element {
         this.label = label;
     }
 
-    public void setIcon(String type, String value) {
-        Icon i = new Icon();
-        i.setType(type);
-        i.setValue(value);
-        this.icon = i;
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
     public void setMobileVisible(Boolean mobileVisible) {
@@ -64,7 +61,7 @@ public class Element {
         return label;
     }
 
-    public Icon getIcon() {
+    public String getIcon() {
         return icon;
     }
 
@@ -102,27 +99,6 @@ public class Element {
 
         public Map<String, String> getParams() {
             return params;
-        }
-    }
-
-    public static class Icon {
-        String type;
-        String value;
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
         }
     }
 

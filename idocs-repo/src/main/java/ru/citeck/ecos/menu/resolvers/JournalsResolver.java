@@ -21,16 +21,8 @@ public class JournalsResolver extends AbstractJournalsResolver {
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
         String listId = getParam(params, context, LIST_ID_KEY);
-        /* put listId to context params */
-        Map<String, String> contextParams = context.getParams();
-        if (contextParams == null) {
-            contextParams = new HashMap<>();
-        }
-        contextParams.put(LIST_ID_KEY, listId);
-        context.setParams(contextParams);
-
         return queryJournalsRefs(listId).stream()
-                .map(nodeRef -> constructItem(nodeRef, context))
+                .map(nodeRef -> constructItem(nodeRef, params, context))
                 .collect(Collectors.toList());
     }
 

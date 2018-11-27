@@ -35,6 +35,11 @@ public class MenuFactory {
                 .forEach(obj -> {
                     if (obj instanceof Item && evaluate((Item) obj)) {
                         Element newElement = new Element();
+                        if (context == null) {
+                            Map<String, String> params = new HashMap<>();;
+                            params.put("rootElement", "true");
+                            newElement.setParams(params);
+                        }
                         result.add(updateItem(newElement, (Item) obj));
                     } else if (obj instanceof ItemsResolver) {
                         result.addAll(resolve((ItemsResolver) obj, context));
@@ -81,13 +86,7 @@ public class MenuFactory {
 
         String label = getLocalizedMessage(newData.getLabel());
         String id = newData.getId();
-
-        Icon icon = newData.getIcon();
-        String iconType= null, iconValue = null;
-        if (icon != null) {
-            iconType = icon.getType();
-            iconValue = icon.getValue();
-        }
+        String icon = newData.getIcon();
 
         Boolean mobileVisible = newData.isMobileVisible();
 
@@ -106,8 +105,8 @@ public class MenuFactory {
         if (!StringUtils.isEmpty(label)) {
             targetElement.setLabel(label);
         }
-        if (!StringUtils.isEmpty(iconType) && !StringUtils.isEmpty(iconValue)) {
-            targetElement.setIcon(iconType, iconValue);
+        if (!StringUtils.isEmpty(icon)) {
+            targetElement.setIcon(icon);
         }
         if (mobileVisible != null) {
             targetElement.setMobileVisible(mobileVisible);

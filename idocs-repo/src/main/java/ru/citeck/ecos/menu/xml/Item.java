@@ -55,7 +55,7 @@ public class Item {
     @XmlElement(namespace = "http://www.citeck.ru/menu/config/1.0")
     protected String label;
     @XmlElement(namespace = "http://www.citeck.ru/menu/config/1.0")
-    protected Icon icon;
+    protected String icon;
     @XmlElement(name = "mobile-visible", namespace = "http://www.citeck.ru/menu/config/1.0")
     protected Boolean mobileVisible;
     @XmlElement(namespace = "http://www.citeck.ru/menu/config/1.0")
@@ -122,10 +122,10 @@ public class Item {
      *
      * @return
      *     possible object is
-     *     {@link Icon }
+     *     {@link String }
      *
      */
-    public Icon getIcon() {
+    public String getIcon() {
         return icon;
     }
 
@@ -134,10 +134,10 @@ public class Item {
      *
      * @param value
      *     allowed object is
-     *     {@link Icon }
+     *     {@link String }
      *
      */
-    public void setIcon(Icon value) {
+    public void setIcon(String value) {
         this.icon = value;
     }
 
