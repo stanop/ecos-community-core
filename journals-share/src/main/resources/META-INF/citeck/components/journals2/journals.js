@@ -996,6 +996,7 @@ JournalsWidget
     .property('defaultMaxItems', n)
     .property('totalItems', n)
     .property('hasMore', b)
+    .property('adaptScroll', b, false)
     .computed('totalEstimate', function() {
         var total = this.totalItems();
         if(typeof total != "undefined" && total !== null) {
@@ -1052,6 +1053,28 @@ JournalsWidget
         }
 
         return query;
+    })
+
+    .method('adaptScrollTop', function() {
+        if (this.view && this.view.id) {
+            var $dashlet = $(Dom.get(this.view.id));
+            var skipCount = this.skipCount();
+            var inWindow = function(element){
+                var scrollTop = $(window).scrollTop();
+                var windowHeight = $(window).height();
+                var elementTop = element.offset().top;
+
+                return (scrollTop <= elementTop && (element.height() + elementTop) < (scrollTop + windowHeight));
+            };
+
+            if (!inWindow($dashlet) && this._lastSkipCount !== undefined && this._lastSkipCount !== skipCount) {
+                $('html, body').animate({
+                    scrollTop: $dashlet.offset().top
+                }, 1000);
+            }
+
+            this._lastSkipCount = skipCount;
+        }
     })
 
     // selected records
@@ -1831,6 +1854,13 @@ JournalsWidget
                     fn: function(response) {
 
                         var actualQuery = self.recordsQueryData();
+
+                        koutils.subscribeOnce(this.loading, function() {
+                            if (this.adaptScroll()) {
+                                this.adaptScrollTop();
+                            }
+                        }, this);
+
                         if (iteration < 4 && !_.isEqual(recordsQuery, actualQuery)) {
                             load.call(self, iteration + 1);
                             return;
