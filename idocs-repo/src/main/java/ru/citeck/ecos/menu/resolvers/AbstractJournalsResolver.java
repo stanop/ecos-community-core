@@ -24,6 +24,7 @@ import java.util.Map;
 
 public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver {
 
+    protected static final String LIST_ID_KEY = "listId";
     private static final String JOURNAL_REF_KEY = "journalRef";
     private static final String JOURNAL_LINK_KEY = "JOURNAL_LINK";
     private static final Integer COUNT_MAX = 100;
@@ -56,9 +57,8 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
             Map<String, String> parentActionParams = context.getAction().getParams();
             actionParams.putAll(parentActionParams);
         } else {
-            Map<String, String> props = context.getParams();
-            if (MapUtils.isNotEmpty(props)) {
-                actionParams.putAll(props);
+            if (MapUtils.isNotEmpty(params) && params.containsKey(LIST_ID_KEY)) {
+                actionParams.put(LIST_ID_KEY, params.get(LIST_ID_KEY));
             }
         }
         /* current element action params */

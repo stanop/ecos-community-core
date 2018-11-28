@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 public class JournalsResolver extends AbstractJournalsResolver {
 
     private static final String ID = "JOURNALS";
-    private static final String LIST_ID_KEY = "listId";
 
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
