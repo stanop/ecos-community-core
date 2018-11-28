@@ -62,8 +62,8 @@ const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, 
     }
 
     let counter = null;
-    if (item.params && item.params.badge && item.params.badge !== '0') {
-        counter = <span className={'slide-menu-list__link-badge'}>{item.params.badge}</span>;
+    if (item.params && item.params.count && item.params.count !== '0') {
+        counter = <span className={'slide-menu-list__link-badge'}>{item.params.count}</span>;
     }
 
     return (
