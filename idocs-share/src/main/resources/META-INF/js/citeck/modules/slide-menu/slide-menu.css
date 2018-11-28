@@ -205,11 +205,37 @@
     overflow: hidden;
 }
 
-.slide-menu-list__link-badge {
+.slide-menu-list__link-badge-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #f96857;
+    position: absolute;
+    left: 35px;
+    top: 7px;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+.slide-menu-collapsible-list_nested .slide-menu-list__link-badge-indicator {
     display: none;
 }
 
+#slide-menu-checkbox:checked ~ .slide-menu .slide-menu-list__link-badge-indicator {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.slide-menu-list__link-badge {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
 #slide-menu-checkbox:checked ~ .slide-menu .slide-menu-list__link-badge {
+    visibility: visible;
+    opacity: 1;
     display: inline-block;
     position: absolute;
     right: 13px;
