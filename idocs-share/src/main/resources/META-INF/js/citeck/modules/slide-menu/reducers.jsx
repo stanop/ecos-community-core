@@ -6,6 +6,7 @@ import {
     LEFT_MENU_SET_ITEMS,
     LEFT_MENU_SET_EXPANDABLE_ITEMS,
     LEFT_MENU_TOGGLE_EXPANDED,
+    LEFT_MENU_TOGGLE_IS_OPEN,
     LEFT_MENU_SET_SELECTED_ID
 } from './actions';
 
@@ -16,6 +17,7 @@ const leftMenuInitialState = {
     selectedId: null,
     items: [],
     expandableItems: [],
+    isOpen: false,
 };
 
 Object.freeze(leftMenuInitialState);
@@ -50,6 +52,12 @@ function leftMenuReducer(state = leftMenuInitialState, action) {
             return {
                 ...state,
                 expandableItems: action.payload
+            };
+
+        case LEFT_MENU_TOGGLE_IS_OPEN:
+            return {
+                ...state,
+                isOpen: action.payload
             };
 
         case LEFT_MENU_TOGGLE_EXPANDED:

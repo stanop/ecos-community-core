@@ -3,10 +3,17 @@ import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import LogoBlock from "./logo-block";
 import RootList from "./root-list";
+import { t } from "../../common/util";
+import { toggleIsOpen } from "../actions";
 
 const mapStateToProps = (state) => ({
+    isOpen: state.leftMenu.isOpen,
     smallLogo: state.leftMenu.smallLogo,
     largeLogo: state.leftMenu.largeLogo
+});
+
+const mapDispatchToProps = dispatch => ({
+    toggleIsOpen: isOpen => dispatch(toggleIsOpen(isOpen))
 });
 
 class SlideMenu extends React.Component {
@@ -34,11 +41,11 @@ class SlideMenu extends React.Component {
         document.body.insertBefore(this.menu, theFirstChild);
         document.body.insertBefore(this.mask, theFirstChild);
 
-        // this.checkbox.addEventListener('change', this.onCheckboxChange);
+        this.checkbox.addEventListener('change', this.onCheckboxChange);
     }
 
     componentWillUnmount() {
-        // this.checkbox.removeEventListener('change', this.onCheckboxChange);
+        this.checkbox.removeEventListener('change', this.onCheckboxChange);
 
         document.body.removeChild(this.checkbox);
         document.body.removeChild(this.menu);
@@ -46,19 +53,17 @@ class SlideMenu extends React.Component {
     }
 
     onCheckboxChange = e => {
-        // console.log(e.target.checked);
+        this.props.toggleIsOpen(e.target.checked);
     };
 
     toggleSlideMenu = () => {
         this.slideMenuToggle && this.slideMenuToggle.click();
     };
 
-    // componentDidCatch(error, info) {
-    //     console.log(error, info);
-    // }
-
     render() {
-        const { smallLogo, largeLogo } = this.props;
+        const { smallLogo, largeLogo, isOpen } = this.props;
+
+        const toggleHandleTitle = isOpen ? '' : t('slide_menu_click_to_open.label');
 
         return ReactDOM.createPortal(
             <Fragment>
@@ -66,6 +71,7 @@ class SlideMenu extends React.Component {
                     ref={el => this.slideMenuToggle = el}
                     className='slide-menu-toggle'
                     htmlFor="slide-menu-checkbox"
+                    title={toggleHandleTitle}
                 />
                 <LogoBlock smallLogo={smallLogo} largeLogo={largeLogo} />
                 <RootList toggleSlideMenu={this.toggleSlideMenu} />
@@ -75,4 +81,4 @@ class SlideMenu extends React.Component {
     }
 }
 
-export default connect(mapStateToProps)(SlideMenu);
+export default connect(mapStateToProps, mapDispatchToProps)(SlideMenu);
