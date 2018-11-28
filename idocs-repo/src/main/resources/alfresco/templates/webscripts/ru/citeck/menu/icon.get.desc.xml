@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>Get menu icon info</shortname>
+    <description>Return icon info by icon name</description>
+    <url>/citeck/menu/icon?iconName={iconName}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>
