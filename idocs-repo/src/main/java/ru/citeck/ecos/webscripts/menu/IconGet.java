@@ -59,8 +59,9 @@ public class IconGet extends AbstractWebScript {
         result.setType(type);
         if (StringUtils.equals(type, "fa")) {
             result.setValue(faIconName);
+        } else {
+            result.setValue(nodeRef.toString());
         }
-        result.setValue(nodeRef.toString());
         return result;
     }
 
