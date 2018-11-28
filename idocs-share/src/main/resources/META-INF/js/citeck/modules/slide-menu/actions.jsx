@@ -49,16 +49,14 @@ export function toggleExpanded(payload) {
     }
 }
 
-export function loadMenuItemIconUrl(webScriptUrl, onSuccessCallback) {
+export function loadMenuItemIconUrl(iconName, onSuccessCallback) {
     return (dispatch, getState, api) => {
-        // onSuccessCallback('/share/res/citeck/components/journals2/images/settings.png');
-
-        if (!webScriptUrl) {
+        if (!iconName) {
             return null;
         }
 
-        api.getMenuItemIconUrl(webScriptUrl).then(url => {
-            typeof onSuccessCallback === 'function' && onSuccessCallback(url);
+        api.getMenuItemIconUrl(iconName).then(data => {
+            typeof onSuccessCallback === 'function' && onSuccessCallback(data);
         });
     }
 }

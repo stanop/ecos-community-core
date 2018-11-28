@@ -84,8 +84,8 @@ export default class {
         return this.getJSON(url).catch(() => []);
     };
 
-    getMenuItemIconUrl = (webScriptUrl) => {
-        // return this.getJSON(webScriptUrl).catch(() => null); // TODO
-        return null;
+    getMenuItemIconUrl = (iconName) => {
+        const url = `citeck/menu/icon?iconName=${iconName}`;
+        return this.getJSON(url).catch(() => null);
     };
 }

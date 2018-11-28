@@ -1,25 +1,47 @@
 import React from 'react';
-import ListItemIconImg from './list-item-icon-img';
+import { connect } from "react-redux";
+import { loadMenuItemIconUrl } from '../actions';
 
-const ListItemIcon = ({ item }) => {
-    let itemId = item.id;
-    let icon = <i className={`fa fa-menu-default-icon ${itemId}`} />;
+const mapDispatchToProps = (dispatch, ownProps) => ({
+    loadMenuItemIconUrl: (iconName, cb) => dispatch(loadMenuItemIconUrl(iconName, cb))
+});
 
-    if (item.icon) {
-        switch (item.icon.type) {
-            case 'fa':
-                icon = <i className={`fa fa-menu-default-icon ${item.icon.value}`} />;
-                break;
-            case 'img':
-                icon = <ListItemIconImg webScriptUrl={item.icon.value} />;
-                break;
-            default:
-                break;
+class ListItemIcon extends React.Component {
+    state = {
+        data: null,
+    };
+
+    componentDidMount() {
+        const { iconName, loadMenuItemIconUrl } = this.props;
+
+        if (iconName) {
+            loadMenuItemIconUrl(iconName, (data) => this.setState({ data }));
         }
     }
 
-    return icon;
-};
+    render() {
+        const { data } = this.state;
+        const emptyIcon = <i className={`fa fa-menu-default-icon`} />;
 
-export default ListItemIcon;
+        if (!data) {
+            return emptyIcon;
+        }
 
+        switch (data.type) {
+            case 'fa':
+                return <i className={`fa fa-menu-default-icon ${data.value}`} />;
+            case 'img':
+                if (!data.value ) {
+                    return emptyIcon;
+                }
+                const url = `/share/proxy/alfresco/api/node/workspace/SpacesStore/${data.value}/content;cm:content`;
+                const backgroundImage = `url(${url})`;
+
+                return <div className='list-item-icon-img' style={{backgroundImage}} />;
+            default:
+                return emptyIcon;
+        }
+    }
+}
+
+export default connect(null, mapDispatchToProps)(ListItemIcon);
