@@ -3,12 +3,333 @@
            xmlns:cm="http://www.alfresco.org/model/content/1.0"
            xmlns:ecos="http://www.citeck.ru/model/content/ecos/1.0">
 
+    <!-- JOURNALS -->
+
     <ecos:icon view:childName="cm:active-tasks">
         <view:properties>
             <cm:name>active-tasks</cm:name>
             <cm:title>active-tasks</cm:title>
             <ecos:iconType>fa</ecos:iconType>
             <ecos:faIconName>fa-list</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:completed-tasks">
+        <view:properties>
+            <cm:name>completed-tasks</cm:name>
+            <cm:title>completed-tasks</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-archive</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:controlled">
+        <view:properties>
+            <cm:name>controlled</cm:name>
+            <cm:title>controlled</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-eye</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:subordinate-tasks">
+        <view:properties>
+            <cm:name>subordinate-tasks</cm:name>
+            <cm:title>subordinate-tasks</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-align-center</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:task-statistic">
+        <view:properties>
+            <cm:name>task-statistic</cm:name>
+            <cm:title>task-statistic</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-bar-chart</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:initiator-tasks">
+        <view:properties>
+            <cm:name>initiator-tasks</cm:name>
+            <cm:title>initiator-tasks</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-plus-square</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:income-package-tasks">
+        <view:properties>
+            <cm:name>income-package-tasks</cm:name>
+            <cm:title>income-package-tasks</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-get-pocket</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <!-- SITES -->
+
+    <ecos:icon view:childName="cm:cases">
+        <view:properties>
+            <cm:name>cases</cm:name>
+            <cm:title>cases</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-briefcase</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:contracts">
+        <view:properties>
+            <cm:name>contracts</cm:name>
+            <cm:title>contracts</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-address-card</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:ecos-tr">
+        <view:properties>
+            <cm:name>ecos-tr</cm:name>
+            <cm:title>ecos-tr</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-list</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:letters">
+        <view:properties>
+            <cm:name>letters</cm:name>
+            <cm:title>letters</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-envelope</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:ecos-finance">
+        <view:properties>
+            <cm:name>ecos-finance</cm:name>
+            <cm:title>ecos-finance</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-credit-card</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:meetings">
+        <view:properties>
+            <cm:name>meetings</cm:name>
+            <cm:title>meetings</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-group</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:order-pass">
+        <view:properties>
+            <cm:name>order-pass</cm:name>
+            <cm:title>order-pass</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-bus</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:orders">
+        <view:properties>
+            <cm:name>orders</cm:name>
+            <cm:title>orders</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-bars</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:common-documents">
+        <view:properties>
+            <cm:name>common-documents</cm:name>
+            <cm:title>common-documents</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-crosshairs</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <!-- STATIC -->
+
+    <ecos:icon view:childName="cm:find-sites">
+        <view:properties>
+            <cm:name>find-sites</cm:name>
+            <cm:title>find-sites</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-search</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:create-site">
+        <view:properties>
+            <cm:name>create-site</cm:name>
+            <cm:title>create-site</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-plus-circle</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:orgstructure">
+        <view:properties>
+            <cm:name>orgstructure</cm:name>
+            <cm:title>orgstructure</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-sitemap</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:my-workflows">
+        <view:properties>
+            <cm:name>my-workflows</cm:name>
+            <cm:title>my-workflows</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-object-group</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:completed-workflows">
+        <view:properties>
+            <cm:name>completed-workflows</cm:name>
+            <cm:title>completed-workflows</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-check-square</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:my-content">
+        <view:properties>
+            <cm:name>my-content</cm:name>
+            <cm:title>my-content</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-columns</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:my-sites">
+        <view:properties>
+            <cm:name>my-sites</cm:name>
+            <cm:title>my-sites</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-globe</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:my-files">
+        <view:properties>
+            <cm:name>my-files</cm:name>
+            <cm:title>my-files</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-file</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:data-lists">
+        <view:properties>
+            <cm:name>data-lists</cm:name>
+            <cm:title>data-lists</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-newspaper-o</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:finance-data-lists">
+        <view:properties>
+            <cm:name>finance-data-lists</cm:name>
+            <cm:title>finance-data-lists</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-newspaper-o</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:repository">
+        <view:properties>
+            <cm:name>repository</cm:name>
+            <cm:title>repository</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-tasks</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:application">
+        <view:properties>
+            <cm:name>application</cm:name>
+            <cm:title>application</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-desktop</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:bpmn-modeler">
+        <view:properties>
+            <cm:name>bpmn-modeler</cm:name>
+            <cm:title>bpmn-modeler</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-retweet</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:groups">
+        <view:properties>
+            <cm:name>groups</cm:name>
+            <cm:title>groups</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-clone</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:users">
+        <view:properties>
+            <cm:name>users</cm:name>
+            <cm:title>users</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-user</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:types">
+        <view:properties>
+            <cm:name>types</cm:name>
+            <cm:title>types</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-braille</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:system-journals">
+        <view:properties>
+            <cm:name>system-journals</cm:name>
+            <cm:title>system-journals</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-cogs</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:journal-setup">
+        <view:properties>
+            <cm:name>journal-setup</cm:name>
+            <cm:title>journal-setup</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-newspaper-o</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:templates">
+        <view:properties>
+            <cm:name>templates</cm:name>
+            <cm:title>templates</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-code</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+    <ecos:icon view:childName="cm:more">
+        <view:properties>
+            <cm:name>more</cm:name>
+            <cm:title>more</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-ellipsis-h</ecos:faIconName>
         </view:properties>
     </ecos:icon>
 
