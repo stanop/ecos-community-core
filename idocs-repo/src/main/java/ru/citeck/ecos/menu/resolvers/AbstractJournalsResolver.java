@@ -27,7 +27,7 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
     protected static final String LIST_ID_KEY = "listId";
     private static final String JOURNAL_REF_KEY = "journalRef";
     private static final String JOURNAL_LINK_KEY = "JOURNAL_LINK";
-    private static final Integer COUNT_MAX = 100;
+    private static final Integer COUNT_MAX = Integer.MAX_VALUE;
     private static final String CRIT_ELEM_FORMAT = "\"%s_%d\":\"%s\"";
     private static final JGqlPageInfoInput PAGE_INFO = new JGqlPageInfoInput(null, COUNT_MAX,
             Collections.emptyList(), 0);
@@ -69,9 +69,8 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
 
         /* badge (items count) */
         if (displayCount) {
-            Long count = journalItemsCount(journalRef, journalId);
-            String badge = count < COUNT_MAX ? count.toString() : "99+";
-            elementParams.put("badge", badge);
+            Integer itemsCount = journalItemsCount(journalRef, journalId).intValue();
+            elementParams.put("count", itemsCount.toString());
         }
 
         /* additional params for constructing child items */

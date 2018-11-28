@@ -38,7 +38,7 @@ public class IconGet extends AbstractWebScript {
                     .map(this::getIconData)
                     .orElseThrow(() -> new InvalidParameterException("Error getting icon info for icon name: " + iconName));
         } catch (RuntimeException re) {
-            throw new WebScriptException(Status.STATUS_NO_CONTENT, "Error getting menu data.", re);
+            throw new WebScriptException(Status.STATUS_NOT_FOUND, "Error getting icon info.", re);
         }
 
         try (OutputStream os = resp.getOutputStream()) {
@@ -52,15 +52,17 @@ public class IconGet extends AbstractWebScript {
     private Icon getIconData(NodeRef nodeRef) {
         String type = RepoUtils.getProperty(nodeRef, EcosModel.PROP_ICON_TYPE, nodeService);
         String faIconName = RepoUtils.getProperty(nodeRef, EcosModel.PROP_FA_ICON_NAME, nodeService);
-        if (StringUtils.isEmpty(type)) {
-            throw new RuntimeException("Icon type is null. NodeRef: " + nodeRef.toString());
-        }
         Icon result = new Icon();
-        result.setType(type);
-        if (StringUtils.equals(type, "fa")) {
-            result.setValue(faIconName);
+        if (StringUtils.isNotEmpty(type)) {
+            result.setType(type);
+            if (StringUtils.equals(type, "fa")) {
+                result.setValue(faIconName);
+            } else {
+                result.setValue(nodeRef.getId());
+            }
         } else {
-            result.setValue(nodeRef.toString());
+            result.setType("img");
+            result.setValue(nodeRef.getId());
         }
         return result;
     }
