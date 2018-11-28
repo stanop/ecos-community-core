@@ -43,23 +43,22 @@ public abstract class AbstractMenuItemsResolver implements MenuItemsResolver {
      */
     static String getParam(Map<String, String> params, Element context, String key) {
         String result = null;
-        if (context == null) {
-            return "";
-        }
-        Map<String, String> contextParams = context.getParams();
-        if (MapUtils.isNotEmpty(contextParams)) {
-            result = contextParams.get(key);
+        if (context != null) {
+            Map<String, String> contextParams = context.getParams();
+            if (MapUtils.isNotEmpty(contextParams)) {
+                result = contextParams.get(key);
+            }
         }
         if (StringUtils.isEmpty(result) && MapUtils.isNotEmpty(params)) {
             result = params.get(key);
         }
-        if (result == null) {
-            return "";
-        }
-        return result;
+        return StringUtils.defaultString(result);
     }
 
     static String toUpperCase(String s) {
+        if (StringUtils.isEmpty(s)) {
+            return "";
+        }
         String result = s.replaceAll("\\W", "_");
         return result.toUpperCase();
     }
