@@ -16,6 +16,29 @@ export const RECEIVE_ERR_CARDLET_DATA = 'RECEIVE_ERR_CARDLET_DATA';
 
 export const CARD_MODE_LOADED = 'CARD_MODE_LOADED';
 
+export const SET_START_MESSAGE = 'SET_START_MESSAGE';
+
+export function fetchStartMessage(nodeRef) {
+    return dispatch => {
+        // TODO use fetch
+        return Promise.resolve().then(data => {
+            let messageText = 'Спасибо за обращение, карточка создана и запущена в работу';
+            let shouldShowMessage = true;
+
+            if (shouldShowMessage) {
+                dispatch(setStartMessage(messageText));
+            }
+        });
+    }
+}
+
+export function setStartMessage(payload) {
+    return {
+        type: SET_START_MESSAGE,
+        payload
+    };
+}
+
 export function setCardMode(cardMode, registerReducers) {
 
     return (dispatch, getState) => {

@@ -7,7 +7,8 @@ import { connect } from 'react-redux';
 
 import {
     setCardMode,
-    fetchCardletData
+    fetchCardletData,
+    setStartMessage
 } from "./actions";
 
 function CardDetailsImpl(props) {
@@ -47,7 +48,10 @@ function CardDetailsImpl(props) {
         <div id='card-details-container'>
             <div key="card-details-body" className="sticky-wrapper">
                 <div id="doc3">
-                    <div id="alf-hd">{headerComponent}</div>
+                    <div id="alf-hd">
+                        {headerComponent}
+                        <StartMessage />
+                    </div>
                     <div id="bd">
                         <CardletsBodyView {...props} />
                     </div>
@@ -70,6 +74,30 @@ const CardDetails = connect((state, ownProps) => {
 })(CardDetailsImpl);
 
 export default CardDetails;
+
+/*======START_MESSAGE=======*/
+
+const StartMessageComponent = ({ text, closeMessage }) => {
+    if (!text) {
+        return null;
+    }
+
+    return (
+        <div className='card-details-start-message'>
+            {text}
+            <span className='card-details-start-message-close' onClick={closeMessage} />
+        </div>
+    );
+};
+
+const StartMessage = connect(
+    state => ({
+        text: state.startMessage
+    }),
+    (dispatch, ownProps) => ({
+        closeMessage: () => dispatch(setStartMessage(''))
+    }),
+)(StartMessageComponent);
 
 /*======CARDLETS_BODY=======*/
 

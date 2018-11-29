@@ -18,12 +18,14 @@ import {
     setCardMode,
     setPageArgs,
     fetchCardlets,
-    fetchNodeInfo
+    fetchNodeInfo,
+    fetchStartMessage
 } from "./actions";
 
 require("xstyle!./card-details.css");
 
 const DEFAULT_CARD_MODE = "default";
+const SHOW_MESSAGE_PARAM_NAME = "showStartMsg";
 
 const store = createStore(
     rootReducer,
@@ -46,13 +48,23 @@ export function renderPage (elementId, props) {
 
     store.dispatch(setPageArgs(props.pageArgs));
 
-    let nodeBaseInfoPromise = store.dispatch(fetchNodeInfo(props.pageArgs.nodeRef));
-    let cardletsPromise = store.dispatch(fetchCardlets(props.pageArgs.nodeRef))
-                               .then(() => {
-                                   store.dispatch(setCardMode(getCurrentCardMode(), registerReducers));
-                               });
+    let promises = [];
 
-    Promise.all([cardletsPromise, nodeBaseInfoPromise]).then(() => {
+    promises.push(
+        store.dispatch(fetchNodeInfo(props.pageArgs.nodeRef))
+    );
+
+    promises.push(
+        store.dispatch(fetchCardlets(props.pageArgs.nodeRef)).then(() => {
+            store.dispatch(setCardMode(getCurrentCardMode(), registerReducers));
+        })
+    );
+
+    if (CiteckUtils.getURLParameterByName(SHOW_MESSAGE_PARAM_NAME) === 'true') {
+        promises.push(store.dispatch(fetchStartMessage(props.pageArgs.nodeRef)));
+    }
+
+    Promise.all(promises).then(() => {
 
         window.__CARD_DETAILS_START = new Date().getTime();
 
