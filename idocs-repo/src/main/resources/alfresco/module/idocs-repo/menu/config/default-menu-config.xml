@@ -57,7 +57,7 @@
         <item id="HEADER_ORGSTRUCT">
             <label>menu.header.orgstructure</label>
             <items>
-                <item id="HEADER_HEADER_ORGSTRUCT_WIDGET">
+                <item id="HEADER_ORGSTRUCT_WIDGET">
                     <label>menu.header.orgstructure</label>
                     <icon>orgstructure</icon>
                     <action type="PAGE_LINK">

@@ -5,4 +5,9 @@
     <format default="json"/>
     <authentication>user</authentication>
     <transaction allow="readonly">required</transaction>
+    <cache>
+        <never>false</never>
+        <public>false</public>
+        <mustrevalidate/>
+    </cache>
 </webscript>

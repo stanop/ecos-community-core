@@ -1,5 +1,7 @@
 package ru.citeck.ecos.menu.resolvers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -19,8 +21,10 @@ import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.processor.TemplateExpressionEvaluator;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.utils.RepoUtils;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -30,13 +34,13 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
     private static final String JOURNAL_REF_KEY = "journalRef";
     private static final String JOURNAL_LINK_KEY = "JOURNAL_LINK";
     private static final Integer COUNT_MAX = 0;
-    private static final String CRIT_ELEM_FORMAT = "\"%s_%d\":\"%s\"";
     private static final JGqlPageInfoInput PAGE_INFO = new JGqlPageInfoInput(null, COUNT_MAX,
             Collections.emptyList(), 0);
 
     private TemplateExpressionEvaluator expressionEvaluator;
     private NamespaceService namespaceService;
     private JournalService journalService;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private LoadingCache<RequestKey, Long> itemsCount;
 
@@ -120,45 +124,40 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
         return result.getTotalCount();
     }
 
-//    TODO: move this to journalService
+//    TODO: move this to CriteriaSearchService
     private String buildJournalQuery(NodeRef journalRef) {
-        StringBuilder sb = new StringBuilder("{");
-        List<NodeRef> criteria = RepoUtils.getChildrenByAssoc(journalRef, JournalsModel.ASSOC_SEARCH_CRITERIA, nodeService);
-        if (CollectionUtils.isEmpty(criteria)) {
+        List<NodeRef> criteriaRefs = RepoUtils.getChildrenByAssoc(
+                journalRef, JournalsModel.ASSOC_SEARCH_CRITERIA, nodeService);
+        if (CollectionUtils.isEmpty(criteriaRefs)) {
             return "{}";
         }
-        for (int i = 0; i < criteria.size(); i++ ) {
-            QName fieldQName = RepoUtils.getProperty(criteria.get(i), JournalsModel.PROP_FIELD_QNAME, nodeService);
-            String predicate = RepoUtils.getProperty(criteria.get(i), JournalsModel.PROP_PREDICATE, nodeService);
-            String criterionValue = RepoUtils.getProperty(criteria.get(i), JournalsModel.PROP_CRITERION_VALUE, nodeService);
-            String criterion = buildCriterion(fieldQName, predicate, criterionValue, i);
-            if (i != 0 && StringUtils.isNotEmpty(criterion)) {
-                sb.append(",");
+        SearchCriteria searchCriteria = new SearchCriteria(namespaceService);
+        criteriaRefs.forEach(nodeRef -> {
+            Map<QName, Serializable> props = nodeService.getProperties(nodeRef);
+            QName fieldQName = (QName) props.get(JournalsModel.PROP_FIELD_QNAME);
+            String predicate = (String) props.get(JournalsModel.PROP_PREDICATE);
+            String criterionValue = (String) props.get(JournalsModel.PROP_CRITERION_VALUE);
+            if (fieldQName == null || predicate == null || criterionValue == null) {
+                return;
             }
-            sb.append(criterion);
+            String field = fieldQName.toPrefixString(namespaceService);
+            String criterion = "";
+            if (StringUtils.isNotEmpty(criterionValue)) {
+                Map<String, Object> model = new HashMap<>();
+                /* this replacement is used to fix template strings like this one:
+                 * <#list (people.getContainerGroups(person)![]) as group>#{group.nodeRef},</#list>#{person.nodeRef} */
+                criterionValue = criterionValue.replace("#{", "${");
+                criterion = (String) expressionEvaluator.evaluate(criterionValue, model);
+            }
+            searchCriteria.addCriteriaTriplet(field, predicate, criterion);
+        });
+        String criteria;
+        try {
+            criteria = objectMapper.writeValueAsString(searchCriteria);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Json processing error.", e);
         }
-        sb.append("}");
-        return sb.toString();
-    }
-
-//    TODO: move this to journalService
-    private String buildCriterion(QName fieldQName, String predicate, String criterionValue, int i) {
-        if (fieldQName == null || predicate == null || criterionValue == null) {
-            return "";
-        }
-        String field = fieldQName.toPrefixString(namespaceService);
-        String criterion = "";
-        if (StringUtils.isNotEmpty(criterionValue)) {
-            Map<String, Object> model = new HashMap<>();
-            /* this replacement is used to fix template strings like this one:
-             * <#list (people.getContainerGroups(person)![]) as group>#{group.nodeRef},</#list>#{person.nodeRef} */
-            criterionValue = criterionValue.replace("#{", "${");
-            criterion = (String) expressionEvaluator.evaluate(criterionValue, model);
-        }
-        String f = String.format(CRIT_ELEM_FORMAT, "field", i, field);
-        String p = String.format(CRIT_ELEM_FORMAT, "predicate", i, predicate);
-        String v = String.format(CRIT_ELEM_FORMAT, "value", i, criterion);
-        return String.format("%s,%s,%s", f, p, v);
+        return criteria;
     }
 
     @Autowired
@@ -195,17 +194,17 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
         }
 
         @Override
-        public int hashCode() {
-            int result = 629 + userName.hashCode();
-            result = 37 * result + journalId.hashCode();
-            return result;
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            RequestKey that = (RequestKey) o;
+            return Objects.equals(userName, that.userName) &&
+                    Objects.equals(journalId, that.journalId);
         }
 
         @Override
-        public boolean equals(Object obj) {
-            return obj instanceof RequestKey &&
-                    (userName.equals(((RequestKey) obj).userName)) &&
-                    (journalId.equals(((RequestKey) obj).journalId));
+        public int hashCode() {
+            return Objects.hash(userName, journalId);
         }
 
         public String getUserName() {

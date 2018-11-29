@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="type" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="label" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="icon" type="{http://www.citeck.ru/menu/config/1.0}icon" minOccurs="0"/>
+ *         &lt;element name="icon" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="mobile-visible" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="param" type="{http://www.citeck.ru/menu/config/1.0}parameter" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="action" type="{http://www.citeck.ru/menu/config/1.0}action" minOccurs="0"/>
