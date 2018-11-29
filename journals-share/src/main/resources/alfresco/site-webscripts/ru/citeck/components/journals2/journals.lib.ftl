@@ -142,9 +142,10 @@
     </div>
 </#macro>
 
-<#macro renderPaginatorBinding pagingTemplate pagingOptions>
+<#macro renderPaginatorBinding pagingTemplate pagingOptions adaptScroll='false'>
     css: { hidden: journal() == null },
     yuiPaginator: {
+        adaptScroll: ${adaptScroll},
         recordOffset: skipCount,
         rowsPerPage : maxItems,
         totalRecords: totalEstimate,
