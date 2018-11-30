@@ -84,7 +84,7 @@ const StartMessageComponent = ({ text, closeMessage }) => {
 
     return (
         <div className='card-details-start-message'>
-            {text}
+            {Alfresco.util.message(text)}
             <span className='card-details-start-message-close' onClick={closeMessage} />
         </div>
     );

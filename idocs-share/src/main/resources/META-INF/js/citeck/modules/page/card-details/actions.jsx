@@ -20,13 +20,13 @@ export const SET_START_MESSAGE = 'SET_START_MESSAGE';
 
 export function fetchStartMessage(nodeRef) {
     return dispatch => {
-        // TODO use fetch
-        return Promise.resolve().then(data => {
-            let messageText = 'Спасибо за обращение, карточка создана и запущена в работу';
-            let shouldShowMessage = true;
-
-            if (shouldShowMessage) {
-                dispatch(setStartMessage(messageText));
+        return fetch(`/alfresco/s/acm/getSubmitMessage?nodeRef=${nodeRef}`, {
+            credentials: 'include'
+        }).then(response => {
+            return response.json();
+        }).then(json => {
+            if (!json.disabled) {
+                dispatch(setStartMessage(json.message));
             }
         });
     }
