@@ -276,7 +276,7 @@
                                         id: "${id}"
                                     }} --><!-- /ko -->
 
-                                    <div id="${id}-criteria-buttons" class="criteria-buttons flat-button icon-buttons" data-bind="if: journal() != null">
+                                    <div id="${id}-criteria-buttons-bottom" class="criteria-buttons flat-button icon-buttons" data-bind="if: journal() != null">
 
                                         <span class="apply button_img" title="${msg("button.apply-criteria")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
                                             <span class="first-child">
