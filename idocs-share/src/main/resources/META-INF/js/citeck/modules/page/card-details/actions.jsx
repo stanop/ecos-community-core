@@ -18,16 +18,28 @@ export const CARD_MODE_LOADED = 'CARD_MODE_LOADED';
 
 export const SET_START_MESSAGE = 'SET_START_MESSAGE';
 
+function checkStatus(response) {
+    if (response.status >= 200 && response.status < 300) {
+        return response;
+    }
+
+    const error = new Error(response.statusText);
+    error.response = response;
+    throw error;
+}
+
 export function fetchStartMessage(nodeRef) {
     return dispatch => {
         return fetch(`/alfresco/s/acm/getSubmitMessage?nodeRef=${nodeRef}`, {
             credentials: 'include'
-        }).then(response => {
+        }).then(checkStatus).then(response => {
             return response.json();
         }).then(json => {
             if (!json.disabled) {
                 dispatch(setStartMessage(json.message));
             }
+        }).catch(e => {
+            console.log('fetchStartMessage error: ', e.message);
         });
     }
 }
