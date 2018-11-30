@@ -228,19 +228,9 @@
                                 <!-- ko if: filterVisibility -->
                                     <div id="${id}-criteria-buttons" class="criteria-buttons flat-button icon-buttons" data-bind="if: journal() != null">
 
-                                        <span class="apply" title="${msg("button.apply-criteria")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
+                                        <span class="save button_img" title="${msg("button.save-filter")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
                                             <span class="first-child">
-                                                <button data-bind="click: applyCriteria"></button>
-                                            </span>
-                                        </span>
-                                        <span class="reset" title="${msg("button.reset-criteria")}" data-bind="yuiButton: { type: 'push' }">
-                                            <span class="first-child">
-                                                <button data-bind="click: clearCriteria"></button>
-                                            </span>
-                                        </span>
-                                        <span class="save" title="${msg("button.save-filter")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
-                                            <span class="first-child">
-                                                <button data-bind="click: saveFilter"></button>
+                                                <button data-bind="click: saveFilter">${msg("button.save-filter")}</button>
                                             </span>
                                         </span>
 
@@ -284,7 +274,21 @@
                                         filter: _filter,
                                         applyCriteria: applyCriteria.bind($root),
                                         id: "${id}"
-                                    }} --><!-- /ko -->                               
+                                    }} --><!-- /ko -->
+
+                                    <div id="${id}-criteria-buttons" class="criteria-buttons flat-button icon-buttons" data-bind="if: journal() != null">
+
+                                        <span class="apply button_img" title="${msg("button.apply-criteria")}" data-bind="yuiButton: { type: 'push', disabled: !_filter().valid() }">
+                                            <span class="first-child">
+                                                <button data-bind="click: applyCriteria">${msg("button.apply-criteria")}</button>
+                                            </span>
+                                        </span>
+                                        <span class="reset button_img" title="${msg("button.reset-criteria")}" data-bind="yuiButton: { type: 'push' }">
+                                            <span class="first-child">
+                                                <button data-bind="click: clearCriteria">${msg("button.reset-criteria")}</button>
+                                            </span>
+                                        </span>
+                                    </div>
                                 <!-- /ko -->
                             </div>
                         </form>
