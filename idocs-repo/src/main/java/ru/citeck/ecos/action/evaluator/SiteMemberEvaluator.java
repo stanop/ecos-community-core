@@ -21,9 +21,6 @@ public class SiteMemberEvaluator extends ActionConditionEvaluatorAbstractBase {
     private SiteService siteService;
     private AuthorityService authorityService;
 
-    /**
-     * @see org.alfresco.repo.action.evaluator.ActionConditionEvaluatorAbstractBase#evaluateImpl(org.alfresco.service.cmr.action.ActionCondition, org.alfresco.service.cmr.repository.NodeRef)
-     */
     @Override
     protected boolean evaluateImpl(ActionCondition actionCondition, NodeRef actionedUponNodeRef) {
         String paramAuthorityName = (String) actionCondition.getParameterValue(PARAM_AUTHORITY);
@@ -36,20 +33,22 @@ public class SiteMemberEvaluator extends ActionConditionEvaluatorAbstractBase {
         final String siteName = (String) actionCondition.getParameterValue(PARAM_SITE);
 
         return AuthenticationUtil.runAsSystem(() -> {
-            if (siteName == null || !siteService.hasSite(siteName) || !authorityService.authorityExists(authorityName)) {
+            if (siteName == null || !siteService.hasSite(siteName) ||
+                    !authorityService.authorityExists(authorityName)) {
                 return false;
             }
             return siteService.isMember(siteName, authorityName);
         });
     }
 
-    /**
-     * @see org.alfresco.repo.action.ParameterizedItemAbstractBase#addParameterDefinitions(java.util.List)
-     */
     @Override
     protected void addParameterDefinitions(List<ParameterDefinition> paramList) {
-        paramList.add(new ParameterDefinitionImpl(PARAM_AUTHORITY, DataTypeDefinition.TEXT, false, getParamDisplayLabel(PARAM_AUTHORITY), false));
-        paramList.add(new ParameterDefinitionImpl(PARAM_SITE, DataTypeDefinition.TEXT, true, getParamDisplayLabel(PARAM_SITE), false));
+        paramList.add(new ParameterDefinitionImpl(
+                PARAM_AUTHORITY, DataTypeDefinition.TEXT, false,
+                getParamDisplayLabel(PARAM_AUTHORITY), false));
+        paramList.add(new ParameterDefinitionImpl(
+                PARAM_SITE, DataTypeDefinition.TEXT, true,
+                getParamDisplayLabel(PARAM_SITE), false));
     }
 
     public void setSiteService(SiteService siteService) {

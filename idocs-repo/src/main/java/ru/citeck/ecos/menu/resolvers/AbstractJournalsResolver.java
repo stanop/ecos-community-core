@@ -195,7 +195,9 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
+            if (this == o) {
+                return true;
+            }
             if (o == null || getClass() != o.getClass()) return false;
             RequestKey that = (RequestKey) o;
             return Objects.equals(userName, that.userName) &&

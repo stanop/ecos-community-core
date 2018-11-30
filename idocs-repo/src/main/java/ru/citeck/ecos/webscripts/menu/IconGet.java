@@ -41,7 +41,8 @@ public class IconGet extends AbstractWebScript {
                         .exact(ContentModel.PROP_NAME, iconName)
                         .transactional().queryOne(searchService)
                         .map(this::getIconData)
-                        .orElseThrow(() -> new InvalidParameterException("Error getting icon info for icon name: " + iconName));
+                        .orElseThrow(() -> new InvalidParameterException(
+                                "Error getting icon info for icon name: " + iconName));
         } catch (RuntimeException re) {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "Error getting icon info.", re);
         }
