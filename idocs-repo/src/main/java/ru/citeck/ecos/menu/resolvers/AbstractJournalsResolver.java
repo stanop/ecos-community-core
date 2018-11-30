@@ -198,7 +198,9 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
             if (this == o) {
                 return true;
             }
-            if (o == null || getClass() != o.getClass()) return false;
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             RequestKey that = (RequestKey) o;
             return Objects.equals(userName, that.userName) &&
                     Objects.equals(journalId, that.journalId);
