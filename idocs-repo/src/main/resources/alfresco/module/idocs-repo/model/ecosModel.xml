@@ -56,6 +56,30 @@
             </mandatory-aspects>
         </type>
 
+        <type name="ecos:icon">
+            <parent>cm:content</parent>
+            <properties>
+                <property name="ecos:faIconName">
+                    <title>Font Awesome icon name</title>
+                    <type>d:text</type>
+                </property>
+                <property name="ecos:iconType">
+                    <title>Icon type</title>
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>fa</value>
+                                    <value>img</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </properties>
+        </type>
+
     </types>
 
     <aspects>
@@ -179,6 +203,24 @@
                 </property>
             </properties>
         </aspect>
+
+        <aspect name="ecos:hasIcon">
+            <associations>
+                <child-association name="ecos:iconAssoc">
+                    <title>Icon</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>ecos:icon</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </child-association>
+            </associations>
+        </aspect>
+
     </aspects>
 
 </model>

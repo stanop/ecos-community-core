@@ -1,7 +1,9 @@
 package ru.citeck.ecos.menu.resolvers;
 
+import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.search.SearchService;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.menu.dto.Element;
@@ -14,7 +16,11 @@ public abstract class AbstractMenuItemsResolver implements MenuItemsResolver {
 
     protected static final String JOURNAL_ID_KEY = "journalId";
     protected static final String SITE_ID_KEY = "siteId";
+    protected static final String PAGE_LINK_KEY = "PAGE_LINK";
+    protected static final String PAGE_ID_KEY = "pageId";
 
+    protected NodeService nodeService;
+    protected SearchService searchService;
     private MenuFactory menuFactory;
 
     @PostConstruct
@@ -37,20 +43,33 @@ public abstract class AbstractMenuItemsResolver implements MenuItemsResolver {
      */
     static String getParam(Map<String, String> params, Element context, String key) {
         String result = null;
-        if (context == null) {
-            return "";
-        }
-        Map<String, String> contextParams = context.getParams();
-        if (MapUtils.isNotEmpty(contextParams)) {
-            result = contextParams.get(key);
+        if (context != null) {
+            Map<String, String> contextParams = context.getParams();
+            if (MapUtils.isNotEmpty(contextParams)) {
+                result = contextParams.get(key);
+            }
         }
         if (StringUtils.isEmpty(result) && MapUtils.isNotEmpty(params)) {
             result = params.get(key);
         }
-        if (result == null) {
-            return "";
-        }
-        return result;
+        return StringUtils.defaultString(result);
     }
 
+    static String toUpperCase(String s) {
+        if (StringUtils.isEmpty(s)) {
+            return "";
+        }
+        String result = s.replaceAll("\\W", "_");
+        return result.toUpperCase();
+    }
+
+    @Autowired
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
+
+    @Autowired
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
 }

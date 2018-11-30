@@ -35,6 +35,11 @@ public class MenuFactory {
                 .forEach(obj -> {
                     if (obj instanceof Item && evaluate((Item) obj)) {
                         Element newElement = new Element();
+                        if (context == null) {
+                            Map<String, String> params = new HashMap<>();;
+                            params.put("rootElement", "true");
+                            newElement.setParams(params);
+                        }
                         result.add(updateItem(newElement, (Item) obj));
                     } else if (obj instanceof ItemsResolver) {
                         result.addAll(resolve((ItemsResolver) obj, context));
@@ -82,6 +87,7 @@ public class MenuFactory {
         String label = getLocalizedMessage(newData.getLabel());
         String id = newData.getId();
         String icon = newData.getIcon();
+
         Boolean mobileVisible = newData.isMobileVisible();
 
         Action xmlAction = newData.getAction();

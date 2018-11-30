@@ -3,7 +3,7 @@ package ru.citeck.ecos.menu.resolvers;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.site.SiteInfo;
 import org.alfresco.service.cmr.site.SiteService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.menu.dto.Element;
@@ -25,21 +25,23 @@ public class UserSitesResolver extends AbstractMenuItemsResolver {
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
         return getUserSites().stream()
-                .map(this::constructItem)
+                .map(siteInfo -> constructItem(siteInfo, context))
                 .collect(Collectors.toList());
     }
 
-    private Element constructItem(SiteInfo site) {
-        String name = site.getShortName();
+    private Element constructItem(SiteInfo site, Element context) {
+        String siteName = site.getShortName();
+        String parentElemId = StringUtils.defaultString(context.getId());
         Element element = new Element();
         Map<String, String> actionParams = new HashMap<>();
-        actionParams.put(SITE_NAME_KEY, name);
+        actionParams.put(SITE_NAME_KEY, siteName);
         element.setLabel(site.getTitle());
         Map<String, String> elementParams = new HashMap<>();
-        elementParams.put(SITE_ID_KEY, name);
+        elementParams.put(SITE_ID_KEY, siteName);
         element.setParams(elementParams);
-        element.setId(name);
+        element.setId(String.format("%s_%s", parentElemId, siteName.toUpperCase()));
         element.setAction(SITE_LINK_KEY, actionParams);
+        element.setIcon(siteName);
         return element;
     }
 

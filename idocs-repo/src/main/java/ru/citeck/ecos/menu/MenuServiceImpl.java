@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.content.ContentData;
 import ru.citeck.ecos.content.RepoContentDAOImpl;
 import ru.citeck.ecos.menu.dto.MenuFactory;
@@ -25,6 +26,8 @@ public class MenuServiceImpl implements MenuService {
     private PersonService personService;
 
     private static final String DEFAULT_AUTHORITY = "GROUP_EVERYONE";
+    private static final String AUTHORITY_ORDER_KEY = "menu-config-authority-order";
+    private EcosConfigService ecosConfigService;
 
     @Override
     public Menu queryMenu() {
@@ -36,7 +39,6 @@ public class MenuServiceImpl implements MenuService {
         if (!personService.personExists(userName)) {
             throw new IllegalArgumentException(String.format("User '%s' does not exist.", userName));
         }
-//        TODO: this authorities set is not sorted by priority
         if (StringUtils.equals(userName, AuthenticationUtil.getRunAsUser())) {
             return buildMenuByUser(userName);
         }
@@ -44,7 +46,7 @@ public class MenuServiceImpl implements MenuService {
     }
 
     private Menu buildMenuByUser(String userName) {
-        Set<String> authorities = authorityUtils.getUserAuthorities(userName);
+        List<String> authorities = getOrderedAuthorities(userName);
         return authorities.stream()
                 .map(this::queryMenuConfigByAuth)
                 .filter(Optional::isPresent)
@@ -67,6 +69,21 @@ public class MenuServiceImpl implements MenuService {
         return registry.getContentData(keys, true)
                 .stream().findFirst()
                 .flatMap(ContentData::getData);
+    }
+
+    private List<String> getOrderedAuthorities(String userName) {
+        Set<String> allUserAuthorities = authorityUtils.getUserAuthorities(userName);
+        String defaultOrderParam = StringUtils.defaultString((String)
+                ecosConfigService.getParamValue(AUTHORITY_ORDER_KEY));
+        List<String> defaultOrder = new ArrayList<>(Arrays.asList(defaultOrderParam.split(",")));
+        defaultOrder.retainAll(allUserAuthorities);
+        allUserAuthorities.removeAll(defaultOrder);
+        allUserAuthorities.remove(userName);
+        List<String> orderedAuthorities = new LinkedList<>();
+        orderedAuthorities.add(userName);
+        orderedAuthorities.addAll(defaultOrder);
+        orderedAuthorities.addAll(allUserAuthorities);
+        return orderedAuthorities;
     }
 
     public void setAuthorityUtils(AuthorityUtils authorityUtils) {
@@ -94,4 +111,8 @@ public class MenuServiceImpl implements MenuService {
         this.personService = personService;
     }
 
+    @Autowired
+    public void setEcosConfigService(EcosConfigService ecosConfigService) {
+        this.ecosConfigService = ecosConfigService;
+    }
 }

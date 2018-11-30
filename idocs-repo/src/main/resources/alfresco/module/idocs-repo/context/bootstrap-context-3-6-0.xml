@@ -69,4 +69,42 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.menu-config-authority-order" parent="idocs.import-spaces.3-6-0">
+        <property name="name" value="menu-config-authority-order" />
+        <property name="description" value="menu-config-authority-order" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/menu-config-authority-order</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.icons" parent="idocs.import-spaces.3-6-0">
+        <property name="name" value="icons"/>
+        <property name="description" value="Root folder for icons"/>
+        <property name="sinceVersion" value="3.6.0"/>
+        <property name="appliesFromVersion" value="3.6.0"/>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecos-icons-root.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/app:company_home/app:dictionary/cm:ecosIconsRoot</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecos-icons.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>
