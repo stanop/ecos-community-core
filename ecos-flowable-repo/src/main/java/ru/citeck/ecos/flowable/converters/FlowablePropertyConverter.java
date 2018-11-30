@@ -139,6 +139,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Get task properties
+     *
      * @param task Task instance
      * @return Map of properties
      */
@@ -181,6 +182,16 @@ public class FlowablePropertyConverter {
         List<IdentityLink> links = taskService.getIdentityLinksForTask(task.getId());
         mapPooledActors(links, properties);
         return filterTaskProperties(properties);
+    }
+
+    public Task updateTask(Task task, Map<QName, Serializable> properties, Map<QName, List<NodeRef>> add,
+                           Map<QName, List<NodeRef>> remove) {
+        Map<QName, Serializable> newProperties = getNewTaskProperties(task, properties, add, remove);
+        if (newProperties != null) {
+            setTaskProperties(task, newProperties);
+            return flowableTaskService.getTaskById(task.getId());
+        }
+        return task;
     }
 
     /**
@@ -232,6 +243,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Get owner from delegate task
+     *
      * @param task Delegate task
      * @return Owner username
      */
@@ -247,6 +259,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Get owner from task
+     *
      * @param task Task
      * @return Owner username
      */
@@ -262,6 +275,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Get initiator from workflow
+     *
      * @param workflowInstance Workflow instance
      * @return Initiator username
      */
@@ -541,6 +555,18 @@ public class FlowablePropertyConverter {
         }
     }
 
+    public void setTaskProperties(Task task, Map<QName, Serializable> properties) {
+        if (properties == null || properties.isEmpty()) {
+            return;
+        }
+        TypeDefinition type = typeManager.getFullTaskDefinition(task);
+        Map<String, Object> variablesToSet = handlerRegistry.handleVariablesToSet(properties, type, task, Task.class);
+
+        taskService.saveTask(task);
+        taskService.setVariablesLocal(task.getId(), variablesToSet);
+        setTaskOwner(task, properties);
+    }
+
     /**
      * Get start task properties
      *
@@ -607,7 +633,8 @@ public class FlowablePropertyConverter {
 
     /**
      * Set task owner
-     * @param task Task Task instance
+     *
+     * @param task       Task Task instance
      * @param properties Map<QName, Serializable> Map of parameters
      */
     public void setTaskOwner(Task task, Map<QName, Serializable> properties) {
@@ -627,6 +654,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set task service
+     *
      * @param taskService Task service
      */
     public void setTaskService(TaskService taskService) {
@@ -635,6 +663,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set authority manager
+     *
      * @param authorityManager Authority manager
      */
     public void setAuthorityManager(WorkflowAuthorityManager authorityManager) {
@@ -643,6 +672,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set namespace prefix resolver
+     *
      * @param namespaceService Namespace prefix resolver
      */
     public void setNamespaceService(NamespacePrefixResolver namespaceService) {
@@ -651,6 +681,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Dictionary service
+     *
      * @param dictionaryService Dictionary service
      */
     public void setDictionaryService(DictionaryService dictionaryService) {
@@ -659,6 +690,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set tenant service
+     *
      * @param tenantService Tenant service
      */
     public void setTenantService(TenantService tenantService) {
@@ -667,6 +699,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set message service
+     *
      * @param messageService Message service
      */
     public void setMessageService(MessageService messageService) {
@@ -675,6 +708,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set node service
+     *
      * @param nodeService Node service
      */
     public void setNodeService(NodeService nodeService) {
@@ -683,6 +717,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set flowable task service
+     *
      * @param flowableTaskService Flowable task service
      */
     public void setFlowableTaskService(FlowableTaskService flowableTaskService) {
@@ -691,6 +726,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set flowable process definition service
+     *
      * @param flowableProcessDefinitionService Flowable process definition service
      */
     public void setFlowableProcessDefinitionService(FlowableProcessDefinitionService flowableProcessDefinitionService) {
@@ -699,6 +735,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set flowable history service
+     *
      * @param flowableHistoryService Flowable history service
      */
     public void setFlowableHistoryService(FlowableHistoryService flowableHistoryService) {
@@ -707,6 +744,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set flowable workflow component
+     *
      * @param flowableWorkflowComponent Flowable workflow component
      */
     public void setFlowableWorkflowComponent(FlowableWorkflowComponent flowableWorkflowComponent) {
@@ -715,6 +753,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set person service
+     *
      * @param personService Person service
      */
     public void setPersonService(PersonService personService) {
@@ -723,6 +762,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set handler registry
+     *
      * @param handlerRegistry Handler registry
      */
     public void setHandlerRegistry(FlowableWorkflowPropertyHandlerRegistry handlerRegistry) {
@@ -731,6 +771,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Set type manager
+     *
      * @param typeManager Type manager
      */
     public void setTypeManager(FlowableTaskTypeManager typeManager) {
@@ -739,6 +780,7 @@ public class FlowablePropertyConverter {
 
     /**
      * Get workflow object factory
+     *
      * @return Workflow object factory
      */
     public WorkflowObjectFactory getFactory() {

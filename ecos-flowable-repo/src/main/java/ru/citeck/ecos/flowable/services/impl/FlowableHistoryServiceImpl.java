@@ -13,6 +13,7 @@ import org.flowable.engine.HistoryService;
 import org.flowable.engine.history.*;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.api.history.HistoricTaskInstanceQuery;
+import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.FlowableHistoryService;
 
 import java.util.*;
@@ -22,10 +23,6 @@ import java.util.*;
  */
 public class FlowableHistoryServiceImpl implements FlowableHistoryService {
 
-    /**
-     * Constants
-     */
-    private static final String ENGINE_PREFIX = "flowable$";
     private static final QName INITIATOR_QNAME = QName.createQName("initiator");
     private static final QName INITIATOR_USERNAME_QNAME = QName.createQName("initiator_username");
     private static final QName PRIORITY_QNAME = WorkflowModel.PROP_WORKFLOW_PRIORITY;
@@ -33,47 +30,9 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
     private static final String PRIORITY_VARIABLE_NAME = "bpm_workflowPriority";
     private static final String DUE_DATE_VARIABLE_NAME = "bpm_workflowDueDate";
 
-    /**
-     * History service
-     */
     private HistoryService historyService;
-
-    /**
-     * Person service
-     */
     private PersonService personService;
-
-    /**
-     * Service registry
-     */
     private ServiceRegistry serviceRegistry;
-
-
-    /**
-     * Set history service
-     *
-     * @param historyService History service
-     */
-    public void setHistoryService(HistoryService historyService) {
-        this.historyService = historyService;
-    }
-
-    /**
-     * Set person service
-     *
-     * @param personService Person service
-     */
-    public void setPersonService(PersonService personService) {
-        this.personService = personService;
-    }
-
-    /**
-     * Set service registry
-     * @param serviceRegistry Service registry
-     */
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-    }
 
     /**
      * Get history process instance by id
@@ -410,6 +369,19 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
         if (rawValue == null) {
             return null;
         }
-        return rawValue.startsWith(ENGINE_PREFIX) ? rawValue.substring(ENGINE_PREFIX.length()) : rawValue;
+        return rawValue.startsWith(FlowableConstants.ENGINE_PREFIX)
+                ? rawValue.substring(FlowableConstants.ENGINE_PREFIX.length()) : rawValue;
+    }
+
+    public void setHistoryService(HistoryService historyService) {
+        this.historyService = historyService;
+    }
+
+    public void setPersonService(PersonService personService) {
+        this.personService = personService;
+    }
+
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
     }
 }

@@ -4,14 +4,12 @@ import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.workflow.BPMEngineRegistry;
 import org.alfresco.repo.workflow.WorkflowComponent;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.*;
-import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.flowable.engine.HistoryService;
@@ -28,7 +26,6 @@ import org.flowable.task.api.Task;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.*;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
 import ru.citeck.ecos.model.BpmPackageModel;
@@ -37,182 +34,67 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
 
+import static ru.citeck.ecos.flowable.constants.FlowableConstants.*;
+
 /**
  * Flowable workflow component
  */
 public class FlowableWorkflowComponent implements WorkflowComponent, InitializingBean {
 
-    /**
-     * Constants
-     */
-    public static final String FLOWABLE_ENGINE_NAME = "flowable";
-    public static final String ENGINE_PREFIX = "flowable$";
     private static final QName INITIATOR_QNAME = QName.createQName("initiator");
     private static final QName INITIATOR_USERNAME_QNAME = QName.createQName("initiator_username");
-    public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
+    private static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
 
-    /**
-     * BPN engine registry
-     */
     private BPMEngineRegistry bpmEngineRegistry;
-
-    /**
-     * Workflow admin service
-     */
     private WorkflowAdminService workflowAdminService;
-
-    /**
-     * Authentication service
-     */
     private AuthenticationService authenticationService;
-
-    /**
-     * Person service
-     */
     private PersonService personService;
+    private NodeService nodeService;
 
-    /**
-     * Namespace service
-     */
-    private NamespaceService namespaceService;
-
-    /**
-     * Dictionary service
-     */
-    private DictionaryService dictionaryService;
-
-    /**
-     * Runtime service
-     */
     @Autowired
     private RuntimeService runtimeService;
 
-    /**
-     * Repository service
-     */
     @Autowired
     private RepositoryService repositoryService;
 
-    /**
-     * History service
-     */
     @Autowired
     private HistoryService historyService;
 
-    /**
-     * Flowable process definition service
-     */
     @Autowired
     private FlowableProcessDefinitionService flowableProcessDefinitionService;
 
-    /**
-     * Flowable transform service
-     */
     @Autowired
     private FlowableTransformService flowableTransformService;
 
-    /**
-     * Workflow property handler registry
-     */
     @Autowired
     @Qualifier("flowableWorkflowPropertyHandlerRegistry")
     private FlowableWorkflowPropertyHandlerRegistry workflowPropertyHandlerRegistry;
 
-    /**
-     * Flowable task service
-     */
     @Autowired
     private FlowableTaskService flowableTaskService;
 
-    /**
-     * Flowable process instance service
-     */
     @Autowired
     private FlowableProcessInstanceService flowableProcessInstanceService;
 
-    /**
-     * Flowable history service
-     */
     @Autowired
     private FlowableHistoryService flowableHistoryService;
 
     /**
-     * Node service
-     */
-    private NodeService nodeService;
-
-    /**
-     * Set BPN engine registry
-     * @param bpmEngineRegistry BPN engine registry
-     */
-    public void setBpmEngineRegistry(BPMEngineRegistry bpmEngineRegistry) {
-        this.bpmEngineRegistry = bpmEngineRegistry;
-    }
-
-    /**
-     * Set Workflow admin service
-     * @param workflowAdminService Workflow admin service
-     */
-    public void setWorkflowAdminService(WorkflowAdminService workflowAdminService) {
-        this.workflowAdminService = workflowAdminService;
-    }
-
-    /**
-     * Set authentication service
-     * @param authenticationService Authentication service
-     */
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
-
-    /**
-     * Set person service
-     * @param personService Person service
-     */
-    public void setPersonService(PersonService personService) {
-        this.personService = personService;
-    }
-
-    /**
-     * Set namespace service
-     * @param namespaceService Namespace service
-     */
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
-    }
-
-    /**
-     * Dictionary service
-     * @param dictionaryService Dictionary service
-     */
-    public void setDictionaryService(DictionaryService dictionaryService) {
-        this.dictionaryService = dictionaryService;
-    }
-
-    /**
-     * Set node service
-     * @param nodeService Node service
-     */
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
-    /**
      * After properties set
-     * @throws Exception
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if (repositoryService == null || runtimeService == null || historyService == null) {
             return;
         }
-        bpmEngineRegistry.registerWorkflowComponent(FLOWABLE_ENGINE_NAME, this);
-        workflowAdminService.setEngineEnabled(FLOWABLE_ENGINE_NAME, true);
-        workflowAdminService.setEngineVisibility(FLOWABLE_ENGINE_NAME, true);
+        bpmEngineRegistry.registerWorkflowComponent(ENGINE_NAME, this);
+        workflowAdminService.setEngineEnabled(ENGINE_NAME, true);
+        workflowAdminService.setEngineVisibility(ENGINE_NAME, true);
     }
 
     /**
      * Deploy a Workflow Definition
+     *
      * @param workflowDefinition the content object containing the definition
      * @param mimetype           (optional)  the mime type of the workflow definition
      * @return workflow deployment descriptor
@@ -224,6 +106,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Deploy a Workflow Definition
+     *
      * @param workflowDefinition the content object containing the definition
      * @param mimetype           (optional)  the mime type of the workflow definition
      * @param name               (optional)  a name to represent the deployment
@@ -239,7 +122,8 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
         deploymentBuilder.addInputStream(name, workflowDefinition);
         deploymentBuilder.name(name);
         Deployment deployment = deploymentBuilder.deploy();
-        ProcessDefinition processDefinition = flowableProcessDefinitionService.getProcessDefinitionByDeploymentId(deployment.getId());
+        ProcessDefinition processDefinition = flowableProcessDefinitionService.getProcessDefinitionByDeploymentId(
+                deployment.getId());
         return new WorkflowDeployment(
                 flowableTransformService.transformProcessDefinition(processDefinition)
         );
@@ -262,6 +146,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Undeploy an exisiting Workflow Definition
+     *
      * @param workflowDefinitionId the id of the definition to undeploy
      */
     @Override
@@ -275,6 +160,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Gets all deployed Workflow Definitions
+     *
      * @return the deployed workflow definitions
      */
     @Override
@@ -296,6 +182,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Gets a Workflow Definition by unique Id
+     *
      * @param workflowDefinitionId the workflow definition id
      * @return the deployed workflow definition
      */
@@ -308,6 +195,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Gets a Workflow Definition by unique name
+     *
      * @param workflowName workflow name e.g. jbpm$wf:review
      * @return the deployed workflow definition
      */
@@ -367,7 +255,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
             throw new FlowableIllegalArgumentException("Workflow definition id is required.");
         }
         WorkflowDefinition workflowDefinition = getDefinitionById(workflowDefinitionId);
-        /** Load current user and set as initiator */
+        /* Load current user and set as initiator */
         if (!parameters.containsKey(INITIATOR_QNAME)) {
             String currentUsername = authenticationService.getCurrentUserName();
             if (currentUsername != null) {
@@ -376,7 +264,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
                 parameters.put(INITIATOR_USERNAME_QNAME, currentUsername);
             }
         }
-        /** Build process */
+        /* Build process */
         String processDefinitionId = getLocalValue(workflowDefinitionId);
         ProcessInstanceBuilder processInstanceBuilder = runtimeService.createProcessInstanceBuilder();
         processInstanceBuilder.processDefinitionId(processDefinitionId);
@@ -430,7 +318,8 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
      */
     @Override
     public List<WorkflowInstance> getWorkflows(WorkflowInstanceQuery workflowInstanceQuery) {
-        List<HistoricProcessInstance> processInstances = flowableHistoryService.getProcessInstancesByQuery(workflowInstanceQuery);
+        List<HistoricProcessInstance> processInstances = flowableHistoryService.getProcessInstancesByQuery(
+                workflowInstanceQuery);
         return flowableTransformService.transformHistoryProcessInstancesToWorkflowInstances(processInstances);
     }
 
@@ -444,7 +333,8 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
      */
     @Override
     public List<WorkflowInstance> getWorkflows(WorkflowInstanceQuery workflowInstanceQuery, int maxItems, int skipCount) {
-        List<HistoricProcessInstance> processInstances = flowableHistoryService.getProcessInstancesByQuery(workflowInstanceQuery, maxItems, skipCount);
+        List<HistoricProcessInstance> processInstances = flowableHistoryService.getProcessInstancesByQuery(
+                workflowInstanceQuery, maxItems, skipCount);
         return flowableTransformService.transformHistoryProcessInstancesToWorkflowInstances(processInstances);
     }
 
@@ -461,6 +351,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Gets all "in-flight" active workflow instances.
+     *
      * @return the list of "in-flight" workflow instances
      * @since 4.0
      */
@@ -472,6 +363,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Gets all completed workflow instances.
+     *
      * @return the list of "in-flight" workflow instances
      * @since 4.0
      */
@@ -505,7 +397,8 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
         if (processInstance != null) {
             return flowableTransformService.transformProcessInstanceToWorkflowInstance(processInstance);
         } else {
-            HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceById(getLocalValue(workflowId));
+            HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceById(
+                    getLocalValue(workflowId));
             return flowableTransformService.transformHistoryProcessInstanceToWorkflowInstance(historicProcessInstance);
         }
 
@@ -541,11 +434,12 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
      */
     @Override
     public WorkflowInstance cancelWorkflow(String workflowId) {
-        return deleteProcessInstanceWithReason(workflowId, FlowableConstants.DELETE_REASON_CANCELLED);
+        return deleteProcessInstanceWithReason(workflowId, DELETE_REASON_CANCELLED);
     }
 
     /**
      * Cancel a batch of "in-flight" Workflow instances
+     *
      * @param workflowIds List of the workflow instances to cancel
      * @return List of updated representations of the workflow instances
      */
@@ -565,18 +459,20 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Delete an "in-flight" Workflow instance
+     *
      * @param workflowId the workflow instance to cancel
      * @return an updated representation of the workflow instance
      */
     @Override
     public WorkflowInstance deleteWorkflow(String workflowId) {
-        return deleteProcessInstanceWithReason(workflowId, FlowableConstants.DELETE_REASON_DELETED);
+        return deleteProcessInstanceWithReason(workflowId, DELETE_REASON_DELETED);
     }
 
     /**
      * Delete process instance with reason
+     *
      * @param workflowId Workflow id
-     * @param reason Delete reason
+     * @param reason     Delete reason
      * @return Deleted workflow instance
      */
     private WorkflowInstance deleteProcessInstanceWithReason(String workflowId, String reason) {
@@ -585,16 +481,20 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
             NodeRef bpmPackage = (NodeRef) runtimeService.getVariable(processInstance.getId(), "bpm_package");
             runtimeService.deleteProcessInstance(processInstance.getId(), reason);
             deleteMirrorTasks(bpmPackage);
-            HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceById(processInstance.getId());
+            HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceById(
+                    processInstance.getId());
             if (historicProcessInstance != null) {
                 historyService.deleteHistoricProcessInstance(historicProcessInstance.getId());
-                return flowableTransformService.transformHistoryProcessInstanceToWorkflowInstance(historicProcessInstance);
+                return flowableTransformService.transformHistoryProcessInstanceToWorkflowInstance(
+                        historicProcessInstance);
             } else {
-                WorkflowInstance result = flowableTransformService.transformProcessInstanceToWorkflowInstance(processInstance);
+                WorkflowInstance result = flowableTransformService.transformProcessInstanceToWorkflowInstance(
+                        processInstance);
                 return result;
             }
         } else {
-            HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceById(getLocalValue(workflowId));
+            HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceById(
+                    getLocalValue(workflowId));
             if (historicProcessInstance != null) {
                 historyService.deleteHistoricProcessInstance(historicProcessInstance.getId());
                 return flowableTransformService.transformHistoryProcessInstanceToWorkflowInstance(historicProcessInstance);
@@ -606,6 +506,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Delete mirror tasks
+     *
      * @param bpmPackage Bpm package
      */
     private void deleteMirrorTasks(NodeRef bpmPackage) {
@@ -622,11 +523,12 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Check - is node for delete
+     *
      * @param nodeRef Node reference
      * @return Check result
      */
     private boolean isNodeForDelete(NodeRef nodeRef) {
-        if(AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
+        if (AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
             return false;
         } else {
             Set<NodeRef> nodesPendingDelete = TransactionalResourceHelper.getSet(KEY_PENDING_DELETE_NODES);
@@ -667,11 +569,14 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
      */
     @Override
     public List<WorkflowTask> getTasksForWorkflowPath(String pathId) {
-        /** Check is start task active */
+        /* Check is start task active */
         if (flowableProcessInstanceService.isStartTaskActive(getLocalValue(pathId))) {
-            ProcessInstance processInstance = flowableProcessInstanceService.getProcessInstanceById(getLocalValue(pathId));
-            ProcessDefinition processDefinition = flowableProcessDefinitionService.getProcessDefinitionById(processInstance.getProcessDefinitionId());
-            return Collections.singletonList(flowableTransformService.transformStartTask(processDefinition, processInstance));
+            ProcessInstance processInstance = flowableProcessInstanceService.getProcessInstanceById(
+                    getLocalValue(pathId));
+            ProcessDefinition processDefinition = flowableProcessDefinitionService.getProcessDefinitionById(
+                    processInstance.getProcessDefinitionId());
+            return Collections.singletonList(flowableTransformService.transformStartTask(processDefinition,
+                    processInstance));
         } else {
             List<Task> tasks = flowableTaskService.getTasksByProcessInstanceId(getLocalValue(pathId));
             return flowableTransformService.transformTasks(tasks);
@@ -691,13 +596,15 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Determines if a graphical view of the workflow instance exists
+     *
      * @param workflowInstanceId the workflow instance id
      * @return true if there is a workflow instance diagram available
      * @since 4.0
      */
     @Override
     public boolean hasWorkflowImage(String workflowInstanceId) {
-        ProcessDefinition processDefinition = flowableProcessDefinitionService.getProcessDefinitionByProcessInstanceId(getLocalValue(workflowInstanceId));
+        ProcessDefinition processDefinition = flowableProcessDefinitionService
+                .getProcessDefinitionByProcessInstanceId(getLocalValue(workflowInstanceId));
         if (processDefinition != null) {
             return processDefinition.hasGraphicalNotation();
         } else {
@@ -707,13 +614,15 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Gets a graphical view of the workflow instance
+     *
      * @param workflowInstanceId the workflow instance id
      * @return image view of the workflow instance as an InputStream or null if a diagram is not available
      * @since 4.0
      */
     @Override
     public InputStream getWorkflowImage(String workflowInstanceId) {
-        ProcessDefinition processDefinition = flowableProcessDefinitionService.getProcessDefinitionByProcessInstanceId(getLocalValue(workflowInstanceId));
+        ProcessDefinition processDefinition = flowableProcessDefinitionService
+                .getProcessDefinitionByProcessInstanceId(getLocalValue(workflowInstanceId));
         if (processDefinition != null) {
             return flowableProcessDefinitionService.getProcessDefinitionImage(processDefinition.getId());
         } else {
@@ -723,6 +632,7 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
 
     /**
      * Get local value
+     *
      * @param rawValue Raw value
      * @return Local value
      */
@@ -730,7 +640,27 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
         if (rawValue == null) {
             return null;
         }
-        return rawValue.startsWith(ENGINE_PREFIX) ? rawValue.substring(ENGINE_PREFIX.length()) : rawValue;
+        return rawValue.startsWith(ENGINE_PREFIX)
+                ? rawValue.substring(ENGINE_PREFIX.length()) : rawValue;
     }
 
+    public void setBpmEngineRegistry(BPMEngineRegistry bpmEngineRegistry) {
+        this.bpmEngineRegistry = bpmEngineRegistry;
+    }
+
+    public void setWorkflowAdminService(WorkflowAdminService workflowAdminService) {
+        this.workflowAdminService = workflowAdminService;
+    }
+
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
+
+    public void setPersonService(PersonService personService) {
+        this.personService = personService;
+    }
+
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 }

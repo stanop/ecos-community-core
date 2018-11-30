@@ -25,12 +25,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.attr.NodeAttributeService;
-import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
+import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.form.view.AssocFieldConverter;
 import ru.citeck.ecos.flowable.form.view.FieldConverter;
 import ru.citeck.ecos.flowable.services.FlowableCustomCommentService;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskServiceImpl;
 import ru.citeck.ecos.flowable.services.rest.RestFormService;
+import ru.citeck.ecos.form.WorkflowFormProvider;
 import ru.citeck.ecos.forms.FormMode;
 import ru.citeck.ecos.forms.NodeViewDefinition;
 import ru.citeck.ecos.forms.NodeViewProvider;
@@ -38,7 +39,6 @@ import ru.citeck.ecos.invariants.view.NodeField;
 import ru.citeck.ecos.invariants.view.NodeView;
 import ru.citeck.ecos.invariants.view.NodeViewRegion;
 import ru.citeck.ecos.invariants.view.forms.TypeFormProvider;
-import ru.citeck.ecos.form.WorkflowFormProvider;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixProvider;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixResolver;
 import ru.citeck.ecos.utils.ConvertUtils;
@@ -97,7 +97,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
         NodeViewDefinition definition = null;
 
-        if (taskId.startsWith(FlowableWorkflowComponent.ENGINE_PREFIX)) {
+        if (taskId.startsWith(FlowableConstants.ENGINE_PREFIX)) {
 
             definition = new NodeViewDefinition();
 
@@ -150,7 +150,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
         String formKey = null;
 
-        if (taskId.startsWith(FlowableWorkflowComponent.ENGINE_PREFIX)) {
+        if (taskId.startsWith(FlowableConstants.ENGINE_PREFIX)) {
 
             String id = taskId.substring(taskId.indexOf("$") + 1);
             Task task = flowableTaskService.getTaskById(id);
@@ -176,7 +176,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     public Map<String, Object> saveNodeView(String taskId, String formId, FormMode mode,
                                             Map<String, Object> params, Map<QName, Object> attributes) {
 
-        if (taskId.startsWith(FlowableWorkflowComponent.ENGINE_PREFIX)) {
+        if (taskId.startsWith(FlowableConstants.ENGINE_PREFIX)) {
             SimpleFormModel formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey)
                     .orElseThrow(() ->
                             new IllegalArgumentException(taskId + " form not found"));
@@ -401,7 +401,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     public boolean hasNodeView(String taskId, String formId, FormMode mode, Map<String, Object> params) {
         if (taskId.startsWith(ACTIVITI_PREFIX)) {
             return typeFormProvider.hasNodeView(getFormKey(taskId).get(), formId, mode, params);
-        } else if (taskId.startsWith(FlowableWorkflowComponent.ENGINE_PREFIX)) {
+        } else if (taskId.startsWith(FlowableConstants.ENGINE_PREFIX)) {
             return getFormKey(taskId).map(restFormService::hasFormWithKey).orElse(false);
         }
         return false;
