@@ -1,7 +1,7 @@
 // WORK PROCESS
 require(['js/citeck/modules/utils/citeck', 'xstyle!citeck/mobile/mobile.css'], function() {
 
-    if (Citeck.mobile.isMobileDevice()) {       
+    if (Citeck.mobile.isMobileDevice()) {
         YAHOO.Bubbling.on("on-mobile-device", function(e, args) { if (args[1].fn) fn(); });
 
         $(document).ready(function() {
@@ -16,9 +16,13 @@ require(['js/citeck/modules/utils/citeck', 'xstyle!citeck/mobile/mobile.css'], f
             transformJournalsSidebar(true);
             transformForm(true);
             trasformCard(true);
+
+            $('.grid').show(); // hack to fix mobile styles jumping
         });
-    } else {       
+    } else {
         $(document).ready(function() {
+            $('.grid').show(); // hack to fix mobile styles jumping
+
             var mobileWidth = (function() {
                 var defaultMobileWidth = { "default": 525, "card": 700 }, 
                     themesMobileWidth = {

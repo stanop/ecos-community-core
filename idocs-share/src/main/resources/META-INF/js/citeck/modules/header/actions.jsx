@@ -1,4 +1,5 @@
-import { processMenuItemsFromOldMenu, makeUserMenuItems, t } from './misc/util'
+import { processMenuItemsFromOldMenu, makeUserMenuItems } from './misc/util'
+import { t } from '../common/util';
 
 
 /* MODAL */

@@ -42,12 +42,19 @@
                     userIsAvailable: "${((user.properties.available)!"")?string}",
                     userIsMutable: "${((user.capabilities.isMutable)!"")?string}",
                     isExternalAuthentication: "${((context.externalAuthentication)!"")?string}",
-                    slideMenuConfig: ${jsonUtils.toJSONString(slideMenuConfig)},
                     siteMenuItems: ${jsonUtils.toJSONString(siteMenuItems)},
-                    isCascadeCreateMenu: "${isCascadeCreateMenu?string}",
-                    isMobile: "${isMobile?string}"
+                    isCascadeCreateMenu: "${isCascadeCreateMenu?string}"
                 });
             });
+
+            require([
+                'js/citeck/modules/slide-menu/slide-menu'
+            ], function(SlideMenu) {
+                SlideMenu.render('slide-menu', {
+                    slideMenuConfig: ${jsonUtils.toJSONString(slideMenuConfig)},
+                });
+            });
+
         //]]></script>
    <#else>
       <@processJsonModel group="share"/>
@@ -56,4 +63,5 @@
 
 <@markup id="html">
    <div id="share-header"></div>
+   <div id="slide-menu"></div>
 </@>

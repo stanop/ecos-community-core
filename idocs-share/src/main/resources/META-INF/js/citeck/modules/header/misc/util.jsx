@@ -1,21 +1,4 @@
-export function t(messageId, multipleValues, scope = 'global') {
-    // https://dev.alfresco.com/resource/docs/aikau-jsdoc/Core.js.html
-    if (!messageId) {
-        return '';
-    }
-
-    if (!window.Alfresco) {
-        return messageId;
-    }
-
-    return window.Alfresco.util.message(messageId, scope, multipleValues);
-}
-
-export function generateSearchTerm (terms, hiddenSearchTerms) {
-    let searchTerm = hiddenSearchTerms ? "(" + terms + ") " + hiddenSearchTerms : terms;
-
-    return encodeURIComponent(searchTerm);
-}
+import { getCurrentLocale } from '../../common/util';
 
 const BYTES_KB = 1024;
 const BYTES_MB = 1048576;
@@ -123,16 +106,6 @@ export function getRelativeTime(from, to) {
 
     const years_ago  = Math.round(minutes_ago / 525960);
     return fnTime("relative.years", years_ago);
-}
-
-export function getCurrentLocale() {
-    if (!window.navigator) {
-        return "en";
-    }
-
-    const language = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.systemLanguage || navigator.userLanguage);
-
-    return language.substr(0, 2).toLowerCase();
 }
 
 export function makeSiteMenuItems(user, siteData) {
