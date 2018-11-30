@@ -49,12 +49,12 @@ public class GetSubmitMessage extends AbstractWebScript {
         JSONObject result = new JSONObject();
         if (messageKey != null) {
             String message = I18NUtil.getMessage(messageKey);
-            if (messageKey.equals("disabled") || message.length() == 0) {
-                result.put("disabled", true);
-                result.put("message", "");
-            } else {
+            if (!messageKey.equals("disabled") && message != null && message.length() > 0) {
                 result.put("disabled", false);
                 result.put("message", message);
+            } else {
+                result.put("disabled", true);
+                result.put("message", "");
             }
         } else {
             result.put("disabled", true);
