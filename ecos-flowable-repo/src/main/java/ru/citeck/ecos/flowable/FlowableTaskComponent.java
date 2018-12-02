@@ -75,9 +75,9 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
         if (taskService == null) {
             return;
         }
-        bpmEngineRegistry.registerTaskComponent(ENGINE_NAME, this);
-        workflowAdminService.setEngineEnabled(ENGINE_NAME, true);
-        workflowAdminService.setEngineVisibility(ENGINE_NAME, true);
+        bpmEngineRegistry.registerTaskComponent(ENGINE_ID, this);
+        workflowAdminService.setEngineEnabled(ENGINE_ID, true);
+        workflowAdminService.setEngineVisibility(ENGINE_ID, true);
     }
 
 

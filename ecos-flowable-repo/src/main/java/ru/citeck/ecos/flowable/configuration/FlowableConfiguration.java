@@ -416,7 +416,7 @@ public class FlowableConfiguration {
         // QName converter
         WorkflowQNameConverter workflowQNameConverter = new WorkflowQNameConverter(namespaceService);
         WorkflowObjectFactory workflowObjectFactory = new WorkflowObjectFactory(workflowQNameConverter,
-                tenantService, messageService, dictionaryService, FlowableConstants.ENGINE_NAME, null);
+                tenantService, messageService, dictionaryService, FlowableConstants.ENGINE_ID, null);
         return new FlowableTaskTypeManagerImpl(workflowObjectFactory, formService);
     }
 

@@ -87,9 +87,9 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
         if (repositoryService == null || runtimeService == null || historyService == null) {
             return;
         }
-        bpmEngineRegistry.registerWorkflowComponent(ENGINE_NAME, this);
-        workflowAdminService.setEngineEnabled(ENGINE_NAME, true);
-        workflowAdminService.setEngineVisibility(ENGINE_NAME, true);
+        bpmEngineRegistry.registerWorkflowComponent(ENGINE_ID, this);
+        workflowAdminService.setEngineEnabled(ENGINE_ID, true);
+        workflowAdminService.setEngineVisibility(ENGINE_ID, true);
     }
 
     /**
