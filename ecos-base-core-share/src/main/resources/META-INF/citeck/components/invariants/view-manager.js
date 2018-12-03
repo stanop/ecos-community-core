@@ -34,12 +34,19 @@ define(['js/citeck/modules/utils/citeck'], function() {
             card: this.goToCard,
             redirect: this.redirect
         };
+
+        this.behavioursDraft = {
+            back: this.goBack,
+            card: this.goToCardDraft,
+            redirect: this.redirect
+        };
        
         this.defaultBehaviour = this.behaviours.back;
-        
+
+        YAHOO.Bubbling.on("node-view-submit-draft", this.onSubmit, this);
         YAHOO.Bubbling.on("node-view-submit", this.onSubmit, this);
         YAHOO.Bubbling.on("node-view-cancel", this.onCancel, this);
-    }
+    };
     
     Citeck.invariants.NodeViewManager.prototype = {
         
@@ -54,13 +61,14 @@ define(['js/citeck/modules/utils/citeck'], function() {
         
         onSubmit: function(layer, args) {
             if(this.key != args[1].key) return;
+            var behaviours = layer === 'node-view-submit-draft' ? this.behavioursDraft : this.behaviours;
             var node = args[1].node;
             node.thisclass.save(node, {
                 scope: this,
                 fn: function(result) {
                   var submitBehaviour = this.options.redirect ? 
-                                        this.behaviours.redirect : 
-                                        (this.behaviours[this.options.onsubmit] || this.defaultBehaviour);
+                                        behaviours.redirect :
+                                        (behaviours[this.options.onsubmit] || this.defaultBehaviour);
                   submitBehaviour.call(this, result);
                 }
             });
@@ -85,6 +93,10 @@ define(['js/citeck/modules/utils/citeck'], function() {
         
         goToCard: function(node) {
             document.location.href = Alfresco.constants.URL_PAGECONTEXT + "card-details?nodeRef=" + node.nodeRef + "&showStartMsg=true";
+        },
+
+        goToCardDraft: function(node) {
+            document.location.href = Alfresco.constants.URL_PAGECONTEXT + "card-details?nodeRef=" + node.nodeRef;
         },
 
         redirect: function(node) {
