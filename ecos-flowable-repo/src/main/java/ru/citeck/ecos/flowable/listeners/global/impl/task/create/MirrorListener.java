@@ -6,23 +6,18 @@ import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
 
+import static ru.citeck.ecos.flowable.constants.FlowableConstants.ENGINE_PREFIX;
+
 /**
  * Flowable mirror listener
  */
 public class MirrorListener implements GlobalCreateTaskListener, GlobalAssignmentTaskListener, GlobalCompleteTaskListener {
 
-    /**
-     * Constants
-     */
-    private static final String ENGINE_PREFIX = "flowable$";
-
-    /**
-     * Workflow mirror service
-     */
     private WorkflowMirrorService workflowMirrorService;
 
     /**
      * Notify
+     *
      * @param delegateTask Task
      */
     @Override
@@ -32,6 +27,7 @@ public class MirrorListener implements GlobalCreateTaskListener, GlobalAssignmen
 
     /**
      * Set workflow mirror service
+     *
      * @param workflowMirrorService Workflow mirror service
      */
     public void setWorkflowMirrorService(WorkflowMirrorService workflowMirrorService) {

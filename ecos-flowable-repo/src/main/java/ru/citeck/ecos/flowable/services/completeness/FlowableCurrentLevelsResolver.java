@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
+import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.listeners.CheckListsTaskListener;
 import ru.citeck.ecos.flowable.services.FlowableHistoryService;
 import ru.citeck.ecos.flowable.services.cmd.GetTaskListenersCmd;
@@ -61,7 +62,7 @@ public class FlowableCurrentLevelsResolver extends AbstractCurrentLevelsResolver
             WorkflowTaskQuery taskQuery = new WorkflowTaskQuery();
             taskQuery.setActive(true);
             taskQuery.setTaskState(WorkflowTaskState.IN_PROGRESS);
-            taskQuery.setProcessId(workflow.getId().replace(FlowableWorkflowComponent.ENGINE_PREFIX, ""));
+            taskQuery.setProcessId(workflow.getId().replace(FlowableConstants.ENGINE_PREFIX, ""));
 
             List<HistoricTaskInstance> tasks = flowableHistoryService.getTasksByQuery(taskQuery);
 
@@ -71,7 +72,7 @@ public class FlowableCurrentLevelsResolver extends AbstractCurrentLevelsResolver
 
             String workflowDefId = workflow.getDefinition()
                                            .getId()
-                                           .replace(FlowableWorkflowComponent.ENGINE_PREFIX, "");
+                                           .replace(FlowableConstants.ENGINE_PREFIX, "");
 
             GetTaskListenersCmd cmd = new GetTaskListenersCmd(workflowDefId, taskIds);
             Map<String, List<FlowableListener>> listeners = engineConfiguration.getCommandExecutor().execute(cmd);
@@ -111,7 +112,7 @@ public class FlowableCurrentLevelsResolver extends AbstractCurrentLevelsResolver
     }
 
     private boolean isFlowableId(String id) {
-        return id.startsWith(FlowableWorkflowComponent.ENGINE_PREFIX);
+        return id.startsWith(FlowableConstants.ENGINE_PREFIX);
     }
 
     @Override

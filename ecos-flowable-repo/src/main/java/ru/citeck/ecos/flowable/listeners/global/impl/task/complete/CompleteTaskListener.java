@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
 import org.flowable.task.service.delegate.DelegateTask;
+import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 import ru.citeck.ecos.notification.AbstractNotificationSender;
 
@@ -16,43 +17,30 @@ import java.util.Map;
  */
 public class CompleteTaskListener implements GlobalCompleteTaskListener {
 
-    /**
-     * Constants
-     */
-    private static final String ENGINE_PREFIX = "flowable$";
-
-    /**
-     * Services
-     */
     private AbstractNotificationSender<DelegateTask> sender;
     protected NodeService nodeService;
-    private Map<String, Map<String,String>> conditions;
+    private Map<String, Map<String, String>> conditions;
     protected NamespaceService namespaceService;
     private WorkflowService workflowService;
     protected WorkflowQNameConverter qNameConverter;
 
-    /**
-     * Is enabled
-     */
     protected boolean enabled;
 
-    /**
-     * Init
-     */
     public void init() {
         qNameConverter = new WorkflowQNameConverter(namespaceService);
     }
 
     /**
      * Notify
+     *
      * @param delegateTask Task
      */
     @Override
     public void notify(DelegateTask delegateTask) {
-        if(enabled) {
+        if (enabled) {
             Boolean value = (Boolean) delegateTask.getVariable("cwf_sendNotification");
             if (Boolean.TRUE.equals(value)) {
-                WorkflowTask wfTask = workflowService.getTaskById(ENGINE_PREFIX + delegateTask.getId());
+                WorkflowTask wfTask = workflowService.getTaskById(FlowableConstants.ENGINE_PREFIX + delegateTask.getId());
                 if (conditions != null && wfTask != null) {
                     Map<String, String> condition = conditions.get(wfTask.getName());
                     int result = 0;
@@ -73,8 +61,6 @@ public class CompleteTaskListener implements GlobalCompleteTaskListener {
             }
         }
     }
-
-    /** Setters */
 
     public void setSender(AbstractNotificationSender<DelegateTask> sender) {
         this.sender = sender;

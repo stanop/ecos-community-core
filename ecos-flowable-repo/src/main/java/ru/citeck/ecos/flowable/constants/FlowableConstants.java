@@ -5,6 +5,9 @@ package ru.citeck.ecos.flowable.constants;
  */
 public class FlowableConstants {
 
+    public static final String ENGINE_ID = "flowable";
+    public static final String ENGINE_PREFIX = ENGINE_ID + "$";
+
     public static final String SERVICE_REGISTRY_BEAN_KEY = "serviceRegistry";
 
     public static final String COMPLETENESS_SERVICE_JS_KEY = "completeness";

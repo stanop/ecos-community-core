@@ -10,8 +10,6 @@
 		<property name="workflowAdminService" ref="workflowAdminService"/>
 		<property name="authenticationService" ref="authenticationService"/>
 		<property name="personService" ref="PersonService"/>
-		<property name="namespaceService" ref="namespaceService"/>
-		<property name="dictionaryService" ref="dictionaryService"/>
 		<property name="nodeService" ref="nodeService"/>
 	</bean>
 
@@ -23,8 +21,6 @@
 	<bean id="flowableTransformService" class="ru.citeck.ecos.flowable.services.impl.FlowableTransformServiceImpl">
 		<property name="namespaceService" ref="namespaceService"/>
 		<property name="dictionaryService" ref="dictionaryService"/>
-		<property name="personService" ref="PersonService"/>
-		<property name="authenticationService" ref="authenticationService"/>
 		<property name="flowableProcessDefinitionService" ref="flowableCustomProcessDefinitionService"/>
 		<property name="formService" ref="flowableFormService"/>
 		<property name="flowableProcessInstanceService" ref="flowableCustomProcessInstanceService"/>
@@ -136,7 +132,6 @@
 
 	<bean id="flowablePackageFieldsFillingListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.start.PackageFieldsFillingListener">
 		<property name="nodeService" ref="nodeService"/>
-		<property name="namespaceService" ref="NamespaceService" />
 	</bean>
 
 	<bean id="flowableCycleStartProcessListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.start.LifeCycleStartProcessListener">

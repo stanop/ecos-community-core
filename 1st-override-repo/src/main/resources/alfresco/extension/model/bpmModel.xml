@@ -389,6 +389,7 @@
           </properties>
        </type>      
 
+        <!--Deprecated - dont use it-->
         <type name="bpm:approvalToken">
             <title>Approval token</title>
             <parent>cm:cmobject</parent>
@@ -552,6 +553,7 @@
 
         <aspect name="bpm:endAutomatically" />
 
+        <!--Deprecated - dont use it-->
         <aspect name="bpm:hasApprovalTokens">
             <associations>
                 <child-association name="bpm:approvalTokens">

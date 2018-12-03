@@ -49,11 +49,6 @@ public class FlowableConfiguration {
     private static final Logger logger = Logger.getLogger(FlowableConfiguration.class);
 
     /**
-     * Constants
-     */
-    private static final String FLOWABLE_ENGINE_NAME = "flowable";
-
-    /**
      * Properties constants
      */
     private static final String FLOWABLE_DB_URL = "flowable.db.url";
@@ -421,7 +416,7 @@ public class FlowableConfiguration {
         // QName converter
         WorkflowQNameConverter workflowQNameConverter = new WorkflowQNameConverter(namespaceService);
         WorkflowObjectFactory workflowObjectFactory = new WorkflowObjectFactory(workflowQNameConverter,
-                tenantService, messageService, dictionaryService, FLOWABLE_ENGINE_NAME, null);
+                tenantService, messageService, dictionaryService, FlowableConstants.ENGINE_ID, null);
         return new FlowableTaskTypeManagerImpl(workflowObjectFactory, formService);
     }
 
