@@ -63,13 +63,15 @@ define(['js/citeck/modules/utils/citeck'], function() {
             if(this.key != args[1].key) return;
             var behaviours = layer === 'node-view-submit-draft' ? this.behavioursDraft : this.behaviours;
             var node = args[1].node;
+            var isDraft = node.impl().getAttribute('invariants:isDraft').value();
+
             node.thisclass.save(node, {
                 scope: this,
                 fn: function(result) {
                   var submitBehaviour = this.options.redirect ? 
                                         behaviours.redirect :
                                         (behaviours[this.options.onsubmit] || this.defaultBehaviour);
-                  submitBehaviour.call(this, result);
+                  submitBehaviour.call(this, result, isDraft);
                 }
             });
         },
@@ -91,8 +93,18 @@ define(['js/citeck/modules/utils/citeck'], function() {
             }
         },
         
-        goToCard: function(node) {
-            document.location.href = Alfresco.constants.URL_PAGECONTEXT + "card-details?nodeRef=" + node.nodeRef + "&showStartMsg=true";
+        goToCard: function(node, isDraft) {
+            var showStartMessage = true;
+            if (!isDraft && location.pathname.indexOf('node-edit-page') !== -1) {
+                showStartMessage = false;
+            }
+
+            var redirectUrl = Alfresco.constants.URL_PAGECONTEXT + "card-details?nodeRef=" + node.nodeRef;
+            if (showStartMessage) {
+                redirectUrl += "&showStartMsg=true";
+            }
+
+            document.location.href = redirectUrl;
         },
 
         goToCardDraft: function(node) {

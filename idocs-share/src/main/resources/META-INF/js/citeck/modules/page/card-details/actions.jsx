@@ -30,7 +30,7 @@ function checkStatus(response) {
 
 export function fetchStartMessage(nodeRef) {
     return dispatch => {
-        return fetch(`/alfresco/s/acm/getSubmitMessage?nodeRef=${nodeRef}`, {
+        return fetch(`/share/proxy/alfresco/acm/getSubmitMessage?nodeRef=${nodeRef}`, {
             credentials: 'include'
         }).then(checkStatus).then(response => {
             return response.json();
