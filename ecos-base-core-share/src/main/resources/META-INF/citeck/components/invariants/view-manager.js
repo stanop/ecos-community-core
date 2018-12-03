@@ -84,7 +84,7 @@ define(['js/citeck/modules/utils/citeck'], function() {
         },
         
         goToCard: function(node) {
-            document.location.href = Alfresco.constants.URL_PAGECONTEXT + "card-details?nodeRef=" + node.nodeRef;
+            document.location.href = Alfresco.constants.URL_PAGECONTEXT + "card-details?nodeRef=" + node.nodeRef + "&showStartMsg=true";
         },
 
         redirect: function(node) {
