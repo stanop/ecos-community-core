@@ -27,16 +27,16 @@ function onProcessStart() {
 }
 
 function beforeConfirm() {
-
-    var lastResults = confirmUtils.getLastConfirmOutcomes(document);
-
-    var optionalPerformers = [];
-    for (var performerRef in lastResults) {
-        if (lastResults[performerRef] == "Confirm") {
-            optionalPerformers.push(search.findNode(performerRef));
-        }
-    }
-    process.optionalPerformers = optionalPerformers;
+    // /* this method impl. breaks second run of Approval task */
+    // var lastResults = confirmUtils.getLastConfirmOutcomes(document);
+    //
+    // var optionalPerformers = [];
+    // for (var performerRef in lastResults) {
+    //     if (lastResults[performerRef] == "Confirm") {
+    //         optionalPerformers.push(search.findNode(performerRef));
+    //     }
+    // }
+    // process.optionalPerformers = optionalPerformers;
 }
 
 function afterConfirm() {
