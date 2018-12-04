@@ -12,6 +12,7 @@
                 <resolver id="JOURNALS">
                     <param name="listId">global-tasks</param>
                     <param name="displayCount">true</param>
+                    <param name="countForJournals">active-tasks,subordinate-tasks</param>
                     <item>
                         <mobile-visible>false</mobile-visible>
                         <items>
