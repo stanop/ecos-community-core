@@ -2641,7 +2641,7 @@ define([
         .method('submitDraft', function() {
             if (this.node().hasAspect("invariants:draftAspect")) {
                 this.node().impl().isDraft(true);
-                this.broadcast('node-view-submit');
+                this.broadcast('node-view-submit-draft');
             }
         })
 

@@ -16,6 +16,41 @@ export const RECEIVE_ERR_CARDLET_DATA = 'RECEIVE_ERR_CARDLET_DATA';
 
 export const CARD_MODE_LOADED = 'CARD_MODE_LOADED';
 
+export const SET_START_MESSAGE = 'SET_START_MESSAGE';
+
+function checkStatus(response) {
+    if (response.status >= 200 && response.status < 300) {
+        return response;
+    }
+
+    const error = new Error(response.statusText);
+    error.response = response;
+    throw error;
+}
+
+export function fetchStartMessage(nodeRef) {
+    return dispatch => {
+        return fetch(`/share/proxy/alfresco/acm/getSubmitMessage?nodeRef=${nodeRef}`, {
+            credentials: 'include'
+        }).then(checkStatus).then(response => {
+            return response.json();
+        }).then(json => {
+            if (!json.disabled) {
+                dispatch(setStartMessage(json.message));
+            }
+        }).catch(e => {
+            console.log('fetchStartMessage error: ', e.message);
+        });
+    }
+}
+
+export function setStartMessage(payload) {
+    return {
+        type: SET_START_MESSAGE,
+        payload
+    };
+}
+
 export function setCardMode(cardMode, registerReducers) {
 
     return (dispatch, getState) => {

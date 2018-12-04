@@ -94,3 +94,22 @@ input::-ms-clear {
     left: -50%;
     top: 100px;
 }
+
+.card-details-start-message {
+    padding: 12px 0;
+    position: relative;
+    text-align: center;
+}
+
+.card-details-start-message-close {
+    position: absolute;
+    right: 15px;
+    cursor: pointer;
+    display: none;
+}
+
+.card-details-start-message-close:after {
+    font-family: FontAwesome;
+    content: '\f00d';
+    color: #666;
+}

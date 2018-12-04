@@ -27,6 +27,14 @@
 			</map>
 		</property>
 	</bean>
+
+    <bean id="idocs.workflowMirror.documentToMessage.mapping" class="ru.citeck.ecos.spring.registry.MappingRegistrar">
+        <constructor-arg ref="documentToMessage.mappingRegistry"/>
+        <!--TODO add message for base classes-->
+        <property name="mapping">
+            <map></map>
+        </property>
+    </bean>
 	
 	<bean id="workflowMirrorService" class="ru.citeck.ecos.workflow.mirror.WorkflowMirrorServiceImpl" parent="baseJavaScriptExtension">
 		<property name="nodeService" ref="nodeService" />

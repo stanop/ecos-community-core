@@ -58,6 +58,15 @@
 		<property name="nodeService" ref="NodeService" />
 	</bean>
 
+    <bean id="webscript.ru.citeck.document.getSubmitMessage.get"
+          class="ru.citeck.ecos.webscripts.document.GetSubmitMessage"
+          parent="webscript">
+          <property name="nodeService" ref="NodeService" />
+          <property name="namespaceService" ref="namespaceService"/>
+          <property name="dictionaryService" ref="dictionaryService"/>
+          <property name="documentToMessage" ref="documentToMessage.mappingRegistry" />
+    </bean>
+
     <bean id="webscript.ru.citeck.document-registration.register.post"
           class="ru.citeck.ecos.webscripts.documentregistration.RegisterPost"
           parent="webscript">
