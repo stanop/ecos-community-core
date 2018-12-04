@@ -18,8 +18,6 @@
 
 	<bean id="documentToCounterparty.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
 
-    <bean id="documentToMessage.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
-
 	<bean id="idocs.workflowMirror.documentToCounterparty.mapping" class="ru.citeck.ecos.spring.registry.MappingRegistrar">
 		<constructor-arg ref="documentToCounterparty.mappingRegistry"/>
 		<property name="mapping">
