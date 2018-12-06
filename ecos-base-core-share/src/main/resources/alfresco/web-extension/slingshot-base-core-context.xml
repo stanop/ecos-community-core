@@ -39,6 +39,7 @@
         <property name="extensionName" value="citeckUtils" />
         <property name="modulePackageManager" ref="modulepackagemanager" />
         <property name="aikauModuleResource" value="META-INF/maven/org.alfresco/aikau/pom.properties" />
+        <property name="shareModuleResource" value="META-INF/maven/org.alfresco/alfresco-web-framework-commons/pom.properties" />
     </bean>
 
     <!--====================================-->

@@ -9,7 +9,6 @@ import org.alfresco.web.config.packaging.ModulePackageManager;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.extensions.webscripts.processor.BaseProcessorExtension;
 
 import java.io.BufferedReader;
@@ -33,7 +32,10 @@ public class CiteckUtilsTemplate extends BaseProcessorExtension {
 
     private String cacheBust;
     private String aikauVersion;
+    private String shareVersion;
+
     private ClassPathResource aikauModuleResource;
+    private ClassPathResource shareModuleResource;
 
     public TemplateBooleanModel templateExists(String path) {
         return templateExistsCache.computeIfAbsent(path, this::templateExistsImpl);
@@ -61,31 +63,44 @@ public class CiteckUtilsTemplate extends BaseProcessorExtension {
     }
 
     public String getAikauVersion() {
-
         if (aikauVersion == null) {
-
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(aikauModuleResource.getInputStream()))) {
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (StringUtils.isNotBlank(line)) {
-                        String[] keyValue = line.split("=");
-                        if (keyValue.length == 2 && "version".equals(keyValue[0])) {
-                            aikauVersion = keyValue[1];
-                        }
-                    }
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if (StringUtils.isBlank(aikauVersion)) {
-                aikauVersion = "1.0.63";
-            }
+            aikauVersion = getModuleVersion(aikauModuleResource, "1.0.63");
         }
         return aikauVersion;
+    }
+
+    public String getShareVersion() {
+        if (shareVersion == null) {
+            shareVersion = getModuleVersion(shareModuleResource, "5.1.3.3");
+        }
+        return shareVersion;
+    }
+
+    private String getModuleVersion(ClassPathResource resource, String orElse) {
+
+        String version = null;
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (StringUtils.isNotBlank(line)) {
+                    String[] keyValue = line.split("=");
+                    if (keyValue.length == 2 && "version".equals(keyValue[0])) {
+                        version = keyValue[1];
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (StringUtils.isBlank(version)) {
+            version = orElse;
+        }
+
+        return version;
     }
 
     public void clearCache() {
@@ -96,8 +111,9 @@ public class CiteckUtilsTemplate extends BaseProcessorExtension {
         cacheBust = String.valueOf(System.currentTimeMillis());
     }
 
-    public void updateAikauVersion() {
+    public void updateVersions() {
         aikauVersion = null;
+        shareVersion = null;
     }
 
     private TemplateBooleanModel templateExistsImpl(String path) {
@@ -128,5 +144,9 @@ public class CiteckUtilsTemplate extends BaseProcessorExtension {
 
     public void setAikauModuleResource(ClassPathResource aikauModuleResource) {
         this.aikauModuleResource = aikauModuleResource;
+    }
+
+    public void setShareModuleResource(ClassPathResource shareModuleResource) {
+        this.shareModuleResource = shareModuleResource;
     }
 }

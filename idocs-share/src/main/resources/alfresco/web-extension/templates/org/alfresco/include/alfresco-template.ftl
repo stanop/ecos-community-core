@@ -18,7 +18,11 @@
         gets setup before any of the other Alfresco JavaScript dependencies try to make use of it. -->
    <@markup id="messages">
       <#-- Common i18n msg properties -->
-      <@generateMessages type="text/javascript" src="${url.context}/service/messages.js" locale="${locale}"/>
+      <#if citeckUtils.getShareVersion() == '5.1.f'>
+         <@generateMessages type="text/javascript" src="${url.context}/service/messages.js" locale="${locale}"/>
+      <#else>
+         <@generateMessages type="text/javascript" src="${url.context}/noauth/messages.js" locale="${locale}"/>
+      </#if>
    </@markup>
    <@markup id="dojoBootstrap">
       <@region scope="global" id="bootstrap" chromeless="true"/>
