@@ -228,6 +228,31 @@ ko.components.register("number-generate", {
 // NUMBER
 // ---------------
 
+ko.bindingHandlers.numericKeyInput = {
+    init: function (element) {
+        $(element).on('keydown', function (event) {
+            var keyCode = event.keyCode;
+            var allowKeyCodes = [
+                46, //delete
+                8, //backspace
+                9, //tab
+                27, //escape
+                13, //enter
+                188, //comma
+                190, //period
+                110, //decimal point
+                35,36,37,38,39 //end, home, left arrow, up arrow, right arrow
+            ];
+
+            if (allowKeyCodes.includes(keyCode) || (keyCode === 65 && event.ctrlKey === true)) {
+                return null;
+            } else if (event.shiftKey || (keyCode < 48 || keyCode > 57) && (keyCode < 96 || keyCode > 105)) {
+                event.preventDefault();
+            }
+        });
+    }
+};
+
 ko.components.register("number", {
     viewModel: function(params) {
         var self = this;
@@ -240,6 +265,9 @@ ko.components.register("number", {
 
         this.validation = function(data, event) {
             var newValue = document.getElementById(self.id).value + event.key;
+
+            newValue = newValue.replace(',', '.');
+
             if (self.isInteger) {
                 var regExp = /^[0-9]*$/;
                 return regExp.test(newValue);
@@ -251,7 +279,7 @@ ko.components.register("number", {
         };
     },
     template:
-       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
+       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="numericKeyInput, textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
 });
 
 // ---------------
