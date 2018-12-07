@@ -21,8 +21,8 @@
 		"control": {
 			"template": "/ru/citeck/components/form/controls/select.ftl",
 			"params": {
-				"optionsUrl": "${url.context}/page/citeck/component?scope=page&source-id=card-details&short=true",
-				"resultsList": "components",
+				"optionsUrl": "${url.context}/proxy/alfresco/citeck/cardlets/registered-regions",
+				"resultsList": "regions",
 				"valueField": "region-id",
 				"titleField": "region-id",
 				"sortKey": "region-id"

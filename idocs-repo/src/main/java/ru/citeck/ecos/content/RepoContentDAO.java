@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public interface RepoContentDAO<T> {
 
@@ -40,6 +41,8 @@ public interface RepoContentDAO<T> {
         List<ContentData<T>> configs = getContentData(keys, ignoreWithoutData);
         return Optional.ofNullable(configs.size() > 0 ? configs.get(0) : null);
     }
+
+    void forEach(Consumer<ContentData<T>> consumer);
 
     void clearCache();
 }

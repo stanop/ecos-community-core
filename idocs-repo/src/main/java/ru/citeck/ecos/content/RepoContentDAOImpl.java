@@ -15,6 +15,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.content.dao.ContentDAO;
 import ru.citeck.ecos.content.dao.NodeDataReader;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.RecordsService;
+import ru.citeck.ecos.records.query.RecordsQuery;
+import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.LazyNodeRef;
@@ -22,6 +26,7 @@ import ru.citeck.ecos.utils.LazyNodeRef;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +55,7 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
     protected ContentService contentService;
     protected SearchService searchService;
     protected DictionaryService dictionaryService;
+    protected RecordsService recordsService;
 
     private ContentDAO<T> contentDAO;
     private NodeDataReader<T> nodeDataReader;
@@ -132,6 +138,24 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
     public void clearCache() {
         configDataByNode.clear();
         configDataByKeys.clear();
+    }
+
+    @Override
+    public void forEach(Consumer<ContentData<T>> consumer) {
+
+        RecordsQuery query = new RecordsQuery();
+        query.setMaxItems(0);
+        query.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
+        query.setQuery("PARENT:\"" + rootRef.getNodeRef() + "\"");
+        query.setSourceId(AlfNodesRecordsDAO.ID);
+
+        Iterable<RecordRef> records = recordsService.getIterableRecords(query);
+        for (RecordRef ref : records) {
+            NodeRef nodeRef = new NodeRef(ref.getId());
+            ContentData<T> data = getContentDataImpl(nodeRef);
+            data.updateData();
+            consumer.accept(data);
+        }
     }
 
     private List<ContentData<T>> searchData(Map<QName, Serializable> keys) {
@@ -226,6 +250,11 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
 
     public void setNodeDataReader(NodeDataReader<T> nodeDataReader) {
         this.nodeDataReader = nodeDataReader;
+    }
+
+    @Autowired
+    public void setRecordsService(RecordsService recordsService) {
+        this.recordsService = recordsService;
     }
 
     @Autowired
