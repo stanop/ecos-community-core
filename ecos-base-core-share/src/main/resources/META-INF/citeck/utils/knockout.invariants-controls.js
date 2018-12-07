@@ -69,6 +69,10 @@ ko.components.register("help", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);
         var self = this;
+
+        self.containerZIndex = ko.observable(0);
+        self.labelZIndex = ko.observable(0);
+
         // private methods
         this._createTooltip = _.bind(function(text) {
             if (!this.tooltip) {
@@ -87,6 +91,10 @@ ko.components.register("help", {
                 this.tooltip.contextMouseOverEvent.subscribe(function() {
                     var parent = $("#" + self.id).closest(".yui-panel-container"),
                         zindex = parent.css("z-index") ? parseInt(parent.css("z-index")) + 1 : 10;
+
+                    self.containerZIndex(zindex + 1);
+                    self.labelZIndex(zindex - 1);
+
                     self.tooltip.cfg.setProperty("zIndex", zindex);
                 }, this);
             }
@@ -110,8 +118,10 @@ ko.components.register("help", {
         // create tooltip if text already calculated
         this._createTooltip(this.text());
     },
-    template:
-       '<span data-bind="attr: { id: id }, if: text, click: onclick">?</span>'
+    template: '\
+        <span data-bind="style: { \'z-index\': containerZIndex, position: \'relative\' }, attr: { id: id }, if: text, click: onclick">\
+            <span data-bind="style: { \'z-index\': labelZIndex, position: \'relative\' }">?</span>\
+        </span>'
 });
 
 // ---------------
