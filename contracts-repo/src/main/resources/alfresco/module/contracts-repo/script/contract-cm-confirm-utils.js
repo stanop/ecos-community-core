@@ -16,8 +16,10 @@ var confirmUtils = {
                 var workflowId = confirmUtils.getCurrentConfirmWF().getId().replaceAll("activiti\\$", "");
 
                 var optionalPerformers = runtimeService.getVariable(workflowId, OPTIONAL_PERFORMERS);
-                optionalPerformers.remove(person.nodeRef);
-                runtimeService.setVariable(workflowId, OPTIONAL_PERFORMERS, optionalPerformers);
+                if (optionalPerformers) {
+                    optionalPerformers.remove(person.nodeRef);
+                    runtimeService.setVariable(workflowId, OPTIONAL_PERFORMERS, optionalPerformers);
+                }
 
                 confirmUtils.addParallelConfirmTask(person);
             },
