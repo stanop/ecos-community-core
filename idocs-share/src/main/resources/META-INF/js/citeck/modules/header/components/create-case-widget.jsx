@@ -4,6 +4,7 @@ import { Dropdown } from 'react-bootstrap';
 import CustomToggle from './dropdown-menu-custom-toggle';
 import DropDownMenuGroup from './dropdown-menu-group';
 import DropdownMenuCascade from './dropdown-menu-cascade';
+import { t } from '../../common/util';
 
 const CreateCaseWidget = ({ items, isCascade }) => {
     let menuListItems = null;
@@ -26,7 +27,10 @@ const CreateCaseWidget = ({ items, isCascade }) => {
         <div id='HEADER_CREATE_CASE'>
             <Dropdown className='custom-dropdown-menu' pullLeft>
                 <CustomToggle bsRole='toggle' className='create-case-dropdown-menu__toggle custom-dropdown-menu__toggle'>
-                    <i className={'fa fa-plus'} />
+                    <div>
+                        <i className={'fa fa-plus'} />
+                        <span>{t('create_case.label')}</span>
+                    </div>
                 </CustomToggle>
                 <Dropdown.Menu bsRole='menu' className={dropdownMenuClasses.join(' ')} id='HEADER_CREATE_CASE__DROPDOWN'>
                     {menuListItems}
