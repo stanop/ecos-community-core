@@ -7,24 +7,34 @@ import org.alfresco.repo.workflow.DefaultWorkflowPropertyHandler;
 import org.alfresco.repo.workflow.WorkflowObjectFactory;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.flowable.engine.*;
+import org.flowable.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.flowable.engine.impl.cfg.StandaloneProcessEngineConfiguration;
+import org.flowable.engine.impl.jobexecutor.AsyncContinuationJobHandler;
+import org.flowable.engine.impl.jobexecutor.AsyncTriggerJobHandler;
+import org.flowable.engine.impl.jobexecutor.TriggerTimerEventJobHandler;
 import org.flowable.engine.parse.BpmnParseHandler;
+import org.flowable.job.service.JobHandler;
+import org.flowable.spring.SpringProcessEngineConfiguration;
 import org.flowable.variable.api.types.VariableType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.jta.JtaTransactionManager;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
 import ru.citeck.ecos.flowable.handlers.UserTaskBpmnParseHandler;
+import ru.citeck.ecos.flowable.jobexecutor.AuthenticatedAsyncJobHandler;
+import ru.citeck.ecos.flowable.jobexecutor.AuthenticatedTimerJobHandler;
 import ru.citeck.ecos.flowable.services.FlowableEngineProcessService;
 import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
@@ -135,9 +145,7 @@ public class FlowableConfiguration {
             dataSource.setMaxActive(maxActive);
             dataSource.setMaxOpenPreparedStatements(maxOpenPreparedStatements);
 
-            TransactionAwareDataSourceProxy wrappedDataSource = new TransactionAwareDataSourceProxy(dataSource);
-
-            return wrappedDataSource;
+            return dataSource;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -160,7 +168,9 @@ public class FlowableConfiguration {
                                                                   @Qualifier("flowableScriptNodeType") FlowableScriptNodeVariableType
                                                                           flowableScriptNodeVariableType,
                                                                   @Qualifier("flowableScriptNodeListType") FlowableScriptNodeListVariableType
-                                                                          flowableScriptNodeListVariableType) {
+                                                                          flowableScriptNodeListVariableType,
+                                                                  @Qualifier("nodeService") NodeService nodeService,
+                                                                  @Qualifier("ecosFlowableConfigurator") EcosFlowableConfigurator ecosFlowableConfigurator) {
         if (dataSource != null) {
             StandaloneProcessEngineConfiguration engineConfiguration = new StandaloneProcessEngineConfiguration();
             engineConfiguration.setDataSource(dataSource);
@@ -186,6 +196,26 @@ public class FlowableConfiguration {
             types.add(flowableScriptNodeVariableType);
             types.add(flowableScriptNodeListVariableType);
             engineConfiguration.setCustomPreVariableTypes(types);
+
+
+            List<JobHandler> customJobHandlers = engineConfiguration.getCustomJobHandlers();
+            customJobHandlers = customJobHandlers != null ? new ArrayList<>(customJobHandlers) : new ArrayList<>();
+
+            AsyncContinuationJobHandler asyncContinuationJobHandler = new AsyncContinuationJobHandler();
+            customJobHandlers.add(new AuthenticatedAsyncJobHandler(asyncContinuationJobHandler));
+
+            AsyncTriggerJobHandler asyncTriggerJobHandler = new AsyncTriggerJobHandler();
+            customJobHandlers.add(new AuthenticatedAsyncJobHandler(asyncTriggerJobHandler));
+
+            TriggerTimerEventJobHandler triggerTimerEventJobHandler = new TriggerTimerEventJobHandler();
+            customJobHandlers.add(new AuthenticatedTimerJobHandler(triggerTimerEventJobHandler, nodeService));
+
+            //engineConfiguration.setCustomJobHandlers(customJobHandlers);
+
+
+
+
+            engineConfiguration.addConfigurator(ecosFlowableConfigurator);
 
             return engineConfiguration;
         } else {
@@ -220,7 +250,7 @@ public class FlowableConfiguration {
      *
      * @param processEngineConfiguration Process engine configuration
      */
-    private void setMailConfiguration(StandaloneProcessEngineConfiguration processEngineConfiguration) {
+    private void setMailConfiguration(ProcessEngineConfigurationImpl processEngineConfiguration) {
         String mailHost = properties.getProperty(FLOWABLE_MAIL_SERVER_HOST);
         if (mailHost != null) {
             processEngineConfiguration.setMailServerHost(mailHost);
