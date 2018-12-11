@@ -191,12 +191,16 @@ import java.util.stream.Collectors;
     private List<QName> getAllNodeTypes(NodeRef nodeRef) {
         List<QName> nodeTypes = new ArrayList<>();
         QName baseType = nodeService.getType(nodeRef);
+        nodeTypes.add(baseType);
+        nodeTypes.addAll(nodeService.getAspects(nodeRef));
         ClassDefinition typeDef = dictionaryService.getClass(baseType);
+        if (typeDef != null) {
+            typeDef = typeDef.getParentClassDefinition();
+        }
         while (typeDef != null) {
             nodeTypes.add(typeDef.getName());
             typeDef = typeDef.getParentClassDefinition();
         }
-        nodeTypes.addAll(nodeService.getAspects(nodeRef));
         return nodeTypes;
     }
 
