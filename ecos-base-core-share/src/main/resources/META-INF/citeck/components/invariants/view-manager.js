@@ -43,7 +43,6 @@ define(['js/citeck/modules/utils/citeck'], function() {
        
         this.defaultBehaviour = this.behaviours.back;
 
-        YAHOO.Bubbling.on("node-view-submit-draft", this.onSubmit, this);
         YAHOO.Bubbling.on("node-view-submit", this.onSubmit, this);
         YAHOO.Bubbling.on("node-view-cancel", this.onCancel, this);
     };
@@ -61,7 +60,7 @@ define(['js/citeck/modules/utils/citeck'], function() {
         
         onSubmit: function(layer, args) {
             if(this.key != args[1].key) return;
-            var behaviours = layer === 'node-view-submit-draft' ? this.behavioursDraft : this.behaviours;
+            var behaviours = args[1].isDraft ? this.behavioursDraft : this.behaviours;
             var node = args[1].node;
             var isDraft = node.impl().getAttribute('invariants:isDraft').value();
 

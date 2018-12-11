@@ -33,7 +33,7 @@
         </property>
 
         <property name="idocs:registrationNumber">
-            <invariant on="relevant" language="javascript">!!node.properties["orders:skipRegistration"]</invariant>
+            <invariant on="protected" language="javascript">!node.properties["orders:skipRegistration"]</invariant>
         </property>
 
         <property name="idocs:registrationDate">
