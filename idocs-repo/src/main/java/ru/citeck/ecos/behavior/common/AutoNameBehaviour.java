@@ -22,6 +22,7 @@ import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.PolicyScope;
@@ -36,27 +37,27 @@ import org.alfresco.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import ru.citeck.ecos.model.ConfigModel;
 import ru.citeck.ecos.model.IdocsTemplateModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 public class AutoNameBehaviour implements 
     NodeServicePolicies.OnUpdatePropertiesPolicy,
     NodeServicePolicies.OnMoveNodePolicy,
-    VersionServicePolicies.OnCreateVersionPolicy
+    VersionServicePolicies.OnCreateVersionPolicy {
 
-{
     private static Log logger = LogFactory.getLog(AutoNameBehaviour.class);
     
-    private static ConcurrentHashMap<Object,Boolean> nameCache;
+    private static ConcurrentHashMap<Object, Boolean> nameCache;
     
     static {
-        nameCache = new ConcurrentHashMap<Object,Boolean>(100);
+        nameCache = new ConcurrentHashMap<>(100);
     }
     
     // constants
@@ -90,30 +91,29 @@ public class AutoNameBehaviour implements
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnMoveNodePolicy.QNAME, className, moveBehaviour);
         OrderedBehaviour createBehaviour = new OrderedBehaviour(this, "onCreateVersion", NotificationFrequency.TRANSACTION_COMMIT, order);
         policyComponent.bindClassBehaviour(VersionServicePolicies.OnCreateVersionPolicy.QNAME, className, createBehaviour);
-        if(appendExtension == null) {
-            if(dictionaryService.isSubClass(className, ContentModel.TYPE_CONTENT)) {
-                appendExtension = true;
-            } else {
-                appendExtension = false;
-            }
+        if (appendExtension == null) {
+            appendExtension = dictionaryService.isSubClass(className, ContentModel.TYPE_CONTENT);
         }
     }
 
     @Override
     public void onUpdateProperties(NodeRef nodeRef,
-            Map<QName, Serializable> before, Map<QName, Serializable> after) {
+                                   Map<QName, Serializable> before,
+                                   Map<QName, Serializable> after) {
         updateName(nodeRef, false);
     }
 
     @Override
     public void onMoveNode(ChildAssociationRef oldChildAssocRef,
-            ChildAssociationRef newChildAssocRef) {
+                           ChildAssociationRef newChildAssocRef) {
         updateName(newChildAssocRef.getChildRef(), true);
     }
 
     @Override
-    public void onCreateVersion(QName classRef, NodeRef nodeRef,
-            Map<String, Serializable> versionProperties, PolicyScope nodeDetails) {
+    public void onCreateVersion(QName classRef,
+                                NodeRef nodeRef,
+                                Map<String, Serializable> versionProperties,
+                                PolicyScope nodeDetails) {
         updateName(nodeRef, false);
     }
 
@@ -139,26 +139,35 @@ public class AutoNameBehaviour implements
             String oldExtension = pos >= 0 ? oldName.substring(pos) : EMPTY_EXTENSION;
 
             String newName = AuthenticationUtil.runAsSystem(() -> {
-				HashMap<String,Object> model = new HashMap<String,Object>(1);
-				model.put(nodeVariable, nodeRef);
-				if (nameTemplateJS != null) {
-					return scriptService.executeScriptString(nameTemplateJS, model).toString();
-				} else {
-					return templateService.processTemplateString("freemarker", nameTemplate, model);
-				}
-			});
+
+                HashMap<String,Object> model = new HashMap<>(1);
+
+                model.put(nodeVariable, nodeRef);
+
+                if (nameTemplateJS != null) {
+
+                    model.put("msg", (Function<String, String>) key -> {
+                        String message = I18NUtil.getMessage(key, Locale.getDefault());
+                        return message != null ? message : key;
+                    });
+
+                    return scriptService.executeScriptString(nameTemplateJS, model).toString();
+                } else {
+                    return templateService.processTemplateString("freemarker", nameTemplate, model);
+                }
+            });
 
             // automatically replace all restricted patterns in name:
             boolean matches;
             do {
                 matches = false;
-                for(String restrictedPattern : restrictedPatterns.keySet()) {
-                    if(newName.matches(".*" + restrictedPattern + ".*")) {
+                for (String restrictedPattern : restrictedPatterns.keySet()) {
+                    if (newName.matches(".*" + restrictedPattern + ".*")) {
                         newName = newName.replaceAll(restrictedPattern, restrictedPatterns.get(restrictedPattern));
                         matches = true;
                     }
                 }
-            } while(matches);
+            } while (matches);
 
             // if empty name returned
             // do not perform rename
@@ -171,7 +180,7 @@ public class AutoNameBehaviour implements
             if (appendExtension) {
                 extension = RepoUtils.getExtension(nodeRef, EMPTY_EXTENSION, nodeService, mimetypeService);
             }
-            String oldGeneratedName = (String)nodeService.getProperty(nodeRef, IdocsTemplateModel.PROP_GENERATED_NAME);
+            String oldGeneratedName = (String) nodeService.getProperty(nodeRef, IdocsTemplateModel.PROP_GENERATED_NAME);
             boolean equal = newName.equals(oldGeneratedName) && extension.equals(oldExtension);
 
             // change name if new name differs from old name
@@ -180,63 +189,67 @@ public class AutoNameBehaviour implements
                 final String finalBaseName = newName;
                 final String finalExtension = extension;
 
-                AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-                    @Override
-                    public Void doWork() throws Exception {
-                        nodeService.setProperty(nodeRef, IdocsTemplateModel.PROP_GENERATED_NAME, finalBaseName);
-                        ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(nodeRef);
-                        NodeRef parentRef = parentAssoc.getParentRef();
-                        int index = 0;
-                        
-                        // find unique name:
-                        String newName = finalBaseName + finalExtension;
-                        while (true) {
-                            NodeRef existingNode = nodeService.getChildByName(parentRef, parentAssoc.getTypeQName(), newName);
-                            if(nodeRef.equals(existingNode)) break;
-                            if(existingNode == null) {
-                                
-                                // check name cache
-                                final Object key = new Pair<NodeRef,String>(parentRef, newName);
-                                Boolean isFree = nameCache.putIfAbsent(key, true) == null;
-                                
-                                if(isFree) {
-                                    AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
-                                        @Override
-                                        public void afterCommit() {
-                                            nameCache.remove(key);
-                                        }
-                                        @Override
-                                        public void afterRollback() {
-                                            nameCache.remove(key);
-                                        }
-                                    });
-                                    
-                                    try {
-                                        if(logger.isDebugEnabled()) {
-                                            logger.debug(Thread.currentThread().getName() + ": trying to set name: " + newName);
-                                        }
-                                        
-                                        nodeService.setProperty(nodeRef, ContentModel.PROP_NAME, newName);
-                                        
-                                        if(logger.isDebugEnabled()) {
-                                            logger.debug(Thread.currentThread().getName() + ": success");
-                                        }
-                                        break;
-                                    } catch(DuplicateChildNodeNameException e) {
-                                        logger.warn(Thread.currentThread().getName() + ": failure to set name " + newName);
-                                        // proceed
+                AuthenticationUtil.runAsSystem(() -> {
+
+                    nodeService.setProperty(nodeRef, IdocsTemplateModel.PROP_GENERATED_NAME, finalBaseName);
+                    ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(nodeRef);
+                    NodeRef parentRef = parentAssoc.getParentRef();
+                    int index = 0;
+
+                    // find unique name:
+                    String newName1 = finalBaseName + finalExtension;
+                    while (true) {
+                        NodeRef existingNode = nodeService.getChildByName(parentRef,
+                                                                          parentAssoc.getTypeQName(),
+                                                                          newName1);
+                        if(nodeRef.equals(existingNode)) {
+                            break;
+                        }
+                        if(existingNode == null) {
+
+                            // check name cache
+                            final Object key = new Pair<>(parentRef, newName1);
+                            boolean isFree = nameCache.putIfAbsent(key, true) == null;
+
+                            if (isFree) {
+                                AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
+                                    @Override
+                                    public void afterCommit() {
+                                        nameCache.remove(key);
                                     }
+                                    @Override
+                                    public void afterRollback() {
+                                        nameCache.remove(key);
+                                    }
+                                });
+
+                                try {
+                                    if (logger.isDebugEnabled()) {
+                                        logger.debug(Thread.currentThread().getName() +
+                                                     ": trying to set name: " + newName1);
+                                    }
+
+                                    nodeService.setProperty(nodeRef, ContentModel.PROP_NAME, newName1);
+
+                                    if (logger.isDebugEnabled()) {
+                                        logger.debug(Thread.currentThread().getName() + ": success");
+                                    }
+                                    break;
+                                } catch (DuplicateChildNodeNameException e) {
+                                    logger.warn(Thread.currentThread().getName() +
+                                                ": failure to set name " + newName1);
+                                    // proceed
                                 }
                             }
-                            index++;
-                            newName = finalBaseName + " (" + index + ")" + finalExtension;
                         }
-                        return null;
+                        index++;
+                        newName1 = finalBaseName + " (" + index + ")" + finalExtension;
                     }
+                    return null;
                 });
             }
         } catch (RuntimeException e) {
-            if(!ignoreRenameFailure) {
+            if (!ignoreRenameFailure) {
                 throw e;
             }
         }

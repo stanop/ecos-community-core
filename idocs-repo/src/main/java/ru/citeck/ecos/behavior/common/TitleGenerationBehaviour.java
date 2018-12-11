@@ -23,33 +23,31 @@ import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
-import org.alfresco.service.cmr.repository.MLText;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.TemplateService;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * @author Alexander Nemerov
  * created on 03.03.2015.
  */
-public class TitleGenerationBehaviour implements
-        NodeServicePolicies.OnUpdatePropertiesPolicy {
+public class TitleGenerationBehaviour implements NodeServicePolicies.OnUpdatePropertiesPolicy {
 
     private static final String TITLE_UPDATE_TIME_KEY = TitleGenerationBehaviour.class.toString();
+    private static final String JAVASCRIPT_ENGINE = "javascript";
 
     // common properties
     private PolicyComponent policyComponent;
     private NodeService nodeService;
     private NodeService mlAwareNodeService;
     private TemplateService templateService;
+    private ScriptService scriptService;
 
     // distinct properties
     private QName className;
@@ -57,11 +55,21 @@ public class TitleGenerationBehaviour implements
     private String templateEngine;
     private Map<Locale, String> titleMLTemplate = new HashMap<>();
     private Map<Locale, String> descriptionMLTemplate = new HashMap<>();
+
 	private int order = 80;
 
     public void init() {
-		OrderedBehaviour updateBehaviour = new OrderedBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT, order);
-        policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, className, updateBehaviour);
+		OrderedBehaviour updateBehaviour = new OrderedBehaviour(
+		        this,
+                "onUpdateProperties",
+                NotificationFrequency.TRANSACTION_COMMIT,
+                order
+        );
+        policyComponent.bindClassBehaviour(
+                NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,
+                className,
+                updateBehaviour
+        );
     }
 
     @Override
@@ -88,13 +96,15 @@ public class TitleGenerationBehaviour implements
     }
 
     private MLText getProcessedMLText(final NodeRef nodeRef, final Map<Locale, String> mlText) {
-        if(mlText == null) return null;
+        if (mlText == null) {
+            return null;
+        }
         MLText result = new MLText();
-        for(Map.Entry<Locale, String> entry : mlText.entrySet()) {
+        for (Map.Entry<Locale, String> entry : mlText.entrySet()) {
             Locale locale = entry.getKey();
             String template = entry.getValue();
-            if(locale != null && template != null) {
-                String processedString = getProcessedString(nodeRef, template);
+            if (locale != null && template != null) {
+                String processedString = getProcessedString(nodeRef, template, locale);
                 if(processedString != null && !processedString.isEmpty()) {
                     result.put(locale, processedString);
                 }
@@ -103,13 +113,24 @@ public class TitleGenerationBehaviour implements
         return result;
     }
 
-    private String getProcessedString(final NodeRef nodeRef, final String template) {
-        if (template == null) {return null;}
-        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<String>() {
-            @Override
-            public String doWork() throws Exception {
-                HashMap<String, Object> model = new HashMap<String, Object>(1);
-                model.put(nodeVariable, nodeRef);
+    private String getProcessedString(final NodeRef nodeRef, final String template, final Locale locale) {
+        if (template == null) {
+            return null;
+        }
+        return AuthenticationUtil.runAsSystem(() -> {
+
+            HashMap<String, Object> model = new HashMap<>(2);
+            model.put(nodeVariable, nodeRef);
+
+            if (JAVASCRIPT_ENGINE.equals(templateEngine)) {
+
+                model.put("msg", (Function<String, String>) key -> {
+                    String message = I18NUtil.getMessage(key, locale);
+                    return message != null ? message : key;
+                });
+
+                return (String) scriptService.executeScriptString(JAVASCRIPT_ENGINE, template, model);
+            } else {
                 return templateService.processTemplateString(templateEngine, template, model);
             }
         });
@@ -118,20 +139,18 @@ public class TitleGenerationBehaviour implements
     private void setProperty(final NodeRef nodeRef, final QName property,
                              final Map<Locale, String> mlTemplate) {
         MLText mlValue = getProcessedMLText(nodeRef, mlTemplate);
-        if(mlValue != null && mlValue.size() > 0) {
+        if (mlValue != null && mlValue.size() > 0) {
             setProperty(nodeRef, property, mlValue);
         }
     }
 
-    private Void setProperty(final NodeRef nodeRef, final QName property, final MLText value) {
-        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            public Void doWork() throws Exception {
-                Serializable currentValue = mlAwareNodeService.getProperty(nodeRef, property);
-                if (!Objects.equals(value, currentValue)) {
-                    nodeService.setProperty(nodeRef, property, value);
-                }
-                return null;
+    private void setProperty(final NodeRef nodeRef, final QName property, final MLText value) {
+        AuthenticationUtil.runAsSystem(() -> {
+            Serializable currentValue = mlAwareNodeService.getProperty(nodeRef, property);
+            if (!Objects.equals(value, currentValue)) {
+                nodeService.setProperty(nodeRef, property, value);
             }
+            return null;
         });
     }
 
@@ -151,6 +170,10 @@ public class TitleGenerationBehaviour implements
         this.templateService = templateService;
     }
 
+    public void setScriptService(ScriptService scriptService) {
+        this.scriptService = scriptService;
+    }
+
     public void setClassName(QName className) {
         this.className = className;
     }
@@ -164,7 +187,12 @@ public class TitleGenerationBehaviour implements
     }
 
     public void setTitleTemplate(String titleTemplate) {
-        titleMLTemplate.put(I18NUtil.getContentLocale(), titleTemplate);
+        if (titleTemplate.contains("msg.apply(")) {
+            titleMLTemplate.put(new Locale("en", "US"), titleTemplate);
+            titleMLTemplate.put(new Locale("ru", "RU"), titleTemplate);
+        } else {
+            titleMLTemplate.put(I18NUtil.getContentLocale(), titleTemplate);
+        }
     }
 
     public void setTitleMLTemplate(Map<Locale, String> titleTemplate) {
@@ -181,4 +209,6 @@ public class TitleGenerationBehaviour implements
     public void setOrder(int order) {
         this.order = order;
     }
+
+
 }
