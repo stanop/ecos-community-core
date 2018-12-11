@@ -87,6 +87,10 @@
                     <title>Пропуск этапа регистрации</title>
                     <type>d:boolean</type>
                 </property>
+                <property name="orders:scanRequired">
+                    <type>d:boolean</type>
+                    <default>true</default>
+                </property>
             </properties>
             <associations>
                 <association name="orders:toEmployee">

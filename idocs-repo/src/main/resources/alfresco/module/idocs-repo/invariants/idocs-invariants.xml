@@ -29,25 +29,10 @@
         <property name="idocs:bankTitle">
             <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
         </property>
-        <property name="idocs:bankTitleEng">
-            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
-        </property>
         <property name="idocs:bankId">
             <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
         </property>
         <property name="idocs:accountNumber">
-            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
-        </property>
-        <property name="idocs:swift">
-            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
-        </property>
-        <property name="idocs:corresponentBankTitle">
-            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
-        </property>
-        <property name="idocs:correspondentBankId">
-            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
-        </property>
-        <property name="idocs:corresponentAccountNumber">
             <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
         </property>
     </type>

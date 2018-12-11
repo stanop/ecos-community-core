@@ -2641,7 +2641,9 @@ define([
         .method('submitDraft', function() {
             if (this.node().hasAspect("invariants:draftAspect")) {
                 this.node().impl().isDraft(true);
-                this.broadcast('node-view-submit-draft');
+                this.broadcast('node-view-submit', {
+                    isDraft: true
+                });
             }
         })
 
@@ -2649,12 +2651,22 @@ define([
             this.broadcast('node-view-cancel');
         })
 
-        .method('broadcast', function(eventName) {
-            YAHOO.Bubbling.fire(eventName, {
+        .method('broadcast', function(eventName, extraParams) {
+            var obj = {
                 key: this.key(),
                 runtime: this,
                 node: this.node()
-            });
+            };
+
+            for (var paramName in extraParams) {
+                if (!extraParams.hasOwnProperty(paramName)) {
+                    continue;
+                }
+
+                obj[paramName] = extraParams[paramName];
+            }
+
+            YAHOO.Bubbling.fire(eventName, obj);
         })
 
         .method('terminate', function() {

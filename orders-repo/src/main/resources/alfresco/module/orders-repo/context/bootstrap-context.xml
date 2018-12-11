@@ -13,6 +13,7 @@
         <property name="labels">
             <list>
                 <value>alfresco/module/orders-repo/messages/orders</value>
+                <value>alfresco/module/orders-repo/messages/orders-common</value>
             </list>
         </property>
     </bean>
@@ -85,11 +86,11 @@
         </property>
     </bean>
 
-    <bean id="orders.spacesBootstrap" parent="spacesStoreImporter"
-          singleton="true">
-        <property name="useExistingStore">
-            <value>true</value> <!-- set this to false after data will get imported on production -->
-        </property>
+    <bean id="orders.spacesBootstrap" parent="orders.import-spaces">
+        <property name="name" value="orders.spacesBootstrap" />
+        <property name="description" value="orders.spacesBootstrap" />
+        <property name="sinceVersion" value="0.1" />
+        <property name="appliesFromVersion" value="0.1" />
         <property name="bootstrapViews">
             <list>
                 <props>

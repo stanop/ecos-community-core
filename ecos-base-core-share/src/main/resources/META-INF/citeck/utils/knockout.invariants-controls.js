@@ -69,6 +69,10 @@ ko.components.register("help", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);
         var self = this;
+
+        self.containerZIndex = ko.observable(0);
+        self.labelZIndex = ko.observable(0);
+
         // private methods
         this._createTooltip = _.bind(function(text) {
             if (!this.tooltip) {
@@ -87,6 +91,10 @@ ko.components.register("help", {
                 this.tooltip.contextMouseOverEvent.subscribe(function() {
                     var parent = $("#" + self.id).closest(".yui-panel-container"),
                         zindex = parent.css("z-index") ? parseInt(parent.css("z-index")) + 1 : 10;
+
+                    self.containerZIndex(zindex + 1);
+                    self.labelZIndex(zindex - 1);
+
                     self.tooltip.cfg.setProperty("zIndex", zindex);
                 }, this);
             }
@@ -110,8 +118,10 @@ ko.components.register("help", {
         // create tooltip if text already calculated
         this._createTooltip(this.text());
     },
-    template:
-       '<span data-bind="attr: { id: id }, if: text, click: onclick">?</span>'
+    template: '\
+        <span data-bind="style: { \'z-index\': containerZIndex, position: \'relative\' }, attr: { id: id }, if: text, click: onclick">\
+            <span data-bind="style: { \'z-index\': labelZIndex, position: \'relative\' }">?</span>\
+        </span>'
 });
 
 // ---------------
@@ -228,6 +238,31 @@ ko.components.register("number-generate", {
 // NUMBER
 // ---------------
     
+ko.bindingHandlers.numericKeyInput = {
+    init: function (element) {
+        $(element).on('keydown', function (event) {
+            var keyCode = event.keyCode;
+            var allowKeyCodes = [
+                46, //delete
+                8, //backspace
+                9, //tab
+                27, //escape
+                13, //enter
+                188, //comma
+                190, //period
+                110, //decimal point
+                35,36,37,38,39 //end, home, left arrow, up arrow, right arrow
+            ];
+
+            if (allowKeyCodes.includes(keyCode) || (keyCode === 65 && event.ctrlKey === true)) {
+                return null;
+            } else if (event.shiftKey || (keyCode < 48 || keyCode > 57) && (keyCode < 96 || keyCode > 105)) {
+                event.preventDefault();
+            }
+        });
+    }
+};
+
 ko.components.register("number", {
     viewModel: function(params) {
         var self = this;
