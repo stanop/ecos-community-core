@@ -237,7 +237,7 @@ ko.components.register("number-generate", {
 // ---------------
 // NUMBER
 // ---------------
-
+    
 ko.bindingHandlers.numericKeyInput = {
     init: function (element) {
         $(element).on('keydown', function (event) {
@@ -275,6 +275,19 @@ ko.components.register("number", {
 
         this.validation = function(data, event) {
             var newValue = document.getElementById(self.id).value + event.key;
+            var keyCode = event.keyCode;
+            var allowKeyCodes = [
+                46, //delete
+                8, //backspace
+                9, //tab
+                27, //escape
+                13, //enter
+                35,36,37,38,39 //end, home, left arrow, up arrow, right arrow
+            ];
+
+            if (allowKeyCodes.includes(keyCode) || (keyCode === 65 && event.ctrlKey === true)) {
+                return true;
+            }
 
             newValue = newValue.replace(',', '.');
 
@@ -289,7 +302,7 @@ ko.components.register("number", {
         };
     },
     template:
-       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="numericKeyInput, textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
+       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keydown: validation }" />'
 });
 
 // ---------------
