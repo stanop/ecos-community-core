@@ -17,11 +17,11 @@ require(['js/citeck/modules/utils/citeck', 'xstyle!citeck/mobile/mobile.css'], f
             transformForm(true);
             trasformCard(true);
 
-            $('.grid').css({visibility: 'visible'}); // hack to fix mobile styles jumping
+            $('.mobile .grid').css({visibility: 'visible'}); // hack to fix mobile styles jumping
         });
     } else {
         $(document).ready(function() {
-            $('.grid').css({visibility: 'visible'}); // hack to fix mobile styles jumping
+            $('.mobile .grid').css({visibility: 'visible'}); // hack to fix mobile styles jumping
 
             var mobileWidth = (function() {
                 var defaultMobileWidth = { "default": 525, "card": 700 }, 

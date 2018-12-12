@@ -3,7 +3,9 @@
     <head>
         <meta http-equiv="Cache-Control" content="private" >
         <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-        <meta id="metaviewport" name=viewport content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+        <#if citeckUtils.isMobile()>
+            <meta id="metaviewport" name=viewport content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+        </#if>
 
         <title>
             <#if metaPage??>
@@ -98,7 +100,7 @@
         </style>
     </head>
 
-    <body id="Share" class="yui-skin-${theme} alfresco-share ${type!} claro mobile">
+    <body id="Share" class="yui-skin-${theme} alfresco-share ${type!} claro <#if citeckUtils.isMobile()>mobile</#if>">
 
         <div id="page-content-root">
             <div id="card-details-root"></div>
