@@ -98,6 +98,10 @@
   top: 7px;
 }
 
+#cardlet-remote-node-view-container .template-row .form-field-inline-mode-changer.save-mode {
+  top: 0;
+}
+
 @keyframes fadein {
     from { opacity: 0; }
     to   { opacity: 1; }
