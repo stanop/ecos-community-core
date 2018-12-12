@@ -13,22 +13,18 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.flowable.engine.*;
-import org.flowable.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.flowable.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.flowable.engine.impl.jobexecutor.AsyncContinuationJobHandler;
 import org.flowable.engine.impl.jobexecutor.AsyncTriggerJobHandler;
 import org.flowable.engine.impl.jobexecutor.TriggerTimerEventJobHandler;
 import org.flowable.engine.parse.BpmnParseHandler;
 import org.flowable.job.service.JobHandler;
-import org.flowable.spring.SpringProcessEngineConfiguration;
 import org.flowable.variable.api.types.VariableType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.jta.JtaTransactionManager;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
@@ -169,12 +165,11 @@ public class FlowableConfiguration {
                                                                           flowableScriptNodeVariableType,
                                                                   @Qualifier("flowableScriptNodeListType") FlowableScriptNodeListVariableType
                                                                           flowableScriptNodeListVariableType,
-                                                                  @Qualifier("nodeService") NodeService nodeService,
-                                                                  @Qualifier("ecosFlowableConfigurator") EcosFlowableConfigurator ecosFlowableConfigurator) {
+                                                                  @Qualifier("nodeService") NodeService nodeService) {
         if (dataSource != null) {
             StandaloneProcessEngineConfiguration engineConfiguration = new StandaloneProcessEngineConfiguration();
             engineConfiguration.setDataSource(dataSource);
-            engineConfiguration.setAsyncExecutorActivate(false);
+            engineConfiguration.setAsyncExecutorActivate(true);
             engineConfiguration.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE);
 
             Set<Class<?>> customMybatisMappers = new HashSet<>();
@@ -210,12 +205,9 @@ public class FlowableConfiguration {
             TriggerTimerEventJobHandler triggerTimerEventJobHandler = new TriggerTimerEventJobHandler();
             customJobHandlers.add(new AuthenticatedTimerJobHandler(triggerTimerEventJobHandler, nodeService));
 
-            //engineConfiguration.setCustomJobHandlers(customJobHandlers);
+            engineConfiguration.setCustomJobHandlers(customJobHandlers);
 
-
-
-
-            engineConfiguration.addConfigurator(ecosFlowableConfigurator);
+            engineConfiguration.setExe
 
             return engineConfiguration;
         } else {
@@ -250,7 +242,7 @@ public class FlowableConfiguration {
      *
      * @param processEngineConfiguration Process engine configuration
      */
-    private void setMailConfiguration(ProcessEngineConfigurationImpl processEngineConfiguration) {
+    private void setMailConfiguration(StandaloneProcessEngineConfiguration processEngineConfiguration) {
         String mailHost = properties.getProperty(FLOWABLE_MAIL_SERVER_HOST);
         if (mailHost != null) {
             processEngineConfiguration.setMailServerHost(mailHost);
