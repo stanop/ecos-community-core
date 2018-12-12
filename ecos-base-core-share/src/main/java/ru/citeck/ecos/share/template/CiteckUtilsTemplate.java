@@ -10,6 +10,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.extensions.webscripts.processor.BaseProcessorExtension;
+import ru.citeck.ecos.share.utils.MobileUADetector;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,6 +61,10 @@ public class CiteckUtilsTemplate extends BaseProcessorExtension {
             }
         }
         return cacheBust;
+    }
+
+    public TemplateBooleanModel isMobile() {
+        return MobileUADetector.isMobile() ? TemplateBooleanModel.TRUE : TemplateBooleanModel.FALSE;
     }
 
     public String getAikauVersion() {
