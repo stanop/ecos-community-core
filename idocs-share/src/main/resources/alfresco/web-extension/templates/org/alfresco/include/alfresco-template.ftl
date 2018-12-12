@@ -13,7 +13,9 @@
 <head>
    <title><@region id="head-title" scope="global" chromeless="true"/></title>
    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-   <meta id="metaviewport" name=viewport content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+   <#if citeckUtils.isMobile()>
+      <meta id="metaviewport" name=viewport content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+   </#if>
    <#-- This MUST be placed before the <@outputJavaScript> directive to ensure that the Alfresco namespace
         gets setup before any of the other Alfresco JavaScript dependencies try to make use of it. -->
    <@markup id="messages">
@@ -70,7 +72,7 @@
    Pulls in main template body.
 -->
 <#macro templateBody type="">
-<body id="Share" class="yui-skin-${theme} alfresco-share ${type} claro mobile">
+<body id="Share" class="yui-skin-${theme} alfresco-share ${type} claro <#if citeckUtils.isMobile()>mobile</#if>">
    <div id="page-content-root"> <#-- page-content-root start -->
       <div class="sticky-wrapper" >
          <div id="doc3">
