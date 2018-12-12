@@ -1600,6 +1600,16 @@ define([
                 this.value(value);
             }
         })
+        .computed('invariantValues', {
+            read: function() {
+                var values = this.convertValue(this.invariantValue(), true);
+                return _.sortBy(values, this.getValueOrder, this);
+            },
+            write: function(value) {
+                value = _.isArray(value) ? _.difference(value, [undefined]) : value;
+                this.value(value);
+            }
+        })
         .computed('lastValue', {
             read: function() {
                 return this.single() ? this.value() :
