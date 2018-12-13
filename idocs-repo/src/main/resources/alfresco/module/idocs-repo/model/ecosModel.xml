@@ -84,6 +84,17 @@
 
     <aspects>
 
+        <aspect name="ecos:hasStartStopDate">
+            <properties>
+                <property name="ecos:startDate">
+                    <type>d:datetime</type>
+                </property>
+                <property name="ecos:stopDate">
+                    <type>d:datetime</type>
+                </property>
+            </properties>
+        </aspect>
+
         <aspect name="ecos:hasResponsible">
             <associations>
                 <association name="ecos:responsible">
