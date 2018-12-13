@@ -4,8 +4,8 @@
 @import "/share/res/themes/citeckTheme/custom-mobile.css";
 
 /* hack to fix mobile styles jumping */
-.grid {
-    display: none;
+.mobile .grid {
+    visibility: hidden;
 }
 
  /* Site-wide Styles */
