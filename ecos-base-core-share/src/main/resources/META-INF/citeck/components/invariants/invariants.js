@@ -1604,10 +1604,6 @@ define([
             read: function() {
                 var values = this.convertValue(this.invariantValue(), true);
                 return _.sortBy(values, this.getValueOrder, this);
-            },
-            write: function(value) {
-                value = _.isArray(value) ? _.difference(value, [undefined]) : value;
-                this.value(value);
             }
         })
         .computed('lastValue', {
