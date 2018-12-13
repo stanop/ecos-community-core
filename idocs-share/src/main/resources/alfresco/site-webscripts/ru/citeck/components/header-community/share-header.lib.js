@@ -109,3 +109,37 @@ function addSubWidgetsToSectionSlideMenu(sectionId, newItem, insetToTop) {
         });
     }
 }
+
+function isShouldDisplayLeftMenuForUser(userName) {
+    var userGroups = getGroupsForUser(userName);
+    return (getMenuConfig("default-ui-main-menu") == "left") && isShouldDisplayLeftMenu(userGroups);
+}
+
+
+function isShouldDisplayLeftMenu(userGroups) {
+
+    var leftMenuAccessGroups = getMenuConfig("default-ui-left-menu-access-groups");
+
+    if (!leftMenuAccessGroups) {
+        // allow if the "default-ui-left-menu-access-group" config is not defined or empty
+        return true;
+    }
+
+    userGroups = userGroups.map(function (item) {
+        return item.fullName;
+    });
+
+    return leftMenuAccessGroups.split(',').map(function (item) {
+        return item.trim();
+    }).some(function (item) {
+        return userGroups.indexOf(item) >= 0;
+    });
+}
+
+function getGroupsForUser(username) {
+    var result = remote.call("/api/orgstruct/people/" + encodeURIComponent(username) + "/groups");
+    if (result.status == 200 && result != "{}") {
+        return eval('(' + result + ')');
+    }
+    return [];
+}
