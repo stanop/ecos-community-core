@@ -8,10 +8,9 @@
             <value><![CDATA[(function() {
                 var nameBase = msg.apply("orders.internal.name.base");
                 var status = caseStatusService.getStatus(node);
-                var isRegistered = status == 'active';
-                var nameNum;
-                if (isRegistered) {
-                    nameNum = "№ " + node.properties["idocs:registrationNumber"];
+                var regNumber = node.properties["idocs:registrationNumber"];
+                if (regNumber) {
+                    nameNum = "№ " + regNumber;
                 } else {
                     nameNum = msg.apply("orders.internal.name.draft-number");
                 }
@@ -27,10 +26,9 @@
             <value><![CDATA[(function() {
                 var nameBase = msg.apply("orders.internal.name.base");
                 var status = caseStatusService.getStatus(node);
-                var isRegistered = status == 'active';
-                var nameNum;
-                if (isRegistered) {
-                    nameNum = "№ " + node.properties["idocs:registrationNumber"];
+                var regNumber = node.properties["idocs:registrationNumber"];
+                if (regNumber) {
+                    nameNum = "№ " + regNumber;
                 } else {
                     nameNum = msg.apply("orders.internal.name.draft-number");
                 }
