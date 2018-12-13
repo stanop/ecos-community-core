@@ -14,6 +14,7 @@
     <#assign needPullForDuplicate = "" />
 </#if>
 <#assign cloneParent = params.cloneParent!"false" />
+<#assign useInvariantValues = params.useInvariantValues!"false" />
 
 <#-- Parametes:
         * journalType - columns is defaultAttributes ("files-numenclature") [optional]
@@ -81,7 +82,11 @@
 
             </tr>
         </thead>
-        <tbody data-bind="foreach: multipleValues">
+        <#if useInvariantValues == "true">
+            <tbody data-bind="foreach: invariantValues">
+        <#else>
+            <tbody data-bind="foreach: multipleValues">
+        </#if>
             <!-- ko if: $data.impl -->
                 <!-- ko with: impl -->
                     <#if params.highlightedColumnMarker??>

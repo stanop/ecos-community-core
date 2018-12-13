@@ -7,8 +7,8 @@ function onCaseCreate() {
     document.properties["orders:skipRegistration"] = skipRegValue;
     document.properties["orders:lastCorrectOutcome"] = "";
     document.save();
-    if (!skipRegValue && !document.properties["idocs:registrationNumber"]) {
-        var template = search.findNode("workspace://SpacesStore/orders-internal-number-template");
+    if (skipRegValue && !document.properties["idocs:registrationNumber"]) {
+        var template = search.findNode("workspace://SpacesStore/internal-regNumber-template");
         var registrationNumber = enumeration.getNumber(template, document);
         document.properties['idocs:registrationNumber'] = registrationNumber;
         document.properties['idocs:registrationDate'] = new Date();
@@ -34,18 +34,22 @@ function beforeFamiliarization() {
     }
 
     var performers = additionalData.assocs['iEvent:performers'];
-    if (!performers.length) throw "Исполнители не выбраны";
+    if (!performers.length) {
+        throw "Исполнители не выбраны";
+    }
 
-    var expandedPerformers = null;
+    var expandedPerformers = new Packages.java.util.HashSet();
     var authorityUtils = services.get('authorityUtils');
 
-    for (var perfId in performers) {
+    for (var perfIdx in performers) {
 
-        var performer = performers[perfId];
-        var users = authorityUtils.getContainedUsers(performer.nodeRef, false);
-        if (expandedPerformers == null) {
-            expandedPerformers = new Packages.java.util.HashSet(users);
+        var performer = performers[perfIdx];
+
+        var userName = performer.properties['cm:userName'];
+        if (userName) {
+            expandedPerformers.add(userName);
         } else {
+            var users = authorityUtils.getContainedUsers(performer.nodeRef, false);
             expandedPerformers.addAll(users);
         }
     }

@@ -106,6 +106,7 @@
                     <permission allow="true">Write</permission>
                 </permissions>
                 <evaluator>evaluator.doclib.ecos.document</evaluator>
+                <evaluator negate="true">evaluator.doclib.ecos.case</evaluator>
             </action>
 
             <!-- Start perform workflow -->

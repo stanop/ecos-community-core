@@ -41,6 +41,7 @@
                 <invariant on="description" language="javascript">
                     Alfresco.util.message('orders.view.registrationNumber.description')
                 </invariant>
+                <invariant on="protected" language="javascript">view.mode == 'create'</invariant>
             </field>
         </view>
 

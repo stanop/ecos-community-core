@@ -1155,6 +1155,11 @@
   width: 46%;
 }
 
+.yui-panel-container.shadow .invariants-form .template-table .template-row .template-date input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 
 /* datetime */
 .invariants-form .template-table .template-row .template-datetime input[type="text"] {
