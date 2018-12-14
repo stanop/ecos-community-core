@@ -107,4 +107,47 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.ecos-case-folder-rules" parent="idocs.import-spaces.3-6-0">
+        <property name="name" value="ecos-case-folder-rules" />
+        <property name="description" value="ecos-case-folder-rules" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.site.cases.add-case-types-to-site" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/app:scripts</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/content.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/ecos-case-folder-permission-config</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/ecos-case-folder-permission-config</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:cases/cm:documentLibrary/tk:cat-doc-type-general-case</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/rules/rule-folder.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:cases/cm:documentLibrary/tk:cat-doc-type-general-case/rule:ruleFolder</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/rules/rule-inbound.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/ecos-case-folder-permission-config</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:cases/cm:documentLibrary/tk:cat-doc-type-general-case/rule:ruleFolder/rule:rules-move-ecos-case-to-creator-directory/rule:action</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/rules/action-script.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/ecos-case-folder-permission-config</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>
