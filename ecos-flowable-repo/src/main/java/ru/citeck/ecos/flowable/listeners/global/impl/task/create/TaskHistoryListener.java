@@ -25,10 +25,7 @@ import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 import ru.citeck.ecos.flowable.utils.FlowableListenerUtils;
 import ru.citeck.ecos.history.HistoryEventType;
 import ru.citeck.ecos.history.HistoryService;
-import ru.citeck.ecos.model.CasePerformModel;
-import ru.citeck.ecos.model.HistoryModel;
-import ru.citeck.ecos.model.ICaseRoleModel;
-import ru.citeck.ecos.model.ICaseTaskModel;
+import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.role.CaseRoleService;
 
 import java.io.Serializable;
@@ -158,6 +155,9 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         eventProperties.put(HistoryModel.PROP_TASK_POOLED_ACTORS, pooledActors);
         eventProperties.put(HistoryModel.PROP_TASK_ROLE, roleName);
         eventProperties.put(HistoryModel.PROP_TASK_DUE_DATE, delegateTask.getDueDate());
+
+        String taskTitleProp = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_TASK_TITLE);
+        eventProperties.put(HistoryModel.PROP_TASK_TITLE, (String) delegateTask.getVariable(taskTitleProp));
 
         eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ENGINE_PREFIX + delegateTask.getProcessInstanceId());
         eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) delegateTask.getVariable(VAR_DESCRIPTION));

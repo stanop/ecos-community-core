@@ -41,10 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.deputy.DeputyService;
 import ru.citeck.ecos.history.HistoryEventType;
 import ru.citeck.ecos.history.HistoryService;
-import ru.citeck.ecos.model.CasePerformModel;
-import ru.citeck.ecos.model.HistoryModel;
-import ru.citeck.ecos.model.ICaseRoleModel;
-import ru.citeck.ecos.model.ICaseTaskModel;
+import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.role.CaseRoleService;
 import ru.citeck.ecos.service.CiteckServices;
 
@@ -152,6 +149,9 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		eventProperties.put(HistoryModel.PROP_TASK_POOLED_ACTORS, pooledActors);
 		eventProperties.put(HistoryModel.PROP_TASK_ROLE, roleName);
 		eventProperties.put(HistoryModel.PROP_TASK_DUE_DATE, task.getDueDate());
+
+		String taskTitleProp = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_TASK_TITLE);
+		eventProperties.put(HistoryModel.PROP_TASK_TITLE, (String) task.getVariable(taskTitleProp));
 
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ACTIVITI_PREFIX + task.getProcessInstanceId());
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) task.getExecution().getVariable(VAR_DESCRIPTION));

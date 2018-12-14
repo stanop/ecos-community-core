@@ -27,8 +27,10 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="bpm:description" default="true">
+            <header key="wfm:taskType" default="true">
                 <option name="customLabel">journal.task.bpm_description.title</option>
+                <option name="formatter">taskTitle</option>
+                <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" default="true" searchable="false" />
             <header key="cwf:sender" visible="false" />
@@ -61,6 +63,7 @@
             <header key="attr:aspects" visible="false" searchable="false" />
             <header key="attr:isContainer" visible="false" searchable="false" />
             <header key="attr:isDocument" visible="false" searchable="false" />
+            <header key="cwf:taskTitle" visible="false" />
         </headers>
     </journal>
 
@@ -79,8 +82,10 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="bpm:description" default="true">
+            <header key="wfm:taskType" default="true">
                 <option name="customLabel">journal.task.bpm_description.title</option>
+                <option name="formatter">taskTitle</option>
+                <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" default="true" searchable="false" />
             <header key="cwf:sender" visible="false" />
@@ -110,6 +115,7 @@
             <header key="bpm:startDate" />
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:comment" />
+            <header key="cwf:taskTitle" visible="false" />
         </headers>
     </journal>
 
@@ -128,8 +134,10 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="bpm:description" default="true">
+            <header key="wfm:taskType" default="true">
                 <option name="customLabel">journal.task.bpm_description.title</option>
+                <option name="formatter">taskTitle</option>
+                <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" default="true" searchable="false" />
             <header key="cwf:sender" visible="false" />
@@ -152,6 +160,7 @@
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:completionDate" default="true" />
             <header key="bpm:comment" default="true" />
+            <header key="cwf:taskTitle" visible="false" />
         </headers>
     </journal>
 
@@ -211,8 +220,10 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="bpm:description" default="true">
+            <header key="wfm:taskType" default="true">
                 <option name="customLabel">journal.task.bpm_description.title</option>
+                <option name="formatter">taskTitle</option>
+                <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" searchable="false" />
             <header key="cwf:sender" visible="false" />
@@ -246,6 +257,7 @@
                 <option name="formatter">workflowName</option>
             </header>
             <header key="wfm:workflowInitiator" />
+            <header key="cwf:taskTitle" visible="false" />
         </headers>
     </journal>
 
@@ -263,8 +275,10 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="bpm:description" default="true">
+            <header key="wfm:taskType" default="true">
                 <option name="customLabel">journal.task.bpm_description.title</option>
+                <option name="formatter">taskTitle</option>
+                <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" searchable="false"/>
             <header key="cwf:sender" visible="false" />
@@ -295,6 +309,7 @@
             <header key="bpm:dueDate" default="true"/>
             <header key="bpm:comment"/>
             <header key="wfm:workflowInitiator" />
+            <header key="cwf:taskTitle" visible="false" />
         </headers>
     </journal>
 

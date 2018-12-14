@@ -91,6 +91,10 @@
             <region name="input" template="text"/>
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
+        <field prop="icaseTask:useActivityTitle">
+            <invariant on="default" language="javascript">true</invariant>
+        </field>
+
         <field prop="activ:plannedStartDate">
             <region name="input" template="datetime"/>
         </field>
@@ -139,6 +143,10 @@
             <region name="input" template="text"/>
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
+        <field prop="icaseTask:useActivityTitle">
+            <invariant on="default" language="javascript">true</invariant>
+        </field>
+
         <field prop="activ:plannedStartDate">
             <region name="input" template="datetime"/>
         </field>
@@ -195,6 +203,9 @@
         <field prop="cm:title">
             <region name="input" template="text"/>
             <invariant on="mandatory" language="explicit">true</invariant>
+        </field>
+        <field prop="icaseTask:useActivityTitle">
+            <invariant on="default" language="javascript">true</invariant>
         </field>
         <field prop="icaseTask:priority">
             <region name="input" template="select"/>
