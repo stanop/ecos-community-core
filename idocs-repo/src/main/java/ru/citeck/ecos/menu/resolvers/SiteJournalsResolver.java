@@ -18,22 +18,31 @@ import java.util.stream.Collectors;
 public class SiteJournalsResolver extends AbstractJournalsResolver {
 
     private static final String ID = "SITE_JOURNALS";
+    private static final String JOURNAL_NAME_TEMPLATE = "site-%s-%s"; /* site-<sitename>-<listId> */
+    private static final String DEFAULT_JOURNAL_LIST_ID = "main";
 
     @Override
     public List<Element> resolve(Map<String, String> params, Element context) {
         String siteId = getParam(params, context, SITE_ID_KEY);
-        return getJournalsBySiteId(siteId).stream()
+        String listId = getParam(params, context, LIST_ID_KEY);
+        if (StringUtils.isNotEmpty(listId)) {
+            params.put(LIST_ID_KEY, listId);
+        } else {
+            params.put(LIST_ID_KEY, DEFAULT_JOURNAL_LIST_ID);
+            listId = DEFAULT_JOURNAL_LIST_ID;
+        }
+        return getJournalsBySiteId(siteId, listId).stream()
                 .map(nodeRef -> constructItem(nodeRef, params, context))
                 .collect(Collectors.toList());
     }
 
-    private List<NodeRef> getJournalsBySiteId(String siteId) {
+    private List<NodeRef> getJournalsBySiteId(String siteId, String listId) {
         if (StringUtils.isEmpty(siteId)) {
             return Collections.emptyList();
         }
         return FTSQuery.create()
                         .type(JournalsModel.TYPE_JOURNALS_LIST).and()
-                        .value(ContentModel.PROP_NAME, "site-" + siteId + "-main")
+                        .value(ContentModel.PROP_NAME, String.format(JOURNAL_NAME_TEMPLATE, siteId, listId))
                         .transactional().query(searchService).stream()
                         .flatMap(listRef -> nodeService.getTargetAssocs(listRef, JournalsModel.ASSOC_JOURNALS).stream())
                         .map(AssociationRef::getTargetRef)
