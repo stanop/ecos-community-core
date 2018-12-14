@@ -1240,6 +1240,11 @@ define([
                 || this.multiple() && this.value().length == 0
                 || this.valueClass() == String && this.value().length == 0;
         })
+        .computed('invariantValueEmpty', function() {
+            return this.invariantValue() == null
+                || this.multiple() && this.invariantValue().length == 0
+                || this.valueClass() == String && this.invariantValue().length == 0;
+        })
         .computed('evaluatedValid', function() {
             return this.validEvaluator(this.invariantsModel());
         })

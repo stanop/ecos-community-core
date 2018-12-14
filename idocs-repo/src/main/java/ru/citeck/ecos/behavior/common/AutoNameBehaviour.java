@@ -76,6 +76,7 @@ public class AutoNameBehaviour implements
     private String nodeVariable;
     private String nameTemplate;
     private String nameTemplateJS;
+    private boolean generateFromTitle = false;
     private Map<String,String> restrictedPatterns;
     private boolean ignoreRenameFailure = false;
     private Boolean appendExtension = null;
@@ -127,7 +128,7 @@ public class AutoNameBehaviour implements
                 return;
             }
 
-            if (StringUtils.isEmpty(nameTemplate) && StringUtils.isEmpty(nameTemplateJS)) {
+            if (!generateFromTitle && StringUtils.isEmpty(nameTemplate) && StringUtils.isEmpty(nameTemplateJS)) {
                 return;
             }
 
@@ -139,6 +140,23 @@ public class AutoNameBehaviour implements
             String oldExtension = pos >= 0 ? oldName.substring(pos) : EMPTY_EXTENSION;
 
             String newName = AuthenticationUtil.runAsSystem(() -> {
+
+                if (generateFromTitle) {
+
+                    Locale localeBefore = I18NUtil.getLocale();
+                    I18NUtil.setLocale(Locale.getDefault());
+
+                    Map<QName, Serializable> props = nodeService.getProperties(nodeRef);
+
+                    String title = (String) props.get(ContentModel.PROP_TITLE);
+                    if (StringUtils.isEmpty(title)) {
+                        title = (String) props.get(ContentModel.PROP_NAME);
+                    }
+
+                    I18NUtil.setLocale(localeBefore);
+
+                    return title;
+                }
 
                 HashMap<String,Object> model = new HashMap<>(1);
 
@@ -301,6 +319,10 @@ public class AutoNameBehaviour implements
 
     public void setRestrictedPatterns(Map<String,String> restrictedPatterns) {
         this.restrictedPatterns = restrictedPatterns;
+    }
+
+    public void setGenerateFromTitle(boolean generateFromTitle) {
+        this.generateFromTitle = generateFromTitle;
     }
 
     public void setIgnoreRenameFailure(boolean ignore) {
