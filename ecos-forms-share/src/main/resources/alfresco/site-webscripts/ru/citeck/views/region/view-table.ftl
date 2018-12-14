@@ -46,7 +46,11 @@
 </#if>
 <div class="view-table-container" style="<#if params.maxheight??>max-height: ${params.maxheight};</#if>">
     <table>
+        <#if useInvariantValues == "true">
+        <thead data-bind="with: invariantSingleValue">
+        <#else>
         <thead data-bind="with: singleValue">
+        </#if>
             <tr data-bind="if: $data.impl">
                 <#if actionIsFirstColumn == "true">
                     <@actionsHeader />
