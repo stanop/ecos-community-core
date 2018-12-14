@@ -39,7 +39,11 @@
 -->
 
 
+<#if useInvariantValues == "true">
+<!-- ko ifnot: invariantValueEmpty -->
+<#else>
 <!-- ko ifnot: empty -->
+</#if>
 <div class="view-table-container" style="<#if params.maxheight??>max-height: ${params.maxheight};</#if>">
     <table>
         <thead data-bind="with: singleValue">
@@ -158,7 +162,11 @@
 </div>
 <!-- /ko -->
 
+<#if useInvariantValues == "true">
+<!-- ko if: invariantValueEmpty -->
+<#else>
 <!-- ko if: empty -->
+</#if>
     <span>${msg("label.none")}</span>
 <!-- /ko -->
 
