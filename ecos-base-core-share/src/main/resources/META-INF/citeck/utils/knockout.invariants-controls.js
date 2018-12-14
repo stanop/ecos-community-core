@@ -184,37 +184,47 @@ ko.components.register("select", {
 
 ko.components.register("number-generate", {
     viewModel: function(params) {
+
         var self = this;
         this.id = params.id;
         this.label = params.label || "Generate";
         this.mode = params.mode;
         this.disable = params.disable;
-
-        this.generate = function() {
-            var generator = ko.computed(function() {
-                return params.enumeration.getNumber(params.template, params.node());
-            }, this, { deferEvaluation: true });
-
-            var number = generator();
-            if (number) {
-                params.value(number);
-                generator.dispose();
-            } else {
-                koutils.subscribeOnce(generator, function(number) {
-                    params.value(number);
-                    generator.dispose();
-                });
-            }
+        this.node = params.node;
+        if (_.isFunction(params.template)) {
+            this.numTemplate = ko.computed(params.template.bind(this));
+        } else {
+            this.numTemplate = ko.observable(params.template);
+        }
+        this._cache = {
+            numbers: {}
         };
 
         // flag for 'checkbox' mode
         this.flag = ko.observable(false);
-        this.flag.subscribe(function(flag) {
-            if (flag) {
-                self.generate();
-                Dom.setAttribute(self.id, "disabled", "disabled");
+        this.generatedNumber = ko.computed(function() {
+            if (!self.flag()) {
+                return -1;
+            }
+            var template = self.numTemplate();
+            if (!template) {
+                return -1;
+            }
+            if (!self._cache.numbers[template]) {
+                var model = params.node().impl().allData.peek().attributes;
+                self._cache.numbers[template] = ko.computed(function() {
+                    return params.enumeration.getNumber(template, model);
+                });
+            }
+            return self._cache.numbers[template]();
+        });
+
+        this.generatedNumber.subscribe(function (num) {
+            var input = Dom.get(self.id);
+            if (num > -1) {
+                params.value(num);
+                if (input) Dom.setAttribute(self.id, "disabled", "disabled");
             } else {
-                var input = Dom.get(self.id);
                 if (input) input.removeAttribute("disabled");
             }
         });

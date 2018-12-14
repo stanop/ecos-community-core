@@ -149,6 +149,9 @@
                 <property name="event:taskDueDate">
                     <type>d:date</type>
                 </property>
+                <property name="event:taskTitle">
+                    <type>d:text</type>
+                </property>
             </properties>
         </aspect>
         
