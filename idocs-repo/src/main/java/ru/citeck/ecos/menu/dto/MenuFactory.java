@@ -1,6 +1,7 @@
 package ru.citeck.ecos.menu.dto;
 
 import org.alfresco.service.cmr.action.ActionService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
@@ -9,6 +10,7 @@ import ru.citeck.ecos.menu.resolvers.MenuItemsResolver;
 import ru.citeck.ecos.menu.xml.*;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MenuFactory {
@@ -45,7 +47,20 @@ public class MenuFactory {
                         result.addAll(resolve((ItemsResolver) obj, context));
                     }
                 });
-        return result;
+        return filterElements(result, context);
+    }
+
+    private List<Element> filterElements(List<Element> elements, Element context) {
+        if (context == null || context.getParams() == null) {
+            return elements;
+        }
+        String hideParam = StringUtils.defaultString(context.getParams().get("hideEmpty"));
+        if (!hideParam.equals("true")) {
+            return elements;
+        }
+        Boolean hide = hideParam.equals("true");
+        Predicate<Element> predicate = elem -> hide && CollectionUtils.isNotEmpty(elem.getItems());
+        return elements.stream().filter(predicate).collect(Collectors.toList());
     }
 
     private boolean evaluate(Item item) {
@@ -87,6 +102,7 @@ public class MenuFactory {
         String label = getLocalizedMessage(newData.getLabel());
         String id = newData.getId();
         String icon = newData.getIcon();
+        List<Parameter> param = newData.getParam();
 
         Boolean mobileVisible = newData.isMobileVisible();
 
@@ -110,6 +126,17 @@ public class MenuFactory {
         }
         if (mobileVisible != null) {
             targetElement.setMobileVisible(mobileVisible);
+        }
+
+        if (param != null) {
+            Map<String, String> params = targetElement.getParams();
+            if (params == null) {
+                params = new HashMap<>();
+            }
+            Map<String, String> newParams = new HashMap<>();
+            param.forEach(parameter -> newParams.put(parameter.getName(), parameter.getValue()));
+            params.putAll(newParams);
+            targetElement.setParams(params);
         }
 
         targetElement.setItems(constructItems(newData.getItems(), targetElement));
