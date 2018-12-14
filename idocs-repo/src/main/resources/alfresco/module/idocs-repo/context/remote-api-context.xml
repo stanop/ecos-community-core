@@ -211,7 +211,6 @@
         <property name="displayByNameClasses">
             <list>
                 <value>{http://www.citeck.ru/model/content/ecos/1.0}document</value>
-                <value>{http://www.citeck.ru/model/content/ecos/1.0}case</value>
             </list>
         </property>
     </bean>

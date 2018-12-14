@@ -116,7 +116,11 @@
         </view>
         <view>
             <view kind="1-column">
-                <field prop="cm:name"/>
+                <field prop="cm:title">
+                    <region name="label">
+                        <param name="key">idocs_idocsModel.property.cm_title.title</param>
+                    </region>
+                </field>
                 <field prop="idocs:note">
                     <region name="input" template="textarea">
                         <param name="height">100%</param>
