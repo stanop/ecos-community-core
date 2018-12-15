@@ -38,7 +38,7 @@ public class MenuFactory {
                     if (obj instanceof Item && evaluate((Item) obj)) {
                         Element newElement = new Element();
                         if (context == null) {
-                            Map<String, String> params = new HashMap<>();;
+                            Map<String, String> params = new HashMap<>();
                             params.put("rootElement", "true");
                             newElement.setParams(params);
                         }
@@ -58,8 +58,17 @@ public class MenuFactory {
         if (!hideParam.equals("true")) {
             return elements;
         }
-        Boolean hide = hideParam.equals("true");
-        Predicate<Element> predicate = elem -> hide && CollectionUtils.isNotEmpty(elem.getItems());
+        Predicate<Element> predicate = elem -> {
+            boolean ignore = false;
+            if (elem.getParams() != null) {
+                String ignoreParam = StringUtils.defaultString(elem.getParams().get("ignoreHideEmpty"));
+                ignore = ignoreParam.equals("true");
+            }
+            if (ignore) {
+                return true;
+            }
+            return CollectionUtils.isNotEmpty(elem.getItems());
+        };
         return elements.stream().filter(predicate).collect(Collectors.toList());
     }
 
