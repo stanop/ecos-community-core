@@ -1,0 +1,4 @@
+.flowable-tasks-manual ol>li {
+    list-style: decimal inside;
+    margin-left: 15px;
+}

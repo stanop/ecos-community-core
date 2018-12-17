@@ -614,4 +614,6 @@
         </property>
     </bean>
 
+    <bean id="documentToMessage.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
+
 </beans>

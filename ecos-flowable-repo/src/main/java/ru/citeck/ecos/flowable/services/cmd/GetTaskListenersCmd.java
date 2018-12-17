@@ -1,14 +1,18 @@
 package ru.citeck.ecos.flowable.services.cmd;
 
-import org.flowable.bpmn.model.*;
+import org.flowable.bpmn.model.FlowElement;
+import org.flowable.bpmn.model.FlowableListener;
 import org.flowable.bpmn.model.Process;
-import org.flowable.engine.common.api.FlowableObjectNotFoundException;
+import org.flowable.bpmn.model.UserTask;
 import org.flowable.engine.common.impl.interceptor.Command;
 import org.flowable.engine.common.impl.interceptor.CommandContext;
-import org.flowable.engine.impl.util.ProcessDefinitionUtil;
+import ru.citeck.ecos.flowable.utils.FlowableUtils;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GetTaskListenersCmd implements Command<Map<String, List<FlowableListener>>>, Serializable {
 
@@ -35,14 +39,7 @@ public class GetTaskListenersCmd implements Command<Map<String, List<FlowableLis
             return Collections.emptyMap();
         }
 
-        BpmnModel bpmnModel = ProcessDefinitionUtil.getBpmnModel(processDefinitionId);
-
-        if (bpmnModel == null) {
-            throw new FlowableObjectNotFoundException("Cannot find bpmn model for process definition id: " +
-                                                      processDefinitionId, BpmnModel.class);
-        }
-
-        Process process = bpmnModel.getMainProcess();
+        Process process = FlowableUtils.getProcessByDefinitionId(processDefinitionId);
 
         Map<String, List<FlowableListener>> result = new HashMap<>();
 

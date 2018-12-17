@@ -146,12 +146,12 @@
                 </property>
                 <!-- ecos type of document, for which this template is designed -->
                 <property name="icase:caseEcosType">
-                    <title>Case EcoS Type</title>
+                    <title>Case ECOS Type</title>
                     <type>d:category</type>
                 </property>
                 <!-- ecos kind of document, for which this template is designed -->
                 <property name="icase:caseEcosKind">
-                    <title>Case EcoS Kind</title>
+                    <title>Case ECOS Kind</title>
                     <type>d:category</type>
                 </property>
                 <!-- condition, when the template is applicable -->

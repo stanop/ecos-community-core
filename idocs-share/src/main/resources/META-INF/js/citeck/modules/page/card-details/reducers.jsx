@@ -9,7 +9,8 @@ import {
     RECEIVE_NODE_INFO,
     REQUEST_CARDLET_DATA,
     RECEIVE_CARDLET_DATA,
-    RECEIVE_ERR_CARDLET_DATA
+    RECEIVE_ERR_CARDLET_DATA,
+    SET_START_MESSAGE
 } from './actions';
 
 let reducersStore = {
@@ -157,6 +158,12 @@ let reducersStore = {
                 }
             },
             ...onCardletLoaded(state, action.cardletProps)
+        }
+    },
+    [SET_START_MESSAGE]: function (state = {}, action) {
+        return {
+            ...state,
+            startMessage: action.payload
         }
     }
 };

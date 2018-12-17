@@ -20,6 +20,7 @@
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">/citeck/components/redirect-to-task?nodeRef={id}
         </option>
+        <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
@@ -71,6 +72,7 @@
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">/citeck/components/redirect-to-task?nodeRef={id}
         </option>
+        <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
@@ -119,6 +121,7 @@
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">/citeck/components/redirect-to-task?nodeRef={id}
         </option>
+        <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />
@@ -253,6 +256,7 @@
         <option name="css">modules/journals/tasks/tasks.css</option>
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">/citeck/components/redirect-to-task?nodeRef={id}</option>
+        <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <headers>
             <!-- cm:name is used for double-click -->
             <header key="cm:name" visible="false" searchable="false" />

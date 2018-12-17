@@ -128,6 +128,7 @@
         <property name="nodeService" ref="nodeService"/>
         <property name="mlAwareNodeService" ref="mlAwareNodeService" />
         <property name="templateService" ref="templateService"/>
+        <property name="scriptService" ref="scriptService" />
         <property name="templateEngine" value="freemarker"/>
         <property name="nodeVariable" value="node"/>
         <property name="order" value="${behavior.order.title}"/>
@@ -942,6 +943,12 @@
 
     <bean id="setMontDayPersonAttributeBehaviour"
           class="ru.citeck.ecos.behavior.common.FillMonthDayPersonPropertyBehaviour">
+    </bean>
+
+    <bean id="idocs.ecosCaseNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="{http://www.citeck.ru/model/content/ecos/1.0}case" />
+        <property name="generateFromTitle" value="true" />
+        <property name="order" value="40"/>
     </bean>
 
     <!--<bean id="ru.citeck.ecos.copy-metadata-from-target-to-source-assoc"-->

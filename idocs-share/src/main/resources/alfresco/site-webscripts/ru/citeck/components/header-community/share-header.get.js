@@ -25,7 +25,7 @@ var header = findObjectById(model.jsonModel.widgets, "SHARE_HEADER"),
     customizeUserDashboard = findObjectById(model.jsonModel.widgets, "HEADER_CUSTOMIZE_USER_DASHBOARD"),
     currentSite = page.url.templateArgs.site || getLastSiteFromCookie(),
     accessibleSites = getSitesForUser(user.name),
-    isSlideMenu = getMenuConfig("default-ui-main-menu") == "left",
+    isSlideMenu = isShouldDisplayLeftMenuForUser(user.name),
     isCascadCreateMenu = getMenuConfig("default-ui-create-menu") == "cascad",
     siteData = getSiteData(),
     myTools = [
@@ -439,7 +439,7 @@ userMenuItems.push(
             id: "HEADER_USER_MENU_REPORTISSUE",
             label: "header.reportIssue.label",
             iconImage: "/share/res/components/images/header/default-feedback-16.png",
-            targetUrl: "mailto:support@citeck.ru?subject=Ошибка в работе Citeck EcoS: краткое описание&body=Summary: Короткое описание проблемы (продублировать в теме письма)%0A%0ADescription:%0AПожалуйста, детально опишите возникшую проблему, последовательность действий, которая привела к ней. При необходимости приложите скриншоты.",
+            targetUrl: "mailto:support@citeck.ru?subject=Ошибка в работе Citeck ECOS: краткое описание&body=Summary: Короткое описание проблемы (продублировать в теме письма)%0A%0ADescription:%0AПожалуйста, детально опишите возникшую проблему, последовательность действий, которая привела к ней. При необходимости приложите скриншоты.",
             targetUrlType: "FULL_PATH",
             targetUrlLocation: "NEW"
         }

@@ -32,9 +32,17 @@
         </view>
 
         <view>
-            <field prop="orders:header"/>
-            <field prop="idocs:registrationNumber"/>
             <field prop="idocs:registrationDate"/>
+        </view>
+
+        <view kind="2-column">
+            <field prop="orders:header"/>
+            <field prop="idocs:registrationNumber">
+                <invariant on="description" language="javascript">
+                    Alfresco.util.message('orders.view.registrationNumber.description')
+                </invariant>
+                <invariant on="protected" language="javascript">view.mode == 'create'</invariant>
+            </field>
         </view>
 
         <view id="summary" kind="1-column">
@@ -58,6 +66,7 @@
                     <param name="key">header.orders-internal.cm-content</param>
                 </region>
             </field>
+            <field prop="orders:scanRequired" />
         </view>
 
         <view>

@@ -58,6 +58,15 @@
 		<property name="nodeService" ref="NodeService" />
 	</bean>
 
+    <bean id="webscript.ru.citeck.document.getSubmitMessage.get"
+          class="ru.citeck.ecos.webscripts.document.GetSubmitMessage"
+          parent="webscript">
+          <property name="nodeService" ref="NodeService" />
+          <property name="namespaceService" ref="namespaceService"/>
+          <property name="dictionaryService" ref="dictionaryService"/>
+          <property name="documentToMessage" ref="documentToMessage.mappingRegistry" />
+    </bean>
+
     <bean id="webscript.ru.citeck.document-registration.register.post"
           class="ru.citeck.ecos.webscripts.documentregistration.RegisterPost"
           parent="webscript">
@@ -202,7 +211,6 @@
         <property name="displayByNameClasses">
             <list>
                 <value>{http://www.citeck.ru/model/content/ecos/1.0}document</value>
-                <value>{http://www.citeck.ru/model/content/ecos/1.0}case</value>
             </list>
         </property>
     </bean>
@@ -440,6 +448,14 @@
     
     <bean id="webscript.ru.citeck.image.image-thumbnail.get"
           class="ru.citeck.ecos.webscripts.image.ImageThumbnailGet"
+          parent="webscript" />
+
+    <bean id="webscript.ru.citeck.menu.menu.get"
+          class="ru.citeck.ecos.webscripts.menu.MenuGet"
+          parent="webscript" />
+
+    <bean id="webscript.ru.citeck.menu.icon.get"
+          class="ru.citeck.ecos.webscripts.menu.IconGet"
           parent="webscript" />
 
 </beans>

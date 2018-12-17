@@ -43,7 +43,6 @@ public class FormCommentsListener implements GlobalCreateTaskListener, GlobalAss
         commentFieldIds.forEach(commentFieldId -> {
             String comments = (String) taskService.getVariable(delegateTask.getId(), commentFieldId);
             if (comments != null) {
-                taskService.setVariable(delegateTask.getId(),"bpm_comment", comments);
                 taskService.setVariable(delegateTask.getId(), "cwf_lastcomment", comments);
             }
         });

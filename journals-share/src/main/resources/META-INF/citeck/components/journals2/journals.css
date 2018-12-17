@@ -80,7 +80,17 @@
 	vertical-align: middle;
 }
 
-.filter-criteria .criterion .criterion-actions,
+.filter-criteria .criterion .criterion-label,
+.filter-criteria .criterion .criterion-actions{
+	display: table-cell;
+	vertical-align: middle;
+	line-height: 1px;
+}
+
+.filter-criteria .criterion .criterion-actions {
+	padding: 0 5px;
+}
+
 .filter-criteria .criterion .criterion-field,
 .filter-criteria .criterion .criterion-predicate,
 .filter-criteria .criterion .criterion-value {
@@ -586,6 +596,25 @@ div.toolbar.flat-button span.yui-checkbox-button-checked span.first-child
   min-width: 250px;
 }
 
+.criterion-draggable {
+	display: table-cell;
+	vertical-align: middle;
+	letter-spacing: -1pt;
+	cursor: move;
+}
+
+.button_img {
+	color: #1c55da;
+	padding: 0 10px;
+	border: 1px solid #1c55da;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.button_img:hover {
+	border-color: red;
+	cursor: pointer;
+}
 
 a.criterion-remove,
 a.remove {

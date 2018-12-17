@@ -32,10 +32,6 @@
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
 
-        <property name="idocs:registrationNumber">
-            <invariant on="relevant" language="javascript">!!node.properties["orders:skipRegistration"]</invariant>
-        </property>
-
         <property name="idocs:registrationDate">
             <invariant on="relevant" language="javascript">!!node.properties["orders:skipRegistration"]</invariant>
         </property>

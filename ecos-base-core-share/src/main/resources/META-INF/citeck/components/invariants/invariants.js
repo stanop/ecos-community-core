@@ -1240,6 +1240,11 @@ define([
                 || this.multiple() && this.value().length == 0
                 || this.valueClass() == String && this.value().length == 0;
         })
+        .computed('invariantValueEmpty', function() {
+            return this.invariantValue() == null
+                || this.multiple() && this.invariantValue().length == 0
+                || this.valueClass() == String && this.invariantValue().length == 0;
+        })
         .computed('evaluatedValid', function() {
             return this.validEvaluator(this.invariantsModel());
         })
@@ -1590,6 +1595,9 @@ define([
             read: function() { return this.convertValue(this.rawValue(), false); },
             write: function(value) { this.value(value); }
         })
+        .computed('invariantSingleValue', {
+            read: function() { return this.convertValue(this.invariantValue(), false); }
+        })
         .computed('multipleValues', {
             read: function() {
                 var values = this.convertValue(this.rawValue(), true);
@@ -1598,6 +1606,12 @@ define([
             write: function(value) {
                 value = _.isArray(value) ? _.difference(value, [undefined]) : value;
                 this.value(value);
+            }
+        })
+        .computed('invariantValues', {
+            read: function() {
+                var values = this.convertValue(this.invariantValue(), true);
+                return _.sortBy(values, this.getValueOrder, this);
             }
         })
         .computed('lastValue', {
@@ -2641,7 +2655,9 @@ define([
         .method('submitDraft', function() {
             if (this.node().hasAspect("invariants:draftAspect")) {
                 this.node().impl().isDraft(true);
-                this.broadcast('node-view-submit');
+                this.broadcast('node-view-submit', {
+                    isDraft: true
+                });
             }
         })
 
@@ -2649,12 +2665,22 @@ define([
             this.broadcast('node-view-cancel');
         })
 
-        .method('broadcast', function(eventName) {
-            YAHOO.Bubbling.fire(eventName, {
+        .method('broadcast', function(eventName, extraParams) {
+            var obj = {
                 key: this.key(),
                 runtime: this,
                 node: this.node()
-            });
+            };
+
+            for (var paramName in extraParams) {
+                if (!extraParams.hasOwnProperty(paramName)) {
+                    continue;
+                }
+
+                obj[paramName] = extraParams[paramName];
+            }
+
+            YAHOO.Bubbling.fire(eventName, obj);
         })
 
         .method('terminate', function() {

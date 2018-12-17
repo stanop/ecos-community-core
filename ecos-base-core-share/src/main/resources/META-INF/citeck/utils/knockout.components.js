@@ -17,8 +17,11 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journals2/journals', 'citeck/components/invariants/invariants', 'lib/moment'], function(ko, koutils, journals, invariants, moment) {
+define(['jquery','lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journals2/journals', 'citeck/components/invariants/invariants', 'lib/moment'], function($, ko, koutils, journals, invariants, moment) {
 
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        DDM = YAHOO.util.DragDropMgr;
 
     var koValue = function(value) {
         return typeof value == "function" ? value() : value;
@@ -353,6 +356,156 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
            '<div class="criterion-value" data-bind="attr: { id: valueContainerId }, event: {keydown: keyDownManagment }, mousedownBubble: false"></div>'
     });
 
+    ko.bindingHandlers.draggable = {
+        dnd: null,
+        createDnd: function(){
+            var dnd = function(id, sGroup, config) {
+                dnd.superclass.constructor.call(this, id, sGroup, config);
+
+                var el = this.getDragEl();
+                Dom.setStyle(el, "opacity", 0.67); // The proxy is slightly transparent
+
+                this.goingUp = false;
+                this.lastY = 0;
+            };
+
+            YAHOO.extend(dnd, YAHOO.util.DDProxy, {
+                endDrag: function(e) {
+                    var srcEl = this.getEl();
+                    var proxy = this.getDragEl();
+                    var onDragEnd = this.config.onDragEnd;
+
+                    // Show the proxy element and animate it to the src element's location
+                    Dom.setStyle(proxy, "visibility", "");
+                    var a = new YAHOO.util.Motion(
+                        proxy, {
+                            points: {
+                                to: Dom.getXY(srcEl)
+                            }
+                        },
+                        0.2,
+                        YAHOO.util.Easing.easeOut
+                    );
+                    var proxyid = proxy.id;
+                    var thisid = this.id;
+
+                    // Hide the proxy and show the source element when finished with the animation
+                    a.onComplete.subscribe(function() {
+                        Dom.setStyle(proxyid, "visibility", "hidden");
+                        Dom.setStyle(thisid, "visibility", "");
+                    });
+                    a.animate();
+
+                    if (_.isFunction(onDragEnd)) {
+                        onDragEnd($(srcEl).index(), this.config.data);
+                    }
+                },
+
+                startDrag: function(x, y) {
+                    // make the proxy look like the source element
+                    var dragEl = this.getDragEl();
+                    var clickEl = this.getEl();
+                    Dom.setStyle(clickEl, "visibility", "hidden");
+
+                    //dragEl.innerHTML = clickEl.innerHTML;
+
+                    Dom.setStyle(dragEl, "color", Dom.getStyle(clickEl, "color"));
+                    Dom.setStyle(dragEl, "backgroundColor", Dom.getStyle(clickEl, "backgroundColor"));
+                    Dom.setStyle(dragEl, "border", "2px solid gray");
+                },
+
+                onDragDrop: function(e, id) {
+                    // If there is one drop interaction, the li was dropped either on the list,
+                    // or it was dropped on the current location of the source element.
+                    if (DDM.interactionInfo.drop.length === 1) {
+
+                        // The position of the cursor at the time of the drop (YAHOO.util.Point)
+                        var pt = DDM.interactionInfo.point;
+
+                        // The region occupied by the source element at the time of the drop
+                        var region = DDM.interactionInfo.sourceRegion;
+
+                        // Check to see if we are over the source element's location.  We will
+                        // append to the bottom of the list once we are sure it was a drop in
+                        // the negative space (the area of the list without any list items)
+                        if (!region.intersect(pt)) {
+                            var destEl = Dom.get(id);
+                            var destDD = DDM.getDDById(id);
+                            destEl.appendChild(this.getEl());
+                            destDD.isEmpty = false;
+                            DDM.refreshCache();
+                        }
+                    }
+                },
+
+                onDrag: function(e) {
+                    // Keep track of the direction of the drag for use during onDragOver
+                    var y = Event.getPageY(e);
+
+                    if (y < this.lastY) {
+                        this.goingUp = true;
+                    } else if (y > this.lastY) {
+                        this.goingUp = false;
+                    }
+
+                    this.lastY = y;
+                },
+
+                onDragOver: function(e, id) {
+                    var srcEl = this.getEl();
+                    var destEl = Dom.get(id);
+
+                    // We are only concerned with list items, we ignore the dragover
+                    // notifications for the list.
+                    if (destEl) {
+                        var orig_p = srcEl.parentNode;
+                        var p = destEl.parentNode;
+
+                        if (this.goingUp) {
+                            p.insertBefore(srcEl, destEl); // insert above
+                        } else {
+                            p.insertBefore(srcEl, destEl.nextSibling); // insert below
+                        }
+
+                        DDM.refreshCache();
+                    }
+                }
+            });
+
+            return dnd;
+        },
+        init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+            var draggable = ko.bindingHandlers.draggable;
+            var options = valueAccessor();
+            var config = {
+                data: bindingContext.$data
+            };
+            var invalidHandleTypes;
+            var dnd;
+
+            if (!options) {
+                return;
+            }
+
+            if (!draggable.dnd) {
+                draggable.dnd = draggable.createDnd();
+            }
+
+            element = options.useId ? element.id : element;
+
+            $.extend(config, options);
+
+            if (element) {
+                dnd = new draggable.dnd(element, '', config);
+
+                invalidHandleTypes = config.invalidHandleTypes || [];
+                invalidHandleTypes.forEach(function(invalidHandleType){
+                    dnd.addInvalidHandleType(invalidHandleType);
+                });
+            }
+        }
+    };
+
     ko.components.register("filter-criterion-field", {
         viewModel: function(params) {
 
@@ -377,6 +530,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 return;
             }
 
+            this.criterion.draggable = params.draggable || false;
             this.criterion.removeCriterion = this.removeCriterion;
             this.criterion.containerId = this.containerId;
             this.criterion.applyCriteria = this.applyCriteria;
@@ -385,6 +539,10 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             this.containerContent = ko.observable("");
 
             this.containerContent.subscribe(function(newValue) {
+
+                if (self.criterion.draggable) {
+                    newValue = '<div class="criterion-draggable"><span>&#8942;&#8942;</span></div>' + newValue;
+                }
 
                 var setValue = function (counter) {
 
@@ -444,7 +602,7 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
             }
         },
         template:
-            '<div class="criterion" data-bind="attr: { id: containerId }, event: {keydown: keyDownManagment }, mousedownBubble: false"></div>'
+            '<div class="criterion" data-bind="draggable: draggable, attr: { id: containerId }, event: {keydown: keyDownManagment }, mousedownBubble: false"></div>'
     });
 
 
@@ -555,6 +713,24 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                 });
             };
 
+            this.draggable = {
+                useId: true,
+                invalidHandleTypes: ['input', 'select'],
+                onDragEnd: function(index, data) {
+                    var criteria = self.filter().criteria;
+                    var criteriaValue = criteria();
+
+                    for (var i = 0, count = criteriaValue.length; i < count; i++) {
+                        if (criteriaValue[i].containerId === data.containerId) {
+                            criteria.splice(i, 1);
+                            break;
+                        }
+                    }
+
+                    criteria.splice(index, 0, data);
+                }
+            };
+
             this.valueVisibility = function(predicate) {
                 return predicate && predicate.id().indexOf("empty") == -1;
             }
@@ -570,7 +746,8 @@ define(['lib/knockout', 'citeck/utils/knockout.utils', 'citeck/components/journa
                    attribute: $component.getAttribute($data),\
                    applyCriteria: $component.applyCriteria,\
                    journalType: $component.journalType,\
-                   removeCriterion: $component.remove.bind($data)\
+                   removeCriterion: $component.remove.bind($data),\
+                   draggable: $component.draggable\
                }} --><!-- /ko -->\
            </div>'
     });

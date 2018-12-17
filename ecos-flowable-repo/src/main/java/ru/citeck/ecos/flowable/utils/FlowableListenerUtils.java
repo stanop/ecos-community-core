@@ -30,6 +30,7 @@ public class FlowableListenerUtils {
 
     /**
      * Get workflow package node
+     *
      * @param execution Execution
      * @return Node reference
      */
@@ -39,6 +40,7 @@ public class FlowableListenerUtils {
 
     /**
      * Get workflow package node
+     *
      * @param task Workflow task
      * @return Node reference
      */
@@ -48,22 +50,23 @@ public class FlowableListenerUtils {
 
     /**
      * Get document node reference by execution
-     * @param execution Execution
+     *
+     * @param execution   Execution
      * @param nodeService Node service
      * @return Document node reference
      */
     public static NodeRef getDocument(VariableScope execution, NodeService nodeService) {
         NodeRef wfPackage = getWorkflowPackage(execution);
-        if(!nodeService.exists(wfPackage)) {
+        if (wfPackage == null || !nodeService.exists(wfPackage)) {
             return null;
         }
-        List<ChildAssociationRef> childAssocs = null;
-        childAssocs = nodeService.getChildAssocs(wfPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
-        if(childAssocs.size() > 0) {
+        List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(wfPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS,
+                RegexQNamePattern.MATCH_ALL);
+        if (childAssocs.size() > 0) {
             return childAssocs.get(0).getChildRef();
         }
         childAssocs = nodeService.getChildAssocs(wfPackage, ContentModel.ASSOC_CONTAINS, RegexQNamePattern.MATCH_ALL);
-        if(childAssocs.size() > 0) {
+        if (childAssocs.size() > 0) {
             return childAssocs.get(0).getChildRef();
         }
         return null;
@@ -71,6 +74,7 @@ public class FlowableListenerUtils {
 
     /**
      * Get initiator username
+     *
      * @param execution Execution
      * @return Initiator username
      */
@@ -81,29 +85,30 @@ public class FlowableListenerUtils {
 
     /**
      * Get pooled actors
-     * @param task Task
+     *
+     * @param task             Task
      * @param authorityService Authority service
      * @return List of actors node reference
      */
     public static ArrayList<NodeRef> getPooledActors(DelegateTask task, AuthorityService authorityService) {
         Set<IdentityLink> candidates = (Set) ReflectionUtils.callGetterIfDeclared(task, "getCandidates", new HashSet());
-        ArrayList<NodeRef> pooledActors = new ArrayList<NodeRef>(candidates.size());
-        for(IdentityLink candidate : candidates) {
-            if(!candidate.getType().equals(IdentityLinkType.CANDIDATE)) {
+        ArrayList<NodeRef> pooledActors = new ArrayList<>(candidates.size());
+        for (IdentityLink candidate : candidates) {
+            if (!candidate.getType().equals(IdentityLinkType.CANDIDATE)) {
                 continue;
             }
             String userId = candidate.getUserId();
-            if(userId != null) {
+            if (userId != null) {
                 NodeRef person = authorityService.getAuthorityNodeRef(userId);
-                if(person != null) {
+                if (person != null) {
                     pooledActors.add(person);
                 }
             }
 
             String groupId = candidate.getGroupId();
-            if(groupId != null) {
+            if (groupId != null) {
                 NodeRef group = authorityService.getAuthorityNodeRef(groupId);
-                if(group != null) {
+                if (group != null) {
                     pooledActors.add(group);
                 }
             }
@@ -113,26 +118,27 @@ public class FlowableListenerUtils {
 
     /**
      * Get task attachments
+     *
      * @param task Task
      * @return List of task attachments
      */
     public static ArrayList<NodeRef> getTaskAttachments(DelegateTask task) {
         Object taskAttachments = task.getVariable(VAR_ATTACHMENTS);
-        if(!(taskAttachments instanceof Collection)) {
+        if (!(taskAttachments instanceof Collection)) {
             return null;
         }
         @SuppressWarnings("rawtypes")
         Collection source = (Collection) taskAttachments;
-        ArrayList<NodeRef> target = new ArrayList<NodeRef>(source.size());
-        for(Object item : source) {
-            if(item == null) {
+        ArrayList<NodeRef> target = new ArrayList<>(source.size());
+        for (Object item : source) {
+            if (item == null) {
                 continue;
-            } else if(item instanceof NodeRef) {
-                target.add((NodeRef)item);
-            } else if(item instanceof ScriptNode) {
-                target.add(((ScriptNode)item).getNodeRef());
-            } else if(item instanceof String) {
-                target.add(new NodeRef((String)item));
+            } else if (item instanceof NodeRef) {
+                target.add((NodeRef) item);
+            } else if (item instanceof ScriptNode) {
+                target.add(((ScriptNode) item).getNodeRef());
+            } else if (item instanceof String) {
+                target.add(new NodeRef((String) item));
             } else {
                 throw new IllegalArgumentException("Unsupported task attachment class: " + item.getClass());
             }

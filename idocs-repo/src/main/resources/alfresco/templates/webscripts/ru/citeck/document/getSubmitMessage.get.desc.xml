@@ -1,0 +1,8 @@
+<webscript>
+    <shortname>getSubmitMessage</shortname>
+    <description>Get message from form submit</description>
+    <url>/acm/getSubmitMessage</url>
+    <format default="json">argument</format>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>

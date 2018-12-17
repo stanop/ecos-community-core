@@ -1,21 +1,4 @@
-export function t(messageId, multipleValues, scope = 'global') {
-    // https://dev.alfresco.com/resource/docs/aikau-jsdoc/Core.js.html
-    if (!messageId) {
-        return '';
-    }
-
-    if (!window.Alfresco) {
-        return messageId;
-    }
-
-    return window.Alfresco.util.message(messageId, scope, multipleValues);
-}
-
-export function generateSearchTerm (terms, hiddenSearchTerms) {
-    let searchTerm = hiddenSearchTerms ? "(" + terms + ") " + hiddenSearchTerms : terms;
-
-    return encodeURIComponent(searchTerm);
-}
+import { getCurrentLocale, t } from '../../common/util';
 
 const BYTES_KB = 1024;
 const BYTES_MB = 1048576;
@@ -123,16 +106,6 @@ export function getRelativeTime(from, to) {
 
     const years_ago  = Math.round(minutes_ago / 525960);
     return fnTime("relative.years", years_ago);
-}
-
-export function getCurrentLocale() {
-    if (!window.navigator) {
-        return "en";
-    }
-
-    const language = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.systemLanguage || navigator.userLanguage);
-
-    return language.substr(0, 2).toLowerCase();
 }
 
 export function makeSiteMenuItems(user, siteData) {
@@ -353,7 +326,7 @@ export const makeUserMenuItems = (userName, isAvailable, isMutable, isExternalAu
         {
             id: "HEADER_USER_MENU_REPORTISSUE",
             label: "header.reportIssue.label",
-            targetUrl: "mailto:support@citeck.ru?subject=Ошибка в работе Citeck EcoS: краткое описание&body=Summary: Короткое описание проблемы (продублировать в теме письма)%0A%0ADescription:%0AПожалуйста, детально опишите возникшую проблему, последовательность действий, которая привела к ней. При необходимости приложите скриншоты.",
+            targetUrl: "mailto:support@citeck.ru?subject=Ошибка в работе Citeck ECOS: краткое описание&body=Summary: Короткое описание проблемы (продублировать в теме письма)%0A%0ADescription:%0AПожалуйста, детально опишите возникшую проблему, последовательность действий, которая привела к ней. При необходимости приложите скриншоты.",
             targetUrlType: "FULL_PATH",
             target: "_blank"
         }

@@ -4,13 +4,9 @@ import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.security.AuthenticationService;
-import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.*;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.flowable.engine.FormService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.form.StartFormData;
@@ -32,160 +28,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static ru.citeck.ecos.flowable.constants.FlowableConstants.ENGINE_PREFIX;
+
 /**
  * Flowable transform service
  */
 public class FlowableTransformServiceImpl implements FlowableTransformService {
 
-    /**
-     * Logger
-     */
-    private static Log logger = LogFactory.getLog(FlowableTransformServiceImpl.class);
-
-    /**
-     * Constants
-     */
-    private static final String ENGINE_PREFIX = "flowable$";
     private static final String DEFAULT_TASK_VIEW_TYPE = "wfcf:defaultTask";
 
-    /**
-     * Namespace service
-     */
     private NamespaceService namespaceService;
-
-    /**
-     * Dictionary service
-     */
     private DictionaryService dictionaryService;
-
-    /**
-     * Person service
-     */
-    private PersonService personService;
-
-    /**
-     * Authentication service
-     */
-    private AuthenticationService authenticationService;
-
-    /**
-     * Flowable process definition service
-     */
     private FlowableProcessDefinitionService flowableProcessDefinitionService;
-
-    /**
-     * Form service
-     */
     private FormService formService;
-
-    /**
-     * Flowable process instance service
-     */
     private FlowableProcessInstanceService flowableProcessInstanceService;
-
-    /**
-     * Flowable history service
-     */
     private FlowableHistoryService flowableHistoryService;
-
-    /**
-     * Flowable property converter
-     */
     private FlowablePropertyConverter flowablePropertyConverter;
-
-    /**
-     * Runtime service
-     */
     private RuntimeService runtimeService;
-
-    /**
-     * Set flowable history service
-     *
-     * @param flowableHistoryService Flowable history service
-     */
-    public void setFlowableHistoryService(FlowableHistoryService flowableHistoryService) {
-        this.flowableHistoryService = flowableHistoryService;
-    }
-
-    /**
-     * Set flowable process instance service
-     *
-     * @param flowableProcessInstanceService Flowable process instance service
-     */
-    public void setFlowableProcessInstanceService(FlowableProcessInstanceService flowableProcessInstanceService) {
-        this.flowableProcessInstanceService = flowableProcessInstanceService;
-    }
-
-    /**
-     * Set flowable process definition service
-     *
-     * @param flowableProcessDefinitionService Flowable process definition service
-     */
-    public void setFlowableProcessDefinitionService(FlowableProcessDefinitionService flowableProcessDefinitionService) {
-        this.flowableProcessDefinitionService = flowableProcessDefinitionService;
-    }
-
-    /**
-     * Set form service
-     *
-     * @param formService Form service
-     */
-    public void setFormService(FormService formService) {
-        this.formService = formService;
-    }
-
-    /**
-     * Set namespace service
-     *
-     * @param namespaceService Namespace service
-     */
-    public void setNamespaceService(NamespaceService namespaceService) {
-        this.namespaceService = namespaceService;
-    }
-
-    /**
-     * Dictionary service
-     *
-     * @param dictionaryService Dictionary service
-     */
-    public void setDictionaryService(DictionaryService dictionaryService) {
-        this.dictionaryService = dictionaryService;
-    }
-
-    /**
-     * Set authentication service
-     *
-     * @param authenticationService Authentication service
-     */
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
-
-    /**
-     * Set person service
-     *
-     * @param personService Person service
-     */
-    public void setPersonService(PersonService personService) {
-        this.personService = personService;
-    }
-
-    /**
-     * Set flowable property converter
-     *
-     * @param flowablePropertyConverter Flowable property converter
-     */
-    public void setFlowablePropertyConverter(FlowablePropertyConverter flowablePropertyConverter) {
-        this.flowablePropertyConverter = flowablePropertyConverter;
-    }
-
-    /**
-     * Runtime service
-     * @param runtimeService Runtime service
-     */
-    public void setRuntimeService(RuntimeService runtimeService) {
-        this.runtimeService = runtimeService;
-    }
 
     /**
      * Transform process definition to alfresco workflow definition
@@ -277,7 +136,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
     @Override
     public WorkflowTaskDefinition transformStartTaskDefinition(ProcessDefinition processDefinition) {
         StartFormData startFormData = formService.getStartFormData(processDefinition.getId());
-        /** Task node */
+        /* Task node */
         WorkflowNode taskNode = new WorkflowNode(
                 startFormData.getProcessDefinition().getKey(),
                 startFormData.getProcessDefinition().getName(),
@@ -285,7 +144,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
                 "",
                 true
         );
-        /** Start task definition */
+        /* Start task definition */
         TypeDefinition typeDefinition = getTypeDefinition(startFormData != null ? startFormData.getFormKey() : null);
         if (typeDefinition == null) {
             typeDefinition = getTypeDefinition(DEFAULT_TASK_VIEW_TYPE);
@@ -303,7 +162,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
      */
     @Override
     public WorkflowTaskDefinition transformTaskDefinition(Task task) {
-        /** Task node */
+        /* Task node */
         WorkflowNode taskNode = new WorkflowNode(
                 task.getTaskDefinitionKey(),
                 task.getName(),
@@ -311,7 +170,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
                 "",
                 true
         );
-        /** Task definition */
+        /* Task definition */
         TaskFormData taskFormData = formService.getTaskFormData(task.getId());
         TypeDefinition typeDefinition = getTypeDefinition(taskFormData != null ? taskFormData.getFormKey() : null);
         if (typeDefinition == null) {
@@ -332,7 +191,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
      */
     @Override
     public WorkflowTaskDefinition transformTaskDefinition(HistoricTaskInstance task) {
-        /** Task node */
+        /* Task node */
         WorkflowNode taskNode = new WorkflowNode(
                 task.getTaskDefinitionKey(),
                 task.getName(),
@@ -340,7 +199,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
                 "",
                 true
         );
-        /** Task definition */
+        /* Task definition */
         TypeDefinition typeDefinition = getTypeDefinition(task.getFormKey());
         if (typeDefinition == null) {
             typeDefinition = getTypeDefinition(DEFAULT_TASK_VIEW_TYPE);
@@ -396,7 +255,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
     @Override
     public WorkflowPath transformHistoryProcessInstanceToWorkflowPath(HistoricProcessInstance processInstance) {
         if (processInstance != null) {
-            /** Workflow path */
+            /* Workflow path */
             return new WorkflowPath(
                     ENGINE_PREFIX + processInstance.getId(),
                     transformHistoryProcessInstanceToWorkflowInstance(processInstance),
@@ -462,7 +321,8 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
         if (processInstance != null) {
             WorkflowInstance result = new WorkflowInstance(
                     ENGINE_PREFIX + processInstance.getId(),
-                    transformProcessDefinition(flowableProcessDefinitionService.getProcessDefinitionById(processInstance.getProcessDefinitionId())),
+                    transformProcessDefinition(flowableProcessDefinitionService.getProcessDefinitionById(
+                            processInstance.getProcessDefinitionId())),
                     (String) getHistoryProcessVariable(processInstance.getId(), "bpm_workflowDescription"),
                     (NodeRef) getHistoryProcessVariable(processInstance.getId(), "initiator"),
                     (NodeRef) getHistoryProcessVariable(processInstance.getId(), "bpm_package"),
@@ -480,7 +340,8 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Get process variable
-     * @param processId Process id
+     *
+     * @param processId   Process id
      * @param variableKey Variable key
      * @return Process variable
      */
@@ -494,6 +355,7 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
 
     /**
      * Get history process variable
+     *
      * @param variableKey Variable key
      * @return Process variable
      */
@@ -627,5 +489,37 @@ public class FlowableTransformServiceImpl implements FlowableTransformService {
         } else {
             return null;
         }
+    }
+
+    public void setFlowableHistoryService(FlowableHistoryService flowableHistoryService) {
+        this.flowableHistoryService = flowableHistoryService;
+    }
+
+    public void setFlowableProcessInstanceService(FlowableProcessInstanceService flowableProcessInstanceService) {
+        this.flowableProcessInstanceService = flowableProcessInstanceService;
+    }
+
+    public void setFlowableProcessDefinitionService(FlowableProcessDefinitionService flowableProcessDefinitionService) {
+        this.flowableProcessDefinitionService = flowableProcessDefinitionService;
+    }
+
+    public void setFormService(FormService formService) {
+        this.formService = formService;
+    }
+
+    public void setNamespaceService(NamespaceService namespaceService) {
+        this.namespaceService = namespaceService;
+    }
+
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
+    }
+
+    public void setFlowablePropertyConverter(FlowablePropertyConverter flowablePropertyConverter) {
+        this.flowablePropertyConverter = flowablePropertyConverter;
+    }
+
+    public void setRuntimeService(RuntimeService runtimeService) {
+        this.runtimeService = runtimeService;
     }
 }

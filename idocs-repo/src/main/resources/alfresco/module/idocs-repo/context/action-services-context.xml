@@ -56,6 +56,11 @@
         <property name="personService" ref="personService" />
         <property name="permissionService" ref="permissionService" />
     </bean>
+
+    <bean id="site-member" class="ru.citeck.ecos.action.evaluator.SiteMemberEvaluator" parent="action-condition-evaluator">
+        <property name="siteService" ref="siteService" />
+        <property name="authorityService" ref="authorityService" />
+    </bean>
     
     <bean id="compare-process-variable" class="ru.citeck.ecos.action.evaluator.CompareLifecycleProcessVariableValueEvaluator" parent="action-condition-evaluator" />
     

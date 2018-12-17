@@ -1,6 +1,6 @@
 import React from 'react';
 import DropDownMenuItem from './dropdown-menu-item';
-import { t } from '../misc/util';
+import { t } from '../../common/util';
 
 const DropDownMenuGroup = ({ id, label, items }) => {
     const groupItems = items && items.length > 0 ? items.map((item, key) => {

@@ -13,6 +13,7 @@ public interface EcosModel {
     //Types
     QName TYPE_DOCUMENT = QName.createQName(ECOS_NAMESPACE, "document");
     QName TYPE_CASE = QName.createQName(ECOS_NAMESPACE, "case");
+    QName TYPE_ICON = QName.createQName(ECOS_NAMESPACE, "icon");
 
     //Aspects
     QName ASPECT_HAS_RESPONSIBLE = QName.createQName(ECOS_NAMESPACE, "hasResponsible");
@@ -38,6 +39,8 @@ public interface EcosModel {
     QName PROP_PASS = QName.createQName(ECOS_NAMESPACE, "pass");
     QName PROP_PASS_VERIFY = QName.createQName(ECOS_NAMESPACE, "passVerify");
     QName PROP_IS_PERSON_DISABLED = QName.createQName(ECOS_NAMESPACE, "isPersonDisabled");
+    QName PROP_ICON_TYPE = QName.createQName(ECOS_NAMESPACE, "iconType");
+    QName PROP_FA_ICON_NAME = QName.createQName(ECOS_NAMESPACE, "faIconName");
 
     //Associations
     QName ASSOC_RESPONSIBLE = QName.createQName(ECOS_NAMESPACE, "responsible");

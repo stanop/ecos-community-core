@@ -81,12 +81,17 @@
 
     <view class="ecos:case">
         <views mode="create" kind="3-column"/>
-        <views mode="edit" kind="3-column"/>
+        <views mode="edit" kind="3-column" />
+
+        <field prop="tk:type" template="none">
+            <invariant on="value" language="explicit">workspace://SpacesStore/cat-doc-type-general-case</invariant>
+        </field>
+
         <view id="type-kind-view">
-            <field prop="tk:type" template="none">
-                <invariant on="value" language="explicit">workspace://SpacesStore/cat-doc-type-general-case</invariant>
-            </field>
             <field prop="tk:kind">
+                <region name="label" template="label">
+                    <param name="key">ecos_case.form.tk_kind.title</param>
+                </region>
                 <region name="input" template="autocomplete">
                     <param name="searchScript">criteria-search</param>
                     <param name="criteria">
@@ -102,43 +107,80 @@
                     <param name="mode">checkbox</param>
                 </region>
             </field>
-            <field prop="ecos:documentDate" />
-        </view>
-        <view kind="1-column">
-            <field prop="cm:name"/>
-            <field prop="idocs:note">
-                <region name="input" template="textarea">
-                    <param name="height">100%</param>
-                </region>
+            <field prop="ecos:documentDate">
                 <region name="label" template="label">
-                    <param name="key">idocs_idocsModel.property.idocs_note.title</param>
+                    <param name="key">ecos_case.form.ecos_documentDate.title</param>
                 </region>
+                <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
             </field>
         </view>
         <view>
-            <field assoc="ecos:responsible">
-                <invariant on="mandatory" language="explicit">true</invariant>
-            </field>
-            <field assoc="idocs:legalEntity">
-                <region name="input" template="view"/>
-                <region name="select" template="select-journal">
-                    <param name="journalType">legal-entities</param>
-                </region>
-            </field>
-            <field assoc="idocs:contractor">
-                <region name="input" template="view"/>
-                <region name="select" template="select-journal">
-                    <param name="journalType">idocs-contractor</param>
-                </region>
-            </field>
+            <view kind="1-column">
+                <field prop="cm:title">
+                    <region name="label">
+                        <param name="key">idocs_idocsModel.property.cm_title.title</param>
+                    </region>
+                </field>
+                <field prop="idocs:note">
+                    <region name="input" template="textarea">
+                        <param name="height">100%</param>
+                    </region>
+                    <region name="label" template="label">
+                        <param name="key">idocs_idocsModel.property.idocs_note.title</param>
+                    </region>
+                </field>
+            </view>
+            <view>
+                <field assoc="ecos:responsible">
+                    <invariant on="mandatory" language="explicit">true</invariant>
+                    <invariant on="default" language="javascript">person</invariant>
+                </field>
+                <field assoc="idocs:initiator">
+                    <invariant on="default" language="javascript">person</invariant>
+                </field>
+            </view>
         </view>
         <view>
-            <field assoc="idocs:currencyDocument">
-                <region name="input" template="select" />
-            </field>
-            <field prop="ecos:documentAmount">
-                <region name="input" template="number" />
-            </field>
+            <view>
+                <field prop="ecos:startDate" />
+                <field prop="ecos:stopDate" />
+                <field assoc="idocs:legalEntity">
+                    <region name="input" template="view"/>
+                    <region name="select" template="select-journal">
+                        <param name="journalType">legal-entities</param>
+                    </region>
+                    <invariant on="default" language="javascript"><![CDATA[(function () {
+                        if (!window.defaultLegalEntity) {
+                            window.defaultLegalEntity = ko.observable(null);
+                            Alfresco.util.Ajax.jsonGet({
+                                url: Alfresco.constants.PROXY_URI + "/citeck/ecosConfig/ecos-config-value?configName=defaultLegalEntity",
+                                successCallback: {
+                                    fn: function(response) {
+                                        if (response && response.json && response.json.value) {
+                                            window.defaultLegalEntity(response.json.value || null);
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        return window.defaultLegalEntity();
+                    })()]]></invariant>
+                </field>
+            </view>
+            <view>
+                <field assoc="idocs:currencyDocument">
+                    <region name="input" template="select" />
+                </field>
+                <field prop="ecos:documentAmount">
+                    <region name="input" template="number" />
+                </field>
+                <field assoc="idocs:contractor">
+                    <region name="input" template="view"/>
+                    <region name="select" template="select-journal">
+                        <param name="journalType">idocs-contractor</param>
+                    </region>
+                </field>
+            </view>
         </view>
     </view>
 

@@ -69,6 +69,10 @@ ko.components.register("help", {
     viewModel: function(params) {
         kocomponents.initializeParameters.call(this, params);
         var self = this;
+
+        self.containerZIndex = ko.observable(0);
+        self.labelZIndex = ko.observable(0);
+
         // private methods
         this._createTooltip = _.bind(function(text) {
             if (!this.tooltip) {
@@ -87,6 +91,10 @@ ko.components.register("help", {
                 this.tooltip.contextMouseOverEvent.subscribe(function() {
                     var parent = $("#" + self.id).closest(".yui-panel-container"),
                         zindex = parent.css("z-index") ? parseInt(parent.css("z-index")) + 1 : 10;
+
+                    self.containerZIndex(zindex + 1);
+                    self.labelZIndex(zindex - 1);
+
                     self.tooltip.cfg.setProperty("zIndex", zindex);
                 }, this);
             }
@@ -110,8 +118,10 @@ ko.components.register("help", {
         // create tooltip if text already calculated
         this._createTooltip(this.text());
     },
-    template:
-       '<span data-bind="attr: { id: id }, if: text, click: onclick">?</span>'
+    template: '\
+        <span data-bind="style: { \'z-index\': containerZIndex, position: \'relative\' }, attr: { id: id }, if: text, click: onclick">\
+            <span data-bind="style: { \'z-index\': labelZIndex, position: \'relative\' }">?</span>\
+        </span>'
 });
 
 // ---------------
@@ -227,6 +237,31 @@ ko.components.register("number-generate", {
 // ---------------
 // NUMBER
 // ---------------
+    
+ko.bindingHandlers.numericKeyInput = {
+    init: function (element) {
+        $(element).on('keydown', function (event) {
+            var keyCode = event.keyCode;
+            var allowKeyCodes = [
+                46, //delete
+                8, //backspace
+                9, //tab
+                27, //escape
+                13, //enter
+                188, //comma
+                190, //period
+                110, //decimal point
+                35,36,37,38,39 //end, home, left arrow, up arrow, right arrow
+            ];
+
+            if (allowKeyCodes.includes(keyCode) || (keyCode === 65 && event.ctrlKey === true)) {
+                return null;
+            } else if (event.shiftKey || (keyCode < 48 || keyCode > 57) && (keyCode < 96 || keyCode > 105)) {
+                event.preventDefault();
+            }
+        });
+    }
+};
 
 ko.components.register("number", {
     viewModel: function(params) {
@@ -240,6 +275,22 @@ ko.components.register("number", {
 
         this.validation = function(data, event) {
             var newValue = document.getElementById(self.id).value + event.key;
+            var keyCode = event.keyCode;
+            var allowKeyCodes = [
+                46, //delete
+                8, //backspace
+                9, //tab
+                27, //escape
+                13, //enter
+                35,36,37,38,39 //end, home, left arrow, up arrow, right arrow
+            ];
+
+            if (allowKeyCodes.includes(keyCode) || (keyCode === 65 && event.ctrlKey === true)) {
+                return true;
+            }
+
+            newValue = newValue.replace(',', '.');
+
             if (self.isInteger) {
                 var regExp = /^[0-9]*$/;
                 return regExp.test(newValue);
@@ -251,7 +302,7 @@ ko.components.register("number", {
         };
     },
     template:
-       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keypress: validation }" />'
+       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keydown: validation }" />'
 });
 
 // ---------------
@@ -1336,6 +1387,27 @@ ko.bindingHandlers.journalControl = {
                     options = ko.computed(function (page) {
                         var journalTypeId = data.journalId && data.journalId() || params.journalType;
                         var actualCriteria = criteria();
+
+                        var optionsFilters;
+                        var optionsFiltersTemp = [];
+
+                        if (_.isFunction(optionsFilter)) {
+                            optionsFilters = optionsFilter() || [];
+
+                            optionsFilters.forEach(function(optionsFilter) {
+                                var match = _.find(actualCriteria, function(actualCriterion) {
+                                    return optionsFilter.attribute == actualCriterion.attribute;
+                                });
+                                if (!match) {
+                                    optionsFiltersTemp.push(optionsFilter);
+                                }
+                            });
+
+                            if(optionsFiltersTemp.length){
+                                criteria(optionsFiltersTemp);
+                            }
+                        }
+
                         if (hiddenCriteria) {
                             for (var hc in hiddenCriteria) {
                                 if (!_.some(actualCriteria, function (criterion) {

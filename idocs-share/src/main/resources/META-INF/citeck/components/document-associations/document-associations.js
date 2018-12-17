@@ -151,10 +151,12 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                         if(this.options.addable.length>0 && this.hasPermissionWrite) {
                             require([
                                 'citeck/components/journals2/journals-selector',
+                                'citeck/utils/knockout.utils',
                                 'react-dom',
                                 'react'
                             ], function(
                                 component,
+                                koutils,
                                 ReactDOM,
                                 React
                             ){
@@ -168,7 +170,11 @@ if (typeof Citeck.widget == "undefined" || !Citeck.widget) {
                                             if (newValue) {
                                                 me.selectedType = selectedType;
                                                 var isArray = _.isArray(newValue);
-                                                me.onAddAssociation(isArray ? newValue : [newValue]);
+                                                var newValues = isArray ? newValue : [newValue];
+
+                                                koutils.ensureAttributeValue(newValues, ['cm:name','cm:title'], function(newValues){
+                                                    me.onAddAssociation(newValues);
+                                                });
                                             }
                                         }
                                     }),

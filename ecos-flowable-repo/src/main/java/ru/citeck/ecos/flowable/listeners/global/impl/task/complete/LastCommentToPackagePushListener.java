@@ -4,6 +4,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowInstance;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.flowable.task.service.delegate.DelegateTask;
+import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 
@@ -18,7 +19,8 @@ public class LastCommentToPackagePushListener implements GlobalCompleteTaskListe
     public void notify(DelegateTask delegateTask) {
 
         WorkflowInstance workflowInstance =
-                workflowService.getWorkflowById("flowable$" + delegateTask.getProcessInstanceId());
+                workflowService.getWorkflowById(FlowableConstants.ENGINE_PREFIX
+                        + delegateTask.getProcessInstanceId());
         if (workflowInstance == null) {
             return;
         }

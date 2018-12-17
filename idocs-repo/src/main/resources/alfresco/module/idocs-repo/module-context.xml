@@ -10,6 +10,7 @@
     <import resource="classpath:alfresco/module/idocs-repo/context/case-activity-service-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/deputy-services-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/lifecycle-services-context.xml"/>
+    <import resource="classpath:alfresco/module/idocs-repo/context/menu-services-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/scheduled-jobs-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/case-roles-service-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context.xml"/>
@@ -50,6 +51,7 @@
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-3-3-0.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-3-4-0.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-3-5-0.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-3-6-0.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/form-actions-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/aop-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/records-service-context.xml"/>
