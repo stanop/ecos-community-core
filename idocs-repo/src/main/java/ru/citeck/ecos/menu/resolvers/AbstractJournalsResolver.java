@@ -85,11 +85,11 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
         if (context.getAction() != null) {
             Map<String, String> parentActionParams = context.getAction().getParams();
             actionParams.putAll(parentActionParams);
-        } else {
-            if (MapUtils.isNotEmpty(params) && params.containsKey(LIST_ID_KEY)) {
-                actionParams.put(LIST_ID_KEY, params.get(LIST_ID_KEY));
-            }
         }
+        if (MapUtils.isNotEmpty(params) && params.containsKey(LIST_ID_KEY)) {
+            actionParams.put(LIST_ID_KEY, params.get(LIST_ID_KEY));
+        }
+
         /* current element action params */
         actionParams.put(JOURNAL_REF_KEY, journalRef.toString());
 
