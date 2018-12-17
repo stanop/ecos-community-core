@@ -1595,6 +1595,9 @@ define([
             read: function() { return this.convertValue(this.rawValue(), false); },
             write: function(value) { this.value(value); }
         })
+        .computed('invariantSingleValue', {
+            read: function() { return this.convertValue(this.invariantValue(), false); }
+        })
         .computed('multipleValues', {
             read: function() {
                 var values = this.convertValue(this.rawValue(), true);
