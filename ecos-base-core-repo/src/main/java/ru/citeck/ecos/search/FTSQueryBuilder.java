@@ -236,7 +236,7 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
         term.append('(');
         term.append(buildNullCheckTerm(field, isEmpty));
         term.append(isEmpty ? " OR " : " AND NOT ");
-        buildEqualsTerm(field, "");
+        term.append(buildEqualsTerm(field, ""));
         term.append(')');
 
         return term.toString();
