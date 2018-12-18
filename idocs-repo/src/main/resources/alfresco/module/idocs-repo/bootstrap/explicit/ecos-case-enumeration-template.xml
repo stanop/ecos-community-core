@@ -7,6 +7,7 @@
     <view:reference view:pathref=".">
         <view:associations>
             <cm:contains>
+
                 <count:autonumberTemplate view:childName="count:ecos-case-number-template">
                     <view:properties>
                         <sys:node-uuid>ecos-case-number-template</sys:node-uuid>
@@ -14,6 +15,47 @@
                         <count:counterTemplate>ecosCaseNumberTemplate</count:counterTemplate>
                     </view:properties>
                 </count:autonumberTemplate>
+
+                <count:autonumberTemplate view:childName="count:ecos-case-application-num-template">
+                    <view:properties>
+                        <sys:node-uuid>ecos-case-application-num-template</sys:node-uuid>
+                        <cm:name>ecos-case-application-num-template</cm:name>
+                        <count:counterTemplate>ecosCaseApplicationNumberTemplate</count:counterTemplate>
+                    </view:properties>
+                </count:autonumberTemplate>
+
+                <count:autonumberTemplate view:childName="count:ecos-case-claim-num-template">
+                    <view:properties>
+                        <sys:node-uuid>ecos-case-claim-num-template</sys:node-uuid>
+                        <cm:name>ecos-case-claim-num-template</cm:name>
+                        <count:counterTemplate>ecosCaseClaimNumberTemplate</count:counterTemplate>
+                    </view:properties>
+                </count:autonumberTemplate>
+
+                <count:autonumberTemplate view:childName="count:ecos-case-work-plan-num-template">
+                    <view:properties>
+                        <sys:node-uuid>ecos-case-work-plan-num-template</sys:node-uuid>
+                        <cm:name>ecos-case-work-plan-num-template</cm:name>
+                        <count:counterTemplate>ecosCaseWorkPlanNumberTemplate</count:counterTemplate>
+                    </view:properties>
+                </count:autonumberTemplate>
+
+                <count:autonumberTemplate view:childName="count:ecos-case-customer-req-num-template">
+                    <view:properties>
+                        <sys:node-uuid>ecos-case-customer-req-num-template</sys:node-uuid>
+                        <cm:name>ecos-case-customer-req-num-template</cm:name>
+                        <count:counterTemplate>ecosCaseCustomerReqNumberTemplate</count:counterTemplate>
+                    </view:properties>
+                </count:autonumberTemplate>
+
+                <count:autonumberTemplate view:childName="count:ecos-case-complaint-num-template">
+                    <view:properties>
+                        <sys:node-uuid>ecos-case-complaint-num-template</sys:node-uuid>
+                        <cm:name>ecos-case-complaint-num-template</cm:name>
+                        <count:counterTemplate>ecosCaseComplaintNumberTemplate</count:counterTemplate>
+                    </view:properties>
+                </count:autonumberTemplate>
+
             </cm:contains>
         </view:associations>
     </view:reference>

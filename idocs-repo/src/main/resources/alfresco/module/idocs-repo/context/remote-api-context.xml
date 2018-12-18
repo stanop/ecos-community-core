@@ -211,7 +211,6 @@
         <property name="displayByNameClasses">
             <list>
                 <value>{http://www.citeck.ru/model/content/ecos/1.0}document</value>
-                <value>{http://www.citeck.ru/model/content/ecos/1.0}case</value>
             </list>
         </property>
     </bean>
@@ -340,8 +339,6 @@
     <bean id="webscript.ru.citeck.history.document-history.get"
           class="ru.citeck.ecos.webscripts.history.DocumentHistoryGet" parent="webscript">
         <property name="historyRemoteService" ref="historyRemoteService"/>
-        <property name="nodeService" ref="NodeService"/>
-        <property name="personService" ref="PersonService"/>
         <property name="historyGetService" ref="historyGetService"/>
         <property name="filterRegistry" ref="historyFilter.mappingRegistry"/>
     </bean>

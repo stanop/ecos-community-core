@@ -16,11 +16,11 @@ var statuses = [
     {name: 'terminated',           title: {'en': 'Terminated',             'ru': '\u041F\u0440\u0435\u043A\u0440\u0430\u0442\u0438\u043B \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435'}},
     {name: 'registered',           title: {'en': 'Registered (archive)',   'ru': '\u0417\u0430\u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0438\u0440\u043E\u0432\u0430\u043D (\u0430\u0440\u0445\u0438\u0432)'}}, 
     {name: 'rejected',             title: {'en': 'Rejected',               'ru': '\u041E\u0442\u043A\u043B\u043E\u043D\u0435\u043D\u0430'}},
-    {name: 'signing',              title: {'en': 'Signing',                'ru': '\u041D\u0430 \u043F\u043E\u0434\u043F\u0438\u0441\u0430\u043D\u0438\u0438'}},
     {name: 'on-approval',          title: {'en': 'Approve',                'ru': '\u041D\u0430 \u0441\u043E\u0433\u043B\u0430\u0441\u043E\u0432\u0430\u043D\u0438\u0438'}},
     {name: 'signed',               title: {'en': 'Signed',                 'ru': '\u041F\u043E\u0434\u043F\u0438\u0441\u0430\u043D\u0430'}},
     {name: 'prepared',             title: {'en': 'Prepared',               'ru': '\u041F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u043B\u0435\u043D\u0430'}},
     {name: 'closed',               title: {'en': 'Closed',                 'ru': '\u0417\u0430\u043A\u0440\u044B\u0442\u0430'}},
+    {name: 'closed-m',             title: {'en': 'Closed',                 'ru': '\u0417\u0430\u043A\u0440\u044B\u0442'}},
     {name: 'cancelled',            title: {'en': 'Cancelled',              'ru': '\u041E\u0442\u043C\u0435\u043D\u0435\u043D\u0430'}}
 ];
 

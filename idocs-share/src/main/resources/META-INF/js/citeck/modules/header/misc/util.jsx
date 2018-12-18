@@ -1,4 +1,4 @@
-import { getCurrentLocale } from '../../common/util';
+import { getCurrentLocale, t } from '../../common/util';
 
 const BYTES_KB = 1024;
 const BYTES_MB = 1048576;

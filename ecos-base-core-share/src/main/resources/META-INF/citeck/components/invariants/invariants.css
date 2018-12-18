@@ -98,6 +98,10 @@
   top: 7px;
 }
 
+#cardlet-remote-node-view-container .template-row .form-field-inline-mode-changer.save-mode {
+  top: 0;
+}
+
 @keyframes fadein {
     from { opacity: 0; }
     to   { opacity: 1; }
@@ -1149,6 +1153,11 @@
 /* date */
 .invariants-form .template-table .template-row .template-date input {
   width: 46%;
+}
+
+.yui-panel-container.shadow .invariants-form .template-table .template-row .template-date input {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 

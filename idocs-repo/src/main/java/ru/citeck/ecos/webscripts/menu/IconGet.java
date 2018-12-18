@@ -25,13 +25,14 @@ public class IconGet extends AbstractWebScript {
     private ObjectMapper objectMapper = new ObjectMapper();
     private SearchService searchService;
     private NodeService nodeService;
-    private long cacheAgeSeconds = 600;
+    private long cacheAgeSeconds = 3600;
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse resp) throws IOException {
         String iconName = req.getParameter(PARAM_ICON_NAME);
         resp.setContentType("application/json;charset=UTF-8");
         Cache cache = new Cache();
+        cache.setNeverCache(false);
         cache.setMaxAge(cacheAgeSeconds);
         resp.setCache(cache);
         Icon result;

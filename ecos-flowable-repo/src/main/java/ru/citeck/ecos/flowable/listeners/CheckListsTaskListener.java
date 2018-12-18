@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.flowable.engine.common.api.delegate.Expression;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
+import org.flowable.variable.api.delegate.VariableScope;
 import ru.citeck.ecos.flowable.example.AbstractServiceProvider;
 import ru.citeck.ecos.flowable.utils.FlowableListenerUtils;
 import ru.citeck.ecos.icase.completeness.CompletenessUtils;
@@ -25,7 +26,7 @@ public class CheckListsTaskListener extends AbstractServiceProvider implements T
     private final List<NodeRef> lists = new ArrayList<>();
     private final List<String> outcomesToCheck = new ArrayList<>();
     private String outcomeField = "outcome";
-    private boolean checkEnabled = true;
+    private Expression checkEnabled;
 
     @Override
     protected void initImpl() {
@@ -38,7 +39,9 @@ public class CheckListsTaskListener extends AbstractServiceProvider implements T
 
         init();
 
-        if (!checkEnabled || lists.isEmpty()) {
+        boolean isEnabled = processEnabledState(delegateTask);
+
+        if (!isEnabled || lists.isEmpty()) {
             return;
         } else if (!outcomesToCheck.isEmpty()) {
             String outcome = (String) delegateTask.getVariable(outcomeField);
@@ -59,8 +62,21 @@ public class CheckListsTaskListener extends AbstractServiceProvider implements T
         completenessUtils.assertLevelsCompleted(document, lists);
     }
 
+    private boolean processEnabledState(VariableScope variableScope) {
+        if (checkEnabled == null) {
+            return Boolean.TRUE;
+        }
+
+        final String expText = checkEnabled.getExpressionText();
+        if (Boolean.TRUE.toString().equals(expText) || Boolean.FALSE.toString().equals(expText)) {
+            return Boolean.valueOf(expText);
+        }
+
+        return (boolean) checkEnabled.getValue(variableScope);
+    }
+
     public void setCheckEnabled(Expression checkEnabled) {
-        this.checkEnabled = Boolean.TRUE.toString().equals(checkEnabled.getExpressionText());
+        this.checkEnabled = checkEnabled;
     }
 
     public void setOutcomeField(Expression value) {

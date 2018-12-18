@@ -32,6 +32,46 @@ define([
     var repoMessageCache = {};
     var loadedFormattersCache = {};
 
+    var workflowDefinitions = null;
+    var _workflowDefinitionsListeners = [];
+    var _workflowDefinitionsReqSent = false;
+
+    var getWorkflowDefinitions = function (callback) {
+
+        if (!workflowDefinitions) {
+
+            _workflowDefinitionsListeners.push(callback);
+
+            if (!_workflowDefinitionsReqSent) {
+
+                var setWorkflowDefinitions = function(definitions) {
+                    workflowDefinitions = definitions;
+                    for (var idx in _workflowDefinitionsListeners) {
+                        _workflowDefinitionsListeners[idx].call(this, definitions);
+                    }
+                    _workflowDefinitionsListeners = [];
+                };
+
+                Alfresco.util.Ajax.jsonGet({
+                    url: Alfresco.constants.PROXY_URI + "api/workflow-definitions",
+                    successCallback: {
+                        fn: function(response) {
+                            setWorkflowDefinitions(response.json.data);
+                        }
+                    },
+                    failureCallback: {
+                        fn: function(response) {
+                            setWorkflowDefinitions([]);
+                        }
+                    }
+                });
+                _workflowDefinitionsReqSent = true;
+            }
+        } else {
+            callback(workflowDefinitions);
+        }
+    };
+
     YAHOO.lang.augmentObject(Citeck.format, {
 
         empty: function() {
@@ -533,27 +573,28 @@ define([
         },
 
         workflowName: function() {
+
             return function(elCell, oRecord, oColumn, sData) {
-                var workflowDefinitionName = '';
-                Alfresco.util.Ajax.jsonGet({
-                    url: Alfresco.constants.PROXY_URI + "api/workflow-definitions",
-                    successCallback: {
-                        fn: function(response) {
-                            var data = response.json.data;
-                            for(var i=0; i<data.length; i++)
-                            {
-                                if(data[i].name==sData)
-                                {
-                                    elCell.innerHTML = data[i].title;
-                                    break;
-                                }
-                            }
+
+                if (!sData) {
+                    elCell.innerHTML = "";
+                    return;
+                }
+                var value = sData.hasOwnProperty("str") ? sData.str : sData;
+
+                getWorkflowDefinitions(function (definitions) {
+
+                    var found = false;
+
+                    for (var i=0; i < definitions.length; i++) {
+                        if (definitions[i].name == value) {
+                            elCell.innerHTML = definitions[i].title;
+                            found = true;
+                            break;
                         }
-                    },
-                    failureCallback: {
-                        fn: function(response) {
-                            elCell.innerHTML = '';
-                        }
+                    }
+                    if (!found) {
+                        elCell.innerHTML = "";
                     }
                 });
             };
@@ -566,13 +607,20 @@ define([
                     elCell.innerHTML = sData.displayName;
                     return;
                 }
+                var typeQName = null;
                 var sDataValues = _.values(sData);
-                if (sDataValues.length && sDataValues[0].name == "classTitle") {
-                    var value = sDataValues[0].val || [];
-                    elCell.innerHTML = value.length ? value[0].str : '';
-                    return;
+                if (sDataValues.length) {
+                    if (sDataValues[0].name == "classTitle") {
+                        var value = sDataValues[0].val || [];
+                        elCell.innerHTML = value.length ? value[0].str : '';
+                        return;
+                    } else if (sDataValues[0].name == "shortName") {
+                        typeQName = ((sDataValues[0].val || [])[0] || { str: null }).str;
+                    }
                 }
-                var typeQName = key ? sData[key] : sData;
+                if (!typeQName) {
+                    typeQName = key ? sData[key] : sData;
+                }
                 if (cache[typeQName]) {
                     elCell.innerHTML = cache[typeQName];
                 } else {
@@ -1928,9 +1976,21 @@ define([
             var typeName = this.typeName(null);
 
             return function(elCell, oRecord, oColumn, sData) {
+                if (!sData) {
+                    elCell.innerHTML = "";
+                    return;
+                }
                 var title = oRecord.getData('taskTitle');
                 if (title) {
                     elCell.innerHTML = title;
+                    return;
+                }
+                title = (oRecord.getData("attributes['cwf:taskTitle']") || [])[0];
+                if (!title) {
+                    title = sData;
+                }
+                if (title && title.hasOwnProperty("str")) {
+                    elCell.innerHTML = title.str;
                 } else {
                     typeName.call(this, elCell, oRecord, oColumn, sData);
                 }

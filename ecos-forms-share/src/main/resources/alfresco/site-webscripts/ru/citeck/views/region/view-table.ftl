@@ -14,6 +14,7 @@
     <#assign needPullForDuplicate = "" />
 </#if>
 <#assign cloneParent = params.cloneParent!"false" />
+<#assign useInvariantValues = params.useInvariantValues!"false" />
 
 <#-- Parametes:
         * journalType - columns is defaultAttributes ("files-numenclature") [optional]
@@ -38,10 +39,18 @@
 -->
 
 
+<#if useInvariantValues == "true">
+<!-- ko ifnot: invariantValueEmpty -->
+<#else>
 <!-- ko ifnot: empty -->
+</#if>
 <div class="view-table-container" style="<#if params.maxheight??>max-height: ${params.maxheight};</#if>">
     <table>
+        <#if useInvariantValues == "true">
+        <thead data-bind="with: invariantSingleValue">
+        <#else>
         <thead data-bind="with: singleValue">
+        </#if>
             <tr data-bind="if: $data.impl">
                 <#if actionIsFirstColumn == "true">
                     <@actionsHeader />
@@ -81,7 +90,11 @@
 
             </tr>
         </thead>
-        <tbody data-bind="foreach: multipleValues">
+        <#if useInvariantValues == "true">
+            <tbody data-bind="foreach: invariantValues">
+        <#else>
+            <tbody data-bind="foreach: multipleValues">
+        </#if>
             <!-- ko if: $data.impl -->
                 <!-- ko with: impl -->
                     <#if params.highlightedColumnMarker??>
@@ -153,7 +166,11 @@
 </div>
 <!-- /ko -->
 
+<#if useInvariantValues == "true">
+<!-- ko if: invariantValueEmpty -->
+<#else>
 <!-- ko if: empty -->
+</#if>
     <span>${msg("label.none")}</span>
 <!-- /ko -->
 

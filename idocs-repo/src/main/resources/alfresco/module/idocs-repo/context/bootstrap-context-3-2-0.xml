@@ -239,9 +239,9 @@
         </property>
     </bean>
 
-    <bean id="idocs.module-component.ecos-case-enumeration-template" parent="idocs.import-spaces.3-2-0">
-        <property name="name" value="ecos-case-enumeration-template" />
-        <property name="description" value="ecos-case-enumeration-template" />
+    <bean id="idocs.module-component.ecos-case-enumeration-template2" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="ecos-case-enumeration-template2" />
+        <property name="description" value="ecos-case-enumeration-template2" />
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.idocs-root" />
@@ -255,6 +255,16 @@
                     <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecos-case-enumeration-template.xml</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.ecos-case-enumeration-template" parent="idocs.import-spaces.3-2-0">
+        <property name="name" value="ecos-case-enumeration-template" />
+        <property name="description" value="ecos-case-enumeration-template" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.ecos-case-enumeration-template2" />
             </list>
         </property>
     </bean>

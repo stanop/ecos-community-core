@@ -84,6 +84,7 @@
 				<aspect>wfcf:options</aspect>
 				<aspect>cwf:sender</aspect>
 				<aspect>cwf:lastcomment</aspect>
+				<aspect>cwf:hasTaskTitle</aspect>
 			</mandatory-aspects>
 		</type>
 

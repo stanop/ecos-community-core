@@ -945,6 +945,12 @@
           class="ru.citeck.ecos.behavior.common.FillMonthDayPersonPropertyBehaviour">
     </bean>
 
+    <bean id="idocs.ecosCaseNamingBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="{http://www.citeck.ru/model/content/ecos/1.0}case" />
+        <property name="generateFromTitle" value="true" />
+        <property name="order" value="40"/>
+    </bean>
+
     <!--<bean id="ru.citeck.ecos.copy-metadata-from-target-to-source-assoc"-->
           <!--class="ru.citeck.ecos.behavior.copy.CopyMetadataFromTargetToSourceBehaviour" init-method="init">-->
         <!--<property name="policyComponent" ref="policyComponent"/>-->

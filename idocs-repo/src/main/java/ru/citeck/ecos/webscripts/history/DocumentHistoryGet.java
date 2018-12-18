@@ -3,7 +3,10 @@ package ru.citeck.ecos.webscripts.history;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
@@ -34,9 +37,6 @@ public class DocumentHistoryGet extends AbstractWebScript {
 
     private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citeck.history.service.enabled";
 
-    /**
-     * Constants
-     */
     public static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
     public static final String HISTORY_PROPERTY_NAME = "history";
     public static final String ATTRIBUTES_PROPERTY_NAME = "attributes";
@@ -49,26 +49,17 @@ public class DocumentHistoryGet extends AbstractWebScript {
     private static final String PARAM_FILTER = "filter";
     private static final String PARAM_TASK_TYPES = "taskTypes";
 
-    /**
-     * Global properties
-     */
     @Autowired
     @Qualifier("global-properties")
     private Properties properties;
 
-    /**
-     * Services
-     */
-    private HistoryRemoteService historyRemoteService;
-
-    private PersonService personService;
-
     private NodeService nodeService;
-
-    private HistoryGetService historyGetService;
-
-    @Autowired
+    private PersonService personService;
+    private MessageService messageService;
     private ServiceRegistry serviceRegistry;
+    private DictionaryService dictionaryService;
+    private HistoryGetService historyGetService;
+    private HistoryRemoteService historyRemoteService;
 
     private MappingRegistry<String, Criteria> filterRegistry = new MappingRegistry<>();
 
@@ -83,7 +74,6 @@ public class DocumentHistoryGet extends AbstractWebScript {
         String taskTypeParam = req.getParameter(PARAM_TASK_TYPES);
 
         /* Check history event status */
-
 
         List<ObjectNode> events = getHistoryEvents(nodeRefUuid, filterParam, eventsParam, taskTypeParam);
 
@@ -153,6 +143,7 @@ public class DocumentHistoryGet extends AbstractWebScript {
         List<ObjectNode> result = new ArrayList<>();
 
         Map<Pair<String, String>, String> outcomeTitles = new HashMap<>();
+        Map<Object, String> taskTitles = new HashMap<>();
 
         /* Transform records */
         for (Map<String, Object> historyRecordMap : historyRecordMaps) {
@@ -173,12 +164,12 @@ public class DocumentHistoryGet extends AbstractWebScript {
 
             if (StringUtils.isNotEmpty(taskType)) {
 
-                QName taskTypeValue = QName.createQName(taskType);
+                QName taskTypeQName = QName.createQName(taskType);
 
                 ObjectNode taskTypeNode = objectMapper.createObjectNode();
                 taskTypeNode.put("fullQName", taskType);
 
-                taskTypeShort = taskTypeValue.toPrefixString(serviceRegistry.getNamespaceService());
+                taskTypeShort = taskTypeQName.toPrefixString(serviceRegistry.getNamespaceService());
                 taskTypeNode.put("shortQName", taskTypeShort);
 
                 /* filter out records by taskTypes if specified */
@@ -187,6 +178,9 @@ public class DocumentHistoryGet extends AbstractWebScript {
                 }
 
                 attributesNode.put(DocumentHistoryConstants.TASK_TYPE.getKey(), taskTypeNode);
+
+                String taskTitle = getTaskTitle(taskTypeQName, historyRecordMap, taskTitles);
+                attributesNode.put(DocumentHistoryConstants.TASK_TITLE.getKey(), taskTitle);
             }
 
             /* Populate object */
@@ -251,6 +245,27 @@ public class DocumentHistoryGet extends AbstractWebScript {
         }
 
         return result;
+    }
+
+    private String getTaskTitle(QName taskType, Map<String, Object> historyRecordMap, Map<Object, String> taskTitles) {
+        String title = (String) historyRecordMap.get(DocumentHistoryConstants.TASK_TITLE.getValue());
+        if (StringUtils.isBlank(title)) {
+            if (taskType != null) {
+                title = taskTitles.computeIfAbsent(taskType, type -> {
+                    TypeDefinition typeDef = dictionaryService.getType(taskType);
+                    return typeDef != null ? typeDef.getTitle(messageService) : type.toString();
+                });
+            } else {
+                title = "";
+            }
+        } else {
+            title = taskTitles.computeIfAbsent(title, key -> {
+                String strKey = key.toString();
+                String titleMessage = I18NUtil.getMessage(strKey);
+                return StringUtils.isNotBlank(titleMessage) ? titleMessage : strKey;
+            });
+        }
+        return title;
     }
 
     private String getTaskOutcomeTitle(String taskTypeShort,
@@ -348,19 +363,20 @@ public class DocumentHistoryGet extends AbstractWebScript {
         this.historyRemoteService = historyRemoteService;
     }
 
-    public void setPersonService(PersonService personService) {
-        this.personService = personService;
-    }
-
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
-
     public void setHistoryGetService(HistoryGetService historyGetService) {
         this.historyGetService = historyGetService;
     }
 
     public void setFilterRegistry(MappingRegistry<String, Criteria> filterRegistry) {
         this.filterRegistry = filterRegistry;
+    }
+
+    @Autowired
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+        this.personService = serviceRegistry.getPersonService();
+        this.nodeService = serviceRegistry.getNodeService();
+        this.dictionaryService = serviceRegistry.getDictionaryService();
+        this.messageService = serviceRegistry.getMessageService();
     }
 }

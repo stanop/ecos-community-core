@@ -38,10 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.config.EcosConfigService;
-import ru.citeck.ecos.model.HistoryModel;
-import ru.citeck.ecos.model.ICaseModel;
-import ru.citeck.ecos.model.ICaseTaskModel;
-import ru.citeck.ecos.model.IdocsModel;
+import ru.citeck.ecos.model.*;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
 
@@ -81,6 +78,7 @@ public class HistoryService {
     private static final String TASK_ROLE = "taskRole";
     private static final String TASK_OUTCOME = "taskOutcome";
     private static final String TASK_TYPE = "taskType";
+    private static final String TASK_TITLE = "taskTitle";
     private static final String FULL_TASK_TYPE = "fullTaskType";
     private static final String INITIATOR = "initiator";
     private static final String WORKFLOW_INSTANCE_ID = "workflowInstanceId";
@@ -163,14 +161,11 @@ public class HistoryService {
 
     public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
         Date creationDate = new Date();
-        TransactionUtils.doAfterCommit(new Runnable() {
-            @Override
-            public void run() {
-                if (isEnabledRemoteHistoryService()) {
-                    sendHistoryEventToRemoteService(properties, creationDate);
-                } else {
-                    persistEventToAlfresco(type, properties, creationDate);
-                }
+        TransactionUtils.doAfterCommit(() -> {
+            if (isEnabledRemoteHistoryService()) {
+                sendHistoryEventToRemoteService(properties, creationDate);
+            } else {
+                persistEventToAlfresco(type, properties, creationDate);
             }
         });
         return null;
@@ -245,14 +240,14 @@ public class HistoryService {
 
     private void sendHistoryEventToRemoteService(final Map<QName, Serializable> properties, Date creationDate) {
         Map<String, Object> requestParams = new HashMap<>();
-        /** Document */
+        /* Document */
         NodeRef document = getDocument(properties);
         if (document == null || isDocumentForDelete(document)) {
             return;
         }
         requestParams.put(DOCUMENT_ID, document.getId());
         requestParams.put(VERSION, getDocumentProperty(document, VERSION_LABEL_PROPERTY));
-        /** User */
+        /* User */
         String username = (String) getDocumentProperty(document, MODIFIER_PROPERTY);
         String currentUsername = authenticationService.getCurrentUserName();
         if (currentUsername != null) {
@@ -261,8 +256,8 @@ public class HistoryService {
         NodeRef userRef = personService.getPerson(username);
         requestParams.put(USERNAME, username);
         requestParams.put(USER_ID, userRef.getId());
-        /** Event time */
-        Date now = creationDate;
+        /* Event time */
+        Date now = (Date) creationDate.clone();
         if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))
                     || "task.assign".equals(properties.get(HistoryModel.PROP_NAME))) {
             now.setTime(now.getTime() + 5000);
@@ -272,16 +267,17 @@ public class HistoryService {
             now.setTime(now.getTime() - 5000);
         }
         requestParams.put(CREATION_TIME, dateFormat.format(now));
-        /** Expected perform time */
+        /* Expected perform time */
         NodeRef taskCaseRef = (NodeRef) properties.get(HistoryModel.PROP_CASE_TASK);
         if (taskCaseRef != null) {
-           Integer expectedPerformTime = (Integer) nodeService.getProperty(taskCaseRef, ICaseTaskModel.PROP_EXPECTED_PERFORM_TIME);
+           Integer expectedPerformTime = (Integer) nodeService.getProperty(taskCaseRef,
+                                                                           ActivityModel.PROP_EXPECTED_PERFORM_TIME);
            if (expectedPerformTime == null) {
                expectedPerformTime = getDefaultSLA();
            }
             requestParams.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
         }
-        /** Event properties */
+        /* Event properties */
         requestParams.put(HISTORY_EVENT_ID, UUID.randomUUID().toString());
         requestParams.put(EVENT_TYPE, properties.get(HistoryModel.PROP_NAME));
         requestParams.put(COMMENTS, properties.get(HistoryModel.PROP_TASK_COMMENT));
@@ -290,7 +286,8 @@ public class HistoryService {
         QName taskType = (QName) properties.get(HistoryModel.PROP_TASK_TYPE);
         requestParams.put(TASK_TYPE, taskType != null ? taskType.getLocalName() : "");
         requestParams.put(FULL_TASK_TYPE, taskType != null ? taskType.toString() : "");
-        /** Workflow properties */
+        requestParams.put(TASK_TITLE, properties.get(HistoryModel.PROP_TASK_TITLE));
+        /* Workflow properties */
         requestParams.put(INITIATOR, properties.get(HistoryModel.ASSOC_INITIATOR));
         requestParams.put(WORKFLOW_INSTANCE_ID, properties.get(HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
         requestParams.put(WORKFLOW_DESCRIPTION, properties.get(HistoryModel.PROP_WORKFLOW_DESCRIPTION));

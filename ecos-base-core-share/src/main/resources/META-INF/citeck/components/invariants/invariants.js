@@ -1240,6 +1240,11 @@ define([
                 || this.multiple() && this.value().length == 0
                 || this.valueClass() == String && this.value().length == 0;
         })
+        .computed('invariantValueEmpty', function() {
+            return this.invariantValue() == null
+                || this.multiple() && this.invariantValue().length == 0
+                || this.valueClass() == String && this.invariantValue().length == 0;
+        })
         .computed('evaluatedValid', function() {
             return this.validEvaluator(this.invariantsModel());
         })
@@ -1590,6 +1595,9 @@ define([
             read: function() { return this.convertValue(this.rawValue(), false); },
             write: function(value) { this.value(value); }
         })
+        .computed('invariantSingleValue', {
+            read: function() { return this.convertValue(this.invariantValue(), false); }
+        })
         .computed('multipleValues', {
             read: function() {
                 var values = this.convertValue(this.rawValue(), true);
@@ -1598,6 +1606,12 @@ define([
             write: function(value) {
                 value = _.isArray(value) ? _.difference(value, [undefined]) : value;
                 this.value(value);
+            }
+        })
+        .computed('invariantValues', {
+            read: function() {
+                var values = this.convertValue(this.invariantValue(), true);
+                return _.sortBy(values, this.getValueOrder, this);
             }
         })
         .computed('lastValue', {

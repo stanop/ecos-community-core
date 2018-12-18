@@ -13,6 +13,7 @@ import ru.citeck.ecos.model.CardletModel;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Map;
 
 public class CardletNodeDataReader implements NodeDataReader<Cardlet> {
@@ -37,6 +38,12 @@ public class CardletNodeDataReader implements NodeDataReader<Cardlet> {
         cardlet.setControl(createControl(props));
         cardlet.setId((String) props.get(CardletModel.PROP_REGION_ID));
         cardlet.setRegionId((String) props.get(CardletModel.PROP_REGION_ID));
+
+        Object allowedAuthorities = props.get(CardletModel.PROP_ALLOWED_AUTHORITIES);
+        if (allowedAuthorities instanceof Collection) {
+            Collection<String> authorities = (Collection) allowedAuthorities;
+            cardlet.setAuthorities(String.join(",", authorities));
+        }
 
         return cardlet;
     }

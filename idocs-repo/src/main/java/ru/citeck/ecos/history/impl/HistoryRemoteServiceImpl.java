@@ -23,8 +23,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import ru.citeck.ecos.constants.DocumentHistoryConstants;
 import ru.citeck.ecos.history.HistoryRemoteService;
+import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.HistoryModel;
-import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.model.IdocsModel;
 import ru.citeck.ecos.utils.NodeUtils;
 
@@ -263,7 +263,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         /* Event task */
         NodeRef taskNodeRef = (NodeRef) nodeService.getProperty(eventRef, HistoryModel.PROP_CASE_TASK);
         if (taskNodeRef != null) {
-            Integer expectedPerformTime = (Integer) nodeService.getProperty(taskNodeRef, ICaseTaskModel.PROP_EXPECTED_PERFORM_TIME);
+            Integer expectedPerformTime = (Integer) nodeService.getProperty(taskNodeRef,
+                                                                            ActivityModel.PROP_EXPECTED_PERFORM_TIME);
             entryMap.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
         }
         /* Username and user id */
