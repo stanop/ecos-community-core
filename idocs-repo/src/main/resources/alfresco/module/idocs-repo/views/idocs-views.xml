@@ -325,4 +325,9 @@
         </field>
     </view>
 
+    <view class="budget:item">
+        <field prop="budget:itemCode" />
+        <field prop="budget:itemName" />
+    </view>
+
 </views>
