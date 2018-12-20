@@ -112,7 +112,6 @@ var roles = {
     };
     roles.rolesData[ROLE_INITIATOR] = {
         fn: function () {
-            logger.warn('Fill initiator role');
             var initiator = (document.assocs['idocs:performer'] || [])[0];
             if (!initiator) {
                 var creator = document.properties['cm:creator'];
