@@ -298,10 +298,12 @@ ko.components.register("number", {
                 9, //tab
                 27, //escape
                 13, //enter
+                116, //f5
                 35,36,37,38,39 //end, home, left arrow, up arrow, right arrow
             ];
 
-            if (allowKeyCodes.includes(keyCode) || (keyCode === 65 && event.ctrlKey === true)) {
+            if (allowKeyCodes.includes(keyCode) ||
+                ((keyCode === 65 || keyCode === 67 || keyCode === 86 || keyCode === 88) && event.ctrlKey === true) ) {
                 return true;
             }
 
