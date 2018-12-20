@@ -11,7 +11,8 @@ import {
     setLargeLogo,
     setLeftMenuItems,
     setLeftMenuExpandableItems,
-    setSelectedId
+    setSelectedId,
+    setIsReady
 } from './actions';
 import {
     selectedMenuItemIdKey,
@@ -46,7 +47,7 @@ export const render = (elementId, props) => {
 
         store.dispatch(setLeftMenuItems(slideMenuData));
         store.dispatch(setLeftMenuExpandableItems(expandableItems));
-
+        store.dispatch(setIsReady(true));
     });
 
     // TODO use api
