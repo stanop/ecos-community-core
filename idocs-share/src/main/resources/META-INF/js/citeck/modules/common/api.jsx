@@ -66,17 +66,17 @@ export default class {
 
     getLiveSearchDocuments = (terms, startIndex) => {
         const url = "slingshot/live-search-docs?t=" + generateSearchTerm(terms) + "&maxResults=5&startIndex=" + startIndex;
-        return this.getJSON(url).catch(() => {});
+        return this.getJSON(url).catch(() => ({items: [], hasMoreRecords: false}));
     };
 
     getLiveSearchSites = terms => {
         const url = "slingshot/live-search-sites?t=" + generateSearchTerm(terms) + "&maxResults=5";
-        return this.getJSON(url).catch(() => {});
+        return this.getJSON(url).catch(() => ({items: []}));
     };
 
     getLiveSearchPeople = terms => {
         const url = "slingshot/live-search-people?t=" + generateSearchTerm(terms) + "&maxResults=5";
-        return this.getJSON(url).catch(() => {});
+        return this.getJSON(url).catch(() => ({items: []}));
     };
 
     getSlideMenuItems = () => {
