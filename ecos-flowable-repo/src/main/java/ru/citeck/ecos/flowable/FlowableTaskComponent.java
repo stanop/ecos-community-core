@@ -291,7 +291,6 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
         String fullFormKey = FlowableUtils.getFullFormKey(task.getFormKey());
 
         HashMap<QName, Serializable> updates = new HashMap<>();
-        updates.put(OUTCOME_KEY, transition);
 
         if (StringUtils.isNotBlank(fullFormKey)) {
             updates.put(QName.createQName(fullFormKey), transition);
