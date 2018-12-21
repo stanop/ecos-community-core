@@ -34,8 +34,6 @@ import static ru.citeck.ecos.flowable.constants.FlowableConstants.*;
  */
 public class FlowableTaskComponent implements TaskComponent, InitializingBean {
 
-    private static final QName OUTCOME_KEY = QName.createQName("outcome");
-
     private BPMEngineRegistry bpmEngineRegistry;
     private WorkflowAdminService workflowAdminService;
 
