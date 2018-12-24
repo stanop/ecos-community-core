@@ -1,0 +1,9 @@
+.ecos-case-form-section .rowset-body {
+    margin-left: 5px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+.ecos-case-form-section .title {
+    margin-top: 10px;
+    color: #1c55da !important;
+}
