@@ -124,6 +124,10 @@
     <div id="${id}-form" class="ecos-form ${formMode} invariants-form ${formTemplate} <#if loadIndicator>loading</#if> <#if inlineEdit!false>inline-edit-form</#if>"
          data-bind="css: { <#if loadIndicator>'loading': !loaded(),</#if> 'submit-process': inSubmitProcess, invalid: invalid }">
 
+        <#if view.params.customStyle??>
+           <script type="text/javascript">require(['xstyle!${view.params.customStyle}.css']);</script>
+        </#if>
+
         <#if loadIndicator>
             <div class="loading-overlay">
                 <div class="loading-container">
