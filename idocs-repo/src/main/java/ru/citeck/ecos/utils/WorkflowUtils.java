@@ -3,6 +3,7 @@ package ru.citeck.ecos.utils;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.*;
 import org.alfresco.service.namespace.QName;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +26,7 @@ import java.util.stream.Collectors;
 public class WorkflowUtils {
 
     private static final String ID_SEPERATOR_REGEX = "\\$";
+    private static final Locale[] locales = {new Locale("ru"), new Locale("en")};
 
     private WorkflowService workflowService;
     private AuthorityUtils authorityUtils;
@@ -132,6 +131,31 @@ public class WorkflowUtils {
             taskTitle = task.getTitle();
         }
         return taskTitle;
+    }
+
+    public MLText getTaskMLTitle(WorkflowTask task) {
+
+        MLText result = new MLText();
+
+        String taskTitle = (String) task.getProperties().get(CiteckWorkflowModel.PROP_TASK_TITLE);
+
+        if (StringUtils.isNotBlank(taskTitle)) {
+
+            for (Locale locale : locales) {
+                String taskTitleMessage = I18NUtil.getMessage(taskTitle, locale);
+                if (StringUtils.isNotBlank(taskTitleMessage)) {
+                    result.put(locale, taskTitleMessage);
+                }
+            }
+
+            if (result.isEmpty()) {
+                result.put(Locale.ENGLISH, taskTitle);
+            }
+        } else {
+            result.put(Locale.ENGLISH, task.getTitle());
+        }
+
+        return result;
     }
 
     /**
