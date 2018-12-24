@@ -1985,7 +1985,10 @@ define([
                     elCell.innerHTML = title;
                     return;
                 }
-                title = (oRecord.getData("attributes['cwf:taskTitle']") || [])[0];
+                title = (oRecord.getData("attributes['cm:title']") || [])[0];
+                if (!title) {
+                    title = (oRecord.getData("attributes['cwf:taskTitle']") || [])[0];
+                }
                 if (!title) {
                     title = sData;
                 }
