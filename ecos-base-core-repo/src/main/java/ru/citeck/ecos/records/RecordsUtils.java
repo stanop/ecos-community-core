@@ -75,6 +75,22 @@ public class RecordsUtils {
                       .collect(Collectors.toList());
     }
 
+    public static List<ObjectNode> toScopedRecordsMeta(String sourceId, List<ObjectNode> records) {
+        if (StringUtils.isBlank(sourceId)) {
+            return records;
+        }
+        return records.stream().map(n -> {
+            ObjectNode node;
+            if (n.has("id")) {
+                node = n.deepCopy();
+                node.set("id", TextNode.valueOf(new RecordRef(sourceId, n.get("id").asText()).toString()));
+            } else {
+                node = n;
+            }
+            return node;
+        }).collect(Collectors.toList());
+    }
+
     public static List<RecordRef> toScopedRecords(String sourceId, List<RecordRef> records) {
         return records.stream()
                       .map(r -> new RecordRef(sourceId, r))
@@ -114,19 +130,7 @@ public class RecordsUtils {
     }
 
     public static  List<ObjectNode> convertToRefs(String sourceId, List<ObjectNode> data) {
-        if (StringUtils.isBlank(sourceId)) {
-            return data;
-        }
-        return data.stream().map(n -> {
-            ObjectNode node;
-            if (n.has("id")) {
-                node = n.deepCopy();
-                node.set("id", TextNode.valueOf(new RecordRef(sourceId, n.get("id").asText()).toString()));
-            } else {
-                node = n;
-            }
-            return node;
-        }).collect(Collectors.toList());
+        return toScopedRecordsMeta(sourceId, data);
     }
 
     private static <I, O> Map<String, List<O>> groupBySource(Collection<I> records,

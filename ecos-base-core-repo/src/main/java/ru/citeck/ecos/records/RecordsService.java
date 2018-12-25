@@ -1,23 +1,26 @@
 package ru.citeck.ecos.records;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
-import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.converter.ConvertersProvider;
 import ru.citeck.ecos.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.actions.RecordsActionFactory;
-import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.request.mutation.RecordsMutation;
+import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsResult;
 import ru.citeck.ecos.records.source.MetaAttributeDef;
 import ru.citeck.ecos.records.source.MetaValueTypeDef;
 import ru.citeck.ecos.records.source.RecordsDAO;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -51,12 +54,41 @@ public interface RecordsService {
     <T> RecordsResult<T> getRecords(RecordsQuery query, Class<T> metaClass);
 
     /**
+     * Query records with meta
+     * Fields example: ['/cm:name', '/cm:title']
+     */
+    RecordsResult<Map<String, JsonNode>> getRecords(RecordsQuery query, Map<String, String> attributes);
+
+    /**
+     * Query records with meta
+     * Fields example: ['/cm:name', '/cm:title']
+     */
+    RecordsResult<Map<String, JsonNode>> getRecords(RecordsQuery query, Collection<String> attributes);
+
+    /**
+     * Create or change records data
+     */
+    RecordsMutResult mutate(RecordsMutation mutation);
+
+    /**
      * Get metadata for specified records
      *
      * @param metaSchema GraphQL schema for MetaValue
      * @see MetaValue
      */
     List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema);
+
+    /**
+     * Get meta
+     * Fields example: ['/cm:name', '/cm:title']
+     */
+    List<Map<String, JsonNode>> getMeta(Collection<RecordRef> records, Collection<String> attributes);
+
+    /**
+     * Get meta
+     * Fields example: ['/cm:name', '/cm:title']
+     */
+    List<Map<String, JsonNode>> getMeta(Collection<RecordRef> records, Map<String, String> attributes);
 
     /**
      * Get metadata for specified records.

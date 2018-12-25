@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.query;
+package ru.citeck.ecos.records.request.query;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

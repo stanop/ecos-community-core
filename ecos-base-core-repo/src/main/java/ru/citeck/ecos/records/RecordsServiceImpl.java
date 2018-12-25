@@ -1,5 +1,7 @@
 package ru.citeck.ecos.records;
 
+import com.fasterxml.jackson.core.JsonPointer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -10,12 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
-import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
+import ru.citeck.ecos.records.request.mutation.RecordsMutation;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsResult;
 import ru.citeck.ecos.records.source.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -44,6 +49,87 @@ public class RecordsServiceImpl implements RecordsService {
     @Override
     public Iterable<RecordRef> getIterableRecords(RecordsQuery query) {
         return new IterableRecords(this, query);
+    }
+
+    @Override
+    public RecordsMutResult mutate(RecordsMutation mutation) {
+        RecordsDAO recordsDAO = needRecordsSource(mutation.getSourceId());
+        if (recordsDAO instanceof MutableRecordsDAO) {
+            return ((MutableRecordsDAO) recordsDAO).mutate(mutation);
+        }
+        throw new IllegalArgumentException("Mutate operation is not supported by " + mutation.getSourceId());
+    }
+
+    @Override
+    public RecordsResult<Map<String, JsonNode>> getRecords(RecordsQuery query, Collection<String> fields) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        for (String field : fields) {
+            fieldsMap.put(field, field);
+        }
+        return getRecords(query, fieldsMap);
+    }
+
+    private String createFieldsQuery(Map<String, String> fields, Map<JsonPointer, String> fieldsMapping) {
+
+        StringBuilder schemaBuilder = new StringBuilder();
+
+        AtomicInteger idx = new AtomicInteger();
+        fields.forEach((field, path) -> {
+
+            String fieldName = path.replace("/", "");
+
+            if (fieldName.equals("id")) {
+
+                fieldsMapping.put(JsonPointer.valueOf("/id"), field);
+                schemaBuilder.append("id\n");
+
+            } else {
+
+                String queryFieldName = "a" + idx.getAndIncrement();
+
+                fieldsMapping.put(JsonPointer.valueOf("/" + queryFieldName + "/val/0/str"), field);
+                schemaBuilder.append(queryFieldName)
+                        .append(":att(name:\"")
+                        .append(fieldName)
+                        .append("\"){val{str}}\n");
+            }
+        });
+
+        return schemaBuilder.toString();
+    }
+
+    @Override
+    public RecordsResult<Map<String, JsonNode>> getRecords(RecordsQuery query, Map<String, String> fields) {
+
+        Map<JsonPointer, String> fieldsMapping = new HashMap<>();
+        RecordsResult<ObjectNode> records = getRecords(query, createFieldsQuery(fields, fieldsMapping));
+
+        return new RecordsResult<>(records, node -> {
+            Map<String, JsonNode> result = new HashMap<>();
+            fieldsMapping.forEach((path, key) -> result.put(key, node.at(path)));
+            return result;
+        });
+    }
+
+    @Override
+    public List<Map<String, JsonNode>> getMeta(Collection<RecordRef> records, Collection<String> fields) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        fields.forEach(field -> fieldsMap.put(field, field));
+        return getMeta(records, fieldsMap);
+    }
+
+    @Override
+    public List<Map<String, JsonNode>> getMeta(Collection<RecordRef> records, Map<String, String> fields) {
+
+        Map<JsonPointer, String> fieldsMapping = new HashMap<>();
+
+        List<ObjectNode> meta = getMeta(records, createFieldsQuery(fields, fieldsMapping));
+
+        return meta.stream().map(record -> {
+            Map<String, JsonNode> result = new HashMap<>();
+            fieldsMapping.forEach((path, key) -> result.put(key, record.at(path)));
+            return result;
+        }).collect(Collectors.toList());
     }
 
     @Override

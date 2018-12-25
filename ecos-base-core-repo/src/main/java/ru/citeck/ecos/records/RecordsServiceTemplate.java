@@ -1,7 +1,7 @@
 package ru.citeck.ecos.records;
 
 import org.alfresco.repo.template.BaseTemplateProcessorExtension;
-import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsResult;
 
 public class RecordsServiceTemplate extends BaseTemplateProcessorExtension {
 
@@ -20,7 +20,6 @@ public class RecordsServiceTemplate extends BaseTemplateProcessorExtension {
         }
         return clazz;
     }
-
 
     public void setRecordsService(RecordsServiceJS recordsService) {
         this.recordsService = recordsService;

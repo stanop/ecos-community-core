@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-8-0" abstract="true" parent="idocs.import-spaces">
+        <property name="sinceVersion" value="3.8.0" />
+        <property name="appliesFromVersion" value="3.8.0" />
+    </bean>
+
+    <bean id="idocs.import-scripts.3-8-0" abstract="true" parent="idocs.import-scripts">
+        <property name="sinceVersion" value="3.8.0" />
+        <property name="appliesFromVersion" value="3.8.0" />
+    </bean>
+
+    <bean id="idocs.module-component.ecos-bpm-process-root" parent="idocs.import-spaces.3-8-0">
+        <property name="name" value="ecos-bpm-process-root"/>
+        <property name="description" value="ecos-bpm-process-root"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.idocs-root" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/cm:IDocsRoot</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecos-bpm-process-root.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean class="ru.citeck.ecos.records.source.alfnode.AlfNodesDefaultParentRegistrar">
+        <property name="defaultParents">
+            <map>
+                <entry key="{http://www.citeck.ru/model/ecos/bpm/1.0}processModel" value="workspace://SpacesStore/ecos-bpm-process-root" />
+            </map>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.ecos-bpm-process-category-root" parent="idocs.import-spaces.3-8-0" depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="ecos-bpm-process-category-root" />
+        <property name="description" value="ecos-bpm-process-category-root" />
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/cm:categoryRoot/cm:generalclassifiable</prop>
+                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecos-bpm-category-root.xml</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>

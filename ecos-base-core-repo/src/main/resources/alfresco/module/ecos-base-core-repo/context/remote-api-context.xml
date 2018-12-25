@@ -231,8 +231,13 @@
         </property>
     </bean>
 
-    <bean id="webscript.ru.citeck.ecos.records.post"
-          class="ru.citeck.ecos.records.RecordsPost"
+    <bean id="webscript.ru.citeck.ecos.records-query.post"
+          class="ru.citeck.ecos.records.rest.RecordsQueryPost"
+          parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.ecos.records-mutate.post"
+          class="ru.citeck.ecos.records.rest.RecordsMutatePost"
           parent="webscript">
     </bean>
 
