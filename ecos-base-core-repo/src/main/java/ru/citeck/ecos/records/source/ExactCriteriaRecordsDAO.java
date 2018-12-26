@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.source.alfnode.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.search.*;
 

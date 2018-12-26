@@ -17,7 +17,7 @@ import ru.citeck.ecos.content.dao.ContentDAO;
 import ru.citeck.ecos.content.dao.NodeDataReader;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;

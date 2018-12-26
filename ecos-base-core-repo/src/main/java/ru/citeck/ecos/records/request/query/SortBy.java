@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.query;
+package ru.citeck.ecos.records.request.query;
 
 public class SortBy {
 

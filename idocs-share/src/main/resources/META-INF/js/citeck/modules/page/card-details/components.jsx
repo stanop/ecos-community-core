@@ -224,8 +224,19 @@ function CardletsModeBody (props) {
         bottom: []
     };
 
-    let contentClass = props.loaded ? 'active' : 'not-active';
-    let loadingClass = props.loaded ? 'not-active' : 'active';
+    let isCardletsEmpty = function(cardlets) {
+        for (let space in cardlets) {
+            if (cardlets.hasOwnProperty(space) && cardlets[space].length) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    let loaded = isCardletsEmpty(cardlets) || props.loaded;
+
+    let contentClass = loaded ? 'active' : 'not-active';
+    let loadingClass = loaded ? 'not-active' : 'active';
 
     return <div id={`card-mode-${props.id}`} className={className}>
         <div className={`card-details-mode-body ${loadingClass} loading-overlay`}>

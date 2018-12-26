@@ -1,8 +1,13 @@
-package ru.citeck.ecos.records.query;
+package ru.citeck.ecos.records.request.query;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.node.MissingNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.SearchService;
+import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.records.RecordRef;
 
 import java.util.ArrayList;
@@ -17,13 +22,13 @@ public class RecordsQuery {
 
     private String sourceId = "";
     private int skipCount;
-    private int maxItems;
+    private int maxItems = -1;
     private List<SortBy> sortBy = Collections.emptyList();
     private RecordRef afterId;
     private boolean afterIdMode = false;
     private QueryConsistency consistency = QueryConsistency.DEFAULT;
     private String language = SearchService.LANGUAGE_FTS_ALFRESCO;
-    private String query;
+    private JsonNode query = MissingNode.getInstance();
     private boolean debug = false;
 
     public RecordsQuery() {
@@ -50,12 +55,25 @@ public class RecordsQuery {
         this.sourceId = sourceId;
     }
 
-    public String getQuery() {
+    public JsonNode getQuery() {
         return query;
     }
 
+    @JsonSetter
+    public void setQuery(JsonNode query) {
+        if (query != null) {
+            this.query = query;
+        } else {
+            this.query = MissingNode.getInstance();
+        }
+    }
+
     public void setQuery(String query) {
-        this.query = query;
+        if (StringUtils.isNotBlank(query)) {
+            this.query = TextNode.valueOf(query);
+        } else {
+            this.query = MissingNode.getInstance();
+        }
     }
 
     public String getLanguage() {

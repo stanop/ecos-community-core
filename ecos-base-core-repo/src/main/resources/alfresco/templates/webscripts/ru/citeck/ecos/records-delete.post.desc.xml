@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>Delete records</shortname>
+    <description>Delete records</description>
+    <url>/citeck/ecos/records/delete</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readwrite">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

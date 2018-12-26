@@ -38,7 +38,7 @@ import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsResult;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.NamespacePrefixResolverMapImpl;

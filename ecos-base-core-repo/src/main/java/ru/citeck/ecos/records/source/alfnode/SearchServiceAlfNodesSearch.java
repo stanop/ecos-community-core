@@ -13,7 +13,9 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.query.*;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.records.source.alfnode.AlfNodesSearch.AfterIdType;
 
 import java.util.Date;
@@ -49,7 +51,7 @@ public class SearchServiceAlfNodesSearch {
 
     private RecordsResult<RecordRef> queryRecordsImpl(RecordsQuery recordsQuery, Long afterDbId, Date afterCreated) {
 
-        String query = recordsQuery.getQuery();
+        String query = recordsQuery.getQuery().asText();
 
         SearchParameters searchParameters = new SearchParameters();
         searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);

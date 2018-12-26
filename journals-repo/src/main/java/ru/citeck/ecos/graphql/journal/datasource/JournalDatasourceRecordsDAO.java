@@ -9,9 +9,9 @@ import ru.citeck.ecos.graphql.journal.JGqlSortBy;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaServiceImpl;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.query.RecordsResult;
-import ru.citeck.ecos.records.query.SortBy;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
 import ru.citeck.ecos.records.source.RecordsDAO;
 import ru.citeck.ecos.records.source.RecordsWithMetaDAO;
@@ -67,7 +67,7 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
 
         List<ObjectNode> nodes = graphQLMetaService.getMeta(context -> {
             JGqlRecordsConnection records = dataSource.getRecords(context,
-                                                                  query.getQuery(),
+                                                                  query.getQuery().asText(),
                                                                   query.getLanguage(),
                                                                   pageInfo);
             result.setTotalCount(records.totalCount());

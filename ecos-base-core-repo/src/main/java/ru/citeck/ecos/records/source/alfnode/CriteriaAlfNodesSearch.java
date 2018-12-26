@@ -7,7 +7,9 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.query.*;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.search.*;
 
 import java.util.Date;

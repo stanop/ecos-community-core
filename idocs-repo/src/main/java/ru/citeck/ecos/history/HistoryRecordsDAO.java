@@ -9,8 +9,8 @@ import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaServiceImpl;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.source.meta.MetaJsonNodeValue;
-import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsResult;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
 import ru.citeck.ecos.records.source.RecordsWithMetaDAO;
 import ru.citeck.ecos.webscripts.history.DocumentHistoryGet;
@@ -48,7 +48,7 @@ public class HistoryRecordsDAO extends AbstractRecordsDAO implements RecordsWith
 
         Query queryData;
         try {
-            queryData = objectMapper.readValue(query.getQuery(), Query.class);
+            queryData = objectMapper.readValue(query.getQuery().asText(), Query.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

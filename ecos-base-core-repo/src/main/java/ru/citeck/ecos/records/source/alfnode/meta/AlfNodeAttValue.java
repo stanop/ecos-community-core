@@ -28,7 +28,9 @@ public class AlfNodeAttValue implements MetaValue {
     private GqlContext context;
 
     public AlfNodeAttValue(Object value, GqlContext context) {
-        if (value instanceof NodeRef) {
+        if (value instanceof GqlAlfNode) {
+            alfNode = (GqlAlfNode) value;
+        } else if (value instanceof NodeRef) {
             alfNode = context.getNode(value).orElse(null);
         } else if (value instanceof QName) {
             qName = context.getQName(value).orElse(null);
@@ -41,7 +43,12 @@ public class AlfNodeAttValue implements MetaValue {
 
     @Override
     public String id() {
-        return alfNode != null ? alfNode.nodeRef() : null;
+        if (alfNode != null) {
+            return alfNode.nodeRef();
+        } else if (qName != null) {
+            return qName.shortName();
+        }
+        return null;
     }
 
     @Override

@@ -64,6 +64,7 @@
             <header key="attr:isContainer" visible="false" searchable="false" />
             <header key="attr:isDocument" visible="false" searchable="false" />
             <header key="cwf:taskTitle" visible="false" />
+            <header key="cm:title" visible="false" searchable="false" />
         </headers>
     </journal>
 
@@ -116,6 +117,7 @@
             <header key="bpm:dueDate" default="true" />
             <header key="bpm:comment" />
             <header key="cwf:taskTitle" visible="false" />
+            <header key="cm:title" visible="false" searchable="false" />
         </headers>
     </journal>
 
@@ -161,6 +163,7 @@
             <header key="bpm:completionDate" default="true" />
             <header key="bpm:comment" default="true" />
             <header key="cwf:taskTitle" visible="false" />
+            <header key="cm:title" visible="false" searchable="false" />
         </headers>
     </journal>
 
@@ -258,6 +261,7 @@
             </header>
             <header key="wfm:workflowInitiator" />
             <header key="cwf:taskTitle" visible="false" />
+            <header key="cm:title" visible="false" searchable="false" />
         </headers>
     </journal>
 
@@ -310,6 +314,7 @@
             <header key="bpm:comment"/>
             <header key="wfm:workflowInitiator" />
             <header key="cwf:taskTitle" visible="false" />
+            <header key="cm:title" visible="false" searchable="false" />
         </headers>
     </journal>
 

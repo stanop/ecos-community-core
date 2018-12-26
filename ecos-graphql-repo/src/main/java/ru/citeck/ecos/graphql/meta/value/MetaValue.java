@@ -16,7 +16,7 @@ public interface MetaValue {
 
     @GraphQLField
     String str();
-
+    
     @GraphQLField
     Optional<MetaAttribute> att(@GraphQLName("name") String name);
 

@@ -32,6 +32,8 @@ public class GqlAlfNode {
     private final Map<QName, List<NodeRef>> childAssocs = evalChildAssocs();
     @Getter(lazy = true)
     private final List<GqlQName> aspects = evalAspects();
+    @Getter(lazy = true)
+    private final GqlAlfNode parent = evalParent();
 
     private Map<QName, List<NodeRef>> assocs = new ConcurrentHashMap<>();
     private Map<QName, Attribute> attributes = new ConcurrentHashMap<>();
@@ -85,6 +87,11 @@ public class GqlAlfNode {
             Attribute name = getAttribute(ContentModel.PROP_NAME);
             return title.value().orElseGet(() -> name.value().orElse(null));
         }
+    }
+
+    @GraphQLField
+    public GqlAlfNode parent() {
+        return getParent();
     }
 
     @GraphQLField
@@ -218,6 +225,11 @@ public class GqlAlfNode {
                    .map(ChildAssociationRef::getChildRef)
                    .collect(Collectors.toCollection(ArrayList::new))
         );
+    }
+
+    private GqlAlfNode evalParent() {
+        ChildAssociationRef assoc = context.getNodeService().getPrimaryParent(nodeRef);
+        return new GqlAlfNode(assoc.getParentRef(), context);
     }
 
     private List<GqlQName> evalAspects() {

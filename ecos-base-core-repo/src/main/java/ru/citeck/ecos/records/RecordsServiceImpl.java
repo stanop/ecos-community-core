@@ -1,5 +1,7 @@
 package ru.citeck.ecos.records;
 
+import com.fasterxml.jackson.core.JsonPointer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -10,12 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
-import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.request.RespRecord;
+import ru.citeck.ecos.records.request.delete.RecordsDelResult;
+import ru.citeck.ecos.records.request.delete.RecordsDeletion;
+import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
+import ru.citeck.ecos.records.request.mutation.RecordsMutation;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsResult;
 import ru.citeck.ecos.records.source.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -47,6 +55,111 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
+    public RecordsMutResult mutate(RecordsMutation mutation) {
+        RecordsDAO recordsDAO = needRecordsSource(mutation.getSourceId());
+        if (recordsDAO instanceof MutableRecordsDAO) {
+            return ((MutableRecordsDAO) recordsDAO).mutate(mutation);
+        }
+        throw new IllegalArgumentException("Mutate operation is not supported by " + mutation.getSourceId());
+    }
+
+    @Override
+    public RecordsDelResult delete(RecordsDeletion deletion) {
+
+        RecordsDelResult result = new RecordsDelResult();
+
+        RecordsUtils.groupRefBySource(deletion.getRecords()).forEach((sourceId, sourceRecords) -> {
+            RecordsDAO source = needRecordsSource(sourceId);
+            if (source instanceof MutableRecordsDAO) {
+                result.merge(((MutableRecordsDAO) source).delete(deletion));
+            } else {
+                throw new IllegalArgumentException("Mutate operation is not supported by " + sourceId);
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public RecordsResult<RespRecord> getRecords(RecordsQuery query, Collection<String> fields) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        for (String field : fields) {
+            fieldsMap.put(field, field);
+        }
+        return getRecords(query, fieldsMap);
+    }
+
+    private String createFieldsQuery(Map<String, String> fields, Map<JsonPointer, String> fieldsMapping) {
+
+        StringBuilder schemaBuilder = new StringBuilder("id\n");
+
+        AtomicInteger idx = new AtomicInteger();
+        fields.forEach((field, path) -> {
+
+            String fieldName = path.replace("/", "");
+
+            String valueField = "str";
+            int questionIdx = path.indexOf('?');
+
+            if (questionIdx >= 0) {
+                fieldName = path.substring(0, questionIdx);
+                valueField = path.substring(questionIdx + 1);
+            }
+
+            String queryFieldName = "a" + idx.getAndIncrement();
+
+            fieldsMapping.put(JsonPointer.valueOf("/" + queryFieldName + "/val/0/" + valueField), field);
+            schemaBuilder.append(queryFieldName)
+                         .append(":att(name:\"")
+                         .append(fieldName)
+                         .append("\"){val{")
+                         .append(valueField)
+                         .append("}}\n");
+        });
+
+        return schemaBuilder.toString();
+    }
+
+    @Override
+    public RecordsResult<RespRecord> getRecords(RecordsQuery query, Map<String, String> fields) {
+
+        Map<JsonPointer, String> fieldsMapping = new HashMap<>();
+        RecordsResult<ObjectNode> records = getRecords(query, createFieldsQuery(fields, fieldsMapping));
+
+        return new RecordsResult<>(records, node -> {
+
+            RespRecord record = new RespRecord(RecordsUtils.getRecordId(node));
+            Map<String, JsonNode> attributes = record.getAttributes();
+            fieldsMapping.forEach((path, key) -> attributes.put(key, node.at(path)));
+            return record;
+        });
+    }
+
+    @Override
+    public List<RespRecord> getMeta(Collection<RecordRef> records, Collection<String> fields) {
+        Map<String, String> fieldsMap = new HashMap<>();
+        fields.forEach(field -> fieldsMap.put(field, field));
+        return getMeta(records, fieldsMap);
+    }
+
+    @Override
+    public List<RespRecord> getMeta(Collection<RecordRef> records, Map<String, String> fields) {
+
+        Map<JsonPointer, String> fieldsMapping = new HashMap<>();
+
+        List<ObjectNode> meta = getMeta(records, createFieldsQuery(fields, fieldsMapping), false);
+
+        return meta.stream().map(record -> {
+
+            RespRecord respRecord = new RespRecord(RecordsUtils.getRecordId(record));
+            Map<String, JsonNode> atts = respRecord.getAttributes();
+            fieldsMapping.forEach((path, key) -> atts.put(key, record.at(path)));
+
+            return respRecord;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
     public <T> List<T> getMeta(Collection<RecordRef> records, Class<T> metaClass) {
         if (records == null || records.isEmpty()) {
             return Collections.emptyList();
@@ -69,10 +182,20 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema) {
+        return getMeta(records, metaSchema, false);
+    }
+
+    private List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema, boolean addRecordId) {
         return getRecordsMeta(records, (source, recs) -> {
             if (source instanceof RecordsMetaDAO) {
                 RecordsMetaDAO metaDAO = (RecordsMetaDAO) source;
-                return metaDAO.getMeta(recs, metaSchema);
+                List<ObjectNode> meta = metaDAO.getMeta(recs, metaSchema);
+                if (addRecordId) {
+                    for (int i = 0; i < meta.size(); i++) {
+                        meta.get(i).put("id", recs.get(i).toString());
+                    }
+                }
+                return meta;
             } else {
                 return recs.stream().map(r -> {
                     ObjectNode recordNode = JsonNodeFactory.instance.objectNode();

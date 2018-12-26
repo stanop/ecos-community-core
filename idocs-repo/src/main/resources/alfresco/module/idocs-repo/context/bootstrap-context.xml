@@ -59,6 +59,7 @@
                 <value>alfresco/module/idocs-repo/model/case_mt/caseTimerModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/telegramModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/ecosContentModel.xml</value>
+                <value>alfresco/module/idocs-repo/model/ecosBpmModel.xml</value>
             </list>
         </property>
         <property name="labels">

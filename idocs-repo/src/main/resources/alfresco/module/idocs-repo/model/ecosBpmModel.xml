@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="ecosbpm:model" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Ecos Bpm Model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/ecos/bpm/1.0" prefix="ecosbpm" />
+    </namespaces>
+
+    <types>
+
+        <type name="ecosbpm:processModel">
+            <parent>cm:cmobject</parent>
+            <properties>
+                <property name="ecosbpm:category">
+                    <type>d:category</type>
+                </property>
+                <property name="ecosbpm:engine">
+                    <type>d:text</type>
+                </property>
+                <property name="ecosbpm:author">
+                    <type>d:text</type>
+                </property>
+
+            </properties>
+            <mandatory-aspects>
+                <aspect>tk:documentTypeKind</aspect>
+                <aspect>ecosbpm:hasIndex</aspect>
+            </mandatory-aspects>
+        </type>
+
+    </types>
+
+    <aspects>
+
+        <aspect name="ecosbpm:hasIndex">
+            <properties>
+                <property name="ecosbpm:index">
+                    <type>d:int</type>
+                </property>
+            </properties>
+        </aspect>
+
+    </aspects>
+
+</model>

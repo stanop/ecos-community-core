@@ -3,4 +3,6 @@
         <#if msg(viewScope.view.params.title)??>${msg(viewScope.view.params.title)}<#else>${viewScope.view.params.title}</#if>
     </div>
 </#if>
-<#include "default.ftl" />
+<div class="rowset-body">
+    <#include "default.ftl" />
+</div>

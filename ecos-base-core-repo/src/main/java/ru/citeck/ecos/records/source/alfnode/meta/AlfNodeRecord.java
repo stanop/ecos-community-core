@@ -21,6 +21,7 @@ public class AlfNodeRecord implements MetaValue {
     public static final String ATTR_ASPECTS = "attr:aspects";
     public static final String ATTR_IS_DOCUMENT = "attr:isDocument";
     public static final String ATTR_IS_CONTAINER = "attr:isContainer";
+    public static final String ATTR_PARENT = "attr:parent";
 
     private GqlAlfNode node;
     private GqlContext context;
@@ -49,6 +50,8 @@ public class AlfNodeRecord implements MetaValue {
             attribute = new AlfNodeAtt(name, Collections.singletonList(node.isContainer()), context);
         } else if (ATTR_IS_DOCUMENT.equals(name)) {
             attribute = new AlfNodeAtt(name, Collections.singletonList(node.isDocument()), context);
+        } if (ATTR_PARENT.equals(name)) {
+            attribute = new AlfNodeAtt(name, Collections.singletonList(node.getParent()), context);
         } else {
             Attribute nodeAtt = node.attribute(name);
             if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {

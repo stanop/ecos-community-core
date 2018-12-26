@@ -87,10 +87,10 @@
         <aspect name="ecos:hasStartStopDate">
             <properties>
                 <property name="ecos:startDate">
-                    <type>d:datetime</type>
+                    <type>d:date</type>
                 </property>
                 <property name="ecos:stopDate">
-                    <type>d:datetime</type>
+                    <type>d:date</type>
                 </property>
             </properties>
         </aspect>

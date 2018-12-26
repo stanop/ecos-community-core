@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsResult;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
