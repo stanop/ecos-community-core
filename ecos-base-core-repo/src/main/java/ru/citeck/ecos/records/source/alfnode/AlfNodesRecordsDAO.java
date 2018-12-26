@@ -22,6 +22,8 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.request.delete.RecordsDelResult;
+import ru.citeck.ecos.records.request.delete.RecordsDeletion;
 import ru.citeck.ecos.records.request.mutation.RecordMut;
 import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records.request.mutation.RecordsMutation;
@@ -104,6 +106,14 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         return result;
     }
 
+    @Override
+    public RecordsDelResult delete(RecordsDeletion deletion) {
+        for (RecordRef recordRef : deletion.getRecords()) {
+            nodeService.deleteNode(new NodeRef(recordRef.getId()));
+        }
+        return new RecordsDelResult();
+    }
+
     private QName getParentAssoc(RecordMut record, NodeRef parentRef) {
         String parentAtt = record.getParentAtt();
         if (parentAtt != null) {
@@ -112,6 +122,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         QName parentType = nodeService.getType(parentRef);
         if (ContentModel.TYPE_CONTAINER.equals(parentType)) {
             return ContentModel.ASSOC_CHILDREN;
+        } else if (ContentModel.TYPE_CATEGORY.equals(parentType)) {
+            return ContentModel.ASSOC_SUBCATEGORIES;
         }
         return ContentModel.ASSOC_CONTAINS;
     }

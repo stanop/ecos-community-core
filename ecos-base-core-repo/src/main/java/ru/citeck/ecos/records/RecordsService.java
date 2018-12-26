@@ -1,6 +1,5 @@
 package ru.citeck.ecos.records;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
@@ -10,6 +9,9 @@ import ru.citeck.ecos.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.actions.RecordsActionFactory;
+import ru.citeck.ecos.records.request.RespRecord;
+import ru.citeck.ecos.records.request.delete.RecordsDelResult;
+import ru.citeck.ecos.records.request.delete.RecordsDeletion;
 import ru.citeck.ecos.records.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
@@ -55,20 +57,25 @@ public interface RecordsService {
 
     /**
      * Query records with meta
-     * Fields example: ['/cm:name', '/cm:title']
+     * Fields example: {name: 'cm:name', title: 'cm:title'}
      */
-    RecordsResult<Map<String, JsonNode>> getRecords(RecordsQuery query, Map<String, String> attributes);
+    RecordsResult<RespRecord> getRecords(RecordsQuery query, Map<String, String> attributes);
 
     /**
      * Query records with meta
-     * Fields example: ['/cm:name', '/cm:title']
+     * Fields example: ['cm:name', 'cm:title']
      */
-    RecordsResult<Map<String, JsonNode>> getRecords(RecordsQuery query, Collection<String> attributes);
+    RecordsResult<RespRecord> getRecords(RecordsQuery query, Collection<String> attributes);
 
     /**
      * Create or change records data
      */
     RecordsMutResult mutate(RecordsMutation mutation);
+
+    /**
+     * Delete records
+     */
+    RecordsDelResult delete(RecordsDeletion deletion);
 
     /**
      * Get metadata for specified records
@@ -82,13 +89,13 @@ public interface RecordsService {
      * Get meta
      * Fields example: ['/cm:name', '/cm:title']
      */
-    List<Map<String, JsonNode>> getMeta(Collection<RecordRef> records, Collection<String> attributes);
+    List<RespRecord> getMeta(Collection<RecordRef> records, Collection<String> attributes);
 
     /**
      * Get meta
      * Fields example: ['/cm:name', '/cm:title']
      */
-    List<Map<String, JsonNode>> getMeta(Collection<RecordRef> records, Map<String, String> attributes);
+    List<RespRecord> getMeta(Collection<RecordRef> records, Map<String, String> attributes);
 
     /**
      * Get metadata for specified records.

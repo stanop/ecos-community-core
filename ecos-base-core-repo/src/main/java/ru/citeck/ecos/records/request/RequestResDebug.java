@@ -8,19 +8,19 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 import java.util.Iterator;
 
-public abstract class RequestDebug {
+public abstract class RequestResDebug {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ObjectNode debug;
 
-    protected RequestDebug() {
+    protected RequestResDebug() {
     }
 
-    protected RequestDebug(RequestDebug other) {
+    protected RequestResDebug(RequestResDebug other) {
         debug = other.debug;
     }
 
-    protected void merge(RequestDebug other) {
+    protected void merge(RequestResDebug other) {
         if (other.debug == null) {
             return;
         }

@@ -15,7 +15,9 @@ public class RecordsMutation {
 
     public void setRecords(List<RecordMut> records) {
         if (records != null) {
-            this.records = records;
+            this.records = new ArrayList<>(records);
+        } else {
+            this.records.clear();
         }
     }
 

@@ -67,7 +67,7 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
 
         List<ObjectNode> nodes = graphQLMetaService.getMeta(context -> {
             JGqlRecordsConnection records = dataSource.getRecords(context,
-                                                                  query.getQuery(),
+                                                                  query.getQuery().asText(),
                                                                   query.getLanguage(),
                                                                   pageInfo);
             result.setTotalCount(records.totalCount());

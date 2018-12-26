@@ -48,7 +48,7 @@ public class HistoryRecordsDAO extends AbstractRecordsDAO implements RecordsWith
 
         Query queryData;
         try {
-            queryData = objectMapper.readValue(query.getQuery(), Query.class);
+            queryData = objectMapper.readValue(query.getQuery().asText(), Query.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

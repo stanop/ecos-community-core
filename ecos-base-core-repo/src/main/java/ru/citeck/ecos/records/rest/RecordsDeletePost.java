@@ -1,16 +1,16 @@
 package ru.citeck.ecos.records.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.extensions.webscripts.*;
-
+import org.springframework.extensions.webscripts.AbstractWebScript;
+import org.springframework.extensions.webscripts.WebScriptRequest;
+import org.springframework.extensions.webscripts.WebScriptResponse;
+import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.request.mutation.RecordMut;
-import ru.citeck.ecos.records.request.mutation.RecordsMutation;
-import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
+import ru.citeck.ecos.records.request.delete.RecordsDeletion;
 
 import java.io.IOException;
 
-public class RecordsMutatePost extends AbstractWebScript {
+public class RecordsDeletePost extends AbstractWebScript {
 
     private RecordsService recordsService;
     private RecordsRestUtils utils;
@@ -18,8 +18,7 @@ public class RecordsMutatePost extends AbstractWebScript {
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
         Request request = utils.readBody(req, Request.class);
-        RecordsMutResult result = recordsService.mutate(request);
-        utils.writeRespRecords(res, result, RecordsMutResult::getRecords, request.isSingleRecord);
+        utils.writeResp(res, recordsService.delete(request));
     }
 
     @Autowired
@@ -32,12 +31,9 @@ public class RecordsMutatePost extends AbstractWebScript {
         this.utils = utils;
     }
 
-    public static class Request extends RecordsMutation {
+    public static class Request extends RecordsDeletion {
 
-        boolean isSingleRecord = false;
-
-        void setRecord(RecordMut record) {
-            isSingleRecord = true;
+        void setRecord(RecordRef record) {
             getRecords().add(record);
         }
     }

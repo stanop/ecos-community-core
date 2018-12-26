@@ -51,7 +51,7 @@ public class SearchServiceAlfNodesSearch {
 
     private RecordsResult<RecordRef> queryRecordsImpl(RecordsQuery recordsQuery, Long afterDbId, Date afterCreated) {
 
-        String query = recordsQuery.getQuery();
+        String query = recordsQuery.getQuery().asText();
 
         SearchParameters searchParameters = new SearchParameters();
         searchParameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);

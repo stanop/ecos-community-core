@@ -1,7 +1,6 @@
 package ru.citeck.ecos.records.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
+import ru.citeck.ecos.records.request.RespRecord;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsResult;
 
@@ -19,13 +19,14 @@ public class RecordsQueryPost extends AbstractWebScript {
 
     private static final Log logger = LogFactory.getLog(RecordsQueryPost.class);
 
-    private ObjectMapper objectMapper = new ObjectMapper();
     private RecordsService recordsService;
+    private RecordsRestUtils utils;
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
-        Request request = objectMapper.readValue(req.getContent().getContent(), Request.class);
+        Request request = utils.readBody(req, Request.class);
+
         if (request.query != null && request.records != null) {
             logger.warn("There must be one of 'records' or 'query' field " +
                         "but found both. 'records' field will be ignored");
@@ -72,15 +73,13 @@ public class RecordsQueryPost extends AbstractWebScript {
 
             } else {
 
-                RecordsResult<Map<String, JsonNode>> metaResult = new RecordsResult<>();
+                RecordsResult<RespRecord> metaResult = new RecordsResult<>();
                 metaResult.setRecords(recordsService.getMeta(request.records, getAttributes(request)));
                 recordsResult = metaResult;
             }
         }
 
-        res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
-        objectMapper.writeValue(res.getOutputStream(), recordsResult);
-        res.setStatus(Status.STATUS_OK);
+        utils.writeRespRecords(res, recordsResult, RecordsResult::getRecords, request.isSingleRecord);
     }
 
     private Map<String, String> getAttributes(Request request) {
@@ -108,6 +107,11 @@ public class RecordsQueryPost extends AbstractWebScript {
         this.recordsService = recordsService;
     }
 
+    @Autowired
+    public void setUtils(RecordsRestUtils utils) {
+        this.utils = utils;
+    }
+
     public static class Request {
 
         public List<RecordRef> records;
@@ -115,10 +119,13 @@ public class RecordsQueryPost extends AbstractWebScript {
         public String schema;
         public JsonNode attributes;
 
+        boolean isSingleRecord = false;
+
         public void setRecord(RecordRef record) {
             if (records == null) {
                 records = new ArrayList<>();
             }
+            isSingleRecord = true;
             records.add(record);
         }
 

@@ -241,6 +241,11 @@
           parent="webscript">
     </bean>
 
+    <bean id="webscript.ru.citeck.ecos.records-delete.post"
+          class="ru.citeck.ecos.records.rest.RecordsDeletePost"
+          parent="webscript">
+    </bean>
+
     <bean id="webscript.ru.citeck.ecos.group-action.post"
           class="ru.citeck.ecos.action.group.GroupActionPost"
           parent="webscript">

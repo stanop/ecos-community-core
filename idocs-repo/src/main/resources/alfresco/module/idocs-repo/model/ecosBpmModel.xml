@@ -29,15 +29,26 @@
                 <property name="ecosbpm:author">
                     <type>d:text</type>
                 </property>
-                <property name="ecosbpm:index">
-                    <type>d:int</type>
-                </property>
+
             </properties>
             <mandatory-aspects>
                 <aspect>tk:documentTypeKind</aspect>
+                <aspect>ecosbpm:hasIndex</aspect>
             </mandatory-aspects>
         </type>
 
     </types>
+
+    <aspects>
+
+        <aspect name="ecosbpm:hasIndex">
+            <properties>
+                <property name="ecosbpm:index">
+                    <type>d:int</type>
+                </property>
+            </properties>
+        </aspect>
+
+    </aspects>
 
 </model>

@@ -1,6 +1,6 @@
 package ru.citeck.ecos.records.request.query;
 
-import ru.citeck.ecos.records.request.RequestDebug;
+import ru.citeck.ecos.records.request.RequestResDebug;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class RecordsResult<T> extends RequestDebug {
+public class RecordsResult<T> extends RequestResDebug {
 
     private List<T> records = Collections.emptyList();
     private boolean hasMore = false;

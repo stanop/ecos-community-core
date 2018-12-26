@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -7,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionStatus;
+import ru.citeck.ecos.records.request.RespRecord;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -42,6 +44,12 @@ public class RecordsUtils {
         });
 
         return results;
+    }
+
+    public static RecordRef getRecordId(ObjectNode recordMeta) {
+        JsonNode idNode = recordMeta.get("id");
+        String id = idNode != null && idNode.isTextual() ? idNode.asText() : null;
+        return id != null ? new RecordRef(id) : null;
     }
 
     public static NodeRef toNodeRef(RecordRef recordRef) {
