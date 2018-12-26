@@ -413,6 +413,20 @@
   height: 3.5em;
 }
 
+.loader-panel {
+  position: relative;
+}
+
+.loader-panel__message {
+  position: absolute;
+  top: 50%;
+  left: 25%;
+  width: 50%;
+  margin: -10% 0;
+  text-align: center;
+}
+
+.loader-panel .loading-indicator,
 .loading-container .loading-indicator {
   width: 250px;
   height: 250px;

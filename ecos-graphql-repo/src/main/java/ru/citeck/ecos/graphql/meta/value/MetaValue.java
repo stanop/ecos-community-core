@@ -16,7 +16,12 @@ public interface MetaValue {
 
     @GraphQLField
     String str();
-    
+
+    @GraphQLField
+    default MetaValue as(@GraphQLName("type") String type) {
+        return this;
+    }
+
     @GraphQLField
     Optional<MetaAttribute> att(@GraphQLName("name") String name);
 
