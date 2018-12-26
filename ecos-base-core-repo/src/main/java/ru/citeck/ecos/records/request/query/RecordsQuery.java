@@ -1,7 +1,9 @@
 package ru.citeck.ecos.records.request.query;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -18,7 +20,7 @@ import java.util.Objects;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class RecordsQuery {
 
-    private static final Integer DEFAULT_PAGE_SIZE = 10;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private String sourceId = "";
     private int skipCount;
@@ -55,8 +57,20 @@ public class RecordsQuery {
         this.sourceId = sourceId;
     }
 
+    public <T> T getQuery(Class<T> type) {
+        try {
+            return objectMapper.treeToValue(query, type);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Query is incorrect: " + query, e);
+        }
+    }
+
     public JsonNode getQuery() {
         return query;
+    }
+
+    public void setQuery(Object query) {
+        this.query = objectMapper.valueToTree(query);
     }
 
     @JsonSetter
@@ -126,7 +140,7 @@ public class RecordsQuery {
     }
 
     public void setMaxItems(Integer maxItems) {
-        this.maxItems = maxItems != null ? maxItems : DEFAULT_PAGE_SIZE;
+        this.maxItems = maxItems != null ? maxItems : -1;
     }
 
     public void setSortBy(List<SortBy> sortBy) {

@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source.alfnode;
+package ru.citeck.ecos.records.source.alfnode.search;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.error.AlfrescoRuntimeException;
@@ -16,7 +16,8 @@ import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsResult;
 import ru.citeck.ecos.records.request.query.SortBy;
-import ru.citeck.ecos.records.source.alfnode.AlfNodesSearch.AfterIdType;
+import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
+import ru.citeck.ecos.records.source.alfnode.search.AlfNodesSearch.AfterIdType;
 
 import java.util.Date;
 import java.util.stream.Collectors;
