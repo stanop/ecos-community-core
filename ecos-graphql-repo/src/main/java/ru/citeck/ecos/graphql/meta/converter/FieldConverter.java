@@ -40,7 +40,7 @@ public class FieldConverter<T> extends MetaConverter<Object> {
         MetaAtt attrInfo = field.getAnnotation(MetaAtt.class);
 
         if (attrInfo != null) {
-            attName = attrInfo.name();
+            attName = attrInfo.value();
             Class<? extends MetaConverter<T>> converterClass = (Class<? extends MetaConverter<T>>) attrInfo.converter();
             if (!converterClass.equals(NotValidConverter.class)) {
                 valueConverter = provider.getCustom(converterClass);

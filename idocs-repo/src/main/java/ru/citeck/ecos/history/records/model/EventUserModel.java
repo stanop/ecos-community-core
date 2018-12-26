@@ -8,13 +8,13 @@ public class EventUserModel {
 
     public String displayName;
 
-    @MetaAtt(name = "cm:userName")
+    @MetaAtt("cm:userName")
     public String userName;
-    @MetaAtt(name = "cm:firstName")
+    @MetaAtt("cm:firstName")
     public String firstName;
-    @MetaAtt(name = "cm:lastName")
+    @MetaAtt("cm:lastName")
     public String lastName;
-    @MetaAtt(name = "cm:middleName")
+    @MetaAtt("cm:middleName")
     public String middleName;
 
     public String getId() {

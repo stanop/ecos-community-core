@@ -7,10 +7,10 @@ public class EventUserOrGroupModel {
 
     public NodeRef id;
 
-    @MetaAtt(name = "cm:authorityName")
+    @MetaAtt("cm:authorityName")
     public String authorityName;
 
-    @MetaAtt(name = "cm:userName")
+    @MetaAtt("cm:userName")
     public String userName;
 
     public NodeRef getId() {

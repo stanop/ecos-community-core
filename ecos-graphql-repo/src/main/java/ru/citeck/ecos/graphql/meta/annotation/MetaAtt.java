@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface MetaAtt {
 
-    String name() default "";
+    String value() default "";
 
     Class<? extends MetaConverter<?>> converter() default NotValidConverter.class;
 

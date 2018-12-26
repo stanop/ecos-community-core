@@ -9,31 +9,31 @@ public class HistoryRecordModel {
 
     public String nodeRef;
 
-    @MetaAtt(name = "event:initiator")
+    @MetaAtt("event:initiator")
     public EventUserModel initiator;
-    @MetaAtt(name = "event:documentId")
+    @MetaAtt("event:documentId")
     public String documentId;
-    @MetaAtt(name = "event:date")
+    @MetaAtt("event:date")
     public Date date;
-    @MetaAtt(name = "event:documentVersion")
+    @MetaAtt("event:documentVersion")
     public String documentVersion;
-    @MetaAtt(name = "event:taskComment")
+    @MetaAtt("event:taskComment")
     public String taskComment;
-    @MetaAtt(name = "event:name")
+    @MetaAtt("event:name")
     public String eventType;
-    @MetaAtt(name = "event:taskRole")
+    @MetaAtt("event:taskRole")
     public String taskRole;
-    @MetaAtt(name = "event:taskOutcome")
+    @MetaAtt("event:taskOutcome")
     public String taskOutcome;
-    @MetaAtt(name = "event:taskOutcomeTitle")
+    @MetaAtt("event:taskOutcomeTitle")
     public String taskOutcomeTitle;
-    @MetaAtt(name = "event:taskType")
+    @MetaAtt("event:taskType")
     public TaskType taskType;
-    @MetaAtt(name = "event:taskAttachments")
+    @MetaAtt("event:taskAttachments")
     public List<TaskAttachmentModel> taskAttachments;
-    @MetaAtt(name = "event:taskInstanceId")
+    @MetaAtt("event:taskInstanceId")
     public String taskInstanceId;
-    @MetaAtt(name = "event:taskPooledActors")
+    @MetaAtt("event:taskPooledActors")
     public List<EventUserOrGroupModel> taskPooledActors;
 
     public String getNodeRef() {
