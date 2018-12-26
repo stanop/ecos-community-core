@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source.alfnode;
+package ru.citeck.ecos.records.source.alfnode.search;
 
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
