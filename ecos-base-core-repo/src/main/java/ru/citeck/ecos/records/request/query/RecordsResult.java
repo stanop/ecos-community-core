@@ -3,14 +3,13 @@ package ru.citeck.ecos.records.request.query;
 import ru.citeck.ecos.records.request.RequestResDebug;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class RecordsResult<T> extends RequestResDebug {
 
-    private List<T> records = Collections.emptyList();
+    private List<T> records = new ArrayList<>();
     private boolean hasMore = false;
     private long totalCount = 0;
 
@@ -48,7 +47,11 @@ public class RecordsResult<T> extends RequestResDebug {
     }
 
     public void setRecords(List<T> records) {
-        this.records = records != null ? records : Collections.emptyList();
+        if (records != null) {
+            this.records = new ArrayList<>(records);
+        } else {
+            this.records = new ArrayList<>();
+        }
     }
 
     public boolean getHasMore() {
@@ -65,5 +68,22 @@ public class RecordsResult<T> extends RequestResDebug {
 
     public void setTotalCount(long totalCount) {
         this.totalCount = totalCount;
+    }
+
+    @Override
+    public String toString() {
+        String recordsStr = records.stream()
+                                   .map(Object::toString)
+                                   .collect(Collectors.joining(",\n    "));
+        if (!recordsStr.isEmpty()) {
+            recordsStr = "\n    " + recordsStr + "\n  ";
+        }
+        String debugStr = getDebug() != null ? ",\n  \"debug\": " + getDebug() : "";
+        return "{\n" +
+                "  \"records\": [" + recordsStr +
+                "],\n  \"hasMore\": " + hasMore +
+                ",\n  \"totalCount\": " + totalCount +
+                debugStr +
+                "\n}";
     }
 }
