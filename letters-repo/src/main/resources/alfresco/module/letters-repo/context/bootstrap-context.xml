@@ -16,12 +16,12 @@
 		</property>
 	</bean>
 
-	<bean id="letters.income-lifecycle" parent="idocs.import-lifecycle.csv">
+	<bean id="letters.income-lifecycle" parent="idocs.import-lifecycle.csv" depends-on="letters.dictionaryBootstrap">
 		<property name="location" value="alfresco/module/letters-repo/lifecycle/income-lifecycle.csv" />
 		<property name="entityType" value="letters:income" />
 	</bean>
 	
-	<bean id="letters.outcome-lifecycle" parent="idocs.import-lifecycle.csv">
+	<bean id="letters.outcome-lifecycle" parent="idocs.import-lifecycle.csv" depends-on="letters.dictionaryBootstrap">
 		<property name="location" value="alfresco/module/letters-repo/lifecycle/outcome-lifecycle.csv" />
 		<property name="entityType" value="letters:outcome" />
 	</bean>
