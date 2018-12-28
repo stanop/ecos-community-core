@@ -38,6 +38,7 @@ public class RecordsServiceImpl implements RecordsService {
 
     private Map<String, RecordsDAO> sources = new ConcurrentHashMap<>();
     private GraphQLMetaService graphQLMetaService;
+    private RecordAttributes recordAttributes;
 
     @Autowired
     public RecordsServiceImpl(GraphQLMetaService graphQLMetaService) {

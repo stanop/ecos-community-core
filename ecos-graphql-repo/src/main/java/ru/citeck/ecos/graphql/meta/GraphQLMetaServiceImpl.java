@@ -19,6 +19,7 @@ import ru.citeck.ecos.graphql.meta.value.MetaValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,14 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private GraphQLService graphQLService;
+
+    @Override
+    public <T> List<ObjectNode> getMeta(List<T> values, BiFunction<T, GqlContext, MetaValue> converter, String schema) {
+        return getMeta(context -> values.stream()
+                                        .map(v -> converter.apply(v, context))
+                                        .collect(Collectors.toList()),
+                       schema);
+    }
 
     @Override
     public List<ObjectNode> getMeta(Function<GqlContext, List<MetaValue>> valuesProvider, String schema) {
@@ -71,7 +80,7 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
         }).collect(Collectors.toList());
     }
 
-    private <K> List<ObjectNode> convertMeta(ExecutionResult executionResult, List<MetaValue> metaValues) {
+    private List<ObjectNode> convertMeta(ExecutionResult executionResult, List<MetaValue> metaValues) {
 
         List<ObjectNode> result = new ArrayList<>();
 

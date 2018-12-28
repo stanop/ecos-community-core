@@ -5,11 +5,14 @@ import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public interface GraphQLMetaService {
 
     List<ObjectNode> getMeta(Function<GqlContext, List<MetaValue>> valuesProvider, String schema);
+
+    <T> List<ObjectNode> getMeta(List<T> values, BiFunction<T, GqlContext, MetaValue> converter, String schema);
 
     List<ObjectNode> getMeta(List<MetaValue> valuesProvider, String schema);
 

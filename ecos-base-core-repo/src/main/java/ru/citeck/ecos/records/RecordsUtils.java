@@ -21,6 +21,7 @@ public class RecordsUtils {
     public static <T> List<ActionResult<RecordRef>> processList(List<RecordRef> records,
                                                                 Function<RecordRef, T> toNode,
                                                                 Function<List<T>, Map<T, ActionStatus>> process) {
+
         List<ActionResult<RecordRef>> results = new ArrayList<>();
 
         Map<T, RecordRef> mapping = new HashMap<>();
@@ -39,9 +40,9 @@ public class RecordsUtils {
         }
 
         Map<T, ActionStatus> statuses = process.apply(nodes);
-        statuses.forEach((node, status) -> {
-            results.add(new ActionResult<>(mapping.get(node), status));
-        });
+        statuses.forEach((node, status) ->
+            results.add(new ActionResult<>(mapping.get(node), status))
+        );
 
         return results;
     }
@@ -97,6 +98,10 @@ public class RecordsUtils {
             }
             return node;
         }).collect(Collectors.toList());
+    }
+
+    public static RecordsResult<RecordRef> toScoped(String sourceId, RecordsResult<RecordRef> result) {
+        return new RecordsResult<>(result, r -> new RecordRef(sourceId, r));
     }
 
     public static List<RecordRef> toScopedRecords(String sourceId, List<RecordRef> records) {
