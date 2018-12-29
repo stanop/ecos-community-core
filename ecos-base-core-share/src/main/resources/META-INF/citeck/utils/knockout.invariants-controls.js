@@ -1416,7 +1416,7 @@ ko.bindingHandlers.journalControl = {
                             });
 
                             if(optionsFiltersTemp.length){
-                                criteria(optionsFiltersTemp);
+                                criteria(optionsFiltersTemp.concat(actualCriteria));
                             }
                         }
 
