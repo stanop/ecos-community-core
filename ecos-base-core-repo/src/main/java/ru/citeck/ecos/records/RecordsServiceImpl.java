@@ -1,6 +1,5 @@
 package ru.citeck.ecos.records;
 
-import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -12,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
+import ru.citeck.ecos.records.attributes.RecordAttributesDAO;
+import ru.citeck.ecos.records.attributes.accessor.ObjectAccessor;
 import ru.citeck.ecos.records.request.RespRecord;
 import ru.citeck.ecos.records.request.delete.RecordsDelResult;
 import ru.citeck.ecos.records.request.delete.RecordsDeletion;
@@ -23,7 +24,6 @@ import ru.citeck.ecos.records.source.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -33,16 +33,20 @@ public class RecordsServiceImpl implements RecordsService {
     private static final String DEBUG_QUERY_TIME = "queryTimeMs";
     private static final String DEBUG_RECORDS_QUERY_TIME = "recordsQueryTimeMs";
     private static final String DEBUG_META_QUERY_TIME = "metaQueryTimeMs";
+    private static final String RECORD_ID_FIELD = "recordId";
 
     private static final Log logger = LogFactory.getLog(RecordsServiceImpl.class);
 
     private Map<String, RecordsDAO> sources = new ConcurrentHashMap<>();
+
     private GraphQLMetaService graphQLMetaService;
-    private RecordAttributes recordAttributes;
+    private RecordAttributesDAO attributesDAO;
 
     @Autowired
-    public RecordsServiceImpl(GraphQLMetaService graphQLMetaService) {
+    public RecordsServiceImpl(GraphQLMetaService graphQLMetaService,
+                              RecordAttributesDAO attributesDAO) {
         this.graphQLMetaService = graphQLMetaService;
+        this.attributesDAO = attributesDAO;
     }
 
     @Override
@@ -90,49 +94,30 @@ public class RecordsServiceImpl implements RecordsService {
         return getRecords(query, fieldsMap);
     }
 
-    private String createFieldsQuery(Map<String, String> fields, Map<JsonPointer, String> fieldsMapping) {
-
-        StringBuilder schemaBuilder = new StringBuilder("id\n");
-
-        AtomicInteger idx = new AtomicInteger();
-        fields.forEach((field, path) -> {
-
-            String fieldName = path.replace("/", "");
-
-            String valueField = "str";
-            int questionIdx = path.indexOf('?');
-
-            if (questionIdx >= 0) {
-                fieldName = path.substring(0, questionIdx);
-                valueField = path.substring(questionIdx + 1);
-            }
-
-            String queryFieldName = "a" + idx.getAndIncrement();
-
-            fieldsMapping.put(JsonPointer.valueOf("/" + queryFieldName + "/val/0/" + valueField), field);
-            schemaBuilder.append(queryFieldName)
-                         .append(":att(name:\"")
-                         .append(fieldName)
-                         .append("\"){val{")
-                         .append(valueField)
-                         .append("}}\n");
-        });
-
-        return schemaBuilder.toString();
-    }
-
     @Override
-    public RecordsResult<RespRecord> getRecords(RecordsQuery query, Map<String, String> fields) {
+    public RecordsResult<RespRecord> getRecords(RecordsQuery query, Map<String, String> attributes) {
 
-        Map<JsonPointer, String> fieldsMapping = new HashMap<>();
-        RecordsResult<ObjectNode> records = getRecords(query, createFieldsQuery(fields, fieldsMapping));
+        Map<String, String> fieldsWithId = new HashMap<>(attributes);
+        fieldsWithId.put(RECORD_ID_FIELD, "id");
+
+        ObjectAccessor accessor = attributesDAO.getObjectAttsAccessor(fieldsWithId);
+        RecordsResult<ObjectNode> records = getRecords(query, accessor.getSchema());
 
         return new RecordsResult<>(records, node -> {
 
-            RespRecord record = new RespRecord(RecordsUtils.getRecordId(node));
-            Map<String, JsonNode> attributes = record.getAttributes();
-            fieldsMapping.forEach((path, key) -> attributes.put(key, node.at(path)));
-            return record;
+            RespRecord result = new RespRecord();
+            ObjectNode flatNode = accessor.getValue(node);
+            result.setId(new RecordRef(flatNode.get(RECORD_ID_FIELD).asText()));
+            flatNode.remove(RECORD_ID_FIELD);
+
+            Map<String, JsonNode> flatAttributes = result.getAttributes();
+            Iterator<String> names = flatNode.fieldNames();
+            while (names.hasNext()) {
+                String name = names.next();
+                flatAttributes.put(name, flatNode.path(name));
+            }
+
+            return result;
         });
     }
 
@@ -146,16 +131,23 @@ public class RecordsServiceImpl implements RecordsService {
     @Override
     public List<RespRecord> getMeta(Collection<RecordRef> records, Map<String, String> fields) {
 
-        Map<JsonPointer, String> fieldsMapping = new HashMap<>();
+        ObjectAccessor accessor = attributesDAO.getObjectAttsAccessor(fields);
+        List<ObjectNode> meta = getMeta(records, accessor.getSchema());
 
-        List<ObjectNode> meta = getMeta(records, createFieldsQuery(fields, fieldsMapping), false);
+        int idx = 0;
+        return records.stream().map(recordRef -> {
 
-        return meta.stream().map(record -> {
+            ObjectNode record = accessor.getValue(meta.get(idx));
 
-            RespRecord respRecord = new RespRecord(RecordsUtils.getRecordId(record));
+            RespRecord respRecord = new RespRecord();
             Map<String, JsonNode> atts = respRecord.getAttributes();
-            fieldsMapping.forEach((path, key) -> atts.put(key, record.at(path)));
 
+            Iterator<String> names = record.fieldNames();
+            while (names.hasNext()) {
+                String name = names.next();
+
+                atts.put(name, record.path(name));
+            }
             return respRecord;
         }).collect(Collectors.toList());
     }

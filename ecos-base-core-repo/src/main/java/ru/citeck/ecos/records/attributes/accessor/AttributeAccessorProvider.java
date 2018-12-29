@@ -1,10 +1,10 @@
-package ru.citeck.ecos.records.attribute.accessor;
+package ru.citeck.ecos.records.attributes.accessor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.records.attribute.AttributeAccessor;
+import ru.citeck.ecos.records.attributes.AttributeAccessor;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class AttributeAccessorProvider extends AbstractAttAccessorProvider {
         return new Accessor(args.get(0), args.size() > 1 ? args.get(1) : "", next);
     }
 
-    private static class Accessor implements AttributeAccessor {
+    private static class Accessor implements AttributeAccessor<JsonNode> {
 
         private String name;
         private boolean isMultiple;
@@ -43,18 +43,18 @@ public class AttributeAccessorProvider extends AbstractAttAccessorProvider {
         }
 
         @Override
-        public JsonNode getValue(JsonNode raw, boolean flat) {
-            JsonNode values = flat ? raw.path("val") : raw.path("att").path("val");
+        public JsonNode getValue(JsonNode raw) {
+            JsonNode values = raw.path("val");
             if (isMultiple) {
                 ArrayNode result = JsonNodeFactory.instance.arrayNode();
                 if (values.isArray()) {
                     for (int i = 0; i < values.size(); i++) {
-                        result.add(next.getValue(values.get(i), false));
+                        result.add(next.getValue(values.get(i)));
                     }
                 }
                 return result;
             } else {
-                return next.getValue(values.path(0), false);
+                return next.getValue(values.path(0));
             }
         }
     }

@@ -9,14 +9,12 @@ import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
 import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsResult;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
 import ru.citeck.ecos.records.source.RecordsMetaDAO;
-import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeAtt;
 import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeAttValue;
 import ru.citeck.ecos.records.source.alfnode.search.ChildrenAlfNodesSearch;
 
@@ -24,9 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-public class EcosBpmCatRecords extends AbstractRecordsDAO, RecordsMetaDAO {
+public class EcosBpmCatRecords extends AbstractRecordsDAO implements RecordsMetaDAO {
 
     public static final String ID = "ebpmcat";
 

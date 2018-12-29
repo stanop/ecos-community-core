@@ -1,6 +1,6 @@
-package ru.citeck.ecos.records.attribute.accessor;
+package ru.citeck.ecos.records.attributes.accessor;
 
-import ru.citeck.ecos.records.attribute.AttributeAccessor;
+import ru.citeck.ecos.records.attributes.AttributeAccessor;
 
 import java.util.List;
 

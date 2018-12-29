@@ -1,8 +1,8 @@
-package ru.citeck.ecos.records.attribute;
+package ru.citeck.ecos.records.attributes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public interface AttributeAccessor {
+public interface AttributeAccessor<T extends JsonNode> {
 
     default String getSchema() {
         return appendSchema(new StringBuilder()).toString();
@@ -10,6 +10,5 @@ public interface AttributeAccessor {
 
     StringBuilder appendSchema(StringBuilder sb);
 
-    JsonNode getValue(JsonNode raw, boolean flat);
-
+    T getValue(JsonNode raw);
 }

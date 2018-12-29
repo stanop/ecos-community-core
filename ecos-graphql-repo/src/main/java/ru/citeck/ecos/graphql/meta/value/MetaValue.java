@@ -13,24 +13,18 @@ public interface MetaValue {
 
     @GraphQLField
     @GraphQLID
-    String id();
-
-    @GraphQLField
-    String str();
-
-    @GraphQLField
-    default MetaValue as(@GraphQLName("type") String type) {
-        return this;
-    }
-
-    @GraphQLField
-    default Optional<MetaValue> as(@GraphQLName("type") String type) {
-        return Optional.empty();
+    default String id() {
+        return null;
     }
 
     @GraphQLField
     default String str() {
         return id();
+    }
+
+    @GraphQLField
+    default Optional<MetaValue> as(@GraphQLName("type") String type) {
+        return Optional.empty();
     }
 
     @GraphQLField

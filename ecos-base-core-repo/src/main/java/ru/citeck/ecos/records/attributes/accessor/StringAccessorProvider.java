@@ -1,8 +1,8 @@
-package ru.citeck.ecos.records.attribute.accessor;
+package ru.citeck.ecos.records.attributes.accessor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.records.attribute.AttributeAccessor;
+import ru.citeck.ecos.records.attributes.AttributeAccessor;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class StringAccessorProvider extends AbstractAttAccessorProvider {
         @Override
         public StringBuilder appendSchema(StringBuilder sb) {
             if (internal == null) {
-                sb.append("s");
+                sb.append("str");
             } else {
                 throw new IllegalArgumentException("Not supported");
             }
@@ -38,8 +38,16 @@ public class StringAccessorProvider extends AbstractAttAccessorProvider {
         }
 
         @Override
-        public JsonNode getValue(JsonNode raw, boolean flat) {
-            return flat ? raw : raw.path("s");
+        public JsonNode getValue(JsonNode raw) {
+            return raw;
         }
     }
 }
+/*
+* id,
+* attributes: o(
+*
+* )
+*
+*
+* */
