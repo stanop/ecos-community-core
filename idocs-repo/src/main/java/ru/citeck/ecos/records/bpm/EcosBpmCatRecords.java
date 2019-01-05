@@ -1,13 +1,11 @@
 package ru.citeck.ecos.records.bpm;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import graphql.annotations.annotationTypes.GraphQLID;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
-import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
@@ -18,10 +16,7 @@ import ru.citeck.ecos.records.source.RecordsMetaDAO;
 import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeAttValue;
 import ru.citeck.ecos.records.source.alfnode.search.ChildrenAlfNodesSearch;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class EcosBpmCatRecords extends AbstractRecordsDAO implements RecordsMetaDAO {
 
@@ -56,8 +51,10 @@ public class EcosBpmCatRecords extends AbstractRecordsDAO implements RecordsMeta
 
     @Override
     public List<ObjectNode> getMeta(List<RecordRef> records, String gqlSchema) {
+/*
 
-        List<ObjectNode> meta = graphQLMetaService.getMeta(records, Category::new, gqlSchema);
+        List<ObjectNode> meta = graphQLMetaService.getMeta(records.stream().map(Category), gqlSchema);
+*/
 
 
 
@@ -75,22 +72,33 @@ public class EcosBpmCatRecords extends AbstractRecordsDAO implements RecordsMeta
         private RecordRef id;
         private AlfNodeAttValue node;
 
-        public Category(RecordRef id, GqlContext context) {
+        public Category(RecordRef id) {
             this.id = id;
-            node = new AlfNodeAttValue(new NodeRef(id.getId()), context);
+        }
+
+        private AlfNodeAttValue getValue(GqlContext context) {
+            if (node == null) {
+                node = new AlfNodeAttValue(new NodeRef(id.getId()), context);
+            }
+            return node;
         }
 
         @Override
-        public @GraphQLID String id() {
+        public String getId(GqlContext context) {
             return id.getId();
         }
 
         @Override
-        public Optional<MetaAttribute> att(String name) {
+        public List<MetaValue> getAttribute(String name, GqlContext context) {
             if (FIELDS_MAPPING.containsKey(name)) {
-                return node.att(FIELDS_MAPPING.get(name));
+                return getValue(context).getAttribute(FIELDS_MAPPING.get(name), context);
             }
-            return Optional.empty();
+            return Collections.emptyList();
+        }
+
+        @Override
+        public String getString(GqlContext context) {
+            return id.toString();
         }
     }
 }

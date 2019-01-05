@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
-import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
@@ -31,11 +30,11 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO implements Reco
     }
 
     public List<ObjectNode> getMeta(List<RecordRef> records, String gqlSchema) {
-        List<ObjectNode> meta = graphQLMetaService.getMeta(context -> getMetaValues(context, records), gqlSchema);
+        List<ObjectNode> meta = graphQLMetaService.getMeta(getMetaValues(records), gqlSchema);
         return addSourceId ? RecordsUtils.convertToRefs(getId(), meta) : meta;
     }
 
-    protected List<MetaValue> getMetaValues(GqlContext context, List<RecordRef> records) {
+    protected List<MetaValue> getMetaValues(List<RecordRef> records) {
         throw new RuntimeException("Not implemented");
     }
 

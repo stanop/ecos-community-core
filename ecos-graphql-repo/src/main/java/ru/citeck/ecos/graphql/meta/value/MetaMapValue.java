@@ -1,7 +1,7 @@
 package ru.citeck.ecos.graphql.meta.value;
 
-import ru.citeck.ecos.graphql.meta.attribute.MetaExplicitAtt;
-import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
+import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.meta.MetaUtils;
 
 import java.util.*;
 
@@ -15,36 +15,19 @@ public class MetaMapValue implements MetaValue {
     }
 
     @Override
-    public String id() {
+    public String getId(GqlContext context) {
         return id;
     }
 
     @Override
-    public String str() {
+    public String getString(GqlContext context) {
         return id;
     }
 
     @Override
-    public Optional<MetaAttribute> att(String name) {
+    public List<MetaValue> getAttribute(String name, GqlContext context) {
         Object value = attributes.get(name);
-        return Optional.of(toMetaAtt(name, value));
-    }
-
-    @Override
-    public List<MetaAttribute> atts(String filter) {
-        List<MetaAttribute> result = new ArrayList<>();
-        attributes.forEach((name, value) -> result.add(toMetaAtt(name, value)));
-        return result;
-    }
-
-    private MetaAttribute toMetaAtt(String name, Object value) {
-        MetaAttribute result;
-        if (value instanceof MetaAttribute) {
-            result = (MetaAttribute) value;
-        } else {
-            result = new MetaExplicitAtt(name, value);
-        }
-        return result;
+        return MetaUtils.toMetaValues(value);
     }
 
     public void setAttributes(Map<String, Object> attributes) {

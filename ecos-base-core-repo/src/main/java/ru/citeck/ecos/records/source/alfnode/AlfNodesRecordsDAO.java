@@ -19,7 +19,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.delete.RecordsDelResult;
@@ -238,12 +237,9 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
-    public List<MetaValue> getMetaValues(GqlContext context, List<RecordRef> recordRef) {
+    public List<MetaValue> getMetaValues(List<RecordRef> recordRef) {
         return recordRef.stream()
-                        .map(RecordRef::getId)
-                        .map(context::getNode)
-                        .filter(Optional::isPresent)
-                        .map(n -> new AlfNodeRecord(n.get(), context))
+                        .map(AlfNodeRecord::new)
                         .collect(Collectors.toList());
     }
 

@@ -8,40 +8,30 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
-import ru.citeck.ecos.graphql.meta.attribute.MetaExplicitAtt;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeAttValue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class MetaJsonNodeValue implements MetaValue {
 
     private String id;
     private JsonNode data;
-    private GqlContext context;
 
     public MetaJsonNodeValue(String id, JsonNode data) {
         this.id = id;
         this.data = data;
     }
 
-    public MetaJsonNodeValue(String id, JsonNode data, GqlContext context) {
-        this.id = id;
-        this.data = data;
-        this.context = context;
-    }
-
     @Override
-    public String id() {
+    public String getId(GqlContext context) {
         return id;
     }
 
     @Override
-    public String str() {
+    public String getString(GqlContext context) {
         if (data == null || data instanceof NullNode) {
             return null;
         }
@@ -49,29 +39,28 @@ public class MetaJsonNodeValue implements MetaValue {
     }
 
     @Override
-    public Optional<MetaAttribute> att(String name) {
+    public List<MetaValue> getAttribute(String name, GqlContext context) {
 
         JsonNode attNode = data.get(name);
 
         if (attNode == null) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
 
-        MetaAttribute attribute = new MetaExplicitAtt(name, getValue(attNode));
-        return Optional.of(attribute);
+        return getValue(attNode, context);
     }
 
-    private List<MetaValue> getValue(JsonNode attNode) {
+    private List<MetaValue> getValue(JsonNode attNode, GqlContext context) {
 
         List<MetaValue> attValue = new ArrayList<>();
 
         if (attNode instanceof ArrayNode) {
             ArrayNode array = (ArrayNode) attNode;
             for (int i = 0; i < array.size(); i++) {
-                attValue.addAll(getValue(array.get(i)));
+                attValue.addAll(getValue(array.get(i), context));
             }
         } else {
-            if (attNode instanceof ObjectNode && context != null) {
+            if (attNode instanceof ObjectNode) {
                 JsonNode nodeRefNode = attNode.get("nodeRef");
                 if (nodeRefNode instanceof TextNode) {
                     NodeRef nodeRef = new NodeRef(nodeRefNode.asText());
@@ -85,15 +74,10 @@ public class MetaJsonNodeValue implements MetaValue {
                 }
             }
             if (attValue.isEmpty()) {
-                attValue.add(new MetaJsonNodeValue(null, attNode, context));
+                attValue.add(new MetaJsonNodeValue(null, attNode));
             }
         }
 
         return attValue;
-    }
-
-    @Override
-    public List<MetaAttribute> atts(String filter) {
-        return Collections.emptyList();
     }
 }

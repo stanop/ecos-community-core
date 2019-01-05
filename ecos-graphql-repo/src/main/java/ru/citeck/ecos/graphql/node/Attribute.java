@@ -1,7 +1,6 @@
 package ru.citeck.ecos.graphql.node;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
-import graphql.annotations.annotationTypes.GraphQLField;
 import lombok.Getter;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.GqlContext;
@@ -36,17 +35,14 @@ public class Attribute {
         rawValue = value;
     }
 
-    @GraphQLField
     public Type type() {
         return type;
     }
 
-    @GraphQLField
     public String name() {
         return name.toPrefixString();
     }
 
-    @GraphQLField
     public Optional<String> value() {
         List<?> values = getValues();
         Object value = values.size() > 0 ? values.get(0) : null;
@@ -60,30 +56,25 @@ public class Attribute {
         return Optional.empty();
     }
 
-    @GraphQLField
     public List<String> values() {
         return getValues().stream()
                           .map(v -> v != null ? v.toString() : null)
                           .collect(Collectors.toList());
     }
 
-    @GraphQLField
     public List<GqlQName> qnames() {
         return context.getQNames(getValues());
     }
 
-    @GraphQLField
     public Optional<GqlQName> qname() {
         List<GqlQName> qnames = qnames();
         return qnames.size() > 0 ? Optional.of(qnames.get(0)) : Optional.empty();
     }
 
-    @GraphQLField
     public List<GqlAlfNode> nodes() {
         return context.getNodes(getValues());
     }
 
-    @GraphQLField
     public Optional<GqlAlfNode> node() {
         List<GqlAlfNode> nodes = nodes();
         return nodes.size() > 0 ? Optional.of(nodes.get(0)) : Optional.empty();

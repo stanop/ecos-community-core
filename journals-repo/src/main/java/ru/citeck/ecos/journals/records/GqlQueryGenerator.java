@@ -68,7 +68,7 @@ public class GqlQueryGenerator {
 
             schemaBuilder.append("a")
                     .append(attrCounter++)
-                    .append(":att(name:\"")
+                    .append(":edge(n:\"")
                     .append(prefixedKey)
                     .append("\"){");
 
@@ -85,13 +85,13 @@ public class GqlQueryGenerator {
 
         String schema = attributeOptions.get("attributeSchema");
         if (StringUtils.isNotBlank(schema)) {
-            return "name,val{" + schema + "}";
+            return "name,val:vals{" + schema + "}";
         }
 
         String formatter = attributeOptions.get("formatter");
         formatter = formatter != null ? formatter : "";
 
-        StringBuilder schemaBuilder = new StringBuilder("name,val{");
+        StringBuilder schemaBuilder = new StringBuilder("name,val:vals{");
 
         // attributes
         Set<String> attributesToLoad = new HashSet<>();
@@ -119,9 +119,9 @@ public class GqlQueryGenerator {
         for (String attrName : attributesToLoad) {
             schemaBuilder.append("a")
                     .append(attrCounter++)
-                    .append(":att(name:\"")
+                    .append(":edge(n:\"")
                     .append(attrName).append("\")")
-                    .append("{name val{str}}")
+                    .append("{name val:vals{str}}")
                     .append(",");
         }
 

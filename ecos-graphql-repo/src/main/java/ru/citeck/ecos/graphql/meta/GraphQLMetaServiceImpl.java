@@ -19,8 +19,6 @@ import ru.citeck.ecos.graphql.meta.value.MetaValue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,29 +33,15 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
     private GraphQLService graphQLService;
 
     @Override
-    public <T> List<ObjectNode> getMeta(List<T> values, BiFunction<T, GqlContext, MetaValue> converter, String schema) {
-        return getMeta(context -> values.stream()
-                                        .map(v -> converter.apply(v, context))
-                                        .collect(Collectors.toList()),
-                       schema);
-    }
-
-    @Override
-    public List<ObjectNode> getMeta(Function<GqlContext, List<MetaValue>> valuesProvider, String schema) {
+    public List<ObjectNode> getMeta(List<MetaValue> values, String schema) {
 
         String query = String.format(META_QUERY_TEMPLATE, schema);
 
         GqlContext context = graphQLService.getGqlContext();
-        List<MetaValue> values = valuesProvider.apply(context);
         context.setMetaValues(values);
 
         ExecutionResult result = graphQLService.execute(query, null, context);
-        return convertMeta(result, values);
-    }
-
-    @Override
-    public List<ObjectNode> getMeta(List<MetaValue> valuesProvider, String schema) {
-        return getMeta(context -> valuesProvider, schema);
+        return convertMeta(result, values, context);
     }
 
     @Override
@@ -80,7 +64,9 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
         }).collect(Collectors.toList());
     }
 
-    private List<ObjectNode> convertMeta(ExecutionResult executionResult, List<MetaValue> metaValues) {
+    private List<ObjectNode> convertMeta(ExecutionResult executionResult,
+                                         List<MetaValue> metaValues,
+                                         GqlContext context) {
 
         List<ObjectNode> result = new ArrayList<>();
 
@@ -89,7 +75,7 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
             for (MetaValue value : metaValues) {
                 ObjectNode node = JsonNodeFactory.instance.objectNode();
 
-                node.set("id", TextNode.valueOf(getValueId(value)));
+                node.set("id", TextNode.valueOf(getValueId(value, context)));
                 result.add(node);
             }
         } else {
@@ -104,10 +90,10 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
         return result;
     }
 
-    private String getValueId(MetaValue value) {
-        String valueId = value.id();
+    private String getValueId(MetaValue value, GqlContext context) {
+        String valueId = value.getId(context);
         if (StringUtils.isBlank(valueId)) {
-            valueId = value.str();
+            valueId = value.getString(context);
             if (StringUtils.isBlank(valueId)) {
                 valueId = GUID.generate();
             }
