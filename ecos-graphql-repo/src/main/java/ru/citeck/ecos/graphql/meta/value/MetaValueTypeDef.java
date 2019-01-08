@@ -1,10 +1,8 @@
 package ru.citeck.ecos.graphql.meta.value;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import graphql.Scalars;
 import graphql.schema.*;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.graphql.CustomGqlScalars;
 import ru.citeck.ecos.graphql.GqlTypeDefinition;
 
 import java.util.Collections;
@@ -81,11 +79,6 @@ public class MetaValueTypeDef implements GqlTypeDefinition {
                         .dataFetcher(this::getStr)
                         .type(Scalars.GraphQLString))
                 .field(GraphQLFieldDefinition.newFieldDefinition()
-                        .name("json")
-                        .description("Json representation")
-                        .dataFetcher(this::getJson)
-                        .type(CustomGqlScalars.JSON_NODE))
-                .field(GraphQLFieldDefinition.newFieldDefinition()
                         .name("num")
                         .description("Number representation")
                         .dataFetcher(this::getNum)
@@ -121,11 +114,6 @@ public class MetaValueTypeDef implements GqlTypeDefinition {
     private String getStr(DataFetchingEnvironment env) {
         MetaValue value = env.getSource();
         return value.getString(env.getContext());
-    }
-
-    private JsonNode getJson(DataFetchingEnvironment env) {
-        MetaValue value = env.getSource();
-        return value.getJson(env.getContext());
     }
 
     private Double getNum(DataFetchingEnvironment env) {

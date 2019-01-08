@@ -54,7 +54,7 @@ public class GqlQueryGenerator {
                                         .map(a -> a.toPrefixString(namespaceService))
                                         .collect(Collectors.toSet());
 
-        List<MetaAttributeDef> defs = recordsService.getAttsDefinition(dataSource, strAtts);
+        List<MetaAttributeDef> defs = recordsService.getAttributesDef(dataSource, strAtts);
 
         Map<String, MetaAttributeDef> defsByName = new HashMap<>();
         for (MetaAttributeDef def : defs) {

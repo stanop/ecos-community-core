@@ -8,6 +8,6 @@ export default class DefaultGqlFormatter extends BaseFormatter {
 
     value(cell){
         const val = cell ? cell.val[0] : {};
-        return val.str || '';
+        return val ? val.str || '' : '';
     }
 }

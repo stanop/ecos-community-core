@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -11,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
-import ru.citeck.ecos.records.attributes.RecordAttributesDAO;
-import ru.citeck.ecos.records.attributes.accessor.ObjectAccessor;
 import ru.citeck.ecos.records.request.RespRecord;
 import ru.citeck.ecos.records.request.delete.RecordsDelResult;
 import ru.citeck.ecos.records.request.delete.RecordsDeletion;
@@ -21,6 +20,7 @@ import ru.citeck.ecos.records.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsResult;
 import ru.citeck.ecos.records.source.*;
+import ru.citeck.ecos.utils.json.ObjectKeyGenerator;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,13 +40,10 @@ public class RecordsServiceImpl implements RecordsService {
     private Map<String, RecordsDAO> sources = new ConcurrentHashMap<>();
 
     private GraphQLMetaService graphQLMetaService;
-    private RecordAttributesDAO attributesDAO;
 
     @Autowired
-    public RecordsServiceImpl(GraphQLMetaService graphQLMetaService,
-                              RecordAttributesDAO attributesDAO) {
+    public RecordsServiceImpl(GraphQLMetaService graphQLMetaService) {
         this.graphQLMetaService = graphQLMetaService;
-        this.attributesDAO = attributesDAO;
     }
 
     @Override
@@ -94,28 +91,54 @@ public class RecordsServiceImpl implements RecordsService {
         return getRecords(query, fieldsMap);
     }
 
+    private String getSchema(Map<String, String> attributes, Map<String, String> keysMapping) {
+
+        ObjectKeyGenerator keys = new ObjectKeyGenerator();
+
+        StringBuilder schemaBuilder = new StringBuilder(RECORD_ID_FIELD).append(":id\n");
+
+        attributes.forEach((attribute, path) -> {
+
+            String fieldName = path.replace("/", "");
+
+            String valueField = "str";
+            int questionIdx = path.indexOf('?');
+
+            if (questionIdx >= 0) {
+                fieldName = path.substring(0, questionIdx);
+                valueField = path.substring(questionIdx + 1);
+            }
+
+            String queryFieldName = keys.incrementAndGet();
+
+            keysMapping.put(queryFieldName, attribute);
+            schemaBuilder.append(queryFieldName)
+                    .append(":att(n:\"")
+                    .append(fieldName)
+                    .append("\"){")
+                    .append(valueField)
+                    .append("}");
+        });
+
+        return schemaBuilder.toString();
+    }
+
     @Override
     public RecordsResult<RespRecord> getRecords(RecordsQuery query, Map<String, String> attributes) {
 
-        Map<String, String> fieldsWithId = new HashMap<>(attributes);
-        fieldsWithId.put(RECORD_ID_FIELD, "id");
+        Map<String, String> attributesMapping = new HashMap<>();
+        String schema = getSchema(attributes, attributesMapping);
 
-        ObjectAccessor accessor = attributesDAO.getObjectAttsAccessor(fieldsWithId);
-        RecordsResult<ObjectNode> records = getRecords(query, accessor.getSchema());
+        RecordsResult<ObjectNode> records = getRecords(query, schema, true);
 
         return new RecordsResult<>(records, node -> {
 
             RespRecord result = new RespRecord();
-            ObjectNode flatNode = accessor.getValue(node);
-            result.setId(new RecordRef(flatNode.get(RECORD_ID_FIELD).asText()));
-            flatNode.remove(RECORD_ID_FIELD);
+
+            result.setId(new RecordRef(node.get(RECORD_ID_FIELD).asText()));
 
             Map<String, JsonNode> flatAttributes = result.getAttributes();
-            Iterator<String> names = flatNode.fieldNames();
-            while (names.hasNext()) {
-                String name = names.next();
-                flatAttributes.put(name, flatNode.path(name));
-            }
+            attributesMapping.forEach((k, v) -> flatAttributes.put(v, node.get(k)));
 
             return result;
         });
@@ -129,10 +152,12 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public List<RespRecord> getMeta(Collection<RecordRef> records, Map<String, String> fields) {
+    public List<RespRecord> getMeta(Collection<RecordRef> records, Map<String, String> attributes) {
 
-        ObjectAccessor accessor = attributesDAO.getObjectAttsAccessor(fields);
-        List<ObjectNode> meta = getMeta(records, accessor.getSchema());
+        Map<String, String> attributesMapping = new HashMap<>();
+        String schema = getSchema(attributes, attributesMapping);
+
+        List<ObjectNode> meta = getMeta(records, schema, true);
 
         int idx = 0;
         return records.stream().map(recordRef -> {
@@ -178,7 +203,17 @@ public class RecordsServiceImpl implements RecordsService {
         return getMeta(records, metaSchema, false);
     }
 
-    private List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema, boolean addRecordId) {
+    @Override
+    public List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema, boolean flat) {
+        List<ObjectNode> meta = getRecordsMeta(records, metaSchema, false);
+        if (flat) {
+            return meta.stream().map(this::toFlatObject).collect(Collectors.toList());
+        } else {
+            return meta;
+        }
+    }
+
+    private List<ObjectNode> getRecordsMeta(Collection<RecordRef> records, String metaSchema, boolean addRecordId) {
         return getRecordsMeta(records, (source, recs) -> {
             if (source instanceof RecordsMetaDAO) {
                 RecordsMetaDAO metaDAO = (RecordsMetaDAO) source;
@@ -201,8 +236,14 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema) {
+        return getRecords(query, metaSchema, false);
+    }
+
+    @Override
+    public RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema, boolean flat) {
 
         RecordsDAO recordsDAO = needRecordsSource(query.getSourceId());
+        RecordsResult<ObjectNode> records;
 
         if (recordsDAO instanceof RecordsWithMetaDAO) {
 
@@ -213,7 +254,7 @@ public class RecordsServiceImpl implements RecordsService {
             }
 
             long queryStart = System.currentTimeMillis();
-            RecordsResult<ObjectNode> records = recordsWithMetaDAO.getRecords(query, metaSchema);
+            records = recordsWithMetaDAO.getRecords(query, metaSchema);
             long queryDuration = System.currentTimeMillis() - queryStart;
 
             if (logger.isDebugEnabled()) {
@@ -224,8 +265,6 @@ public class RecordsServiceImpl implements RecordsService {
                 records.setDebugInfo(getClass(), DEBUG_QUERY_TIME, queryDuration);
             }
 
-            return records;
-
         } else {
 
             if (logger.isDebugEnabled()) {
@@ -233,35 +272,39 @@ public class RecordsServiceImpl implements RecordsService {
             }
 
             long recordsQueryStart = System.currentTimeMillis();
-            RecordsResult<RecordRef> records = recordsDAO.getRecords(query);
+            RecordsResult<RecordRef> recordRefs = recordsDAO.getRecords(query);
             long recordsTime = System.currentTimeMillis() - recordsQueryStart;
 
             if (logger.isDebugEnabled()) {
-                int found = records.getRecords().size();
+                int found = recordRefs.getRecords().size();
                 logger.debug("Stop records query. Found: " + found + "Duration: " + recordsTime);
                 logger.debug("Start meta query: " + metaSchema);
             }
 
             long metaQueryStart = System.currentTimeMillis();
-            List<ObjectNode> meta = getMeta(records.getRecords(), metaSchema);
+            List<ObjectNode> meta = getMeta(recordRefs.getRecords(), metaSchema);
             long metaTime = System.currentTimeMillis() - metaQueryStart;
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Stop meta query. Duration: " + metaTime);
             }
 
-            RecordsResult<ObjectNode> recordsWithMeta = new RecordsResult<>();
-            recordsWithMeta.setHasMore(records.getHasMore());
-            recordsWithMeta.setTotalCount(records.getTotalCount());
-            recordsWithMeta.setDebug(records.getDebug());
-            recordsWithMeta.setRecords(meta);
+            records = new RecordsResult<>();
+            records.setHasMore(recordRefs.getHasMore());
+            records.setTotalCount(recordRefs.getTotalCount());
+            records.setDebug(records.getDebug());
+            records.setRecords(meta);
 
             if (query.isDebug()) {
-                recordsWithMeta.setDebugInfo(getClass(), DEBUG_RECORDS_QUERY_TIME, recordsTime);
-                recordsWithMeta.setDebugInfo(getClass(), DEBUG_META_QUERY_TIME, metaTime);
+                records.setDebugInfo(getClass(), DEBUG_RECORDS_QUERY_TIME, recordsTime);
+                records.setDebugInfo(getClass(), DEBUG_META_QUERY_TIME, metaTime);
             }
+        }
 
-            return recordsWithMeta;
+        if (flat) {
+            return new RecordsResult<>(records, this::toFlatObject);
+        } else {
+            return records;
         }
     }
 
@@ -289,6 +332,52 @@ public class RecordsServiceImpl implements RecordsService {
         }
 
         return results;
+    }
+
+    private ObjectNode toFlatObject(ObjectNode node) {
+        JsonNode result = toFlatNode(node, true);
+        if (result instanceof ObjectNode) {
+            return (ObjectNode) result;
+        }
+        Class<?> clazz = result != null ? result.getClass() : null;
+        throw new IllegalStateException("toFlatNode should return ObjectNode, but found: " + clazz);
+    }
+
+    private JsonNode toFlatNode(JsonNode input, boolean isRoot) {
+
+        JsonNode node = input;
+
+        if (node.isObject() && (isRoot || node.size() > 1)) {
+
+            ObjectNode objNode = JsonNodeFactory.instance.objectNode();
+            final JsonNode finalNode = node;
+
+            node.fieldNames().forEachRemaining(name ->
+                    objNode.put(name, toFlatNode(finalNode.get(name), false))
+            );
+
+            node = objNode;
+
+        } else if (node.isObject() && node.size() == 1) {
+
+
+            String fieldName = node.fieldNames().next();
+            JsonNode value = node.get(fieldName);
+
+            node = toFlatNode(value, false);
+
+        } else if (node.isArray()) {
+
+            ArrayNode newArr = JsonNodeFactory.instance.arrayNode();
+
+            for (JsonNode n : node) {
+                newArr.add(toFlatNode(n, false));
+            }
+
+            node = newArr;
+        }
+
+        return node;
     }
 
     private <T> List<T> getRecordsMeta(Collection<RecordRef> records,
@@ -343,7 +432,7 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public List<MetaAttributeDef> getAttsDefinition(String sourceId, Collection<String> names) {
+    public List<MetaAttributeDef> getAttributesDef(String sourceId, Collection<String> names) {
         RecordsDAO recordsDAO = needRecordsSource(sourceId);
         if (recordsDAO instanceof RecordsDefinitionDAO) {
             RecordsDefinitionDAO definitionDAO = (RecordsDefinitionDAO) recordsDAO;
@@ -353,8 +442,8 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public Optional<MetaAttributeDef> getAttDefinition(String sourceId, String name) {
-        return getAttsDefinition(sourceId, Collections.singletonList(name)).stream().findFirst();
+    public Optional<MetaAttributeDef> getAttributeDef(String sourceId, String name) {
+        return getAttributesDef(sourceId, Collections.singletonList(name)).stream().findFirst();
     }
 
     private Optional<RecordsDAO> getRecordsSource(String sourceId) {

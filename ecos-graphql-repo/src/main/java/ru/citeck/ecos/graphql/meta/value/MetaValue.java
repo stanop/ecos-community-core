@@ -1,7 +1,5 @@
 package ru.citeck.ecos.graphql.meta.value;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import ru.citeck.ecos.graphql.GqlContext;
 
 import java.util.Collections;
@@ -21,12 +19,11 @@ public interface MetaValue {
         return null;
     }
 
+    /**
+     * Get value attribute
+     */
     default List<MetaValue> getAttribute(String attributeName, GqlContext context) {
         return Collections.emptyList();
-    }
-
-    default JsonNode getJson(GqlContext context) {
-        return TextNode.valueOf(getString(context));
     }
 
     default Double getDouble(GqlContext context) {
@@ -36,6 +33,4 @@ public interface MetaValue {
     default MetaValue getAs(String type, GqlContext context) {
         return null;
     }
-
-    /*MetaEdge edge(String name, GqlContext context);*/
 }
