@@ -6,5 +6,6 @@
     <import resource="classpath:alfresco/module/ecos-flowable-repo/context/bootstrap-context.xml" />
     <import resource="classpath:alfresco/module/ecos-flowable-repo/context/bootstrap-context-1-0-0.xml" />
     <import resource="classpath:alfresco/module/ecos-flowable-repo/context/remote-context.xml" />
+    <import resource="classpath:alfresco/module/ecos-flowable-repo/context/behaviour-context.xml" />
 
 </beans>

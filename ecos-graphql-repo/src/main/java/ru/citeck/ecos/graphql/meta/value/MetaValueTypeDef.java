@@ -3,6 +3,7 @@ package ru.citeck.ecos.graphql.meta.value;
 import graphql.Scalars;
 import graphql.schema.*;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.graphql.CustomGqlScalars;
 import ru.citeck.ecos.graphql.GqlTypeDefinition;
 
 import java.util.Collections;
@@ -83,6 +84,11 @@ public class MetaValueTypeDef implements GqlTypeDefinition {
                         .description("Number representation")
                         .dataFetcher(this::getNum)
                         .type(Scalars.GraphQLFloat))
+                .field(GraphQLFieldDefinition.newFieldDefinition()
+                        .name("json")
+                        .description("Json representation")
+                        .dataFetcher(this::getJson)
+                        .type(CustomGqlScalars.JSON_NODE))
                 .build();
     }
 
@@ -125,6 +131,11 @@ public class MetaValueTypeDef implements GqlTypeDefinition {
         String name = env.getArgument("n");
         MetaValue value = env.getSource();
         return new MetaEdge(name, value);
+    }
+
+    private Object getJson(DataFetchingEnvironment env) {
+        MetaValue value = env.getSource();
+        return value.getJson();
     }
 
     private String getParameter(DataFetchingEnvironment env, String name) {

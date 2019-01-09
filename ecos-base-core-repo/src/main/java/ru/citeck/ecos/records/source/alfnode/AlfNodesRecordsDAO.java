@@ -1,15 +1,15 @@
 package ru.citeck.ecos.records.source.alfnode;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.dictionary.PropertyDefinition;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -51,6 +51,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
     private DictionaryService dictionaryService;
     private NamespaceService namespaceService;
+    private ContentService contentService;
     private MessageService messageService;
     private SearchService searchService;
     private NodeService nodeService;
@@ -69,16 +70,28 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         for (RecordMut record : mutation.getRecords()) {
 
             Map<QName, Serializable> props = new HashMap<>();
+            Map<QName, JsonNode> contentProps = new HashMap<>();
 
             ObjectNode fields = record.getAttributes();
             Iterator<String> names = fields.fieldNames();
             while (names.hasNext()) {
 
                 String name = names.next();
-                QName fielName = QName.resolveToQName(namespaceService, name);
+                QName fieldName = QName.resolveToQName(namespaceService, name);
 
-                props.put(fielName, fields.path(name).asText());
+                PropertyDefinition propDef = dictionaryService.getProperty(fieldName);
+
+                if (propDef != null) {
+
+                    if (DataTypeDefinition.CONTENT.equals(propDef.getDataType().getName())) {
+                        contentProps.put(fieldName, fields.path(name));
+                    } else {
+                        props.put(fieldName, fields.path(name).asText());
+                    }
+                }
             }
+
+            NodeRef nodeRef;
 
             if (record.getId() == null) {
 
@@ -92,15 +105,42 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 }
                 QName assocName = QName.createQName(parentAssoc.getNamespaceURI(), name);
 
-                ChildAssociationRef child = nodeService.createNode(parent, parentAssoc, assocName, type, props);
-                result.add(new RecordRef(child.getChildRef()));
+                nodeRef = nodeService.createNode(parent, parentAssoc, assocName, type, props).getChildRef();
+                result.add(new RecordRef(nodeRef));
 
             } else {
 
-                NodeRef nodeRef = new NodeRef(record.getId().getId());
+                nodeRef = new NodeRef(record.getId().getId());
                 nodeService.addProperties(nodeRef, props);
                 result.add(record.getId());
             }
+
+            contentProps.forEach((name, value) -> {
+
+                ContentWriter writer = contentService.getWriter(nodeRef, name, true);
+
+                if (value.isTextual()) {
+
+                    writer.putContent(value.asText());
+
+                } else if (value.isObject()) {
+
+                    JsonNode mimetype = value.path("mimetype");
+                    if (mimetype.isTextual()) {
+                        writer.setMimetype(mimetype.asText());
+                    }
+                    JsonNode encoding = value.path("encoding");
+                    if (encoding.isTextual()) {
+                        writer.setEncoding(encoding.asText());
+                    } else {
+                        writer.setEncoding("UTF-8");
+                    }
+                    JsonNode data = value.path("data");
+                    if (data.isTextual()) {
+                        writer.putContent(data.asText());
+                    }
+                }
+            });
         }
 
         return result;
@@ -254,6 +294,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.namespaceService = serviceRegistry.getNamespaceService();
+        this.contentService = serviceRegistry.getContentService();
         this.messageService = serviceRegistry.getMessageService();
         this.searchService = serviceRegistry.getSearchService();
         this.nodeService = serviceRegistry.getNodeService();

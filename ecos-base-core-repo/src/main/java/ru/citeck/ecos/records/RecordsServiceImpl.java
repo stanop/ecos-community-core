@@ -354,7 +354,11 @@ public class RecordsServiceImpl implements RecordsService {
             String fieldName = node.fieldNames().next();
             JsonNode value = node.get(fieldName);
 
-            node = toFlatNode(value, false);
+            if ("json".equals(fieldName)) {
+                node = value;
+            } else {
+                node = toFlatNode(value, false);
+            }
 
         } else if (node.isArray()) {
 

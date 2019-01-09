@@ -37,6 +37,10 @@ public interface MetaValue {
         return Double.parseDouble(getString());
     }
 
+    default Object getJson() {
+        return getString();
+    }
+
     default MetaValue getAs(String type) {
         return null;
     }

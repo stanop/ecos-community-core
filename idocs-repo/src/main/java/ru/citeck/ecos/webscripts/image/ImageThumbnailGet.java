@@ -60,6 +60,10 @@ public class ImageThumbnailGet extends AbstractWebScript {
         }
 
         ContentReader reader = contentService.getReader(nodeRef, contentProperty);
+        if (reader == null || !reader.exists()) {
+            throw new WebScriptException(Status.STATUS_NOT_FOUND, "Content not found");
+        }
+
         File tempFile = getTempFile(nodeRef, reader, width, height, stretch);
 
         long tempLastModified = tempFile.lastModified();
@@ -103,7 +107,10 @@ public class ImageThumbnailGet extends AbstractWebScript {
         }
 
         BufferedImage thumbnailImg;
-        if (width > 0 && height == -1) {
+
+        if (width == -1 && height == -1) {
+            thumbnailImg = originalImage;
+        } else if (width > 0 && height == -1) {
             thumbnailImg = Scalr.resize(originalImage, Scalr.Mode.FIT_TO_WIDTH, width);
         } else if (height > 0 && width == -1) {
             thumbnailImg = Scalr.resize(originalImage, Scalr.Mode.FIT_TO_HEIGHT, height);
