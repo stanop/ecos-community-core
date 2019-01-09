@@ -17,7 +17,6 @@ import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsResult;
 import ru.citeck.ecos.records.source.MetaAttributeDef;
-import ru.citeck.ecos.records.source.MetaValueTypeDef;
 import ru.citeck.ecos.records.source.RecordsDAO;
 
 import java.util.Collection;
@@ -49,6 +48,13 @@ public interface RecordsService {
 
     /**
      * Query records with meta
+     * @param metaSchema GraphQL schema for MetaValue
+     * @param flat transform {"key0" : {"key1" : "value"}} to {"key0" : "value"}
+     */
+    RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema, boolean flat);
+
+    /**
+     * Query records with meta
      * @param metaClass POJO to generate metadata GQL schema and retrieve data
      *                  This class must contain constructor without arguments and have public fields
      *                  Getters/setters is not yet supported
@@ -68,7 +74,7 @@ public interface RecordsService {
     RecordsResult<RespRecord> getRecords(RecordsQuery query, Collection<String> attributes);
 
     /**
-     * Create or change records data
+     * Create or change records
      */
     RecordsMutResult mutate(RecordsMutation mutation);
 
@@ -86,14 +92,23 @@ public interface RecordsService {
     List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema);
 
     /**
+     * Get metadata for specified records
+     *
+     * @param metaSchema GraphQL schema for MetaValue
+     * @param flat transform {"key0" : {"key1" : "value"}} to {"key0" : "value"}
+     * @see MetaValue
+     */
+    List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema, boolean flat);
+
+    /**
      * Get meta
-     * Fields example: ['/cm:name', '/cm:title']
+     * Fields example: ["cm:name", "cm:title"]
      */
     List<RespRecord> getMeta(Collection<RecordRef> records, Collection<String> attributes);
 
     /**
      * Get meta
-     * Fields example: ['/cm:name', '/cm:title']
+     * Fields example: {"name" : "cm:name", "title" : "cm:title"]
      */
     List<RespRecord> getMeta(Collection<RecordRef> records, Map<String, String> attributes);
 
@@ -132,11 +147,7 @@ public interface RecordsService {
      */
     void register(RecordsDAO recordsSource);
 
-    List<MetaValueTypeDef> getTypesDefinition(String sourceId, Collection<String> names);
+    List<MetaAttributeDef> getAttributesDef(String sourceId, Collection<String> names);
 
-    Optional<MetaValueTypeDef> getTypeDefinition(String sourceId, String name);
-
-    List<MetaAttributeDef> getAttsDefinition(String sourceId, Collection<String> names);
-
-    Optional<MetaAttributeDef> getAttDefinition(String sourceId, String name);
+    Optional<MetaAttributeDef> getAttributeDef(String sourceId, String name);
 }

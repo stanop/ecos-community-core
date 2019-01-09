@@ -1,6 +1,5 @@
 package ru.citeck.ecos.graphql.journal.record;
 
-import graphql.annotations.annotationTypes.GraphQLField;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 
@@ -13,7 +12,6 @@ public class JGqlRecordsConnection {
     private JGqlPageInfo pageInfo = new JGqlPageInfo();
     private long totalCount = 0;
 
-    @GraphQLField
     public List<MetaValue> records() {
         return records;
     }
@@ -22,7 +20,6 @@ public class JGqlRecordsConnection {
         this.records = records;
     }
 
-    @GraphQLField
     public long totalCount() {
         return totalCount == 0 ? (records != null ? records.size() : 0) : totalCount;
     }
@@ -31,7 +28,6 @@ public class JGqlRecordsConnection {
         this.totalCount = totalCount;
     }
 
-    @GraphQLField
     public JGqlPageInfo pageInfo() {
         return pageInfo;
     }

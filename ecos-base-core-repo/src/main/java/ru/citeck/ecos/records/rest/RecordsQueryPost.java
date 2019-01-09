@@ -36,6 +36,8 @@ public class RecordsQueryPost extends AbstractWebScript {
                         "but found both. 'schema' field will be ignored");
         }
 
+        boolean isFlatResult = Boolean.TRUE.equals(request.flat);
+
         RecordsResult<?> recordsResult;
 
         if (request.query != null) {
@@ -46,7 +48,7 @@ public class RecordsQueryPost extends AbstractWebScript {
 
             } else if (request.schema != null) {
 
-                recordsResult = recordsService.getRecords(request.query, request.schema);
+                recordsResult = recordsService.getRecords(request.query, request.schema, isFlatResult);
 
             } else {
 
@@ -60,7 +62,7 @@ public class RecordsQueryPost extends AbstractWebScript {
             }
             if (request.schema == null && request.attributes == null) {
                 throw new WebScriptException(Status.STATUS_BAD_REQUEST,
-                                             "When records specified parameter 'schema' or 'attributes' is mandatory");
+                                             "You must specify 'schema' or 'attributes' for records");
             }
 
             if (request.attributes == null) {
@@ -68,7 +70,7 @@ public class RecordsQueryPost extends AbstractWebScript {
                 RecordsResult<ObjectNode> metaResult = new RecordsResult<>();
                 metaResult.setTotalCount(request.records.size());
                 metaResult.setHasMore(false);
-                metaResult.setRecords(recordsService.getMeta(request.records, request.schema));
+                metaResult.setRecords(recordsService.getMeta(request.records, request.schema, isFlatResult));
                 recordsResult = metaResult;
 
             } else {
@@ -117,6 +119,7 @@ public class RecordsQueryPost extends AbstractWebScript {
         public List<RecordRef> records;
         public RecordsQuery query;
         public String schema;
+        public Boolean flat;
         public JsonNode attributes;
 
         boolean isSingleRecord = false;
