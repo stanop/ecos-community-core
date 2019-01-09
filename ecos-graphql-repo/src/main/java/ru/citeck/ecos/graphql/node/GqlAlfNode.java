@@ -1,7 +1,5 @@
 package ru.citeck.ecos.graphql.node;
 
-import graphql.annotations.annotationTypes.GraphQLField;
-import graphql.annotations.annotationTypes.GraphQLName;
 import lombok.Getter;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
@@ -32,6 +30,8 @@ public class GqlAlfNode {
     private final Map<QName, List<NodeRef>> childAssocs = evalChildAssocs();
     @Getter(lazy = true)
     private final List<GqlQName> aspects = evalAspects();
+    @Getter(lazy = true)
+    private final GqlAlfNode parent = evalParent();
 
     private Map<QName, List<NodeRef>> assocs = new ConcurrentHashMap<>();
     private Map<QName, Attribute> attributes = new ConcurrentHashMap<>();
@@ -43,7 +43,6 @@ public class GqlAlfNode {
         this.context = context;
     }
 
-    @GraphQLField
     public String displayName() {
 
         QName type = getType();
@@ -87,35 +86,32 @@ public class GqlAlfNode {
         }
     }
 
-    @GraphQLField
+    public GqlAlfNode parent() {
+        return getParent();
+    }
+
     public List<GqlQName> aspects() {
         return getAspects();
     }
 
-    @GraphQLField
     public List<String> aspectNames() {
         return getAspects().stream()
                            .map(GqlQName::shortName)
                            .collect(Collectors.toList());
     }
 
-    @GraphQLField
     public String nodeRef() {
         return nodeRef.toString();
     }
 
-    @GraphQLField
     public String type() {
         return getType().toPrefixString();
     }
 
-    @GraphQLField
     public Optional<GqlQName> typeQName() {
         return context.getQName(getType());
     }
 
-    @GraphQLField
-    @GraphQLName("isContainer")
     public boolean isContainer() {
         DictionaryService dd = context.getDictionaryService();
         QName type = getType();
@@ -123,15 +119,12 @@ public class GqlAlfNode {
               !dd.isSubClass(type, ContentModel.TYPE_SYSTEM_FOLDER);
     }
 
-    @GraphQLField
-    @GraphQLName("isDocument")
     public boolean isDocument() {
         DictionaryService dd = context.getDictionaryService();
         return dd.isSubClass(getType(), ContentModel.TYPE_CONTENT);
     }
 
-    @GraphQLField
-    public Attribute attribute(@GraphQLName("name") String name) {
+    public Attribute attribute(String name) {
         return getAttribute(QName.resolveToQName(context.getNamespaceService(), name));
     }
 
@@ -142,10 +135,7 @@ public class GqlAlfNode {
         });
     }
 
-    @GraphQLField
-    public List<Attribute> attributes(@GraphQLName("types")
-                                      List<Attribute.Type> types,
-                                      @GraphQLName("names")
+    public List<Attribute> attributes(List<Attribute.Type> types,
                                       List<String> names) {
         if (names != null) {
             List<Attribute> result = new ArrayList<>();
@@ -218,6 +208,11 @@ public class GqlAlfNode {
                    .map(ChildAssociationRef::getChildRef)
                    .collect(Collectors.toCollection(ArrayList::new))
         );
+    }
+
+    private GqlAlfNode evalParent() {
+        ChildAssociationRef assoc = context.getNodeService().getPrimaryParent(nodeRef);
+        return new GqlAlfNode(assoc.getParentRef(), context);
     }
 
     private List<GqlQName> evalAspects() {

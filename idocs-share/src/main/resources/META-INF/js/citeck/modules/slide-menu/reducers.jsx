@@ -2,12 +2,13 @@ import { combineReducers } from 'redux';
 import {
     LEFT_MENU_SET_SMALL_LOGO,
     LEFT_MENU_SET_LARGE_LOGO,
-
     LEFT_MENU_SET_ITEMS,
     LEFT_MENU_SET_EXPANDABLE_ITEMS,
     LEFT_MENU_TOGGLE_EXPANDED,
     LEFT_MENU_TOGGLE_IS_OPEN,
-    LEFT_MENU_SET_SELECTED_ID
+    LEFT_MENU_SET_SELECTED_ID,
+    LEFT_MENU_SET_SCROLL_TOP,
+    LEFT_MENU_SET_IS_READY
 } from './actions';
 
 /* leftMenuReducer */
@@ -18,6 +19,8 @@ const leftMenuInitialState = {
     items: [],
     expandableItems: [],
     isOpen: false,
+    scrollTop: 0,
+    isReady: false
 };
 
 Object.freeze(leftMenuInitialState);
@@ -74,6 +77,18 @@ function leftMenuReducer(state = leftMenuInitialState, action) {
                         }
                     ];
                 })(),
+            };
+
+        case LEFT_MENU_SET_SCROLL_TOP:
+            return {
+                ...state,
+                scrollTop: action.payload
+            };
+
+        case LEFT_MENU_SET_IS_READY:
+            return {
+                ...state,
+                isReady: action.payload
             };
 
         default:

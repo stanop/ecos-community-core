@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.NullNode;
-import graphql.annotations.annotationTypes.GraphQLField;
-import graphql.annotations.annotationTypes.GraphQLName;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,21 +26,15 @@ public class JGqlPageInfoInput extends HashMap<String, Object> {
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
-    @GraphQLField
     private int skipCount;
-    @GraphQLField
     private int maxItems;
-    @GraphQLField
     private List<JGqlSortBy> sortBy;
-    @GraphQLField
     private String afterId;
 
-    public JGqlPageInfoInput(
-            @GraphQLName(PROP_AFTER_ID) String afterId,
-            @GraphQLName(PROP_MAX_ITEMS) Integer maxItems,
-            @GraphQLName(PROP_SORT_BY) List<JGqlSortBy> sortBy,
-            @GraphQLName(PROP_SKIP_COUNT) Integer skipCount
-    ) {
+    public JGqlPageInfoInput(String afterId,
+                             Integer maxItems,
+                             List<JGqlSortBy> sortBy,
+                             Integer skipCount) {
         super(4);
 
         setAfterId(afterId);

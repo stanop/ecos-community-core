@@ -1,22 +1,15 @@
 package ru.citeck.ecos.graphql.journal;
 
-import graphql.annotations.annotationTypes.GraphQLField;
-
 import java.util.List;
 
 public class JGqlPageInfo {
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
-    @GraphQLField
     private boolean hasNextPage;
-    @GraphQLField
     private int skipCount;
-    @GraphQLField
     private int maxItems = DEFAULT_PAGE_SIZE;
-    @GraphQLField
     private List<JGqlSortBy> sortBy;
-    @GraphQLField
     private String afterId;
 
     public boolean isHasNextPage() {

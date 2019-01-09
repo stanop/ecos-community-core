@@ -50,7 +50,7 @@ public class GqlContext {
         this.messageService = serviceRegistry.getMessageService();
 
         nodes = CacheBuilder.newBuilder()
-                            .maximumSize(1000)
+                            .maximumSize(500)
                             .build(CacheLoader.from(this::createNode));
         qnames = CacheBuilder.newBuilder()
                              .maximumSize(1000)
@@ -120,6 +120,7 @@ public class GqlContext {
 
     public void setMetaValues(List<MetaValue> metaValues) {
         this.metaValues = metaValues;
+        metaValues.forEach(v -> v.init(this));
     }
 
     public SearchService getSearchService() {

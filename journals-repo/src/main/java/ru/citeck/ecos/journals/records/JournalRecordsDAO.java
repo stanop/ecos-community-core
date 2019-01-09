@@ -8,10 +8,10 @@ import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.query.RecordsResult;
-import ru.citeck.ecos.records.query.SortBy;
-import ru.citeck.ecos.records.source.alfnode.CriteriaAlfNodesSearch;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.SortBy;
+import ru.citeck.ecos.records.source.alfnode.search.CriteriaAlfNodesSearch;
 
 import java.util.stream.Collectors;
 

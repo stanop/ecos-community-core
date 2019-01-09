@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -7,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionStatus;
+import ru.citeck.ecos.records.request.query.RecordsResult;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -19,6 +21,7 @@ public class RecordsUtils {
     public static <T> List<ActionResult<RecordRef>> processList(List<RecordRef> records,
                                                                 Function<RecordRef, T> toNode,
                                                                 Function<List<T>, Map<T, ActionStatus>> process) {
+
         List<ActionResult<RecordRef>> results = new ArrayList<>();
 
         Map<T, RecordRef> mapping = new HashMap<>();
@@ -37,11 +40,17 @@ public class RecordsUtils {
         }
 
         Map<T, ActionStatus> statuses = process.apply(nodes);
-        statuses.forEach((node, status) -> {
-            results.add(new ActionResult<>(mapping.get(node), status));
-        });
+        statuses.forEach((node, status) ->
+            results.add(new ActionResult<>(mapping.get(node), status))
+        );
 
         return results;
+    }
+
+    public static RecordRef getRecordId(ObjectNode recordMeta) {
+        JsonNode idNode = recordMeta.get("id");
+        String id = idNode != null && idNode.isTextual() ? idNode.asText() : null;
+        return id != null ? new RecordRef(id) : null;
     }
 
     public static NodeRef toNodeRef(RecordRef recordRef) {
@@ -73,6 +82,26 @@ public class RecordsUtils {
                           return new NodeRef(id);
                       })
                       .collect(Collectors.toList());
+    }
+
+    public static List<ObjectNode> toScopedRecordsMeta(String sourceId, List<ObjectNode> records) {
+        if (StringUtils.isBlank(sourceId)) {
+            return records;
+        }
+        return records.stream().map(n -> {
+            ObjectNode node;
+            if (n.has("id")) {
+                node = n.deepCopy();
+                node.set("id", TextNode.valueOf(new RecordRef(sourceId, n.get("id").asText()).toString()));
+            } else {
+                node = n;
+            }
+            return node;
+        }).collect(Collectors.toList());
+    }
+
+    public static RecordsResult<RecordRef> toScoped(String sourceId, RecordsResult<RecordRef> result) {
+        return new RecordsResult<>(result, r -> new RecordRef(sourceId, r));
     }
 
     public static List<RecordRef> toScopedRecords(String sourceId, List<RecordRef> records) {
@@ -114,19 +143,7 @@ public class RecordsUtils {
     }
 
     public static  List<ObjectNode> convertToRefs(String sourceId, List<ObjectNode> data) {
-        if (StringUtils.isBlank(sourceId)) {
-            return data;
-        }
-        return data.stream().map(n -> {
-            ObjectNode node;
-            if (n.has("id")) {
-                node = n.deepCopy();
-                node.set("id", TextNode.valueOf(new RecordRef(sourceId, n.get("id").asText()).toString()));
-            } else {
-                node = n;
-            }
-            return node;
-        }).collect(Collectors.toList());
+        return toScopedRecordsMeta(sourceId, data);
     }
 
     private static <I, O> Map<String, List<O>> groupBySource(Collection<I> records,

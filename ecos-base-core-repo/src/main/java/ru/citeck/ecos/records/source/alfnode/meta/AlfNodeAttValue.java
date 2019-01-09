@@ -3,12 +3,8 @@ package ru.citeck.ecos.records.source.alfnode.meta;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
-import ru.citeck.ecos.graphql.meta.attribute.MetaReflectionAtt;
+import ru.citeck.ecos.graphql.meta.MetaUtils;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
@@ -19,33 +15,46 @@ import java.util.stream.Collectors;
 
 public class AlfNodeAttValue implements MetaValue {
 
-    private static final Log logger = LogFactory.getLog(AlfNodeAttValue.class);
-
     private Object rawValue;
     private GqlAlfNode alfNode;
     private GqlQName qName;
 
     private GqlContext context;
 
-    public AlfNodeAttValue(Object value, GqlContext context) {
-        if (value instanceof NodeRef) {
-            alfNode = context.getNode(value).orElse(null);
-        } else if (value instanceof QName) {
-            qName = context.getQName(value).orElse(null);
-        } else if (value instanceof GqlQName) {
-            qName = (GqlQName) value;
-        }
+    public AlfNodeAttValue(Object value) {
         this.rawValue = value;
+    }
+
+    @Override
+    public MetaValue init(GqlContext context) {
+
         this.context = context;
+
+        if (rawValue instanceof GqlAlfNode) {
+            alfNode = (GqlAlfNode) rawValue;
+        } else if (rawValue instanceof NodeRef) {
+            alfNode = context.getNode(rawValue).orElse(null);
+        } else if (rawValue instanceof QName) {
+            qName = context.getQName(rawValue).orElse(null);
+        } else if (rawValue instanceof GqlQName) {
+            qName = (GqlQName) rawValue;
+        }
+
+        return this;
     }
 
     @Override
-    public String id() {
-        return alfNode != null ? alfNode.nodeRef() : null;
+    public String getId() {
+        if (alfNode != null) {
+            return alfNode.nodeRef();
+        } else if (qName != null) {
+            return qName.shortName();
+        }
+        return null;
     }
 
     @Override
-    public String str() {
+    public String getString() {
         if (alfNode != null) {
             return alfNode.displayName();
         } else if (qName != null) {
@@ -57,39 +66,17 @@ public class AlfNodeAttValue implements MetaValue {
     }
 
     @Override
-    public Optional<MetaAttribute> att(String name) {
+    public List<MetaValue> getAttribute(String name) {
         if (alfNode != null) {
             Attribute attribute = alfNode.attribute(name);
-            return Optional.of(new AlfNodeAtt(attribute, context));
+            return attribute.getValues()
+                            .stream()
+                            .map(v -> new AlfNodeAttValue(v).init(context))
+                            .collect(Collectors.toList());
         } else if (qName != null) {
-            return Optional.of(new MetaReflectionAtt(qName, name));
+            return MetaUtils.getReflectionValue(qName, name);
         }
-        return Optional.empty();
-    }
-
-    @Override
-    public List<MetaAttribute> atts(String filter) {
-        if (alfNode != null) {
-            List<Attribute> attributes;
-            if (StringUtils.isNotBlank(filter)) {
-                attributes = alfNode.attributes(null, null);
-            } else {
-                String[] filters = filter.split(",");
-                List<Attribute.Type> types = new ArrayList<>();
-                for (String f : filters) {
-                    try {
-                        types.add(Attribute.Type.valueOf(f.toUpperCase()));
-                    } catch (IllegalArgumentException e) {
-                        logger.error("Attribute type " + f + " is unknown");
-                    }
-                }
-                attributes = alfNode.attributes(types, null);
-            }
-            return attributes.stream()
-                             .map(a -> new AlfNodeAtt(a, context))
-                             .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        return null;
     }
 }
 

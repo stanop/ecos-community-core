@@ -283,6 +283,12 @@ ko.components.register("number", {
         this.isInteger = params.isInteger == true;
         this.value = params.value;
 
+        this.textInputValue = ko.observable(this.value());
+
+        this.textInputValue.subscribe(function(value){
+            self.value(value);
+        });
+
         this.validation = function(data, event) {
             var newValue = document.getElementById(self.id).value + event.key;
             var keyCode = event.keyCode;
@@ -292,10 +298,12 @@ ko.components.register("number", {
                 9, //tab
                 27, //escape
                 13, //enter
+                116, //f5
                 35,36,37,38,39 //end, home, left arrow, up arrow, right arrow
             ];
 
-            if (allowKeyCodes.includes(keyCode) || (keyCode === 65 && event.ctrlKey === true)) {
+            if (allowKeyCodes.includes(keyCode) ||
+                ((keyCode === 65 || keyCode === 67 || keyCode === 86 || keyCode === 88) && event.ctrlKey === true) ) {
                 return true;
             }
 
@@ -312,7 +320,7 @@ ko.components.register("number", {
         };
     },
     template:
-       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keydown: validation }" />'
+       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="textInput: textInputValue, disable: disable, attr: { id: id, step: step }, event: { keydown: validation }" />'
 });
 
 // ---------------

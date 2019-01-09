@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>Mutate records</shortname>
+    <description>Mutate records</description>
+    <url>/citeck/ecos/records/mutate</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readwrite">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

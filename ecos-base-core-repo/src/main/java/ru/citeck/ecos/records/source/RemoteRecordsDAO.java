@@ -8,9 +8,10 @@ import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.records.*;
-import ru.citeck.ecos.records.query.RecordsNodesResult;
-import ru.citeck.ecos.records.query.RecordsRefsResult;
-import ru.citeck.ecos.records.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsNodesResult;
+import ru.citeck.ecos.records.request.query.RecordsRefsResult;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.rest.RecordsQueryPost;
 import ru.citeck.ecos.remote.RestConnection;
 
 import java.util.*;
@@ -32,7 +33,7 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO implements RecordsMetaD
     @Override
     public RecordsRefsResult getRecords(RecordsQuery query) {
 
-        RecordsPost.Request request = new RecordsPost.Request();
+        RecordsQueryPost.Request request = new RecordsQueryPost.Request();
 
         if (enabled) {
 
@@ -61,7 +62,7 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO implements RecordsMetaD
                                              .map(RecordRef::new)
                                              .collect(Collectors.toList());
 
-        RecordsPost.Request request = new RecordsPost.Request();
+        RecordsQueryPost.Request request = new RecordsQueryPost.Request();
         request.schema = gqlSchema;
         request.records = recordsRefs;
 

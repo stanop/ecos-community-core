@@ -4,15 +4,18 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
+import ru.citeck.ecos.graphql.meta.MetaUtils;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.RecordsUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class AlfNodeRecord implements MetaValue {
 
@@ -21,34 +24,56 @@ public class AlfNodeRecord implements MetaValue {
     public static final String ATTR_ASPECTS = "attr:aspects";
     public static final String ATTR_IS_DOCUMENT = "attr:isDocument";
     public static final String ATTR_IS_CONTAINER = "attr:isContainer";
+    public static final String ATTR_PARENT = "attr:parent";
 
+    private RecordRef recordRef;
     private GqlAlfNode node;
     private GqlContext context;
 
-    public AlfNodeRecord(GqlAlfNode node, GqlContext context) {
+    public AlfNodeRecord(RecordRef recordRef) {
+        this.recordRef = recordRef;
+    }
+
+    @Override
+    public MetaValue init(GqlContext context) {
         this.context = context;
-        this.node = node;
+        return this;
     }
 
     @Override
-    public String id() {
-        return node.nodeRef();
+    public String getId() {
+        return recordRef.toString();
     }
 
     @Override
-    public String str() {
-        return node.displayName();
+    public String getString() {
+        return getNode().displayName();
+    }
+
+    private GqlAlfNode getNode() {
+        if (node == null) {
+            node = context.getNode(RecordsUtils.toNodeRef(recordRef)).orElse(null);
+        }
+        return node;
     }
 
     @Override
-    public Optional<MetaAttribute> att(String name) {
-        AlfNodeAtt attribute = null;
+    public List<MetaValue> getAttribute(String name) {
+
+        GqlAlfNode node = getNode();
+
+        List<MetaValue> attribute = null;
         if (ATTR_ASPECTS.equals(name)) {
-            attribute = new AlfNodeAtt(name, node.aspects(), context);
+            attribute = node.aspects()
+                            .stream()
+                            .map(a -> new AlfNodeAttValue(a).init(context))
+                            .collect(Collectors.toList());
         } else if (ATTR_IS_CONTAINER.equals(name)) {
-            attribute = new AlfNodeAtt(name, Collections.singletonList(node.isContainer()), context);
+            attribute = MetaUtils.toMetaValues(node.isContainer(), context);
         } else if (ATTR_IS_DOCUMENT.equals(name)) {
-            attribute = new AlfNodeAtt(name, Collections.singletonList(node.isDocument()), context);
+            attribute = MetaUtils.toMetaValues(node.isDocument(), context);
+        } if (ATTR_PARENT.equals(name)) {
+            attribute = Collections.singletonList(new AlfNodeAttValue(node.getParent()).init(context));
         } else {
             Attribute nodeAtt = node.attribute(name);
             if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
@@ -57,20 +82,18 @@ public class AlfNodeRecord implements MetaValue {
                     VirtualScriptAttributes attributes = context.getService(VIRTUAL_SCRIPT_ATTS_ID);
                     if (attributes != null && attributes.provides(attQname.get())) {
                         Object value = attributes.getAttribute(new NodeRef(node.nodeRef()), attQname.get());
-                        attribute = new AlfNodeAtt(name, Collections.singletonList(value), context);
+                        attribute = MetaUtils.toMetaValues(value, context);
                     }
                 }
             }
             if (attribute == null) {
-                attribute = new AlfNodeAtt(nodeAtt, context);
+                attribute = nodeAtt.getValues()
+                                   .stream()
+                                   .map(v -> new AlfNodeAttValue(v).init(context))
+                                   .collect(Collectors.toList());
             }
         }
-        return Optional.of(attribute);
-    }
-
-    @Override
-    public List<MetaAttribute> atts(String filter) {
-        return Collections.emptyList();
+        return attribute;
     }
 }
 

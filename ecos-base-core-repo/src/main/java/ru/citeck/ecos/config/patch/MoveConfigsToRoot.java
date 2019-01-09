@@ -24,7 +24,7 @@ import ru.citeck.ecos.model.ConfigModel;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
 import ru.citeck.ecos.records.RecordsUtils;
-import ru.citeck.ecos.records.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
 
 import java.io.Serializable;
 import java.util.*;

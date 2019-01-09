@@ -1,6 +1,5 @@
 package ru.citeck.ecos.graphql.node;
 
-import graphql.annotations.annotationTypes.GraphQLField;
 import lombok.Getter;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.namespace.NamespaceService;
@@ -36,32 +35,26 @@ public class GqlQName {
         return qname;
     }
 
-    @GraphQLField
     public String prefix() {
         return getPrefix();
     }
 
-    @GraphQLField
     public String classTitle() {
         return getClassDefinition().getTitle(context.getMessageService());
     }
 
-    @GraphQLField
     public String namespace() {
         return qname.getNamespaceURI();
     }
 
-    @GraphQLField
     public String localName() {
         return qname.getLocalName();
     }
 
-    @GraphQLField
     public String fullName() {
         return String.format("{%s}%s", qname.getNamespaceURI(), qname.getLocalName());
     }
 
-    @GraphQLField
     public String shortName() {
         return String.format("%s:%s", getPrefix(), qname.getLocalName());
     }

@@ -55,6 +55,7 @@ import ru.citeck.ecos.spring.registry.MappingRegistry;
 import ru.citeck.ecos.utils.NodeUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.TransactionUtils;
+import ru.citeck.ecos.utils.WorkflowUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -81,6 +82,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     private NodeService mlAwareNodeService;
     private NamespaceService namespaceService;
     private MappingRegistry<String, String> documentToCounterparty;
+    private WorkflowUtils workflowUtils;
 
     private NodeUtils nodeUtils;
 
@@ -202,6 +204,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             nodeInfo.setProperty(ContentModel.PROP_NAME, task.getId());
 
             // add convenient attributes, specific to task-mirrors only
+            nodeInfo.setProperty(ContentModel.PROP_TITLE, workflowUtils.getTaskMLTitle(task));
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_TASK_TYPE, nodeInfo.getType());
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_ID, task.getPath().getInstance().getId());
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_ACTORS, getActors(task));
@@ -458,6 +461,11 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     @Autowired
     public void setNodeUtils(NodeUtils nodeUtils) {
         this.nodeUtils = nodeUtils;
+    }
+
+    @Autowired
+    public void setWorkflowUtils(WorkflowUtils workflowUtils) {
+        this.workflowUtils = workflowUtils;
     }
 
     public void setMessageLookup(MessageLookup messageLookup) {

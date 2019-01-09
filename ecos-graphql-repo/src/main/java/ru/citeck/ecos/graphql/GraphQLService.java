@@ -8,6 +8,8 @@ import java.util.Map;
 
 public interface GraphQLService {
 
+    String QUERY_TYPE = "Query";
+
     default ExecutionResult execute(String query) {
         return execute(query, Collections.emptyMap());
     }

@@ -8,8 +8,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.source.alfnode.CriteriaAlfNodesSearch;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.source.alfnode.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.search.*;
 
 import java.util.*;
@@ -86,9 +86,9 @@ public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO {
 
                     metaQuery.append("\n")
                              .append(fieldKey)
-                             .append(":att(name:\"")
+                             .append(":edge(n:\"")
                              .append(t.getField())
-                             .append("\"){val{")
+                             .append("\"){val:vals{")
                              .append(filter.metaSchema)
                              .append("}}");
                 }
