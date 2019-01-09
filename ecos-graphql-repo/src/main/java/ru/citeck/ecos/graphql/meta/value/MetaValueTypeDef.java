@@ -89,12 +89,12 @@ public class MetaValueTypeDef implements GqlTypeDefinition {
     private MetaValue getAs(DataFetchingEnvironment env) {
         MetaValue value = env.getSource();
         String type = getParameter(env, "t");
-        return value.getAs(type, env.getContext());
+        return value.getAs(type);
     }
 
     private String getId(DataFetchingEnvironment env) {
         MetaValue value = env.getSource();
-        return value.getId(env.getContext());
+        return value.getId();
     }
 
     private MetaValue getAtt(DataFetchingEnvironment env) {
@@ -104,7 +104,7 @@ public class MetaValueTypeDef implements GqlTypeDefinition {
     private List<MetaValue> getAtts(DataFetchingEnvironment env) {
         MetaValue value = env.getSource();
         String name = getParameter(env, "n");
-        List<MetaValue> result = value.getAttribute(name, env.getContext());
+        List<MetaValue> result = value.getAttribute(name);
         if (result == null) {
             result = Collections.emptyList();
         }
@@ -113,12 +113,12 @@ public class MetaValueTypeDef implements GqlTypeDefinition {
 
     private String getStr(DataFetchingEnvironment env) {
         MetaValue value = env.getSource();
-        return value.getString(env.getContext());
+        return value.getString();
     }
 
     private Double getNum(DataFetchingEnvironment env) {
         MetaValue value = env.getSource();
-        return value.getDouble(env.getContext());
+        return value.getDouble();
     }
 
     private MetaEdge getEdge(DataFetchingEnvironment env) {

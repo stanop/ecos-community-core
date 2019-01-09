@@ -9,25 +9,31 @@ public class MetaMapValue implements MetaValue {
 
     private String id;
     private Map<String, Object> attributes = Collections.emptyMap();
+    private GqlContext context;
 
     public MetaMapValue(String id) {
         this.id = id;
     }
 
     @Override
-    public String getId(GqlContext context) {
+    public void init(GqlContext context) {
+        this.context = context;
+    }
+
+    @Override
+    public String getId() {
         return id;
     }
 
     @Override
-    public String getString(GqlContext context) {
+    public String getString() {
         return id;
     }
 
     @Override
-    public List<MetaValue> getAttribute(String name, GqlContext context) {
+    public List<MetaValue> getAttribute(String name) {
         Object value = attributes.get(name);
-        return MetaUtils.toMetaValues(value);
+        return MetaUtils.toMetaValues(value, context);
     }
 
     public void setAttributes(Map<String, Object> attributes) {

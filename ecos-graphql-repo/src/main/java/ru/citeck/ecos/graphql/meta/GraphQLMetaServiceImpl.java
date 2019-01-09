@@ -41,7 +41,7 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
         context.setMetaValues(values);
 
         ExecutionResult result = graphQLService.execute(query, null, context);
-        return convertMeta(result, values, context);
+        return convertMeta(result, values);
     }
 
     @Override
@@ -65,8 +65,7 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
     }
 
     private List<ObjectNode> convertMeta(ExecutionResult executionResult,
-                                         List<MetaValue> metaValues,
-                                         GqlContext context) {
+                                         List<MetaValue> metaValues) {
 
         List<ObjectNode> result = new ArrayList<>();
 
@@ -75,7 +74,7 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
             for (MetaValue value : metaValues) {
                 ObjectNode node = JsonNodeFactory.instance.objectNode();
 
-                node.set("id", TextNode.valueOf(getValueId(value, context)));
+                node.set("id", TextNode.valueOf(getValueId(value)));
                 result.add(node);
             }
         } else {
@@ -90,10 +89,10 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
         return result;
     }
 
-    private String getValueId(MetaValue value, GqlContext context) {
-        String valueId = value.getId(context);
+    private String getValueId(MetaValue value) {
+        String valueId = value.getId();
         if (StringUtils.isBlank(valueId)) {
-            valueId = value.getString(context);
+            valueId = value.getString();
             if (StringUtils.isBlank(valueId)) {
                 valueId = GUID.generate();
             }

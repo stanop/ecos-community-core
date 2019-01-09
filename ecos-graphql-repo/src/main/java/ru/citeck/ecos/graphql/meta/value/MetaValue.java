@@ -8,29 +8,34 @@ import java.util.List;
 public interface MetaValue {
 
     /**
+     * Initialize value with context before execute other methods
+     */
+    default void init(GqlContext context) {}
+
+    /**
      * String representation
      */
-    String getString(GqlContext context);
+    String getString();
 
     /**
      * Value identifier
      */
-    default String getId(GqlContext context) {
+    default String getId() {
         return null;
     }
 
     /**
      * Get value attribute
      */
-    default List<MetaValue> getAttribute(String attributeName, GqlContext context) {
+    default List<MetaValue> getAttribute(String attributeName) {
         return Collections.emptyList();
     }
 
-    default Double getDouble(GqlContext context) {
-        return Double.parseDouble(getString(context));
+    default Double getDouble() {
+        return Double.parseDouble(getString());
     }
 
-    default MetaValue getAs(String type, GqlContext context) {
+    default MetaValue getAs(String type) {
         return null;
     }
 }

@@ -1,7 +1,5 @@
 package ru.citeck.ecos.graphql.meta.value;
 
-import ru.citeck.ecos.graphql.GqlContext;
-
 import java.util.List;
 
 public class MetaEdge {
@@ -18,7 +16,7 @@ public class MetaEdge {
         return name;
     }
 
-    public List<MetaValue> getValue(GqlContext context) {
-        return scope.getAttribute(name, context);
+    public List<MetaValue> getValue() {
+        return scope.getAttribute(name);
     }
 }

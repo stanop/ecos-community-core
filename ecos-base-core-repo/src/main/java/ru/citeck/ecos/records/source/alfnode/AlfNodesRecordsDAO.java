@@ -244,12 +244,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
-    public List<MetaValueTypeDef> getTypesDefinition(Collection<String> names) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public List<MetaAttributeDef> getAttsDefinition(Collection<String> names) {
+    public List<MetaAttributeDef> getAttributesDef(Collection<String> names) {
         return names.stream()
                     .map(n -> new AlfAttributeDefinition(n, namespaceService, dictionaryService, messageService))
                     .collect(Collectors.toList());

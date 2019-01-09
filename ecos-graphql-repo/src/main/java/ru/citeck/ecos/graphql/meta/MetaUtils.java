@@ -2,6 +2,7 @@ package ru.citeck.ecos.graphql.meta;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaExplicitValue;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 
@@ -16,7 +17,7 @@ public class MetaUtils {
 
     private static final Log logger = LogFactory.getLog(MetaUtils.class);
 
-    public static List<MetaValue> toMetaValues(Object value) {
+    public static List<MetaValue> toMetaValues(Object value, GqlContext context) {
 
         List<MetaValue> values;
 
@@ -27,6 +28,8 @@ public class MetaUtils {
         } else {
             values = Collections.singletonList(new MetaExplicitValue(value));
         }
+
+        values.forEach(v -> v.init(context));
 
         return values;
     }

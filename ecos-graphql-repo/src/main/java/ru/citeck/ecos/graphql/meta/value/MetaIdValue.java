@@ -1,7 +1,6 @@
 package ru.citeck.ecos.graphql.meta.value;
 
 import org.alfresco.util.ParameterCheck;
-import ru.citeck.ecos.graphql.GqlContext;
 
 public class MetaIdValue implements MetaValue {
 
@@ -13,12 +12,12 @@ public class MetaIdValue implements MetaValue {
     }
 
     @Override
-    public String getString(GqlContext context) {
+    public String getString() {
         return id;
     }
 
     @Override
-    public String getId(GqlContext context) {
+    public String getId() {
         return id;
     }
 }

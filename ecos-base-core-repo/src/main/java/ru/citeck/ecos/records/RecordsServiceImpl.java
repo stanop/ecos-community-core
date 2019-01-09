@@ -162,18 +162,15 @@ public class RecordsServiceImpl implements RecordsService {
         int idx = 0;
         return records.stream().map(recordRef -> {
 
-            ObjectNode record = accessor.getValue(meta.get(idx));
+            ObjectNode record = meta.get(idx);
 
-            RespRecord respRecord = new RespRecord();
-            Map<String, JsonNode> atts = respRecord.getAttributes();
+            RespRecord result = new RespRecord();
+            result.setId(new RecordRef(record.get(RECORD_ID_FIELD).asText()));
 
-            Iterator<String> names = record.fieldNames();
-            while (names.hasNext()) {
-                String name = names.next();
+            Map<String, JsonNode> flatAttributes = result.getAttributes();
+            attributesMapping.forEach((k, v) -> flatAttributes.put(v, record.get(k)));
 
-                atts.put(name, record.path(name));
-            }
-            return respRecord;
+            return result;
         }).collect(Collectors.toList());
     }
 
@@ -205,7 +202,7 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema, boolean flat) {
-        List<ObjectNode> meta = getRecordsMeta(records, metaSchema, false);
+        List<ObjectNode> meta = getRecordsMeta(records, metaSchema);
         if (flat) {
             return meta.stream().map(this::toFlatObject).collect(Collectors.toList());
         } else {
@@ -213,17 +210,11 @@ public class RecordsServiceImpl implements RecordsService {
         }
     }
 
-    private List<ObjectNode> getRecordsMeta(Collection<RecordRef> records, String metaSchema, boolean addRecordId) {
+    private List<ObjectNode> getRecordsMeta(Collection<RecordRef> records, String metaSchema) {
         return getRecordsMeta(records, (source, recs) -> {
             if (source instanceof RecordsMetaDAO) {
                 RecordsMetaDAO metaDAO = (RecordsMetaDAO) source;
-                List<ObjectNode> meta = metaDAO.getMeta(recs, metaSchema);
-                if (addRecordId) {
-                    for (int i = 0; i < meta.size(); i++) {
-                        meta.get(i).put("id", recs.get(i).toString());
-                    }
-                }
-                return meta;
+                return metaDAO.getMeta(recs, metaSchema);
             } else {
                 return recs.stream().map(r -> {
                     ObjectNode recordNode = JsonNodeFactory.instance.objectNode();
@@ -353,13 +344,12 @@ public class RecordsServiceImpl implements RecordsService {
             final JsonNode finalNode = node;
 
             node.fieldNames().forEachRemaining(name ->
-                    objNode.put(name, toFlatNode(finalNode.get(name), false))
+                objNode.put(name, toFlatNode(finalNode.get(name), false))
             );
 
             node = objNode;
 
         } else if (node.isObject() && node.size() == 1) {
-
 
             String fieldName = node.fieldNames().next();
             JsonNode value = node.get(fieldName);
@@ -417,26 +407,11 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public Optional<MetaValueTypeDef> getTypeDefinition(String sourceId, String name) {
-        return getTypesDefinition(sourceId, Collections.singletonList(name)).stream().findFirst();
-    }
-
-    @Override
-    public List<MetaValueTypeDef> getTypesDefinition(String sourceId, Collection<String> names) {
-        RecordsDAO recordsDAO = needRecordsSource(sourceId);
-        if (recordsDAO instanceof RecordsDefinitionDAO) {
-            RecordsDefinitionDAO definitionDAO = (RecordsDefinitionDAO) recordsDAO;
-            return definitionDAO.getTypesDefinition(names);
-        }
-        return Collections.emptyList();
-    }
-
-    @Override
     public List<MetaAttributeDef> getAttributesDef(String sourceId, Collection<String> names) {
         RecordsDAO recordsDAO = needRecordsSource(sourceId);
         if (recordsDAO instanceof RecordsDefinitionDAO) {
             RecordsDefinitionDAO definitionDAO = (RecordsDefinitionDAO) recordsDAO;
-            return definitionDAO.getAttsDefinition(names);
+            return definitionDAO.getAttributesDef(names);
         }
         return Collections.emptyList();
     }

@@ -71,12 +71,18 @@ public class EcosBpmCatRecords extends AbstractRecordsDAO implements RecordsMeta
 
         private RecordRef id;
         private AlfNodeAttValue node;
+        private GqlContext context;
 
         public Category(RecordRef id) {
             this.id = id;
         }
 
-        private AlfNodeAttValue getValue(GqlContext context) {
+        @Override
+        public void init(GqlContext context) {
+            this.context = context;
+        }
+
+        private AlfNodeAttValue getValue() {
             if (node == null) {
                 node = new AlfNodeAttValue(new NodeRef(id.getId()), context);
             }
@@ -84,20 +90,20 @@ public class EcosBpmCatRecords extends AbstractRecordsDAO implements RecordsMeta
         }
 
         @Override
-        public String getId(GqlContext context) {
+        public String getId() {
             return id.getId();
         }
 
         @Override
-        public List<MetaValue> getAttribute(String name, GqlContext context) {
+        public List<MetaValue> getAttribute(String name) {
             if (FIELDS_MAPPING.containsKey(name)) {
-                return getValue(context).getAttribute(FIELDS_MAPPING.get(name), context);
+                /*return getValue().getAttribute(FIELDS_MAPPING.get(name), context);*/
             }
             return Collections.emptyList();
         }
 
         @Override
-        public String getString(GqlContext context) {
+        public String getString() {
             return id.toString();
         }
     }

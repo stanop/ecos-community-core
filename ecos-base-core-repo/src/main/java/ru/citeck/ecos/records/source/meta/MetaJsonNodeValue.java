@@ -19,6 +19,7 @@ public class MetaJsonNodeValue implements MetaValue {
 
     private String id;
     private JsonNode data;
+    private GqlContext context;
 
     public MetaJsonNodeValue(String id, JsonNode data) {
         this.id = id;
@@ -26,12 +27,17 @@ public class MetaJsonNodeValue implements MetaValue {
     }
 
     @Override
-    public String getId(GqlContext context) {
+    public void init(GqlContext context) {
+        this.context = context;
+    }
+
+    @Override
+    public String getId() {
         return id;
     }
 
     @Override
-    public String getString(GqlContext context) {
+    public String getString() {
         if (data == null || data instanceof NullNode) {
             return null;
         }
@@ -39,7 +45,7 @@ public class MetaJsonNodeValue implements MetaValue {
     }
 
     @Override
-    public List<MetaValue> getAttribute(String name, GqlContext context) {
+    public List<MetaValue> getAttribute(String name) {
 
         JsonNode attNode = data.get(name);
 
@@ -47,17 +53,17 @@ public class MetaJsonNodeValue implements MetaValue {
             return Collections.emptyList();
         }
 
-        return getValue(attNode, context);
+        return getValue(attNode);
     }
 
-    private List<MetaValue> getValue(JsonNode attNode, GqlContext context) {
+    private List<MetaValue> getValue(JsonNode attNode) {
 
         List<MetaValue> attValue = new ArrayList<>();
 
         if (attNode instanceof ArrayNode) {
             ArrayNode array = (ArrayNode) attNode;
             for (int i = 0; i < array.size(); i++) {
-                attValue.addAll(getValue(array.get(i), context));
+                attValue.addAll(getValue(array.get(i)));
             }
         } else {
             if (attNode instanceof ObjectNode) {

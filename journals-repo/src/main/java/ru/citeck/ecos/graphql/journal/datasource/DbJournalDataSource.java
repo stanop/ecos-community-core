@@ -77,17 +77,17 @@ public class DbJournalDataSource implements JournalDataSource {
         }
 
         @Override
-        public String getId(GqlContext context) {
+        public String getId() {
             return String.valueOf(id);
         }
 
         @Override
-        public String getString(GqlContext context) {
-            return getId(context);
+        public String getString() {
+            return getId();
         }
 
         @Override
-        public List<MetaValue> getAttribute(String name, GqlContext context) {
+        public List<MetaValue> getAttribute(String name) {
             return Collections.singletonList(new MetaExplicitValue(attributes.get(name)));
         }
     }

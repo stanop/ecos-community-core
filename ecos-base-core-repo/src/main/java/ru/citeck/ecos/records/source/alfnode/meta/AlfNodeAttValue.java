@@ -19,6 +19,8 @@ public class AlfNodeAttValue implements MetaValue {
     private GqlAlfNode alfNode;
     private GqlQName qName;
 
+    private GqlContext context;
+
     public AlfNodeAttValue(Object value, GqlContext context) {
         if (value instanceof GqlAlfNode) {
             alfNode = (GqlAlfNode) value;
@@ -30,10 +32,11 @@ public class AlfNodeAttValue implements MetaValue {
             qName = (GqlQName) value;
         }
         this.rawValue = value;
+        this.context = context;
     }
 
     @Override
-    public String getId(GqlContext context) {
+    public String getId() {
         if (alfNode != null) {
             return alfNode.nodeRef();
         } else if (qName != null) {
@@ -43,7 +46,7 @@ public class AlfNodeAttValue implements MetaValue {
     }
 
     @Override
-    public String getString(GqlContext context) {
+    public String getString() {
         if (alfNode != null) {
             return alfNode.displayName();
         } else if (qName != null) {
@@ -55,7 +58,7 @@ public class AlfNodeAttValue implements MetaValue {
     }
 
     @Override
-    public List<MetaValue> getAttribute(String name, GqlContext context) {
+    public List<MetaValue> getAttribute(String name) {
         if (alfNode != null) {
             Attribute attribute = alfNode.attribute(name);
             return attribute.getValues()

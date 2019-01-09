@@ -28,22 +28,28 @@ public class AlfNodeRecord implements MetaValue {
 
     private RecordRef recordRef;
     private GqlAlfNode node;
+    private GqlContext context;
 
     public AlfNodeRecord(RecordRef recordRef) {
         this.recordRef = recordRef;
     }
 
     @Override
-    public String getId(GqlContext context) {
+    public void init(GqlContext context) {
+        this.context = context;
+    }
+
+    @Override
+    public String getId() {
         return recordRef.toString();
     }
 
     @Override
-    public String getString(GqlContext context) {
-        return getNode(context).displayName();
+    public String getString() {
+        return getNode().displayName();
     }
 
-    private GqlAlfNode getNode(GqlContext context) {
+    private GqlAlfNode getNode() {
         if (node == null) {
             node = context.getNode(RecordsUtils.toNodeRef(recordRef)).orElse(null);
         }
@@ -51,9 +57,9 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public List<MetaValue> getAttribute(String name, GqlContext context) {
+    public List<MetaValue> getAttribute(String name) {
 
-        GqlAlfNode node = getNode(context);
+        GqlAlfNode node = getNode();
 
         List<MetaValue> attribute = null;
         if (ATTR_ASPECTS.equals(name)) {
@@ -62,9 +68,9 @@ public class AlfNodeRecord implements MetaValue {
                             .map(a -> new AlfNodeAttValue(a, context))
                             .collect(Collectors.toList());
         } else if (ATTR_IS_CONTAINER.equals(name)) {
-            attribute = MetaUtils.toMetaValues(node.isContainer());
+            attribute = MetaUtils.toMetaValues(node.isContainer(), context);
         } else if (ATTR_IS_DOCUMENT.equals(name)) {
-            attribute = MetaUtils.toMetaValues(node.isDocument());
+            attribute = MetaUtils.toMetaValues(node.isDocument(), context);
         } if (ATTR_PARENT.equals(name)) {
             attribute = Collections.singletonList(new AlfNodeAttValue(node.getParent(), context));
         } else {
@@ -75,7 +81,7 @@ public class AlfNodeRecord implements MetaValue {
                     VirtualScriptAttributes attributes = context.getService(VIRTUAL_SCRIPT_ATTS_ID);
                     if (attributes != null && attributes.provides(attQname.get())) {
                         Object value = attributes.getAttribute(new NodeRef(node.nodeRef()), attQname.get());
-                        attribute = MetaUtils.toMetaValues(value);
+                        attribute = MetaUtils.toMetaValues(value, context);
                     }
                 }
             }

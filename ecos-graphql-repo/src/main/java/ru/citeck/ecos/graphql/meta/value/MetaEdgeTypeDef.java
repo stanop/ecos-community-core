@@ -48,6 +48,6 @@ public class MetaEdgeTypeDef implements GqlTypeDefinition {
 
     private List<MetaValue> getValues(DataFetchingEnvironment env) {
         MetaEdge edge = env.getSource();
-        return edge.getValue(env.getContext());
+        return edge.getValue();
     }
 }
