@@ -27,8 +27,9 @@ public class MetaJsonNodeValue implements MetaValue {
     }
 
     @Override
-    public void init(GqlContext context) {
+    public MetaValue init(GqlContext context) {
         this.context = context;
+        return this;
     }
 
     @Override
@@ -70,12 +71,12 @@ public class MetaJsonNodeValue implements MetaValue {
                 JsonNode nodeRefNode = attNode.get("nodeRef");
                 if (nodeRefNode instanceof TextNode) {
                     NodeRef nodeRef = new NodeRef(nodeRefNode.asText());
-                    attValue.add(new AlfNodeAttValue(nodeRef, context));
+                    attValue.add(new AlfNodeAttValue(nodeRef).init(context));
                 } else {
                     JsonNode qnameNode = attNode.get("fullQName");
                     if (qnameNode instanceof TextNode) {
                         QName qName = QName.createQName(qnameNode.asText());
-                        attValue.add(new AlfNodeAttValue(qName, context));
+                        attValue.add(new AlfNodeAttValue(qName).init(context));
                     }
                 }
             }

@@ -318,10 +318,10 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsW
         return recordAttributes;
     }
 
-    private AlfNodeAttValue getAssocAttribute(GqlAlfNode node, String key, GqlContext context) {
+    private MetaValue getAssocAttribute(GqlAlfNode node, String key, GqlContext context) {
         return new AlfNodeAttValue(node.attribute(key)
                                        .node()
                                        .map(n -> new NodeRef(n.nodeRef()))
-                                       .orElse(null), context);
+                                       .orElse(null)).init(context);
     }
 }

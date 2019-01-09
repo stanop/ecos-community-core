@@ -35,8 +35,9 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public void init(GqlContext context) {
+    public MetaValue init(GqlContext context) {
         this.context = context;
+        return this;
     }
 
     @Override
@@ -65,14 +66,14 @@ public class AlfNodeRecord implements MetaValue {
         if (ATTR_ASPECTS.equals(name)) {
             attribute = node.aspects()
                             .stream()
-                            .map(a -> new AlfNodeAttValue(a, context))
+                            .map(a -> new AlfNodeAttValue(a).init(context))
                             .collect(Collectors.toList());
         } else if (ATTR_IS_CONTAINER.equals(name)) {
             attribute = MetaUtils.toMetaValues(node.isContainer(), context);
         } else if (ATTR_IS_DOCUMENT.equals(name)) {
             attribute = MetaUtils.toMetaValues(node.isDocument(), context);
         } if (ATTR_PARENT.equals(name)) {
-            attribute = Collections.singletonList(new AlfNodeAttValue(node.getParent(), context));
+            attribute = Collections.singletonList(new AlfNodeAttValue(node.getParent()).init(context));
         } else {
             Attribute nodeAtt = node.attribute(name);
             if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
@@ -88,7 +89,7 @@ public class AlfNodeRecord implements MetaValue {
             if (attribute == null) {
                 attribute = nodeAtt.getValues()
                                    .stream()
-                                   .map(v -> new AlfNodeAttValue(v, context))
+                                   .map(v -> new AlfNodeAttValue(v).init(context))
                                    .collect(Collectors.toList());
             }
         }

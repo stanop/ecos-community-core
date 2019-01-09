@@ -78,13 +78,14 @@ public class EcosBpmCatRecords extends AbstractRecordsDAO implements RecordsMeta
         }
 
         @Override
-        public void init(GqlContext context) {
+        public MetaValue init(GqlContext context) {
             this.context = context;
+            return this;
         }
 
         private AlfNodeAttValue getValue() {
             if (node == null) {
-                node = new AlfNodeAttValue(new NodeRef(id.getId()), context);
+                node = new AlfNodeAttValue(new NodeRef(id.getId()));
             }
             return node;
         }

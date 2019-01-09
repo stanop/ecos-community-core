@@ -10,7 +10,9 @@ public interface MetaValue {
     /**
      * Initialize value with context before execute other methods
      */
-    default void init(GqlContext context) {}
+    default MetaValue init(GqlContext context) {
+        return this;
+    }
 
     /**
      * String representation

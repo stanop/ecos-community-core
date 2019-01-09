@@ -16,8 +16,9 @@ public class MetaMapValue implements MetaValue {
     }
 
     @Override
-    public void init(GqlContext context) {
+    public MetaValue init(GqlContext context) {
         this.context = context;
+        return this;
     }
 
     @Override

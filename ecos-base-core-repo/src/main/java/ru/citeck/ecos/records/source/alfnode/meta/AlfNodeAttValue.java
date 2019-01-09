@@ -21,18 +21,26 @@ public class AlfNodeAttValue implements MetaValue {
 
     private GqlContext context;
 
-    public AlfNodeAttValue(Object value, GqlContext context) {
-        if (value instanceof GqlAlfNode) {
-            alfNode = (GqlAlfNode) value;
-        } else if (value instanceof NodeRef) {
-            alfNode = context.getNode(value).orElse(null);
-        } else if (value instanceof QName) {
-            qName = context.getQName(value).orElse(null);
-        } else if (value instanceof GqlQName) {
-            qName = (GqlQName) value;
-        }
+    public AlfNodeAttValue(Object value) {
         this.rawValue = value;
+    }
+
+    @Override
+    public MetaValue init(GqlContext context) {
+
         this.context = context;
+
+        if (rawValue instanceof GqlAlfNode) {
+            alfNode = (GqlAlfNode) rawValue;
+        } else if (rawValue instanceof NodeRef) {
+            alfNode = context.getNode(rawValue).orElse(null);
+        } else if (rawValue instanceof QName) {
+            qName = context.getQName(rawValue).orElse(null);
+        } else if (rawValue instanceof GqlQName) {
+            qName = (GqlQName) rawValue;
+        }
+
+        return this;
     }
 
     @Override
@@ -63,7 +71,7 @@ public class AlfNodeAttValue implements MetaValue {
             Attribute attribute = alfNode.attribute(name);
             return attribute.getValues()
                             .stream()
-                            .map(v -> new AlfNodeAttValue(v, context))
+                            .map(v -> new AlfNodeAttValue(v).init(context))
                             .collect(Collectors.toList());
         } else if (qName != null) {
             return MetaUtils.getReflectionValue(qName, name);
