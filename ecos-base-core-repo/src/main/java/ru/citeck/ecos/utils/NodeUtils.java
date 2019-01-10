@@ -1,10 +1,12 @@
 package ru.citeck.ecos.utils;
 
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport.TxnReadState;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.cmr.dictionary.ChildAssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -12,11 +14,15 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.alfresco.util.GUID;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,6 +57,53 @@ public class NodeUtils {
         @SuppressWarnings("unchecked")
         T result = (T) nodeService.getProperty(nodeRef, propName);
         return result;
+    }
+
+    public String getValidChildName(NodeRef parentRef, String name) {
+        return getValidChildName(parentRef, ContentModel.ASSOC_CONTAINS, name);
+    }
+
+    public String getValidChildName(NodeRef parentRef, QName childAssoc, String name) {
+
+        AssociationDefinition assoc = dictionaryService.getAssociation(childAssoc);
+
+        if (!(assoc instanceof ChildAssociationDefinition) ||
+                ((ChildAssociationDefinition) assoc).getDuplicateChildNamesAllowed()) {
+            return name;
+        }
+
+        NodeRef child = nodeService.getChildByName(parentRef, childAssoc, name);
+        if (child == null) {
+            return name;
+        }
+
+        String extension = "." + FilenameUtils.getExtension(name);
+        String nameWithoutExt = FilenameUtils.removeExtension(name);
+
+        int index = 0;
+        String newNameWithIndex;
+
+        do {
+            newNameWithIndex = nameWithoutExt + " (" + (++index) + ")" + extension;
+            child = nodeService.getChildByName(parentRef, childAssoc, newNameWithIndex);
+        } while (child != null);
+
+        return newNameWithIndex;
+    }
+
+    public NodeRef createNode(NodeRef parentRef, QName type, QName childAssoc, Map<QName, Serializable> props) {
+
+        String name = (String) props.get(ContentModel.PROP_NAME);
+        if (name == null) {
+            name = GUID.generate();
+        }
+
+        name = getValidChildName(parentRef, childAssoc, name);
+        props.put(ContentModel.PROP_NAME, name);
+
+        QName assocName = QName.createQNameWithValidLocalName(childAssoc.getNamespaceURI(), name);
+
+        return nodeService.createNode(parentRef, childAssoc, assocName, type, props).getChildRef();
     }
 
     /**

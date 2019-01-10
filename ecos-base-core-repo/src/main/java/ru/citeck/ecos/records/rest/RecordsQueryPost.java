@@ -8,13 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.request.RespRecord;
+import ru.citeck.ecos.records.request.RecordAttributes;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsResult;
 
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * @author Pavel Simonov
+ */
 public class RecordsQueryPost extends AbstractWebScript {
 
     private static final Log logger = LogFactory.getLog(RecordsQueryPost.class);
@@ -75,7 +78,7 @@ public class RecordsQueryPost extends AbstractWebScript {
 
             } else {
 
-                RecordsResult<RespRecord> metaResult = new RecordsResult<>();
+                RecordsResult<RecordAttributes> metaResult = new RecordsResult<>();
                 metaResult.setRecords(recordsService.getMeta(request.records, getAttributes(request)));
                 recordsResult = metaResult;
             }

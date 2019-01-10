@@ -9,6 +9,9 @@ import ru.citeck.ecos.graphql.GqlTypeDefinition;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @author Pavel Simonov
+ */
 @Component
 public class MetaValueTypeDef implements GqlTypeDefinition {
 
@@ -85,11 +88,31 @@ public class MetaValueTypeDef implements GqlTypeDefinition {
                         .dataFetcher(this::getNum)
                         .type(Scalars.GraphQLFloat))
                 .field(GraphQLFieldDefinition.newFieldDefinition()
+                        .name("bool")
+                        .description("Boolean representation")
+                        .dataFetcher(this::getBool)
+                        .type(Scalars.GraphQLBoolean))
+                .field(GraphQLFieldDefinition.newFieldDefinition()
+                        .name("has")
+                        .description("Check attribute exist or not")
+                        .dataFetcher(this::getHasAttribute)
+                        .argument(GraphQLArgument.newArgument()
+                                .name("n")
+                                .type(Scalars.GraphQLString)
+                                .build())
+                        .type(Scalars.GraphQLBoolean))
+                .field(GraphQLFieldDefinition.newFieldDefinition()
                         .name("json")
                         .description("Json representation")
                         .dataFetcher(this::getJson)
                         .type(CustomGqlScalars.JSON_NODE))
                 .build();
+    }
+
+    private boolean getHasAttribute(DataFetchingEnvironment env) {
+        MetaValue value = env.getSource();
+        String name = getParameter(env, "n");
+        return value.hasAttribute(name);
     }
 
     private MetaValue getAs(DataFetchingEnvironment env) {
@@ -115,6 +138,11 @@ public class MetaValueTypeDef implements GqlTypeDefinition {
             result = Collections.emptyList();
         }
         return result;
+    }
+
+    private Boolean getBool(DataFetchingEnvironment env) {
+        MetaValue value = env.getSource();
+        return value.getBool();
     }
 
     private String getStr(DataFetchingEnvironment env) {

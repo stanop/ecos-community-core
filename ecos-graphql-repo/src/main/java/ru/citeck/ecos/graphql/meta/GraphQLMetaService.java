@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface GraphQLMetaService {
 
+    List<ObjectNode> getEmpty(List<?> ids, String schema);
+
     List<ObjectNode> getMeta(List<MetaValue> values, String schema);
 
     <V> List<V> convertMeta(List<ObjectNode> meta, Class<V> metaClass);

@@ -37,6 +37,7 @@ public class AlfNodeRecord implements MetaValue {
     @Override
     public MetaValue init(GqlContext context) {
         this.context = context;
+        this.node = context.getNode(RecordsUtils.toNodeRef(recordRef)).orElse(null);
         return this;
     }
 
@@ -47,20 +48,25 @@ public class AlfNodeRecord implements MetaValue {
 
     @Override
     public String getString() {
-        return getNode().displayName();
+        return node.displayName();
     }
 
-    private GqlAlfNode getNode() {
-        if (node == null) {
-            node = context.getNode(RecordsUtils.toNodeRef(recordRef)).orElse(null);
+    @Override
+    public boolean hasAttribute(String attributeName) {
+
+        Attribute nodeAtt = node.attribute(attributeName);
+
+        if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
+            return false;
         }
-        return node;
+
+        List<?> values = nodeAtt.getValues();
+
+        return values != null && !values.isEmpty();
     }
 
     @Override
     public List<MetaValue> getAttribute(String name) {
-
-        GqlAlfNode node = getNode();
 
         List<MetaValue> attribute = null;
         if (ATTR_ASPECTS.equals(name)) {

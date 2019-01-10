@@ -19,6 +19,8 @@ import ru.citeck.ecos.graphql.meta.value.MetaValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,10 +29,31 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
     private static final String META_QUERY_KEY = "gqlMeta";
     private static final String META_QUERY_TEMPLATE = "{" + META_QUERY_KEY + "{%s}}";
 
+    private Pattern ID_FIELD_NAME_PATTERN = Pattern.compile(".*\\b([\\S]+)\\s*:\\s*id\\s.*");
+
     private ConvertersProvider convertersProvider = new ConvertersProvider();
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private GraphQLService graphQLService;
+
+    @Override
+    public List<ObjectNode> getEmpty(List<?> ids, String schema) {
+
+        Matcher idMatcher = ID_FIELD_NAME_PATTERN.matcher(schema);
+
+        String idFieldName;
+        if (idMatcher.matches()) {
+            idFieldName = idMatcher.group(1);
+        } else {
+            idFieldName = "id";
+        }
+
+        return ids.stream().map(id -> {
+            ObjectNode recordNode = JsonNodeFactory.instance.objectNode();
+            recordNode.put(idFieldName, id.toString());
+            return recordNode;
+        }).collect(Collectors.toList());
+    }
 
     @Override
     public List<ObjectNode> getMeta(List<MetaValue> values, String schema) {
@@ -41,7 +64,7 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
         context.setMetaValues(values);
 
         ExecutionResult result = graphQLService.execute(query, null, context);
-        return convertMeta(result, values);
+        return convertMeta(result, values, schema);
     }
 
     @Override
@@ -65,18 +88,17 @@ public class GraphQLMetaServiceImpl implements GraphQLMetaService {
     }
 
     private List<ObjectNode> convertMeta(ExecutionResult executionResult,
-                                         List<MetaValue> metaValues) {
+                                         List<MetaValue> metaValues,
+                                         String schema) {
 
         List<ObjectNode> result = new ArrayList<>();
 
         if (executionResult == null || executionResult.getData() == null) {
 
-            for (MetaValue value : metaValues) {
-                ObjectNode node = JsonNodeFactory.instance.objectNode();
+            result = getEmpty(metaValues.stream()
+                                        .map(this::getValueId)
+                                        .collect(Collectors.toList()), schema);
 
-                node.set("id", TextNode.valueOf(getValueId(value)));
-                result.add(node);
-            }
         } else {
             JsonNode jsonNode = objectMapper.valueToTree(executionResult.getData());
             JsonNode meta = jsonNode.get(META_QUERY_KEY);

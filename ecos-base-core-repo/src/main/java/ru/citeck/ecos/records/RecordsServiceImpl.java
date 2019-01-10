@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
-import ru.citeck.ecos.records.request.RespRecord;
+import ru.citeck.ecos.records.request.RecordAttributes;
 import ru.citeck.ecos.records.request.delete.RecordsDelResult;
 import ru.citeck.ecos.records.request.delete.RecordsDeletion;
 import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
@@ -27,12 +26,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+/**
+ * @author Pavel Simonov
+ */
 @Service
 public class RecordsServiceImpl implements RecordsService {
 
     private static final String DEBUG_QUERY_TIME = "queryTimeMs";
     private static final String DEBUG_RECORDS_QUERY_TIME = "recordsQueryTimeMs";
     private static final String DEBUG_META_QUERY_TIME = "metaQueryTimeMs";
+    private static final String DEBUG_META_SCHEMA = "schema";
+
     private static final String RECORD_ID_FIELD = "recordId";
 
     private static final Log logger = LogFactory.getLog(RecordsServiceImpl.class);
@@ -83,7 +87,7 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public RecordsResult<RespRecord> getRecords(RecordsQuery query, Collection<String> fields) {
+    public RecordsResult<RecordAttributes> getRecords(RecordsQuery query, Collection<String> fields) {
         Map<String, String> fieldsMap = new HashMap<>();
         for (String field : fields) {
             fieldsMap.put(field, field);
@@ -99,60 +103,74 @@ public class RecordsServiceImpl implements RecordsService {
 
         attributes.forEach((attribute, path) -> {
 
-            String fieldName = path.replace("/", "");
-
-            String valueField = "str";
-            int questionIdx = path.indexOf('?');
-
-            if (questionIdx >= 0) {
-                fieldName = path.substring(0, questionIdx);
-                valueField = path.substring(questionIdx + 1);
-            }
-
             String queryFieldName = keys.incrementAndGet();
-
             keysMapping.put(queryFieldName, attribute);
-            schemaBuilder.append(queryFieldName)
-                    .append(":att(n:\"")
-                    .append(fieldName)
-                    .append("\"){")
-                    .append(valueField)
-                    .append("}");
+
+            schemaBuilder.append(queryFieldName).append(":");
+
+            if (path.contains("(")) {
+
+                schemaBuilder.append(path);
+
+            } else {
+
+                String fieldName = path.replace("/", "");
+
+                String valueField = "str";
+                int questionIdx = path.indexOf('?');
+
+                if (questionIdx >= 0) {
+                    fieldName = path.substring(0, questionIdx);
+                    valueField = path.substring(questionIdx + 1);
+                }
+
+                schemaBuilder.append("att(n:\"")
+                        .append(fieldName)
+                        .append("\"){")
+                        .append(valueField)
+                        .append("}");
+            }
         });
 
         return schemaBuilder.toString();
     }
 
     @Override
-    public RecordsResult<RespRecord> getRecords(RecordsQuery query, Map<String, String> attributes) {
+    public RecordsResult<RecordAttributes> getRecords(RecordsQuery query, Map<String, String> attributes) {
 
         Map<String, String> attributesMapping = new HashMap<>();
         String schema = getSchema(attributes, attributesMapping);
 
         RecordsResult<ObjectNode> records = getRecords(query, schema, true);
 
-        return new RecordsResult<>(records, node -> {
+        RecordsResult<RecordAttributes> attResult = new RecordsResult<>(records, node -> {
 
-            RespRecord result = new RespRecord();
+            RecordAttributes result = new RecordAttributes();
 
             result.setId(new RecordRef(node.get(RECORD_ID_FIELD).asText()));
 
-            Map<String, JsonNode> flatAttributes = result.getAttributes();
+            ObjectNode flatAttributes = result.getAttributes();
             attributesMapping.forEach((k, v) -> flatAttributes.put(v, node.get(k)));
 
             return result;
         });
+
+        if (query.isDebug()) {
+            attResult.setDebugInfo(getClass(), DEBUG_META_SCHEMA, schema);
+        }
+
+        return attResult;
     }
 
     @Override
-    public List<RespRecord> getMeta(Collection<RecordRef> records, Collection<String> fields) {
+    public List<RecordAttributes> getMeta(Collection<RecordRef> records, Collection<String> fields) {
         Map<String, String> fieldsMap = new HashMap<>();
         fields.forEach(field -> fieldsMap.put(field, field));
         return getMeta(records, fieldsMap);
     }
 
     @Override
-    public List<RespRecord> getMeta(Collection<RecordRef> records, Map<String, String> attributes) {
+    public List<RecordAttributes> getMeta(Collection<RecordRef> records, Map<String, String> attributes) {
 
         Map<String, String> attributesMapping = new HashMap<>();
         String schema = getSchema(attributes, attributesMapping);
@@ -164,10 +182,10 @@ public class RecordsServiceImpl implements RecordsService {
 
             ObjectNode record = meta.get(idx);
 
-            RespRecord result = new RespRecord();
+            RecordAttributes result = new RecordAttributes();
             result.setId(new RecordRef(record.get(RECORD_ID_FIELD).asText()));
 
-            Map<String, JsonNode> flatAttributes = result.getAttributes();
+            ObjectNode flatAttributes = result.getAttributes();
             attributesMapping.forEach((k, v) -> flatAttributes.put(v, record.get(k)));
 
             return result;
@@ -211,16 +229,17 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     private List<ObjectNode> getRecordsMeta(Collection<RecordRef> records, String metaSchema) {
+
         return getRecordsMeta(records, (source, recs) -> {
+
             if (source instanceof RecordsMetaDAO) {
+
                 RecordsMetaDAO metaDAO = (RecordsMetaDAO) source;
                 return metaDAO.getMeta(recs, metaSchema);
+
             } else {
-                return recs.stream().map(r -> {
-                    ObjectNode recordNode = JsonNodeFactory.instance.objectNode();
-                    recordNode.set("id", TextNode.valueOf(r.toString()));
-                    return recordNode;
-                }).collect(Collectors.toList());
+
+                return graphQLMetaService.getEmpty(recs, metaSchema);
             }
         });
     }

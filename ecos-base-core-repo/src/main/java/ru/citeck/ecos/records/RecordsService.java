@@ -9,7 +9,7 @@ import ru.citeck.ecos.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.actions.RecordsActionFactory;
-import ru.citeck.ecos.records.request.RespRecord;
+import ru.citeck.ecos.records.request.RecordAttributes;
 import ru.citeck.ecos.records.request.delete.RecordsDelResult;
 import ru.citeck.ecos.records.request.delete.RecordsDeletion;
 import ru.citeck.ecos.records.request.mutation.RecordsMutation;
@@ -29,8 +29,11 @@ import java.util.Optional;
  * It may be alfresco nodes, database records, generated data and so on
  * A record id contains two parts: 'sourceId' and 'id'. String representation: sourceId@id
  *
+ * @see MetaValue
  * @see RecordRef
  * @see RecordsDAO
+ *
+ * @author Pavel Simonov
  */
 public interface RecordsService {
 
@@ -65,13 +68,13 @@ public interface RecordsService {
      * Query records with meta
      * Fields example: {name: 'cm:name', title: 'cm:title'}
      */
-    RecordsResult<RespRecord> getRecords(RecordsQuery query, Map<String, String> attributes);
+    RecordsResult<RecordAttributes> getRecords(RecordsQuery query, Map<String, String> attributes);
 
     /**
      * Query records with meta
      * Fields example: ['cm:name', 'cm:title']
      */
-    RecordsResult<RespRecord> getRecords(RecordsQuery query, Collection<String> attributes);
+    RecordsResult<RecordAttributes> getRecords(RecordsQuery query, Collection<String> attributes);
 
     /**
      * Create or change records
@@ -104,13 +107,13 @@ public interface RecordsService {
      * Get meta
      * Fields example: ["cm:name", "cm:title"]
      */
-    List<RespRecord> getMeta(Collection<RecordRef> records, Collection<String> attributes);
+    List<RecordAttributes> getMeta(Collection<RecordRef> records, Collection<String> attributes);
 
     /**
      * Get meta
      * Fields example: {"name" : "cm:name", "title" : "cm:title"]
      */
-    List<RespRecord> getMeta(Collection<RecordRef> records, Map<String, String> attributes);
+    List<RecordAttributes> getMeta(Collection<RecordRef> records, Map<String, String> attributes);
 
     /**
      * Get metadata for specified records.
