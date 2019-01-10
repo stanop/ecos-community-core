@@ -812,72 +812,72 @@ ko.bindingHandlers.dateControl = {
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
 
-        if (mode == "alfresco" || !Citeck.HTML5.supportedInputTypes.date) {
-            var calendarDialogId = elementId + "-calendarDialog",
-                calendarContainerId = elementId + "-calendarContainer",
-                calendarAccessorId = elementId + "-calendarAccessor",
-                calendarDialog, calendar;
+        var calendarDialogId = elementId + "-calendarDialog",
+            calendarContainerId = elementId + "-calendarContainer",
+            calendarAccessorId = elementId + "-calendarAccessor",
+            calendarDialog, calendar;
 
-            var showCalendarButton = document.getElementById(calendarAccessorId);
-            showCalendarButton.classList.remove("hidden");
+        var showCalendarButton = document.getElementById(calendarAccessorId);
+        showCalendarButton.classList.remove("hidden");
 
-            Event.on(showCalendarButton, "click", function() {
-                if (!calendarDialog) {
-                    var formContainer = $(element).closest(".yui-panel-container"),
-                        zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
+        Event.on(showCalendarButton, "click", function() {
+            if (!calendarDialog) {
+                var formContainer = $(element).closest(".yui-panel-container"),
+                    zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
 
-                    calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
-                        visible:    false,
-                        context:    [calendarAccessorId, "tl", "bl"],
-                        draggable:  false,
-                        close:      true,
-                        zindex:     zindex
-                    });
-                    calendarDialog.setHeader(localization.labels.header);
-                    calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
-                    calendarDialog.render(document.body);
-                }
+                calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
+                    visible:    false,
+                    context:    [calendarAccessorId, "tl", "bl"],
+                    draggable:  false,
+                    close:      true,
+                    zindex:     zindex
+                });
+                calendarDialog.setHeader(localization.labels.header);
+                calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
+                calendarDialog.render(document.body);
+            }
 
-                if (!calendar) {
-                    calendar = new YAHOO.widget.Calendar(calendarContainerId, {
-                        LOCALE_WEEKDAYS: "short",
-                        LOCALE_MONTHS: "long",
-                        START_WEEKDAY: 1,
+            if (!calendar) {
+                calendar = new YAHOO.widget.Calendar(calendarContainerId, {
+                    LOCALE_WEEKDAYS: "short",
+                    LOCALE_MONTHS: "long",
+                    START_WEEKDAY: 1,
 
-                        iframe: false,
-                        navigator: {
-                            strings: {
-                                month:  localization.labels.month,
-                                year:   localization.labels.year,
-                                submit: localization.buttons.submit,
-                                cancel: localization.buttons.cancel
-                            }
+                    iframe: false,
+                    navigator: {
+                        strings: {
+                            month:  localization.labels.month,
+                            year:   localization.labels.year,
+                            submit: localization.buttons.submit,
+                            cancel: localization.buttons.cancel
                         }
-                    });
+                    }
+                });
 
-                    // localization months and days
-                    calendar.cfg.setProperty("MONTHS_LONG", localization.months.split(","));
-                    calendar.cfg.setProperty("WEEKDAYS_SHORT", localization.days.split(","));
+                // localization months and days
+                calendar.cfg.setProperty("MONTHS_LONG", localization.months.split(","));
+                calendar.cfg.setProperty("WEEKDAYS_SHORT", localization.days.split(","));
 
-                    // selected date
-                    calendar.selectEvent.subscribe(function() {
-                        if (calendar.getSelectedDates().length > 0) {
-                            var selectedDate = calendar.getSelectedDates()[0],
-                                nowDate = new Date;
+                // selected date
+                calendar.selectEvent.subscribe(function() {
+                    if (calendar.getSelectedDates().length > 0) {
+                        var selectedDate = calendar.getSelectedDates()[0],
+                            nowDate = new Date;
 
-                            selectedDate.setHours(-nowDate.getTimezoneOffset()/60);
+                        selectedDate.setHours(-nowDate.getTimezoneOffset()/60);
 
-                            value(selectedDate);
-                        }
-                        calendarDialog.hide();
-                    });
+                        value(selectedDate);
+                    }
+                    calendarDialog.hide();
+                });
 
-                    calendar.render();
-                }
+                calendar.render();
+            }
 
-                if (calendarDialog) calendarDialog.show();
-            });
-        } else {
+            if (calendarDialog) calendarDialog.show();
+        });
+
+        if (mode != "alfresco" && Citeck.HTML5.supportedInputTypes.date) {
             // set max and min attributes
             var date = new Date(),
                 year = date.getFullYear();
@@ -1422,7 +1422,7 @@ ko.bindingHandlers.journalControl = {
                             });
 
                             if(optionsFiltersTemp.length){
-                                criteria(optionsFiltersTemp);
+                                criteria(optionsFiltersTemp.concat(actualCriteria));
                             }
                         }
 

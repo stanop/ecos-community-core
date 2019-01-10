@@ -1155,8 +1155,12 @@
   width: 46%;
 }
 
+.invariants-form .template-table .template-row .template-date a.calendar-link-button img {
+  vertical-align: baseline;
+}
+
 .yui-panel-container.shadow .invariants-form .template-table .template-row .template-date input {
-  width: 100%;
+  width: 85%;
   box-sizing: border-box;
 }
 
