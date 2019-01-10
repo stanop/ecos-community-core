@@ -4,12 +4,28 @@
 	<bean id="flowableSetContextStartListener" class="ru.citeck.ecos.flowable.listeners.utils.FlowableSetContextStartListener"/>
 	<bean id="flowableBeansContextSetListener" class="ru.citeck.ecos.flowable.listeners.utils.FlowableBeansContextSetListener"/>
 
+	<bean id="flowableEngine" class="org.flowable.spring.ProcessEngineFactoryBean">
+		<property name="processEngineConfiguration" ref="flowableEngineConfiguration" />
+	</bean>
+
+	<bean id="flowableRepositoryService" factory-bean="flowableEngine" factory-method="getRepositoryService" />
+	<bean id="flowableRuntimeService" factory-bean="flowableEngine" factory-method="getRuntimeService" />
+	<bean id="flowableTaskService" factory-bean="flowableEngine" factory-method="getTaskService" />
+	<bean id="flowableHistoryService" factory-bean="flowableEngine" factory-method="getHistoryService" />
+	<bean id="flowableManagementService" factory-bean="flowableEngine" factory-method="getManagementService" />
+	<bean id="flowableFormService" factory-bean="flowableEngine" factory-method="getFormService" />
+
+	<!--TODO: need to implement transaction manager-->
+	<bean id="flowableTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="flowableDataSource" />
+	</bean>
+
 	<!-- Flowable engine -->
 	<bean id="flowableWorkflowComponent" class="ru.citeck.ecos.flowable.FlowableWorkflowComponent">
 		<property name="bpmEngineRegistry" ref="bpm_engineRegistry"/>
 		<property name="workflowAdminService" ref="workflowAdminService"/>
 		<property name="authenticationService" ref="authenticationService"/>
-		<property name="personService" ref="PersonService"/>
+		<property name="personService" ref="personService"/>
 		<property name="nodeService" ref="nodeService"/>
 	</bean>
 
@@ -44,7 +60,7 @@
 
 	<bean id="flowableCustomHistoryService" class="ru.citeck.ecos.flowable.services.impl.FlowableHistoryServiceImpl">
 		<property name="historyService" ref="flowableHistoryService"/>
-		<property name="personService" ref="PersonService"/>
+		<property name="personService" ref="personService"/>
 		<property name="serviceRegistry" ref="ServiceRegistry"/>
 	</bean>
 
@@ -82,7 +98,7 @@
 		<property name="namespaceService" ref="namespaceService"/>
 		<property name="tenantService" ref="tenantService"/>
 		<property name="nodeService" ref="nodeService"/>
-		<property name="personService" ref="PersonService"/>
+		<property name="personService" ref="personService"/>
 		<property name="flowableTaskService" ref="flowableCustomTaskService"/>
 		<property name="flowableHistoryService" ref="flowableCustomHistoryService"/>
 		<property name="flowableWorkflowComponent" ref="flowableWorkflowComponent"/>
@@ -126,7 +142,7 @@
 
 	<!-- Start process -->
 	<bean id="flowableSetInitiatorStartProcessListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.start.SetInitiatorStartProcessListener">
-		<property name="personService" ref="PersonService"/>
+		<property name="personService" ref="personService"/>
 		<property name="nodeService" ref="nodeService"/>
 	</bean>
 
@@ -186,12 +202,12 @@
 
 	<bean id="flowableTaskCreateListener"
 		  class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.TaskCreateListener">
-		<property name="personService" ref="PersonService"/>
+		<property name="personService" ref="personService"/>
 	</bean>
 
 	<bean id="flowableTaskSenderPullListener" init-method="init"
 		  class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.TaskSenderPullListener">
-		<property name="personService" ref="PersonService"/>
+		<property name="personService" ref="personService"/>
 		<property name="nodeService" ref="nodeService"/>
 		<property name="namespaceService" ref="NamespaceService"/>
 	</bean>
@@ -235,7 +251,7 @@
 	<!-- End task -->
 	<bean id="flowableTaskSenderPushListener" init-method="init"
 		  class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.TaskSenderPushListener">
-		<property name="personService" ref="PersonService"/>
+		<property name="personService" ref="personService"/>
 		<property name="nodeService" ref="nodeService"/>
 		<property name="namespaceService" ref="NamespaceService"/>
 	</bean>

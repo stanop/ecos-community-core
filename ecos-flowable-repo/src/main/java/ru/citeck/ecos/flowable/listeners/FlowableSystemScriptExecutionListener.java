@@ -12,7 +12,7 @@ import org.flowable.engine.delegate.DelegateExecution;
 public class FlowableSystemScriptExecutionListener extends FlowableScriptExecutionListener {
     @Override
     public void notify(DelegateExecution execution) {
-        super.setRunAs(new FlowableStringExpression(AuthenticationUtil.getAdminUserName()));
+        super.setRunAs(new FlowableStringExpression(AuthenticationUtil.getSystemUserName()));
         super.notify(execution);
     }
 }

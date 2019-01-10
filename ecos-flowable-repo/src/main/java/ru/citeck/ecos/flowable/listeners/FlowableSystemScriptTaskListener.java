@@ -9,7 +9,7 @@ import org.flowable.task.service.delegate.DelegateTask;
 public class FlowableSystemScriptTaskListener extends FlowableScriptTaskListener {
     @Override
     public void notify(DelegateTask delegateTask) {
-        super.setRunAs(new FlowableStringExpression(AuthenticationUtil.getAdminUserName()));
+        super.setRunAs(new FlowableStringExpression(AuthenticationUtil.getSystemUserName()));
         super.notify(delegateTask);
     }
 }

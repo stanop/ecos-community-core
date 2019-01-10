@@ -3,6 +3,7 @@ package ru.citeck.ecos.flowable.configuration;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.service.ServiceDescriptorRegistry;
 import org.alfresco.repo.tenant.TenantService;
+import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.workflow.DefaultWorkflowPropertyHandler;
 import org.alfresco.repo.workflow.WorkflowObjectFactory;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
@@ -12,19 +13,21 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.flowable.engine.*;
-import org.flowable.engine.impl.cfg.StandaloneProcessEngineConfiguration;
+import org.flowable.engine.FormService;
+import org.flowable.engine.ProcessEngineConfiguration;
 import org.flowable.engine.impl.jobexecutor.AsyncContinuationJobHandler;
 import org.flowable.engine.impl.jobexecutor.AsyncTriggerJobHandler;
 import org.flowable.engine.impl.jobexecutor.TriggerTimerEventJobHandler;
 import org.flowable.engine.parse.BpmnParseHandler;
 import org.flowable.job.service.JobHandler;
+import org.flowable.spring.SpringProcessEngineConfiguration;
 import org.flowable.variable.api.types.VariableType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
@@ -157,7 +160,7 @@ public class FlowableConfiguration {
      * @return Process engine configuration
      */
     @Bean(name = "flowableEngineConfiguration")
-    public ProcessEngineConfiguration flowableEngineConfiguration(@Qualifier("flowableDataSource") DataSource dataSource,
+    public SpringProcessEngineConfiguration flowableEngineConfiguration(@Qualifier("flowableDataSource") DataSource dataSource,
                                                                   @Qualifier("workflow.variable.EcosPojoTypeHandler")
                                                                           EcosPojoTypeHandler<?> ecosPojoTypeHandler,
                                                                   ServiceDescriptorRegistry descriptorRegistry,
@@ -165,12 +168,22 @@ public class FlowableConfiguration {
                                                                           flowableScriptNodeVariableType,
                                                                   @Qualifier("flowableScriptNodeListType") FlowableScriptNodeListVariableType
                                                                           flowableScriptNodeListVariableType,
+                                                                  @Qualifier("flowableTransactionManager") DataSourceTransactionManager
+                                                                          transactionManager,
                                                                   @Qualifier("nodeService") NodeService nodeService) {
         if (dataSource != null) {
-            StandaloneProcessEngineConfiguration engineConfiguration = new StandaloneProcessEngineConfiguration();
+            SpringProcessEngineConfiguration engineConfiguration = new SpringProcessEngineConfiguration();
             engineConfiguration.setDataSource(dataSource);
+
+            //TODO: Need to implement transaction manager
+            //engineConfiguration.setTransactionManager(transactionManager);
+
             engineConfiguration.setAsyncExecutorActivate(true);
             engineConfiguration.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE);
+
+            engineConfiguration.setTransactionSynchronizationAdapterOrder(
+                    AlfrescoTransactionSupport.SESSION_SYNCHRONIZATION_ORDER - 100
+            );
 
             Set<Class<?>> customMybatisMappers = new HashSet<>();
             customMybatisMappers.add(ModelMapper.class);
@@ -192,7 +205,6 @@ public class FlowableConfiguration {
             types.add(flowableScriptNodeListVariableType);
             engineConfiguration.setCustomPreVariableTypes(types);
 
-
             List<JobHandler> customJobHandlers = engineConfiguration.getCustomJobHandlers();
             customJobHandlers = customJobHandlers != null ? new ArrayList<>(customJobHandlers) : new ArrayList<>();
 
@@ -206,8 +218,6 @@ public class FlowableConfiguration {
             customJobHandlers.add(new AuthenticatedTimerJobHandler(triggerTimerEventJobHandler, nodeService));
 
             engineConfiguration.setCustomJobHandlers(customJobHandlers);
-
-            engineConfiguration.setExe
 
             return engineConfiguration;
         } else {
@@ -242,7 +252,7 @@ public class FlowableConfiguration {
      *
      * @param processEngineConfiguration Process engine configuration
      */
-    private void setMailConfiguration(StandaloneProcessEngineConfiguration processEngineConfiguration) {
+    private void setMailConfiguration(SpringProcessEngineConfiguration processEngineConfiguration) {
         String mailHost = properties.getProperty(FLOWABLE_MAIL_SERVER_HOST);
         if (mailHost != null) {
             processEngineConfiguration.setMailServerHost(mailHost);
@@ -275,112 +285,6 @@ public class FlowableConfiguration {
         String mailUseSSL = properties.getProperty(FLOWABLE_MAIL_SERVER_USE_SSL);
         if (mailUseSSL != null) {
             processEngineConfiguration.setMailServerUseSSL(Boolean.valueOf(mailUseSSL));
-        }
-    }
-
-    /**
-     * Flowable engine bean
-     *
-     * @param flowableEngineConfiguration Flowable engine configuration
-     * @return Flowable engine
-     */
-    @Bean(name = "flowableEngine")
-    public ProcessEngine flowableEngine(ProcessEngineConfiguration flowableEngineConfiguration) {
-        if (flowableEngineConfiguration != null) {
-            return flowableEngineConfiguration.buildProcessEngine();
-        } else {
-            return null;
-        }
-
-    }
-
-    /**
-     * Flowable service bean
-     *
-     * @param processEngine Process engine
-     * @return service
-     */
-    @Bean(name = "flowableRepositoryService")
-    public RepositoryService flowableRepositoryService(ProcessEngine processEngine) {
-        if (processEngine != null) {
-            return processEngine.getRepositoryService();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Flowable runtime service bean
-     *
-     * @param processEngine Process engine
-     * @return Runtime service
-     */
-    @Bean(name = "flowableRuntimeService")
-    public RuntimeService flowableRuntimeService(ProcessEngine processEngine) {
-        if (processEngine != null) {
-            return processEngine.getRuntimeService();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Flowable task service bean
-     *
-     * @param processEngine Process engine
-     * @return Task service
-     */
-    @Bean(name = "flowableTaskService")
-    public TaskService flowableTaskService(ProcessEngine processEngine) {
-        if (processEngine != null) {
-            return processEngine.getTaskService();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Flowable history service bean
-     *
-     * @param processEngine Process engine
-     * @return History service
-     */
-    @Bean(name = "flowableHistoryService")
-    public HistoryService flowableHistoryService(ProcessEngine processEngine) {
-        if (processEngine != null) {
-            return processEngine.getHistoryService();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Flowable management service bean
-     *
-     * @param processEngine Process engine
-     * @return Management service
-     */
-    @Bean(name = "flowableManagementService")
-    public ManagementService flowableManagementService(ProcessEngine processEngine) {
-        if (processEngine != null) {
-            return processEngine.getManagementService();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Flowable form service bean
-     *
-     * @param processEngine Process engine
-     * @return Form service
-     */
-    @Bean(name = "flowableFormService")
-    public FormService flowableFormService(ProcessEngine processEngine) {
-        if (processEngine != null) {
-            return processEngine.getFormService();
-        } else {
-            return null;
         }
     }
 

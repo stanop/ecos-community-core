@@ -36,7 +36,7 @@ public class AuthenticatedTimerJobHandler implements JobHandler {
 
     @Override
     public void execute(JobEntity job, String configuration, VariableScope variableScope, CommandContext commandContext) {
-        /*String userName;
+        String userName;
         String tenantToRunIn = (String) variableScope.getVariable(ActivitiConstants.VAR_TENANT_DOMAIN);
         if (tenantToRunIn != null && tenantToRunIn.trim().length() == 0) {
             tenantToRunIn = null;
@@ -66,17 +66,11 @@ public class AuthenticatedTimerJobHandler implements JobHandler {
             }, userName, tenantToRunIn);
         } else {
             // Execute the timer without tenant
-            AuthenticationUtil.runAs((AuthenticationUtil.RunAsWork<Void>) () -> {
-                wrappedHandler.execute(job, configuration, variableScope, commandContext);
-                return null;
-            }, AuthenticationUtil.getSystemUserName());
-        }*/
-
-        AuthenticationUtil.runAsSystem(() -> {
-            wrappedHandler.execute(job, configuration, variableScope, commandContext);
-            return null;
-        });
-
+           AuthenticationUtil.runAsSystem(() -> {
+               wrappedHandler.execute(job, configuration, variableScope, commandContext);
+               return null;
+           });
+        }
     }
 
     private String getInitiator(Object initiatorNode) {

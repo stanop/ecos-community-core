@@ -8,6 +8,7 @@ import org.flowable.engine.common.impl.interceptor.CommandContext;
 import org.flowable.job.service.JobHandler;
 import org.flowable.job.service.impl.persistence.entity.JobEntity;
 import org.flowable.variable.api.delegate.VariableScope;
+import ru.citeck.ecos.utils.TransactionUtils;
 
 public class AuthenticatedAsyncJobHandler implements JobHandler {
 
@@ -27,6 +28,16 @@ public class AuthenticatedAsyncJobHandler implements JobHandler {
 
     @Override
     public void execute(JobEntity job, String configuration, VariableScope variableScope, CommandContext commandContext) {
+        final String userName = getUserName(variableScope);
+
+        // Execute job
+        AuthenticationUtil.runAs((AuthenticationUtil.RunAsWork<Void>) () -> {
+            wrappedHandler.execute(job, configuration, variableScope, commandContext);
+            return null;
+        }, userName);
+    }
+
+    private String getUserName(VariableScope variableScope) {
         // Get initiator
         String userName = AuthenticationUtil.runAsSystem(() -> {
             Object ownerNode = variableScope.getVariable(WorkflowConstants.PROP_INITIATOR);
@@ -50,10 +61,6 @@ public class AuthenticatedAsyncJobHandler implements JobHandler {
             userName = AuthenticationUtil.getSystemUserName();
         }
 
-        // Execute job
-        AuthenticationUtil.runAs((AuthenticationUtil.RunAsWork<Void>) () -> {
-            wrappedHandler.execute(job, configuration, variableScope, commandContext);
-            return null;
-        }, userName);
+        return userName;
     }
 }
