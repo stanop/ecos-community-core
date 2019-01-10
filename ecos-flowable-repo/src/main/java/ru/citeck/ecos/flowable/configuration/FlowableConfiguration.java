@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
@@ -168,15 +168,15 @@ public class FlowableConfiguration {
                                                                           flowableScriptNodeVariableType,
                                                                   @Qualifier("flowableScriptNodeListType") FlowableScriptNodeListVariableType
                                                                           flowableScriptNodeListVariableType,
-                                                                  @Qualifier("flowableTransactionManager") DataSourceTransactionManager
+                                                                  @Qualifier("transactionManager") PlatformTransactionManager
                                                                           transactionManager,
                                                                   @Qualifier("nodeService") NodeService nodeService) {
         if (dataSource != null) {
             SpringProcessEngineConfiguration engineConfiguration = new SpringProcessEngineConfiguration();
             engineConfiguration.setDataSource(dataSource);
 
-            //TODO: Need to implement transaction manager
-            //engineConfiguration.setTransactionManager(transactionManager);
+            //TODO: Need to implement transaction manager flowableTransactionManager
+            engineConfiguration.setTransactionManager(transactionManager);
 
             engineConfiguration.setAsyncExecutorActivate(true);
             engineConfiguration.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE);
