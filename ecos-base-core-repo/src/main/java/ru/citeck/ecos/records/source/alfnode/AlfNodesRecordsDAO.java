@@ -1,15 +1,16 @@
 package ru.citeck.ecos.records.source.alfnode;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
+import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.dictionary.PropertyDefinition;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -19,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.delete.RecordsDelResult;
@@ -32,6 +32,7 @@ import ru.citeck.ecos.records.request.query.RecordsResult;
 import ru.citeck.ecos.records.source.*;
 import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeRecord;
 import ru.citeck.ecos.records.source.alfnode.search.AlfNodesSearch;
+import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -52,9 +53,12 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
     private DictionaryService dictionaryService;
     private NamespaceService namespaceService;
+    private MimetypeService mimetypeService;
+    private ContentService contentService;
     private MessageService messageService;
     private SearchService searchService;
     private NodeService nodeService;
+    private NodeUtils nodeUtils;
 
     private Map<QName, NodeRef> defaultParentByType = new ConcurrentHashMap<>();
 
@@ -70,16 +74,28 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         for (RecordMut record : mutation.getRecords()) {
 
             Map<QName, Serializable> props = new HashMap<>();
+            Map<QName, JsonNode> contentProps = new HashMap<>();
 
             ObjectNode fields = record.getAttributes();
             Iterator<String> names = fields.fieldNames();
             while (names.hasNext()) {
 
                 String name = names.next();
-                QName fielName = QName.resolveToQName(namespaceService, name);
+                QName fieldName = QName.resolveToQName(namespaceService, name);
 
-                props.put(fielName, fields.path(name).asText());
+                PropertyDefinition propDef = dictionaryService.getProperty(fieldName);
+
+                if (propDef != null) {
+
+                    if (DataTypeDefinition.CONTENT.equals(propDef.getDataType().getName())) {
+                        contentProps.put(fieldName, fields.path(name));
+                    } else {
+                        props.put(fieldName, fields.path(name).asText());
+                    }
+                }
             }
+
+            NodeRef nodeRef;
 
             if (record.getId() == null) {
 
@@ -88,20 +104,66 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 QName parentAssoc = getParentAssoc(record, parent);
 
                 String name = (String) props.get(ContentModel.PROP_NAME);
+
+                if (StringUtils.isBlank(name)) {
+
+                    JsonNode contentProp = contentProps.get(ContentModel.PROP_CONTENT);
+                    if (contentProp != null && contentProp.isObject()) {
+                        JsonNode filenameProp = contentProp.path("filename");
+                        if (filenameProp.isTextual()) {
+                            name = filenameProp.asText();
+                        }
+                    }
+                }
+
                 if (StringUtils.isBlank(name)) {
                     name = GUID.generate();
                 }
-                QName assocName = QName.createQName(parentAssoc.getNamespaceURI(), name);
 
-                ChildAssociationRef child = nodeService.createNode(parent, parentAssoc, assocName, type, props);
-                result.add(new RecordRef(child.getChildRef()));
+                props.put(ContentModel.PROP_NAME, name);
+
+                nodeRef = nodeUtils.createNode(parent, type, parentAssoc, props);
+                result.add(new RecordRef(nodeRef));
 
             } else {
 
-                NodeRef nodeRef = new NodeRef(record.getId().getId());
+                nodeRef = new NodeRef(record.getId().getId());
                 nodeService.addProperties(nodeRef, props);
                 result.add(record.getId());
             }
+
+            contentProps.forEach((name, value) -> {
+
+                ContentWriter writer = contentService.getWriter(nodeRef, name, true);
+
+                if (value.isTextual()) {
+
+                    writer.putContent(value.asText());
+
+                } else if (value.isObject()) {
+
+                    JsonNode mimetypeProp = value.path("mimetype");
+                    String mimetype = mimetypeProp.isTextual() ? mimetypeProp.asText() : MimetypeMap.MIMETYPE_BINARY;
+                    if (MimetypeMap.MIMETYPE_BINARY.equals(mimetype)) {
+                        JsonNode filename = value.path("filename");
+                        if (filename.isTextual()) {
+                            mimetype = mimetypeService.guessMimetype(filename.asText());
+                        }
+                    }
+                    writer.setMimetype(mimetype);
+
+                    JsonNode encoding = value.path("encoding");
+                    if (encoding.isTextual()) {
+                        writer.setEncoding(encoding.asText());
+                    } else {
+                        writer.setEncoding("UTF-8");
+                    }
+                    JsonNode content = value.path("content");
+                    if (content.isTextual()) {
+                        writer.putContent(content.asText());
+                    }
+                }
+            });
         }
 
         return result;
@@ -238,22 +300,14 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
-    public List<MetaValue> getMetaValues(GqlContext context, List<RecordRef> recordRef) {
+    public List<MetaValue> getMetaValues(List<RecordRef> recordRef) {
         return recordRef.stream()
-                        .map(RecordRef::getId)
-                        .map(context::getNode)
-                        .filter(Optional::isPresent)
-                        .map(n -> new AlfNodeRecord(n.get(), context))
+                        .map(AlfNodeRecord::new)
                         .collect(Collectors.toList());
     }
 
     @Override
-    public List<MetaValueTypeDef> getTypesDefinition(Collection<String> names) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public List<MetaAttributeDef> getAttsDefinition(Collection<String> names) {
+    public List<MetaAttributeDef> getAttributesDef(Collection<String> names) {
         return names.stream()
                     .map(n -> new AlfAttributeDefinition(n, namespaceService, dictionaryService, messageService))
                     .collect(Collectors.toList());
@@ -263,9 +317,16 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.namespaceService = serviceRegistry.getNamespaceService();
+        this.mimetypeService = serviceRegistry.getMimetypeService();
+        this.contentService = serviceRegistry.getContentService();
         this.messageService = serviceRegistry.getMessageService();
         this.searchService = serviceRegistry.getSearchService();
         this.nodeService = serviceRegistry.getNodeService();
+    }
+
+    @Autowired
+    public void setNodeUtils(NodeUtils nodeUtils) {
+        this.nodeUtils = nodeUtils;
     }
 
     public void register(AlfNodesSearch alfNodesSearch) {

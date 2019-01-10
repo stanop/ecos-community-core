@@ -1,11 +1,6 @@
 package ru.citeck.ecos.graphql.meta.value;
 
 import org.alfresco.util.ParameterCheck;
-import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 public class MetaIdValue implements MetaValue {
 
@@ -17,22 +12,12 @@ public class MetaIdValue implements MetaValue {
     }
 
     @Override
-    public String id() {
+    public String getString() {
         return id;
     }
 
     @Override
-    public String str() {
+    public String getId() {
         return id;
-    }
-
-    @Override
-    public Optional<MetaAttribute> att(String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public List<MetaAttribute> atts(String filter) {
-        return Collections.emptyList();
     }
 }

@@ -6,7 +6,7 @@ import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
-import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
+import ru.citeck.ecos.graphql.meta.value.MetaExplicitValue;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 
 import javax.sql.DataSource;
@@ -77,73 +77,18 @@ public class DbJournalDataSource implements JournalDataSource {
         }
 
         @Override
-        public String id() {
+        public String getId() {
             return String.valueOf(id);
         }
 
         @Override
-        public String str() {
-            return id();
+        public String getString() {
+            return getId();
         }
 
         @Override
-        public Optional<MetaAttribute> att(String name) {
-            return Optional.of(new Att(name, attributes.get(name)));
-        }
-
-        @Override
-        public List<MetaAttribute> atts(String filter) {
-            return Collections.emptyList();
-        }
-    }
-
-    private class Att implements MetaAttribute {
-
-        private String name;
-        private String value;
-
-        public Att(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        @Override
-        public String name() {
-            return name;
-        }
-
-        @Override
-        public List<MetaValue> val() {
-            return Collections.singletonList(new AttrValue(value));
-        }
-    }
-
-    private class AttrValue implements MetaValue {
-
-        private String val;
-
-        public AttrValue(String value) {
-            val = value;
-        }
-
-        @Override
-        public String id() {
-            return null;
-        }
-
-        @Override
-        public String str() {
-            return val;
-        }
-
-        @Override
-        public Optional<MetaAttribute> att(String name) {
-            return Optional.empty();
-        }
-
-        @Override
-        public List<MetaAttribute> atts(String filter) {
-            return Collections.emptyList();
+        public List<MetaValue> getAttribute(String name) {
+            return Collections.singletonList(new MetaExplicitValue(attributes.get(name)));
         }
     }
 }

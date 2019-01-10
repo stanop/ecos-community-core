@@ -1,7 +1,7 @@
 package ru.citeck.ecos.records.request.mutation;
 
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.request.RespRecord;
+import ru.citeck.ecos.records.request.RecordAttributes;
 import ru.citeck.ecos.records.request.RequestResDebug;
 
 import java.util.ArrayList;
@@ -9,13 +9,13 @@ import java.util.List;
 
 public class RecordsMutResult extends RequestResDebug {
 
-    private List<RespRecord> records = new ArrayList<>();
+    private List<RecordAttributes> records = new ArrayList<>();
 
-    public List<RespRecord> getRecords() {
+    public List<RecordAttributes> getRecords() {
         return records;
     }
 
-    public void setRecords(List<RespRecord> records) {
+    public void setRecords(List<RecordAttributes> records) {
         if (records != null) {
             this.records = new ArrayList<>(records);
         } else {
@@ -24,10 +24,10 @@ public class RecordsMutResult extends RequestResDebug {
     }
 
     public void add(RecordRef recordRef) {
-        records.add(new RespRecord(recordRef));
+        records.add(new RecordAttributes(recordRef));
     }
 
-    public void add(RespRecord record) {
+    public void add(RecordAttributes record) {
         records.add(record);
     }
 }

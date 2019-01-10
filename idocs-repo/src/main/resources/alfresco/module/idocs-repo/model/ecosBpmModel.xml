@@ -20,20 +20,26 @@
         <type name="ecosbpm:processModel">
             <parent>cm:cmobject</parent>
             <properties>
+                <property name="ecosbpm:processId">
+                    <type>d:text</type>
+                </property>
                 <property name="ecosbpm:category">
                     <type>d:category</type>
                 </property>
                 <property name="ecosbpm:engine">
                     <type>d:text</type>
                 </property>
-                <property name="ecosbpm:author">
-                    <type>d:text</type>
+                <property name="ecosbpm:jsonModel">
+                    <type>d:content</type>
+                    <index enabled="false" />
                 </property>
-
             </properties>
             <mandatory-aspects>
                 <aspect>tk:documentTypeKind</aspect>
                 <aspect>ecosbpm:hasIndex</aspect>
+                <aspect>cm:versionable</aspect>
+                <aspect>ecosbpm:hasThumbnail</aspect>
+                <aspect>cm:titled</aspect>
             </mandatory-aspects>
         </type>
 
@@ -45,6 +51,15 @@
             <properties>
                 <property name="ecosbpm:index">
                     <type>d:int</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="ecosbpm:hasThumbnail">
+            <properties>
+                <property name="ecosbpm:thumbnail">
+                    <type>d:content</type>
+                    <index enabled="false" />
                 </property>
             </properties>
         </aspect>

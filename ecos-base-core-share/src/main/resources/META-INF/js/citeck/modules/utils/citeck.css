@@ -11,6 +11,11 @@
   opacity: 1;
 }
 
+/*for fix bug with incorrect message is presented during search*/
+div#FCTSRCH_SEARCH_RESULTS_LIST .data-failure {
+  display: none;
+}
+
 /* ---------------- UI ---------------- */
 
 

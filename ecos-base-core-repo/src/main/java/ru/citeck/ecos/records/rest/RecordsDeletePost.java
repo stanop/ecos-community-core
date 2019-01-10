@@ -10,6 +10,9 @@ import ru.citeck.ecos.records.request.delete.RecordsDeletion;
 
 import java.io.IOException;
 
+/**
+ * @author Pavel Simonov
+ */
 public class RecordsDeletePost extends AbstractWebScript {
 
     private RecordsService recordsService;

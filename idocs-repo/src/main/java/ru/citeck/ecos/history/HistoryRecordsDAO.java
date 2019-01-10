@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaServiceImpl;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.source.meta.MetaJsonNodeValue;
@@ -58,7 +57,7 @@ public class HistoryRecordsDAO extends AbstractRecordsDAO implements RecordsWith
                                                               queryData.events,
                                                               queryData.taskTypes);
 
-        List<ObjectNode> nodes = graphQLMetaService.getMeta(context -> getMetaValues(events, context), metaSchema);
+        List<ObjectNode> nodes = graphQLMetaService.getMeta(getMetaValues(events), metaSchema);
 
         RecordsResult<ObjectNode> result = new RecordsResult<>();
         result.setHasMore(false);
@@ -68,9 +67,9 @@ public class HistoryRecordsDAO extends AbstractRecordsDAO implements RecordsWith
         return result;
     }
 
-    private List<MetaValue> getMetaValues(List<ObjectNode> events, GqlContext context) {
+    private List<MetaValue> getMetaValues(List<ObjectNode> events) {
         return events.stream()
-                     .map(e -> new MetaJsonNodeValue(e.get("nodeRef").asText(), e.get("attributes"), context))
+                     .map(e -> new MetaJsonNodeValue(e.get("nodeRef").asText(), e.get("attributes")))
                      .collect(Collectors.toList());
     }
 

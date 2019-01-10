@@ -1,30 +1,61 @@
 package ru.citeck.ecos.graphql.meta.value;
 
-import graphql.annotations.annotationTypes.GraphQLField;
-import graphql.annotations.annotationTypes.GraphQLID;
-import graphql.annotations.annotationTypes.GraphQLName;
-import ru.citeck.ecos.graphql.meta.attribute.MetaAttribute;
+import ru.citeck.ecos.graphql.GqlContext;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * Metadata value. Used to get attributes by schema
+ *
+ * @see MetaValueTypeDef
+ * @author Pavel Simonov
+ */
 public interface MetaValue {
 
-    @GraphQLField
-    @GraphQLID
-    String id();
-
-    @GraphQLField
-    String str();
-
-    @GraphQLField
-    default MetaValue as(@GraphQLName("type") String type) {
+    /**
+     * Initialize value with context before execute other methods
+     */
+    default MetaValue init(GqlContext context) {
         return this;
     }
 
-    @GraphQLField
-    Optional<MetaAttribute> att(@GraphQLName("name") String name);
+    /**
+     * String representation
+     */
+    String getString();
 
-    @GraphQLField
-    List<MetaAttribute> atts(@GraphQLName("filter") String filter);
+    /**
+     * Value identifier
+     */
+    default String getId() {
+        return null;
+    }
+
+    /**
+     * Get value attribute
+     */
+    default List<MetaValue> getAttribute(String attributeName) {
+        return Collections.emptyList();
+    }
+
+    default boolean hasAttribute(String attributeName) {
+        return false;
+    }
+
+    default Double getDouble() {
+        return Double.parseDouble(getString());
+    }
+
+    default Boolean getBool() {
+        return null;
+    }
+
+    default Object getJson() {
+        return getString();
+    }
+
+    default MetaValue getAs(String type) {
+        return null;
+    }
 }

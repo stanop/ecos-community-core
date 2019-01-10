@@ -86,9 +86,9 @@ public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO {
 
                     metaQuery.append("\n")
                              .append(fieldKey)
-                             .append(":att(name:\"")
+                             .append(":edge(n:\"")
                              .append(t.getField())
-                             .append("\"){val{")
+                             .append("\"){val:vals{")
                              .append(filter.metaSchema)
                              .append("}}");
                 }
