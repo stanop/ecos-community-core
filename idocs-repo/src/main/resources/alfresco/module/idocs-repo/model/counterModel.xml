@@ -41,7 +41,7 @@
 				<property name="count:numberTemplate">
 					<type>d:text</type>
 					<mandatory>true</mandatory>
-					<default>${count}</default>
+					<default>${count?c}</default>
 				</property>
 				<property name="count:errorMessageConfig">
 					<type>d:text</type>
