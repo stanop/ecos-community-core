@@ -42,11 +42,16 @@ public class RecordsMutatePost extends AbstractWebScript {
 
         Request request;
 
-        if (MimetypeMap.MIMETYPE_JSON.equals(req.getContentType())) {
+        String contentType = req.getContentType();
+        if (contentType == null) {
+            contentType = "";
+        }
+
+        if (contentType.contains(MimetypeMap.MIMETYPE_JSON)) {
 
             request = utils.readBody(req, Request.class);
 
-        } else if (WebScriptRequestImpl.MULTIPART_FORM_DATA.equals(req.getContentType())) {
+        } else if (contentType.contains(WebScriptRequestImpl.MULTIPART_FORM_DATA)) {
 
             RecordMut recordMut = new RecordMut();
             ObjectNode attributes = JsonNodeFactory.instance.objectNode();
