@@ -302,7 +302,7 @@ public class RecordsServiceImpl implements RecordsService {
             records = new RecordsResult<>();
             records.setHasMore(recordRefs.getHasMore());
             records.setTotalCount(recordRefs.getTotalCount());
-            records.setDebug(records.getDebug());
+            records.setDebug(recordRefs.getDebug());
             records.setRecords(meta);
 
             if (query.isDebug()) {
