@@ -6,9 +6,10 @@ import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.util.*;
 
@@ -29,12 +30,35 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO implements Reco
         this.addSourceId = addSourceId;
     }
 
+    public RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema) {
+
+        if (this instanceof RecordsWithMetaDAO) {
+
+            RecordsResult<?> metaValues = getMetaValues(query);
+            List<ObjectNode> meta = graphQLMetaService.getMeta(metaValues.getRecords(), metaSchema);
+            meta = addSourceId ? RecordsUtils.convertToRefs(getId(), meta) : meta;
+
+            RecordsResult<ObjectNode> result = new RecordsResult<>();
+            result.setTotalCount(metaValues.getTotalCount());
+            result.setHasMore(metaValues.getHasMore());
+            result.setRecords(meta);
+
+            return result;
+        }
+
+        throw new RuntimeException("RecordsDAO must implement RecordsWithMetaDAO");
+    }
+
     public List<ObjectNode> getMeta(List<RecordRef> records, String gqlSchema) {
         List<ObjectNode> meta = graphQLMetaService.getMeta(getMetaValues(records), gqlSchema);
         return addSourceId ? RecordsUtils.convertToRefs(getId(), meta) : meta;
     }
 
-    protected List<MetaValue> getMetaValues(List<RecordRef> records) {
+    protected List<?> getMetaValues(List<RecordRef> records) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    protected RecordsResult<?> getMetaValues(RecordsQuery query) {
         throw new RuntimeException("Not implemented");
     }
 

@@ -5,7 +5,6 @@ import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.MetaUtils;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 public class MetaExplicitValue implements MetaValue {
@@ -54,7 +53,7 @@ public class MetaExplicitValue implements MetaValue {
     }
 
     @Override
-    public List<MetaValue> getAttribute(String name) {
+    public Object getAttribute(String name) throws Exception {
         if (metaVal != null) {
             return metaVal.getAttribute(name);
         }

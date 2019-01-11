@@ -27,7 +27,7 @@ public class GqlContext {
 
     private LoadingCache<NodeRef, GqlAlfNode> nodes;
     private LoadingCache<Object, Optional<GqlQName>> qnames;
-    private List<MetaValue> metaValues;
+    private List<?> metaValues;
 
     private final ServiceRegistry serviceRegistry;
 
@@ -114,13 +114,12 @@ public class GqlContext {
         return result;
     }
 
-    public List<MetaValue> getMetaValues() {
+    public List<?> getMetaValues() {
         return metaValues;
     }
 
-    public void setMetaValues(List<MetaValue> metaValues) {
+    public void setMetaValues(List<?> metaValues) {
         this.metaValues = metaValues;
-        metaValues.forEach(v -> v.init(this));
     }
 
     public SearchService getSearchService() {

@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.request.RecordAttributes;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.io.IOException;
 import java.util.*;
@@ -78,7 +78,7 @@ public class RecordsQueryPost extends AbstractWebScript {
 
             } else {
 
-                RecordsResult<RecordAttributes> metaResult = new RecordsResult<>();
+                RecordsResult<RecordMeta> metaResult = new RecordsResult<>();
                 metaResult.setRecords(recordsService.getMeta(request.records, getAttributes(request)));
                 recordsResult = metaResult;
             }

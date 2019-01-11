@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source.meta;
+package ru.citeck.ecos.records.meta.value;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;

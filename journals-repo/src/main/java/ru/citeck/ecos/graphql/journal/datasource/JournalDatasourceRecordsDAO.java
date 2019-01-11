@@ -12,7 +12,7 @@ import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.graphql.meta.GraphQLMetaServiceImpl;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
 import ru.citeck.ecos.records.source.RecordsDAO;

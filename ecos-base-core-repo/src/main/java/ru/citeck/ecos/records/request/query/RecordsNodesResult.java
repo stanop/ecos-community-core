@@ -1,8 +1,8 @@
 package ru.citeck.ecos.records.request.query;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import ru.citeck.ecos.records.RecordMeta;
 
-public class RecordsNodesResult extends RecordsResult<ObjectNode> {
+public class RecordsNodesResult extends RecordsQueryResult<RecordMeta> {
 
     public RecordsNodesResult() {
     }

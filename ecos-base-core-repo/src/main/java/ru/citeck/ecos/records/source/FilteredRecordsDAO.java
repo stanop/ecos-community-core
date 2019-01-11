@@ -2,7 +2,7 @@ package ru.citeck.ecos.records.source;
 
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.util.ArrayList;
 import java.util.List;

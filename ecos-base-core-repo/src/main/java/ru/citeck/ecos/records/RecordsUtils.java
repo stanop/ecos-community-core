@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionStatus;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.util.*;
 import java.util.function.BiFunction;

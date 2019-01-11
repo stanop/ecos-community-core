@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.request;
+package ru.citeck.ecos.records.request.result;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -8,19 +8,19 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 import java.util.Iterator;
 
-public abstract class RequestResDebug {
+public abstract class DebugResult {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ObjectNode debug;
 
-    protected RequestResDebug() {
+    protected DebugResult() {
     }
 
-    protected RequestResDebug(RequestResDebug other) {
+    protected DebugResult(DebugResult other) {
         debug = other.debug;
     }
 
-    protected void merge(RequestResDebug other) {
+    protected void merge(DebugResult other) {
         if (other.debug == null) {
             return;
         }

@@ -1,57 +1,34 @@
 package ru.citeck.ecos.records.request.query;
 
-import ru.citeck.ecos.records.request.RequestResDebug;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class RecordsResult<T> extends RequestResDebug {
+public class RecordsQueryResult<T> extends RecordsResult<T> {
 
-    private List<T> records = new ArrayList<>();
     private boolean hasMore = false;
     private long totalCount = 0;
 
-    public RecordsResult() {
+    public RecordsQueryResult() {
     }
 
-    public RecordsResult(RecordsResult<T> other) {
+    public RecordsQueryResult(RecordsQueryResult<T> other) {
         super(other);
-        records = new ArrayList<>(other.getRecords());
         hasMore = other.hasMore;
         totalCount = other.totalCount;
     }
 
-    public <K> RecordsResult(RecordsResult<K> other, Function<K, T> mapper) {
-        super(other);
-        records = other.getRecords().stream().map(mapper).collect(Collectors.toList());
+    public <K> RecordsQueryResult(RecordsQueryResult<K> other, Function<K, T> mapper) {
+        super(other, mapper);
         hasMore = other.hasMore;
         totalCount = other.totalCount;
     }
 
-    public void merge(RecordsResult<T> other) {
+    public void merge(RecordsQueryResult<T> other) {
         super.merge(other);
-
-        List<T> records = new ArrayList<>();
-        records.addAll(this.records);
-        records.addAll(other.getRecords());
-        this.records = records;
-
         hasMore = other.getHasMore();
         totalCount += other.getTotalCount();
-    }
-
-    public List<T> getRecords() {
-        return records;
-    }
-
-    public void setRecords(List<T> records) {
-        if (records != null) {
-            this.records = new ArrayList<>(records);
-        } else {
-            this.records = new ArrayList<>();
-        }
     }
 
     public boolean getHasMore() {
@@ -72,7 +49,7 @@ public class RecordsResult<T> extends RequestResDebug {
 
     @Override
     public String toString() {
-        String recordsStr = records.stream()
+        String recordsStr = getRecords().stream()
                                    .map(Object::toString)
                                    .collect(Collectors.joining(",\n    "));
         if (!recordsStr.isEmpty()) {

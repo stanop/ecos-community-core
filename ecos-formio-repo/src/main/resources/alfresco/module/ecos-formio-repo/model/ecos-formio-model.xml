@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="ecosFormio:model" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/ecos/formio/1.0" prefix="ecosFormio" />
+    </namespaces>
+
+    <types>
+
+        <type name="ecosFormio:form">
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="ecosFormio:formType">
+                    <type>d:text</type>
+                </property>
+                <property name="ecosFormio:formId">
+                    <type>d:text</type>
+                </property>
+                <property name="ecosFormio:formKey">
+                    <type>d:text</type>
+                </property>
+                <property name="ecosFormio:formMode">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>ecosFormio:hasId</aspect>
+            </mandatory-aspects>
+        </type>
+
+    </types>
+
+    <aspects>
+        <aspect name="ecosFormio:hasId">
+            <properties>
+                <property name="ecosFormio:id">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+
+</model>

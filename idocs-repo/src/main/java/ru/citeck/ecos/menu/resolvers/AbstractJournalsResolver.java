@@ -20,7 +20,7 @@ import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.processor.TemplateExpressionEvaluator;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.utils.RepoUtils;
 

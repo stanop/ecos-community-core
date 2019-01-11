@@ -5,7 +5,7 @@ import ru.citeck.ecos.model.EcosBpmModel;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 

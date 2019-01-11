@@ -2,7 +2,7 @@ package ru.citeck.ecos.records.source.alfnode.search;
 
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.util.Date;
 

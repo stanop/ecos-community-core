@@ -33,7 +33,7 @@ public class HistoryRecordModel {
     public List<TaskAttachmentModel> taskAttachments;
     @MetaAtt("event:taskInstanceId")
     public String taskInstanceId;
-    @MetaAtt("event:taskPooledActors")
+    @MetaAtt(".att(n:'event:taskPooledActors')")
     public List<EventUserOrGroupModel> taskPooledActors;
 
     public String getNodeRef() {

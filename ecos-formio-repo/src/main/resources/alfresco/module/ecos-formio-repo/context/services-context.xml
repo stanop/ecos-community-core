@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+    <bean id="ecos.formio.contentDAO" class="ru.citeck.ecos.content.dao.JsonContentDAO">
+        <property name="contentType" value="ru.citeck.ecos.formio.FormioForm" />
+    </bean>
+
+    <bean id="ecos.formio.repoFormsDAO" class="ru.citeck.ecos.content.RepoContentDAOImpl">
+        <property name="rootNode" value="/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:formio-forms" />
+        <property name="contentDAO" ref="ecos.formio.contentDAO" />
+        <property name="configNodeType" value="{http://www.citeck.ru/model/ecos/formio/1.0}form" />
+    </bean>
+
+    <bean id="ecos.formio.contentDeployer" class="ru.citeck.ecos.content.deploy.ContentDeployer">
+        <property name="artifactType" value="formio-content-deployer" />
+        <property name="repoContentDAO" ref="ecos.formio.repoFormsDAO" />
+        <property name="metadataKeys">
+            <set>
+                <value>{http://www.citeck.ru/model/ecos/formio/1.0}id</value>
+            </set>
+        </property>
+        <property name="metadataExtractor">
+            <bean class="ru.citeck.ecos.formio.FormioFormMetadata" />
+        </property>
+        <property name="locations">
+            <bean factory-bean="resourceResolver" factory-method="getResources">
+                <constructor-arg>
+                    <list>
+                        <value>classpath*:alfresco/formio/**/*.json</value>
+                        <value>classpath*:alfresco/module/*/formio/**/*.json</value>
+                        <value>classpath*:alfresco/extension/formio/**/*.json</value>
+                    </list>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="ecos.formio.formService" class="ru.citeck.ecos.formio.FormioFormService">
+        <property name="formsContentDAO" ref="ecos.formio.repoFormsDAO" />
+    </bean>
+
+</beans>

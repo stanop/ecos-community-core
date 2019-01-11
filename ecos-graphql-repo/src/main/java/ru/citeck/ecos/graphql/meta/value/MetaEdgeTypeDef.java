@@ -2,8 +2,10 @@ package ru.citeck.ecos.graphql.meta.value;
 
 import graphql.Scalars;
 import graphql.schema.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.GqlTypeDefinition;
+import ru.citeck.ecos.graphql.meta.MetaUtils;
 
 import java.util.List;
 
@@ -15,6 +17,8 @@ public class MetaEdgeTypeDef implements GqlTypeDefinition {
     public static GraphQLTypeReference typeRef() {
         return new GraphQLTypeReference(TYPE_NAME);
     }
+
+    private MetaValueTypeDef metaValueTypeDef;
 
     @Override
     public GraphQLObjectType getType() {
@@ -42,12 +46,21 @@ public class MetaEdgeTypeDef implements GqlTypeDefinition {
         return edge.getName();
     }
 
-    private MetaValue getValue(DataFetchingEnvironment env) {
+    private Object getValue(DataFetchingEnvironment env) {
         return getValues(env).stream().findFirst().orElse(null);
+    }
+
+    @Autowired
+    public void setMetaValueTypeDef(MetaValueTypeDef metaValueTypeDef) {
+        this.metaValueTypeDef = metaValueTypeDef;
     }
 
     private List<MetaValue> getValues(DataFetchingEnvironment env) {
         MetaEdge edge = env.getSource();
-        return edge.getValue();
+        try {
+            return metaValueTypeDef.getAsMetaValues(edge.getValue(), env.getContext());
+        } catch (Exception e) {
+            throw new RuntimeException("Error with edge " + edge.getName(), e);
+        }
     }
 }

@@ -1,20 +1,19 @@
-package ru.citeck.ecos.records.request;
+package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import ru.citeck.ecos.records.RecordRef;
 
-public class RecordAttributes {
+public class RecordMeta {
 
     private RecordRef id;
 
     private ObjectNode attributes = JsonNodeFactory.instance.objectNode();
 
-    public RecordAttributes() {
+    public RecordMeta() {
     }
 
-    public RecordAttributes(RecordRef id) {
+    public RecordMeta(RecordRef id) {
         this.id = id;
     }
 

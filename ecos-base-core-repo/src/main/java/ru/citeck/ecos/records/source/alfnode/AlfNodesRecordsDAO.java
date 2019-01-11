@@ -28,7 +28,7 @@ import ru.citeck.ecos.records.request.mutation.RecordMut;
 import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.source.*;
 import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeRecord;
 import ru.citeck.ecos.records.source.alfnode.search.AlfNodesSearch;
