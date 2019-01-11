@@ -216,7 +216,11 @@ public class LuceneQuery implements SearchQueryBuilder {
         return result.toString();
     }
 
-    private static String buildField(String field) {
+    private String buildField(String field) {
+        return buildField(field, false);
+    }
+
+    protected String buildField(String field, boolean exact) {
         try {
             return FieldType.forName(field).toString();
         } catch (IllegalArgumentException e) {
@@ -308,7 +312,7 @@ public class LuceneQuery implements SearchQueryBuilder {
             }
 
             triplet = convertAssocTriplet(triplet);
-            String field = buildField(triplet.getField());
+            String field = buildField(triplet.getField(), SearchPredicate.STRING_EQUALS.equals(criterion));
 
             switch (criterion) {
                 case STRING_CONTAINS:
