@@ -29,4 +29,13 @@ public class FtsAlfrescoQueryMigration extends LuceneQuery {
         
         return queryBuilder.buildQuery(criteria);
     }
+
+    @Override
+    protected String buildField(String field, boolean exact) {
+        try {
+            return FieldType.forName(field).toString();
+        } catch (IllegalArgumentException e) {
+            return (exact ? "=" : "@") + escapeField(field);
+        }
+    }
 }
