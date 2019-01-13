@@ -1,14 +1,15 @@
 package ru.citeck.ecos.records.source;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
-import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records.meta.RecordsMetaService;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.util.*;
@@ -18,7 +19,7 @@ import java.util.*;
  */
 public abstract class LocalRecordsDAO extends AbstractRecordsDAO implements RecordsActionExecutor {
 
-    protected GraphQLMetaService graphQLMetaService;
+    protected RecordsMetaService recordsMetaService;
     protected GroupActionService groupActionService;
 
     private boolean addSourceId = true;
@@ -30,18 +31,20 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO implements Reco
         this.addSourceId = addSourceId;
     }
 
-    public RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema) {
+    public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String metaSchema) {
 
         if (this instanceof RecordsWithMetaDAO) {
 
-            RecordsResult<?> metaValues = getMetaValues(query);
-            List<ObjectNode> meta = graphQLMetaService.getMeta(metaValues.getRecords(), metaSchema);
-            meta = addSourceId ? RecordsUtils.convertToRefs(getId(), meta) : meta;
+            RecordsQueryResult<?> metaValues = getMetaValues(query);
+            RecordsResult<RecordMeta> meta = recordsMetaService.getMeta(metaValues.getRecords(), metaSchema);
+            if (addSourceId) {
+                meta.setRecords(RecordsUtils.convertToRefs(getId(), meta.getRecords()));
+            }
 
-            RecordsResult<ObjectNode> result = new RecordsResult<>();
+            RecordsQueryResult<RecordMeta> result = new RecordsQueryResult<>();
+            result.merge(meta);
             result.setTotalCount(metaValues.getTotalCount());
             result.setHasMore(metaValues.getHasMore());
-            result.setRecords(meta);
 
             return result;
         }
@@ -49,21 +52,25 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO implements Reco
         throw new RuntimeException("RecordsDAO must implement RecordsWithMetaDAO");
     }
 
-    public List<ObjectNode> getMeta(List<RecordRef> records, String gqlSchema) {
-        List<ObjectNode> meta = graphQLMetaService.getMeta(getMetaValues(records), gqlSchema);
-        return addSourceId ? RecordsUtils.convertToRefs(getId(), meta) : meta;
+    public RecordsResult<RecordMeta> getMeta(List<RecordRef> records, String gqlSchema) {
+        RecordsResult<RecordMeta> result = recordsMetaService.getMeta(getMetaValues(records), gqlSchema);
+        if (addSourceId) {
+            result.setRecords(RecordsUtils.toScopedRecordsMeta(getId(), result.getRecords()));
+        }
+        return result;
     }
 
     protected List<?> getMetaValues(List<RecordRef> records) {
         throw new RuntimeException("Not implemented");
     }
 
-    protected RecordsResult<?> getMetaValues(RecordsQuery query) {
+    protected RecordsQueryResult<?> getMetaValues(RecordsQuery query) {
         throw new RuntimeException("Not implemented");
     }
 
     @Override
-    public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {
+    public ActionResults<RecordRef> executeAction(List<RecordRef> records,
+                                                  GroupActionConfig config) {
         return groupActionService.execute(records, config);
     }
 
@@ -73,7 +80,7 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO implements Reco
     }
 
     @Autowired
-    public void setGraphQLMetaService(GraphQLMetaService graphQLMetaService) {
-        this.graphQLMetaService = graphQLMetaService;
+    public void setRecordsMetaService(RecordsMetaService recordsMetaService) {
+        this.recordsMetaService = recordsMetaService;
     }
 }

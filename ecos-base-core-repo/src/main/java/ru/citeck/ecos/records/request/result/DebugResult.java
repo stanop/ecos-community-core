@@ -20,7 +20,7 @@ public abstract class DebugResult {
         debug = other.debug;
     }
 
-    protected void merge(DebugResult other) {
+    public void merge(DebugResult other) {
         if (other.debug == null) {
             return;
         }

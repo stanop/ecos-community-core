@@ -1,15 +1,14 @@
 package ru.citeck.ecos.records.bpm;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
 import ru.citeck.ecos.records.source.RecordsMetaDAO;
@@ -27,14 +26,12 @@ public class EcosBpmCatRecords extends AbstractRecordsDAO implements RecordsMeta
         put("parent", "attr:parent");
     }};
 
-    private GraphQLMetaService graphQLMetaService;
-
     public EcosBpmCatRecords() {
         setId(ID);
     }
 
     @Override
-    public RecordsResult<RecordRef> getRecords(RecordsQuery query) {
+    public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
 
         ChildrenAlfNodesSearch.Query childrenQuery = new ChildrenAlfNodesSearch.Query();
         childrenQuery.parent = "workspace://SpacesStore/ecos-bpm-category-root";
@@ -44,27 +41,14 @@ public class EcosBpmCatRecords extends AbstractRecordsDAO implements RecordsMeta
         RecordsQuery processNodesQuery = new RecordsQuery();
         processNodesQuery.setLanguage(ChildrenAlfNodesSearch.LANGUAGE);
         processNodesQuery.setQuery(childrenQuery);
-        RecordsResult<RecordRef> result = recordsService.getRecords(processNodesQuery);
+        RecordsQueryResult<RecordRef> result = recordsService.getRecords(processNodesQuery);
 
         return RecordsUtils.toScoped(ID, result);
     }
 
     @Override
-    public List<ObjectNode> getMeta(List<RecordRef> records, String gqlSchema) {
-/*
-
-        List<ObjectNode> meta = graphQLMetaService.getMeta(records.stream().map(Category), gqlSchema);
-*/
-
-
-
-
+    public RecordsResult<RecordMeta> getMeta(List<RecordRef> records, String gqlSchema) {
         return null;
-    }
-
-    @Autowired
-    public void setGraphQLMetaService(GraphQLMetaService graphQLMetaService) {
-        this.graphQLMetaService = graphQLMetaService;
     }
 
     private static class Category implements MetaValue {

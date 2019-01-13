@@ -7,8 +7,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.source.alfnode.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.search.*;
 
@@ -99,10 +101,11 @@ public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO {
             return list -> list;
         } else {
             return list -> {
-                List<ObjectNode> meta = recordsService.getMeta(list, metaQuery.toString());
-                return meta.stream()
-                           .filter(m -> criterionFilters.stream().allMatch(f -> f.apply(m)))
-                           .map(m -> new RecordRef(m.get("id").asText()))
+                RecordsResult<RecordMeta> meta = recordsService.getMeta(list, metaQuery.toString());
+                return meta.getRecords()
+                           .stream()
+                           .filter(m -> criterionFilters.stream().allMatch(f -> f.apply(m.getAttributes())))
+                           .map(RecordMeta::getId)
                            .collect(Collectors.toList());
             };
         }

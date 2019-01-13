@@ -9,6 +9,7 @@ import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
@@ -40,7 +41,7 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
         return recordsService.getRecords(convertedQuery);
     }
 
-    public RecordsResult<ObjectNode> getRecords(Object recordsQuery, String metaSchema) {
+    public RecordsQueryResult<RecordMeta> getRecords(Object recordsQuery, String metaSchema) {
         RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
         return recordsService.getRecords(convertedQuery, metaSchema);
     }

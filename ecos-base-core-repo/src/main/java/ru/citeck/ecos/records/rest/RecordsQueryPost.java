@@ -1,14 +1,14 @@
 package ru.citeck.ecos.records.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.result.RecordsResult;
 
@@ -39,8 +39,6 @@ public class RecordsQueryPost extends AbstractWebScript {
                         "but found both. 'schema' field will be ignored");
         }
 
-        boolean isFlatResult = Boolean.TRUE.equals(request.flat);
-
         RecordsResult<?> recordsResult;
 
         if (request.query != null) {
@@ -51,7 +49,7 @@ public class RecordsQueryPost extends AbstractWebScript {
 
             } else if (request.schema != null) {
 
-                recordsResult = recordsService.getRecords(request.query, request.schema, isFlatResult);
+                recordsResult = recordsService.getRecords(request.query, request.schema);
 
             } else {
 
@@ -70,17 +68,11 @@ public class RecordsQueryPost extends AbstractWebScript {
 
             if (request.attributes == null) {
 
-                RecordsResult<ObjectNode> metaResult = new RecordsResult<>();
-                metaResult.setTotalCount(request.records.size());
-                metaResult.setHasMore(false);
-                metaResult.setRecords(recordsService.getMeta(request.records, request.schema, isFlatResult));
-                recordsResult = metaResult;
+                recordsResult = recordsService.getMeta(request.records, request.schema);
 
             } else {
 
-                RecordsResult<RecordMeta> metaResult = new RecordsResult<>();
-                metaResult.setRecords(recordsService.getMeta(request.records, getAttributes(request)));
-                recordsResult = metaResult;
+                recordsResult = recordsService.getMeta(request.records, getAttributes(request));
             }
         }
 
@@ -119,13 +111,12 @@ public class RecordsQueryPost extends AbstractWebScript {
 
     public static class Request {
 
-        public List<RecordRef> records;
-        public RecordsQuery query;
-        public String schema;
-        public Boolean flat;
-        public JsonNode attributes;
+        @Getter @Setter private List<RecordRef> records;
+        @Getter @Setter private RecordsQuery query;
+        @Getter @Setter private JsonNode attributes;
+        @Getter @Setter private String schema;
 
-        boolean isSingleRecord = false;
+        private boolean isSingleRecord = false;
 
         public void setRecord(RecordRef record) {
             if (records == null) {

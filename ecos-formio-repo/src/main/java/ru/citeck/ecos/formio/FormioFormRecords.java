@@ -3,7 +3,7 @@ package ru.citeck.ecos.formio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.result.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.source.LocalRecordsDAO;
 import ru.citeck.ecos.records.source.RecordsWithMetaDAO;
 
@@ -22,10 +22,10 @@ public class FormioFormRecords extends LocalRecordsDAO implements RecordsWithMet
     }
 
     @Override
-    protected RecordsResult<?> getMetaValues(RecordsQuery recordsQuery) {
+    protected RecordsQueryResult<?> getMetaValues(RecordsQuery recordsQuery) {
 
         Query query = recordsQuery.getQuery(Query.class);
-        RecordsResult<FormioForm> result = new RecordsResult<>();
+        RecordsQueryResult<FormioForm> result = new RecordsQueryResult<>();
 
         Optional<FormioForm> form = formioFormService.getForm(query.type, query.key, query.id, query.mode);
         form.ifPresent(formioForm -> result.setRecords(Collections.singletonList(formioForm)));

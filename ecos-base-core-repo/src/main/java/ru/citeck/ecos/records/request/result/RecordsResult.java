@@ -20,9 +20,16 @@ public class RecordsResult<T> extends DebugResult {
     public <K> RecordsResult(RecordsResult<K> other, Function<K, T> mapper) {
         super(other);
         records = new ArrayList<>();
-        for (K record: other.getRecords()) {
-            records.add(mapper.apply(record));
+        for (K record : other.getRecords()) {
+            T mappedRec = mapper.apply(record);
+            if (mappedRec != null) {
+                records.add(mappedRec);
+            }
         }
+    }
+
+    public RecordsResult(List<T> records) {
+        setRecords(records);
     }
 
     public void merge(RecordsResult<T> other) {

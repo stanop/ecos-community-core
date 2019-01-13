@@ -9,7 +9,7 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.result.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,9 +26,9 @@ public class MultiRecordsDAO extends AbstractRecordsDAO
     private Map<String, RecordsDAO> daoBySource = new ConcurrentHashMap<>();
 
     @Override
-    public RecordsResult<RecordRef> getRecords(RecordsQuery query) {
+    public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
 
-        RecordsResult<RecordRef> result = new RecordsResult<>();
+        RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
 
         RecordsQuery localQuery = new RecordsQuery(query);
 
@@ -45,7 +45,7 @@ public class MultiRecordsDAO extends AbstractRecordsDAO
 
             localQuery.setMaxItems(query.getMaxItems() - result.getRecords().size());
             RecordsDAO recordsDAO = recordsDao.get(sourceIdx);
-            RecordsResult<RecordRef> daoRecords = recordsDAO.getRecords(localQuery);
+            RecordsQueryResult<RecordRef> daoRecords = recordsDAO.getRecords(localQuery);
 
             result.merge(daoRecords);
 

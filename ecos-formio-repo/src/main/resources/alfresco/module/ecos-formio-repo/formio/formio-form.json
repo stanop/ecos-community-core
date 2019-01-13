@@ -1,7 +1,7 @@
 {
     "id": "ecos-formio-form",
-    "type": "recordType",
-    "key": "ecosFormio:form",
+    "formType": "recordType",
+    "formKey": "ecosFormio:form",
     "definition": {
         "display": "form",
         "components": [

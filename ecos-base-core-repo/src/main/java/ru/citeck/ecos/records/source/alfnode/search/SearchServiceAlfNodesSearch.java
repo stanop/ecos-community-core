@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
@@ -50,7 +51,7 @@ public class SearchServiceAlfNodesSearch {
         recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_XPATH));
     }
 
-    private RecordsResult<RecordRef> queryRecordsImpl(RecordsQuery recordsQuery, Long afterDbId, Date afterCreated) {
+    private RecordsQueryResult<RecordRef> queryRecordsImpl(RecordsQuery recordsQuery, Long afterDbId, Date afterCreated) {
 
         String query = recordsQuery.getQuery().asText();
 
@@ -107,7 +108,7 @@ public class SearchServiceAlfNodesSearch {
             }
             resultSet = searchService.query(searchParameters);
 
-            RecordsResult<RecordRef> result = new RecordsResult<>();
+            RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
             result.setRecords(resultSet.getNodeRefs()
                                        .stream()
                                        .map(RecordRef::new)
@@ -141,7 +142,7 @@ public class SearchServiceAlfNodesSearch {
         }
 
         @Override
-        public RecordsResult<RecordRef> queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
+        public RecordsQueryResult<RecordRef> queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
             return queryRecordsImpl(query, afterDbId, afterCreated);
         }
 

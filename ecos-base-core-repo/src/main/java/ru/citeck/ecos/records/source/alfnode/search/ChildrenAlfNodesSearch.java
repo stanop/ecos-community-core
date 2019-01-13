@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
 
@@ -33,7 +34,7 @@ public class ChildrenAlfNodesSearch implements AlfNodesSearch {
     }
 
     @Override
-    public RecordsResult<RecordRef> queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
+    public RecordsQueryResult<RecordRef> queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
 
         Query assocsQuery = query.getQuery(Query.class);
 
@@ -42,7 +43,7 @@ public class ChildrenAlfNodesSearch implements AlfNodesSearch {
 
         List<NodeRef> children = fillChildren(parentRef, assocQName, new ArrayList<>(), assocsQuery.recursive);
 
-        RecordsResult<RecordRef> results = new RecordsResult<>();
+        RecordsQueryResult<RecordRef> results = new RecordsQueryResult<>();
         results.setRecords(children.stream()
                                    .map(RecordRef::new)
                                    .collect(Collectors.toList()));

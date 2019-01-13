@@ -1,8 +1,9 @@
 package ru.citeck.ecos.records.request.query;
 
 import ru.citeck.ecos.records.RecordMeta;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 
-public class RecordsNodesResult extends RecordsQueryResult<RecordMeta> {
+public class RecordsNodesResult extends RecordsResult<RecordMeta> {
 
     public RecordsNodesResult() {
     }

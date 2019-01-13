@@ -5,7 +5,6 @@ import graphql.schema.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.GqlTypeDefinition;
-import ru.citeck.ecos.graphql.meta.MetaUtils;
 
 import java.util.List;
 

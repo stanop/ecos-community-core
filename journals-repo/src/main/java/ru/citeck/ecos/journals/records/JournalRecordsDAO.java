@@ -1,15 +1,15 @@
 package ru.citeck.ecos.journals.records;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.journals.JournalType;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.result.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.records.source.alfnode.search.CriteriaAlfNodesSearch;
 
@@ -20,11 +20,11 @@ public class JournalRecordsDAO {
     private GqlQueryGenerator gqlQueryGenerator;
     private RecordsService recordsService;
 
-    public RecordsResult<ObjectNode> getRecordsWithData(JournalType journalType,
-                                                        String query,
-                                                        String language,
-                                                        JGqlPageInfoInput pageInfo,
-                                                        boolean debug) {
+    public RecordsQueryResult<RecordMeta> getRecordsWithData(JournalType journalType,
+                                                             String query,
+                                                             String language,
+                                                             JGqlPageInfoInput pageInfo,
+                                                             boolean debug) {
 
         String gqlQuery = gqlQueryGenerator.generate(journalType);
         RecordsQuery recordsQuery = createQuery(journalType.getDataSource(), query, language, pageInfo, debug);
@@ -32,11 +32,11 @@ public class JournalRecordsDAO {
         return recordsService.getRecords(recordsQuery, gqlQuery);
     }
 
-    public RecordsResult<RecordRef> getRecords(JournalType journalType,
-                                               String query,
-                                               String language,
-                                               JGqlPageInfoInput pageInfo,
-                                               boolean debug) {
+    public RecordsQueryResult<RecordRef> getRecords(JournalType journalType,
+                                                    String query,
+                                                    String language,
+                                                    JGqlPageInfoInput pageInfo,
+                                                    boolean debug) {
 
         RecordsQuery recordsQuery = createQuery(journalType.getDataSource(), query, language, pageInfo, debug);
         return recordsService.getRecords(recordsQuery);

@@ -1,8 +1,9 @@
 {
-  "type": "alfType",
-  "key": "cm:content",
-  "id": "someId",
-  "mode": "edit",
+  "id": "testdassdas",
+  "formType": "alfType",
+  "formKey": "cm:content",
+  "formId": "someId",
+  "formMode": "edit",
   "definition": {
     "type": "form",
     "tags": [],

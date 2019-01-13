@@ -3,9 +3,7 @@ package ru.citeck.ecos.records;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
-import ru.citeck.ecos.graphql.meta.converter.ConvertersProvider;
 import ru.citeck.ecos.graphql.meta.annotation.MetaAtt;
-import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.actions.RecordsActionFactory;
 import ru.citeck.ecos.records.request.delete.RecordsDelResult;
@@ -58,6 +56,12 @@ public interface RecordsService {
 
     /**
      * Query records with meta
+     * Fields example: {name: 'cm:name', title: 'cm:title'}
+     */
+    RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String schema);
+
+    /**
+     * Query records with meta
      * Fields example: ['cm:name', 'cm:title']
      */
     RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, Collection<String> attributes);
@@ -75,6 +79,12 @@ public interface RecordsService {
     RecordsResult<RecordMeta> getMeta(List<RecordRef> records, Collection<String> attributes);
 
     /**
+     * Get ordered meta
+     * Fields example: ["cm:name", "cm:title"]
+     */
+    RecordsResult<RecordMeta> getMeta(List<RecordRef> records, String schema);
+
+    /**
      * Get meta
      * Fields example: {"name" : "cm:name", "title" : "cm:title"]
      */
@@ -86,8 +96,6 @@ public interface RecordsService {
      *                  This class must contain constructor without arguments and have public fields
      *                  Getters/setters is not yet supported
      *
-     * @see ConvertersProvider
-     * @see MetaConverter
      * @see MetaAtt
      */
     <T> RecordsResult<T> getMeta(Collection<RecordRef> records, Class<T> metaClass);
@@ -98,8 +106,6 @@ public interface RecordsService {
      *                  This class must contain constructor without arguments and have public fields
      *                  Getters/setters is not yet supported
      *
-     * @see ConvertersProvider
-     * @see MetaConverter
      * @see MetaAtt
      */
     <T> RecordsResult<T> getMeta(List<RecordRef> records, Class<T> metaClass);

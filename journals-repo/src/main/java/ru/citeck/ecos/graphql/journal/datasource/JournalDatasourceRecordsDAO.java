@@ -1,6 +1,5 @@
 package ru.citeck.ecos.graphql.journal.datasource;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +8,11 @@ import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.JGqlSortBy;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
-import ru.citeck.ecos.graphql.meta.GraphQLMetaServiceImpl;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.meta.RecordsMetaService;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.result.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
 import ru.citeck.ecos.records.source.RecordsDAO;
@@ -33,8 +33,8 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
 
     private ServiceRegistry serviceRegistry;
     private JournalDataSource dataSource;
-    private GraphQLMetaServiceImpl graphQLMetaService;
     private GraphQLService graphQLService;
+    private RecordsMetaService recordsMetaService;
 
     @PostConstruct
     public void init() {
@@ -52,7 +52,7 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
     }
 
     @Override
-    public RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema) {
+    public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String metaSchema) {
 
         List<JGqlSortBy> sortBy = new ArrayList<>();
         for (SortBy sort: query.getSortBy()) {
@@ -66,7 +66,7 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
                                                            sortBy,
                                                            query.getSkipCount());
 
-        RecordsResult<ObjectNode> result = new RecordsResult<>();
+        RecordsQueryResult<RecordMeta> result = new RecordsQueryResult<>();
 
         GqlContext gqlContext = graphQLService.getGqlContext();
         JGqlRecordsConnection records = dataSource.getRecords(gqlContext,
@@ -76,14 +76,14 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
 
         result.setTotalCount(records.totalCount());
         result.setHasMore(records.pageInfo().isHasNextPage());
-        result.setRecords(graphQLMetaService.getMeta(records.records(), metaSchema));
+        result.merge(recordsMetaService.getMeta(records.records(), metaSchema));
 
         return result;
     }
 
     @Autowired
-    public void setGraphQLMetaService(GraphQLMetaServiceImpl graphQLMetaService) {
-        this.graphQLMetaService = graphQLMetaService;
+    public void setRecordsMetaService(RecordsMetaService recordsMetaService) {
+        this.recordsMetaService = recordsMetaService;
     }
 
     @Autowired
