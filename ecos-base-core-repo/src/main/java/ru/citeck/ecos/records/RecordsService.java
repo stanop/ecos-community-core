@@ -15,6 +15,7 @@ import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.source.MetaAttributeDef;
 import ru.citeck.ecos.records.source.RecordsDAO;
+import ru.citeck.ecos.records.source.RecordsQueryDAO;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.Optional;
  *
  * @see MetaValue
  * @see RecordRef
- * @see RecordsDAO
+ * @see RecordsQueryDAO
  *
  * @author Pavel Simonov
  */

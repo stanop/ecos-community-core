@@ -209,14 +209,17 @@ public class RecordsMetaServiceImpl implements RecordsMetaService {
         Map<String, String> keysMapping = new HashMap<>();
 
         attributes.forEach((name, path) -> {
+
             String key = generateKeys ? keys.incrementAndGet() : name;
+
             keysMapping.put(key, name);
             schema.append(key).append(":");
-            if (path.charAt(0) == '.') {
-                schema.append(path, 1, path.length());
-            } else {
-                schema.append(path);
+
+            if (path.charAt(0) != '.') {
+                path = convertAttDefinition(path, "str", false);
             }
+
+            schema.append(path, 1, path.length());
             schema.append(",");
         });
         schema.setLength(schema.length() - 1);
@@ -323,10 +326,6 @@ public class RecordsMetaServiceImpl implements RecordsMetaService {
     }
 
     private String convertAttDefinition(String def, String defaultScalar, boolean multiple) {
-
-        if (def.startsWith(".")) {
-            return def.substring(1);
-        }
 
         String fieldName = def;
         String scalarField = defaultScalar;

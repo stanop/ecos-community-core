@@ -9,6 +9,7 @@ import ru.citeck.ecos.records.meta.value.MetaJsonNodeValue;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.source.LocalRecordsDAO;
+import ru.citeck.ecos.records.source.RecordsQueryDAO;
 import ru.citeck.ecos.records.source.RecordsWithMetaDAO;
 import ru.citeck.ecos.webscripts.history.DocumentHistoryGet;
 
@@ -16,7 +17,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class HistoryRecordsDAO extends LocalRecordsDAO implements RecordsWithMetaDAO {
+public class HistoryRecordsDAO extends LocalRecordsDAO
+                               implements RecordsWithMetaDAO,
+                                          RecordsQueryDAO {
 
     private static final String ID = "history";
     private static final String LANGUAGE_DOCUMENT = "document";

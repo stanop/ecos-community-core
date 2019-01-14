@@ -5,7 +5,7 @@ import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 
-public interface RecordsWithMetaDAO extends RecordsDAO {
+public interface RecordsWithMetaDAO extends RecordsQueryDAO {
 
     RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String metaSchema);
 

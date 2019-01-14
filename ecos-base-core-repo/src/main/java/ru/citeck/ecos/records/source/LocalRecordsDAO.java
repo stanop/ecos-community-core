@@ -17,7 +17,7 @@ import java.util.*;
 /**
  * @author Pavel Simonov
  */
-public abstract class LocalRecordsDAO extends AbstractRecordsDAO implements RecordsActionExecutor {
+public abstract class LocalRecordsDAO extends AbstractRecordsDAO {
 
     protected RecordsMetaService recordsMetaService;
     protected GroupActionService groupActionService;
@@ -68,7 +68,6 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO implements Reco
         throw new RuntimeException("Not implemented");
     }
 
-    @Override
     public ActionResults<RecordRef> executeAction(List<RecordRef> records,
                                                   GroupActionConfig config) {
         return groupActionService.execute(records, config);

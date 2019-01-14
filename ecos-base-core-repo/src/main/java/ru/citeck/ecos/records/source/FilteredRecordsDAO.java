@@ -3,15 +3,14 @@ package ru.citeck.ecos.records.source;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class FilteredRecordsDAO extends AbstractRecordsDAO {
+public abstract class FilteredRecordsDAO extends AbstractRecordsDAO implements RecordsQueryDAO {
 
-    private RecordsDAO targetDAO;
+    private RecordsQueryDAO targetDAO;
 
     @Override
     public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
@@ -40,7 +39,7 @@ public abstract class FilteredRecordsDAO extends AbstractRecordsDAO {
 
     protected abstract Function<List<RecordRef>, List<RecordRef>> getFilter(RecordsQuery query);
 
-    public void setTargetDAO(RecordsDAO targetDAO) {
+    public void setTargetDAO(RecordsQueryDAO targetDAO) {
         this.targetDAO = targetDAO;
     }
 }

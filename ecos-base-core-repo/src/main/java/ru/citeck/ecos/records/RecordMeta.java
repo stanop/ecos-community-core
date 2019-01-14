@@ -42,11 +42,11 @@ public class RecordMeta {
         return attributes.path(name);
     }
 
-    public String getStringAtt(String name) {
+    public String getAttributeStr(String name) {
         return getAttribute(name).asText();
     }
 
-    public String getStringAtt(String name, String def) {
+    public String getAttributeStr(String name, String def) {
         JsonNode att = attributes.get(name);
         return !isEmpty(att) ? att.asText() : def;
     }

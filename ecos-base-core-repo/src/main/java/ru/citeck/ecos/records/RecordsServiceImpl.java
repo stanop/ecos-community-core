@@ -33,7 +33,12 @@ public class RecordsServiceImpl implements RecordsService {
 
     private static final Log logger = LogFactory.getLog(RecordsServiceImpl.class);
 
-    private Map<String, RecordsDAO> sources = new ConcurrentHashMap<>();
+    private Map<String, RecordsMetaDAO> metaDAO = new ConcurrentHashMap<>();
+    private Map<String, RecordsQueryDAO> queryDAO = new ConcurrentHashMap<>();
+    private Map<String, MutableRecordsDAO> mutableDAO = new ConcurrentHashMap<>();
+    private Map<String, RecordsWithMetaDAO> withMetaDAO = new ConcurrentHashMap<>();
+    private Map<String, RecordsDefinitionDAO> definitionDAO = new ConcurrentHashMap<>();
+    private Map<String, RecordsActionExecutor> actionExecutors = new ConcurrentHashMap<>();
 
     private RecordsMetaService recordsMetaService;
 
@@ -44,7 +49,8 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
-        return needRecordsSource(query.getSourceId()).getRecords(query);
+        Optional<RecordsQueryDAO> recordsQueryDAO = getRecordsDAO(query.getSourceId(), queryDAO);
+        return recordsQueryDAO.isPresent() ? recordsQueryDAO.get().getRecords(query) : new RecordsQueryResult<>();
     }
 
     @Override
@@ -79,19 +85,17 @@ public class RecordsServiceImpl implements RecordsService {
     @Override
     public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String schema) {
 
-        RecordsDAO recordsDAO = needRecordsSource(query.getSourceId());
+        Optional<RecordsWithMetaDAO> recordsDAO = getRecordsDAO(query.getSourceId(), withMetaDAO);
         RecordsQueryResult<RecordMeta> records;
 
-        if (recordsDAO instanceof RecordsWithMetaDAO) {
-
-            RecordsWithMetaDAO recordsWithMetaDAO = (RecordsWithMetaDAO) recordsDAO;
+        if (recordsDAO.isPresent()) {
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Start records with meta query: " + query.getQuery() + "\n" + schema);
             }
 
             long queryStart = System.currentTimeMillis();
-            records = recordsWithMetaDAO.getRecords(query, schema);
+            records = recordsDAO.get().getRecords(query, schema);
             long queryDuration = System.currentTimeMillis() - queryStart;
 
             if (logger.isDebugEnabled()) {
@@ -104,36 +108,45 @@ public class RecordsServiceImpl implements RecordsService {
 
         } else  {
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Start records query: " + query.getQuery());
-            }
+            Optional<RecordsQueryDAO> recordsQueryDAO = getRecordsDAO(query.getSourceId(), queryDAO);
 
-            long recordsQueryStart = System.currentTimeMillis();
-            RecordsQueryResult<RecordRef> recordRefs = recordsDAO.getRecords(query);
-            long recordsTime = System.currentTimeMillis() - recordsQueryStart;
+            if (!recordsQueryDAO.isPresent()) {
 
-            if (logger.isDebugEnabled()) {
-                int found = recordRefs.getRecords().size();
-                logger.debug("Stop records query. Found: " + found + "Duration: " + recordsTime);
-                logger.debug("Start meta query: " + schema);
-            }
+                records = new RecordsQueryResult<>();
 
-            records = new RecordsQueryResult<>();
-            records.merge(recordRefs);
-            records.setTotalCount(recordRefs.getTotalCount());
-            records.setHasMore(recordRefs.getHasMore());
+            } else {
 
-            long metaQueryStart = System.currentTimeMillis();
-            records.merge(getMeta(recordRefs.getRecords(), schema));
-            long metaTime = System.currentTimeMillis() - metaQueryStart;
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Start records query: " + query.getQuery());
+                }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Stop meta query. Duration: " + metaTime);
-            }
+                long recordsQueryStart = System.currentTimeMillis();
+                RecordsQueryResult<RecordRef> recordRefs = recordsQueryDAO.get().getRecords(query);
+                long recordsTime = System.currentTimeMillis() - recordsQueryStart;
 
-            if (query.isDebug()) {
-                records.setDebugInfo(getClass(), DEBUG_RECORDS_QUERY_TIME, recordsTime);
-                records.setDebugInfo(getClass(), DEBUG_META_QUERY_TIME, metaTime);
+                if (logger.isDebugEnabled()) {
+                    int found = recordRefs.getRecords().size();
+                    logger.debug("Stop records query. Found: " + found + "Duration: " + recordsTime);
+                    logger.debug("Start meta query: " + schema);
+                }
+
+                records = new RecordsQueryResult<>();
+                records.merge(recordRefs);
+                records.setTotalCount(recordRefs.getTotalCount());
+                records.setHasMore(recordRefs.getHasMore());
+
+                long metaQueryStart = System.currentTimeMillis();
+                records.merge(getMeta(recordRefs.getRecords(), schema));
+                long metaTime = System.currentTimeMillis() - metaQueryStart;
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Stop meta query. Duration: " + metaTime);
+                }
+
+                if (query.isDebug()) {
+                    records.setDebugInfo(getClass(), DEBUG_RECORDS_QUERY_TIME, recordsTime);
+                    records.setDebugInfo(getClass(), DEBUG_META_QUERY_TIME, metaTime);
+                }
             }
         }
 
@@ -198,12 +211,12 @@ public class RecordsServiceImpl implements RecordsService {
 
         RecordsUtils.groupRefBySource(records).forEach((sourceId, recs) -> {
 
-            RecordsDAO recordsDAO = needRecordsSource(sourceId);
+            Optional<RecordsMetaDAO> recordsDAO = getRecordsDAO(sourceId, metaDAO);
             RecordsResult<RecordMeta> meta;
 
-            if (recordsDAO instanceof RecordsMetaDAO) {
+            if (recordsDAO.isPresent()) {
 
-                meta = ((RecordsMetaDAO) recordsDAO).getMeta(records, schema);
+                meta = recordsDAO.get().getMeta(records, schema);
 
             } else {
 
@@ -220,11 +233,7 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public RecordsMutResult mutate(RecordsMutation mutation) {
-        RecordsDAO recordsDAO = needRecordsSource(mutation.getSourceId());
-        if (recordsDAO instanceof MutableRecordsDAO) {
-            return ((MutableRecordsDAO) recordsDAO).mutate(mutation);
-        }
-        throw new IllegalArgumentException("Mutate operation is not supported by " + mutation.getSourceId());
+        return needRecordsDAO(mutation.getSourceId(), mutableDAO).mutate(mutation);
     }
 
     @Override
@@ -233,12 +242,8 @@ public class RecordsServiceImpl implements RecordsService {
         RecordsDelResult result = new RecordsDelResult();
 
         RecordsUtils.groupRefBySource(deletion.getRecords()).forEach((sourceId, sourceRecords) -> {
-            RecordsDAO source = needRecordsSource(sourceId);
-            if (source instanceof MutableRecordsDAO) {
-                result.merge(((MutableRecordsDAO) source).delete(deletion));
-            } else {
-                throw new IllegalArgumentException("Mutate operation is not supported by " + sourceId);
-            }
+            MutableRecordsDAO source = needRecordsDAO(sourceId, mutableDAO);
+            result.merge(source.delete(deletion));
         });
 
         return result;
@@ -252,12 +257,11 @@ public class RecordsServiceImpl implements RecordsService {
 
         RecordsUtils.groupRefBySource(records).forEach((sourceId, refs) -> {
 
-            RecordsDAO source = needRecordsSource(sourceId);
+            Optional<RecordsActionExecutor> source = getRecordsDAO(sourceId, actionExecutors);
 
-            if (source instanceof RecordsActionExecutor) {
+            if (source.isPresent()) {
 
-                RecordsActionExecutor executor = (RecordsActionExecutor) source;
-                results.merge(executor.executeAction(refs, processConfig));
+                results.merge(source.get().executeAction(refs, processConfig));
 
             } else {
 
@@ -277,17 +281,31 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public void register(RecordsDAO recordsSource) {
-        sources.put(recordsSource.getId(), recordsSource);
+
+        if (recordsSource instanceof RecordsMetaDAO) {
+            metaDAO.put(recordsSource.getId(), (RecordsMetaDAO) recordsSource);
+        }
+        if (recordsSource instanceof RecordsQueryDAO) {
+            queryDAO.put(recordsSource.getId(), (RecordsQueryDAO) recordsSource);
+        }
+        if (recordsSource instanceof MutableRecordsDAO) {
+            mutableDAO.put(recordsSource.getId(), (MutableRecordsDAO) recordsSource);
+        }
+        if (recordsSource instanceof RecordsWithMetaDAO) {
+            withMetaDAO.put(recordsSource.getId(), (RecordsWithMetaDAO) recordsSource);
+        }
+        if (recordsSource instanceof RecordsDefinitionDAO) {
+            definitionDAO.put(recordsSource.getId(), (RecordsDefinitionDAO) recordsSource);
+        }
+        if (recordsSource instanceof RecordsActionExecutor) {
+            actionExecutors.put(recordsSource.getId(), (RecordsActionExecutor) recordsSource);
+        }
     }
 
     @Override
     public List<MetaAttributeDef> getAttributesDef(String sourceId, Collection<String> names) {
-        RecordsDAO recordsDAO = needRecordsSource(sourceId);
-        if (recordsDAO instanceof RecordsDefinitionDAO) {
-            RecordsDefinitionDAO definitionDAO = (RecordsDefinitionDAO) recordsDAO;
-            return definitionDAO.getAttributesDef(names);
-        }
-        return Collections.emptyList();
+        RecordsDefinitionDAO recordsDAO = needRecordsDAO(sourceId, definitionDAO);
+        return recordsDAO.getAttributesDef(names);
     }
 
     @Override
@@ -303,17 +321,17 @@ public class RecordsServiceImpl implements RecordsService {
         return attributesMap;
     }
 
-    private Optional<RecordsDAO> getRecordsSource(String sourceId) {
+    private <T extends RecordsDAO> Optional<T> getRecordsDAO(String sourceId, Map<String, T> registry) {
         if (sourceId == null) {
             sourceId = "";
         }
-        return Optional.ofNullable(sources.get(sourceId));
+        return Optional.ofNullable(registry.get(sourceId));
     }
 
-    private RecordsDAO needRecordsSource(String sourceId) {
-        Optional<RecordsDAO> source = getRecordsSource(sourceId);
+    private <T extends RecordsDAO> T needRecordsDAO(String sourceId, Map<String, T> registry) {
+        Optional<T> source = getRecordsDAO(sourceId, registry);
         if (!source.isPresent()) {
-            throw new IllegalArgumentException("Records source is not found! Id: " + sourceId);
+            throw new IllegalArgumentException("RecordsDAO is not found! Id: " + sourceId);
         }
         return source.get();
     }

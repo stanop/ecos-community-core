@@ -6,7 +6,7 @@ import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.util.List;
 
-public interface RecordsMetaDAO {
+public interface RecordsMetaDAO extends RecordsDAO {
 
     RecordsResult<RecordMeta> getMeta(List<RecordRef> records, String gqlSchema);
 }
