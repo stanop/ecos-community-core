@@ -27,7 +27,11 @@ public class FormioFormRecords extends LocalRecordsDAO implements RecordsWithMet
         Query query = recordsQuery.getQuery(Query.class);
         RecordsQueryResult<FormioForm> result = new RecordsQueryResult<>();
 
-        Optional<FormioForm> form = formioFormService.getForm(query.type, query.key, query.id, query.mode);
+        Optional<FormioForm> form = formioFormService.getForm(query.formType,
+                                                              query.formKey,
+                                                              query.formId,
+                                                              query.formMode);
+
         form.ifPresent(formioForm -> result.setRecords(Collections.singletonList(formioForm)));
         result.setHasMore(false);
         result.setTotalCount(form.isPresent() ? 1 : 0);
@@ -41,9 +45,9 @@ public class FormioFormRecords extends LocalRecordsDAO implements RecordsWithMet
     }
 
     static class Query {
-        public String type;
-        public String key;
-        public String id;
-        public String mode;
+        public String formType;
+        public String formKey;
+        public String formId;
+        public String formMode;
     }
 }

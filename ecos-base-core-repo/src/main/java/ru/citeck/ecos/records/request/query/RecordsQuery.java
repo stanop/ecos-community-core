@@ -12,6 +12,7 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.records.RecordRef;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,8 +60,12 @@ public class RecordsQuery {
 
     public <T> T getQuery(Class<T> type) {
         try {
-            return objectMapper.treeToValue(query, type);
-        } catch (JsonProcessingException e) {
+            if (query.isTextual() && !String.class.equals(type)) {
+                return objectMapper.readValue(query.textValue(), type);
+            } else {
+                return objectMapper.treeToValue(query, type);
+            }
+        } catch (IOException e) {
             throw new RuntimeException("Query is incorrect: " + query, e);
         }
     }

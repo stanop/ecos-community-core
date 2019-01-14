@@ -23,8 +23,7 @@ import ru.citeck.ecos.utils.json.ObjectKeyGenerator;
 
 import javax.annotation.PostConstruct;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -69,7 +68,8 @@ public class RecordsMetaServiceImpl implements RecordsMetaService {
                 new ScalarField<>(Short.class, "num"),
                 new ScalarField<>(short.class, "num"),
                 new ScalarField<>(Byte.class, "num"),
-                new ScalarField<>(byte.class, "num")
+                new ScalarField<>(byte.class, "num"),
+                new ScalarField<>(Date.class, "str")
         ).forEach(s -> scalars.put(s.getFieldType(), s));
     }
 
@@ -198,6 +198,10 @@ public class RecordsMetaServiceImpl implements RecordsMetaService {
 
     @Override
     public AttributesSchema createSchema(Map<String, String> attributes) {
+        return createSchema(attributes, true);
+    }
+
+    private AttributesSchema createSchema(Map<String, String> attributes, boolean generateKeys) {
 
         StringBuilder schema = new StringBuilder();
         ObjectKeyGenerator keys = new ObjectKeyGenerator();
@@ -205,9 +209,15 @@ public class RecordsMetaServiceImpl implements RecordsMetaService {
         Map<String, String> keysMapping = new HashMap<>();
 
         attributes.forEach((name, path) -> {
-            String key = keys.incrementAndGet();
+            String key = generateKeys ? keys.incrementAndGet() : name;
             keysMapping.put(key, name);
-            schema.append(key).append(":").append(path).append(",");
+            schema.append(key).append(":");
+            if (path.charAt(0) == '.') {
+                schema.append(path, 1, path.length());
+            } else {
+                schema.append(path);
+            }
+            schema.append(",");
         });
         schema.setLength(schema.length() - 1);
 
@@ -228,43 +238,54 @@ public class RecordsMetaServiceImpl implements RecordsMetaService {
 
         for (PropertyDescriptor descriptor : descriptors) {
 
-            String attributeSchema = getAttributeSchema(metaClass, descriptor);
-            if (attributeSchema == null) {
+            Method writeMethod = descriptor.getWriteMethod();
+
+            if (writeMethod == null) {
                 continue;
             }
+
+            Class<?> propType = descriptor.getPropertyType();
+            boolean isMultiple = false;
+
+            if (List.class.isAssignableFrom(propType) || Set.class.isAssignableFrom(propType)) {
+                ParameterizedType parameterType = (ParameterizedType) writeMethod.getGenericParameterTypes()[0];
+                propType = (Class<?>) parameterType.getActualTypeArguments()[0];
+                isMultiple = true;
+            }
+
+            String attributeSchema = getAttributeSchema(metaClass, writeMethod, descriptor.getName(), isMultiple);
             attributeSchema = attributeSchema.replaceAll("'", "\"");
 
             schema.setLength(0);
             char lastChar = attributeSchema.charAt(attributeSchema.length() - 1);
 
-            if (lastChar == '}' || !attributeSchema.startsWith("att")) {
+            if (lastChar == '}' || !attributeSchema.startsWith(".att")) {
                 attributes.put(descriptor.getName(), attributeSchema);
                 continue;
             }
 
             schema.append(attributeSchema).append("{");
 
-            Class<?> propType = descriptor.getPropertyType();
-
             ScalarField<?> scalarField = scalars.get(propType);
             if (scalarField == null) {
 
                 Map<String, String> propSchema = getAttributes(propType);
-                propSchema.forEach((p, s) -> schema.append(p)
-                                                   .append(":")
-                                                   .append(s)
-                                                   .append(","));
-
-                schema.setLength(schema.length() - 1);
+                schema.append(createSchema(propSchema, false).getSchema());
 
             } else {
 
                 schema.append(scalarField.getSchema());
             }
 
-            schema.append("}");
+            if (schema.charAt(schema.length() - 1) != '{') {
 
-            attributes.put(descriptor.getName(), schema.toString());
+                schema.append("}");
+                attributes.put(descriptor.getName(), schema.toString());
+
+            } else {
+
+                logger.error("Class without attributes: " + propType + " property: " + descriptor.getName());
+            }
         }
 
         visited.remove(metaClass);
@@ -272,19 +293,17 @@ public class RecordsMetaServiceImpl implements RecordsMetaService {
         return attributes;
     }
 
-    private String getAttributeSchema(Class<?> scope, PropertyDescriptor descriptor) {
-
-        Method writeMethod = descriptor.getWriteMethod();
-
-        if (writeMethod == null) {
-            return null;
-        }
+    private String getAttributeSchema(Class<?> scope, Method writeMethod, String fieldName, boolean multiple) {
 
         MetaAtt attInfo = writeMethod.getAnnotation(MetaAtt.class);
+
         if (attInfo == null) {
+            Field field;
             try {
-                Field field = scope.getDeclaredField(descriptor.getName());
-                attInfo = field.getAnnotation(MetaAtt.class);
+                field = scope.getDeclaredField(fieldName);
+                if (field != null) {
+                    attInfo = field.getAnnotation(MetaAtt.class);
+                }
             } catch (NoSuchFieldException e) {
                 //do nothing
             }
@@ -292,14 +311,18 @@ public class RecordsMetaServiceImpl implements RecordsMetaService {
 
         String schema;
         if (attInfo == null || attInfo.value().isEmpty()) {
-            schema = "att(n:'" + descriptor.getName() + "')";
+            if ("id".equals(fieldName)) {
+                schema = ".id";
+            } else {
+                schema = ".att(n:'" + fieldName + "')";
+            }
         } else {
-            schema = convertAttDefinition(attInfo.value(), null);
+            schema = convertAttDefinition(attInfo.value(), null, multiple);
         }
         return schema.replaceAll("'", "\"");
     }
 
-    private String convertAttDefinition(String def, String defaultScalar) {
+    private String convertAttDefinition(String def, String defaultScalar, boolean multiple) {
 
         if (def.startsWith(".")) {
             return def.substring(1);
@@ -314,7 +337,7 @@ public class RecordsMetaServiceImpl implements RecordsMetaService {
             fieldName = fieldName.substring(0, questionIdx);
         }
 
-        String result = "att(n:\"" + fieldName + "\")";
+        String result = (multiple ? ".atts" : ".att") + "(n:\"" + fieldName + "\")";
         if (scalarField != null) {
             return result + "{" + scalarField + "}";
         } else {

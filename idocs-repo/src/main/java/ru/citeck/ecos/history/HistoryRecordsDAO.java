@@ -1,6 +1,5 @@
 package ru.citeck.ecos.history;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import ru.citeck.ecos.records.source.LocalRecordsDAO;
 import ru.citeck.ecos.records.source.RecordsWithMetaDAO;
 import ru.citeck.ecos.webscripts.history.DocumentHistoryGet;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,8 +22,6 @@ public class HistoryRecordsDAO extends LocalRecordsDAO implements RecordsWithMet
     private static final String LANGUAGE_DOCUMENT = "document";
 
     private DocumentHistoryGet historyGet;
-
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     public HistoryRecordsDAO() {
         setId(ID);
@@ -43,12 +39,7 @@ public class HistoryRecordsDAO extends LocalRecordsDAO implements RecordsWithMet
             throw new IllegalArgumentException("Language " + language + " is not supported!");
         }
 
-        Query queryData;
-        try {
-            queryData = objectMapper.readValue(query.getQuery().asText(), Query.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Query queryData = query.getQuery(Query.class);
 
         List<ObjectNode> events = historyGet.getHistoryEvents(queryData.nodeRef,
                 queryData.filter,

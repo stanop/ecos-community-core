@@ -42,6 +42,19 @@ public class RecordMeta {
         return attributes.path(name);
     }
 
+    public String getStringAtt(String name) {
+        return getAttribute(name).asText();
+    }
+
+    public String getStringAtt(String name, String def) {
+        JsonNode att = attributes.get(name);
+        return !isEmpty(att) ? att.asText() : def;
+    }
+
+    private boolean isEmpty(JsonNode value) {
+        return value == null || value.isMissingNode() || value.isNull();
+    }
+
     public void setAttributes(ObjectNode attributes) {
         if (attributes != null) {
             this.attributes = attributes.deepCopy();
