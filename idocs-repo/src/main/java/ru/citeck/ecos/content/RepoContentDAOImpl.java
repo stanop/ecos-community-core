@@ -208,6 +208,10 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
         this.rootRef = rootRef;
     }
 
+    public NodeRef getRootRef() {
+        return rootRef.getNodeRef();
+    }
+
     public void setConfigNodeType(QName configNodeType) {
         this.configNodeType = configNodeType;
     }
@@ -242,6 +246,10 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
 
     public void setChildAssocType(QName childAssocType) {
         this.childAssocType = childAssocType;
+    }
+
+    public QName getChildAssocType() {
+        return childAssocType;
     }
 
     public NodeDataReader<T> getNodeDataReader() {

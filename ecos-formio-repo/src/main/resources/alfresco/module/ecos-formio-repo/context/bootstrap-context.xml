@@ -6,7 +6,7 @@
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!-- models -->
-    <bean id="ecos.formio.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
+    <bean id="ecos.formio.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap,idocs.dictionaryBootstrap">
         <property name="models">
             <list>
                 <value>alfresco/module/ecos-formio-repo/model/ecos-formio-model.xml</value>

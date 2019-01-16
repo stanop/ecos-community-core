@@ -25,8 +25,8 @@ public class MetaUtils {
 
         if (value instanceof Collection) {
             values = ((Collection<?>) value).stream()
-                    .map(MetaExplicitValue::new)
-                    .collect(Collectors.toList());
+                                            .map(MetaExplicitValue::new)
+                                            .collect(Collectors.toList());
         } else {
             values = Collections.singletonList(new MetaExplicitValue(value));
         }

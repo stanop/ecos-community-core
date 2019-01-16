@@ -12,12 +12,13 @@ import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
 import ru.citeck.ecos.records.source.RecordsMetaDAO;
+import ru.citeck.ecos.records.source.RecordsQueryDAO;
 import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeAttValue;
 import ru.citeck.ecos.records.source.alfnode.search.ChildrenAlfNodesSearch;
 
 import java.util.*;
 
-public class EcosBpmCatRecords extends AbstractRecordsDAO implements RecordsMetaDAO {
+public class EcosBpmCatRecords extends AbstractRecordsDAO implements RecordsMetaDAO, RecordsQueryDAO {
 
     public static final String ID = "ebpmcat";
 

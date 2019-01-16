@@ -17,7 +17,10 @@ import ru.citeck.ecos.remote.RestConnection;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class RemoteRecordsDAO extends AbstractRecordsDAO implements RecordsMetaDAO, RecordsActionExecutor {
+public class RemoteRecordsDAO extends AbstractRecordsDAO
+                              implements RecordsMetaDAO,
+                                         RecordsQueryDAO,
+                                         RecordsActionExecutor {
 
     private static final Log logger = LogFactory.getLog(RemoteRecordsDAO.class);
 

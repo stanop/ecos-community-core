@@ -1,5 +1,7 @@
 package ru.citeck.ecos.records;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.MissingNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,29 +163,38 @@ public class RecordsServiceImpl implements RecordsService {
     public <T> RecordsResult<T> getMeta(List<RecordRef> records, Class<T> metaClass) {
 
         Map<String, String> attributes = recordsMetaService.getAttributes(metaClass);
-        RecordsResult<RecordMeta> meta = getMeta(records, attributes);
+        RecordsResult<RecordMeta> meta = getAttributes(records, attributes);
 
         return new RecordsResult<>(meta, m -> recordsMetaService.instantiateMeta(metaClass, m));
     }
 
     @Override
-    public RecordsResult<RecordMeta> getMeta(Collection<RecordRef> records,
-                                             Collection<String> attributes) {
+    public RecordsResult<RecordMeta> getAttributes(Collection<RecordRef> records,
+                                                   Collection<String> attributes) {
 
-        return getMeta(new ArrayList<>(records), attributes);
+        return getAttributes(new ArrayList<>(records), attributes);
     }
 
     @Override
-    public RecordsResult<RecordMeta> getMeta(List<RecordRef> records,
-                                             Collection<String> attributes) {
-        return getMeta(records, toAttributesMap(attributes));
+    public RecordsResult<RecordMeta> getAttributes(List<RecordRef> records,
+                                                   Collection<String> attributes) {
+        return getAttributes(records, toAttributesMap(attributes));
     }
 
     @Override
-    public RecordsResult<RecordMeta> getMeta(Collection<RecordRef> records,
-                                             Map<String, String> attributes) {
+    public RecordsResult<RecordMeta> getAttributes(Collection<RecordRef> records,
+                                                   Map<String, String> attributes) {
 
-        return getMeta(new ArrayList<>(records), attributes);
+        return getAttributes(new ArrayList<>(records), attributes);
+    }
+
+    @Override
+    public <T> T getMeta(RecordRef recordRef, Class<T> metaClass) {
+        RecordsResult<T> meta = getMeta(Collections.singletonList(recordRef), metaClass);
+        if (meta.getRecords().size() == 0) {
+            throw new IllegalStateException("Can't get record metadata. Result: " + meta);
+        }
+        return meta.getRecords().get(0);
     }
 
     @Override
@@ -194,14 +205,24 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
-    public RecordsResult<RecordMeta> getMeta(List<RecordRef> records,
-                                             Map<String, String> attributes) {
+    public RecordsResult<RecordMeta> getAttributes(List<RecordRef> records,
+                                                   Map<String, String> attributes) {
 
         AttributesSchema schema = recordsMetaService.createSchema(attributes);
         RecordsResult<RecordMeta> meta = getMeta(records, schema.getSchema());
         meta.setRecords(recordsMetaService.convertToFlatMeta(meta.getRecords(), schema));
 
         return meta;
+    }
+
+    @Override
+    public JsonNode getAttribute(RecordRef record, String attribute) {
+        RecordsResult<RecordMeta> meta = getAttributes(Collections.singletonList(record),
+                                                       Collections.singletonList(attribute));
+        if (!meta.getRecords().isEmpty()) {
+            return meta.getRecords().get(0).getAttribute(attribute);
+        }
+        return MissingNode.getInstance();
     }
 
     @Override
@@ -233,7 +254,7 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public RecordsMutResult mutate(RecordsMutation mutation) {
-        return needRecordsDAO(mutation.getSourceId(), mutableDAO).mutate(mutation);
+        return needRecordsDAO(mutation.getSourceId(), MutableRecordsDAO.class, mutableDAO).mutate(mutation);
     }
 
     @Override
@@ -242,7 +263,7 @@ public class RecordsServiceImpl implements RecordsService {
         RecordsDelResult result = new RecordsDelResult();
 
         RecordsUtils.groupRefBySource(deletion.getRecords()).forEach((sourceId, sourceRecords) -> {
-            MutableRecordsDAO source = needRecordsDAO(sourceId, mutableDAO);
+            MutableRecordsDAO source = needRecordsDAO(sourceId, MutableRecordsDAO.class, mutableDAO);
             result.merge(source.delete(deletion));
         });
 
@@ -304,8 +325,11 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public List<MetaAttributeDef> getAttributesDef(String sourceId, Collection<String> names) {
-        RecordsDefinitionDAO recordsDAO = needRecordsDAO(sourceId, definitionDAO);
-        return recordsDAO.getAttributesDef(names);
+        Optional<RecordsDefinitionDAO> recordsDAO = getRecordsDAO(sourceId, definitionDAO);
+        if (recordsDAO.isPresent()) {
+            return recordsDAO.get().getAttributesDef(names);
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -328,10 +352,10 @@ public class RecordsServiceImpl implements RecordsService {
         return Optional.ofNullable(registry.get(sourceId));
     }
 
-    private <T extends RecordsDAO> T needRecordsDAO(String sourceId, Map<String, T> registry) {
+    private <T extends RecordsDAO> T needRecordsDAO(String sourceId, Class<T> type, Map<String, T> registry) {
         Optional<T> source = getRecordsDAO(sourceId, registry);
         if (!source.isPresent()) {
-            throw new IllegalArgumentException("RecordsDAO is not found! Id: " + sourceId);
+            throw new IllegalArgumentException("RecordsDAO is not found! Class: " + type + " Id: " + sourceId);
         }
         return source.get();
     }

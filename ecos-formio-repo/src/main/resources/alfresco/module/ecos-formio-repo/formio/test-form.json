@@ -1,8 +1,6 @@
 {
   "id": "testdassdas",
-  "formType": "formio",
-  "formKey": "ecosFormio:form",
-  "formId": "someId",
+  "formKey": "alfType_cm:content",
   "definition": {
     "type": "form",
     "tags": [],

@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
@@ -71,25 +72,30 @@ public interface RecordsService {
      * Get meta
      * Fields example: ["cm:name", "cm:title"]
      */
-    RecordsResult<RecordMeta> getMeta(Collection<RecordRef> records, Collection<String> attributes);
+    RecordsResult<RecordMeta> getAttributes(Collection<RecordRef> records, Collection<String> attributes);
+
+    /**
+     * Get attribute
+     */
+    JsonNode getAttribute(RecordRef record, String attribute);
 
     /**
      * Get ordered meta
      * Fields example: ["cm:name", "cm:title"]
      */
-    RecordsResult<RecordMeta> getMeta(List<RecordRef> records, Collection<String> attributes);
+    RecordsResult<RecordMeta> getAttributes(List<RecordRef> records, Collection<String> attributes);
+
+    /**
+     * Get meta
+     * Fields example: {"name" : "cm:name", "title" : "cm:title"]
+     */
+    RecordsResult<RecordMeta> getAttributes(Collection<RecordRef> records, Map<String, String> attributes);
 
     /**
      * Get ordered meta
      * Fields example: ["cm:name", "cm:title"]
      */
     RecordsResult<RecordMeta> getMeta(List<RecordRef> records, String schema);
-
-    /**
-     * Get meta
-     * Fields example: {"name" : "cm:name", "title" : "cm:title"]
-     */
-    RecordsResult<RecordMeta> getMeta(Collection<RecordRef> records, Map<String, String> attributes);
 
     /**
      * Get metadata for specified records.
@@ -104,18 +110,18 @@ public interface RecordsService {
     /**
      * Get metadata for specified records.
      * @param metaClass POJO to generate metadata GQL schema and retrieve data
-     *                  This class must contain constructor without arguments and have public fields
-     *                  Getters/setters is not yet supported
      *
      * @see MetaAtt
      */
     <T> RecordsResult<T> getMeta(List<RecordRef> records, Class<T> metaClass);
 
+    <T> T getMeta(RecordRef recordRef, Class<T> metaClass);
+
     /**
      * Get ordered meta
      * Fields example: {"name" : "cm:name", "title" : "cm:title"]
      */
-    RecordsResult<RecordMeta> getMeta(List<RecordRef> records, Map<String, String> attributes);
+    RecordsResult<RecordMeta> getAttributes(List<RecordRef> records, Map<String, String> attributes);
 
     /**
      * Create or change records

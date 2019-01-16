@@ -72,7 +72,7 @@ public class RecordsQueryPost extends AbstractWebScript {
 
             } else {
 
-                recordsResult = recordsService.getMeta(request.records, getAttributes(request));
+                recordsResult = recordsService.getAttributes(request.records, getAttributes(request));
             }
         }
 

@@ -42,6 +42,10 @@ public class RecordMeta {
         return attributes.path(name);
     }
 
+    public void setAttribute(String name, String value) {
+        attributes.put(name, value);
+    }
+
     public String getAttributeStr(String name) {
         return getAttribute(name).asText();
     }

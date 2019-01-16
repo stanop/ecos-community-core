@@ -8,25 +8,12 @@
         public String formId;
         public String formMode;*/
 
-function getForm(formType, formKey, formId, formMode) {
+function getForm(record, formKey) {
 
-    let query = {};
-
-    if (formType) {
-        query.formType = formType;
-    }
-
-    if (formKey) {
-        query.formKey = formKey;
-    }
-
-    if (formId) {
-        query.formId = formId;
-    }
-
-    if (formMode) {
-        query.formMode = formMode;
-    }
+    let query = {
+        record: record,
+        formKey: formKey
+    };
 
     return fetch('/share/proxy/alfresco/citeck/ecos/records/query', {
         method: 'POST',
@@ -68,12 +55,10 @@ window.onload = function() {
     var urlString = window.location.href;
     var url = new URL(urlString);
 
-    var formType = url.searchParams.get("formType");
+    var record = url.searchParams.get("record");
     var formKey = url.searchParams.get("formKey");
-    var formMode = url.searchParams.get("formMode");
-    var formId = url.searchParams.get("formId");
 
-    getForm(formType, formKey, formMode, formId).then(data => {
+    getForm(record, formKey).then(data => {
 
         var definition = data.records[0].attributes.formDef;
 
@@ -98,7 +83,7 @@ window.onload = function() {
                 })
             }).then(response => { return response.json();})
                 .then(data => {
-                form.submission = {
+                    form.submission = {
                         data: data.attributes
                     }
                 }

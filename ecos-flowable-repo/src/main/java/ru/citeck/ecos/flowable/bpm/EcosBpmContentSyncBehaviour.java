@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.ContentServicePolicies;
+import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
@@ -14,6 +15,8 @@ import org.flowable.app.service.editor.ModelImageService;
 import org.flowable.bpmn.BpmnAutoLayout;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.bpmn.model.Process;
+import org.flowable.bpmn.model.StartEvent;
 import org.flowable.editor.language.json.converter.BpmnJsonConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.Format;
@@ -27,10 +30,13 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.util.Map;
 import java.util.function.Function;
 
 public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
-                                         implements ContentServicePolicies.OnContentPropertyUpdatePolicy {
+                                         implements NodeServicePolicies.OnCreateNodePolicy,
+                                                    ContentServicePolicies.OnContentPropertyUpdatePolicy {
 
     private static final QName PROP_XML = ContentModel.PROP_CONTENT;
     private static final QName PROP_JSON = EcosBpmModel.PROP_JSON_MODEL;
@@ -48,6 +54,40 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
     protected void beforeInit() {
         setClassName(EcosBpmModel.TYPE_PROCESS_MODEL);
         contentService = serviceRegistry.getContentService();
+    }
+
+    @PolicyMethod(policy = NodeServicePolicies.OnCreateNodePolicy.class,
+                  frequency = Behaviour.NotificationFrequency.EVERY_EVENT,
+                  runAsSystem = true)
+    public void onCreateNode(ChildAssociationRef childAssocRef) {
+
+        NodeRef nodeRef = childAssocRef.getChildRef();
+
+        Map<QName, Serializable> props = nodeService.getProperties(nodeRef);
+
+        Serializable content = props.get(PROP_XML);
+
+        if (content == null) {
+
+            String procId = (String) props.get(EcosBpmModel.PROP_PROCESS_ID);
+            String name = (String) props.get(ContentModel.PROP_NAME);
+
+            BpmnModel bpmnModel = new BpmnModel();
+            Process process = new Process();
+            bpmnModel.addProcess(process);
+
+            process.setId(procId);
+            process.setName(name);
+
+            StartEvent startEvent = new StartEvent();
+            startEvent.setId("start");
+            process.addFlowElement(startEvent);
+
+            BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
+            ContentWriter writer = contentService.getWriter(nodeRef, PROP_XML, true);
+
+            writer.putContent(new ByteArrayInputStream(xmlConverter.convertToXML(bpmnModel, ENCODING)));
+        }
     }
 
     @PolicyMethod(policy = ContentServicePolicies.OnContentPropertyUpdatePolicy.class,

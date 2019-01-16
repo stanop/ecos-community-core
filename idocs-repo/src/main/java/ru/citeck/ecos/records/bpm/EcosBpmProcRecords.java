@@ -7,9 +7,10 @@ import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
+import ru.citeck.ecos.records.source.RecordsQueryDAO;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 
-public class EcosBpmProcRecords extends AbstractRecordsDAO {
+public class EcosBpmProcRecords extends AbstractRecordsDAO implements RecordsQueryDAO {
 
     public static final String ID = "ebpmproc";
 
