@@ -1,6 +1,5 @@
 package ru.citeck.ecos.records.source.alfnode.meta;
 
-import jdk.nashorn.internal.ir.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
@@ -97,7 +96,7 @@ public class AlfNodeRecord implements MetaValue {
                 attribute = Collections.singletonList(new AlfNodeAttValue(node.getParent()).init(context));
                 break;
 
-            case RecordConstants.ATT_FORM_KEYS:
+            case RecordConstants.ATT_FORM_KEY:
 
                 attribute = "alfType_" + node.type();
                 break;
