@@ -8,10 +8,7 @@ import org.xml.sax.SAXException;
 import ru.citeck.ecos.content.dao.ContentDAO;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -33,7 +30,7 @@ public class XmlContentDAO<T> implements ContentDAO<T> {
     private volatile Schema schema = null;
 
     @Override
-    public T read(InputStream stream) {
+    public T read(InputStream stream) throws IOException {
 
         try {
 
@@ -49,13 +46,13 @@ public class XmlContentDAO<T> implements ContentDAO<T> {
             T readResult = (T) result;
             return readResult;
 
-        } catch (Exception e) {
+        } catch (JAXBException e) {
             throw new IllegalArgumentException("Can not parse stream", e);
         }
     }
 
     @Override
-    public void write(T value, OutputStream stream) {
+    public void write(T value, OutputStream stream) throws IOException {
         try {
 
             JAXBContext context = JAXBContext.newInstance(rootPackage);
@@ -68,12 +65,12 @@ public class XmlContentDAO<T> implements ContentDAO<T> {
             JAXBElement<T> element = new JAXBElement<>(rootNodeQName, clazz, value);
 
             marshaller.marshal(element, stream);
-        } catch (Exception e) {
+        } catch (JAXBException e) {
             throw new IllegalArgumentException("Can not write to stream", e);
         }
     }
 
-    public Schema getSchema() throws SAXException, IOException {
+    public Schema getSchema() throws IOException {
 
         if (schema != null) {
             return schema;

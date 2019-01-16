@@ -140,4 +140,24 @@ public class CardletsRegistry implements RepoContentDAO<Cardlet> {
     public void setRepoContentDAO(RepoContentDAOImpl<Cardlet> repoContentDAO) {
         this.repoContentDAO = repoContentDAO;
     }
+
+    @Override
+    public QName getConfigNodeType() {
+        return repoContentDAO.getConfigNodeType();
+    }
+
+    @Override
+    public QName getContentFieldName() {
+        return repoContentDAO.getContentFieldName();
+    }
+
+    @Override
+    public QName getChildAssocType() {
+        return repoContentDAO.getChildAssocType();
+    }
+
+    @Override
+    public NodeRef getRootRef() {
+        return repoContentDAO.getRootRef();
+    }
 }

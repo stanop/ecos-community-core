@@ -115,12 +115,12 @@ public abstract class TxnGroupAction<T> extends BaseGroupAction<T> {
         return output;
     }
 
-    protected boolean isApplicable(T nodeId) {
+    protected boolean isApplicable(T node) {
         return true;
     }
 
     @Override
-    protected ActionStatus processImpl(T nodeRef) {
+    protected ActionStatus processImpl(T node) {
         throw new RuntimeException("Method not implemented");
     }
 

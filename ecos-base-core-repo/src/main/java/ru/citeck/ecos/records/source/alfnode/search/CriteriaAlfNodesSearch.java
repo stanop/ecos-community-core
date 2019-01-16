@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
 import ru.citeck.ecos.search.*;
@@ -39,11 +40,11 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
     }
 
     @Override
-    public RecordsResult<RecordRef> queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
+    public RecordsQueryResult<RecordRef> queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
 
         SearchCriteria criteria = criteriaParser.parse(query.getQuery());
         if (criteria.getTriplets().size() == 0) {
-            return new RecordsResult<>();
+            return new RecordsQueryResult<>();
         }
 
         criteria.setSkip(query.getSkipCount());
@@ -72,7 +73,7 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
 
         CriteriaSearchResults criteriaResults = searchService.query(criteria, SearchService.LANGUAGE_FTS_ALFRESCO);
 
-        RecordsResult<RecordRef> result = new RecordsResult<>();
+        RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
 
         if (query.isDebug()) {
             result.setDebugInfo(getClass(), "query", criteriaResults.getQuery());

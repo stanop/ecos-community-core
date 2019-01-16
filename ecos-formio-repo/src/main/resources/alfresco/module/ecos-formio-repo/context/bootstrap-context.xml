@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!-- models -->
+    <bean id="ecos.formio.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap,idocs.dictionaryBootstrap">
+        <property name="models">
+            <list>
+                <value>alfresco/module/ecos-formio-repo/model/ecos-formio-model.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="ecos.formio.import-spaces" abstract="true" parent="idocs.import-spaces">
+        <property name="moduleId" value="ecos-formio-repo" />
+        <property name="importer" ref="spacesBootstrap"/>
+    </bean>
+
+</beans>

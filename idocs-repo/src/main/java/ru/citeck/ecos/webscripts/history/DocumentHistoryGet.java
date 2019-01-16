@@ -150,7 +150,7 @@ public class DocumentHistoryGet extends AbstractWebScript {
 
             String eventType = (String) historyRecordMap.get(DocumentHistoryConstants.EVENT_TYPE.getValue());
 
-            if (includeEvents != null && !includeEvents.contains(eventType)) {
+            if (includeEvents != null && !includeEvents.isEmpty() && !includeEvents.contains(eventType)) {
                 continue;
             }
 

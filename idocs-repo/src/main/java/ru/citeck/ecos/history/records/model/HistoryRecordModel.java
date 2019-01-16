@@ -7,88 +7,144 @@ import java.util.List;
 
 public class HistoryRecordModel {
 
-    public String nodeRef;
+    private String id;
 
     @MetaAtt("event:initiator")
-    public EventUserModel initiator;
+    private EventUserModel initiator;
     @MetaAtt("event:documentId")
-    public String documentId;
+    private String documentId;
     @MetaAtt("event:date")
-    public Date date;
+    private Date date;
     @MetaAtt("event:documentVersion")
-    public String documentVersion;
+    private String documentVersion;
     @MetaAtt("event:taskComment")
-    public String taskComment;
+    private String taskComment;
     @MetaAtt("event:name")
-    public String eventType;
+    private String eventType;
     @MetaAtt("event:taskRole")
-    public String taskRole;
+    private String taskRole;
     @MetaAtt("event:taskOutcome")
-    public String taskOutcome;
+    private String taskOutcome;
     @MetaAtt("event:taskOutcomeTitle")
-    public String taskOutcomeTitle;
+    private String taskOutcomeTitle;
     @MetaAtt("event:taskType")
-    public TaskType taskType;
+    private TaskType taskType;
     @MetaAtt("event:taskAttachments")
-    public List<TaskAttachmentModel> taskAttachments;
+    private List<TaskAttachmentModel> taskAttachments;
     @MetaAtt("event:taskInstanceId")
-    public String taskInstanceId;
+    private String taskInstanceId;
     @MetaAtt("event:taskPooledActors")
-    public List<EventUserOrGroupModel> taskPooledActors;
+    private List<EventUserOrGroupModel> taskPooledActors;
 
-    public String getNodeRef() {
-        return nodeRef;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public EventUserModel getInitiator() {
         return initiator;
     }
 
+    public void setInitiator(EventUserModel initiator) {
+        this.initiator = initiator;
+    }
+
     public String getDocumentId() {
         return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 
     public Date getDate() {
         return date;
     }
 
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     public String getDocumentVersion() {
         return documentVersion;
+    }
+
+    public void setDocumentVersion(String documentVersion) {
+        this.documentVersion = documentVersion;
     }
 
     public String getTaskComment() {
         return taskComment;
     }
 
+    public void setTaskComment(String taskComment) {
+        this.taskComment = taskComment;
+    }
+
     public String getEventType() {
         return eventType;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     public String getTaskRole() {
         return taskRole;
     }
 
+    public void setTaskRole(String taskRole) {
+        this.taskRole = taskRole;
+    }
+
     public String getTaskOutcome() {
         return taskOutcome;
+    }
+
+    public void setTaskOutcome(String taskOutcome) {
+        this.taskOutcome = taskOutcome;
     }
 
     public String getTaskOutcomeTitle() {
         return taskOutcomeTitle;
     }
 
+    public void setTaskOutcomeTitle(String taskOutcomeTitle) {
+        this.taskOutcomeTitle = taskOutcomeTitle;
+    }
+
     public TaskType getTaskType() {
         return taskType;
+    }
+
+    public void setTaskType(TaskType taskType) {
+        this.taskType = taskType;
     }
 
     public List<TaskAttachmentModel> getTaskAttachments() {
         return taskAttachments;
     }
 
+    public void setTaskAttachments(List<TaskAttachmentModel> taskAttachments) {
+        this.taskAttachments = taskAttachments;
+    }
+
     public String getTaskInstanceId() {
         return taskInstanceId;
     }
 
+    public void setTaskInstanceId(String taskInstanceId) {
+        this.taskInstanceId = taskInstanceId;
+    }
+
     public List<EventUserOrGroupModel> getTaskPooledActors() {
         return taskPooledActors;
+    }
+
+    public void setTaskPooledActors(List<EventUserOrGroupModel> taskPooledActors) {
+        this.taskPooledActors = taskPooledActors;
     }
 }

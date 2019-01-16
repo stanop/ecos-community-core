@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records.source.alfnode.meta;
 
+import jdk.nashorn.internal.ir.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
@@ -9,6 +10,7 @@ import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
 
@@ -66,39 +68,61 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public List<MetaValue> getAttribute(String name) {
+    public Object getAttribute(String name) {
 
-        List<MetaValue> attribute = null;
-        if (ATTR_ASPECTS.equals(name)) {
-            attribute = node.aspects()
-                            .stream()
-                            .map(a -> new AlfNodeAttValue(a).init(context))
-                            .collect(Collectors.toList());
-        } else if (ATTR_IS_CONTAINER.equals(name)) {
-            attribute = MetaUtils.toMetaValues(node.isContainer(), context);
-        } else if (ATTR_IS_DOCUMENT.equals(name)) {
-            attribute = MetaUtils.toMetaValues(node.isDocument(), context);
-        } if (ATTR_PARENT.equals(name)) {
-            attribute = Collections.singletonList(new AlfNodeAttValue(node.getParent()).init(context));
-        } else {
-            Attribute nodeAtt = node.attribute(name);
-            if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
-                Optional<QName> attQname = context.getQName(name).map(GqlQName::getQName);
-                if (attQname.isPresent()) {
-                    VirtualScriptAttributes attributes = context.getService(VIRTUAL_SCRIPT_ATTS_ID);
-                    if (attributes != null && attributes.provides(attQname.get())) {
-                        Object value = attributes.getAttribute(new NodeRef(node.nodeRef()), attQname.get());
-                        attribute = MetaUtils.toMetaValues(value, context);
+        Object attribute = null;
+
+        switch (name) {
+            case ATTR_ASPECTS:
+
+                attribute = node.aspects()
+                                .stream()
+                                .map(a -> new AlfNodeAttValue(a).init(context))
+                                .collect(Collectors.toList());
+                break;
+
+            case ATTR_IS_CONTAINER:
+
+                attribute = MetaUtils.toMetaValues(node.isContainer(), context);
+                break;
+
+            case ATTR_IS_DOCUMENT:
+
+                attribute = MetaUtils.toMetaValues(node.isDocument(), context);
+                break;
+
+            case ATTR_PARENT:
+            case RecordConstants.ATT_PARENT:
+
+                attribute = Collections.singletonList(new AlfNodeAttValue(node.getParent()).init(context));
+                break;
+
+            case RecordConstants.ATT_FORM_KEYS:
+
+                attribute = "alfType_" + node.type();
+                break;
+
+            default:
+
+                Attribute nodeAtt = node.attribute(name);
+                if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
+                    Optional<QName> attQname = context.getQName(name).map(GqlQName::getQName);
+                    if (attQname.isPresent()) {
+                        VirtualScriptAttributes attributes = context.getService(VIRTUAL_SCRIPT_ATTS_ID);
+                        if (attributes != null && attributes.provides(attQname.get())) {
+                            Object value = attributes.getAttribute(new NodeRef(node.nodeRef()), attQname.get());
+                            attribute = MetaUtils.toMetaValues(value, context);
+                        }
                     }
                 }
-            }
-            if (attribute == null) {
-                attribute = nodeAtt.getValues()
-                                   .stream()
-                                   .map(v -> new AlfNodeAttValue(v).init(context))
-                                   .collect(Collectors.toList());
-            }
+                if (attribute == null) {
+                    attribute = nodeAtt.getValues()
+                                       .stream()
+                                       .map(v -> new AlfNodeAttValue(v).init(context))
+                                       .collect(Collectors.toList());
+                }
         }
+
         return attribute;
     }
 }

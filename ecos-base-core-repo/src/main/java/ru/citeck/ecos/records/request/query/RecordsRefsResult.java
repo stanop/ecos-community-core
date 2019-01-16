@@ -5,7 +5,7 @@ import ru.citeck.ecos.records.RecordRef;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecordsRefsResult extends RecordsResult<RecordRef> {
+public class RecordsRefsResult extends RecordsQueryResult<RecordRef> {
 
     public RecordsRefsResult() {
     }

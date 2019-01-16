@@ -1,7 +1,5 @@
 package ru.citeck.ecos.graphql.meta.value;
 
-import java.util.List;
-
 public class MetaEdge {
 
     private final String name;
@@ -16,7 +14,7 @@ public class MetaEdge {
         return name;
     }
 
-    public List<MetaValue> getValue() {
+    public Object getValue() throws Exception {
         return scope.getAttribute(name);
     }
 }

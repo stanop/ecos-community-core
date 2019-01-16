@@ -5,11 +5,12 @@ import ru.citeck.ecos.model.EcosBpmModel;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
+import ru.citeck.ecos.records.source.RecordsQueryDAO;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 
-public class EcosBpmProcRecords extends AbstractRecordsDAO {
+public class EcosBpmProcRecords extends AbstractRecordsDAO implements RecordsQueryDAO {
 
     public static final String ID = "ebpmproc";
 
@@ -18,7 +19,7 @@ public class EcosBpmProcRecords extends AbstractRecordsDAO {
     }
 
     @Override
-    public RecordsResult<RecordRef> getRecords(RecordsQuery query) {
+    public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
 
         RecordsQuery processNodesQuery = new RecordsQuery();
         processNodesQuery.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
@@ -27,7 +28,7 @@ public class EcosBpmProcRecords extends AbstractRecordsDAO {
                                           .type(EcosBpmModel.TYPE_PROCESS_MODEL)
                                           .getQuery());
 
-        RecordsResult<RecordRef> result = recordsService.getRecords(processNodesQuery);
+        RecordsQueryResult<RecordRef> result = recordsService.getRecords(processNodesQuery);
         return RecordsUtils.toScoped(ID, result);
     }
 

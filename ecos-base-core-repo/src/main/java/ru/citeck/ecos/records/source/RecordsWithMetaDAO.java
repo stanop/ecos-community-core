@@ -1,16 +1,16 @@
 package ru.citeck.ecos.records.source;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 
-public interface RecordsWithMetaDAO extends RecordsDAO {
+public interface RecordsWithMetaDAO extends RecordsQueryDAO {
 
-    RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema);
+    RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String metaSchema);
 
-    default RecordsResult<RecordRef> getRecords(RecordsQuery query) {
-        RecordsResult<ObjectNode> records = getRecords(query, "id");
-        return new RecordsResult<>(records, node -> new RecordRef(node.get("id").asText()));
+    default RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
+        RecordsQueryResult<RecordMeta> records = getRecords(query, "id");
+        return new RecordsQueryResult<>(records, RecordMeta::getId);
     }
 }

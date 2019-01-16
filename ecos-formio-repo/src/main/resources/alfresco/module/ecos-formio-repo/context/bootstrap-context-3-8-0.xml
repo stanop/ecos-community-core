@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="ecos.formio.import-spaces.3-8-0" abstract="true" parent="ecos.formio.import-spaces">
+        <property name="sinceVersion" value="3.8.0" />
+        <property name="appliesFromVersion" value="3.8.0" />
+    </bean>
+
+    <bean id="ecos.formio.formio-forms-folder" parent="ecos.formio.import-spaces.3-8-0">
+        <property name="name" value="formio-forms-folder" />
+        <property name="description" value="formio-forms-folder" />
+        <property name="bootstrapView">
+            <props>
+                <prop key="path">/${spaces.company_home.childname}/${spaces.dictionary.childname}</prop>
+                <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                <prop key="messages">alfresco/module/ecos-formio-repo/bootstrap/formio-forms-folder</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>
