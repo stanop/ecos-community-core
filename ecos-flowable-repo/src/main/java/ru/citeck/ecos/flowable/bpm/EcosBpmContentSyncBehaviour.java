@@ -97,6 +97,9 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
         } else {
 
             ContentReader reader = contentService.getReader(nodeRef, PROP_XML);
+            if (reader == null || !reader.exists()) {
+                return;
+            }
 
             try (InputStream in = reader.getContentInputStream()) {
 
