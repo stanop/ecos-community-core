@@ -197,6 +197,13 @@
                         <param name="pageId">journals2/list/templates</param>
                     </action>
                 </item>
+                <item id="HEADER_DEV_TOOLS">
+                    <label>menu.item.dev-tools</label>
+                    <icon>dev-tools</icon>
+                    <action type="PAGE_LINK">
+                        <param name="pageId">dev-tools</param>
+                    </action>
+                </item>
                 <item id="HEADER_MORE">
                     <label>menu.item.more</label>
                     <icon>more</icon>
