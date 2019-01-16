@@ -18,6 +18,11 @@
     <bean id="idocs.module-component.icons.dev-tools" parent="idocs.import-spaces.3-7-0">
         <property name="name" value="Icons dev-tools"/>
         <property name="description" value="Icons dev-tools"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.icons" />
+            </list>
+        </property>
         <property name="bootstrapViews">
             <list>
                 <props>
