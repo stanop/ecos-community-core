@@ -3,13 +3,12 @@ package ru.citeck.ecos.graphql.meta.value;
 import ru.citeck.ecos.graphql.GqlContext;
 
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Metadata value. Used to get attributes by schema
  *
- * @see MetaValueTypeDef
  * @author Pavel Simonov
+ * @see MetaValueTypeDef
  */
 public interface MetaValue {
 
@@ -35,11 +34,11 @@ public interface MetaValue {
     /**
      * Get value attribute
      */
-    default List<MetaValue> getAttribute(String attributeName) {
+    default Object getAttribute(String attributeName) throws Exception {
         return Collections.emptyList();
     }
 
-    default boolean hasAttribute(String attributeName) {
+    default boolean hasAttribute(String attributeName) throws Exception {
         return false;
     }
 

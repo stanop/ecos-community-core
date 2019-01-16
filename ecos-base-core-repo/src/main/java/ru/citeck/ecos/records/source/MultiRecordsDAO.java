@@ -9,7 +9,7 @@ import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,17 +18,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Pavel Simonov
  */
 public class MultiRecordsDAO extends AbstractRecordsDAO
-                             implements RecordsActionExecutor {
+                             implements RecordsQueryDAO,
+                                        RecordsActionExecutor {
 
     private static final Log logger = LogFactory.getLog(MultiRecordsDAO.class);
 
-    private List<RecordsDAO> recordsDao;
-    private Map<String, RecordsDAO> daoBySource = new ConcurrentHashMap<>();
+    private List<RecordsQueryDAO> recordsDao;
+    private Map<String, RecordsQueryDAO> daoBySource = new ConcurrentHashMap<>();
 
     @Override
-    public RecordsResult<RecordRef> getRecords(RecordsQuery query) {
+    public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
 
-        RecordsResult<RecordRef> result = new RecordsResult<>();
+        RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
 
         RecordsQuery localQuery = new RecordsQuery(query);
 
@@ -44,8 +45,8 @@ public class MultiRecordsDAO extends AbstractRecordsDAO
         while (sourceIdx < recordsDao.size() && result.getRecords().size() < query.getMaxItems()) {
 
             localQuery.setMaxItems(query.getMaxItems() - result.getRecords().size());
-            RecordsDAO recordsDAO = recordsDao.get(sourceIdx);
-            RecordsResult<RecordRef> daoRecords = recordsDAO.getRecords(localQuery);
+            RecordsQueryDAO recordsDAO = recordsDao.get(sourceIdx);
+            RecordsQueryResult<RecordRef> daoRecords = recordsDAO.getRecords(localQuery);
 
             result.merge(daoRecords);
 
@@ -73,7 +74,7 @@ public class MultiRecordsDAO extends AbstractRecordsDAO
     public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {
         ActionResults<RecordRef> results = new ActionResults<>();
         RecordsUtils.groupRefBySource(records).forEach((sourceId, sourceRecs) -> {
-            RecordsDAO recordsDAO = daoBySource.get(sourceId);
+            RecordsQueryDAO recordsDAO = daoBySource.get(sourceId);
             if (recordsDAO instanceof RecordsActionExecutor) {
                 results.merge(((RecordsActionExecutor) recordsDAO).executeAction(sourceRecs, config));
             } else {
@@ -87,7 +88,7 @@ public class MultiRecordsDAO extends AbstractRecordsDAO
         return results;
     }
 
-    public void setRecordsDao(List<RecordsDAO> records) {
+    public void setRecordsDao(List<RecordsQueryDAO> records) {
         this.recordsDao = records;
         records.forEach(r -> daoBySource.put(r.getId(), r));
     }

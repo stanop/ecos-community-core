@@ -95,15 +95,20 @@ public class GraphQLServiceImpl implements GraphQLService {
         ExecutionResult result = graphQL.execute(input);
         result = new GqlExecutionResult(result);
 
-        if (logger.isWarnEnabled()) {
-            for (GraphQLError error : result.getErrors()) {
+        List<GraphQLError> errors = result.getErrors();
+
+        if (errors != null && !errors.isEmpty()) {
+
+            logger.error("GraphQL query completed with errors:\nQuery: " + query + "\nvariables: " + variables);
+
+            for (GraphQLError error : errors) {
 
                 List<SourceLocation> locations = error.getLocations();
                 String locationsMsg = "";
                 if (locations != null && locations.size() > 0) {
                     locationsMsg = " at " + locations.stream()
-                                                     .map(l -> l.getLine() + ":" + l.getColumn())
-                                                     .collect(Collectors.joining(", ")) + " ";
+                            .map(l -> l.getLine() + ":" + l.getColumn())
+                            .collect(Collectors.joining(", ")) + " ";
                 }
 
                 String message = "GraphQL " + error.getErrorType() + locationsMsg + "message: " + error.getMessage();

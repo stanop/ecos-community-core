@@ -8,10 +8,9 @@ import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.ChildAssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.repository.AssociationRef;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.search.SearchService;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.alfresco.util.GUID;
@@ -32,6 +31,8 @@ public class NodeUtils {
     private static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
 
     private NodeService nodeService;
+    private SearchService searchService;
+    private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
 
     /**
@@ -48,6 +49,24 @@ public class NodeUtils {
             return true;
         }
         return !TransactionalResourceHelper.getSet(KEY_PENDING_DELETE_NODES).contains(nodeRef);
+    }
+
+    /**
+     * Get node by nodeRef or path
+     */
+    public NodeRef getNodeRef(String node) {
+
+        if (NodeRef.isNodeRef(node)) {
+            return new NodeRef(node);
+        }
+
+        NodeRef root = nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        List<NodeRef> results = searchService.selectNodes(root, node, null,
+                                                          namespaceService, false);
+        if (results.isEmpty()) {
+            throw new IllegalArgumentException("Node not found by path: " + node);
+        }
+        return results.get(0);
     }
 
     /**
@@ -219,6 +238,8 @@ public class NodeUtils {
     @Autowired
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         nodeService = serviceRegistry.getNodeService();
+        searchService = serviceRegistry.getSearchService();
+        namespaceService = serviceRegistry.getNamespaceService();
         dictionaryService = serviceRegistry.getDictionaryService();
     }
 }

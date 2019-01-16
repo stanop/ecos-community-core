@@ -1,11 +1,12 @@
 package ru.citeck.ecos.records.source;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.util.List;
 
-public interface RecordsMetaDAO {
+public interface RecordsMetaDAO extends RecordsDAO {
 
-    List<ObjectNode> getMeta(List<RecordRef> records, String gqlSchema);
+    RecordsResult<RecordMeta> getMeta(List<RecordRef> records, String gqlSchema);
 }

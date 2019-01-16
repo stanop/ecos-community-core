@@ -60,7 +60,7 @@
 	</properties>
 	
 	<properties type="d:boolean">
-		<invariant on="value-title" language="javascript">value ? "Да" : "Нет"</invariant>
+		<invariant on="value-title" language="javascript">value ? Alfresco.util.message("label.yes") : Alfresco.util.message("label.no")</invariant>
 		<invariant on="default" language="javascript">false</invariant>
 	</properties>
 	

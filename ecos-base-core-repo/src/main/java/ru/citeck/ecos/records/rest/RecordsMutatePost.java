@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 
 import org.springframework.extensions.webscripts.servlet.FormData;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.request.mutation.RecordMut;
 import ru.citeck.ecos.records.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
 
@@ -22,10 +22,9 @@ import java.io.IOException;
 public class RecordsMutatePost extends AbstractWebScript {
 
     private static final String FIELD_ID = "id";
-    private static final String FIELD_PARENT = "parent";
-    private static final String FIELD_PARENT_ATT = "parentAtt";
-    private static final String FIELD_TYPE = "type";
-    private static final String FIELD_ATT_PREFIX = "att_";
+    private static final String FIELD_PARENT = "_parent";
+    private static final String FIELD_PARENT_ATT = "_parentAtt";
+    private static final String FIELD_TYPE = "_type";
 
     private static final String FILE_FIELD_MIMETYPE = "mimetype";
     private static final String FILE_FIELD_FILENAME = "filename";
@@ -42,13 +41,18 @@ public class RecordsMutatePost extends AbstractWebScript {
 
         Request request;
 
-        if (MimetypeMap.MIMETYPE_JSON.equals(req.getContentType())) {
+        String contentType = req.getContentType();
+        if (contentType == null) {
+            contentType = "";
+        }
+
+        if (contentType.contains(MimetypeMap.MIMETYPE_JSON)) {
 
             request = utils.readBody(req, Request.class);
 
-        } else if (WebScriptRequestImpl.MULTIPART_FORM_DATA.equals(req.getContentType())) {
+        } else if (contentType.contains(WebScriptRequestImpl.MULTIPART_FORM_DATA)) {
 
-            RecordMut recordMut = new RecordMut();
+            RecordMeta recordMeta = new RecordMeta();
             ObjectNode attributes = JsonNodeFactory.instance.objectNode();
 
             FormData data = (FormData) req.parseContent();
@@ -63,50 +67,25 @@ public class RecordsMutatePost extends AbstractWebScript {
 
                 String fieldName = field.getName();
 
-                if (fieldName.startsWith(FIELD_ATT_PREFIX)) {
-
-                    String attName = fieldName.substring(FIELD_ATT_PREFIX.length());
+                if (FIELD_ID.equals(fieldName)) {
+                    recordMeta.setId(new RecordRef(field.getValue()));
+                } else {
 
                     if (field.getIsFile()) {
-                        ObjectNode fileData = attributes.with(attName);
+                        ObjectNode fileData = attributes.with(fieldName);
                         fileData.put(FILE_FIELD_MIMETYPE, field.getMimetype());
                         fileData.put(FILE_FIELD_FILENAME, field.getFilename());
                         fileData.put(FILE_FIELD_CONTENT, field.getContent().getContent());
                         fileData.put(FILE_FIELD_CONTENT_TYPE, CONTENT_TYPE_TEXT);
                     } else {
-                        attributes.put(attName, field.getValue());
-                    }
-
-                } else {
-
-                    switch (fieldName) {
-
-                        case FIELD_ID:
-
-                            recordMut.setId(new RecordRef(value));
-                            break;
-
-                        case FIELD_PARENT:
-
-                            recordMut.setParent(value);
-                            break;
-
-                        case FIELD_PARENT_ATT:
-
-                            recordMut.setParentAtt(value);
-                            break;
-
-                        case FIELD_TYPE:
-
-                            recordMut.setType(value);
-                            break;
+                        attributes.put(fieldName, field.getValue());
                     }
                 }
             }
 
-            recordMut.setAttributes(attributes);
+            recordMeta.setAttributes(attributes);
             request = new Request();
-            request.setRecord(recordMut);
+            request.setRecord(recordMeta);
 
         } else {
 
@@ -132,7 +111,7 @@ public class RecordsMutatePost extends AbstractWebScript {
 
         boolean isSingleRecord = false;
 
-        void setRecord(RecordMut record) {
+        void setRecord(RecordMeta record) {
             isSingleRecord = true;
             getRecords().add(record);
         }

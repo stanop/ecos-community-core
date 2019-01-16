@@ -31,7 +31,12 @@ export default class GridCardlet extends NodeCardlet {
             });
 
             dataSource.load().then(function (data) {
-                success(data.records || []);
+                let records = data.records || [];
+                let recordsData = [];
+                for (let i = 0; i < records.length; i++) {
+                    recordsData.push(records[i].attributes);
+                }
+                success(recordsData);
             }).catch(function(){
                 success([]);
             });
