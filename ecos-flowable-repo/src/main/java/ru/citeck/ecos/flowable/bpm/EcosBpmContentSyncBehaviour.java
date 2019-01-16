@@ -4,12 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.Getter;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.ContentServicePolicies;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.flowable.app.domain.editor.Model;
 import org.flowable.app.service.editor.ModelImageService;
 import org.flowable.bpmn.BpmnAutoLayout;
@@ -31,6 +34,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -45,6 +50,8 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
     private static final String ENCODING = "UTF-8";
     private static final String THUMBNAIL_MIMETYPE = "image/png";
 
+    private static final Log logger = LogFactory.getLog(EcosBpmContentSyncBehaviour.class);
+
     private ContentService contentService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -57,7 +64,7 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
     }
 
     @PolicyMethod(policy = NodeServicePolicies.OnCreateNodePolicy.class,
-                  frequency = Behaviour.NotificationFrequency.EVERY_EVENT,
+                  frequency = Behaviour.NotificationFrequency.TRANSACTION_COMMIT,
                   runAsSystem = true)
     public void onCreateNode(ChildAssociationRef childAssocRef) {
 
@@ -83,10 +90,34 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
             startEvent.setId("start");
             process.addFlowElement(startEvent);
 
-            BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
             ContentWriter writer = contentService.getWriter(nodeRef, PROP_XML, true);
-
+            BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
             writer.putContent(new ByteArrayInputStream(xmlConverter.convertToXML(bpmnModel, ENCODING)));
+
+        } else {
+
+            ContentReader reader = contentService.getReader(nodeRef, PROP_XML);
+
+            try (InputStream in = reader.getContentInputStream()) {
+
+                BpmnModel model = readModelFromXml(in);
+
+                List<Process> processes = model.getProcesses();
+                if (processes.size() > 0) {
+
+                    Process process = processes.get(0);
+
+                    Map<QName, Serializable> nodeProps = new HashMap<>();
+                    nodeProps.put(EcosBpmModel.PROP_PROCESS_ID, process.getId());
+                    nodeProps.put(ContentModel.PROP_TITLE, process.getName());
+                    nodeProps.put(ContentModel.PROP_DESCRIPTION, process.getDocumentation());
+
+                    nodeService.addProperties(nodeRef, nodeProps);
+                }
+
+            } catch (IOException e) {
+                logger.error(e);
+            }
         }
     }
 
@@ -105,21 +136,11 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
         }
     }
 
-    private void xmlToJson(NodeRef nodeRef, ContentData data) {
+    private BpmnModel xmlToJson(NodeRef nodeRef, ContentData data) {
 
-        convert(nodeRef, data, Format.JSON.mimetype(), PROP_JSON, input -> {
+        return convert(nodeRef, data, Format.JSON.mimetype(), PROP_JSON, input -> {
 
-            BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
-            XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
-            XMLStreamReader xmlStreamReader;
-
-            try {
-                xmlStreamReader = xmlFactory.createXMLStreamReader(input, data.getEncoding());
-            } catch (XMLStreamException e) {
-                throw new IllegalStateException("Could not read XML", e);
-            }
-
-            BpmnModel bpmnModel = xmlConverter.convertToBpmnModel(xmlStreamReader);
+            BpmnModel bpmnModel = readModelFromXml(input);
 
             if (bpmnModel.getLocationMap().size() == 0) {
                 BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
@@ -132,16 +153,31 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
             generateThumbnail(nodeRef, modelNode);
 
             try {
-                return objectMapper.writeValueAsBytes(modelNode);
+                return new BpmnModelData(bpmnModel, objectMapper.writeValueAsBytes(modelNode));
             } catch (JsonProcessingException e) {
                 throw new IllegalStateException("Could not write JSON", e);
             }
         });
     }
 
-    private void jsonToXml(NodeRef nodeRef, ContentData data) {
+    private BpmnModel readModelFromXml(InputStream input) {
 
-        convert(nodeRef, data, Format.XML.mimetype(), PROP_XML, input -> {
+        BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
+        XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
+        XMLStreamReader xmlStreamReader;
+
+        try {
+            xmlStreamReader = xmlFactory.createXMLStreamReader(input, ENCODING);
+        } catch (XMLStreamException e) {
+            throw new IllegalStateException("Could not read XML", e);
+        }
+
+        return xmlConverter.convertToBpmnModel(xmlStreamReader);
+    }
+
+    private BpmnModel jsonToXml(NodeRef nodeRef, ContentData data) {
+
+        return convert(nodeRef, data, Format.XML.mimetype(), PROP_XML, input -> {
 
             BpmnJsonConverter jsonConverter = new BpmnJsonConverter();
 
@@ -156,7 +192,7 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
             BpmnModel bpmnModel = jsonConverter.convertToBpmnModel(jsonModel);
             BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
 
-            return xmlConverter.convertToXML(bpmnModel, ENCODING);
+            return new BpmnModelData(bpmnModel, xmlConverter.convertToXML(bpmnModel, ENCODING));
         });
     }
 
@@ -180,19 +216,19 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
         }
     }
 
-    private void convert(NodeRef nodeRef,
-                         ContentData data,
-                         String targetMimetype,
-                         QName targetProp,
-                         Function<InputStream, byte[]> convert) {
+    private BpmnModel convert(NodeRef nodeRef,
+                              ContentData data,
+                              String targetMimetype,
+                              QName targetProp,
+                              Function<InputStream, BpmnModelData> convert) {
 
         if (!nodeService.exists(nodeRef)) {
-            return;
+            return null;
         }
 
         ContentReader reader = contentService.getRawReader(data.getContentUrl());
         if (!reader.exists()) {
-            return;
+            return null;
         }
 
         try (InputStream input = reader.getContentInputStream()) {
@@ -200,7 +236,11 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
             ContentWriter writer = contentService.getWriter(nodeRef, targetProp, true);
             writer.setEncoding(ENCODING);
             writer.setMimetype(targetMimetype);
-            writer.putContent(new ByteArrayInputStream(convert.apply(input)));
+
+            BpmnModelData bpmnModelData = convert.apply(input);
+            writer.putContent(new ByteArrayInputStream(bpmnModelData.getBytes()));
+
+            return bpmnModelData.getModel();
 
         } catch (IOException e) {
             throw new IllegalStateException("Could not convert", e);
@@ -210,5 +250,16 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
     @Autowired
     public void setModelImageService(ModelImageService modelImageService) {
         this.modelImageService = modelImageService;
+    }
+
+    private static class BpmnModelData {
+
+        @Getter private BpmnModel model;
+        @Getter private byte[] bytes;
+
+        BpmnModelData(BpmnModel model, byte[] bytes) {
+            this.model = model;
+            this.bytes = bytes;
+        }
     }
 }
