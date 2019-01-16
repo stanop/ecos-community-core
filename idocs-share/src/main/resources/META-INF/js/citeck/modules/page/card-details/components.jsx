@@ -5,6 +5,8 @@ import SurfRegion from "../../surf/surf-region";
 import ShareFooter from "../../footer/share-footer";
 import { connect } from 'react-redux';
 
+import FormioForm from 'js/citeck/formio/formio-form'
+
 import {
     setCardMode,
     fetchCardletData,
@@ -47,6 +49,7 @@ function CardDetailsImpl(props) {
     return (
         <div id='card-details-container'>
             <div key="card-details-body" className="sticky-wrapper">
+                <FormioForm record={pageArgs.nodeRef} />
                 <div id="doc3">
                     <div id="alf-hd">
                         {headerComponent}
