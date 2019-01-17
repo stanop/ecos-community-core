@@ -854,7 +854,12 @@ Record
         return _.contains(this.aspects(), aspect);
     })
     .method('hasPermission', function(permission) {
-        return this.permissions()[permission] === true;
+        //if we see record we have Read permission
+        if (permission === "Read") {
+            return true;
+        }
+        //if permissions is unknown allow to send requests
+        return (this.permissions() || {})[permission] !== false;
     })
     ;
 
