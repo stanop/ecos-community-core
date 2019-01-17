@@ -92,6 +92,12 @@ public interface RecordsService {
     RecordsResult<RecordMeta> getAttributes(Collection<RecordRef> records, Map<String, String> attributes);
 
     /**
+     * Get meta
+     * Fields example: {"name" : "cm:name", "title" : "cm:title"]
+     */
+    RecordMeta getAttributes(RecordRef record, Map<String, String> attributes);
+
+    /**
      * Get ordered meta
      * Fields example: ["cm:name", "cm:title"]
      */

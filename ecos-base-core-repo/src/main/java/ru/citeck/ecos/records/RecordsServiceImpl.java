@@ -2,6 +2,7 @@ package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.MissingNode;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,6 +190,18 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
+    public RecordMeta getAttributes(RecordRef record, Map<String, String> attributes) {
+
+        RecordsResult<RecordMeta> values = getAttributes(Collections.singletonList(record), attributes);
+
+        if (values.getRecords().isEmpty()) {
+            return new RecordMeta(record);
+        }
+
+        return values.getRecords().get(0);
+    }
+
+    @Override
     public <T> T getMeta(RecordRef recordRef, Class<T> metaClass) {
         RecordsResult<T> meta = getMeta(Collections.singletonList(recordRef), metaClass);
         if (meta.getRecords().size() == 0) {
@@ -254,7 +267,23 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public RecordsMutResult mutate(RecordsMutation mutation) {
-        return needRecordsDAO(mutation.getSourceId(), MutableRecordsDAO.class, mutableDAO).mutate(mutation);
+
+        if (StringUtils.isNotBlank(mutation.getSourceId())) {
+            return needRecordsDAO(mutation.getSourceId(), MutableRecordsDAO.class, mutableDAO).mutate(mutation);
+        }
+
+        RecordsMutResult result = new RecordsMutResult();
+
+        RecordsUtils.groupMetaBySource(mutation.getRecords()).forEach((sourceId, records) -> {
+
+            RecordsMutation sourceMut = new RecordsMutation();
+            sourceMut.setRecords(records);
+
+            MutableRecordsDAO dao = needRecordsDAO(mutation.getSourceId(), MutableRecordsDAO.class, mutableDAO);
+            result.merge(dao.mutate(sourceMut));
+        });
+
+        return result;
     }
 
     @Override

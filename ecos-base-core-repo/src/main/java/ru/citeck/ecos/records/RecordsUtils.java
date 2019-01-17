@@ -150,6 +150,10 @@ public class RecordsUtils {
         return groupBySource(records, RecordInfo::getRef, (r, d) -> d);
     }
 
+    public static Map<String, List<RecordMeta>> groupMetaBySource(Collection<RecordMeta> records) {
+        return groupBySource(records, RecordMeta::getId, (r, d) -> d);
+    }
+
     public static <V> Map<RecordRef, V> convertToRefs(Map<String, V> data) {
         Map<RecordRef, V> result = new HashMap<>();
         data.forEach((id, recMeta) -> result.put(new RecordRef(id), recMeta));

@@ -1,10 +1,16 @@
 package ru.citeck.ecos.formio;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.formio.model.FormioForm;
 import ru.citeck.ecos.records.RecordConstants;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
@@ -21,18 +27,6 @@ public class FormioFormRecords extends LocalRecordsDAO
                                           RecordsMetaDAO {
 
     public static final String ID = "formio";
-/*
-    private static final Map<String, String> TO_ALF_NODE_MAPPING;
-
-    static {
-        Map<String, String> localToAlfNodeMapping = new HashMap<>();
-        localToAlfNodeMapping.put("title", "cm:title");
-        localToAlfNodeMapping.put("formId", "ecosFormio:formId");
-        localToAlfNodeMapping.put("formKey", "ecosFormio:formKey");
-        localToAlfNodeMapping.put("formType", "ecosFormio:formType");
-        localToAlfNodeMapping.put("description", "cm:description");
-        TO_ALF_NODE_MAPPING = Collections.unmodifiableMap(localToAlfNodeMapping);
-    }*/
 
     private RecordsService recordsService;
     private FormioFormService formioFormService;
@@ -46,15 +40,15 @@ public class FormioFormRecords extends LocalRecordsDAO
     }
 
     @Override
-    protected RecordsQueryResult<FormioForm> getMetaValues(RecordsQuery recordsQuery) {
+    protected RecordsQueryResult<FormWithData> getMetaValues(RecordsQuery recordsQuery) {
 
-        RecordsQueryResult<FormioForm> result = new RecordsQueryResult<>();
+        RecordsQueryResult<FormWithData> result = new RecordsQueryResult<>();
 
         Query query = recordsQuery.getQuery(Query.class);
 
         List<String> formKeys = new ArrayList<>();
 
-        if (query.formKey != null) {
+        if (StringUtils.isNotBlank(query.formKey)) {
 
             formKeys.addAll(Arrays.asList(query.formKey.split(",")));
 
@@ -64,6 +58,10 @@ public class FormioFormRecords extends LocalRecordsDAO
 
             for (JsonNode key : recFormKeys) {
                 formKeys.add(key.asText());
+            }
+
+            if (formKeys.isEmpty()) {
+                formKeys.add(query.record.toString());
             }
         }
 
@@ -81,71 +79,88 @@ public class FormioFormRecords extends LocalRecordsDAO
             return result;
         }
 
-        result.setRecords(Collections.singletonList(optForm.get()));
+        FormioForm form = optForm.get();
+        ObjectNode attributes = null;
+
+        if (query.record != null && form.getDefinition() != null) {
+
+            JsonNode components = form.getDefinition().path("components");
+            Map<String, String> attributesToRequest = fillAttributes(components, new HashMap<>());
+
+            RecordMeta meta = recordsService.getAttributes(query.record, attributesToRequest);
+            attributes = meta.getAttributes();
+        }
+
+        FormWithData formWithData = new FormWithData(form, new FormSubmission(attributes));
+        result.setRecords(Collections.singletonList(formWithData));
         result.setTotalCount(1);
 
         return result;
     }
 
-    /*@Override
-    public RecordsMutResult mutate(RecordsMutation mutation) {
+    private Map<String, String> fillAttributes(JsonNode components, Map<String, String> attributes) {
 
-        RepoContentDAO<FormioFormModel> contentDAO = formioFormService.getContentDAO();
+        for (JsonNode component : components) {
 
-        for (RecordMeta record : mutation.getRecords()) {
+            if (component.path("input").asBoolean() && !"button".equals(component.path("type").asText())) {
 
-            ObjectNode attributes = record.getAttributes();
+                String fieldKey = component.path("key").asText();
+                if (StringUtils.isBlank(fieldKey)) {
+                    continue;
+                }
 
-            RecordRef id = record.getId();
+                JsonNode compAttribute = component.path("properties").path("attribute");
+                String attribute = null;
+                if (!compAttribute.isMissingNode() && !compAttribute.isNull()) {
+                    attribute = compAttribute.asText();
+                }
+                if (StringUtils.isBlank(attribute)) {
+                    attribute = fieldKey;
+                }
 
-            if (id != null) {
-                record.setId(new RecordRef(formioFormService.toNodeRef(id)));
-            } else {
-                attributes.put(RecordConstants.ATT_PARENT, contentDAO.getRootRef().toString());
-                attributes.put(RecordConstants.ATT_PARENT_ATT, toPrefix(contentDAO.getChildAssocType()));
-                attributes.put(RecordConstants.ATT_TYPE, toPrefix(contentDAO.getConfigNodeType()));
+                attributes.put(fieldKey, attribute);
             }
 
-            TO_ALF_NODE_MAPPING.forEach((local, alfAtt) -> {
-
-                JsonNode value = attributes.remove(local);
-                if (value != null) {
-                    attributes.put(alfAtt, value);
-                }
-            });
+            fillAttributes(components.path("components"), attributes);
         }
 
-        RecordsMutResult result = alfNodesRecordsDAO.mutate(mutation);
-
-        result.getRecords().forEach(record -> {
-            String localId = record.getId().getId().replace("workspace://SpacesStore/", "");
-            record.setId(new RecordRef(ID, localId));
-        });
-
-        return result;
+        return attributes;
     }
 
-    *//*target=formio&record=*//*
+    public static class FormWithData {
 
-    @Override
-    public RecordsDelResult delete(RecordsDeletion deletion) {
+        private FormioForm form;
+        @Getter private FormSubmission submission;
 
-        deletion.setRecords(deletion.getRecords().stream().map(r ->
-            new RecordRef(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE + r.getId())
-        ).collect(Collectors.toList()));
+        FormWithData(FormioForm form, FormSubmission submission) {
+            this.form = form;
+            this.submission = submission;
+        }
 
-        RecordsDelResult result = alfNodesRecordsDAO.delete(deletion);
-        result.getRecords().forEach(r -> r.setId(new RecordRef(ID, r.getId())));
+        public String getId() {
+            return form.getId();
+        }
 
-        return result;
+        public String getFormKey() {
+            return form.getFormKey();
+        }
+
+        public JsonNode getDefinition() {
+            return form.getDefinition();
+        }
     }
 
-    private String toPrefix(QName name) {
-        return name.toPrefixString(namespaceService);
+    public static class FormSubmission {
+
+        @Getter private ObjectNode data;
+
+        public FormSubmission(ObjectNode data) {
+            this.data = data != null ? data : JsonNodeFactory.instance.objectNode();
+        }
     }
-*/
+
     static class Query {
-        public RecordRef record;
-        public String formKey;
+        @Getter @Setter private RecordRef record;
+        @Getter @Setter private String formKey;
     }
 }

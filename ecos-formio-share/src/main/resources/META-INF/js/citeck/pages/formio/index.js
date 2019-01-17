@@ -10,11 +10,6 @@
 
 function getForm(record, formKey) {
 
-    let query = {
-        record: record,
-        formKey: formKey
-    };
-
     return fetch('/share/proxy/alfresco/citeck/ecos/records/query', {
         method: 'POST',
         credentials: 'include',
@@ -24,9 +19,15 @@ function getForm(record, formKey) {
         body: JSON.stringify({
             query: {
                 sourceId: 'formio',
-                query: query
+                query: {
+                    record: record,
+                    formKey: formKey
+                }
             },
-            attributes: {formDef: 'definition?json'},
+            attributes: {
+                submission: '.att(n:"submission"){att(n:"data"){json}}',
+                formDef: 'definition?json'
+            },
         })
     }).then(response => { return response.json();});
 }
@@ -60,34 +61,13 @@ window.onload = function() {
 
     getForm(record, formKey).then(data => {
 
-        var definition = data.records[0].attributes.formDef;
+        var formAtts = data.records[0].attributes;
 
-        Formio.createForm(document.getElementById('formio'), definition).then(form => {
+        Formio.createForm(document.getElementById('formio'), formAtts.formDef).then(form => {
 
-            fetch('/share/proxy/alfresco/citeck/ecos/records/query', {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-type': 'application/json;charset=UTF-8'
-                },
-                body: JSON.stringify({
-                    record: "workspace://SpacesStore/142b5c69-85e5-4b2e-a0e7-9bdf94ce3e51",
-                    attributes: {
-                        title: 'cm:title',
-                        description: 'cm:description',
-                        formType: 'ecosFormio:formType',
-                        formKind: 'ecosFormio:formKind',
-                        formId: 'ecosFormio:formId',
-                        formMode: 'ecosFormio:formMode',
-                    },
-                })
-            }).then(response => { return response.json();})
-                .then(data => {
-                    form.submission = {
-                        data: data.attributes
-                    }
-                }
-            );
+            form.submission = {
+                data: formAtts.submission
+            };
 
             window.formioForm = form;
 
@@ -98,7 +78,10 @@ window.onload = function() {
                 let attributes = {};
                 for (let i = 0; i < inputs.length; i++) {
 
-                    let input = inputs[i];
+                    let input = inputs[i].component;
+                    if (input.type == 'button') {
+                        continue;
+                    }
                     let attribute = (input.properties || {}).attribute || input.key;
 
                     attributes[attribute] = submission.data[input.key];
@@ -111,8 +94,8 @@ window.onload = function() {
                         'Content-type': 'application/json;charset=UTF-8'
                     },
                     body: JSON.stringify({
-                        sourceId: 'formio',
                         record: {
+                            id: record,
                             attributes: attributes
                         }
                     })
