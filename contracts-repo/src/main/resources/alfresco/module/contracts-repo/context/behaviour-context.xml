@@ -7,6 +7,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Договор<#else>Contract</#if> №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
 		</property>
+		<property name="appendExtension" value="true"/>
 		<property name="order" value="40"/>
 	</bean>
 
@@ -32,7 +33,7 @@
 		<property name="nameTemplate">
 			<value><![CDATA[<#if .locale == "ru_RU">Доп.соглашение<#else>Add'l agreement</#if> №#{'$'}{node.properties['contracts:agreementNumber']!'n/a'}]]></value>
 		</property>
-		<property name="appendExtension" value="false" />
+		<property name="appendExtension" value="true"/>
 		<property name="order" value="40"/>
 	</bean>
 

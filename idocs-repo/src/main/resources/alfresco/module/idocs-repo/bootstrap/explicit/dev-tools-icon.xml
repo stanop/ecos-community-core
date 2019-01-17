@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:ecos="http://www.citeck.ru/model/content/ecos/1.0">
+
+    <ecos:icon view:childName="cm:dev-tools">
+        <view:properties>
+            <cm:name>dev-tools</cm:name>
+            <cm:title>dev-tools</cm:title>
+            <ecos:iconType>fa</ecos:iconType>
+            <ecos:faIconName>fa-wrench</ecos:faIconName>
+        </view:properties>
+    </ecos:icon>
+
+</view:view>

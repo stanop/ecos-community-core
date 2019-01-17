@@ -22,9 +22,6 @@ import java.io.IOException;
 public class RecordsMutatePost extends AbstractWebScript {
 
     private static final String FIELD_ID = "id";
-    private static final String FIELD_PARENT = "_parent";
-    private static final String FIELD_PARENT_ATT = "_parentAtt";
-    private static final String FIELD_TYPE = "_type";
 
     private static final String FILE_FIELD_MIMETYPE = "mimetype";
     private static final String FILE_FIELD_FILENAME = "filename";
