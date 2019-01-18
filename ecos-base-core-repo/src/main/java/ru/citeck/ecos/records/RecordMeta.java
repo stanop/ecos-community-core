@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class RecordMeta {
 
-    private RecordRef id;
+    private RecordRef id = RecordRef.EMPTY;
 
     private ObjectNode attributes = JsonNodeFactory.instance.objectNode();
 
@@ -31,7 +31,7 @@ public class RecordMeta {
     }
 
     public void setId(RecordRef id) {
-        this.id = id;
+        this.id = id != null ? id : RecordRef.EMPTY;
     }
 
     public ObjectNode getAttributes() {

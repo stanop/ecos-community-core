@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Component
 public class RepoFormProvider extends AbstractFormProvider {
 
     private RepoContentDAO<FormioFormModel> formsContentDAO;

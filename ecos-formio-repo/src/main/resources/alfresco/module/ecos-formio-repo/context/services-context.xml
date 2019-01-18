@@ -45,12 +45,12 @@
 
     <bean id="ecos.formio.formioFormNodeDataReader" class="ru.citeck.ecos.formio.repo.FormioFormNodeDataReader" />
 
-    <bean class="ru.citeck.ecos.records.source.alfnode.AlfNodesDefaultParentRegistrar">
+    <!--<bean class="ru.citeck.ecos.records.source.alfnode.AlfNodesDefaultParentRegistrar">
         <property name="defaultParents">
             <map>
                 <entry key="{http://www.citeck.ru/model/ecos/formio/1.0}form" value="/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:formio-forms" />
             </map>
         </property>
-    </bean>
+    </bean>-->
 
 </beans>

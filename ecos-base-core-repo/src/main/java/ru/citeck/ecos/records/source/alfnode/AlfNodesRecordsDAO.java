@@ -99,7 +99,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             NodeRef nodeRef;
 
-            if (record.getId() == null) {
+            if (record.getId() == RecordRef.EMPTY) {
 
                 QName type = getNodeType(record);
                 NodeRef parent = getParent(record, type);
