@@ -31,6 +31,11 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
     public static final String ACTION_ID = "complete-document-task";
     public static final String TASKS = "tasks";
 
+    private static final String MSG_TASKS_NOT_FOUND = "group-action.complete-doc-tasks.task-not-found";
+    private static final String MSG_WITHOUT_WORKFLOW = "group-action.complete-doc-tasks.without-workflow";
+    private static final String MSG_WITHOUT_USER_TASKS = "group-action.complete-doc-tasks.without-user-tasks";
+    private static final String MSG_WITHOUT_ACTIVE_TASKS = "group-action.complete-doc-tasks.without-active-tasks";
+
     private static final String[] MANDATORY_PARAMS = { TASKS };
 
     private TaskService taskService;
@@ -100,7 +105,7 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
             NodeRef nodeRef = new NodeRef(node.getId());
             List<WorkflowInstance> workflows = workflowService.getWorkflowsForContent(nodeRef, true);
             if (workflows.isEmpty()) {
-                return ActionStatus.skipped("Node without workflow");
+                return ActionStatus.skipped(MSG_WITHOUT_WORKFLOW);
             }
             WorkflowInstance workflow = workflows.get(0);
 
@@ -112,7 +117,7 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
             List<WorkflowTask> tasks = workflowService.queryTasks(taskQuery, true);
 
             if (tasks.isEmpty()) {
-                return ActionStatus.skipped("Node without active tasks");
+                return ActionStatus.skipped(MSG_WITHOUT_ACTIVE_TASKS);
             }
 
             Set<String> userAuthorities = authorityUtils.getUserAuthorities();
@@ -138,7 +143,7 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
             }).collect(Collectors.toList());
 
             if (tasks.isEmpty()) {
-                return ActionStatus.skipped("Tasks for current user is not found");
+                return ActionStatus.skipped(MSG_WITHOUT_USER_TASKS);
             }
 
             WorkflowTask taskToComplete = null;
@@ -163,7 +168,7 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
                     taskToComplete = tasks.get(0);
                     transition = defaultTransition;
                 } else {
-                    return ActionStatus.skipped("Task not found");
+                    return ActionStatus.skipped(MSG_TASKS_NOT_FOUND);
                 }
             }
 

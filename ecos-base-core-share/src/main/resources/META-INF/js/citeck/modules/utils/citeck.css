@@ -544,3 +544,14 @@ div#FCTSRCH_SEARCH_RESULTS_LIST .data-failure {
 .web-preview canvas[id*="viewer-canvas"] {
   visibility:inherit !important;
 }
+
+#group-action-result-dialog td,
+#group-action-result-dialog th {
+  padding-left: 10px;
+  padding-top: 5px;
+}
+
+#group-action-result-dialog>.bd {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}

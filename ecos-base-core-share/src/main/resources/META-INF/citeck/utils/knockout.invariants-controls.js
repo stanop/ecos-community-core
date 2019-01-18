@@ -286,12 +286,15 @@ ko.components.register("number", {
         this.textInputValue = ko.observable(this.value());
 
         this.textInputValue.subscribe(function(value){
-            self.value(value);
+            var floatVal = parseFloat(value);
+            if (_.isFinite(floatVal) && floatVal != self.value()) {
+                self.value(floatVal);
+            }
         });
 
         self.value.subscribe(function(value) {
             var existing = parseFloat(self.textInputValue());
-            if (value != existing) {
+            if (_.isFinite(value) && value != existing) {
                 self.textInputValue(value);
             }
         });
