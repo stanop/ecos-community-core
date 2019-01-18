@@ -9,11 +9,18 @@ import java.util.Objects;
 
 public class RecordRef {
 
+    public static final RecordRef EMPTY = new RecordRef();
+
     public static final String SOURCE_DELIMITER = "@";
     private static final String DEFAULT_SOURCE_ID = "";
 
     private final String sourceId;
     private final String id;
+
+    public RecordRef() {
+        id = "";
+        sourceId = "";
+    }
 
     public RecordRef(String sourceId, String id) {
         this.sourceId = sourceId;

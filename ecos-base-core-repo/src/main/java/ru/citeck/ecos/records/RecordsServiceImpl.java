@@ -268,7 +268,7 @@ public class RecordsServiceImpl implements RecordsService {
     @Override
     public RecordsMutResult mutate(RecordsMutation mutation) {
 
-        if (StringUtils.isNotBlank(mutation.getSourceId())) {
+        if (mutation.getSourceId() != null) {
             return needRecordsDAO(mutation.getSourceId(), MutableRecordsDAO.class, mutableDAO).mutate(mutation);
         }
 
@@ -279,7 +279,7 @@ public class RecordsServiceImpl implements RecordsService {
             RecordsMutation sourceMut = new RecordsMutation();
             sourceMut.setRecords(records);
 
-            MutableRecordsDAO dao = needRecordsDAO(mutation.getSourceId(), MutableRecordsDAO.class, mutableDAO);
+            MutableRecordsDAO dao = needRecordsDAO(sourceId, MutableRecordsDAO.class, mutableDAO);
             result.merge(dao.mutate(sourceMut));
         });
 
