@@ -289,6 +289,13 @@ ko.components.register("number", {
             self.value(value);
         });
 
+        self.value.subscribe(function(value) {
+            var existing = parseFloat(self.textInputValue());
+            if (value != existing) {
+                self.textInputValue(value);
+            }
+        });
+
         this.validation = function(data, event) {
             var newValue = document.getElementById(self.id).value + event.key;
             var keyCode = event.keyCode;
