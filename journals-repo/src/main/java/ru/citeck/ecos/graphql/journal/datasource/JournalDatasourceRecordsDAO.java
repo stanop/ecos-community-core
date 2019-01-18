@@ -61,7 +61,7 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
         }
 
         RecordRef afterId = query.getAfterId();
-        JGqlPageInfoInput pageInfo = new JGqlPageInfoInput(afterId != null ? afterId.getId() : null,
+        JGqlPageInfoInput pageInfo = new JGqlPageInfoInput(afterId != RecordRef.EMPTY ? afterId.getId() : null,
                                                            query.getMaxItems(),
                                                            sortBy,
                                                            query.getSkipCount());

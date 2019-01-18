@@ -17,7 +17,7 @@ public class RecordRef {
     private final String sourceId;
     private final String id;
 
-    public RecordRef() {
+    private RecordRef() {
         id = "";
         sourceId = "";
     }
@@ -32,7 +32,6 @@ public class RecordRef {
         this.id = id.toString();
     }
 
-    @JsonCreator
     public RecordRef(String id) {
         int sourceDelimIdx = id.indexOf(SOURCE_DELIMITER);
         if (sourceDelimIdx != -1) {
@@ -47,6 +46,14 @@ public class RecordRef {
     public RecordRef(NodeRef id) {
         this.sourceId = DEFAULT_SOURCE_ID;
         this.id = id.toString();
+    }
+
+    @JsonCreator
+    public static RecordRef valueOf(String id) {
+        if (StringUtils.isBlank(id)) {
+            return EMPTY;
+        }
+        return new RecordRef(id);
     }
 
     public String getSourceId() {
@@ -80,6 +87,9 @@ public class RecordRef {
     @JsonValue
     @Override
     public String toString() {
+        if (this == EMPTY) {
+            return "";
+        }
         if (StringUtils.isEmpty(sourceId)) {
             return id;
         } else {

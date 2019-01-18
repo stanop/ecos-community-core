@@ -35,7 +35,7 @@ public class MultiRecordsDAO extends AbstractRecordsDAO
 
         int sourceIdx = 0;
         RecordRef afterId = localQuery.getAfterId();
-        if (afterId != null) {
+        if (afterId != RecordRef.EMPTY) {
             String source = afterId.getSourceId();
             while (sourceIdx < recordsDao.size() && !recordsDao.get(sourceIdx).getId().equals(source)) {
                 sourceIdx++;
