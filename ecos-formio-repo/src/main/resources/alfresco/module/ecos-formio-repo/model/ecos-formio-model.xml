@@ -21,6 +21,9 @@
                 <property name="ecosFormio:formKey">
                     <type>d:text</type>
                 </property>
+                <property name="ecosFormio:isViewForm">
+                    <type>d:boolean</type>
+                </property>
             </properties>
             <mandatory-aspects>
                 <aspect>ecosCont:hasContentId</aspect>

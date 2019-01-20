@@ -10,5 +10,6 @@ public class FormioFormModel {
     @Getter @Setter private String title;
     @Getter @Setter private String description;
     @Getter @Setter private String formKey;
+    @Getter @Setter private Boolean isViewForm;
     @Getter @Setter private JsonNode definition;
 }

@@ -17,6 +17,7 @@ public class FormioFormMetadata implements MetadataExtractor<FormioFormModel> {
         Map<QName, Serializable> metadata = new HashMap<>();
         metadata.put(EcosContentModel.PROP_ID, form.getId());
         metadata.put(EcosFormioModel.PROP_FORM_KEY, form.getFormKey());
+        metadata.put(EcosFormioModel.PROP_IS_VIEW_FORM, form.getIsViewForm());
         return metadata;
     }
 }
