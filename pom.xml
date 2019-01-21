@@ -66,7 +66,7 @@
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
         <flowable.version>6.3.0</flowable.version>
-        <ecos.flowable.version>1.4.0-SNAPSHOT</ecos.flowable.version>
+        <ecos.flowable.version>1.4.0</ecos.flowable.version>
 
         <web.compression.skip>false</web.compression.skip>
     </properties>
@@ -1063,14 +1063,14 @@
     <repositories>
         <repository>
             <id>citeck-public</id>
-            <url>http://nexus.citeck.ru/repository/maven-public</url>
+            <url>http://nexus.citeck.ru/repository/maven-public/</url>
         </repository>
     </repositories>
 
     <pluginRepositories>
         <pluginRepository>
             <id>citeck-plugin-public</id>
-            <url>http://nexus.citeck.ru/repository/maven-public</url>
+            <url>http://nexus.citeck.ru/repository/maven-public/</url>
         </pluginRepository>
     </pluginRepositories>
 

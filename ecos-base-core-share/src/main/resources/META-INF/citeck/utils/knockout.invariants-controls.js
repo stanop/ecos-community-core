@@ -64,6 +64,25 @@ YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
 
 // TODO:
 // - init tooltip only if text not empty
+function getHintPropertyByCurrentUser(obj){
+    Alfresco.util.Ajax.jsonGet({
+        url: Alfresco.constants.PROXY_URI + "citeck/search/query",
+        dataObj: {
+            query: '=cm:userName:"' + Alfresco.constants.USERNAME + '"',
+            schema: JSON.stringify({attributes:{'org:showHints':''}})
+        },
+        successCallback: {
+            scope: this,
+            fn: function(response) {
+                console.log(response.json.results[0].attributes["org:showHints"]);
+                var showHintValue = response.json.results[0].attributes["org:showHints"];
+                if (showHintValue==="No"){
+                    obj.setProperty("disabled", true);
+                }
+            }
+        }
+    });
+}
 
 ko.components.register("help", {
     viewModel: function(params) {
@@ -74,6 +93,7 @@ ko.components.register("help", {
         self.labelZIndex = ko.observable(0);
 
         // private methods
+
         this._createTooltip = _.bind(function(text) {
             if (!this.tooltip) {
                 this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
@@ -117,6 +137,8 @@ ko.components.register("help", {
 
         // create tooltip if text already calculated
         this._createTooltip(this.text());
+
+        getHintPropertyByCurrentUser(this.tooltip.cfg);
     },
     template: '\
         <span data-bind="style: { \'z-index\': containerZIndex, position: \'relative\' }, attr: { id: id }, if: text, click: onclick">\

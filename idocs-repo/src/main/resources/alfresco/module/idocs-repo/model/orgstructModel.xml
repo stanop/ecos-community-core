@@ -13,6 +13,18 @@
 	<namespaces>
 		<namespace uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org" />
 	</namespaces>
+
+
+	<constraints>
+		<constraint name="org:showHintsConstraint" type="LIST">
+			<parameter name="allowedValues">
+				<list>
+					<value>Yes</value>
+					<value>No</value>
+				</list>
+			</parameter>
+		</constraint>
+	</constraints>
 	
 	<types>
 	
@@ -159,6 +171,20 @@
             </properties>
         </aspect>
 
+		<aspect name="org:showHints">
+			<properties>
+				<!-- show hints for user-->
+				<property name="org:showHints">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+					<default>Yes</default>
+					<constraints>
+						<constraint ref="org:showHintsConstraint"/>
+					</constraints>
+				</property>
+			</properties>
+		</aspect>
+
 		<aspect name="org:hasLegalEntity">
 			<associations>
 				<association name="org:legalEntity">
@@ -175,5 +201,7 @@
 			</associations>
 		</aspect>
 	</aspects>
+
+
 
 </model>

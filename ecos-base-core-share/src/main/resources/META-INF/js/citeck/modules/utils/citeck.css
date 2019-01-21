@@ -374,6 +374,27 @@
   padding-left: 5px;
 }
 
+.alfresco-share div.show-hint {
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  padding-left: 0px;
+  padding-right: 10px;
+}
+
+.alfresco-share div.headHintIcon {
+  width:   30px;
+  height:  30px;
+  margin:  5px 1px 1px 2px;
+}
+
+.alfresco-share div.show-hint-header {
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  padding-left: 5px;
+}
+
 .alfresco-share.mobile img.user-photo-header {
   height: 25px;
   width: 25px;
