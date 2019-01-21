@@ -178,7 +178,8 @@ function sendToContractorForESigning() {
     }
 
     var caseDocs = document.childAssocs["icase:documents"] || [];
-    var contentFromInboundPackage = (document.assocs["sam:contentFromInboundPackage"] || [])[0];
+    var contentFromInboundPackage = (document.assocs["sam:contentFromInboundPackage"] ||
+        document.assocs["idocs:attachmentRkkCreatedFrom"] ||[])[0];
 
     for (var i = 0; i < docPackages.length; i++) {
         if (docPackages[i].typeShort.equals("sam:outboundPackage")) {
