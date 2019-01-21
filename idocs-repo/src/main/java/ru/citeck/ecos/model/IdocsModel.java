@@ -106,6 +106,8 @@ public final class IdocsModel {
     public static final QName ASSOC_CRR_BASE_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrBaseCurrency");
     public static final QName ASSOC_CRR_TARGET_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrTargetCurrency");
 
+    public static final QName ASSOC_ATTACHMENT_RKK_CREATED_FROM = QName.createQName(IDOCS_NAMESPACE, "attachmentRkkCreatedFrom");
+
     // constraints
     public static final String CONSTR_REPEAL_BY_COUNTERPARTY_REQUESTED = "REPEAL_BY_COUNTERPARTY_REQUESTED";
     public static final String CONSTR_REPEALED_BY_COUNTERPARTY = "REPEALED_BY_COUNTERPARTY";
