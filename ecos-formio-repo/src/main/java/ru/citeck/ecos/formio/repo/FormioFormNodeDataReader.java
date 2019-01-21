@@ -32,6 +32,7 @@ public class FormioFormNodeDataReader implements NodeDataReader<FormioFormModel>
         model.setId((String) properties.get(EcosContentModel.PROP_ID));
         model.setTitle((String) properties.get(ContentModel.PROP_TITLE));
         model.setFormKey((String) properties.get(EcosFormioModel.PROP_FORM_KEY));
+        model.setIsViewForm((Boolean) properties.get(EcosFormioModel.PROP_IS_VIEW_FORM));
         model.setDescription((String) properties.get(ContentModel.PROP_DESCRIPTION));
 
         return model;

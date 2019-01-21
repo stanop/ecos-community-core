@@ -7,8 +7,7 @@ import java.util.Optional;
 
 public interface FormioFormService {
 
-    Optional<FormioForm> getForm(String formKey);
+    Optional<FormioForm> getForm(String formKey, Boolean isViewMode);
 
     void register(FormProvider formProvider);
-
 }

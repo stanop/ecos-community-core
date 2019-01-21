@@ -7,8 +7,9 @@ import java.util.List;
 
 public class RecordsMutation {
 
-    private List<RecordMeta> records = new ArrayList<>();
     private String sourceId;
+    private List<RecordMeta> records = new ArrayList<>();
+
     private boolean debug = false;
 
     public List<RecordMeta> getRecords() {

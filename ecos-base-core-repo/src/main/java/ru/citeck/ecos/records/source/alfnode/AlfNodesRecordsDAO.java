@@ -265,7 +265,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             AlfNodesSearch.AfterIdType afterIdType = alfNodesSearch.getAfterIdType();
 
-            if (afterId != null) {
+            if (afterId != RecordRef.EMPTY) {
                 if (!ID.equals(afterId.getSourceId())) {
                     return new RecordsQueryResult<>();
                 }

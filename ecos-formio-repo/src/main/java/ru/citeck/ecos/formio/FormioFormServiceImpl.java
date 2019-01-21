@@ -13,12 +13,12 @@ public class FormioFormServiceImpl implements FormioFormService {
     private Set<FormProvider> providers = new TreeSet<>(Comparator.comparing(FormProvider::getOrder));
 
     @Override
-    public Optional<FormioForm> getForm(String formKey) {
+    public Optional<FormioForm> getForm(String formKey, Boolean isViewMode) {
 
         FormioForm form = null;
 
         for (FormProvider provider : providers) {
-            form = provider.getForm(formKey);
+            form = provider.getForm(formKey, isViewMode);
             if (form != null) {
                 break;
             }

@@ -98,7 +98,7 @@ public class AlfNodeRecord implements MetaValue {
 
             case RecordConstants.ATT_FORM_KEY:
 
-                attribute = "alfType_" + node.type();
+                attribute = "alf_" + node.type();
                 break;
 
             default:

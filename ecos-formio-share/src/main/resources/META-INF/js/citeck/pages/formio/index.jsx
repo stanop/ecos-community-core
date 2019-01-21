@@ -8,6 +8,8 @@
         public String formId;
         public String formMode;*/
 
+import records from 'js/citeck/modules/records/records';
+
 function getForm(record, formKey) {
 
     return fetch('/share/proxy/alfresco/citeck/ecos/records/query', {
