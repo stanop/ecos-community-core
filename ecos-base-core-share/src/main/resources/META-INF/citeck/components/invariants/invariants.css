@@ -2085,6 +2085,12 @@ div[id*="multiple-text"] .multiple-text-control input {
   right: 0px;
 }
 
+#profile-view .invariants-form .template-view span.value-item .value-item-actions {
+  position: relative;
+  top: 0;
+  left: 2px;
+}
+
 /* in view-mode */
 .invariants-form.view-form .template-table .template-view,
 .invariants-form.view-form .template-table .template-select,
