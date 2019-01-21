@@ -7,6 +7,7 @@ import Records from "js/citeck/modules/records/records";
 import "xstyle!https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css";
 import "xstyle!https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css";
 import "xstyle!js/citeck/lib/formio/formio.full.min.css";
+import "xstyle!js/citeck/formio/formio-form.css";
 
 var formCounter = 0;
 
@@ -33,18 +34,32 @@ export default class FormioForm extends React.Component {
                 form.ecos.Records = Records;
                 form.ecos.record = Records.get(this.props.record);
 
-                FormioForm.getData(form).then(data => {
+                let customModule = new Promise(function(resolve, reject) {
+                    if (formAtts.customModule) {
+                        require([formAtts.customModule], function(Module) {
+                            resolve(new Module.default({
+                                form: form
+                            }));
+                        });
+                    } else {
+                        resolve({});
+                    }
+                });
+
+                Promise.all([customModule, FormioForm.getData(form)]).then(data => {
+
+                    form.ecos.custom = data[0];
 
                     form.submission = {
-                        data: data
+                        data: data[1]
                     };
 
                     form.on('submit', (submission) => {
                         self.submitForm(form, submission);
                     });
 
-                    if (this.props.onReady) {
-                        this.props.onReady(form);
+                    if (self.props.onReady) {
+                        self.props.onReady(form);
                     }
                 });
             });
@@ -104,7 +119,10 @@ export default class FormioForm extends React.Component {
         let inputs = FormioForm.getFormInputs(form);
         let attributes = {};
         for (let input of inputs) {
-            attributes[input.component.component.key] = input.attribute;
+            let key = input.component.component.key;
+            if (key) {
+                attributes[key] = input.attribute;
+            }
         }
 
         return form.ecos.record.load(attributes);
@@ -125,7 +143,8 @@ export default class FormioForm extends React.Component {
                 }
             },
             attributes: {
-                formDef: 'definition?json'
+                formDef: 'definition?json',
+                customModule: 'customModule'
             }
         });
     }

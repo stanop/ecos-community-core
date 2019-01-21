@@ -67,7 +67,7 @@ public class FormioFormRecords extends LocalRecordsDAO
         }
 
         Optional<FormioForm> optForm = formKeys.stream()
-                                               .map(key -> formioFormService.getForm(key, query.isViewMode))
+                                               .map(key -> formioFormService.getForm(key, query.formMode))
                                                .filter(Optional::isPresent)
                                                .map(Optional::get)
                                                .findFirst();
@@ -85,6 +85,6 @@ public class FormioFormRecords extends LocalRecordsDAO
     static class Query {
         @Getter @Setter private RecordRef record;
         @Getter @Setter private String formKey;
-        @Getter @Setter private Boolean isViewMode;
+        @Getter @Setter private FormMode formMode = FormMode.ANY;
     }
 }

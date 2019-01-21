@@ -454,8 +454,7 @@
             fixedcenter:  "contained",
             constraintoviewport: true,
             visible: false,
-            close: false, // Because not access to runtime
-            modal: true,
+            modal: false,
             postmethod: "none", // Will make Dialogs not auto submit <form>s it finds in the dialog
             hideaftersubmit: false, // Will stop Dialogs from hiding themselves on submits
             fireHideShowEvents: true
@@ -477,8 +476,10 @@
             ReactDOM.render(React.createElement(FormioForm.default, {
                 record: record,
                 onReady: function() {
-                    panel.center();
                     panel.show();
+                    setTimeout(function(){
+                        panel.center();
+                    }, 100);
                 },
                 onSubmit: function () {
                     panel.destroy();

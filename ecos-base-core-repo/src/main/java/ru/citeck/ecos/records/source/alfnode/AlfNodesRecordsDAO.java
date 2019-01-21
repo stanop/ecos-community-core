@@ -83,6 +83,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             while (names.hasNext()) {
 
                 String name = names.next();
+                if (name.contains("?")) {
+                    name = name.substring(0, name.indexOf("?"));
+                }
+
                 QName fieldName = QName.resolveToQName(namespaceService, name);
 
                 PropertyDefinition propDef = dictionaryService.getProperty(fieldName);

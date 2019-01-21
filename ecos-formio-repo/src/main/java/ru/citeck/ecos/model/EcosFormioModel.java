@@ -9,5 +9,6 @@ public interface EcosFormioModel {
     QName TYPE_FORM = QName.createQName(NAMESPACE, "form");
 
     QName PROP_FORM_KEY = QName.createQName(NAMESPACE, "formKey");
-    QName PROP_IS_VIEW_FORM = QName.createQName(NAMESPACE, "isViewForm");
+    QName PROP_FORM_MODE = QName.createQName(NAMESPACE, "formMode");
+    QName PROP_CUSTOM_MODULE = QName.createQName(NAMESPACE, "customModule");
 }

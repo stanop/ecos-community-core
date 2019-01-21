@@ -1,6 +1,7 @@
 {
     "id": "ecos-formio-form",
     "formKey": "alf_ecosFormio:form",
+    "customModule": "js/citeck/formio/formio-form-custom",
     "definition": {
         "display": "form",
         "components": [
@@ -86,6 +87,20 @@
                 "theme": "primary",
                 "input": true,
                 "tableView": true
+            },
+            {
+                "label": "Edit form",
+                "action": "custom",
+                "state": "",
+                "shortcut": "",
+                "mask": false,
+                "tableView": true,
+                "alwaysEnabled": false,
+                "type": "button",
+                "input": true,
+                "key": "editform",
+                "showValidations": false,
+                "custom": "form.ecos.custom.showFormEditor()"
             }
         ]
     }

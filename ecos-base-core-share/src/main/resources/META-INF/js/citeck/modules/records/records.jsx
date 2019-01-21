@@ -213,6 +213,11 @@ class Record {
     }
 
     att(name, value) {
+
+        if (!name) {
+            return;
+        }
+
         if (arguments.length > 1) {
             let attribute = this._attributes[name];
             if (!attribute) {
@@ -232,6 +237,6 @@ if (!Citeck) {
 
 let records = new Records();
 
-Citeck.records = records;
+Citeck.Records = records;
 
 export default records;

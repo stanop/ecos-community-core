@@ -3,6 +3,7 @@ package ru.citeck.ecos.formio.provider;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.content.ContentData;
 import ru.citeck.ecos.content.RepoContentDAO;
+import ru.citeck.ecos.formio.FormMode;
 import ru.citeck.ecos.formio.model.FormioForm;
 import ru.citeck.ecos.formio.model.FormioFormModel;
 import ru.citeck.ecos.model.EcosFormioModel;
@@ -18,12 +19,12 @@ public class RepoFormProvider extends AbstractFormProvider {
     private RepoContentDAO<FormioFormModel> formsContentDAO;
 
     @Override
-    public FormioForm getForm(String formKey, Boolean isViewMode) {
+    public FormioForm getForm(String formKey, FormMode mode) {
 
         Map<QName, Serializable> keys = new HashMap<>();
         keys.put(EcosFormioModel.PROP_FORM_KEY, formKey);
-        if (isViewMode != null) {
-            keys.put(EcosFormioModel.PROP_IS_VIEW_FORM, isViewMode);
+        if (mode != FormMode.ANY) {
+            keys.put(EcosFormioModel.PROP_FORM_MODE, mode);
         }
 
         return getForm(keys);
@@ -40,9 +41,9 @@ public class RepoFormProvider extends AbstractFormProvider {
             RecordRef formRecordRef = new RecordRef(form.get().getNodeRef());
             formioForm = new FormioForm(formRecordRef, formData.orElse(null));
 
-        } else if (keys.containsKey(EcosFormioModel.PROP_IS_VIEW_FORM)) {
+        } else if (keys.containsKey(EcosFormioModel.PROP_FORM_MODE)) {
 
-            keys.remove(EcosFormioModel.PROP_IS_VIEW_FORM);
+            keys.remove(EcosFormioModel.PROP_FORM_MODE);
             return getForm(keys);
         }
 
