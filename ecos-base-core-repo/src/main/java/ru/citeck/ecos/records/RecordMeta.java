@@ -1,8 +1,7 @@
 package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.*;
 
 public class RecordMeta {
 
@@ -42,17 +41,31 @@ public class RecordMeta {
         return attributes.path(name);
     }
 
+    public JsonNode getAttribute(String name, Object orElse) {
+        JsonNode att = attributes.get(name);
+        if (!isEmpty(att)) {
+            return att;
+        }
+        if (orElse == null) {
+            return NullNode.getInstance();
+        }
+        if (orElse instanceof JsonNode) {
+            return (JsonNode) orElse;
+        }
+        if (orElse instanceof String) {
+            return TextNode.valueOf((String) orElse);
+        }
+        if (orElse instanceof Number) {
+            return DoubleNode.valueOf(((Number) orElse).doubleValue());
+        }
+        if (orElse instanceof Boolean) {
+            return BooleanNode.valueOf((Boolean) orElse);
+        }
+        return NullNode.getInstance();
+    }
+
     public void setAttribute(String name, String value) {
         attributes.put(name, value);
-    }
-
-    public String getAttributeStr(String name) {
-        return getAttribute(name).asText();
-    }
-
-    public String getAttributeStr(String name, String def) {
-        JsonNode att = attributes.get(name);
-        return !isEmpty(att) ? att.asText() : def;
     }
 
     private boolean isEmpty(JsonNode value) {
