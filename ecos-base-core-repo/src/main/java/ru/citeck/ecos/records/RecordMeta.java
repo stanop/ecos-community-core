@@ -2,6 +2,7 @@ package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.*;
+import org.alfresco.util.ParameterCheck;
 
 public class RecordMeta {
 
@@ -41,27 +42,37 @@ public class RecordMeta {
         return attributes.path(name);
     }
 
-    public JsonNode getAttribute(String name, Object orElse) {
+    public <T> T getAttribute(String name, T orElse) {
+
+        ParameterCheck.mandatory("name", name);
+        ParameterCheck.mandatory("orElse", orElse);
+
         JsonNode att = attributes.get(name);
-        if (!isEmpty(att)) {
-            return att;
+        if (isEmpty(att)) {
+            return orElse;
         }
-        if (orElse == null) {
-            return NullNode.getInstance();
-        }
-        if (orElse instanceof JsonNode) {
-            return (JsonNode) orElse;
-        }
+
+        Object value;
+
         if (orElse instanceof String) {
-            return TextNode.valueOf((String) orElse);
+            value = att.asText();
+        } else if (orElse instanceof Integer) {
+            value = att.asInt((Integer) orElse);
+        } else if (orElse instanceof Long) {
+            value = att.asLong((Long) orElse);
+        } else if (orElse instanceof Double) {
+            value = att.asDouble((Double) orElse);
+        } else if (orElse instanceof Float) {
+            value = (float) att.asDouble((Float) orElse);
+        } else if (orElse instanceof Boolean) {
+            value = att.asBoolean((Boolean) orElse);
+        } else if (orElse instanceof JsonNode) {
+            value = att;
+        } else {
+            value = orElse;
         }
-        if (orElse instanceof Number) {
-            return DoubleNode.valueOf(((Number) orElse).doubleValue());
-        }
-        if (orElse instanceof Boolean) {
-            return BooleanNode.valueOf((Boolean) orElse);
-        }
-        return NullNode.getInstance();
+
+        return (T) value;
     }
 
     public void setAttribute(String name, String value) {

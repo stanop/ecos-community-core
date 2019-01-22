@@ -8,8 +8,8 @@ import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.result.RecordsResult;
+import ru.citeck.ecos.records.rest.RecordsQueryPost;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JavaScriptImplUtils;
 
@@ -20,6 +20,8 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
 
     @Autowired
     private RecordsService recordsService;
+    @Autowired
+    private RecordsQueryPost recordsQueryPost;
 
     private static ValueConverter converter = new ValueConverter();
     private static ObjectMapper objectMapper = new ObjectMapper();
@@ -33,24 +35,9 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
         return toArray(recordsService.executeAction(records, actionConfig));
     }
 
-    public RecordsResult<RecordRef> getRecords(Object recordsQuery) {
-        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
-        return recordsService.getRecords(convertedQuery);
-    }
-
-    public RecordsQueryResult<RecordMeta> getRecords(Object recordsQuery, String metaSchema) {
-        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
-        return recordsService.getRecords(convertedQuery, metaSchema);
-    }
-
-    public RecordsQueryResult<RecordMeta> getRecords(Object recordsQuery, Map<String, String> attributes) {
-        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
-        return recordsService.getRecords(convertedQuery, attributes);
-    }
-
-    public RecordsQueryResult<RecordMeta> getRecords(Object recordsQuery, Collection<String> attributes) {
-        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
-        return recordsService.getRecords(convertedQuery, attributes);
+    public RecordsResult<?> getRecords(Object recordsQuery) {
+        RecordsQueryPost.Request request = convertConfig(recordsQuery, RecordsQueryPost.Request.class);
+        return recordsQueryPost.queryRecords(request);
     }
 
     public <T> RecordsResult<T> getRecords(Object recordsQuery, Class<T> schemaClass) {

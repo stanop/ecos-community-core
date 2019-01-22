@@ -184,9 +184,9 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     private QName getParentAssoc(RecordMeta record, NodeRef parentRef) {
-        JsonNode parentAtt = record.getAttribute(RecordConstants.ATT_PARENT_ATT, null);
-        if (!parentAtt.isNull()) {
-            return QName.resolveToQName(namespaceService, parentAtt.asText());
+        String parentAtt = record.getAttribute(RecordConstants.ATT_PARENT_ATT, "");
+        if (!parentAtt.isEmpty()) {
+            return QName.resolveToQName(namespaceService, parentAtt);
         }
         QName parentType = nodeService.getType(parentRef);
         if (ContentModel.TYPE_CONTAINER.equals(parentType)) {
@@ -201,9 +201,9 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
         QName typeQName;
 
-        JsonNode type = record.getAttribute(RecordConstants.ATT_TYPE, null);
-        if (!type.isNull()) {
-            typeQName = QName.resolveToQName(namespaceService, type.asText());
+        String type = record.getAttribute(RecordConstants.ATT_TYPE, "");
+        if (!type.isEmpty()) {
+            typeQName = QName.resolveToQName(namespaceService, type);
         } else {
             typeQName = ContentModel.TYPE_CONTENT;
         }
@@ -216,12 +216,12 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
     private NodeRef getParent(RecordMeta record, QName type) {
 
-        JsonNode parent = record.getAttribute(RecordConstants.ATT_PARENT, null);
-        if (!parent.isNull()) {
-            if (parent.asText().startsWith("workspace")) {
-                return new NodeRef(parent.asText());
+        String parent = record.getAttribute(RecordConstants.ATT_PARENT, "");
+        if (!parent.isEmpty()) {
+            if (parent.startsWith("workspace")) {
+                return new NodeRef(parent);
             }
-            return getByPath(parent.asText());
+            return getByPath(parent);
         }
 
         NodeRef parentRef = defaultParentByType.get(type);

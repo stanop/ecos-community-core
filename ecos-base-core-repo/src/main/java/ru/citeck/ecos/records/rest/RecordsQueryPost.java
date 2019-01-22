@@ -29,6 +29,12 @@ public class RecordsQueryPost extends AbstractWebScript {
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
         Request request = utils.readBody(req, Request.class);
+        RecordsResult<?> result = queryRecords(request);
+
+        utils.writeRespRecords(res, result, RecordsResult::getRecords, request.isSingleRecord);
+    }
+
+    public RecordsResult<?> queryRecords(Request request) {
 
         if (request.query != null && request.records != null) {
             logger.warn("There must be one of 'records' or 'query' field " +
@@ -59,11 +65,11 @@ public class RecordsQueryPost extends AbstractWebScript {
 
             if (request.records == null) {
                 throw new WebScriptException(Status.STATUS_BAD_REQUEST,
-                                             "At least 'records' or 'query' must be specified");
+                        "At least 'records' or 'query' must be specified");
             }
             if (request.schema == null && request.attributes == null) {
                 throw new WebScriptException(Status.STATUS_BAD_REQUEST,
-                                             "You must specify 'schema' or 'attributes' for records");
+                        "You must specify 'schema' or 'attributes' for records");
             }
 
             if (request.attributes == null) {
@@ -76,7 +82,7 @@ public class RecordsQueryPost extends AbstractWebScript {
             }
         }
 
-        utils.writeRespRecords(res, recordsResult, RecordsResult::getRecords, request.isSingleRecord);
+        return recordsResult;
     }
 
     private Map<String, String> getAttributes(Request request) {
