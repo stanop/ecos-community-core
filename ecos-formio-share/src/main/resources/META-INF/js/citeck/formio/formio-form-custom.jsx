@@ -26,7 +26,8 @@ export default class FormioFormCustom {
         this.panel.setHeader("");
         this.contentId = formId + '-content';
         this.panel.setBody('<div class="formio-panel-content" id="' + this.contentId + '"></div>' +
-                           '<button id="' + this.contentId + '-submit" type="button">Submit</button>');
+                           '<button id="' + this.contentId + '-submit" ' +
+            '                       class="btn btn-default btn-md" type="button">Submit</button>');
 
         let children = document.body.children || [];
         this.panel.render(children[children.length - 1]);
