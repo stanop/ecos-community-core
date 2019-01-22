@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
 function getHintPropertyByCurrentUser(){
     Alfresco.util.Ajax.jsonGet({
@@ -15,9 +14,7 @@ function getHintPropertyByCurrentUser(){
 
                 var element = document.getElementById("HEADER_HINT_ICON");
 
-
-
-                if (showHintValue==="No"){
+                if (showHintValue === "false"){
                     element.style.backgroundImage = 'url(/share/res/components/images/header/dialog_image_off.png)';
                     element.title = "Hints is disabled";
                 } else {

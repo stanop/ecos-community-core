@@ -1063,14 +1063,14 @@
     <repositories>
         <repository>
             <id>citeck-public</id>
-            <url>http://nexus.citeck.ru/repository/maven-public/</url>
+            <url>http://nexus.citeck.ru/repository/maven-public</url>
         </repository>
     </repositories>
 
     <pluginRepositories>
         <pluginRepository>
             <id>citeck-plugin-public</id>
-            <url>http://nexus.citeck.ru/repository/maven-public/</url>
+            <url>http://nexus.citeck.ru/repository/maven-public</url>
         </pluginRepository>
     </pluginRepositories>
 
