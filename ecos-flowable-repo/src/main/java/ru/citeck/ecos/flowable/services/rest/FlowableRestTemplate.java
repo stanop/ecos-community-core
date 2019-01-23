@@ -159,9 +159,10 @@ public class FlowableRestTemplate {
 
         private static final String TOKEN_COOKIE = "FLOWABLE_REMEMBER_ME";
         private final long TOKEN_AGE = TimeUnit.HOURS.toMillis(2);
+        private final long TOKEN_ERROR_AGE = TimeUnit.MINUTES.toMillis(5);
 
         private String loginToken;
-        private long tokenReceived;
+        private long tokenExpired;
 
         @Override
         public ClientHttpResponse intercept(HttpRequest httpRequest, byte[] bytes,
@@ -169,7 +170,8 @@ public class FlowableRestTemplate {
 
             URI uri = httpRequest.getURI();
 
-            if (uri.getPath().contains("flowable-idm")) {
+            String path = uri.getPath();
+            if (path.contains("flowable-idm") || path.contains("flowable-rest")) {
                 return clientHttpRequestExecution.execute(httpRequest, bytes);
             }
 
@@ -184,7 +186,7 @@ public class FlowableRestTemplate {
 
         private String getLoginToken(URL url) {
 
-            if (loginToken != null && (System.currentTimeMillis() - tokenReceived) < TOKEN_AGE) {
+            if (System.currentTimeMillis() < tokenExpired) {
                 return loginToken;
             }
 
@@ -202,22 +204,30 @@ public class FlowableRestTemplate {
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(params, headers);
 
-            ResponseEntity<String> authEntity = restTemplate.exchange(authUrl,
-                                                                      HttpMethod.POST,
-                                                                      requestEntity,
-                                                                      String.class);
+            ResponseEntity<String> authEntity;
+            try {
+                authEntity = restTemplate.exchange(authUrl,
+                                                   HttpMethod.POST,
+                                                   requestEntity,
+                                                   String.class);
+            } catch (Exception e) {
+                logger.warn("Flowable auth failed. Url: " + url + " AuthUrl: " + authUrl, e);
+                tokenExpired = System.currentTimeMillis() + TOKEN_ERROR_AGE;
+                return null;
+            }
 
             List<String> cookieList = authEntity.getHeaders().get("Set-Cookie");
             if (cookieList == null || cookieList.isEmpty() || !cookieList.get(0).contains(TOKEN_COOKIE)) {
                 logger.warn("Flowable auth failed. Url: " + url +
                             " AuthUrl: " + authUrl + " Entity: " + authEntity);
+                tokenExpired = System.currentTimeMillis() + TOKEN_ERROR_AGE;
                 return null;
             }
 
             String cookie = cookieList.get(0);
 
             loginToken = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
-            tokenReceived = System.currentTimeMillis();
+            tokenExpired = System.currentTimeMillis() + TOKEN_AGE;
 
             return loginToken;
         }
