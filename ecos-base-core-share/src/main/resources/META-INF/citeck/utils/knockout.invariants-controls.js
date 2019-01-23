@@ -64,7 +64,7 @@ YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
 
 // TODO:
 // - init tooltip only if text not empty
-function getHintPropertyByCurrentUser(targetItem, callback){
+function getHintPropertyByCurrentUser(callback){
     Alfresco.util.Ajax.jsonGet({
         url: Alfresco.constants.PROXY_URI + "citeck/search/query",
         dataObj: {
@@ -74,7 +74,7 @@ function getHintPropertyByCurrentUser(targetItem, callback){
         successCallback: {
             scope: this,
             fn: function(response) {
-                callback(targetItem, response.json);
+                callback(response.json);
             }
         }
     });
@@ -134,14 +134,15 @@ ko.components.register("help", {
         // create tooltip if text already calculated
         this._createTooltip(this.text());
 
-        var func = function (targetItem, json) {
+        var func = function (json) {
             var showHintValue = json.results[0].attributes["org:showHints"];
             if (showHintValue === "false") {
-                targetItem.setProperty("disabled", true);
+                self.tooltip.cfg.setProperty("disabled", true);
             }
         }
+        getHintPropertyByCurrentUser(func);
 
-       getHintPropertyByCurrentUser(this.tooltip.cfg, func);
+       //getHintPropertyByCurrentUser(this.tooltip.cfg, func);
     },
     template: '\
         <span data-bind="style: { \'z-index\': containerZIndex, position: \'relative\' }, attr: { id: id }, if: text, click: onclick">\
