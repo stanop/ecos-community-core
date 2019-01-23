@@ -4,6 +4,7 @@ import CreateCaseWidget from './components/create-case-widget';
 import UserMenu from './components/user-menu';
 import SitesMenu from './components/sites-menu';
 import Search from './components/search';
+import SwitchHintMenu from './components/hints-switcher';
 import "xstyle!js/citeck/modules/header/share-header.css";
 
 import CustomModal from './components/custom-modal';
@@ -24,6 +25,7 @@ const ShareHeader = ({ isMobile }) => {
             </div>
             <div className="alfresco-layout-LeftAndRight__right">
                 <UserMenu />
+                <SwitchHintMenu />
                 <SitesMenu />
                 <Search />
             </div>
