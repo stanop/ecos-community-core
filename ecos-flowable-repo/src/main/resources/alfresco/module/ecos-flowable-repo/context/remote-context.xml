@@ -14,4 +14,8 @@
           class="ru.citeck.ecos.flowable.webscripts.FlowableRestProxy" parent="webscript">
     </bean>
 
+    <bean id="webscript.ru.citeck.flowable.rest-proxy.put"
+          class="ru.citeck.ecos.flowable.webscripts.FlowableRestProxy" parent="webscript">
+    </bean>
+
 </beans>

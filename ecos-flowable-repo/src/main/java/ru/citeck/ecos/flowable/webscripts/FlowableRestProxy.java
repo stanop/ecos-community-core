@@ -10,9 +10,12 @@ import org.springframework.extensions.webscripts.*;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import ru.citeck.ecos.flowable.services.rest.FlowableRestTemplate;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class FlowableRestProxy extends AbstractWebScript {
 
@@ -40,17 +43,24 @@ public class FlowableRestProxy extends AbstractWebScript {
         }
 
         HttpMethod method;
-        if (getDescription().getId().endsWith(".post")) {
+        String desc = getDescription().getId();
+        if (desc.endsWith(".post")) {
             method = HttpMethod.POST;
+        } else if (desc.endsWith(".put")) {
+            method = HttpMethod.PUT;
         } else {
             method = HttpMethod.GET;
         }
 
-        HttpEntity<Object> requestEntity = null;
-        Object body = getBody(req);
-        if (body != null) {
-            requestEntity = new HttpEntity<>(body);
+        String contentType = req.getParameter("_proxy_content_type");
+        if (contentType == null || contentType.isEmpty()) {
+            contentType = req.getHeader("Content-Type");
         }
+
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.put("Accept", Arrays.asList(req.getHeaderValues("Accept")));
+        headers.add("Content-Type", contentType);
+        HttpEntity<Object> requestEntity = new HttpEntity<>(getBody(req), headers);
 
         String url = getFlowableUrl(req.getURL());
         ResponseEntity<String> entity = restTemplate.exchange(url, method, requestEntity, String.class);
@@ -75,7 +85,7 @@ public class FlowableRestProxy extends AbstractWebScript {
 
         String bodyStr = req.getContent().getContent();
         if (bodyStr == null || bodyStr.length() == 0) {
-            return bodyStr;
+            return "";
         }
 
         Object body;
