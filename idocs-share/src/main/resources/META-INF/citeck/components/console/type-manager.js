@@ -881,7 +881,12 @@
         } else {
           treeNode.refresh();
         }
-      }, { destination: params.nodeRef, destinationAssoc: "cm:subcategories", title: e.target.title })
+      }, {
+          destination: params.nodeRef,
+          destinationAssoc: "cm:subcategories",
+          title: e.target.title,
+          width: '590px'
+      })
     }
    });
 

@@ -216,6 +216,12 @@
                     <param name="maxlength">256</param>
                 </region>
             </field>
+
+            <field prop="org:showHints"  template="row">
+                <invariant on="mandatory" language="explicit">true</invariant>
+                <invariant on="default" language="explicit">true</invariant>
+            </field>
+
             <field prop="org:preset">
                 <region name="input">
                     <param name="maxlength">256</param>
@@ -552,6 +558,14 @@
                     <param name="maxlength">256</param>
                 </region>
             </field>
+
+            <view class="org:showHints">
+                <field prop="org:showHints" template="row">
+                    <invariant on="mandatory" language="explicit">true</invariant>
+                    <invariant on="default" language="explicit">true</invariant>
+                </field>
+            </view>
+
             <field prop="org:preset">
                 <region name="input">
                     <param name="maxlength">256</param>
@@ -563,6 +577,7 @@
                     })();
                 ]]></invariant>
             </field>
+
             <view class="deputy:availability">
                 <param name="showNoneIfEmty">false</param>
                 <field prop="deputy:available" template="row">
