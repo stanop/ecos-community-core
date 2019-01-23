@@ -91,7 +91,12 @@
             <param name="customClass">ecos-case-form-section</param>
 
             <field prop="tk:type" template="none">
-                <invariant on="value" language="explicit">workspace://SpacesStore/cat-doc-type-general-case</invariant>
+                <invariant on="value" language="javascript"><![CDATA[(function() {
+                    if (view.params.tk_type) {
+                        return view.params.tk_type;
+                    }
+                    return 'workspace://SpacesStore/cat-doc-type-general-case';
+                })()]]></invariant>
             </field>
 
             <view id="type-kind-view">

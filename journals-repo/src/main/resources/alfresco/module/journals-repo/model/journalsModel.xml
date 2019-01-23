@@ -158,6 +158,9 @@
                     <title>Form ID</title>
                     <type>d:text</type>
                 </property>
+                <property name="journal:createArguments">
+                    <type>d:text</type>
+                </property>
             </properties>
             <associations>
                <association name="journal:destination">

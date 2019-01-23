@@ -135,10 +135,15 @@ CreateVariant
     .property('canCreate', b)
     .property('isDefault', b)
     .property('journal', Journal)
+    .property('createArguments', s)
 
     .computed('link', function() {
         var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
                 urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
+
+        if (this.createArguments()) {
+            urlTemplate += "&" + this.createArguments();
+        }
 
         // redirect back after submit from journal page only
         var options = this.resolve("journal.type.options");
@@ -148,7 +153,7 @@ CreateVariant
         }
 
         return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
-            if(typeof value == "function") { return value(); }
+            if (typeof value == "function") { return value(); }
             return value;
         }));
     })

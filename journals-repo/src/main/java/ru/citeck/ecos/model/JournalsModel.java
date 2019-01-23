@@ -52,20 +52,12 @@ public final class JournalsModel {
     public static final QName PROP_JOURNAL_TYPE = QName.createQName(JOURNAL_NAMESPACE, "journalType");
     public static final QName PROP_FIELD_QNAME = QName.createQName(JOURNAL_NAMESPACE, "fieldQName");
     public static final QName PROP_IS_DEFAULT = QName.createQName(JOURNAL_NAMESPACE, "isDefault");
-
+    public static final QName PROP_JOURNAL_TYPES = QName.createQName(JOURNAL_NAMESPACE, "journalTypes");
+    public static final QName PROP_CREATE_ARGUMENTS = QName.createQName(JOURNAL_NAMESPACE, "createArguments");
 
     //associations
     public static final QName ASSOC_JOURNALS = QName.createQName(JOURNAL_NAMESPACE, "journals");
     public static final QName ASSOC_SEARCH_CRITERIA = QName.createQName(JOURNAL_NAMESPACE, "searchCriteria");
     public static final QName ASSOC_CREATE_VARIANTS = QName.createQName(JOURNAL_NAMESPACE, "createVariants");
     public static final QName ASSOC_DESTINATION = QName.createQName(JOURNAL_NAMESPACE, "destination");
-
-
-
-
-
-
-
-
-
 }
