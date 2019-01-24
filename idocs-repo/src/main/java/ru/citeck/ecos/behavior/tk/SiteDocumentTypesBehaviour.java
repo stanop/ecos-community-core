@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
+import org.alfresco.service.cmr.search.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
@@ -14,11 +15,6 @@ import org.alfresco.repo.site.SiteModel;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.search.QueryConsistency;
-import org.alfresco.service.cmr.search.ResultSet;
-import org.alfresco.service.cmr.search.SearchParameters;
-import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.site.SiteService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -32,6 +28,7 @@ import ru.citeck.ecos.model.EcosModel;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.search.FieldType;
 import ru.citeck.ecos.search.SearchPredicate;
+import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.RepoUtils;
 
 public class SiteDocumentTypesBehaviour implements NodeServicePolicies.OnCreateAssociationPolicy,
@@ -162,7 +159,11 @@ public class SiteDocumentTypesBehaviour implements NodeServicePolicies.OnCreateA
                                   NodeRef journalsContainer,
                                   NodeRef documentsFolder) {
 
-        NodeRef journal = getRelatesToType(JournalsModel.TYPE_JOURNAL, type);
+        NodeRef journal = FTSQuery.create()
+                                  .parent(journalsContainer).and()
+                                  .exact(ClassificationModel.PROP_RELATES_TO_TYPE, type)
+                                  .transactional()
+                                  .queryOne(searchService).orElse(null);
 
         if (journal != null) {
             logger.debug("Journal on site '" + site + "' for type '" + type + "' found: " + journal);
@@ -180,10 +181,11 @@ public class SiteDocumentTypesBehaviour implements NodeServicePolicies.OnCreateA
         journalProps.put(ContentModel.PROP_TITLE, typeTitle);
         journalProps.put(JournalsModel.PROP_JOURNAL_TYPE, journalType);
 
-        journal = nodeService.createNode(journalsContainer, ContentModel.ASSOC_CONTAINS,
-                QName.createQName(JournalsModel.JOURNAL_NAMESPACE, type.getId()),
-                JournalsModel.TYPE_JOURNAL, journalProps).getChildRef();
-
+        journal = nodeService.createNode(journalsContainer,
+                                         ContentModel.ASSOC_CONTAINS,
+                                         QName.createQName(JournalsModel.JOURNAL_NAMESPACE, type.getId()),
+                                         JournalsModel.TYPE_JOURNAL,
+                                         journalProps).getChildRef();
         // create criteria
         QName alfrescoType = RepoUtils.getProperty(type, ClassificationModel.PROP_APPLIED_TYPE, nodeService);
         if (alfrescoType == null) {
@@ -221,10 +223,11 @@ public class SiteDocumentTypesBehaviour implements NodeServicePolicies.OnCreateA
         createVariantProps.put(JournalsModel.PROP_CREATE_ARGUMENTS, "param_tk_type=" + type);
 
         // create variant
-        NodeRef createVariant = nodeService.createNode(journal, JournalsModel.ASSOC_CREATE_VARIANTS,
-                QName.createQName(JournalsModel.JOURNAL_NAMESPACE, "default"),
-                JournalsModel.TYPE_CREATE_VARIANT,
-                createVariantProps).getChildRef();
+        NodeRef createVariant = nodeService.createNode(journal,
+                                                       JournalsModel.ASSOC_CREATE_VARIANTS,
+                                                       QName.createQName(JournalsModel.JOURNAL_NAMESPACE, "default"),
+                                                       JournalsModel.TYPE_CREATE_VARIANT,
+                                                       createVariantProps).getChildRef();
 
         // bind it all together
         nodeService.createAssociation(journalsList, journal, JournalsModel.ASSOC_JOURNALS);
@@ -263,31 +266,17 @@ public class SiteDocumentTypesBehaviour implements NodeServicePolicies.OnCreateA
         
         // journals container
         NodeRef journalsContainer = siteService.getContainer(siteName, JournalService.JOURNALS_CONTAINER);
-        if(journalsContainer == null) return;
+        if (journalsContainer == null) {
+            return;
+        }
         
         // journal
         List<NodeRef> journals = RepoUtils.getChildrenByProperty(journalsContainer, 
-                ClassificationModel.PROP_RELATES_TO_TYPE, type, nodeService);
-        for(NodeRef journal : journals) {
+                                                                 ClassificationModel.PROP_RELATES_TO_TYPE,
+                                                                 type,
+                                                                 nodeService);
+        for (NodeRef journal : journals) {
             RepoUtils.deleteNode(journal, nodeService);
-        }
-    }
-
-    private NodeRef getRelatesToType(QName nodeType, NodeRef toType) {
-        SearchParameters params = new SearchParameters();
-        params.setQueryConsistency(QueryConsistency.TRANSACTIONAL);
-        params.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
-        params.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-        String query = "TYPE:\"%s\" AND =" + ClassificationModel.PROP_RELATES_TO_TYPE + ":\"%s\"";
-        params.setQuery(String.format(query, nodeType, toType));
-        ResultSet result = null;
-        try {
-            result = searchService.query(params);
-            return result.length() > 0 ? result.getNodeRef(0) : null;
-        } finally {
-            if (result != null) {
-                result.close();
-            }
         }
     }
 
