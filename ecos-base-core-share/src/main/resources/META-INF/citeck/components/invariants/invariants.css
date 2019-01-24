@@ -533,6 +533,10 @@
   margin-bottom: 10px;
 }
 
+.invariants-form .template-wide.user-profile-header__column.user-profile-header__column--photo .template-block .block-region .form-region {
+  display: block;
+}
+
 .invariants-form .template-wide .template-block .block-region-select .form-region  {
   margin-right: 10px;
 }
