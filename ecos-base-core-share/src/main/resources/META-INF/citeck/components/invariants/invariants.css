@@ -411,7 +411,7 @@
 /* STATIC */
 
 .static .invariants-form .template-table {
-  margin-left: -40px;
+  /*margin-left: -40px;*/
   width: 800px;
   box-sizing: border-box;
 }
@@ -531,6 +531,10 @@
 .invariants-form .template-wide .template-block .block-region .form-region {
   display: inline-block;
   margin-bottom: 10px;
+}
+
+.invariants-form .template-wide.user-profile-header__column.user-profile-header__column--photo .template-block .block-region .form-region {
+  display: block;
 }
 
 .invariants-form .template-wide .template-block .block-region-select .form-region  {
@@ -703,7 +707,7 @@
 .invariants-form:not(.view-form) .template-table .template-row,
 .invariants-form:not(.view-form) .template-table [class*="template-row-"],
 .invariants-form:not(.view-form) .template-table .template-single {
-  margin-left: 5%;
+  /*margin-left: 5%;*/
   width: 95%;
 }
 
@@ -721,11 +725,16 @@
 .invariants-form .template-table [class*="template-half-width-"] {
   float: left;
   position: relative;
-  margin-left: 5%;
+  margin-right: 5%;
   width: 45%;
 
   padding-bottom: 0 !important;
   border-bottom: none !important;
+}
+
+.invariants-form .template-table .template-half-width:last-child,
+.invariants-form .template-table [class*="template-half-width-"]:last-child {
+  margin-right: 0;
 }
 
 /* three column */
@@ -733,11 +742,16 @@
 .invariants-form .template-table [class*="template-third-width-"] {
   float: left;
   position: relative;
-  margin-left: 5%;
+  margin-right: 5%;
   width: 28.333%;
 
   padding-bottom: 0 !important;
   border-bottom: none !important;
+}
+
+.invariants-form .template-table .template-third-width:last-child,
+.invariants-form .template-table [class*="template-third-width-"]:last-child {
+  margin-right: 0;
 }
 
 
@@ -751,7 +765,12 @@
   height: 1px;
   background-color: #ccc;
   width: 95%;
-  margin-left: 5%;
+  /*margin-left: 5%;*/
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset.ecos-case-form-section:after {
+  margin-bottom: 0;
+  height: 0;
 }
 
 .invariants-form:not(.view-form) .template-table .template-rowset .template-rowset:last-child:after {
@@ -773,7 +792,7 @@
 }
 
 .invariants-form:not(.view-form) .template-table .template-rowset .title {
-  margin-left: 5%;
+  /*margin-left: 5%;*/
 }
 
 .invariants-form .template-table .template-rowset .template-half-width {
@@ -786,7 +805,7 @@
 .invariants-form:not(.view-form) .template-table .template-tabs {
   border: 1px solid #ccc;
   margin-bottom: 10px;
-  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .invariants-form:not(.view-form) .template-table .template-tabs ul.tabs-title {
@@ -858,6 +877,10 @@
   border-bottom: 1px solid #ccc;
 }
 
+.invariants-form .template-table .template-row:last-child,
+.invariants-form .template-table [class*="template-row-"]:last-child {
+  border-bottom: none;
+}
 
 /* general */
 .invariants-form .template-textarea textarea,
