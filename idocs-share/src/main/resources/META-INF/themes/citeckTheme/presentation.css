@@ -3235,6 +3235,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
     background: #fff6d9;
     padding: 8px;
     margin-bottom: 10px;
+    border-radius: 6px;
 }
 
 .share-form .form-container .form-fields .set:not(:first-child) .set-title {
@@ -3341,6 +3342,12 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
    padding: 5px;
    border: 1px solid #CCC;
    box-shadow: none;
+   border-radius: 6px;
+   box-sizing: border-box;
+}
+
+.yui-skin-citeckTheme .select-picker-box a.select-picker-link {
+    border-radius: 6px;
 }
 
 
@@ -3478,6 +3485,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 .share-form .form-container .form-fields .form-field div[id$="packageItems-cntrl"].object-finder .object-finder-list {
   margin-bottom: 10px;
+  border-radius: 6px;
 }
 
 .share-form .form-container .form-fields .form-field div.object-finder > div.dynamic-list .ygtvcontent {
@@ -5024,7 +5032,7 @@ body:not(.mobile).yui-skin-citeckTheme #flowable-modeler,
 body:not(.mobile).yui-skin-citeckTheme #bd > div[id*="site-finder"],
 body:not(.mobile).yui-skin-citeckTheme #bd .orgstruct-console .orgstruct-tree-resizer,
 body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header-Warning__warnings,
-body:not(.mobile).yui-skin-citeckTheme .ecos-form,
+/*body:not(.mobile).yui-skin-citeckTheme .ecos-form,*/
 body:not(.mobile).yui-skin-citeckTheme .alfresco-footer-AlfStickyFooter > div.wrapper {
     box-shadow: inset 15px -1px 10px -15px grey;
 }
