@@ -5130,6 +5130,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
     font-weight: 900;
     padding: 4px 10px;
     border: 2px solid #1c55da;
+    border-radius: 6px;
 }
 
 .yui-skin-citeckTheme .cardlet div[id*="route"].form-container {

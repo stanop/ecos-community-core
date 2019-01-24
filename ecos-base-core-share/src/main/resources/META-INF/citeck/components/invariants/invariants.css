@@ -281,6 +281,7 @@
 .ecos-form .form-fields .form-field input[type="datetime-local"] {
     padding: 4px 5px;
     border-width: 1px;
+    border-radius: 6px;
 }
 
 /* textarea, input text, number */
@@ -288,6 +289,7 @@
 .ecos-form .form-fields .form-field input[type="text"],
 .ecos-form .form-fields .form-field input[type="number"] {
   padding: 5px;
+  border-radius: 6px;
 }
 
 .ecos-form .form-fields .form-field textarea {
@@ -305,6 +307,7 @@
   background-color: white;
   border: 2px solid #1c55da;
   color: #1c55da;
+  border-radius: 6px;
 }
 
 .ecos-form .form-buttons input {
@@ -321,6 +324,7 @@
   border: 2px solid #1c55da;
   color: #1c55da;
   cursor: pointer;
+  border-radius: 6px;
 }
 
 .ecos-form .form-field button:hover,
@@ -380,6 +384,7 @@
 .ecos-form .form-buttons input[type="submit"] {
   border: 2px solid #008c03;
   color: #008c03;
+  border-radius: 6px;
 }
 
 .ecos-form .form-buttons input[type="submit"]:hover,
@@ -400,6 +405,7 @@
 .ecos-form .form-buttons input[type="button"] {
   border: none;
   color: #1c55da;
+  border-radius: 6px;
 }
 
 .ecos-form .form-buttons input[type="button"]:hover,
@@ -707,7 +713,7 @@
 .invariants-form:not(.view-form) .template-table .template-row,
 .invariants-form:not(.view-form) .template-table [class*="template-row-"],
 .invariants-form:not(.view-form) .template-table .template-single {
-  /*margin-left: 5%;*/
+  margin-left: 5%;
   width: 95%;
 }
 
@@ -725,16 +731,11 @@
 .invariants-form .template-table [class*="template-half-width-"] {
   float: left;
   position: relative;
-  margin-right: 5%;
+  margin-left: 5%;
   width: 45%;
 
   padding-bottom: 0 !important;
   border-bottom: none !important;
-}
-
-.invariants-form .template-table .template-half-width:last-child,
-.invariants-form .template-table [class*="template-half-width-"]:last-child {
-  margin-right: 0;
 }
 
 /* three column */
@@ -742,18 +743,12 @@
 .invariants-form .template-table [class*="template-third-width-"] {
   float: left;
   position: relative;
-  margin-right: 5%;
+  margin-left: 5%;
   width: 28.333%;
 
   padding-bottom: 0 !important;
   border-bottom: none !important;
 }
-
-.invariants-form .template-table .template-third-width:last-child,
-.invariants-form .template-table [class*="template-third-width-"]:last-child {
-  margin-right: 0;
-}
-
 
 /* rowset */
 .invariants-form .template-table .template-rowset {
@@ -765,7 +760,7 @@
   height: 1px;
   background-color: #ccc;
   width: 95%;
-  /*margin-left: 5%;*/
+  margin-left: 5%;
 }
 
 .invariants-form:not(.view-form) .template-table .template-rowset.ecos-case-form-section:after {
@@ -792,7 +787,7 @@
 }
 
 .invariants-form:not(.view-form) .template-table .template-rowset .title {
-  /*margin-left: 5%;*/
+  margin-left: 5%;
 }
 
 .invariants-form .template-table .template-rowset .template-half-width {
@@ -932,7 +927,7 @@
 /* mandatory */
 .invariants-form .template-table .template-mandatory {
   position: absolute;
-  left: -15px;
+  left: -10px;
   top: 3px;
 }
 
@@ -966,7 +961,7 @@
 }
 
 .invariants-form:not(.view-form) .template-table .template-row.with-help .template-label {
-  width: 46.5%;
+  width: 45.5%;
 }
 
 .invariants-form .template-table .template-half-width .template-label,
@@ -1426,6 +1421,7 @@
   line-height: normal;
   color: black;
   position: relative;
+  border-radius: 6px;
 }
 
 .autocomplete-control .autocomplete-select.disabled {
