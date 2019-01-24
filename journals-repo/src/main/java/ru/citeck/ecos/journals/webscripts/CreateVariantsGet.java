@@ -66,6 +66,8 @@ public class CreateVariantsGet extends AbstractWebScript {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    private boolean initialized = false;
+
     @Override
     public void init(Container container, Description description) {
         super.init(container, description);
@@ -82,6 +84,8 @@ public class CreateVariantsGet extends AbstractWebScript {
         createVariantsData = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheAgeSeconds, TimeUnit.SECONDS)
                 .build(CacheLoader.from(this::getCreateVariantData));
+
+        initialized = true;
     }
 
     @Override
@@ -270,6 +274,9 @@ public class CreateVariantsGet extends AbstractWebScript {
     }
 
     public void clearCache() {
+        if (!initialized) {
+            return;
+        }
         createVariantsByJournalType.invalidateAll();
         createVariantsByNodeType.invalidateAll();
         createVariantsBySite.invalidateAll();
