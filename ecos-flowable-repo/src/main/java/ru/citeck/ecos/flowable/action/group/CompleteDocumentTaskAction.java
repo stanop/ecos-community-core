@@ -10,6 +10,7 @@ import org.alfresco.service.cmr.workflow.*;
 import org.alfresco.service.transaction.TransactionService;
 import org.apache.commons.lang.StringUtils;
 import org.flowable.engine.TaskService;
+import org.mozilla.javascript.JavaScriptException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -172,24 +173,47 @@ public class CompleteDocumentTaskAction implements GroupActionFactory<RecordRef>
                 }
             }
 
-            if (taskToComplete.getId().startsWith("flowable$")) {
+            try {
 
-                String outcomeField = "form_" + taskToComplete.getName() + "_outcome";
+                if (taskToComplete.getId().startsWith("flowable$")) {
 
-                Map<String, Object> params = new HashMap<>();
-                params.put(outcomeField, transition);
-                params.put("outcome", transition);
+                    String outcomeField = "form_" + taskToComplete.getName() + "_outcome";
 
-                String localId = taskToComplete.getId().replace("flowable$", "");
-                taskService.complete(localId, params);
+                    Map<String, Object> params = new HashMap<>();
+                    params.put(outcomeField, transition);
+                    params.put("outcome", transition);
 
-            } else {
+                    String localId = taskToComplete.getId().replace("flowable$", "");
 
-                workflowService.endTask(taskToComplete.getId(), transition);
+                    taskService.complete(localId, params);
+
+                } else {
+
+                    workflowService.endTask(taskToComplete.getId(), transition);
+                }
+
+            } catch (RuntimeException e) {
+                throw unwrapJavascriptException(e);
             }
 
             return ActionStatus.ok();
         }
+    }
+
+    private RuntimeException unwrapJavascriptException(RuntimeException exception) {
+
+        Throwable ex = exception;
+
+        while (ex.getCause() != null) {
+            ex = ex.getCause();
+        }
+
+        if (ex instanceof JavaScriptException) {
+            Object value = ((JavaScriptException) ex).getValue();
+            return new RuntimeException(String.valueOf(value), exception);
+        }
+
+        return exception;
     }
 
     private String getTaskId(WorkflowTask task) {
