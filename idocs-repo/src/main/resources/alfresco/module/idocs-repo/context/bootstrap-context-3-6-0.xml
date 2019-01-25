@@ -84,6 +84,21 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.show-hints-parameter" parent="idocs.import-spaces.3-6-0">
+        <property name="name" value="show-hints-parameter" />
+        <property name="description" value="show-hints-parameter" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/show-hints-parameter</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
     <bean id="idocs.module-component.icons" parent="idocs.import-spaces.3-6-0">
         <property name="name" value="icons"/>
         <property name="description" value="Root folder for icons"/>

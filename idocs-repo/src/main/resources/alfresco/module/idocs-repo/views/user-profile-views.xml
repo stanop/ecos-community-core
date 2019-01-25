@@ -218,7 +218,6 @@
             </field>
 
             <field prop="org:showHints"  template="row">
-                <invariant on="mandatory" language="explicit">true</invariant>
                 <invariant on="default" language="explicit">true</invariant>
             </field>
 
