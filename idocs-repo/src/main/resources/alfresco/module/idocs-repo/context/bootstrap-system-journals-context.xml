@@ -656,4 +656,26 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.journals-orgstruct-simple-role-type.update-journal-title" parent="idocs.import-spaces.3-7-0">
+        <property name="name" value="orgstruct-simple-role-type-update-journal-title" />
+        <property name="description" value="Orgstruct role type update journal title" />
+        <property name="sinceVersion" value="3.7.0." />
+        <property name="appliesFromVersion" value="3.7.0" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-orgstruct-simple-role-type" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal-update.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/orgstruct-simple-role-type</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>

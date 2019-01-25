@@ -1,9 +1,46 @@
-.ecos-case-form-section .rowset-body {
+.ecos-case-form-section > .rowset-body {
     margin-left: 5px;
     margin-top: 20px;
     margin-bottom: 10px;
 }
 .ecos-case-form-section .title {
-    margin-top: 10px;
-    color: #1c55da !important;
+    /*margin-top: 10px;*/
+    font-family: Open Sans, Arial, sans-serif !important;
+    color: #666 !important;
+    margin: 0;
+    font-weight: 600;
+    background: #fff6d9;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset.ecos-case-form-section .title {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset.ecos-case-form-section .template-third-width,
+.invariants-form:not(.view-form) .template-table .template-rowset.ecos-case-form-section [class*="template-third-width-"] {
+    margin-left: 0;
+    margin-right: 5px;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset.ecos-case-form-section .template-row,
+.invariants-form:not(.view-form) .template-table .template-rowset.ecos-case-form-section [class*="template-row-"],
+.invariants-form:not(.view-form) .template-table .template-rowset.ecos-case-form-section .template-single {
+    margin-left: 0;
+    width: 100%;
+}
+
+.invariants-form .template-table .template-rowset.ecos-case-form-section .template-half-width,
+.invariants-form .template-table .template-rowset.ecos-case-form-section [class*="template-half-width-"] {
+    margin-left: 0;
+    margin-right: 5px;
+}
+
+
+.invariants-form:not(.view-form) .template-table .template-rowset.ecos-case-form-section .template-rowset:after {
+    margin-left: 0;
+    width: 100%;
 }

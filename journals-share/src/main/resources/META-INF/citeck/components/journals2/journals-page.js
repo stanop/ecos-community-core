@@ -526,8 +526,18 @@ define([
 
                     var body = '<table class="batch-edit-results">';
                     for (ref in editStatus) {
-                        var title = editStatus[ref].title ? '<td>' + editStatus[ref].title + '</td>' : '';
-                        body += '<tr>' + title + '<td>' + Alfresco.util.message("batch-edit.message."+editStatus[ref].status) + '</td></tr>';
+                        var title = editStatus[ref].title;
+                        var titleColumn = '';
+                        if (title) {
+                            if (title.length) {
+                                title = title[0];
+                            }
+                            if (title.hasOwnProperty("str")) {
+                                title = title.str;
+                            }
+                            titleColumn = '<td>' + title + '</td>';
+                        }
+                        body += '<tr>' + titleColumn + '<td>' + Alfresco.util.message("batch-edit.message."+editStatus[ref].status) + '</td></tr>';
                     }
                     body += '</table>';
                     body += '<div class="form-buttons batch-edit-results-form-buttons"><input id="' + id + '-close-results-btn" type="button" class="batch-edit-results-button" value="' + msg("button.ok") + '" /></div>';

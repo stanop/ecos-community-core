@@ -313,7 +313,7 @@ ko.components.register("number", {
 
         this.textInputValue.subscribe(function(value){
             var floatVal = parseFloat(value);
-            if (_.isFinite(floatVal) && floatVal != self.value()) {
+            if (value === "" || _.isFinite(floatVal) && floatVal != self.value()) {
                 self.value(floatVal);
             }
         });
