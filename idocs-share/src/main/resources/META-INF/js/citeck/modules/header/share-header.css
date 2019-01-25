@@ -502,6 +502,12 @@
     max-width: 50px !important;
 }
 
+.alfresco-header-showHint .alfresco-header-showHint-icon{
+    width: 26px;
+    height: 26px;
+    margin-top: 7px;
+}
+
 @media screen and (min-width: 360px) and (max-width: 400px) {
     .yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header #HEADER_SEARCHBOX_FORM_FIELD {
         max-width: 105px !important;

@@ -141,8 +141,6 @@ ko.components.register("help", {
             }
         }
         getHintPropertyByCurrentUser(func);
-
-       //getHintPropertyByCurrentUser(this.tooltip.cfg, func);
     },
     template: '\
         <span data-bind="style: { \'z-index\': containerZIndex, position: \'relative\' }, attr: { id: id }, if: text, click: onclick">\
