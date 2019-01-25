@@ -3228,6 +3228,10 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
     border-radius: 8px;
 }
 
+.static .ecos-form .form-fields .ecos-case-form-section {
+    margin-left: 40px;
+}
+
 .share-form .form-container .form-fields .set .set-title {
     margin: 0;
     font-weight: 600;
