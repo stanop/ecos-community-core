@@ -48,68 +48,68 @@ public class JavaScriptImplUtils {
         return wrapNode(new NodeRef(nodeRef), scopeProvider);
     }
 
-	public static ScriptNode wrapNode(NodeRef nodeRef,
-			                          AlfrescoScopableProcessorExtension scopeProvider) {
+    public static ScriptNode wrapNode(NodeRef nodeRef,
+                                      AlfrescoScopableProcessorExtension scopeProvider) {
 
-	    if (nodeRef == null) {
-	        return null;
+        if (nodeRef == null) {
+            return null;
         }
-		return new ScriptNode(nodeRef, scopeProvider.getServiceRegistry(), scopeProvider.getScope());
-	}
-	
-	public static ScriptNode[] wrapNodes(Collection<NodeRef> nodeRefs, 
+        return new ScriptNode(nodeRef, scopeProvider.getServiceRegistry(), scopeProvider.getScope());
+    }
+
+    public static ScriptNode[] wrapNodes(Collection<NodeRef> nodeRefs,
                                          AlfrescoScopableProcessorExtension scopeProvider) {
 
-		List<ScriptNode> nodes = new ArrayList<>(nodeRefs.size());
-		for (NodeRef nodeRef : nodeRefs) {
-			ScriptNode node = wrapNode(nodeRef, scopeProvider);
-			if (node != null) {
-				nodes.add(node);
-			}
-		}
-		return nodes.toArray(new ScriptNode[nodes.size()]);
-	}
-	
-	public static ScriptGroup wrapGroup(String groupName, 
-			AlfrescoScopableProcessorExtension scopeProvider) {
+        List<ScriptNode> nodes = new ArrayList<>(nodeRefs.size());
+        for (NodeRef nodeRef : nodeRefs) {
+            ScriptNode node = wrapNode(nodeRef, scopeProvider);
+            if (node != null) {
+                nodes.add(node);
+            }
+        }
+        return nodes.toArray(new ScriptNode[nodes.size()]);
+    }
 
-		if (groupName == null) {
-			return null;
-		}
-		return new ScriptGroup(groupName, scopeProvider.getServiceRegistry(), scopeProvider.getScope());
-	}
-	
-	public static ScriptGroup[] wrapGroups(Collection<String> groupNames, 
-			                               AlfrescoScopableProcessorExtension scopeProvider) {
+    public static ScriptGroup wrapGroup(String groupName,
+            AlfrescoScopableProcessorExtension scopeProvider) {
 
-		ScriptGroup[] groups = new ScriptGroup[groupNames.size()];
-		int i = 0;
-		for (String groupName : groupNames) {
-			groups[i++] = wrapGroup(groupName, scopeProvider);
-		}
-		return groups;
-	}
-	
-	public static ScriptUser wrapUser(String userName, 
-			                          AlfrescoScopableProcessorExtension scopeProvider) {
+        if (groupName == null) {
+            return null;
+        }
+        return new ScriptGroup(groupName, scopeProvider.getServiceRegistry(), scopeProvider.getScope());
+    }
 
-		return new ScriptUser(userName,
+    public static ScriptGroup[] wrapGroups(Collection<String> groupNames,
+                                           AlfrescoScopableProcessorExtension scopeProvider) {
+
+        ScriptGroup[] groups = new ScriptGroup[groupNames.size()];
+        int i = 0;
+        for (String groupName : groupNames) {
+            groups[i++] = wrapGroup(groupName, scopeProvider);
+        }
+        return groups;
+    }
+
+    public static ScriptUser wrapUser(String userName,
+                                      AlfrescoScopableProcessorExtension scopeProvider) {
+
+        return new ScriptUser(userName,
                               null,
                               scopeProvider.getServiceRegistry(),
                               scopeProvider.getScope());
-	}
-	
-	public static ScriptUser[] wrapUsers(Collection<String> userNames, 
-			AlfrescoScopableProcessorExtension scopeProvider) {
+    }
 
-		ScriptUser[] users = new ScriptUser[userNames.size()];
-		int i = 0;
-		for (String userName : userNames) {
-			users[i++] = wrapUser(userName, scopeProvider);
-		}
-		return users;
-	}
-	
+    public static ScriptUser[] wrapUsers(Collection<String> userNames,
+            AlfrescoScopableProcessorExtension scopeProvider) {
+
+        ScriptUser[] users = new ScriptUser[userNames.size()];
+        int i = 0;
+        for (String userName : userNames) {
+            users[i++] = wrapUser(userName, scopeProvider);
+        }
+        return users;
+    }
+
     public static ScriptNode wrapAuthorityAsNode(String authorityName, 
                                                  AlfrescoScopableProcessorExtension scopeProvider) {
         NodeRef nodeRef;
