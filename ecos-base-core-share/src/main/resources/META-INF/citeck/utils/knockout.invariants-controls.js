@@ -314,7 +314,7 @@ ko.components.register("number", {
         this.textInputValue.subscribe(function(value){
             var floatVal = parseFloat(value);
             if (value === "" || _.isFinite(floatVal) && floatVal != self.value()) {
-                self.value(floatVal);
+                self.value(value);
             }
         });
 

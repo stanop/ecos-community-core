@@ -541,6 +541,14 @@
 
 .invariants-form .template-wide.user-profile-header__column.user-profile-header__column--photo .template-block .block-region .form-region {
   display: block;
+  margin-left: 0;
+  margin-right: 0;
+  transform: none;
+}
+
+.invariants-form .template-wide.user-profile-header__column.user-profile-header__column--photo .template-block .block-region .form-region > div {
+  width: 90px;
+  text-align: center;
 }
 
 .invariants-form .template-wide .template-block .block-region-select .form-region  {
