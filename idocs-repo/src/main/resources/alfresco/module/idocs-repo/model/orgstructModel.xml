@@ -164,7 +164,6 @@
             <properties>
                 <property name="org:showHints">
                     <type>d:boolean</type>
-                    <mandatory>true</mandatory>
                     <default>true</default>
                 </property>
             </properties>

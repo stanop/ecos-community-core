@@ -417,7 +417,7 @@
 /* STATIC */
 
 .static .invariants-form .template-table {
-  /*margin-left: -40px;*/
+  margin-left: -40px;
   width: 800px;
   box-sizing: border-box;
 }

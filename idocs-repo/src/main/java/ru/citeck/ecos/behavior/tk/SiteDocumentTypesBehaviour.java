@@ -34,6 +34,7 @@ import ru.citeck.ecos.utils.RepoUtils;
 public class SiteDocumentTypesBehaviour implements NodeServicePolicies.OnCreateAssociationPolicy,
                                                    NodeServicePolicies.OnDeleteAssociationPolicy {
 
+    private static final NodeRef JOURNALS_GLOBAL_ROOT = new NodeRef("workspace://SpacesStore/journal-meta-f-journals");
     private static final String CLASSIFICATION_NS = ClassificationModel.CLASSIFICATION_TYPE_KIND_NAMESPACE;
 
     private static Log logger = LogFactory.getLog(SiteDocumentTypesBehaviour.class);
@@ -160,7 +161,10 @@ public class SiteDocumentTypesBehaviour implements NodeServicePolicies.OnCreateA
                                   NodeRef documentsFolder) {
 
         NodeRef journal = FTSQuery.create()
-                                  .parent(journalsContainer).and()
+                                  .open()
+                                    .parent(journalsContainer).or()
+                                    .parent(JOURNALS_GLOBAL_ROOT)
+                                  .close().and()
                                   .exact(ClassificationModel.PROP_RELATES_TO_TYPE, type)
                                   .transactional()
                                   .queryOne(searchService).orElse(null);
