@@ -107,6 +107,7 @@
                     <value>legal-entity</value>
                     <value>individual</value>
                     <value>public-body</value>
+                    <value>individual-entrepreneur</value>
                 </list>
             </parameter>
         </constraint>
@@ -306,10 +307,24 @@
         <type name="idocs:contractor">
             <parent>idocs:abstractContractor</parent>
             <properties>
+                <property name="idocs:series">
+                    <title>Series</title>
+                    <type>d:int</type>
+                </property>
+                <property name="idocs:number">
+                    <title>Number</title>
+                    <type>d:int</type>
+                </property>
+                <property name="idocs:psrnsp">
+                    <title>PSRNSP</title>
+                    <type>d:text</type>
+                    <mandatory>false</mandatory>
+                </property>
+
                 <property name="idocs:CEOname">
                     <title>CEO name</title>
                     <type>d:text</type>
-                    <mandatory>true</mandatory>
+                    <!--<mandatory>true</mandatory>-->
                 </property>
                 <property name="idocs:contractorID">
                     <title>ID</title>

@@ -35,6 +35,22 @@
         <property name="idocs:accountNumber">
             <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
         </property>
+        <property name="idocs:series">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual-entrepreneur"</invariant>
+        </property>
+        <property name="idocs:number">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual-entrepreneur"</invariant>
+        </property>
+        <property name="idocs:psrnsp">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual-entrepreneur"</invariant>
+        </property>
+
+        <property name="idocs:CEOname">
+            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] != "individual-entrepreneur"</invariant>
+        </property>
     </type>
 
     <type name="idocs:bankAccount">
