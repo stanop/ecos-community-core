@@ -1,6 +1,6 @@
 <webscript>
-    <shortname>rest proxy</shortname>
-    <description>rest proxy</description>
+    <shortname>rest proxy delete</shortname>
+    <description>rest proxy delete</description>
     <url>/citeck/flowable/proxy/{path0}</url>
     <url>/citeck/flowable/proxy/{path0}/{path1}</url>
     <url>/citeck/flowable/proxy/{path0}/{path1}/{path2}</url>
@@ -14,6 +14,6 @@
     <url>/citeck/flowable/proxy/{path0}/{path1}/{path2}/{path3}/{path4}/{path5}/{path6}/{path7}/{path8}/{path9}/{path10}</url>
     <format default="json"/>
     <authentication>user</authentication>
-    <transaction allow="readonly">required</transaction>
+    <transaction allow="readwrite">required</transaction>
     <formdata multipart-processing="false" />
 </webscript>
