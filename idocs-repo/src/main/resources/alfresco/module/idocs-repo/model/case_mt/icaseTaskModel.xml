@@ -42,6 +42,9 @@
                         <constraint ref="bpm:allowedPriority"/>
                     </constraints>
                 </property>
+                <property name="icaseTask:useActivityTitle">
+                    <type>d:boolean</type>
+                </property>
             </properties>
             <associations>
                 <association name="icaseTask:workflowPackage">

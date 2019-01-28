@@ -265,8 +265,10 @@ define([
         },
 
         getSubTypes: function(type) {
-            var ddClasses = new DDClasses('type');
-            ddClasses.ctbp(type);
+            var ddClasses = new DDClasses({
+                filter: 'type',
+                ctbp: type
+            });
             return _.invoke(ddClasses.classes(), 'name');
         },
 
@@ -278,9 +280,7 @@ define([
         getProperties: function (parentDocType) {
             return DDProperties(parentDocType).properties();
         }
-
     };
-
 
     var JournalService = koutils.koclass('journals.JournalsService')
         .property('journalTypes', [o])

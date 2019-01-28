@@ -105,22 +105,25 @@
                         <param name="pageId">context/mine/myfiles</param>
                     </action>
                 </item>
-                <item id="HEADER_GLOBAL_JOURNALS">
+                <item id="HEADER_DATA_LISTS">
                     <label>menu.item.data-lists</label>
                     <icon>data-lists</icon>
+                    <param name="hideEmpty">true</param>
                     <action type="PAGE_LINK">
                         <param name="pageId">journals2/list/main</param>
                     </action>
-                </item>
-                <item id="HEADER_MORE_FINANCE_JOURNALS">
-                    <label>menu.item.finance-data-lists</label>
-                    <icon>finance-data-lists</icon>
-                    <action type="PAGE_LINK">
-                        <param name="pageId">site/ecos-finance/journals2/list/references</param>
-                    </action>
-                    <evaluator id="site-member">
-                        <param name="siteName">ecos-finance</param>
-                    </evaluator>
+                    <items>
+                        <resolver id="USER_SITES_REFERENCES">
+                            <item>
+                                <icon>data-lists</icon>
+                                <items>
+                                    <resolver id="SITE_JOURNALS">
+                                        <param name="listId">references</param>
+                                    </resolver>
+                                </items>
+                            </item>
+                        </resolver>
+                    </items>
                 </item>
 
             </items>
@@ -192,6 +195,13 @@
                     <icon>templates</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">journals2/list/templates</param>
+                    </action>
+                </item>
+                <item id="HEADER_DEV_TOOLS">
+                    <label>menu.item.dev-tools</label>
+                    <icon>dev-tools</icon>
+                    <action type="PAGE_LINK">
+                        <param name="pageId">dev-tools</param>
                     </action>
                 </item>
                 <item id="HEADER_MORE">

@@ -413,6 +413,31 @@
         });
     };
 
+    Citeck.forms.loaderPanel = function() {
+        if (!this._loaderPanel) {
+            this._loaderPanel = new YAHOO.widget.Panel(Alfresco.util.generateDomId(), {
+                visible: false,
+                close: false,
+                modal: true
+            });
+
+            this._loaderPanel.setHeader(Alfresco.util.message("message.loading.form"));
+            this._loaderPanel.setBody(
+                '<div class="loader-panel">' +
+                    '<div class="loading-indicator"></div>' +
+                    '<div class="loader-panel__message">' + Alfresco.util.message("message.loading.form") + '</div>' +
+                '</div>'
+            );
+
+            this._loaderPanel.render(document.body);
+        }
+
+        this._loaderPanel.show();
+        this._loaderPanel.center();
+
+        return this._loaderPanel;
+    };
+
     Citeck.forms.dialog = function(itemId, formId, callback, params) {
         var itemKind, mode, paramName;
         formId = formId || "";
@@ -548,8 +573,23 @@
                                 .css("max-height", maxHeight - 70 + "px");
                         }
 
-                        // show panel
-                        panel.show();
+                        var loaderPanel = Citeck.forms.loaderPanel();
+                        var component = Alfresco.util.ComponentManager.get(viewId+'-form');
+
+                        if (component) {
+                            component.runtime.loaded.subscribe(function(){
+                                var timerId = setTimeout(function(){
+                                    loaderPanel.hide();
+                                    panel.show();
+                                    panel.center();
+                                    clearTimeout(timerId);
+                                }, 100);
+                            });
+                        } else {
+                            loaderPanel.hide();
+                            panel.show();
+                            panel.center();
+                        }
                     }
                 }
             });

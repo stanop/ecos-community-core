@@ -87,12 +87,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     public void beforeCaseActivityStarted(NodeRef taskRef) {
 
         String workflowDefinitionName = (String) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_WORKFLOW_DEFINITION_NAME);
-
-//        if (!attributesMappingByWorkflow.containsKey(workflowDefinitionName)) {
-//            throw new AlfrescoRuntimeException(String.format("Task start failed. Attributes mapping is " +
-//                                                             "not registered for workflow %s.", workflowDefinitionName));
-//        }
-
+        
         Map<QName, Serializable> workflowProperties = getWorkflowProperties(taskRef, workflowDefinitionName);
 
         ActionPerformance performance = new ActionPerformance(this, "createPackage");
@@ -204,34 +199,41 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
     }
 
     private Serializable convertForRepo(Object value) {
-        return value != null && value instanceof Serializable ?
-                valueConverter.convertValueForRepo((Serializable)value) : null;
+        return value instanceof Serializable ?
+                valueConverter.convertValueForRepo((Serializable) value) : null;
     }
 
     private void setWorkflowPropertiesFromITask(Map<QName, Serializable> workflowProperties, NodeRef taskRef) {
 
-        // get task properties
-        String taskTitle = (String) nodeService.getProperty(taskRef, ContentModel.PROP_TITLE);
+        Map<QName, Serializable> taskProps = nodeService.getProperties(taskRef);
+        Boolean useActivityTitle = (Boolean) taskProps.get(ICaseTaskModel.PROP_USE_ACTIVITY_TITLE);
 
-        Date workflowDueDate = getWorkflowDueDate(taskRef);
-        Integer workflowPriority = (Integer) nodeService.getProperty(taskRef, ICaseTaskModel.PROP_PRIORITY);
+        String taskTitle = (String) taskProps.get(ContentModel.PROP_TITLE);
 
-        // set properties from task
-        workflowProperties.put(CiteckWorkflowModel.PROP_TASK_TITLE, taskTitle);
+        if (!Boolean.FALSE.equals(useActivityTitle)) {
+            workflowProperties.put(CiteckWorkflowModel.PROP_TASK_TITLE, taskTitle);
+        }
         workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DESCRIPTION, taskTitle);
+
+        Date workflowDueDate = getWorkflowDueDate(taskProps);
+        if (workflowDueDate != null) {
+            nodeService.setProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE, workflowDueDate);
+        }
         workflowProperties.put(WorkflowModel.PROP_WORKFLOW_DUE_DATE, workflowDueDate);
+
+        Integer workflowPriority = (Integer) taskProps.get(ICaseTaskModel.PROP_PRIORITY);
         workflowProperties.put(WorkflowModel.PROP_WORKFLOW_PRIORITY, workflowPriority);
     }
 
-    private Date getWorkflowDueDate(NodeRef taskRef) {
+    private Date getWorkflowDueDate(Map<QName, Serializable> taskProps) {
 
         Date workflowDueDate = null;
 
-        Date startDate = (Date) nodeService.getProperty(taskRef, ActivityModel.PROP_ACTUAL_START_DATE);
+        Date startDate = (Date) taskProps.get(ActivityModel.PROP_ACTUAL_START_DATE);
 
         if (startDate != null) {
 
-            Integer expectedPerformTime = (Integer) nodeService.getProperty(taskRef, ActivityModel.PROP_EXPECTED_PERFORM_TIME);
+            Integer expectedPerformTime = (Integer) taskProps.get(ActivityModel.PROP_EXPECTED_PERFORM_TIME);
 
             if (expectedPerformTime == null) {
                 expectedPerformTime = getDefaultSLA();
@@ -239,7 +241,6 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
 
             if (expectedPerformTime > 0) {
                 workflowDueDate = addDays(startDate, hoursToDays(expectedPerformTime));
-                nodeService.setProperty(taskRef, ActivityModel.PROP_PLANNED_END_DATE, workflowDueDate);
             }
         }
 

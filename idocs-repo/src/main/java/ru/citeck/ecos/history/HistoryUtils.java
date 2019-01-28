@@ -1,9 +1,9 @@
 package ru.citeck.ecos.history;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
-import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
@@ -92,12 +92,34 @@ public class HistoryUtils {
                 return valueString;
             }
         }
-        if (dictionaryService.getProperty(qName).getConstraints().size() > 0) {
-            String localName = dictionaryService.getProperty(qName).getConstraints().get(0).getConstraint().getShortName().replace(":", "_");
-            return I18NUtil.getMessage("listconstraint." + localName + "." + constraint);
-        } else {
-            return constraint;
+
+        PropertyDefinition propDef = dictionaryService.getProperty(qName);
+        String constListKey = null;
+
+        if (propDef != null) {
+
+            List<ConstraintDefinition> constraints = propDef.getConstraints();
+
+            if (constraints != null && constraints.size() > 0) {
+
+                for (ConstraintDefinition constrDef : constraints) {
+
+                    Constraint constr = constrDef.getConstraint();
+                    if (ListOfValuesConstraint.class.isAssignableFrom(constr.getClass())) {
+                        constListKey = constr.getShortName().replace(":", "_");
+                        break;
+                    }
+                }
+            }
         }
+        Object constraintValue = null;
+        if (constListKey != null) {
+            constraintValue = I18NUtil.getMessage("listconstraint." + constListKey + "." + constraint);
+        }
+        if (constraintValue == null) {
+            constraintValue = constraint;
+        }
+        return constraintValue;
     }
 
     private static String getCustomChangeValue(NodeRef nodeRef, NodeService nodeService) {

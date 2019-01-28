@@ -4,8 +4,8 @@
 @import "/share/res/themes/citeckTheme/custom-mobile.css";
 
 /* hack to fix mobile styles jumping */
-.grid {
-    display: none;
+.mobile .grid {
+    visibility: hidden;
 }
 
  /* Site-wide Styles */
@@ -3217,21 +3217,38 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
    border-bottom: none;
 }
 
+.static .ecos-form .form-fields .ecos-case-form-section,
 .share-form .form-container .form-fields > .set {
-   padding: 0;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 20px;
+    position: relative;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.15);
+    border-radius: 8px;
+}
+
+.static .ecos-form .form-fields .ecos-case-form-section {
+    margin-left: 40px;
 }
 
 .share-form .form-container .form-fields .set .set-title {
-   border-bottom: 1px solid #ccc;
+    margin: 0;
+    font-weight: 600;
+    color: #666;
+    background: #fff6d9;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 6px;
 }
 
 .share-form .form-container .form-fields .set:not(:first-child) .set-title {
-   margin-top: 30px;
+   /*margin-top: 30px;*/
 }
 
 
 .share-form .form-container .form-fields .set-title {
-  font-size: 16px;
+  font-size: 18px;
   padding-bottom: 10px;
   margin-bottom: 15px;
   margin-top: 15px;
@@ -3329,6 +3346,12 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
    padding: 5px;
    border: 1px solid #CCC;
    box-shadow: none;
+   border-radius: 6px;
+   box-sizing: border-box;
+}
+
+.yui-skin-citeckTheme .select-picker-box a.select-picker-link {
+    border-radius: 6px;
 }
 
 
@@ -3466,6 +3489,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 .share-form .form-container .form-fields .form-field div[id$="packageItems-cntrl"].object-finder .object-finder-list {
   margin-bottom: 10px;
+  border-radius: 6px;
 }
 
 .share-form .form-container .form-fields .form-field div.object-finder > div.dynamic-list .ygtvcontent {
@@ -3610,6 +3634,17 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
   margin-right: 0;
 }
 
+.share-form .form-container .form-fields .form-field:last-child,
+.share-form .form-container .form-fields .yui-g:last-child,
+.share-form .form-container .form-fields .yui-gb:last-child,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .form-field:last-child,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-g:last-child,
+.yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-gb:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
 .share-form .form-container .form-fields .form-field .yui-g,
 .share-form .form-container .form-fields .yui-g .form-field {
   clear: both;
@@ -3708,7 +3743,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 .share-form .form-container .form-fields .form-field .yui-u input[type="text"].time-entry,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].date-entry,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].time-entry {
-   width: 100px;
+   width: 100px !important;
 }
 
 .share-form .form-container .form-fields .form-field .yui-u .format-info {
@@ -5001,23 +5036,30 @@ body:not(.mobile).yui-skin-citeckTheme #flowable-modeler,
 body:not(.mobile).yui-skin-citeckTheme #bd > div[id*="site-finder"],
 body:not(.mobile).yui-skin-citeckTheme #bd .orgstruct-console .orgstruct-tree-resizer,
 body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header-Warning__warnings,
+/*body:not(.mobile).yui-skin-citeckTheme .ecos-form,*/
 body:not(.mobile).yui-skin-citeckTheme .alfresco-footer-AlfStickyFooter > div.wrapper {
-    box-shadow: inset 15px -1px 10px -15px grey;
+    /*box-shadow: inset 15px -1px 10px -15px grey;*/
 }
 
 body:not(.mobile).yui-skin-citeckTheme #bd .site-document-types {
-    box-shadow: inset 15px -1px 10px -15px grey;
+    /*box-shadow: inset 15px -1px 10px -15px grey;*/
     padding-left: 15px;
 }
 
 body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="SurfRegion"] > div[id*="case-documents"],
 body:not(.mobile).yui-skin-citeckTheme #bd .cardlet #cardlet-remote-case-documents-container {
-    box-shadow: inset 15px -1px 10px -15px grey;
+    /*box-shadow: inset 15px -1px 10px -15px grey;*/
     padding-left: 4px;
 }
 
 body:not(.mobile).yui-skin-citeckTheme .sticky-footer .footer {
-    box-shadow: inset 15px -1px 10px -15px grey, 0px 10px 15px -10px grey inset;
+    /*box-shadow: inset 15px -1px 10px -15px grey, 0px 10px 15px -10px grey inset;*/
+    box-shadow: 0px 10px 15px -10px grey inset;
+}
+
+body:not(.mobile).yui-skin-citeckTheme .card-details-top-panel {
+    /*box-shadow: inset 15px -1px 10px -15px grey;*/
+    padding-left: 40px;
 }
 
 .yui-skin-citeckTheme .user-calendar .yui-dt tr.yui-dt-even,

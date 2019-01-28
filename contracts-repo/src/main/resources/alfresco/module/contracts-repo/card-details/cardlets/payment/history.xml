@@ -59,7 +59,7 @@
             text: Alfresco.util.message("dochist.header.group")
             },
             {
-            field: 'event:taskType',
+            field: 'event:taskTitle',
             text: Alfresco.util.message("dochist.header.task")
             },
             {

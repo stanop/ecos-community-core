@@ -15,6 +15,7 @@ import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.cmr.site.SiteInfo;
 import org.alfresco.service.cmr.site.SiteService;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.lang.StringUtils;
@@ -49,20 +50,23 @@ public class CreateVariantsGet extends AbstractWebScript {
 
     private static final String ALL_SITES = "ALL";
 
-    private LoadingCache<String, List<CreateVariant>> createVariantsByJournalType;
-    private LoadingCache<String, List<CreateVariant>> createVariantsByNodeType;
-    private LoadingCache<String, List<CreateVariant>> createVariantsBySite;
     private LoadingCache<NodeRef, CreateVariant> createVariantsData;
+    private LoadingCache<String, List<CreateVariant>> createVariantsBySite;
+    private LoadingCache<String, List<CreateVariant>> createVariantsByNodeType;
+    private LoadingCache<String, List<CreateVariant>> createVariantsByJournalType;
 
-    private PermissionService permissionService;
-    private SearchService searchService;
+    private NodeUtils nodeUtils;
     private NodeService nodeService;
     private SiteService siteService;
-    private NodeUtils nodeUtils;
+    private SearchService searchService;
+    private NamespaceService namespaceService;
+    private PermissionService permissionService;
 
     private long cacheAgeSeconds = 600;
 
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    private boolean initialized = false;
 
     @Override
     public void init(Container container, Description description) {
@@ -80,8 +84,9 @@ public class CreateVariantsGet extends AbstractWebScript {
         createVariantsData = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheAgeSeconds, TimeUnit.SECONDS)
                 .build(CacheLoader.from(this::getCreateVariantData));
-    }
 
+        initialized = true;
+    }
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
@@ -235,13 +240,27 @@ public class CreateVariantsGet extends AbstractWebScript {
 
         List<NodeRef> destinations = nodeUtils.getAssocTargets(variant, JournalsModel.ASSOC_DESTINATION);
         result.destination = destinations.size() > 0 ? destinations.get(0) : null;
-        result.type = (String) properties.get(JournalsModel.PROP_TYPE);
+        result.type = getShortQName(properties.get(JournalsModel.PROP_TYPE));
         result.formId = (String) properties.get(JournalsModel.PROP_FORM_ID);
+        result.createArguments = (String) properties.get(JournalsModel.PROP_CREATE_ARGUMENTS);
 
         Boolean isDefault = (Boolean) properties.get(JournalsModel.PROP_IS_DEFAULT);
         result.isDefault = Boolean.TRUE.equals(isDefault);
 
         return result;
+    }
+
+    private String getShortQName(Object value) {
+        if (value == null) {
+            return null;
+        }
+        QName qname;
+        if (value instanceof QName) {
+            qname = (QName) value;
+        } else {
+            qname = QName.resolveToQName(namespaceService, value.toString());
+        }
+        return qname.toPrefixString(namespaceService);
     }
 
     private List<SiteInfo> getUserSites() {
@@ -255,6 +274,9 @@ public class CreateVariantsGet extends AbstractWebScript {
     }
 
     public void clearCache() {
+        if (!initialized) {
+            return;
+        }
         createVariantsByJournalType.invalidateAll();
         createVariantsByNodeType.invalidateAll();
         createVariantsBySite.invalidateAll();
@@ -272,10 +294,11 @@ public class CreateVariantsGet extends AbstractWebScript {
 
     @Autowired
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        permissionService = serviceRegistry.getPermissionService();
-        searchService = serviceRegistry.getSearchService();
         nodeService = serviceRegistry.getNodeService();
         siteService = serviceRegistry.getSiteService();
+        searchService = serviceRegistry.getSearchService();
+        namespaceService = serviceRegistry.getNamespaceService();
+        permissionService = serviceRegistry.getPermissionService();
     }
 
     @Autowired
@@ -301,6 +324,7 @@ public class CreateVariantsGet extends AbstractWebScript {
         public final String formId;
         public final boolean isDefault;
         public final boolean canCreate;
+        public final String createArguments;
 
         public ResponseVariant(CreateVariant source) {
             title = source.title.getClosestValue(I18NUtil.getLocale());
@@ -309,6 +333,7 @@ public class CreateVariantsGet extends AbstractWebScript {
             formId = source.formId;
             isDefault = source.isDefault;
             canCreate = hasPermission(source.destination, PermissionService.CREATE_CHILDREN);
+            createArguments = source.createArguments;
         }
     }
 
@@ -321,6 +346,7 @@ public class CreateVariantsGet extends AbstractWebScript {
         public String type;
         public String formId;
         public boolean isDefault;
+        public String createArguments;
 
         public CreateVariant(NodeRef nodeRef) {
             this.nodeRef = nodeRef;

@@ -64,6 +64,21 @@ YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
 
 // TODO:
 // - init tooltip only if text not empty
+function getHintPropertyByCurrentUser(callback){
+    Alfresco.util.Ajax.jsonGet({
+        url: Alfresco.constants.PROXY_URI + "citeck/search/query",
+        dataObj: {
+            query: '=cm:userName:"' + Alfresco.constants.USERNAME + '"',
+            schema: JSON.stringify({attributes:{'org:showHints':''}})
+        },
+        successCallback: {
+            scope: this,
+            fn: function(response) {
+                callback(response.json);
+            }
+        }
+    });
+}
 
 ko.components.register("help", {
     viewModel: function(params) {
@@ -74,6 +89,7 @@ ko.components.register("help", {
         self.labelZIndex = ko.observable(0);
 
         // private methods
+
         this._createTooltip = _.bind(function(text) {
             if (!this.tooltip) {
                 this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
@@ -117,6 +133,14 @@ ko.components.register("help", {
 
         // create tooltip if text already calculated
         this._createTooltip(this.text());
+
+        var func = function (json) {
+            var showHintValue = json.results[0].attributes["org:showHints"];
+            if (showHintValue === "false") {
+                self.tooltip.cfg.setProperty("disabled", true);
+            }
+        }
+        getHintPropertyByCurrentUser(func);
     },
     template: '\
         <span data-bind="style: { \'z-index\': containerZIndex, position: \'relative\' }, attr: { id: id }, if: text, click: onclick">\
@@ -184,37 +208,47 @@ ko.components.register("select", {
 
 ko.components.register("number-generate", {
     viewModel: function(params) {
+
         var self = this;
         this.id = params.id;
         this.label = params.label || "Generate";
         this.mode = params.mode;
         this.disable = params.disable;
-
-        this.generate = function() {
-            var generator = ko.computed(function() {
-                return params.enumeration.getNumber(params.template, params.node());
-            }, this, { deferEvaluation: true });
-
-            var number = generator();
-            if (number) {
-                params.value(number);
-                generator.dispose();
-            } else {
-                koutils.subscribeOnce(generator, function(number) {
-                    params.value(number);
-                    generator.dispose();
-                });
-            }
+        this.node = params.node;
+        if (_.isFunction(params.template)) {
+            this.numTemplate = ko.computed(params.template.bind(this));
+        } else {
+            this.numTemplate = ko.observable(params.template);
+        }
+        this._cache = {
+            numbers: {}
         };
 
         // flag for 'checkbox' mode
         this.flag = ko.observable(false);
-        this.flag.subscribe(function(flag) {
-            if (flag) {
-                self.generate();
-                Dom.setAttribute(self.id, "disabled", "disabled");
+        this.generatedNumber = ko.computed(function() {
+            if (!self.flag()) {
+                return -1;
+            }
+            var template = self.numTemplate();
+            if (!template) {
+                return -1;
+            }
+            if (!self._cache.numbers[template]) {
+                var model = params.node().impl().allData.peek().attributes;
+                self._cache.numbers[template] = ko.computed(function() {
+                    return params.enumeration.getNumber(template, model);
+                });
+            }
+            return self._cache.numbers[template]();
+        });
+
+        this.generatedNumber.subscribe(function (num) {
+            var input = Dom.get(self.id);
+            if (num > -1) {
+                params.value(num);
+                if (input) Dom.setAttribute(self.id, "disabled", "disabled");
             } else {
-                var input = Dom.get(self.id);
                 if (input) input.removeAttribute("disabled");
             }
         });
@@ -273,6 +307,22 @@ ko.components.register("number", {
         this.isInteger = params.isInteger == true;
         this.value = params.value;
 
+        this.textInputValue = ko.observable(this.value());
+
+        this.textInputValue.subscribe(function(value){
+            var floatVal = parseFloat(value);
+            if (value === "" || _.isFinite(floatVal) && floatVal != self.value()) {
+                self.value(value);
+            }
+        });
+
+        self.value.subscribe(function(value) {
+            var existing = parseFloat(self.textInputValue());
+            if (_.isFinite(value) && value != existing) {
+                self.textInputValue(value);
+            }
+        });
+
         this.validation = function(data, event) {
             var newValue = document.getElementById(self.id).value + event.key;
             var keyCode = event.keyCode;
@@ -282,10 +332,12 @@ ko.components.register("number", {
                 9, //tab
                 27, //escape
                 13, //enter
+                116, //f5
                 35,36,37,38,39 //end, home, left arrow, up arrow, right arrow
             ];
 
-            if (allowKeyCodes.includes(keyCode) || (keyCode === 65 && event.ctrlKey === true)) {
+            if (allowKeyCodes.includes(keyCode) ||
+                ((keyCode === 65 || keyCode === 67 || keyCode === 86 || keyCode === 88) && event.ctrlKey === true) ) {
                 return true;
             }
 
@@ -302,7 +354,7 @@ ko.components.register("number", {
         };
     },
     template:
-       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="textInput: value, disable: disable, attr: { id: id, step: step }, event: { keydown: validation }" />'
+       '<input type="number" onfocus="this.focused=true;" onblur="this.focused=false;" data-bind="textInput: textInputValue, disable: disable, attr: { id: id, step: step }, event: { keydown: validation }" />'
 });
 
 // ---------------
@@ -794,72 +846,72 @@ ko.bindingHandlers.dateControl = {
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
 
-        if (mode == "alfresco" || !Citeck.HTML5.supportedInputTypes.date) {
-            var calendarDialogId = elementId + "-calendarDialog",
-                calendarContainerId = elementId + "-calendarContainer",
-                calendarAccessorId = elementId + "-calendarAccessor",
-                calendarDialog, calendar;
+        var calendarDialogId = elementId + "-calendarDialog",
+            calendarContainerId = elementId + "-calendarContainer",
+            calendarAccessorId = elementId + "-calendarAccessor",
+            calendarDialog, calendar;
 
-            var showCalendarButton = document.getElementById(calendarAccessorId);
-            showCalendarButton.classList.remove("hidden");
+        var showCalendarButton = document.getElementById(calendarAccessorId);
+        showCalendarButton.classList.remove("hidden");
 
-            Event.on(showCalendarButton, "click", function() {
-                if (!calendarDialog) {
-                    var formContainer = $(element).closest(".yui-panel-container"),
-                        zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
+        Event.on(showCalendarButton, "click", function() {
+            if (!calendarDialog) {
+                var formContainer = $(element).closest(".yui-panel-container"),
+                    zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
 
-                    calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
-                        visible:    false,
-                        context:    [calendarAccessorId, "tl", "bl"],
-                        draggable:  false,
-                        close:      true,
-                        zindex:     zindex
-                    });
-                    calendarDialog.setHeader(localization.labels.header);
-                    calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
-                    calendarDialog.render(document.body);
-                }
+                calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
+                    visible:    false,
+                    context:    [calendarAccessorId, "tl", "bl"],
+                    draggable:  false,
+                    close:      true,
+                    zindex:     zindex
+                });
+                calendarDialog.setHeader(localization.labels.header);
+                calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
+                calendarDialog.render(document.body);
+            }
 
-                if (!calendar) {
-                    calendar = new YAHOO.widget.Calendar(calendarContainerId, {
-                        LOCALE_WEEKDAYS: "short",
-                        LOCALE_MONTHS: "long",
-                        START_WEEKDAY: 1,
+            if (!calendar) {
+                calendar = new YAHOO.widget.Calendar(calendarContainerId, {
+                    LOCALE_WEEKDAYS: "short",
+                    LOCALE_MONTHS: "long",
+                    START_WEEKDAY: 1,
 
-                        iframe: false,
-                        navigator: {
-                            strings: {
-                                month:  localization.labels.month,
-                                year:   localization.labels.year,
-                                submit: localization.buttons.submit,
-                                cancel: localization.buttons.cancel
-                            }
+                    iframe: false,
+                    navigator: {
+                        strings: {
+                            month:  localization.labels.month,
+                            year:   localization.labels.year,
+                            submit: localization.buttons.submit,
+                            cancel: localization.buttons.cancel
                         }
-                    });
+                    }
+                });
 
-                    // localization months and days
-                    calendar.cfg.setProperty("MONTHS_LONG", localization.months.split(","));
-                    calendar.cfg.setProperty("WEEKDAYS_SHORT", localization.days.split(","));
+                // localization months and days
+                calendar.cfg.setProperty("MONTHS_LONG", localization.months.split(","));
+                calendar.cfg.setProperty("WEEKDAYS_SHORT", localization.days.split(","));
 
-                    // selected date
-                    calendar.selectEvent.subscribe(function() {
-                        if (calendar.getSelectedDates().length > 0) {
-                            var selectedDate = calendar.getSelectedDates()[0],
-                                nowDate = new Date;
+                // selected date
+                calendar.selectEvent.subscribe(function() {
+                    if (calendar.getSelectedDates().length > 0) {
+                        var selectedDate = calendar.getSelectedDates()[0],
+                            nowDate = new Date;
 
-                            selectedDate.setHours(-nowDate.getTimezoneOffset()/60);
+                        selectedDate.setHours(-nowDate.getTimezoneOffset()/60);
 
-                            value(selectedDate);
-                        }
-                        calendarDialog.hide();
-                    });
+                        value(selectedDate);
+                    }
+                    calendarDialog.hide();
+                });
 
-                    calendar.render();
-                }
+                calendar.render();
+            }
 
-                if (calendarDialog) calendarDialog.show();
-            });
-        } else {
+            if (calendarDialog) calendarDialog.show();
+        });
+
+        if (mode != "alfresco" && Citeck.HTML5.supportedInputTypes.date) {
             // set max and min attributes
             var date = new Date(),
                 year = date.getFullYear();
@@ -1404,7 +1456,7 @@ ko.bindingHandlers.journalControl = {
                             });
 
                             if(optionsFiltersTemp.length){
-                                criteria(optionsFiltersTemp);
+                                criteria(optionsFiltersTemp.concat(actualCriteria));
                             }
                         }
 

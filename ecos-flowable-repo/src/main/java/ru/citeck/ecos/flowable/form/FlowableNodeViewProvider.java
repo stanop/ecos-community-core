@@ -105,8 +105,19 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
             Optional<SimpleFormModel> formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey);
             if (formModel.isPresent()) {
+
                 String id = taskId.substring(taskId.indexOf("$") + 1);
                 Map<String, Object> variables = taskService.getVariables(id);
+                Map<String, Object> localVariables = taskService.getVariablesLocal(id);
+
+                List<String> commentFields = new ArrayList<>();
+                variables.forEach((varId, value) -> {
+                    if (varId.endsWith("_comment") && !localVariables.containsKey(varId)) {
+                        commentFields.add(varId);
+                    }
+                });
+                commentFields.forEach(variables::remove);
+
                 List<String> commentFieldIds = flowableCustomCommentService.getFieldIdsByTaskId(id);
                 commentFieldIds.forEach(commentFieldId -> {
                     variables.remove(commentFieldId);

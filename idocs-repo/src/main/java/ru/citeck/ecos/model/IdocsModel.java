@@ -51,7 +51,6 @@ public final class IdocsModel {
     public static final QName PROP_REGISTRATION_DATE = QName.createQName(IDOCS_NAMESPACE, "registrationDate");
     public static final QName PROP_REGISTRATION_NUMBER = QName.createQName(IDOCS_NAMESPACE, "registrationNumber");
     public static final QName PROP_DOCUMENT_STATUS = QName.createQName(IDOCS_NAMESPACE, "documentStatus");
-
     public static final QName PROP_CODE = QName.createQName(IDOCS_NAMESPACE, "code");
     public static final QName PROP_FULL_NAME = QName.createQName(IDOCS_NAMESPACE, "fullName");
     public static final QName PROP_FULL_ORG_NAME = QName.createQName(IDOCS_NAMESPACE, "fullOrganizationName");
@@ -88,12 +87,11 @@ public final class IdocsModel {
     public static final QName PROP_COMMENT = QName.createQName(IDOCS_NAMESPACE, "comment");
     public static final QName PROP_DOCUMENT_CASE_COMPLETED = QName.createQName(IDOCS_NAMESPACE, "caseCompleted");
     public static final QName PROP_CASE_MODELS_SENT = QName.createQName(IDOCS_NAMESPACE, "caseModelsSent");
-
     public static final QName PROP_ATTACHMENT_STATE = QName.createQName(IDOCS_NAMESPACE, "attachmentState");
-
     public static final QName PROP_ABSTRACT_CONTRACTOR = QName.createQName(IDOCS_NAMESPACE, "abstractContractor");
-
     public static final QName PROP_CUSTOM_FORM_ACTION_DATA = QName.createQName(IDOCS_NAMESPACE, "customFormActionData");
+    public static final QName PROP_USE_NEW_HISTORY = QName.createQName(IDOCS_NAMESPACE, "useNewHistory");
+    public static final QName PROP_ENG_ORGANIZATION_NAME = QName.createQName(IDOCS_NAMESPACE, "engOrganizationName");
 
     //assocs
     public static final QName ASSOC_GENERAL_DIRECTOR = QName.createQName(IDOCS_NAMESPACE, "generalDirector");
@@ -107,6 +105,8 @@ public final class IdocsModel {
 
     public static final QName ASSOC_CRR_BASE_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrBaseCurrency");
     public static final QName ASSOC_CRR_TARGET_CURRENCY = QName.createQName(IDOCS_NAMESPACE, "crrTargetCurrency");
+
+    public static final QName ASSOC_ATTACHMENT_RKK_CREATED_FROM = QName.createQName(IDOCS_NAMESPACE, "attachmentRkkCreatedFrom");
 
     // constraints
     public static final String CONSTR_REPEAL_BY_COUNTERPARTY_REQUESTED = "REPEAL_BY_COUNTERPARTY_REQUESTED";
@@ -127,6 +127,4 @@ public final class IdocsModel {
     public static final String REVISIONED = "REVISIONED";
     public static final String CORRECTED = "CORRECTED";
     public static final String REVISION_CORRECTED = "REVISION_CORRECTED";
-
-    public static final QName PROP_USE_NEW_HISTORY = QName.createQName(IDOCS_NAMESPACE, "useNewHistory");
 }

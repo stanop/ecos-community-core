@@ -32,7 +32,7 @@
 }
 
 .custom-dropdown-menu__toggle {
-    display:table-cell;
+    display: flex;
     vertical-align:middle;
     height: 40px;
     cursor: pointer;
@@ -48,7 +48,7 @@
 }
 
 .site-dropdown-menu__toggle:after,
-.user-dropdown-menu__toggle:before {
+.user-dropdown-menu__toggle:after {
     content: '▾';
     font-size: 14px;
     color: #fff;
@@ -69,11 +69,6 @@
 
 .user-dropdown-menu__toggle i {
     font-size: 18px;
-}
-
-.user-photo-header {
-    float: right;
-    margin-right: 5px;
 }
 
 /* dropdown menu body */
@@ -238,7 +233,7 @@
 }
 
 .share-header-search__inner {
-    display:table-cell;
+    display:flex;
     vertical-align:middle;
     position: relative;
 }
@@ -253,11 +248,6 @@
     font-size: 18px;
     margin-right: 9px;
     margin-left: 9px;
-    float: left;
-}
-
-.share-header-search__clear-button {
-    float: right;
 }
 
 .search-dropdown-menu i,
@@ -489,7 +479,7 @@
 
 .mobile .user-dropdown-menu__toggle {
     padding-left: 5px;
-    padding-right: 10px;
+    padding-right: 5px;
 }
 
 .mobile .user-dropdown-menu__toggle .user-menu-username {
@@ -498,10 +488,6 @@
 
 .mobile .site-dropdown-menu__toggle {
     padding: 0 5px;
-}
-
-.mobile .share-header-search__inner {
-    display: block;
 }
 
 .mobile .search-dropdown-menu {
@@ -514,6 +500,12 @@
 
 .yui-skin-citeckTheme.mobile #HEADER_SEARCHBOX_FORM_FIELD {
     max-width: 50px !important;
+}
+
+.alfresco-header-showHint .alfresco-header-showHint-icon{
+    width: 26px;
+    height: 26px;
+    margin-top: 7px;
 }
 
 @media screen and (min-width: 360px) and (max-width: 400px) {

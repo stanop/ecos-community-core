@@ -80,67 +80,94 @@
     </view>
 
     <view class="ecos:case">
+
+        <param name="customStyle">css/citeck/views/ecos-views</param>
+
         <views mode="create" kind="3-column"/>
         <views mode="edit" kind="3-column" />
 
-        <field prop="tk:type" template="none">
-            <invariant on="value" language="explicit">workspace://SpacesStore/cat-doc-type-general-case</invariant>
-        </field>
-
-        <view id="type-kind-view">
-            <field prop="tk:kind">
-                <region name="label" template="label">
-                    <param name="key">ecos_case.form.tk_kind.title</param>
-                </region>
-                <region name="input" template="autocomplete">
-                    <param name="searchScript">criteria-search</param>
-                    <param name="criteria">
-                        [
-                        { attribute: "cm:title", predicate: "string-starts-with" }
-                        ]
-                    </param>
-                </region>
-            </field>
-            <field prop="ecos:documentNumber">
-                <region name="select" template="number-generate">
-                    <param name="template">ecos-case-number-template</param>
-                    <param name="mode">checkbox</param>
-                </region>
-            </field>
-            <field prop="ecos:documentDate">
-                <region name="label" template="label">
-                    <param name="key">ecos_case.form.ecos_documentDate.title</param>
-                </region>
-                <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
-            </field>
-        </view>
         <view>
-            <view kind="1-column">
-                <field prop="cm:title">
-                    <region name="label">
-                        <param name="key">idocs_idocsModel.property.cm_title.title</param>
+            <param name="title">ecos_case.form.main.attributes</param>
+            <param name="customClass">ecos-case-form-section</param>
+
+            <field prop="tk:type" template="none">
+                <invariant on="value" language="javascript"><![CDATA[(function() {
+                    if (view.params.tk_type) {
+                        return view.params.tk_type;
+                    }
+                    return 'workspace://SpacesStore/cat-doc-type-general-case';
+                })()]]></invariant>
+            </field>
+
+            <view id="type-kind-view">
+                <field prop="tk:kind">
+                    <region name="label" template="label">
+                        <param name="key">ecos_case.form.tk_kind.title</param>
+                    </region>
+                    <region name="input" template="autocomplete">
+                        <param name="searchScript">criteria-search</param>
+                        <param name="criteria">
+                            [
+                            { attribute: "cm:title", predicate: "string-starts-with" }
+                            ]
+                        </param>
                     </region>
                 </field>
-                <field prop="idocs:note">
-                    <region name="input" template="textarea">
-                        <param name="height">100%</param>
+                <field prop="ecos:documentNumber">
+                    <region name="select" template="number-generate">
+                        <param name="template"><![CDATA[function() {
+                            var mapping = {
+                                'cat-doc-kind-application':         'ecos-case-application-num-template',
+                                'cat-doc-kind-claim':               'ecos-case-claim-num-template',
+                                'cat-doc-kind-work-plan':           'ecos-case-work-plan-num-template',
+                                'cat-doc-kind-customer-request':    'ecos-case-customer-req-num-template',
+                                'cat-doc-kind-complaint':           'ecos-case-complaint-num-template'
+                            };
+                            var kindNode = this.node().properties['tk:kind'];
+                            var kind = kindNode ? kindNode.nodeRef.replace(/^workspace:\/\/SpacesStore\//, "") : "";
+                            return mapping[kind] || 'ecos-case-number-template';
+                        }]]></param>
+                        <param name="mode">checkbox</param>
                     </region>
+                </field>
+                <field prop="ecos:documentDate">
                     <region name="label" template="label">
-                        <param name="key">idocs_idocsModel.property.idocs_note.title</param>
+                        <param name="key">ecos_case.form.ecos_documentDate.title</param>
                     </region>
+                    <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
                 </field>
             </view>
             <view>
-                <field assoc="ecos:responsible">
-                    <invariant on="mandatory" language="explicit">true</invariant>
-                    <invariant on="default" language="javascript">person</invariant>
-                </field>
-                <field assoc="idocs:initiator">
-                    <invariant on="default" language="javascript">person</invariant>
-                </field>
+                <view kind="1-column">
+                    <field prop="cm:title">
+                        <region name="label">
+                            <param name="key">idocs_idocsModel.property.cm_title.title</param>
+                        </region>
+                        <invariant on="mandatory" language="explicit">true</invariant>
+                    </field>
+                    <field prop="idocs:note">
+                        <region name="input" template="textarea">
+                            <param name="height">100%</param>
+                        </region>
+                        <region name="label" template="label">
+                            <param name="key">idocs_idocsModel.property.idocs_note.title</param>
+                        </region>
+                    </field>
+                </view>
+                <view>
+                    <field assoc="ecos:responsible">
+                        <invariant on="mandatory" language="explicit">true</invariant>
+                        <invariant on="default" language="javascript">person</invariant>
+                    </field>
+                    <field assoc="idocs:initiator">
+                        <invariant on="default" language="javascript">person</invariant>
+                    </field>
+                </view>
             </view>
         </view>
         <view>
+            <param name="title">ecos_case.form.additional.attributes</param>
+            <param name="customClass">ecos-case-form-section</param>
             <view>
                 <field prop="ecos:startDate" />
                 <field prop="ecos:stopDate" />

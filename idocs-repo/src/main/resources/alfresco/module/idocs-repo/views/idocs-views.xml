@@ -7,6 +7,7 @@
         <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy"/>
         <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
+        <import uri="http://www.citeck.ru/model/budget/1.0" prefix="budget" />
     </imports>
 
     <view class="idocs:organizationInfo">
@@ -323,6 +324,11 @@
             </region>
             <region name="input" template="view"/>
         </field>
+    </view>
+
+    <view class="budget:item">
+        <field prop="budget:itemCode" />
+        <field prop="budget:itemName" />
     </view>
 
 </views>

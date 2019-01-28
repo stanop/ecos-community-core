@@ -19,7 +19,7 @@
 <#macro valueText isLinked="false">
     <#if isLinked == "true">
         <a class="value-item-text ${asis}" style="${asis}" 
-            data-bind="text: $parent.getValueTitle($data), attr: { title: $parent.getValueDescription($data), href: $parent.href($data) }"></a>
+            data-bind="click: function(){ return true; }, clickBubble: false, text: $parent.getValueTitle($data), attr: { title: $parent.getValueDescription($data), href: $parent.href($data) }"></a>
     <#else>
         <#if postprocessing?has_content>
             <span class="value-item-text ${asis}" style="${asis}" 
