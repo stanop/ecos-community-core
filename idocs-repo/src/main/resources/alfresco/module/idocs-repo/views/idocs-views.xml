@@ -308,6 +308,8 @@
     </view>
 
     <view class="idocs:currencyRateRecord">
+        <param name="preloadInvariants">true</param>
+
         <field assoc="idocs:crrBaseCurrency"/>
         <field assoc="idocs:crrTargetCurrency"/>
         <field prop="idocs:crrValue"/>
