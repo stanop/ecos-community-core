@@ -67,18 +67,7 @@
                 <field prop="idocs:kpp"/>
             </view>
             <view>
-                <field prop="idocs:psrnsp">
-                    <invariant on="mandatory" language="explicit">true</invariant>
-                    <invariant on="valid" language="javascript" description="Некорректный ОГРНИП">
-                        (function() {
-                        var flag = value.match(/^\d*$/) ? true : false;
-                        if ( flag &amp;&amp; (value.length == 15)) {
-                        return true;
-                        }
-                        return false;
-                        })()
-                    </invariant>
-                </field>
+                <field prop="idocs:psrnsp"/>
                 <field prop="idocs:series"/>
                 <field prop="idocs:number"/>
             </view>

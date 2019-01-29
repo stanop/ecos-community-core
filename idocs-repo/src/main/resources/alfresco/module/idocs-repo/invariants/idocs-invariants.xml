@@ -38,14 +38,29 @@
         <property name="idocs:series">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual-entrepreneur"</invariant>
+            <invariant on="valid" language="javascript" description="idocs_idocsModel.property.idocs_series.title">
+                (function() {
+                return value.match(/^\d*$/) ? true : false;
+                })()
+            </invariant>
         </property>
         <property name="idocs:number">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual-entrepreneur"</invariant>
+            <invariant on="valid" language="javascript" description="idocs_idocsModel.property.idocs_number.title" >
+                (function() {
+                return value.match(/^\d*$/) ? true : false;
+                })()
+            </invariant>
         </property>
         <property name="idocs:psrnsp">
             <invariant on="mandatory" language="explicit">true</invariant>
             <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual-entrepreneur"</invariant>
+            <invariant on="valid" language="javascript" description="idocs_idocsModel.property.idocs_psrnsp.title">
+                (function() {
+                return value.match(/^\d{15}$/) ? true : false;
+                })()
+            </invariant>
         </property>
 
         <property name="idocs:CEOname">
