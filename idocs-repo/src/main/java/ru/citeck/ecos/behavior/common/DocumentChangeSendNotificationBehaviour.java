@@ -154,8 +154,8 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 									if(constr_def2 instanceof ListOfValuesConstraint) 
 									{
 										ListOfValuesConstraint listConstraint = (ListOfValuesConstraint) constr_def2;
-										propBefore = listConstraint.getDisplayLabel((String)propBefore, messageService);
-										propAfter = listConstraint.getDisplayLabel((String)propAfter, messageService);
+										propBefore = listConstraint.getDisplayLabel(String.valueOf(propBefore), messageService);
+										propAfter = listConstraint.getDisplayLabel(String.valueOf(propAfter), messageService);
 									}
 									
 								}
@@ -180,8 +180,8 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 											if(constr_def2 instanceof ListOfValuesConstraint) 
 											{
 												ListOfValuesConstraint listConstraint = (ListOfValuesConstraint) constr_def2;
-												propBefore = listConstraint.getDisplayLabel((String)propBefore, messageService);
-												propAfter = listConstraint.getDisplayLabel((String)propAfter, messageService);
+												propBefore = listConstraint.getDisplayLabel(String.valueOf(propBefore), messageService);
+												propAfter = listConstraint.getDisplayLabel(String.valueOf(propAfter), messageService);
 											}
 											
 										}
