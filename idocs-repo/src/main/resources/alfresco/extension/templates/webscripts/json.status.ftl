@@ -28,7 +28,7 @@
 <#macro renderMessage message>
 <#escape x as jsonUtils.encodeJSONString(x)>
 "${message?replace("^(org.alfresco.scripts.ScriptException|org.activiti.engine.ActivitiException): (Exception while invoking TaskListener: )*[0-9]+ Failed to execute supplied script: [0-9]+ *", "", 'r')
-          ?replace("^(org.alfresco.scripts.ScriptException|org.flowable.engine.common.api.FlowableException): (Exception while invoking TaskListener: )*[0-9]+ Failed to execute supplied script: [0-9]+ *", "", 'r')
+          ?replace("^(org.alfresco.scripts.ScriptException|org.flowable.common.engine.api.FlowableException): (Exception while invoking TaskListener: )*[0-9]+ Failed to execute supplied script: [0-9]+ *", "", 'r')
           ?replace("^ru.citeck*[0-9a-zA-Z.$]+Exception:*", "", 'r')
           ?replace("^Exception while invoking TaskListener: Exception while invoking TaskListener: *[0-9]+ Failed to execute supplied script: *[0-9]+ *", "", 'r')
           ?replace(" *[(]AlfrescoJS[#][0-9]+[)]", "", 'r')

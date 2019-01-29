@@ -4,8 +4,8 @@ import org.flowable.bpmn.model.FlowElement;
 import org.flowable.bpmn.model.FlowableListener;
 import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.UserTask;
-import org.flowable.engine.common.impl.interceptor.Command;
-import org.flowable.engine.common.impl.interceptor.CommandContext;
+import org.flowable.common.engine.impl.interceptor.Command;
+import org.flowable.common.engine.impl.interceptor.CommandContext;
 import ru.citeck.ecos.flowable.utils.FlowableUtils;
 
 import java.io.Serializable;

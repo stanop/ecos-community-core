@@ -1,6 +1,6 @@
 package ru.citeck.ecos.flowable.example;
 
-import org.flowable.engine.common.api.delegate.Expression;
+import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.engine.delegate.TaskListener;
 
