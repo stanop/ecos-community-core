@@ -4,17 +4,29 @@ import org.alfresco.repo.admin.SysAdminParams;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.extensions.webscripts.*;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.citeck.ecos.flowable.services.rest.FlowableRestTemplate;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class FlowableRestProxy extends AbstractWebScript {
 
@@ -23,7 +35,7 @@ public class FlowableRestProxy extends AbstractWebScript {
 
     private static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
 
-    private static final String[] HEADERS_TO_SEND = {
+    private static final String[] HEADERS_TO = {
             HttpHeaders.ACCEPT,
             HttpHeaders.ACCEPT_CHARSET,
             HttpHeaders.ACCEPT_ENCODING,
@@ -40,6 +52,26 @@ public class FlowableRestProxy extends AbstractWebScript {
             HttpHeaders.CONTENT_RANGE,
             HttpHeaders.EXPECT
     };
+
+    private static final String[] HEADERS_FROM = {
+            HttpHeaders.CONTENT_TYPE,
+            HttpHeaders.CONTENT_LENGTH,
+            HttpHeaders.CONTENT_ENCODING,
+            HEADER_CONTENT_DISPOSITION,
+            HttpHeaders.CACHE_CONTROL,
+            HttpHeaders.PRAGMA
+    };
+
+    private static final Map<String, BiConsumer<WebScriptResponse, String>> HEADERS_FROM_CONSUMER;
+
+    private static final Log logger = LogFactory.getLog(FlowableRestProxy.class);
+
+    static {
+        Map<String, BiConsumer<WebScriptResponse, String>> headersConsumers = new HashMap<>();
+        headersConsumers.put(HttpHeaders.CONTENT_TYPE, WebScriptResponse::setContentType);
+        headersConsumers.put(HttpHeaders.CONTENT_ENCODING, WebScriptResponse::setContentEncoding);
+        HEADERS_FROM_CONSUMER = Collections.unmodifiableMap(headersConsumers);
+    }
 
     @Value(FLOWABLE_HOST_KEY)
     private String flowableHost;
@@ -66,70 +98,82 @@ public class FlowableRestProxy extends AbstractWebScript {
         String url = getFlowableUrl(req.getURL());
         res.setContentEncoding("UTF-8");
 
-        restTemplate.execute(url, method, request -> {
+        try {
+            restTemplate.execute(url, method,
+                request -> prepareRequest(req, request),
+                response -> processResponse(res, response)
+            );
+        } catch (HttpClientErrorException e) {
+            InputStream body = new ByteArrayInputStream(e.getResponseBodyAsByteArray());
+            processResponse(res, e.getResponseHeaders(), body, e.getStatusCode());
+        }
+    }
 
-            for (String headerName : HEADERS_TO_SEND) {
-                String header = req.getHeader(headerName);
-                if (StringUtils.isNotBlank(header)) {
-                    request.getHeaders().add(headerName, header);
-                }
+    private void prepareRequest(WebScriptRequest req, ClientHttpRequest request) {
+
+        for (String headerName : HEADERS_TO) {
+            String header = req.getHeader(headerName);
+            if (StringUtils.isNotBlank(header)) {
+                request.getHeaders().add(headerName, header);
+            }
+        }
+
+        boolean hasBody = false;
+
+        try (InputStream in = req.getContent().getInputStream()) {
+
+            if (in.available() > 0) {
+                IOUtils.copy(in, request.getBody());
+                hasBody = true;
+            }
+        } catch (IOException e) {
+            logger.error("Error while request body writing", e);
+        }
+
+        if (hasBody) {
+
+            String contentType = req.getParameter("_proxy_content_type");
+
+            if (StringUtils.isBlank(contentType)) {
+                contentType = req.getHeader(HttpHeaders.CONTENT_TYPE);
             }
 
-            boolean hasBody = false;
-
-            try (InputStream in = req.getContent().getInputStream()) {
-
-                if (in.available() > 0) {
-                    IOUtils.copy(in, request.getBody());
-                    hasBody = true;
-                }
-            } catch (IOException e) {
-                //do nothing
+            if (StringUtils.isNotBlank(contentType)) {
+                request.getHeaders().add(HttpHeaders.CONTENT_TYPE, contentType);
             }
+        }
+    }
 
-            if (hasBody) {
+    private WebScriptResponse processResponse(WebScriptResponse res, ClientHttpResponse response) throws IOException {
+        return processResponse(res, response.getHeaders(), response.getBody(), response.getStatusCode());
+    }
 
-                String contentType = req.getParameter("_proxy_content_type");
+    private WebScriptResponse processResponse(WebScriptResponse res,
+                                              org.springframework.http.HttpHeaders headers,
+                                              InputStream body,
+                                              HttpStatus status) {
 
-                if (StringUtils.isBlank(contentType)) {
-                    contentType = req.getHeader(HttpHeaders.CONTENT_TYPE);
-                }
-
-                if (StringUtils.isNotBlank(contentType)) {
-                    request.getHeaders().add(HttpHeaders.CONTENT_TYPE, contentType);
+        for (String header : HEADERS_FROM) {
+            List<String> values = headers.get(header);
+            if (values != null && values.size() > 0) {
+                BiConsumer<WebScriptResponse, String> consumer = HEADERS_FROM_CONSUMER.get(header);
+                if (consumer != null) {
+                    consumer.accept(res, values.get(0));
+                } else {
+                    res.setHeader(header, values.get(0));
                 }
             }
-        }, response -> {
+        }
 
-            response.getHeaders().forEach((key, values) -> {
-                if (values.size() == 0) {
-                    return;
-                }
-                String value = values.get(0);
-                switch (key) {
-                    case HttpHeaders.CONTENT_TYPE:
-                        res.setContentType(value);
-                        break;
-                    case HttpHeaders.CONTENT_LENGTH:
-                        res.setHeader(key, value);
-                        break;
-                    case HttpHeaders.CONTENT_ENCODING:
-                        res.setContentEncoding(value);
-                        break;
-                    case HEADER_CONTENT_DISPOSITION:
-                        res.setHeader(HEADER_CONTENT_DISPOSITION, value);
-                        break;
-                }
-            });
+        try (OutputStream out = res.getOutputStream()) {
+            IOUtils.copy(body, out);
+            out.flush();
+        } catch (IOException e) {
+            logger.error("Error while response body reading", e);
+        }
 
-            try (OutputStream out = res.getOutputStream()) {
-                IOUtils.copy(response.getBody(), out);
-            }
-
-            res.setStatus(response.getStatusCode().value());
-
-            return null;
-        });
+        res.setStatus(status.value());
+        return res;
     }
 
     private String getFlowableUrl(String baseUrl) {
