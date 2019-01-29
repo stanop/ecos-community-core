@@ -75,7 +75,7 @@
     <type name="pas:pasEntityOriginal">
         <property name="pas:pricePerUnit">
             <invariant on="mandatory" language="explicit">true</invariant>
-            <invariant on="valid" language="javascript" description="invariants.validation.no-more-then-2-after-decimal-point">
+            <invariant on="valid" language="javascript" description="invariants.validation.description.no-more-then-2-after-decimal-point">
                 <![CDATA[(function() {
                         var valueStr = value.toString(),
                             index = valueStr ? valueStr.indexOf(".") : -1,

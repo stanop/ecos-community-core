@@ -54,7 +54,7 @@
         <view>
             <field prop="idocs:inn">
                 <invariant on="mandatory" language="explicit">true</invariant>
-                <invariant on="valid" language="javascript" description="Некорректный ИНН/ЕГРПОУ">
+                <invariant on="valid" language="javascript" description="invariants.validation.description.idocs_inn">
                     (function() {
                     var flag = value.match(/^\d*$/) ? true : false;
                     if (flag &amp;&amp; (value.length == 8 || value.length == 10 || value.length == 12)) {
