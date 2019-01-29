@@ -56,6 +56,7 @@
                 ]]>
             </invariant>
             <invariant on="protected" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
         </association>
     </type>
 
@@ -67,6 +68,7 @@
         </property>
         <association name="pas:currency">
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
         </association>
     </type>
 
@@ -82,6 +84,9 @@
                     })()]]>
             </invariant>
         </property>
+        <association name="pas:currency">
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+        </association>
     </type>
 
 </invariants>
