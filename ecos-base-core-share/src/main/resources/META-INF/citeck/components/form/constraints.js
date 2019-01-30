@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
+
 (function() {
 
     if(typeof Citeck == "undefined") Citeck = {};
@@ -438,7 +439,56 @@
         return this._loaderPanel;
     };
 
-    Citeck.forms.dialog = function(itemId, formId, callback, params) {
+    var formioFormIdx = 0;
+    Citeck.forms.formio = function (record, config) {
+
+        if (!config) {
+            config = {};
+        }
+
+        var formId = 'formio-form-panel' + formioFormIdx++;
+
+        var panel = new YAHOO.widget.Panel(formId, {
+            width: config.width || "500px",
+            height: config.height || "auto",
+            fixedcenter:  "contained",
+            constraintoviewport: true,
+            visible: false,
+            modal: false,
+            postmethod: "none", // Will make Dialogs not auto submit <form>s it finds in the dialog
+            hideaftersubmit: false, // Will stop Dialogs from hiding themselves on submits
+            fireHideShowEvents: true
+        });
+
+        // hide dialog on click 'esc' button
+        panel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, { keys: 27 }, {
+            fn: panel.hide,
+            scope: panel,
+            correctScope: true
+        }));
+
+        panel.setHeader(config.header || "");
+        var contentId = formId + '-content';
+        panel.setBody('<div class="formio-panel-content" id="' + contentId + '"></div>');
+        panel.render(document.body);
+
+        require(['react', 'react-dom', 'js/citeck/formio/formio-form'], function (React, ReactDOM, FormioForm) {
+            ReactDOM.render(React.createElement(FormioForm.default, {
+                record: record,
+                onReady: function() {
+                    panel.show();
+                    setTimeout(function(){
+                        panel.center();
+                    }, 100);
+                },
+                onSubmit: function () {
+                    panel.destroy();
+                }
+            }), document.getElementById(contentId))
+        });
+    };
+
+    Citeck.forms.dialog = function (itemId, formId, callback, params) {
         var itemKind, mode, paramName;
         formId = formId || "";
         params = params || {};

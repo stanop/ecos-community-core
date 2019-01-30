@@ -1,16 +1,16 @@
 package ru.citeck.ecos.records.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.request.RecordAttributes;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.io.IOException;
 import java.util.*;
@@ -29,6 +29,12 @@ public class RecordsQueryPost extends AbstractWebScript {
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
         Request request = utils.readBody(req, Request.class);
+        RecordsResult<?> result = queryRecords(request);
+
+        utils.writeRespRecords(res, result, RecordsResult::getRecords, request.isSingleRecord);
+    }
+
+    public RecordsResult<?> queryRecords(Request request) {
 
         if (request.query != null && request.records != null) {
             logger.warn("There must be one of 'records' or 'query' field " +
@@ -39,19 +45,17 @@ public class RecordsQueryPost extends AbstractWebScript {
                         "but found both. 'schema' field will be ignored");
         }
 
-        boolean isFlatResult = Boolean.TRUE.equals(request.flat);
-
         RecordsResult<?> recordsResult;
 
         if (request.query != null) {
 
-            if (request.attributes != null) {
+            if (request.attributes != null && !request.attributes.isNull()) {
 
                 recordsResult = recordsService.getRecords(request.query, getAttributes(request));
 
             } else if (request.schema != null) {
 
-                recordsResult = recordsService.getRecords(request.query, request.schema, isFlatResult);
+                recordsResult = recordsService.getRecords(request.query, request.schema);
 
             } else {
 
@@ -61,30 +65,24 @@ public class RecordsQueryPost extends AbstractWebScript {
 
             if (request.records == null) {
                 throw new WebScriptException(Status.STATUS_BAD_REQUEST,
-                                             "At least 'records' or 'query' must be specified");
+                        "At least 'records' or 'query' must be specified");
             }
             if (request.schema == null && request.attributes == null) {
                 throw new WebScriptException(Status.STATUS_BAD_REQUEST,
-                                             "You must specify 'schema' or 'attributes' for records");
+                        "You must specify 'schema' or 'attributes' for records");
             }
 
-            if (request.attributes == null) {
+            if (request.attributes == null || request.attributes.isNull()) {
 
-                RecordsResult<ObjectNode> metaResult = new RecordsResult<>();
-                metaResult.setTotalCount(request.records.size());
-                metaResult.setHasMore(false);
-                metaResult.setRecords(recordsService.getMeta(request.records, request.schema, isFlatResult));
-                recordsResult = metaResult;
+                recordsResult = recordsService.getMeta(request.records, request.schema);
 
             } else {
 
-                RecordsResult<RecordAttributes> metaResult = new RecordsResult<>();
-                metaResult.setRecords(recordsService.getMeta(request.records, getAttributes(request)));
-                recordsResult = metaResult;
+                recordsResult = recordsService.getAttributes(request.records, getAttributes(request));
             }
         }
 
-        utils.writeRespRecords(res, recordsResult, RecordsResult::getRecords, request.isSingleRecord);
+        return recordsResult;
     }
 
     private Map<String, String> getAttributes(Request request) {
@@ -119,13 +117,12 @@ public class RecordsQueryPost extends AbstractWebScript {
 
     public static class Request {
 
-        public List<RecordRef> records;
-        public RecordsQuery query;
-        public String schema;
-        public Boolean flat;
-        public JsonNode attributes;
+        @Getter @Setter private List<RecordRef> records;
+        @Getter @Setter private RecordsQuery query;
+        @Getter @Setter private JsonNode attributes;
+        @Getter @Setter private String schema;
 
-        boolean isSingleRecord = false;
+        private boolean isSingleRecord = false;
 
         public void setRecord(RecordRef record) {
             if (records == null) {

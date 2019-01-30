@@ -123,13 +123,11 @@
                                                 "GROUP-branch": [
                                                     Alfresco.constants.Citeck.userIsAdmin ? "createBranch" : "",
                                                     Alfresco.constants.Citeck.userIsAdmin ? "createRole" : "",
-                                                    Alfresco.constants.Citeck.userIsAdmin ? "addGroup" : "",
-                                                    Alfresco.constants.Citeck.userIsAdmin ? "createUser" : "" ],
+                                                    Alfresco.constants.Citeck.userIsAdmin ? "addGroup" : "" ],
                                                 "GROUP-role": [
                                                     Alfresco.constants.Citeck.userIsAdmin ? "addUser" : "",
                                                     Alfresco.constants.Citeck.userIsAdmin ? "createUser" : "" ],
-                                                "GROUP-group": [
-                                                    Alfresco.constants.Citeck.userIsAdmin ? "createUser" : "" ],
+                                                "GROUP-group": [],
                                             },
                                         },
                                         tree: {

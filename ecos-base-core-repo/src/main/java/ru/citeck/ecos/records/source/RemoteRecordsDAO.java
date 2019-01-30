@@ -1,6 +1,5 @@
 package ru.citeck.ecos.records.source;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.action.group.ActionResult;
@@ -11,13 +10,17 @@ import ru.citeck.ecos.records.*;
 import ru.citeck.ecos.records.request.query.RecordsNodesResult;
 import ru.citeck.ecos.records.request.query.RecordsRefsResult;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.rest.RecordsQueryPost;
 import ru.citeck.ecos.remote.RestConnection;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class RemoteRecordsDAO extends AbstractRecordsDAO implements RecordsMetaDAO, RecordsActionExecutor {
+public class RemoteRecordsDAO extends AbstractRecordsDAO
+                              implements RecordsMetaDAO,
+                                         RecordsQueryDAO,
+                                         RecordsActionExecutor {
 
     private static final Log logger = LogFactory.getLog(RemoteRecordsDAO.class);
 
@@ -38,10 +41,10 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO implements RecordsMetaD
         if (enabled) {
 
             RecordRef afterId = query.getAfterId();
-            request.query = new RecordsQuery(query);
-            request.query.setSourceId(remoteSourceId);
-            if (afterId != null) {
-                request.query.setAfterId(new RecordRef(afterId.getId()));
+            request.setQuery(new RecordsQuery(query));
+            request.getQuery().setSourceId(remoteSourceId);
+            if (afterId != RecordRef.EMPTY) {
+                request.getQuery().setAfterId(new RecordRef(afterId.getId()));
             }
 
             RecordsRefsResult result = restConnection.jsonPost(recordsMethod, request, RecordsRefsResult.class);
@@ -55,7 +58,7 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO implements RecordsMetaD
     }
 
     @Override
-    public List<ObjectNode> getMeta(List<RecordRef> records, String gqlSchema) {
+    public RecordsResult<RecordMeta> getMeta(List<RecordRef> records, String gqlSchema) {
 
         List<RecordRef> recordsRefs = records.stream()
                                              .map(RecordRef::getId)
@@ -63,11 +66,14 @@ public class RemoteRecordsDAO extends AbstractRecordsDAO implements RecordsMetaD
                                              .collect(Collectors.toList());
 
         RecordsQueryPost.Request request = new RecordsQueryPost.Request();
-        request.schema = gqlSchema;
-        request.records = recordsRefs;
+        request.setSchema(gqlSchema);
+        request.setRecords(recordsRefs);
 
-        RecordsNodesResult result = restConnection.jsonPost(recordsMethod, request, RecordsNodesResult.class);
-        return RecordsUtils.convertToRefs(getId(), result.getRecords());
+        RecordsNodesResult nodesResult = restConnection.jsonPost(recordsMethod, request, RecordsNodesResult.class);
+        List<RecordMeta> meta = RecordsUtils.convertToRefs(getId(), nodesResult.getRecords());
+        nodesResult.setRecords(meta);
+
+        return nodesResult;
     }
 
     @Override

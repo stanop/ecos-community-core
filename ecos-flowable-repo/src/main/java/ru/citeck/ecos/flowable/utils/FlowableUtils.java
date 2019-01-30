@@ -3,7 +3,7 @@ package ru.citeck.ecos.flowable.utils;
 import org.apache.commons.lang.StringUtils;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.Process;
-import org.flowable.engine.common.api.FlowableObjectNotFoundException;
+import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.engine.impl.util.ProcessDefinitionUtil;
 
 /**

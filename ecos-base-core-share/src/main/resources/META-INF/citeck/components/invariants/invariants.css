@@ -281,6 +281,7 @@
 .ecos-form .form-fields .form-field input[type="datetime-local"] {
     padding: 4px 5px;
     border-width: 1px;
+    border-radius: 6px;
 }
 
 /* textarea, input text, number */
@@ -288,6 +289,7 @@
 .ecos-form .form-fields .form-field input[type="text"],
 .ecos-form .form-fields .form-field input[type="number"] {
   padding: 5px;
+  border-radius: 6px;
 }
 
 .ecos-form .form-fields .form-field textarea {
@@ -305,6 +307,7 @@
   background-color: white;
   border: 2px solid #1c55da;
   color: #1c55da;
+  border-radius: 6px;
 }
 
 .ecos-form .form-buttons input {
@@ -321,6 +324,7 @@
   border: 2px solid #1c55da;
   color: #1c55da;
   cursor: pointer;
+  border-radius: 6px;
 }
 
 .ecos-form .form-field button:hover,
@@ -380,6 +384,7 @@
 .ecos-form .form-buttons input[type="submit"] {
   border: 2px solid #008c03;
   color: #008c03;
+  border-radius: 6px;
 }
 
 .ecos-form .form-buttons input[type="submit"]:hover,
@@ -400,6 +405,7 @@
 .ecos-form .form-buttons input[type="button"] {
   border: none;
   color: #1c55da;
+  border-radius: 6px;
 }
 
 .ecos-form .form-buttons input[type="button"]:hover,
@@ -531,6 +537,18 @@
 .invariants-form .template-wide .template-block .block-region .form-region {
   display: inline-block;
   margin-bottom: 10px;
+}
+
+.invariants-form .template-wide.user-profile-header__column.user-profile-header__column--photo .template-block .block-region .form-region {
+  display: block;
+  margin-left: 0;
+  margin-right: 0;
+  transform: none;
+}
+
+.invariants-form .template-wide.user-profile-header__column.user-profile-header__column--photo .template-block .block-region .form-region > div {
+  width: 90px;
+  text-align: center;
 }
 
 .invariants-form .template-wide .template-block .block-region-select .form-region  {
@@ -740,7 +758,6 @@
   border-bottom: none !important;
 }
 
-
 /* rowset */
 .invariants-form .template-table .template-rowset {
   clear: both;
@@ -752,6 +769,11 @@
   background-color: #ccc;
   width: 95%;
   margin-left: 5%;
+}
+
+.invariants-form:not(.view-form) .template-table .template-rowset.ecos-case-form-section:after {
+  margin-bottom: 0;
+  height: 0;
 }
 
 .invariants-form:not(.view-form) .template-table .template-rowset .template-rowset:last-child:after {
@@ -786,7 +808,7 @@
 .invariants-form:not(.view-form) .template-table .template-tabs {
   border: 1px solid #ccc;
   margin-bottom: 10px;
-  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .invariants-form:not(.view-form) .template-table .template-tabs ul.tabs-title {
@@ -858,6 +880,10 @@
   border-bottom: 1px solid #ccc;
 }
 
+.invariants-form .template-table .template-row:last-child,
+.invariants-form .template-table [class*="template-row-"]:last-child {
+  border-bottom: none;
+}
 
 /* general */
 .invariants-form .template-textarea textarea,
@@ -909,7 +935,7 @@
 /* mandatory */
 .invariants-form .template-table .template-mandatory {
   position: absolute;
-  left: -15px;
+  left: -10px;
   top: 3px;
 }
 
@@ -943,7 +969,7 @@
 }
 
 .invariants-form:not(.view-form) .template-table .template-row.with-help .template-label {
-  width: 46.5%;
+  width: 45.5%;
 }
 
 .invariants-form .template-table .template-half-width .template-label,
@@ -1403,6 +1429,7 @@
   line-height: normal;
   color: black;
   position: relative;
+  border-radius: 6px;
 }
 
 .autocomplete-control .autocomplete-select.disabled {
@@ -2083,6 +2110,12 @@ div[id*="multiple-text"] .multiple-text-control input {
   position: absolute;
   top: 2px;
   right: 0px;
+}
+
+#profile-view .invariants-form .template-view span.value-item .value-item-actions {
+  position: relative;
+  top: 0;
+  left: 2px;
 }
 
 /* in view-mode */

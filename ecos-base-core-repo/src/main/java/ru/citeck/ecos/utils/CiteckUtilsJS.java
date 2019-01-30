@@ -25,6 +25,7 @@ import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.NamespacePrefixResolverProvider;
 import org.alfresco.service.namespace.QName;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -40,6 +41,8 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension implements
     private ValueConverter converter = new ValueConverter();
     private NamespacePrefixResolver prefixResolver;
 
+    private JsUtils jsUtils;
+
     public QName createQName(String s) {
         QName qname;
         if (s.indexOf(QName.NAMESPACE_BEGIN) != -1) {
@@ -48,6 +51,14 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension implements
             qname = QName.createQName(s, prefixResolver);
         }
         return qname;
+    }
+
+    public Object toJava(Object value) {
+        return jsUtils.toJava(value);
+    }
+
+    public Object toScript(Object value) {
+        return jsUtils.toScript(value);
     }
 
     public Map<QName, Object> toQNameMap(Serializable map) {
@@ -99,6 +110,11 @@ public class CiteckUtilsJS extends AlfrescoScopableProcessorExtension implements
 
     public String toUTF8(String str) {
         return new String(str.getBytes(), UTF8);
+    }
+
+    @Autowired
+    public void setJsUtils(JsUtils jsUtils) {
+        this.jsUtils = jsUtils;
     }
 
     @Override

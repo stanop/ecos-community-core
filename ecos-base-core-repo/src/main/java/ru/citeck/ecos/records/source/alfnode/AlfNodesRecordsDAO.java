@@ -21,14 +21,15 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.request.delete.RecordsDelResult;
 import ru.citeck.ecos.records.request.delete.RecordsDeletion;
-import ru.citeck.ecos.records.request.mutation.RecordMut;
 import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.source.*;
 import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeRecord;
 import ru.citeck.ecos.records.source.alfnode.search.AlfNodesSearch;
@@ -41,7 +42,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class AlfNodesRecordsDAO extends LocalRecordsDAO
-                                implements RecordsDefinitionDAO,
+                                implements RecordsQueryDAO,
+                                           RecordsDefinitionDAO,
                                            RecordsMetaDAO,
                                            MutableRecordsDAO {
 
@@ -71,7 +73,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
         RecordsMutResult result = new RecordsMutResult();
 
-        for (RecordMut record : mutation.getRecords()) {
+        for (RecordMeta record : mutation.getRecords()) {
 
             Map<QName, Serializable> props = new HashMap<>();
             Map<QName, JsonNode> contentProps = new HashMap<>();
@@ -81,6 +83,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             while (names.hasNext()) {
 
                 String name = names.next();
+                if (name.contains("?")) {
+                    name = name.substring(0, name.indexOf("?"));
+                }
+
                 QName fieldName = QName.resolveToQName(namespaceService, name);
 
                 PropertyDefinition propDef = dictionaryService.getProperty(fieldName);
@@ -97,7 +103,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             NodeRef nodeRef;
 
-            if (record.getId() == null) {
+            if (record.getId() == RecordRef.EMPTY) {
 
                 QName type = getNodeType(record);
                 NodeRef parent = getParent(record, type);
@@ -123,13 +129,13 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 props.put(ContentModel.PROP_NAME, name);
 
                 nodeRef = nodeUtils.createNode(parent, type, parentAssoc, props);
-                result.add(new RecordRef(nodeRef));
+                result.addRecord(new RecordMeta(new RecordRef(nodeRef)));
 
             } else {
 
                 nodeRef = new NodeRef(record.getId().getId());
                 nodeService.addProperties(nodeRef, props);
-                result.add(record.getId());
+                result.addRecord(new RecordMeta(record.getId()));
             }
 
             contentProps.forEach((name, value) -> {
@@ -177,9 +183,9 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         return new RecordsDelResult();
     }
 
-    private QName getParentAssoc(RecordMut record, NodeRef parentRef) {
-        String parentAtt = record.getParentAtt();
-        if (parentAtt != null) {
+    private QName getParentAssoc(RecordMeta record, NodeRef parentRef) {
+        String parentAtt = record.getAttribute(RecordConstants.ATT_PARENT_ATT, "");
+        if (!parentAtt.isEmpty()) {
             return QName.resolveToQName(namespaceService, parentAtt);
         }
         QName parentType = nodeService.getType(parentRef);
@@ -191,27 +197,27 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         return ContentModel.ASSOC_CONTAINS;
     }
 
-    private QName getNodeType(RecordMut record) {
+    private QName getNodeType(RecordMeta record) {
 
         QName typeQName;
 
-        String type = record.getType();
-        if (type != null) {
+        String type = record.getAttribute(RecordConstants.ATT_TYPE, "");
+        if (!type.isEmpty()) {
             typeQName = QName.resolveToQName(namespaceService, type);
         } else {
             typeQName = ContentModel.TYPE_CONTENT;
         }
         if (typeQName == null) {
-            throw new IllegalArgumentException("Incorrect type: " + record.getType());
+            throw new IllegalArgumentException("Incorrect type: " + type);
         }
 
         return typeQName;
     }
 
-    private NodeRef getParent(RecordMut record, QName type) {
+    private NodeRef getParent(RecordMeta record, QName type) {
 
-        String parent = record.getParent();
-        if (parent != null) {
+        String parent = record.getAttribute(RecordConstants.ATT_PARENT, "");
+        if (!parent.isEmpty()) {
             if (parent.startsWith("workspace")) {
                 return new NodeRef(parent);
             }
@@ -249,7 +255,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
-    public RecordsResult<RecordRef> getRecords(RecordsQuery query) {
+    public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
         AlfNodesSearch alfNodesSearch = searchByLanguage.get(query.getLanguage());
         if (alfNodesSearch == null) {
             throw new IllegalArgumentException("Language " + query.getLanguage() +
@@ -263,9 +269,9 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             AlfNodesSearch.AfterIdType afterIdType = alfNodesSearch.getAfterIdType();
 
-            if (afterId != null) {
+            if (afterId != RecordRef.EMPTY) {
                 if (!ID.equals(afterId.getSourceId())) {
-                    return new RecordsResult<>();
+                    return new RecordsQueryResult<>();
                 }
                 NodeRef afterIdNodeRef = new NodeRef(afterId.getId());
 

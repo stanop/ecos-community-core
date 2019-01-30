@@ -14,7 +14,7 @@
 	<namespaces>
 		<namespace uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org" />
 	</namespaces>
-	
+
 	<types>
 	
 		<type name="org:simpleBranchType">
@@ -160,6 +160,16 @@
             </properties>
         </aspect>
 
+        <!-- aspect to add availability to user -->
+        <aspect name="org:showHints">
+            <properties>
+                <property name="org:showHints">
+                    <type>d:boolean</type>
+                    <default>true</default>
+                </property>
+            </properties>
+        </aspect>
+
 		<aspect name="org:hasLegalEntity">
 			<associations>
 				<association name="org:legalEntity">
@@ -192,5 +202,7 @@
 			</associations>
 		</aspect>
 	</aspects>
+
+
 
 </model>

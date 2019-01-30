@@ -199,6 +199,7 @@
                 </item>
                 <item id="HEADER_DEV_TOOLS">
                     <label>menu.item.dev-tools</label>
+                    <icon>dev-tools</icon>
                     <action type="PAGE_LINK">
                         <param name="pageId">dev-tools</param>
                     </action>

@@ -75,6 +75,14 @@
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
         <option name="formId">filters</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
+        <group-actions>
+            <action id="complete-document-task" title="journal.group-action.payments.approve">
+                <param name="actionId">complete-document-task</param>
+                <param name="tasks">[
+                    {"taskId": "confirm-task", "transition": "Confirmed"}
+                ]</param>
+            </action>
+        </group-actions>
         <headers>
             <header key="cm:created" default="true" />
             <header key="cm:name" default="false" />

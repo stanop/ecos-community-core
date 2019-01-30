@@ -1,7 +1,7 @@
 package ru.citeck.ecos.records.request.query;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -11,7 +11,11 @@ import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.SearchService;
 import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records.request.query.page.AfterPage;
+import ru.citeck.ecos.records.request.query.page.QueryPage;
+import ru.citeck.ecos.records.request.query.page.SkipPage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,11 +27,10 @@ public class RecordsQuery {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private String sourceId = "";
-    private int skipCount;
-    private int maxItems = -1;
+
     private List<SortBy> sortBy = Collections.emptyList();
-    private RecordRef afterId;
-    private boolean afterIdMode = false;
+    private QueryPage page = new SkipPage();
+
     private QueryConsistency consistency = QueryConsistency.DEFAULT;
     private String language = SearchService.LANGUAGE_FTS_ALFRESCO;
     private JsonNode query = MissingNode.getInstance();
@@ -38,15 +41,12 @@ public class RecordsQuery {
 
     public RecordsQuery(RecordsQuery other) {
         this.query = other.query;
-        this.afterId = other.afterId;
-        this.maxItems = other.maxItems;
         this.sourceId = other.sourceId;
         this.language = other.language;
-        this.skipCount = other.skipCount;
-        this.afterIdMode = other.afterIdMode;
         this.consistency = other.consistency;
         this.sortBy = new ArrayList<>(other.sortBy);
         this.debug = other.debug;
+        this.page = other.page;
     }
 
     public String getSourceId() {
@@ -59,8 +59,12 @@ public class RecordsQuery {
 
     public <T> T getQuery(Class<T> type) {
         try {
-            return objectMapper.treeToValue(query, type);
-        } catch (JsonProcessingException e) {
+            if (query.isTextual() && !String.class.equals(type)) {
+                return objectMapper.readValue(query.textValue(), type);
+            } else {
+                return objectMapper.treeToValue(query, type);
+            }
+        } catch (IOException e) {
             throw new RuntimeException("Query is incorrect: " + query, e);
         }
     }
@@ -98,25 +102,66 @@ public class RecordsQuery {
         this.language = language;
     }
 
+    @JsonIgnore
     public int getSkipCount() {
-        return skipCount;
+        return getSkipPage().getSkipCount();
     }
 
+    @JsonIgnore
     public int getMaxItems() {
-        return maxItems;
+        return getPage().getMaxItems();
+    }
+
+    @JsonIgnore
+    public RecordRef getAfterId() {
+        return getAfterPage().getAfterId();
+    }
+
+    public void setAfterId(RecordRef afterId) {
+        setPage(getAfterPage().withAfterId(afterId));
+    }
+
+    public void setSkipCount(Integer skipCount) {
+        setPage(getSkipPage().withSkipCount(skipCount));
+    }
+
+    public void setMaxItems(Integer maxItems) {
+        setPage(getPage().withMaxItems(maxItems));
+    }
+
+    public QueryPage getPage() {
+        return page;
+    }
+
+    public void setPage(QueryPage page) {
+        this.page = page != null ? page : new SkipPage();
+    }
+
+    @JsonIgnore
+    public AfterPage getAfterPage() {
+        if (page instanceof AfterPage) {
+            return (AfterPage) page;
+        } else {
+            return AfterPage.DEFAULT;
+        }
+    }
+
+    @JsonIgnore
+    public SkipPage getSkipPage() {
+        if (page instanceof SkipPage) {
+            return (SkipPage) page;
+        } else {
+            return SkipPage.DEFAULT;
+        }
+    }
+
+    @JsonIgnore
+    public boolean isAfterIdMode() {
+        return page instanceof AfterPage;
     }
 
     public List<SortBy> getSortBy() {
         return sortBy;
-    }
-
-    public RecordRef getAfterId() {
-        return afterId;
-    }
-
-    public void setAfterId(RecordRef afterId) {
-        this.afterId = afterId;
-        afterIdMode = true;
     }
 
     public void setDebug(boolean debug) {
@@ -125,22 +170,6 @@ public class RecordsQuery {
 
     public boolean isDebug() {
         return debug;
-    }
-
-    public void setAfterIdMode(boolean afterIdMode) {
-        this.afterIdMode = afterIdMode;
-    }
-
-    public boolean isAfterIdMode() {
-        return afterIdMode;
-    }
-
-    public void setSkipCount(Integer skipCount) {
-        this.skipCount = skipCount != null ? skipCount : 0;
-    }
-
-    public void setMaxItems(Integer maxItems) {
-        this.maxItems = maxItems != null ? maxItems : -1;
     }
 
     public void setSortBy(List<SortBy> sortBy) {
@@ -167,19 +196,15 @@ public class RecordsQuery {
         RecordsQuery that = (RecordsQuery) o;
 
         return Objects.equals(sourceId, that.sourceId) &&
-               Objects.equals(skipCount, that.skipCount) &&
-               Objects.equals(maxItems, that.maxItems) &&
                Objects.equals(sortBy, that.sortBy) &&
-               Objects.equals(afterId, that.afterId) &&
+               Objects.equals(page, that.page) &&
                Objects.equals(consistency, that.consistency);
     }
 
     @Override
     public int hashCode() {
-        int result = skipCount;
-        result = 31 * result + maxItems;
-        result = 31 * result + Objects.hashCode(sortBy);
-        result = 31 * result + Objects.hashCode(afterId);
+        int result = Objects.hashCode(sortBy);
+        result = 31 * result + Objects.hashCode(page);
         result = 31 * result + Objects.hashCode(sourceId);
         result = 31 * result + Objects.hashCode(consistency);
         return result;
@@ -189,14 +214,11 @@ public class RecordsQuery {
     public String toString() {
         return "RecordsQuery{" +
                 "\"sourceId\":\"" + sourceId + "\"," +
-                "\"skipCount\":\"" + skipCount + "\"," +
-                "\"maxItems\":\"" + maxItems + "\"," +
                 "\"sortBy\":\"" + sortBy + "\"," +
-                "\"afterId\":\"" + afterId + "\"," +
-                "\"afterIdMode\":\"" + afterIdMode + "\"," +
                 "\"consistency\":\"" + consistency + "\"," +
                 "\"language\":\"" + language + '\'' + "\"," +
                 "\"query\":\"" + query + "\"," +
+                "\"page\":\"" + page + "\"" +
                 '}';
     }
 }

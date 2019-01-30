@@ -56,6 +56,7 @@
                 ]]>
             </invariant>
             <invariant on="protected" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
         </association>
     </type>
 
@@ -67,13 +68,14 @@
         </property>
         <association name="pas:currency">
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
         </association>
     </type>
 
     <type name="pas:pasEntityOriginal">
         <property name="pas:pricePerUnit">
             <invariant on="mandatory" language="explicit">true</invariant>
-            <invariant on="valid" language="javascript" description="invariants.validation.no-more-then-2-after-decimal-point">
+            <invariant on="valid" language="javascript" description="invariants.validation.description.no-more-then-2-after-decimal-point">
                 <![CDATA[(function() {
                         var valueStr = value.toString(),
                             index = valueStr ? valueStr.indexOf(".") : -1,
@@ -82,6 +84,9 @@
                     })()]]>
             </invariant>
         </property>
+        <association name="pas:currency">
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
+        </association>
     </type>
 
 </invariants>

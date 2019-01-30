@@ -1,34 +1,31 @@
 package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.alfresco.service.cmr.repository.NodeRef;
+import com.fasterxml.jackson.databind.node.MissingNode;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.citeck.ecos.action.group.*;
-import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
-import ru.citeck.ecos.records.request.RecordAttributes;
+import ru.citeck.ecos.action.group.ActionResult;
+import ru.citeck.ecos.action.group.ActionResults;
+import ru.citeck.ecos.action.group.ActionStatus;
+import ru.citeck.ecos.action.group.GroupActionConfig;
+import ru.citeck.ecos.records.meta.AttributesSchema;
+import ru.citeck.ecos.records.meta.RecordsMetaService;
 import ru.citeck.ecos.records.request.delete.RecordsDelResult;
 import ru.citeck.ecos.records.request.delete.RecordsDeletion;
 import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.source.*;
-import ru.citeck.ecos.utils.json.ObjectKeyGenerator;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-/**
- * @author Pavel Simonov
- */
 @Service
 public class RecordsServiceImpl implements RecordsService {
 
@@ -37,234 +34,71 @@ public class RecordsServiceImpl implements RecordsService {
     private static final String DEBUG_META_QUERY_TIME = "metaQueryTimeMs";
     private static final String DEBUG_META_SCHEMA = "schema";
 
-    private static final String RECORD_ID_FIELD = "recordId";
-
     private static final Log logger = LogFactory.getLog(RecordsServiceImpl.class);
 
-    private Map<String, RecordsDAO> sources = new ConcurrentHashMap<>();
+    private Map<String, RecordsMetaDAO> metaDAO = new ConcurrentHashMap<>();
+    private Map<String, RecordsQueryDAO> queryDAO = new ConcurrentHashMap<>();
+    private Map<String, MutableRecordsDAO> mutableDAO = new ConcurrentHashMap<>();
+    private Map<String, RecordsWithMetaDAO> withMetaDAO = new ConcurrentHashMap<>();
+    private Map<String, RecordsDefinitionDAO> definitionDAO = new ConcurrentHashMap<>();
+    private Map<String, RecordsActionExecutor> actionExecutors = new ConcurrentHashMap<>();
 
-    private GraphQLMetaService graphQLMetaService;
+    private RecordsMetaService recordsMetaService;
 
     @Autowired
-    public RecordsServiceImpl(GraphQLMetaService graphQLMetaService) {
-        this.graphQLMetaService = graphQLMetaService;
+    public RecordsServiceImpl(RecordsMetaService recordsMetaService) {
+        this.recordsMetaService = recordsMetaService;
     }
 
     @Override
-    public RecordsResult<RecordRef> getRecords(RecordsQuery query) {
-        return needRecordsSource(query.getSourceId()).getRecords(query);
+    public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
+        Optional<RecordsQueryDAO> recordsQueryDAO = getRecordsDAO(query.getSourceId(), queryDAO);
+        return recordsQueryDAO.isPresent() ? recordsQueryDAO.get().getRecords(query) : new RecordsQueryResult<>();
     }
 
     @Override
-    public Iterable<RecordRef> getIterableRecords(RecordsQuery query) {
-        return new IterableRecords(this, query);
-    }
+    public <T> RecordsQueryResult<T> getRecords(RecordsQuery query, Class<T> metaClass) {
 
-    @Override
-    public RecordsMutResult mutate(RecordsMutation mutation) {
-        RecordsDAO recordsDAO = needRecordsSource(mutation.getSourceId());
-        if (recordsDAO instanceof MutableRecordsDAO) {
-            return ((MutableRecordsDAO) recordsDAO).mutate(mutation);
-        }
-        throw new IllegalArgumentException("Mutate operation is not supported by " + mutation.getSourceId());
-    }
-
-    @Override
-    public RecordsDelResult delete(RecordsDeletion deletion) {
-
-        RecordsDelResult result = new RecordsDelResult();
-
-        RecordsUtils.groupRefBySource(deletion.getRecords()).forEach((sourceId, sourceRecords) -> {
-            RecordsDAO source = needRecordsSource(sourceId);
-            if (source instanceof MutableRecordsDAO) {
-                result.merge(((MutableRecordsDAO) source).delete(deletion));
-            } else {
-                throw new IllegalArgumentException("Mutate operation is not supported by " + sourceId);
-            }
-        });
-
-        return result;
-    }
-
-    @Override
-    public RecordsResult<RecordAttributes> getRecords(RecordsQuery query, Collection<String> fields) {
-        Map<String, String> fieldsMap = new HashMap<>();
-        for (String field : fields) {
-            fieldsMap.put(field, field);
-        }
-        return getRecords(query, fieldsMap);
-    }
-
-    private String getSchema(Map<String, String> attributes, Map<String, String> keysMapping) {
-
-        ObjectKeyGenerator keys = new ObjectKeyGenerator();
-
-        StringBuilder schemaBuilder = new StringBuilder(RECORD_ID_FIELD).append(":id\n");
-
-        attributes.forEach((attribute, path) -> {
-
-            String queryFieldName = keys.incrementAndGet();
-            keysMapping.put(queryFieldName, attribute);
-
-            schemaBuilder.append(queryFieldName).append(":");
-
-            if (path.contains("(")) {
-
-                schemaBuilder.append(path);
-
-            } else {
-
-                String fieldName = path.replace("/", "");
-
-                String valueField = "str";
-                int questionIdx = path.indexOf('?');
-
-                if (questionIdx >= 0) {
-                    fieldName = path.substring(0, questionIdx);
-                    valueField = path.substring(questionIdx + 1);
-                }
-
-                schemaBuilder.append("att(n:\"")
-                        .append(fieldName)
-                        .append("\"){")
-                        .append(valueField)
-                        .append("}");
-            }
-        });
-
-        return schemaBuilder.toString();
-    }
-
-    @Override
-    public RecordsResult<RecordAttributes> getRecords(RecordsQuery query, Map<String, String> attributes) {
-
-        Map<String, String> attributesMapping = new HashMap<>();
-        String schema = getSchema(attributes, attributesMapping);
-
-        RecordsResult<ObjectNode> records = getRecords(query, schema, true);
-
-        RecordsResult<RecordAttributes> attResult = new RecordsResult<>(records, node -> {
-
-            RecordAttributes result = new RecordAttributes();
-
-            result.setId(new RecordRef(node.get(RECORD_ID_FIELD).asText()));
-
-            ObjectNode flatAttributes = result.getAttributes();
-            attributesMapping.forEach((k, v) -> flatAttributes.put(v, node.get(k)));
-
-            return result;
-        });
-
-        if (query.isDebug()) {
-            attResult.setDebugInfo(getClass(), DEBUG_META_SCHEMA, schema);
+        Map<String, String> attributes = recordsMetaService.getAttributes(metaClass);
+        if (attributes.isEmpty()) {
+            throw new IllegalArgumentException("Meta class doesn't has any fields with setter. Class: " + metaClass);
         }
 
-        return attResult;
+        RecordsQueryResult<RecordMeta> meta = getRecords(query, attributes);
+
+        return new RecordsQueryResult<>(meta, m -> recordsMetaService.instantiateMeta(metaClass, m));
     }
 
     @Override
-    public List<RecordAttributes> getMeta(Collection<RecordRef> records, Collection<String> fields) {
-        Map<String, String> fieldsMap = new HashMap<>();
-        fields.forEach(field -> fieldsMap.put(field, field));
-        return getMeta(records, fieldsMap);
+    public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, Map<String, String> attributes) {
+
+        AttributesSchema schema = recordsMetaService.createSchema(attributes);
+        RecordsQueryResult<RecordMeta> records = getRecords(query, schema.getSchema());
+        records.setRecords(recordsMetaService.convertToFlatMeta(records.getRecords(), schema));
+
+        return records;
     }
 
     @Override
-    public List<RecordAttributes> getMeta(Collection<RecordRef> records, Map<String, String> attributes) {
-
-        Map<String, String> attributesMapping = new HashMap<>();
-        String schema = getSchema(attributes, attributesMapping);
-
-        List<ObjectNode> meta = getMeta(records, schema, true);
-
-        int idx = 0;
-        return records.stream().map(recordRef -> {
-
-            ObjectNode record = meta.get(idx);
-
-            RecordAttributes result = new RecordAttributes();
-            result.setId(new RecordRef(record.get(RECORD_ID_FIELD).asText()));
-
-            ObjectNode flatAttributes = result.getAttributes();
-            attributesMapping.forEach((k, v) -> flatAttributes.put(v, record.get(k)));
-
-            return result;
-        }).collect(Collectors.toList());
+    public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query,
+                                                     Collection<String> attributes) {
+        return getRecords(query, toAttributesMap(attributes));
     }
 
     @Override
-    public <T> List<T> getMeta(Collection<RecordRef> records, Class<T> metaClass) {
-        if (records == null || records.isEmpty()) {
-            return Collections.emptyList();
-        }
-        if (metaClass.isAssignableFrom(RecordRef.class)) {
-            @SuppressWarnings("unchecked")
-            List<T> result = new ArrayList<>((Collection<T>) records);
-            return result;
-        }
-        if (metaClass.isAssignableFrom(NodeRef.class)) {
-            @SuppressWarnings("unchecked")
-            List<T> result = (List<T>) records.stream()
-                                              .map(RecordsUtils::toNodeRef)
-                                              .collect(Collectors.toList());
-            return result;
-        }
-        List<ObjectNode> meta = getMeta(records, graphQLMetaService.createSchema(metaClass));
-        return graphQLMetaService.convertMeta(meta, metaClass);
-    }
+    public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String schema) {
 
-    @Override
-    public List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema) {
-        return getMeta(records, metaSchema, false);
-    }
+        Optional<RecordsWithMetaDAO> recordsDAO = getRecordsDAO(query.getSourceId(), withMetaDAO);
+        RecordsQueryResult<RecordMeta> records;
 
-    @Override
-    public List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema, boolean flat) {
-        List<ObjectNode> meta = getRecordsMeta(records, metaSchema);
-        if (flat) {
-            return meta.stream().map(this::toFlatObject).collect(Collectors.toList());
-        } else {
-            return meta;
-        }
-    }
-
-    private List<ObjectNode> getRecordsMeta(Collection<RecordRef> records, String metaSchema) {
-
-        return getRecordsMeta(records, (source, recs) -> {
-
-            if (source instanceof RecordsMetaDAO) {
-
-                RecordsMetaDAO metaDAO = (RecordsMetaDAO) source;
-                return metaDAO.getMeta(recs, metaSchema);
-
-            } else {
-
-                return graphQLMetaService.getEmpty(recs, metaSchema);
-            }
-        });
-    }
-
-    @Override
-    public RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema) {
-        return getRecords(query, metaSchema, false);
-    }
-
-    @Override
-    public RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema, boolean flat) {
-
-        RecordsDAO recordsDAO = needRecordsSource(query.getSourceId());
-        RecordsResult<ObjectNode> records;
-
-        if (recordsDAO instanceof RecordsWithMetaDAO) {
-
-            RecordsWithMetaDAO recordsWithMetaDAO = (RecordsWithMetaDAO) recordsDAO;
+        if (recordsDAO.isPresent()) {
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Start records with meta query: " + query.getQuery() + "\n" + metaSchema);
+                logger.debug("Start records with meta query: " + query.getQuery() + "\n" + schema);
             }
 
             long queryStart = System.currentTimeMillis();
-            records = recordsWithMetaDAO.getRecords(query, metaSchema);
+            records = recordsDAO.get().getRecords(query, schema);
             long queryDuration = System.currentTimeMillis() - queryStart;
 
             if (logger.isDebugEnabled()) {
@@ -275,151 +109,212 @@ public class RecordsServiceImpl implements RecordsService {
                 records.setDebugInfo(getClass(), DEBUG_QUERY_TIME, queryDuration);
             }
 
-        } else {
+        } else  {
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Start records query: " + query.getQuery());
-            }
+            Optional<RecordsQueryDAO> recordsQueryDAO = getRecordsDAO(query.getSourceId(), queryDAO);
 
-            long recordsQueryStart = System.currentTimeMillis();
-            RecordsResult<RecordRef> recordRefs = recordsDAO.getRecords(query);
-            long recordsTime = System.currentTimeMillis() - recordsQueryStart;
+            if (!recordsQueryDAO.isPresent()) {
 
-            if (logger.isDebugEnabled()) {
-                int found = recordRefs.getRecords().size();
-                logger.debug("Stop records query. Found: " + found + "Duration: " + recordsTime);
-                logger.debug("Start meta query: " + metaSchema);
-            }
+                records = new RecordsQueryResult<>();
 
-            long metaQueryStart = System.currentTimeMillis();
-            List<ObjectNode> meta = getMeta(recordRefs.getRecords(), metaSchema);
-            long metaTime = System.currentTimeMillis() - metaQueryStart;
+            } else {
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Stop meta query. Duration: " + metaTime);
-            }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Start records query: " + query.getQuery());
+                }
 
-            records = new RecordsResult<>();
-            records.setHasMore(recordRefs.getHasMore());
-            records.setTotalCount(recordRefs.getTotalCount());
-            records.setDebug(recordRefs.getDebug());
-            records.setRecords(meta);
+                long recordsQueryStart = System.currentTimeMillis();
+                RecordsQueryResult<RecordRef> recordRefs = recordsQueryDAO.get().getRecords(query);
+                long recordsTime = System.currentTimeMillis() - recordsQueryStart;
 
-            if (query.isDebug()) {
-                records.setDebugInfo(getClass(), DEBUG_RECORDS_QUERY_TIME, recordsTime);
-                records.setDebugInfo(getClass(), DEBUG_META_QUERY_TIME, metaTime);
+                if (logger.isDebugEnabled()) {
+                    int found = recordRefs.getRecords().size();
+                    logger.debug("Stop records query. Found: " + found + "Duration: " + recordsTime);
+                    logger.debug("Start meta query: " + schema);
+                }
+
+                records = new RecordsQueryResult<>();
+                records.merge(recordRefs);
+                records.setTotalCount(recordRefs.getTotalCount());
+                records.setHasMore(recordRefs.getHasMore());
+
+                long metaQueryStart = System.currentTimeMillis();
+                records.merge(getMeta(recordRefs.getRecords(), schema));
+                long metaTime = System.currentTimeMillis() - metaQueryStart;
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Stop meta query. Duration: " + metaTime);
+                }
+
+                if (query.isDebug()) {
+                    records.setDebugInfo(getClass(), DEBUG_RECORDS_QUERY_TIME, recordsTime);
+                    records.setDebugInfo(getClass(), DEBUG_META_QUERY_TIME, metaTime);
+                }
             }
         }
 
-        if (flat) {
-            return new RecordsResult<>(records, this::toFlatObject);
-        } else {
-            return records;
+        if (query.isDebug()) {
+            records.setDebugInfo(getClass(), DEBUG_META_SCHEMA, schema);
         }
+
+        return records;
     }
 
     @Override
-    public <T> RecordsResult<T> getRecords(RecordsQuery query, Class<T> metaClass) {
+    public <T> RecordsResult<T> getMeta(List<RecordRef> records, Class<T> metaClass) {
 
-        RecordsResult<T> results = new RecordsResult<>();
+        Map<String, String> attributes = recordsMetaService.getAttributes(metaClass);
+        RecordsResult<RecordMeta> meta = getAttributes(records, attributes);
 
-        if (metaClass.isAssignableFrom(RecordRef.class)
-            || metaClass.isAssignableFrom(NodeRef.class)) {
+        return new RecordsResult<>(meta, m -> recordsMetaService.instantiateMeta(metaClass, m));
+    }
 
-            RecordsResult<RecordRef> records = getRecords(query);
-            results.setTotalCount(records.getTotalCount());
-            results.setHasMore(records.getHasMore());
-            results.setRecords(getMeta(records.getRecords(), metaClass));
+    @Override
+    public RecordsResult<RecordMeta> getAttributes(Collection<RecordRef> records,
+                                                   Collection<String> attributes) {
 
-        } else {
+        return getAttributes(new ArrayList<>(records), attributes);
+    }
 
-            String schema = graphQLMetaService.createSchema(metaClass);
-            RecordsResult<ObjectNode> records = getRecords(query, schema);
+    @Override
+    public RecordsResult<RecordMeta> getAttributes(List<RecordRef> records,
+                                                   Collection<String> attributes) {
+        return getAttributes(records, toAttributesMap(attributes));
+    }
 
-            results.setTotalCount(records.getTotalCount());
-            results.setHasMore(records.getHasMore());
-            results.setRecords(graphQLMetaService.convertMeta(records.getRecords(), metaClass));
+    @Override
+    public RecordsResult<RecordMeta> getAttributes(Collection<RecordRef> records,
+                                                   Map<String, String> attributes) {
+
+        return getAttributes(new ArrayList<>(records), attributes);
+    }
+
+    @Override
+    public RecordMeta getAttributes(RecordRef record, Map<String, String> attributes) {
+
+        RecordsResult<RecordMeta> values = getAttributes(Collections.singletonList(record), attributes);
+
+        if (values.getRecords().isEmpty()) {
+            return new RecordMeta(record);
         }
+
+        return values.getRecords().get(0);
+    }
+
+    @Override
+    public <T> T getMeta(RecordRef recordRef, Class<T> metaClass) {
+        RecordsResult<T> meta = getMeta(Collections.singletonList(recordRef), metaClass);
+        if (meta.getRecords().size() == 0) {
+            throw new IllegalStateException("Can't get record metadata. Result: " + meta);
+        }
+        return meta.getRecords().get(0);
+    }
+
+    @Override
+    public <T> RecordsResult<T> getMeta(Collection<RecordRef> records,
+                                        Class<T> metaClass) {
+
+        return getMeta(new ArrayList<>(records), metaClass);
+    }
+
+    @Override
+    public RecordsResult<RecordMeta> getAttributes(List<RecordRef> records,
+                                                   Map<String, String> attributes) {
+
+        AttributesSchema schema = recordsMetaService.createSchema(attributes);
+        RecordsResult<RecordMeta> meta = getMeta(records, schema.getSchema());
+        meta.setRecords(recordsMetaService.convertToFlatMeta(meta.getRecords(), schema));
+
+        return meta;
+    }
+
+    @Override
+    public JsonNode getAttribute(RecordRef record, String attribute) {
+        RecordsResult<RecordMeta> meta = getAttributes(Collections.singletonList(record),
+                                                       Collections.singletonList(attribute));
+        if (!meta.getRecords().isEmpty()) {
+            return meta.getRecords().get(0).getAttribute(attribute);
+        }
+        return MissingNode.getInstance();
+    }
+
+    @Override
+    public RecordsResult<RecordMeta> getMeta(List<RecordRef> records, String schema) {
+
+        RecordsResult<RecordMeta> results = new RecordsResult<>();
+
+        RecordsUtils.groupRefBySource(records).forEach((sourceId, recs) -> {
+
+            Optional<RecordsMetaDAO> recordsDAO = getRecordsDAO(sourceId, metaDAO);
+            RecordsResult<RecordMeta> meta;
+
+            if (recordsDAO.isPresent()) {
+
+                meta = recordsDAO.get().getMeta(records, schema);
+
+            } else {
+
+                meta = new RecordsResult<>();
+                meta.setRecords(recs.stream().map(RecordMeta::new).collect(Collectors.toList()));
+                logger.error("Records source " + sourceId + " can't return attributes");
+            }
+
+            results.merge(meta);
+        });
 
         return results;
     }
 
-    private ObjectNode toFlatObject(ObjectNode node) {
-        JsonNode result = toFlatNode(node, true);
-        if (result instanceof ObjectNode) {
-            return (ObjectNode) result;
-        }
-        Class<?> clazz = result != null ? result.getClass() : null;
-        throw new IllegalStateException("toFlatNode should return ObjectNode, but found: " + clazz);
-    }
+    @Override
+    public RecordsMutResult mutate(RecordsMutation mutation) {
 
-    private JsonNode toFlatNode(JsonNode input, boolean isRoot) {
-
-        JsonNode node = input;
-
-        if (node.isObject() && (isRoot || node.size() > 1)) {
-
-            ObjectNode objNode = JsonNodeFactory.instance.objectNode();
-            final JsonNode finalNode = node;
-
-            node.fieldNames().forEachRemaining(name ->
-                objNode.put(name, toFlatNode(finalNode.get(name), false))
-            );
-
-            node = objNode;
-
-        } else if (node.isObject() && node.size() == 1) {
-
-            String fieldName = node.fieldNames().next();
-            JsonNode value = node.get(fieldName);
-
-            if ("json".equals(fieldName)) {
-                node = value;
-            } else {
-                node = toFlatNode(value, false);
-            }
-
-        } else if (node.isArray()) {
-
-            ArrayNode newArr = JsonNodeFactory.instance.arrayNode();
-
-            for (JsonNode n : node) {
-                newArr.add(toFlatNode(n, false));
-            }
-
-            node = newArr;
+        if (mutation.getSourceId() != null) {
+            return needRecordsDAO(mutation.getSourceId(), MutableRecordsDAO.class, mutableDAO).mutate(mutation);
         }
 
-        return node;
-    }
+        RecordsMutResult result = new RecordsMutResult();
 
-    private <T> List<T> getRecordsMeta(Collection<RecordRef> records,
-                                       BiFunction<RecordsDAO, List<RecordRef>, List<T>> getMeta) {
+        RecordsUtils.groupMetaBySource(mutation.getRecords()).forEach((sourceId, records) -> {
 
-        if (records == null || records.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<T> result = new ArrayList<>();
+            RecordsMutation sourceMut = new RecordsMutation();
+            sourceMut.setRecords(records);
 
-        RecordsUtils.groupRefBySource(records).forEach((sourceId, sourceRecords) -> {
-            RecordsDAO source = needRecordsSource(sourceId);
-            result.addAll(getMeta.apply(source, sourceRecords));
+            MutableRecordsDAO dao = needRecordsDAO(sourceId, MutableRecordsDAO.class, mutableDAO);
+            result.merge(dao.mutate(sourceMut));
         });
 
         return result;
     }
 
     @Override
-    public ActionResults<RecordRef> executeAction(Collection<RecordRef> records, GroupActionConfig processConfig) {
+    public RecordsDelResult delete(RecordsDeletion deletion) {
+
+        RecordsDelResult result = new RecordsDelResult();
+
+        RecordsUtils.groupRefBySource(deletion.getRecords()).forEach((sourceId, sourceRecords) -> {
+            MutableRecordsDAO source = needRecordsDAO(sourceId, MutableRecordsDAO.class, mutableDAO);
+            result.merge(source.delete(deletion));
+        });
+
+        return result;
+    }
+
+    @Override
+    public ActionResults<RecordRef> executeAction(Collection<RecordRef> records,
+                                                  GroupActionConfig processConfig) {
 
         ActionResults<RecordRef> results = new ActionResults<>();
 
         RecordsUtils.groupRefBySource(records).forEach((sourceId, refs) -> {
-            RecordsDAO source = needRecordsSource(sourceId);
-            if (source instanceof RecordsActionExecutor) {
-                RecordsActionExecutor executor = (RecordsActionExecutor) source;
-                results.merge(executor.executeAction(refs, processConfig));
+
+            Optional<RecordsActionExecutor> source = getRecordsDAO(sourceId, actionExecutors);
+
+            if (source.isPresent()) {
+
+                results.merge(source.get().executeAction(refs, processConfig));
+
             } else {
+
                 ActionStatus status = ActionStatus.skipped("RecordsDAO can't execute action");
                 results.addResults(refs.stream()
                                        .map(r -> new ActionResult<>(r, status))
@@ -430,11 +325,38 @@ public class RecordsServiceImpl implements RecordsService {
     }
 
     @Override
+    public Iterable<RecordRef> getIterableRecords(RecordsQuery query) {
+        return new IterableRecords(this, query);
+    }
+
+    @Override
+    public void register(RecordsDAO recordsSource) {
+
+        if (recordsSource instanceof RecordsMetaDAO) {
+            metaDAO.put(recordsSource.getId(), (RecordsMetaDAO) recordsSource);
+        }
+        if (recordsSource instanceof RecordsQueryDAO) {
+            queryDAO.put(recordsSource.getId(), (RecordsQueryDAO) recordsSource);
+        }
+        if (recordsSource instanceof MutableRecordsDAO) {
+            mutableDAO.put(recordsSource.getId(), (MutableRecordsDAO) recordsSource);
+        }
+        if (recordsSource instanceof RecordsWithMetaDAO) {
+            withMetaDAO.put(recordsSource.getId(), (RecordsWithMetaDAO) recordsSource);
+        }
+        if (recordsSource instanceof RecordsDefinitionDAO) {
+            definitionDAO.put(recordsSource.getId(), (RecordsDefinitionDAO) recordsSource);
+        }
+        if (recordsSource instanceof RecordsActionExecutor) {
+            actionExecutors.put(recordsSource.getId(), (RecordsActionExecutor) recordsSource);
+        }
+    }
+
+    @Override
     public List<MetaAttributeDef> getAttributesDef(String sourceId, Collection<String> names) {
-        RecordsDAO recordsDAO = needRecordsSource(sourceId);
-        if (recordsDAO instanceof RecordsDefinitionDAO) {
-            RecordsDefinitionDAO definitionDAO = (RecordsDefinitionDAO) recordsDAO;
-            return definitionDAO.getAttributesDef(names);
+        Optional<RecordsDefinitionDAO> recordsDAO = getRecordsDAO(sourceId, definitionDAO);
+        if (recordsDAO.isPresent()) {
+            return recordsDAO.get().getAttributesDef(names);
         }
         return Collections.emptyList();
     }
@@ -444,22 +366,26 @@ public class RecordsServiceImpl implements RecordsService {
         return getAttributesDef(sourceId, Collections.singletonList(name)).stream().findFirst();
     }
 
-    private Optional<RecordsDAO> getRecordsSource(String sourceId) {
+    private Map<String, String> toAttributesMap(Collection<String> attributes) {
+        Map<String, String> attributesMap = new HashMap<>();
+        for (String attribute : attributes) {
+            attributesMap.put(attribute, attribute);
+        }
+        return attributesMap;
+    }
+
+    private <T extends RecordsDAO> Optional<T> getRecordsDAO(String sourceId, Map<String, T> registry) {
         if (sourceId == null) {
             sourceId = "";
         }
-        return Optional.ofNullable(sources.get(sourceId));
+        return Optional.ofNullable(registry.get(sourceId));
     }
 
-    private RecordsDAO needRecordsSource(String sourceId) {
-        Optional<RecordsDAO> source = getRecordsSource(sourceId);
+    private <T extends RecordsDAO> T needRecordsDAO(String sourceId, Class<T> type, Map<String, T> registry) {
+        Optional<T> source = getRecordsDAO(sourceId, registry);
         if (!source.isPresent()) {
-            throw new IllegalArgumentException("Records source is not found! Id: " + sourceId);
+            throw new IllegalArgumentException("RecordsDAO is not found! Class: " + type + " Id: " + sourceId);
         }
         return source.get();
-    }
-
-    public void register(RecordsDAO recordsSource) {
-        sources.put(recordsSource.getId(), recordsSource);
     }
 }

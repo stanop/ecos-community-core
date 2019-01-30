@@ -1,6 +1,5 @@
 package ru.citeck.ecos.records;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -17,16 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
-import ru.citeck.ecos.graphql.meta.GraphQLMetaService;
-import ru.citeck.ecos.graphql.meta.MetaUtils;
 import ru.citeck.ecos.graphql.meta.value.MetaMapValue;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.history.HistoryEventType;
 import ru.citeck.ecos.model.HistoryModel;
+import ru.citeck.ecos.records.meta.RecordsMetaService;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.records.source.AbstractRecordsDAO;
 import ru.citeck.ecos.records.source.RecordsWithMetaDAO;
@@ -67,8 +64,8 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsW
     private AuthorityUtils authorityUtils;
     private FTSQueryBuilder queryBuilder;
     private SearchUtils searchUtils;
-    private GraphQLMetaService metaService;
     private GraphQLService graphQLService;
+    private RecordsMetaService recordsMetaService;
 
     @Autowired
     public TaskStatisticRecords(ServiceRegistry serviceRegistry,
@@ -76,7 +73,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsW
                                 AuthorityUtils authorityUtils,
                                 FTSQueryBuilder queryBuilder,
                                 SearchUtils searchUtils,
-                                GraphQLMetaService metaService,
+                                RecordsMetaService recordsMetaService,
                                 GraphQLService graphQLService) {
         setId(ID);
         this.searchService = serviceRegistry.getSearchService();
@@ -86,23 +83,24 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsW
         this.criteriaParser = criteriaParser;
         this.queryBuilder = queryBuilder;
         this.searchUtils = searchUtils;
-        this.metaService = metaService;
+        this.recordsMetaService = recordsMetaService;
     }
 
     @Override
-    public RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema) {
+    public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String metaSchema) {
 
-        RecordsResult<ObjectNode> records = new RecordsResult<>();
-        RecordsResult<MetaValue> metaValues = getRecordsImpl(query);
+        RecordsQueryResult<RecordMeta> records = new RecordsQueryResult<>();
+        RecordsQueryResult<MetaValue> metaValues = getRecordsImpl(query);
 
-        records.setRecords(metaService.getMeta(metaValues.getRecords(), metaSchema));
+        records.merge(metaValues);
+        records.merge(recordsMetaService.getMeta(metaValues.getRecords(), metaSchema));
         records.setHasMore(metaValues.getHasMore());
         records.setTotalCount(metaValues.getTotalCount());
 
         return records;
     }
 
-    private RecordsResult<MetaValue> getRecordsImpl(RecordsQuery query) {
+    private RecordsQueryResult<MetaValue> getRecordsImpl(RecordsQuery query) {
 
         GqlContext context = graphQLService.getGqlContext();
 
@@ -160,7 +158,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsW
             }
         });
 
-        RecordsResult<MetaValue> result = new RecordsResult<>();
+        RecordsQueryResult<MetaValue> result = new RecordsQueryResult<>();
         result.setHasMore(assignSearchResult.getHasMore());
         result.setTotalCount(assignSearchResult.getTotalCount());
         result.setRecords(records);

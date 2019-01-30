@@ -1,0 +1,23 @@
+
+.formio-panel-content.formbuilder {
+     margin-right: 0 !important;
+     margin-left: 0 !important;
+}
+
+.formio-panel-content {
+    background-color: #f2f2f2;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 15px;
+    padding-bottom: 1px;
+}
+
+.formio-panel-content select,
+.formio-panel-content input[type="file"],
+.formio-panel-content input[type="text"],
+.formio-panel-content input[type="password"],
+.formio-panel-content textarea {
+
+    width: 100% !important;
+    padding: 6px 12px !important;
+}

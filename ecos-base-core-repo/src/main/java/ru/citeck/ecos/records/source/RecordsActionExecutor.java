@@ -6,7 +6,7 @@ import ru.citeck.ecos.records.RecordRef;
 
 import java.util.List;
 
-public interface RecordsActionExecutor {
+public interface RecordsActionExecutor extends RecordsDAO {
 
     ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config);
 

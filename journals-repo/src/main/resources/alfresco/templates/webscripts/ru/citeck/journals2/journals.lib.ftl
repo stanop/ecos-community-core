@@ -126,7 +126,8 @@
         "type": "${shortQName(createVariant.properties["journal:type"])}",
         "formId": "${createVariant.properties["journal:formId"]}",
         "canCreate": ${createVariant.assocs["journal:destination"][0].hasPermission("CreateChildren")?string("true","false")},
-        "isDefault": ${(createVariant.properties["journal:isDefault"]!false)?string}
+        "isDefault": ${(createVariant.properties["journal:isDefault"]!false)?string},
+        "createArguments": "${(createVariant.properties["journal:createArguments"]!"")}"
     }
     </#escape>
 </#macro>

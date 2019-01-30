@@ -4,40 +4,64 @@ import ru.citeck.ecos.graphql.meta.annotation.MetaAtt;
 
 public class EventUserModel {
 
-    public String id;
+    private String id;
 
-    public String displayName;
+    private String displayName;
 
     @MetaAtt("cm:userName")
-    public String userName;
+    private String userName;
     @MetaAtt("cm:firstName")
-    public String firstName;
+    private String firstName;
     @MetaAtt("cm:lastName")
-    public String lastName;
+    private String lastName;
     @MetaAtt("cm:middleName")
-    public String middleName;
+    private String middleName;
 
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDisplayName() {
         return displayName;
     }
 
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
     public String getUserName() {
         return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
     public String getLastName() {
         return lastName;
     }
 
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     public String getMiddleName() {
         return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 }

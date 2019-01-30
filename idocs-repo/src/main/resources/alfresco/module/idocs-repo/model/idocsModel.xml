@@ -107,6 +107,7 @@
                     <value>legal-entity</value>
                     <value>individual</value>
                     <value>public-body</value>
+                    <value>individual-entrepreneur</value>
                 </list>
             </parameter>
         </constraint>
@@ -306,10 +307,10 @@
         <type name="idocs:contractor">
             <parent>idocs:abstractContractor</parent>
             <properties>
+
                 <property name="idocs:CEOname">
                     <title>CEO name</title>
                     <type>d:text</type>
-                    <mandatory>true</mandatory>
                 </property>
                 <property name="idocs:contractorID">
                     <title>ID</title>
@@ -444,7 +445,7 @@
                     <type>d:date</type>
                 </property>
                 <property name="idocs:crrSyncDate">
-                    <title>sync date</title>
+                    <title>Дата синхронизации</title>
                     <type>d:text</type>
                 </property>
             </properties>
@@ -711,6 +712,24 @@
                 <property name="idocs:registrationDate">
                     <title>Date of registration</title>
                     <type>d:date</type>
+                </property>
+            </properties>
+        </aspect>
+        
+        <aspect name="idocs:hasIndividualEntrepreneurInfo">
+            <title>Регистрационная информация индивидуального предпринимателя</title>
+            <properties>
+                <property name="idocs:series">
+                    <title>Series</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:number">
+                    <title>Number</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:psrnsp">
+                    <title>PSRNSP</title>
+                    <type>d:text</type>
                 </property>
             </properties>
         </aspect>

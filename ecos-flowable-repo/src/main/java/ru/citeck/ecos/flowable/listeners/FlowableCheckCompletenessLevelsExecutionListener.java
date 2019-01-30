@@ -6,7 +6,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.flowable.engine.common.api.delegate.Expression;
+import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.flowable.example.AbstractExecutionListener;

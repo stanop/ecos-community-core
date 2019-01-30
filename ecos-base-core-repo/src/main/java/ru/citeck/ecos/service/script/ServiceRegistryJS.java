@@ -21,26 +21,35 @@ package ru.citeck.ecos.service.script;
 import org.alfresco.repo.jscript.BaseScopableProcessorExtension;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 public class ServiceRegistryJS extends BaseScopableProcessorExtension
 {
-	private ServiceRegistry serviceRegistry;
+    private ServiceRegistry serviceRegistry;
 
-	/**
-	 * Get specified service by name.
-	 * 
-	 * @param serviceName
-	 * @return
-	 */
-	public Object get(String serviceName) {
-		return serviceRegistry.getService(QName.createQName(null, serviceName));
-	}
+    /**
+     * Get specified service by name.
+     *
+     * @param serviceName
+     * @return
+     */
+    public Object get(String serviceName) {
+        return serviceRegistry.getService(QName.createQName(null, serviceName));
+    }
 
-	/**
-	 * @param serviceRegistry the serviceRegistry to set
-	 */
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
-	}
-	
+    public Object getOrNull(String serviceName) {
+        try {
+            return get(serviceName);
+        } catch (NoSuchBeanDefinitionException e) {
+            return null;
+        }
+    }
+
+    /**
+     * @param serviceRegistry the serviceRegistry to set
+     */
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+    }
+
 }

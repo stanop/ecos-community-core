@@ -9,11 +9,18 @@ import java.util.Objects;
 
 public class RecordRef {
 
+    public static final RecordRef EMPTY = new RecordRef();
+
     public static final String SOURCE_DELIMITER = "@";
     private static final String DEFAULT_SOURCE_ID = "";
 
     private final String sourceId;
     private final String id;
+
+    private RecordRef() {
+        id = "";
+        sourceId = "";
+    }
 
     public RecordRef(String sourceId, String id) {
         this.sourceId = sourceId;
@@ -25,7 +32,6 @@ public class RecordRef {
         this.id = id.toString();
     }
 
-    @JsonCreator
     public RecordRef(String id) {
         int sourceDelimIdx = id.indexOf(SOURCE_DELIMITER);
         if (sourceDelimIdx != -1) {
@@ -40,6 +46,14 @@ public class RecordRef {
     public RecordRef(NodeRef id) {
         this.sourceId = DEFAULT_SOURCE_ID;
         this.id = id.toString();
+    }
+
+    @JsonCreator
+    public static RecordRef valueOf(String id) {
+        if (StringUtils.isBlank(id)) {
+            return EMPTY;
+        }
+        return new RecordRef(id);
     }
 
     public String getSourceId() {
@@ -73,6 +87,9 @@ public class RecordRef {
     @JsonValue
     @Override
     public String toString() {
+        if (this == EMPTY) {
+            return "";
+        }
         if (StringUtils.isEmpty(sourceId)) {
             return id;
         } else {

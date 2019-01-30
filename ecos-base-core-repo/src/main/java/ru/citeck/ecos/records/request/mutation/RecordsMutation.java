@@ -1,19 +1,22 @@
 package ru.citeck.ecos.records.request.mutation;
 
+import ru.citeck.ecos.records.RecordMeta;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class RecordsMutation {
 
-    private List<RecordMut> records = new ArrayList<>();
-    private String sourceId = "";
+    private String sourceId;
+    private List<RecordMeta> records = new ArrayList<>();
+
     private boolean debug = false;
 
-    public List<RecordMut> getRecords() {
+    public List<RecordMeta> getRecords() {
         return records;
     }
 
-    public void setRecords(List<RecordMut> records) {
+    public void setRecords(List<RecordMeta> records) {
         if (records != null) {
             this.records = new ArrayList<>(records);
         } else {

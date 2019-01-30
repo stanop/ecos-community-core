@@ -35,6 +35,37 @@
         <property name="idocs:accountNumber">
             <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
         </property>
+        <property name="idocs:series">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual-entrepreneur"</invariant>
+            <invariant on="valid" language="javascript" description="invariants.validation.description.idocs_series">
+                (function() {
+                return value.match(/^\d*$/) ? true : false;
+                })()
+            </invariant>
+        </property>
+        <property name="idocs:number">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual-entrepreneur"</invariant>
+            <invariant on="valid" language="javascript" description="invariants.validation.description.idocs_number" >
+                (function() {
+                return value.match(/^\d*$/) ? true : false;
+                })()
+            </invariant>
+        </property>
+        <property name="idocs:psrnsp">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual-entrepreneur"</invariant>
+            <invariant on="valid" language="javascript" description="invariants.validation.description.idocs_psrnsp">
+                (function() {
+                return value.match(/^\d{15}$/) ? true : false;
+                })()
+            </invariant>
+        </property>
+
+        <property name="idocs:CEOname">
+            <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] != "individual-entrepreneur"</invariant>
+        </property>
     </type>
 
     <type name="idocs:bankAccount">
@@ -104,9 +135,11 @@
         </property>
         <association name="idocs:crrBaseCurrency">
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
         </association>
         <association name="idocs:crrTargetCurrency">
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
         </association>
     </type>
 

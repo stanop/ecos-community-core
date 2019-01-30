@@ -25,7 +25,8 @@ import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -54,19 +55,19 @@ public interface JournalService {
 
     NodeRef getJournalRef(String id);
 
-    default RecordsResult<RecordRef> getRecords(String journalId,
-                                                String query,
-                                                String language,
-                                                JGqlPageInfoInput pageInfo) {
+    default RecordsQueryResult<RecordRef> getRecords(String journalId,
+                                                     String query,
+                                                     String language,
+                                                     JGqlPageInfoInput pageInfo) {
 
         return getRecords(journalId, query, language, pageInfo, false);
     }
 
-    RecordsResult<RecordRef> getRecords(String journalId,
-                                        String query,
-                                        String language,
-                                        JGqlPageInfoInput pageInfo,
-                                        boolean debug);
+    RecordsQueryResult<RecordRef> getRecords(String journalId,
+                                             String query,
+                                             String language,
+                                             JGqlPageInfoInput pageInfo,
+                                             boolean debug);
 
     default RecordsResult<ObjectNode> getRecordsWithData(String journalId,
                                                  String query,
