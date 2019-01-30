@@ -34,8 +34,6 @@ import static ru.citeck.ecos.flowable.constants.FlowableConstants.*;
  */
 public class FlowableTaskComponent implements TaskComponent, InitializingBean {
 
-    private static final QName OUTCOME_KEY = QName.createQName("outcome");
-
     private BPMEngineRegistry bpmEngineRegistry;
     private WorkflowAdminService workflowAdminService;
 
@@ -291,7 +289,6 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
         String fullFormKey = FlowableUtils.getFullFormKey(task.getFormKey());
 
         HashMap<QName, Serializable> updates = new HashMap<>();
-        updates.put(OUTCOME_KEY, transition);
 
         if (StringUtils.isNotBlank(fullFormKey)) {
             updates.put(QName.createQName(fullFormKey), transition);
