@@ -311,7 +311,9 @@
 
     <bean id="idocs.LegalEntityNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="idocs:legalEntity"/>
-        <property name="nameTemplate" value="#{'$'}{node.properties['idocs:fullOrganizationName']}"/>
+        <property name="nameTemplate">
+            <value><![CDATA[#{'$'}{node.properties['idocs:fullOrganizationName']!(node.properties['cm:name'])}]]></value>
+        </property>
     </bean>
 
     <!--<bean id="idocs.DocumentTypeNamingBehaviour" parent="AutoNameBehaviour">-->
