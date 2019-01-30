@@ -47,7 +47,7 @@ fieldNames = [
 	<div class="${twoColumnClass}">
 		<div class="yui-u first">
 			<@forms.renderField field="prop_tk_kind" extension = typeDefault + {
-				"label": "Вид документа",
+				"label": msg("passports.form.tk_kind"),
 				"control" : {
 					"template" : "/ru/citeck/components/form/controls/select.ftl",
 					"params": {
@@ -113,7 +113,7 @@ fieldNames = [
 	
 	<#if form.mode == "view" && (form.arguments.formId!"") == "preview">
 		<@forms.renderField field="prop_cm_content" extension = extensions.controls.fileupload + {
-			"label": "Скан-копия документа",
+			"label": msg("passports.form.cm_content"),
 			"control": {
 				"template": "/ru/citeck/components/form/controls/img-preview.ftl",
 				"params": {
@@ -123,7 +123,7 @@ fieldNames = [
 		} />
 	<#elseif form.mode != "edit">
 		<@forms.renderField field="prop_cm_content" extension = extensions.controls.fileupload + {
-			"label": "Скан-копия документа"
+			"label": msg("passports.form.cm_content")
 		} />
 	</#if>
 
@@ -132,17 +132,14 @@ fieldNames = [
 			"control": {
 				"template": "/ru/citeck/components/form/controls/boolean-view.ftl",
 				"params": {
-					"trueLabel": "Согласие на обработку персональных данных получено",
-					"falseLabel": "Согласие на обработку персональных данных НЕ получено"
+					"trueLabel": msg("passports.form.prop_privacy_consent.true"),
+					"falseLabel": msg("passports.form.prop_privacy_consent.false")
 				}
 			}
 		} />
 	<#else/>
-		<#assign consentText>Настоящим подтверждаю мое согласие на  обработку и хранение моих  персональных  данных. 
-			В случае размещения мной  персональных данных иных  лиц, гарантирую, 
-			что мной  получено их  согласие на предоставление, обработку и хранение их персональных данных.</#assign>
 		<@forms.renderField field="prop_privacy_consent" extension = {
-			"label": consentText
+			"label": msg("passports.form.prop_privacy_consent.consent_text")
 		} />
 	</#if>
 

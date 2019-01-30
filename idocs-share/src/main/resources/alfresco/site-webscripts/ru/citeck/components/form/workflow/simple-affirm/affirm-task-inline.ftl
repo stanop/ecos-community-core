@@ -7,7 +7,7 @@
 	<@forms.renderField field = "prop_wfsa_affirmDate"/>
 	
 	<@forms.renderField field = "prop_bpm_comment" extension = {
-		"label": "Комментировать",
+		"label": msg("affirm-task.bpm_comment.title"),
 		"control": {
 			"template": "/org/alfresco/components/form/controls/textarea.ftl",
 			"params": {}
