@@ -30,6 +30,7 @@
                 <value>alfresco.site-messages.idocs.products-and-services</value>
                 <value>alfresco.site-messages.idocs.idocs-site-presets</value>
                 <value>alfresco.site-messages.idocs.override</value>
+                <value>alfresco.site-messages.idocs.working-calendar</value>
             </list>
         </property>
     </bean>

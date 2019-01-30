@@ -15,6 +15,7 @@
         <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk"/>
         <import uri="http://www.citeck.ru/model/history/1.0" prefix="history"/>
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
+        <import uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org"/>
     </imports>
 
     <namespaces>
@@ -208,6 +209,10 @@
                     <type>d:text</type>
                 </property>
 
+                <property name="ecos:timezone">
+                    <title>Timezone</title>
+                    <type>d:text</type>
+                </property>
                 <property name="ecos:isPersonDisabled">
                     <title>Disable Account</title>
                     <type>d:boolean</type>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+
+		<import uri="http://www.citeck.ru/model/wcalendar/1.0" prefix="wcal" />
+	</imports>
+
+	<view class="wcal:calendar">
+		<param name="preloadInvariants">true</param>
+
+		<view id="name">
+			<field prop="wcal:name"/>
+		</view>
+		<view id="year-and-country" kind="2-column">
+			<field prop="wcal:year"/>
+			<field prop="wcal:country"/>
+		</view>
+		<view id="dates" kind="2-column">
+			<field prop="wcal:workingDayBegin"/>
+			<field prop="wcal:workingDayEnd"/>
+		</view>
+		<view id="schedule">
+			<field prop="wcal:scheduleName"/>
+		</view>
+		<view id="content">
+			<field prop="cm:content"/>
+		</view>
+	</view>
+
+</views>

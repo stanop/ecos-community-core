@@ -656,4 +656,48 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.journal-working-calendar" parent="idocs.import-spaces.3-8-0">
+        <property name="name" value="journal-working-calendar" />
+        <property name="description" value="Journal for working calendar" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+                <ref bean="idocs.module-component.system-journals-list" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/working-calendar</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/working-calendar</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:working-calendar</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/working-calendar</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:working-calendar</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-variant.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/working-calendar</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/working-calendar</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
 </beans>

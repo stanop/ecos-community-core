@@ -868,6 +868,14 @@
         <property name="order" value="40"/>
     </bean>
 
+    <bean id="idocs.workingCalendar.nameBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="wcal:calendar"/>
+        <property name="nameTemplate">
+            <value><![CDATA[#{'$'}{node.properties['wcal:name']!'No-name calendar'}]]></value>
+        </property>
+        <property name="order" value="40"/>
+    </bean>
+
     <bean id="ecos.document.historyBehaviour" parent="history.historicalPropertiesBehaviour">
         <property name="className" value="ecos:document"/>
         <property name="allowedProperties">

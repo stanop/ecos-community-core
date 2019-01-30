@@ -80,6 +80,12 @@
             </region>
         </field>
         <field prop="deputy:managedByMembers"/>
+        <field assoc="org:workingCalendar">
+            <region name="input" template="view"/>
+            <region name="select" template="select-journal">
+                <param name="journalType">working-calendar</param>
+            </region>
+        </field>
         <view>
             <param name="relevant">false</param>
             <field prop="org:roleType"/>
