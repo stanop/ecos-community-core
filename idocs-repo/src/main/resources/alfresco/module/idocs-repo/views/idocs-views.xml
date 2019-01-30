@@ -5,9 +5,9 @@
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
         <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy"/>
-        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
-        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms" />
-        <import uri="http://www.citeck.ru/model/budget/1.0" prefix="budget" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk"/>
+        <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms"/>
+        <import uri="http://www.citeck.ru/model/budget/1.0" prefix="budget"/>
     </imports>
 
     <view class="idocs:organizationInfo">
@@ -15,7 +15,7 @@
         <field prop="idocs:shortOrganizationName"/>
         <view>
             <field prop="idocs:contractorType">
-                <region name="input" template="checkbox" />
+                <region name="input" template="checkbox"/>
             </field>
             <field prop="idocs:contractorKind">
                 <region name="input" template="select"/>
@@ -43,68 +43,73 @@
         <views mode="create" kind="3-column"/>
         <views mode="edit" kind="3-column"/>
 
-    <view id="contractor-mainTab">
-        <param name="title">tab.main</param>
+        <view id="contractor-mainTab">
+            <param name="title">tab.main</param>
 
-        <view class="idocs:organizationInfo"/>
-        <view>
-            <field prop="idocs:juridicalAddress"/>
-            <field prop="idocs:postAddress"/>
-        </view>
-        <view>
-            <field prop="idocs:inn">
-                <invariant on="mandatory" language="explicit">true</invariant>
+            <view class="idocs:organizationInfo"/>
+            <view>
+                <field prop="idocs:juridicalAddress"/>
+                <field prop="idocs:postAddress"/>
+            </view>
+            <view>
+                <field prop="idocs:inn">
+                    <invariant on="mandatory" language="explicit">true</invariant>
                 <invariant on="valid" language="javascript" description="invariants.validation.description.idocs_inn">
-                    (function() {
-                    var flag = value.match(/^\d*$/) ? true : false;
-                    if (flag &amp;&amp; (value.length == 8 || value.length == 10 || value.length == 12)) {
-                    return true;
-                    }
-                    return false;
-                    })()
-                </invariant>
-            </field>
-            <field prop="idocs:kpp"/>
+                        (function() {
+                        var flag = value.match(/^\d*$/) ? true : false;
+                        if (flag &amp;&amp; (value.length == 8 || value.length == 10 || value.length == 12)) {
+                        return true;
+                        }
+                        return false;
+                        })()
+                    </invariant>
+                </field>
+                <field prop="idocs:kpp"/>
+            </view>
+            <view>
+                <field prop="idocs:psrnsp"/>
+                <field prop="idocs:series"/>
+                <field prop="idocs:number"/>
+            </view>
+            <view>
+                <field prop="idocs:phone"/>
+                <field prop="idocs:fax"/>
+                <field prop="idocs:email"/>
+            </view>
+            <view>
+                <!-- Temporarily hidden field (no controls exists for it yet) -->
+                <!--<field assoc="idocs:contacts">
+                    <region name="input" template="view" />
+                    <region name="select" template="select-orgstruct" />
+                </field>-->
+                <field prop="idocs:CEOname"/>
+                <field prop="idocs:nameInGenitiveCase"/>
+                <field prop="idocs:diadocBoxId"/>
+            </view>
+            <view>
+                <field prop="idocs:doNotSendContractToEdiFlag"/>
+            </view>
         </view>
-        <view>
-            <field prop="idocs:phone"/>
-            <field prop="idocs:fax"/>
-            <field prop="idocs:email"/>
-        </view>
-        <view>
-            <!-- Temporarily hidden field (no controls exists for it yet) -->
-            <!--<field assoc="idocs:contacts">
-                <region name="input" template="view" />
-                <region name="select" template="select-orgstruct" />
-            </field>-->
-            <field prop="idocs:CEOname"/>
-            <field prop="idocs:nameInGenitiveCase"/>
-            <field prop="idocs:diadocBoxId"/>
-        </view>
-        <view>
-            <field prop="idocs:doNotSendContractToEdiFlag"/>
-        </view>
-    </view>
 
-    <view id="contractor-bankDetailsTab">
-        <param name="title">tab.bankDetails</param>
+        <view id="contractor-bankDetailsTab">
+            <param name="title">tab.bankDetails</param>
 
-        <view>
-            <field prop="idocs:bankTitle"/>
-            <field prop="idocs:bankTitleEng"/>
-            <field prop="idocs:bankId"/>
+            <view>
+                <field prop="idocs:bankTitle"/>
+                <field prop="idocs:bankTitleEng"/>
+                <field prop="idocs:bankId"/>
+            </view>
+            <view>
+                <field prop="idocs:accountNumber"/>
+                <field prop="idocs:swift"/>
+                <field prop="idocs:currencyEnabled"/>
+            </view>
+            <view>
+                <field prop="idocs:corresponentBankTitle"/>
+                <field prop="idocs:correspondentBankId"/>
+                <field prop="idocs:corresponentAccountNumber"/>
+            </view>
         </view>
-        <view>
-            <field prop="idocs:accountNumber"/>
-            <field prop="idocs:swift"/>
-            <field prop="idocs:currencyEnabled"/>
-        </view>
-        <view>
-            <field prop="idocs:corresponentBankTitle"/>
-            <field prop="idocs:correspondentBankId"/>
-            <field prop="idocs:corresponentAccountNumber"/>
-        </view>
-    </view>
 
     </view>
 
@@ -329,8 +334,8 @@
     </view>
 
     <view class="budget:item">
-        <field prop="budget:itemCode" />
-        <field prop="budget:itemName" />
+        <field prop="budget:itemCode"/>
+        <field prop="budget:itemName"/>
     </view>
 
 </views>
