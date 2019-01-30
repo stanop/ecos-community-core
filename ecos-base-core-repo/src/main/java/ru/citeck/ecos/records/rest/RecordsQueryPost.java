@@ -49,7 +49,7 @@ public class RecordsQueryPost extends AbstractWebScript {
 
         if (request.query != null) {
 
-            if (request.attributes != null) {
+            if (request.attributes != null && !request.attributes.isNull()) {
 
                 recordsResult = recordsService.getRecords(request.query, getAttributes(request));
 
@@ -72,7 +72,7 @@ public class RecordsQueryPost extends AbstractWebScript {
                         "You must specify 'schema' or 'attributes' for records");
             }
 
-            if (request.attributes == null) {
+            if (request.attributes == null || request.attributes.isNull()) {
 
                 recordsResult = recordsService.getMeta(request.records, request.schema);
 
