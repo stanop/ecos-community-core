@@ -104,9 +104,11 @@
         </property>
         <association name="idocs:crrBaseCurrency">
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
         </association>
         <association name="idocs:crrTargetCurrency">
             <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="value-title" language="javascript">value.properties["cm:title"]</invariant>
         </association>
     </type>
 

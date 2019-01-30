@@ -240,7 +240,7 @@
                 </cmmn:planItemOnPart>
             </cmmn:sentry>
             <cmmn:sentry id="id-117" ns8:originalEvent="user-action" ns8:additionalDataType="iEvent:additionalPerformers">
-                <cmmn:planItemOnPart sourceRef="id-116" id="id-114" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/iEvent/1.0}userAction" ns8:title="Отправить на ознакомление">
+                <cmmn:planItemOnPart sourceRef="id-116" id="id-114" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/iEvent/1.0}userAction" ns8:title="case.orders.internal.action.send-to-formalization">
                     <cmmn:standardEvent>occur</cmmn:standardEvent>
                 </cmmn:planItemOnPart>
             </cmmn:sentry>
