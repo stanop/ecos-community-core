@@ -3743,7 +3743,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 .share-form .form-container .form-fields .form-field .yui-u input[type="text"].time-entry,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].date-entry,
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .form-fields .yui-u .form-field > input[type="text"].time-entry {
-   width: 100px;
+   width: 100px !important;
 }
 
 .share-form .form-container .form-fields .form-field .yui-u .format-info {
@@ -5038,26 +5038,27 @@ body:not(.mobile).yui-skin-citeckTheme #bd .orgstruct-console .orgstruct-tree-re
 body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header-Warning__warnings,
 /*body:not(.mobile).yui-skin-citeckTheme .ecos-form,*/
 body:not(.mobile).yui-skin-citeckTheme .alfresco-footer-AlfStickyFooter > div.wrapper {
-    box-shadow: inset 15px -1px 10px -15px grey;
+    /*box-shadow: inset 15px -1px 10px -15px grey;*/
 }
 
 body:not(.mobile).yui-skin-citeckTheme #bd .site-document-types {
-    box-shadow: inset 15px -1px 10px -15px grey;
+    /*box-shadow: inset 15px -1px 10px -15px grey;*/
     padding-left: 15px;
 }
 
 body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="SurfRegion"] > div[id*="case-documents"],
 body:not(.mobile).yui-skin-citeckTheme #bd .cardlet #cardlet-remote-case-documents-container {
-    box-shadow: inset 15px -1px 10px -15px grey;
+    /*box-shadow: inset 15px -1px 10px -15px grey;*/
     padding-left: 4px;
 }
 
 body:not(.mobile).yui-skin-citeckTheme .sticky-footer .footer {
-    box-shadow: inset 15px -1px 10px -15px grey, 0px 10px 15px -10px grey inset;
+    /*box-shadow: inset 15px -1px 10px -15px grey, 0px 10px 15px -10px grey inset;*/
+    box-shadow: 0px 10px 15px -10px grey inset;
 }
 
 body:not(.mobile).yui-skin-citeckTheme .card-details-top-panel {
-    box-shadow: inset 15px -1px 10px -15px grey;
+    /*box-shadow: inset 15px -1px 10px -15px grey;*/
     padding-left: 40px;
 }
 

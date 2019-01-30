@@ -260,6 +260,9 @@ public class CreateVariantsGet extends AbstractWebScript {
         } else {
             qname = QName.resolveToQName(namespaceService, value.toString());
         }
+        if (qname == null) {
+            return null;
+        }
         return qname.toPrefixString(namespaceService);
     }
 

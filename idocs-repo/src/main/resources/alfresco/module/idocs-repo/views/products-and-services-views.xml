@@ -17,6 +17,8 @@
     </view>
 
     <view class="pas:pasEntityOriginal">
+        <param name="preloadInvariants">true</param>
+
         <field prop="cm:title">
             <region name="input" template="textarea">
 				<param name="height">60px</param>
@@ -48,6 +50,8 @@
     </view>
 
     <view class="pas:pasEntityCopied">
+        <param name="preloadInvariants">true</param>
+
         <field prop="cm:title">
             <region name="input" template="textarea">
                 <param name="height">60px</param>

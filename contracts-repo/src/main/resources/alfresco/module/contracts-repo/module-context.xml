@@ -12,5 +12,6 @@
 	<import resource="classpath:alfresco/module/contracts-repo/context/bootstrap-context-2-0-5.xml" />
 	<import resource="classpath:alfresco/module/contracts-repo/context/bootstrap-context-3-2-1.xml" />
 	<import resource="classpath:alfresco/module/contracts-repo/context/bootstrap-context-3-7-0.xml" />
+	<import resource="classpath:alfresco/module/contracts-repo/context/bootstrap-context-3-8-0.xml" />
 	<import resource="classpath:alfresco/module/contracts-repo/context/workflow-services-context.xml" />
 </beans>

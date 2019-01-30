@@ -65,7 +65,7 @@
         <default.locale>en</default.locale>
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
-        <flowable.version>6.3.0</flowable.version>
+        <flowable.version>6.4.1</flowable.version>
         <ecos.flowable.version>1.5.0-SNAPSHOT</ecos.flowable.version>
 
         <web.compression.skip>false</web.compression.skip>

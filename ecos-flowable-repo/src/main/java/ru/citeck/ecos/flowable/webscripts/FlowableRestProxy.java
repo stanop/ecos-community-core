@@ -1,26 +1,77 @@
 package ru.citeck.ecos.flowable.webscripts;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.repo.admin.SysAdminParams;
-import org.alfresco.repo.content.MimetypeMap;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.extensions.webscripts.*;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.citeck.ecos.flowable.services.rest.FlowableRestTemplate;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class FlowableRestProxy extends AbstractWebScript {
 
     private static final String WEBSCRIPT_URL = "citeck/flowable/proxy/";
     private static final String FLOWABLE_HOST_KEY = "${flowable.host.url}";
+
+    private static final String HEADER_CONTENT_DISPOSITION = "Content-Disposition";
+
+    private static final String[] HEADERS_TO = {
+            HttpHeaders.ACCEPT,
+            HttpHeaders.ACCEPT_CHARSET,
+            HttpHeaders.ACCEPT_ENCODING,
+            HttpHeaders.ACCEPT_LANGUAGE,
+            HttpHeaders.ACCEPT_RANGES,
+            HttpHeaders.AGE,
+            HttpHeaders.ALLOW,
+            HttpHeaders.CACHE_CONTROL,
+            HttpHeaders.CONNECTION,
+            HttpHeaders.CONTENT_ENCODING,
+            HttpHeaders.CONTENT_LANGUAGE,
+            HttpHeaders.CONTENT_LENGTH,
+            HttpHeaders.CONTENT_LOCATION,
+            HttpHeaders.CONTENT_RANGE,
+            HttpHeaders.EXPECT
+    };
+
+    private static final String[] HEADERS_FROM = {
+            HttpHeaders.CONTENT_TYPE,
+            HttpHeaders.CONTENT_LENGTH,
+            HttpHeaders.CONTENT_ENCODING,
+            HEADER_CONTENT_DISPOSITION,
+            HttpHeaders.CACHE_CONTROL,
+            HttpHeaders.PRAGMA
+    };
+
+    private static final Map<String, BiConsumer<WebScriptResponse, String>> HEADERS_FROM_CONSUMER;
+
+    private static final Log logger = LogFactory.getLog(FlowableRestProxy.class);
+
+    static {
+        Map<String, BiConsumer<WebScriptResponse, String>> headersConsumers = new HashMap<>();
+        headersConsumers.put(HttpHeaders.CONTENT_TYPE, WebScriptResponse::setContentType);
+        headersConsumers.put(HttpHeaders.CONTENT_ENCODING, WebScriptResponse::setContentEncoding);
+        HEADERS_FROM_CONSUMER = Collections.unmodifiableMap(headersConsumers);
+    }
 
     @Value(FLOWABLE_HOST_KEY)
     private String flowableHost;
@@ -31,10 +82,8 @@ public class FlowableRestProxy extends AbstractWebScript {
     @Qualifier("sysAdminParams")
     private SysAdminParams sysAdminParams;
 
-    private ObjectMapper mapper = new ObjectMapper();
-
     @Override
-    public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
+    public void execute(WebScriptRequest req, WebScriptResponse res) {
 
         if (flowableHost == null || flowableHost.isEmpty() || FLOWABLE_HOST_KEY.equals(flowableHost)) {
             flowableHost = sysAdminParams.getAlfrescoProtocol() + "://" +
@@ -42,60 +91,89 @@ public class FlowableRestProxy extends AbstractWebScript {
                            sysAdminParams.getAlfrescoPort();
         }
 
-        HttpMethod method;
         String desc = getDescription().getId();
-        if (desc.endsWith(".post")) {
-            method = HttpMethod.POST;
-        } else if (desc.endsWith(".put")) {
-            method = HttpMethod.PUT;
-        } else {
-            method = HttpMethod.GET;
-        }
-
-        String contentType = req.getParameter("_proxy_content_type");
-        if (contentType == null || contentType.isEmpty()) {
-            contentType = req.getHeader("Content-Type");
-        }
-
-        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-        headers.put("Accept", Arrays.asList(req.getHeaderValues("Accept")));
-        headers.add("Content-Type", contentType);
-        HttpEntity<Object> requestEntity = new HttpEntity<>(getBody(req), headers);
+        String ext = FilenameUtils.getExtension(desc);
+        HttpMethod method = HttpMethod.valueOf(ext.toUpperCase());
 
         String url = getFlowableUrl(req.getURL());
-        ResponseEntity<String> entity = restTemplate.exchange(url, method, requestEntity, String.class);
-
-        entity.getHeaders().forEach((key, value) -> {
-            if ("Content-Type".equals(key) && value.size() > 0) {
-                res.setContentType(value.get(0));
-            }
-        });
-
         res.setContentEncoding("UTF-8");
-        res.getWriter().write(entity.getBody());
-        res.setStatus(entity.getStatusCode().value());
+
+        try {
+            restTemplate.execute(url, method,
+                request -> prepareRequest(req, request),
+                response -> processResponse(res, response)
+            );
+        } catch (HttpClientErrorException e) {
+            InputStream body = new ByteArrayInputStream(e.getResponseBodyAsByteArray());
+            processResponse(res, e.getResponseHeaders(), body, e.getStatusCode());
+        }
     }
 
-    private Object getBody(WebScriptRequest req) throws IOException {
+    private void prepareRequest(WebScriptRequest req, ClientHttpRequest request) {
 
-        String contentType = req.getContentType();
-        if (contentType == null) {
-            contentType = "";
+        for (String headerName : HEADERS_TO) {
+            String header = req.getHeader(headerName);
+            if (StringUtils.isNotBlank(header)) {
+                request.getHeaders().add(headerName, header);
+            }
         }
 
-        String bodyStr = req.getContent().getContent();
-        if (bodyStr == null || bodyStr.length() == 0) {
-            return "";
+        boolean hasBody = false;
+
+        try (InputStream in = req.getContent().getInputStream()) {
+
+            if (in.available() > 0) {
+                IOUtils.copy(in, request.getBody());
+                hasBody = true;
+            }
+        } catch (IOException e) {
+            logger.error("Error while request body writing", e);
         }
 
-        Object body;
-        if (contentType.contains(MimetypeMap.MIMETYPE_JSON)) {
-            body = mapper.readTree(bodyStr);
-        } else {
-            body = bodyStr;
+        if (hasBody) {
+
+            String contentType = req.getParameter("_proxy_content_type");
+
+            if (StringUtils.isBlank(contentType)) {
+                contentType = req.getHeader(HttpHeaders.CONTENT_TYPE);
+            }
+
+            if (StringUtils.isNotBlank(contentType)) {
+                request.getHeaders().add(HttpHeaders.CONTENT_TYPE, contentType);
+            }
+        }
+    }
+
+    private WebScriptResponse processResponse(WebScriptResponse res, ClientHttpResponse response) throws IOException {
+        return processResponse(res, response.getHeaders(), response.getBody(), response.getStatusCode());
+    }
+
+    private WebScriptResponse processResponse(WebScriptResponse res,
+                                              org.springframework.http.HttpHeaders headers,
+                                              InputStream body,
+                                              HttpStatus status) {
+
+        for (String header : HEADERS_FROM) {
+            List<String> values = headers.get(header);
+            if (values != null && values.size() > 0) {
+                BiConsumer<WebScriptResponse, String> consumer = HEADERS_FROM_CONSUMER.get(header);
+                if (consumer != null) {
+                    consumer.accept(res, values.get(0));
+                } else {
+                    res.setHeader(header, values.get(0));
+                }
+            }
         }
 
-        return body;
+        try (OutputStream out = res.getOutputStream()) {
+            IOUtils.copy(body, out);
+            out.flush();
+        } catch (IOException e) {
+            logger.error("Error while response body reading", e);
+        }
+
+        res.setStatus(status.value());
+        return res;
     }
 
     private String getFlowableUrl(String baseUrl) {

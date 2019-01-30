@@ -329,6 +329,6 @@
         <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
 
-    <bean id="flowableModelImageService" class="org.flowable.app.service.editor.ModelImageService" />
+    <bean id="flowableModelImageService" class="org.flowable.ui.modeler.service.ModelImageService" />
 
 </beans>

@@ -15,4 +15,5 @@
     <format default="json"/>
     <authentication>user</authentication>
     <transaction allow="readonly">required</transaction>
+    <formdata multipart-processing="false" />
 </webscript>
