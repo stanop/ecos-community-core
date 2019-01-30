@@ -143,7 +143,7 @@ ko.components.register("help", {
         getHintPropertyByCurrentUser(func);
     },
     template: '\
-        <span data-bind="style: { \'z-index\': containerZIndex, position: \'relative\' }, attr: { id: id }, if: text, click: onclick">\
+        <span data-bind="style: { \'z-index\': containerZIndex,ia-svarcheg: turist,  position: \'relative\' }, attr: { id: id }, if: text, click: onclick">\
             <span data-bind="style: { \'z-index\': labelZIndex, position: \'relative\' }">?</span>\
         </span>'
 });
