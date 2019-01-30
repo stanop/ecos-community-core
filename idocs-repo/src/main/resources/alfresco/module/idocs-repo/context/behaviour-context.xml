@@ -312,7 +312,7 @@
     <bean id="idocs.LegalEntityNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="idocs:legalEntity"/>
         <property name="nameTemplate">
-            <value><![CDATA[<#if node.properties['idocs:fullOrganizationName']??>#{'$'}{node.properties['idocs:fullOrganizationName']!'n/a'}<#else>#{'$'}{node.properties['cm:name']}</#if>]]></value>
+            <value><![CDATA[#{'$'}{node.properties['idocs:fullOrganizationName']!(node.properties['cm:name'])}]]></value>
         </property>
     </bean>
 
