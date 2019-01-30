@@ -56,4 +56,42 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.cardlet-cmobject-association-disable" parent="idocs.import-spaces.3-8-0">
+        <property name="name" value="cardlet-cmobject-association-disable"/>
+        <property name="description" value="Common Cardlet association disable"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.cardlets-cmobject"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/disable-cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmobject/associations</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.cardlet-cmobject-advanced-association" parent="idocs.import-spaces.3-8-0">
+        <property name="name" value="cardlet-cmobject-advanced-association"/>
+        <property name="description" value="Common Cardlet advanced association"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmobject/advanced-associations</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>
