@@ -444,7 +444,7 @@
                     <type>d:date</type>
                 </property>
                 <property name="idocs:crrSyncDate">
-                    <title>sync date</title>
+                    <title>Дата синхронизации</title>
                     <type>d:text</type>
                 </property>
             </properties>
