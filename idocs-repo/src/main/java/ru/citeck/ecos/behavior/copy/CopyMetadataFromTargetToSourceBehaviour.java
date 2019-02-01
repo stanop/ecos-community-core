@@ -87,10 +87,14 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
     @Override
     public void onDeleteAssociation(AssociationRef associationRef) {
         // It's correct! We need target to receive his source assocs
+        if (assocTypeQName == null) {
+            return;
+        }
+
         NodeRef targetRef = associationRef.getSourceRef();
         NodeRef targetAssoc = associationRef.getTargetRef();
 
-        if (!nodeService.exists(targetRef)) {
+        if (!nodeService.exists(targetRef) || !nodeService.exists(targetAssoc)) {
             return;
         }
 
@@ -204,8 +208,10 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
     }
 
     private void deleteAssocs(NodeRef sourceRef, NodeRef targetAssoc) {
-        for (Map.Entry<QName, QName> pair : assocsToCopy.entrySet()) {
-            RepoUtils.removeAssociation(sourceRef, targetAssoc, pair.getValue(), true, nodeService);
+        if (assocsToCopy != null && !assocsToCopy.isEmpty()) {
+            for (Map.Entry<QName, QName> pair : assocsToCopy.entrySet()) {
+                RepoUtils.removeAssociation(sourceRef, targetAssoc, pair.getValue(), true, nodeService);
+            }
         }
     }
 
