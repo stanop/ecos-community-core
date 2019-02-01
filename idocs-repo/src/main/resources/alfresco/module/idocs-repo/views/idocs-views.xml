@@ -50,6 +50,7 @@
             <view>
                 <field prop="idocs:juridicalAddress"/>
                 <field prop="idocs:postAddress"/>
+                <field prop="idocs:okpo"/>
             </view>
             <view>
                 <field prop="idocs:inn">
@@ -77,11 +78,6 @@
                 <field prop="idocs:email"/>
             </view>
             <view>
-                <!-- Temporarily hidden field (no controls exists for it yet) -->
-                <!--<field assoc="idocs:contacts">
-                    <region name="input" template="view" />
-                    <region name="select" template="select-orgstruct" />
-                </field>-->
                 <field prop="idocs:CEOname"/>
                 <field prop="idocs:nameInGenitiveCase"/>
                 <field prop="idocs:diadocBoxId"/>
@@ -113,28 +109,59 @@
 
     </view>
 
-    <view class="idocs:legalEntity">
+    <view class="idocs:legalEntity" template="tabs">
         <views mode="create" kind="3-column"/>
         <views mode="edit" kind="3-column"/>
-        <view>
-            <field prop="idocs:fullOrganizationName"/>
-            <field prop="idocs:shortOrganizationName"/>
-            <field prop="idocs:engOrganizationName"/>
+
+        <view id="contractor-mainTab">
+            <param name="title">tab.main</param>
+
+            <view>
+                <field prop="idocs:fullOrganizationName"/>
+                <field prop="idocs:shortOrganizationName"/>
+                <field prop="idocs:engOrganizationName"/>
+            </view>
+            <view>
+                <field prop="idocs:juridicalAddress"/>
+                <field prop="idocs:postAddress"/>
+                <field prop="idocs:okpo"/>
+            </view>
+            <view>
+                <field prop="idocs:inn"/>
+                <field prop="idocs:kpp"/>
+                <field prop="idocs:ogrn"/>
+            </view>
+            <view>
+                <view>
+                    <field prop="idocs:phone"/>
+                    <field prop="idocs:fax"/>
+                    <field prop="idocs:email"/>
+                </view>
+            </view>
+            <view>
+                <field assoc="idocs:generalDirector"/>
+                <field assoc="idocs:accountantGeneral"/>
+            </view>
         </view>
-        <view>
-            <field prop="idocs:juridicalAddress"/>
-            <field prop="idocs:postAddress"/>
-            <field prop="idocs:okpo"/>
-        </view>
-        <view>
-            <field prop="idocs:inn"/>
-            <field prop="idocs:kpp"/>
-            <field prop="idocs:ogrn"/>
-        </view>
-        <view>
-            <field assoc="idocs:generalDirector"/>
-            <field assoc="idocs:accountantGeneral"/>
-            <field prop="idocs:phoneNumber"/>
+
+        <view id="contractor-bankDetailsTab">
+            <param name="title">tab.bankDetails</param>
+
+            <view>
+                <field prop="idocs:bankTitle"/>
+                <field prop="idocs:bankTitleEng"/>
+                <field prop="idocs:bankId"/>
+            </view>
+            <view>
+                <field prop="idocs:accountNumber"/>
+                <field prop="idocs:swift"/>
+                <field prop="idocs:currencyEnabled"/>
+            </view>
+            <view>
+                <field prop="idocs:corresponentBankTitle"/>
+                <field prop="idocs:correspondentBankId"/>
+                <field prop="idocs:corresponentAccountNumber"/>
+            </view>
         </view>
     </view>
 
@@ -229,13 +256,6 @@
         <field assoc="deputy:user">
             <invariant on="mandatory" language="explicit">true</invariant>
         </field>
-        <!-- <field assoc="deputy:reasonOfAbsence">
-            <region name="input" template="view"/>
-            <region name="select" template="select-journal">
-                <param name="journalType">reasons-absence</param>
-                <param name="mode">alfresco</param>
-            </region>
-        </field> -->
     </view>
 
     <view class="deputy:absenceEvent" id="currentUserAbsence">
@@ -255,13 +275,6 @@
                 person
             </invariant>
         </field>
-        <!-- <field assoc="deputy:reasonOfAbsence">
-            <region name="input" template="view"/>
-            <region name="select" template="select-journal">
-                <param name="journalType">reasons-absence</param>
-                <param name="mode">alfresco</param>
-            </region>
-        </field> -->
     </view>
 
     <view class="deputy:selfAbsenceEvent">
