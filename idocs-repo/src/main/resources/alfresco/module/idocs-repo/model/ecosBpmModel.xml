@@ -9,6 +9,7 @@
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
         <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
         <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
     </imports>
 
     <namespaces>
@@ -18,7 +19,7 @@
     <types>
 
         <type name="ecosbpm:processModel">
-            <parent>cm:cmobject</parent>
+            <parent>cm:content</parent>
             <properties>
                 <property name="ecosbpm:processId">
                     <type>d:text</type>
@@ -34,18 +35,66 @@
                     <index enabled="false" />
                 </property>
             </properties>
+            <associations>
+                <association name="ecosbpm:processAuthorAssoc">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+                <association name="ecosbpm:processOwnerAssoc">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+                <association name="ecosbpm:processReviewerAssoc">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:person</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
             <mandatory-aspects>
-                <aspect>tk:documentTypeKind</aspect>
-                <aspect>ecosbpm:hasIndex</aspect>
-                <aspect>cm:versionable</aspect>
-                <aspect>ecosbpm:hasThumbnail</aspect>
                 <aspect>cm:titled</aspect>
+                <aspect>icase:case</aspect>
+                <aspect>cm:versionable</aspect>
+                <aspect>ecosbpm:hasIndex</aspect>
+                <aspect>tk:documentTypeKind</aspect>
+                <aspect>ecosbpm:hasThumbnail</aspect>
+                <aspect>ecosbpm:hasModelImage</aspect>
             </mandatory-aspects>
         </type>
 
     </types>
 
     <aspects>
+
+        <aspect name="ecosbpm:hasValidityDate">
+            <properties>
+                <property name="ecosbpm:validFrom">
+                    <type>d:date</type>
+                </property>
+                <property name="ecosbpm:validTo">
+                    <type>d:date</type>
+                </property>
+            </properties>
+        </aspect>
 
         <aspect name="ecosbpm:hasIndex">
             <properties>
@@ -58,6 +107,15 @@
         <aspect name="ecosbpm:hasThumbnail">
             <properties>
                 <property name="ecosbpm:thumbnail">
+                    <type>d:content</type>
+                    <index enabled="false" />
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="ecosbpm:hasModelImage">
+            <properties>
+                <property name="ecosbpm:modelImage">
                     <type>d:content</type>
                     <index enabled="false" />
                 </property>
