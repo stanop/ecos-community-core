@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
+    <id>ecosbpm-process-view</id>
+    <regionId>ecosbpm-process-view</regionId>
+    <allowed-type>{http://www.citeck.ru/model/ecos/bpm/1.0}processModel</allowed-type>
+    <position>
+        <column>left</column>
+        <order>a0</order>
+        <mobile-order>0</mobile-order>
+    </position>
+    <control url="js/citeck/modules/cardlets/img-preview/img-preview">
+        <prop name="header">cardlet.ecosbpm-process-view.header</prop>
+        <prop name="imgSrc">/share/proxy/alfresco/citeck/ecos/image/thumbnail?nodeRef=${nodeRef}&amp;property=ecosbpm:modelImage&amp;cached=true</prop>
+    </control>
+</cardlet>

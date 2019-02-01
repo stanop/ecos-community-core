@@ -14,7 +14,6 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.flowable.ui.modeler.domain.Model;
-import org.flowable.ui.modeler.service.ModelImageService;
 import org.flowable.bpmn.BpmnAutoLayout;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
@@ -46,6 +45,9 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
     private static final QName PROP_XML = ContentModel.PROP_CONTENT;
     private static final QName PROP_JSON = EcosBpmModel.PROP_JSON_MODEL;
     private static final QName PROP_THUMBNAIL = EcosBpmModel.PROP_THUMBNAIL;
+    private static final QName PROP_MODEL_IMG = EcosBpmModel.PROP_MODEL_IMAGE;
+
+    private static final int THUMBNAIL_WIDTH = 300;
 
     private static final String ENCODING = "UTF-8";
     private static final String THUMBNAIL_MIMETYPE = "image/png";
@@ -55,7 +57,7 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
     private ContentService contentService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
-    private ModelImageService modelImageService;
+    private FlowableImageService imageService;
 
     @Override
     protected void beforeInit() {
@@ -153,7 +155,7 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
             BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
             ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
 
-            generateThumbnail(nodeRef, modelNode);
+            generateImages(nodeRef, modelNode);
 
             try {
                 return new BpmnModelData(bpmnModel, objectMapper.writeValueAsBytes(modelNode));
@@ -190,7 +192,7 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
             } catch (IOException e) {
                 throw new IllegalStateException("Could not read JSON", e);
             }
-            generateThumbnail(nodeRef, jsonModel);
+            generateImages(nodeRef, jsonModel);
 
             BpmnModel bpmnModel = jsonConverter.convertToBpmnModel(jsonModel);
             BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
@@ -199,23 +201,34 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
         });
     }
 
-    private void generateThumbnail(NodeRef nodeRef, JsonNode node) {
+    private void generateImages(NodeRef nodeRef, JsonNode node) {
 
         Model model = new Model();
         model.setId(nodeRef.toString());
 
         if (node instanceof ObjectNode) {
 
-            byte[] thumbnail = modelImageService.generateThumbnailImage(model, (ObjectNode) node);
+            BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
+            BpmnModel bpmnModel = bpmnJsonConverter.convertToBpmnModel(node);
 
-            ContentWriter writer = contentService.getWriter(nodeRef, PROP_THUMBNAIL, true);
-            writer.setEncoding(ENCODING);
-            writer.setMimetype(THUMBNAIL_MIMETYPE);
-            writer.putContent(new ByteArrayInputStream(thumbnail));
+            generateImage(nodeRef, bpmnModel, PROP_MODEL_IMG, Integer.MAX_VALUE);
+            generateImage(nodeRef, bpmnModel, PROP_THUMBNAIL, THUMBNAIL_WIDTH);
 
         } else {
-
             logger.error("Wrong type of node: " + (node != null ? node.getClass() : null));
+        }
+    }
+
+    private void generateImage(NodeRef nodeRef, BpmnModel model, QName targetProp, int maxWidth) {
+
+        byte[] modelImage = imageService.generateImage(model, maxWidth);
+
+        if (modelImage != null) {
+
+            ContentWriter writer = contentService.getWriter(nodeRef, targetProp, true);
+            writer.setEncoding(ENCODING);
+            writer.setMimetype(THUMBNAIL_MIMETYPE);
+            writer.putContent(new ByteArrayInputStream(modelImage));
         }
     }
 
@@ -251,8 +264,8 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
     }
 
     @Autowired
-    public void setModelImageService(ModelImageService modelImageService) {
-        this.modelImageService = modelImageService;
+    public void setImageService(FlowableImageService imageService) {
+        this.imageService = imageService;
     }
 
     private static class BpmnModelData {

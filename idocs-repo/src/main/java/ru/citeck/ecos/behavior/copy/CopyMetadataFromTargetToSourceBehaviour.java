@@ -113,6 +113,10 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
 
     @Override
     public void onCaseStatusChanged(NodeRef caseRef, NodeRef caseStatusBefore, NodeRef caseStatusAfter) {
+        if (caseStatusAssocQName == null) {
+            return;
+        }
+
         if (!nodeService.exists(caseRef)) {
             return;
         }
