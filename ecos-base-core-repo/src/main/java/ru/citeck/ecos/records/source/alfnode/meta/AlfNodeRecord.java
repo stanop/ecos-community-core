@@ -67,9 +67,9 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public Object getAttribute(String name) {
+    public List<? extends MetaValue> getAttribute(String name) {
 
-        Object attribute = null;
+       List<? extends MetaValue> attribute = null;
 
         switch (name) {
             case ATTR_ASPECTS:
@@ -98,7 +98,7 @@ public class AlfNodeRecord implements MetaValue {
 
             case RecordConstants.ATT_FORM_KEY:
 
-                attribute = "alf_" + node.type();
+                attribute = Collections.singletonList(new AlfNodeAttValue("alf_" + node.type()));
                 break;
 
             default:
@@ -122,7 +122,7 @@ public class AlfNodeRecord implements MetaValue {
                 }
         }
 
-        return attribute;
+        return attribute != null ? attribute : Collections.emptyList();
     }
 }
 
