@@ -32,7 +32,7 @@ public class RecordsQuery {
     private QueryPage page = new SkipPage();
 
     private QueryConsistency consistency = QueryConsistency.DEFAULT;
-    private String language = SearchService.LANGUAGE_FTS_ALFRESCO;
+    private String language = "";
     private JsonNode query = MissingNode.getInstance();
     private boolean debug = false;
 
@@ -40,13 +40,13 @@ public class RecordsQuery {
     }
 
     public RecordsQuery(RecordsQuery other) {
+        this.page = other.page;
         this.query = other.query;
-        this.sourceId = other.sourceId;
+        this.debug = other.debug;
         this.language = other.language;
+        this.sourceId = other.sourceId;
         this.consistency = other.consistency;
         this.sortBy = new ArrayList<>(other.sortBy);
-        this.debug = other.debug;
-        this.page = other.page;
     }
 
     public String getSourceId() {
@@ -99,7 +99,7 @@ public class RecordsQuery {
     }
 
     public void setLanguage(String language) {
-        this.language = language;
+        this.language = language != null ? language : "";
     }
 
     @JsonIgnore
