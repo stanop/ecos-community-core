@@ -64,20 +64,42 @@ YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
 
 // TODO:
 // - init tooltip only if text not empty
-function getHintPropertyByCurrentUser(callback){
-    Alfresco.util.Ajax.jsonGet({
-        url: Alfresco.constants.PROXY_URI + "citeck/search/query",
-        dataObj: {
-            query: '=cm:userName:"' + Alfresco.constants.USERNAME + '"',
-            schema: JSON.stringify({attributes:{'org:showHints':''}})
-        },
-        successCallback: {
-            scope: this,
-            fn: function(response) {
-                callback(response.json);
+function getHintPropertyByCurrentUser(callback) {
+
+    if (!window.getHintPropertyByCurrentUser) {
+        window.getHintPropertyByCurrentUser = ko.observable(null);
+
+        Alfresco.util.Ajax.jsonGet({
+            url: Alfresco.constants.PROXY_URI + "citeck/search/query",
+            dataObj: {
+                query: '=cm:userName:"' + Alfresco.constants.USERNAME + '"',
+                schema: JSON.stringify({attributes:{'org:showHints':''}})
+            },
+            successCallback: {
+                scope: this,
+                fn: function(response) {
+                    window.getHintPropertyByCurrentUser(response.json);
+                }
+            },
+            failureCallback: {
+                scope: this,
+                fn: function() {
+                    window.getHintPropertyByCurrentUser({});
+                }
             }
-        }
-    });
+        });
+    }
+
+    var value = window.getHintPropertyByCurrentUser();
+    if (value) {
+        callback(value);
+    } else {
+        koutils.subscribeOnce(window.getHintPropertyByCurrentUser, function(value) {
+            if (value) {
+                callback(value);
+            }
+        }, this);
+    }
 }
 
 ko.components.register("help", {
