@@ -177,7 +177,7 @@
                 </cmmn:ifPart>
             </cmmn:sentry>
             <cmmn:sentry id="id-37" ns8:originalEvent="user-action" ns8:confirmationMessage="Вы уверены, что хотите удалить договор?">
-                <cmmn:planItemOnPart sourceRef="id-36" id="id-34" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/iEvent/1.0}userAction" ns8:title="Удалить">
+                <cmmn:planItemOnPart sourceRef="id-36" id="id-34" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/iEvent/1.0}userAction" ns8:title="userActions.contract.property.delete">
                     <cmmn:standardEvent>occur</cmmn:standardEvent>
                 </cmmn:planItemOnPart>
                 <cmmn:ifPart>
