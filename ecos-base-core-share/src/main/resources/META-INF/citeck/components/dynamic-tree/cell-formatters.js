@@ -221,6 +221,29 @@ define([
             };
         },
 
+        dateOrDateTime: function Citeck_format_date_or_datetime(patternDate, patternDateTime) {
+            if (!patternDate) {
+                patternDate = 'dd.MM.yyyy';
+            }
+            if (!patternDateTime) {
+                patternDateTime = 'dd.MM.yyyy HH:mm';
+            }
+
+            return function(elCell, oRecord, oColumn, sData) {
+                var text = sData && sData.hasOwnProperty('str') ? sData.str : sData;
+                if (!text) {
+                    elCell.innerHTML = '';
+                    return;
+                }
+                var date = Alfresco.util.fromISO8601(text),
+                    hours = date.getHours(),
+                    minutes = date.getMinutes(),
+                    seconds = date.getSeconds(),
+                    pattern = (hours == 0 && minutes == 0 && seconds == 0) ? patternDate : patternDateTime;
+                elCell.innerHTML = date.toString(pattern);
+            };
+        },
+
         // alias for backwards compatibility
         dateFormat: function(pattern) {
             return Citeck.format.date(pattern);
