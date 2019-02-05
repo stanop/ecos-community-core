@@ -237,6 +237,7 @@
                 <region name="select" template="select-journal">
                     <param name="journalType">working-calendar</param>
                 </region>
+                <invariant on="multiple" language="explicit">false</invariant>
             </field>
             <field prop="ecos:timezone">
                 <region name="input" template="select"/>
@@ -598,6 +599,7 @@
                 <region name="select" template="select-journal">
                     <param name="journalType">working-calendar</param>
                 </region>
+                <invariant on="multiple" language="explicit">false</invariant>
             </field>
             <field prop="ecos:timezone">
                 <region name="input" template="select"/>
