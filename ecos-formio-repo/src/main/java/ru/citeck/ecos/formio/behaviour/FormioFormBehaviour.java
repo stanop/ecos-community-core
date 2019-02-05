@@ -49,7 +49,7 @@ public class FormioFormBehaviour extends AbstractBehaviour
         contentService = serviceRegistry.getContentService();
     }
 
-    @PolicyMethod(policy = NodeServicePolicies.OnCreateNodePolicy.class,
+    @PolicyMethod(policy = ContentServicePolicies.OnContentPropertyUpdatePolicy.class,
                   frequency = Behaviour.NotificationFrequency.TRANSACTION_COMMIT,
                   runAsSystem = true)
     public void onContentPropertyUpdate(NodeRef nodeRef,
