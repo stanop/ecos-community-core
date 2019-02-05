@@ -21,7 +21,11 @@
     var results = [];
     if (groupType == "selected") {
 
-        records = recordsService.toRecords(nodes);
+        var records = [];
+        for (var idx in nodes) {
+            records.push(new Packages.ru.citeck.ecos.records.RecordRef(nodes[idx]));
+        }
+
         actionResultsData = groupActions.execute(records, {
             params: params,
             actionId: actionId

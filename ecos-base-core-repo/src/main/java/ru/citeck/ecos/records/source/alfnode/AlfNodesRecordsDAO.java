@@ -42,7 +42,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                                 implements RecordsQueryDAO,
                                            RecordsDefinitionDAO,
                                            RecordsMetaDAO,
-                                           MutableRecordsDAO {
+                                           MutableRecordsDAO,
+                                           RecordsActionExecutor {
 
     private static final Log logger = LogFactory.getLog(AlfNodesRecordsDAO.class);
 
@@ -275,8 +276,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         AlfNodesSearch alfNodesSearch = searchByLanguage.get(query.getLanguage());
 
         if (alfNodesSearch == null) {
-            throw new IllegalArgumentException("Language " + query.getLanguage() +
-                                               " is not supported! Query: " + query);
+            throw new IllegalArgumentException("Language '" + query.getLanguage() +
+                                               "' is not supported! Query: " + query);
         }
 
         if (query.getLanguage().isEmpty()) {
