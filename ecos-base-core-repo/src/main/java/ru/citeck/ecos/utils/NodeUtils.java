@@ -19,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -123,6 +120,45 @@ public class NodeUtils {
         QName assocName = QName.createQNameWithValidLocalName(childAssoc.getNamespaceURI(), name);
 
         return nodeService.createNode(parentRef, childAssoc, assocName, type, props).getChildRef();
+    }
+
+    public boolean setAssocs(NodeRef nodeRef, Collection<NodeRef> targets, QName assocName) {
+
+        if (!isValidNode(nodeRef) || assocName == null) {
+            return false;
+        }
+
+        if (targets == null) {
+            targets = Collections.emptySet();
+        }
+
+        Set<NodeRef> targetsSet = new HashSet<>(targets);
+
+        AssociationDefinition assocDef = dictionaryService.getAssociation(assocName);
+
+        if (assocDef != null) {
+
+            List<NodeRef> storedRefs = getAssocsImpl(nodeRef, assocDef, true);
+
+            Set<NodeRef> toAdd = targetsSet.stream()
+                                           .filter(r -> !storedRefs.contains(r))
+                                           .collect(Collectors.toSet());
+            Set<NodeRef> toRemove = storedRefs.stream()
+                                              .filter(r -> !targetsSet.contains(r))
+                                              .collect(Collectors.toSet());
+
+            if (toAdd.size() > 0 || toRemove.size() > 0) {
+
+                for (NodeRef removeRef : toRemove) {
+                    nodeService.removeAssociation(nodeRef, removeRef, assocName);
+                }
+                for (NodeRef addRef : toAdd) {
+                    nodeService.createAssociation(nodeRef, addRef, assocName);
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

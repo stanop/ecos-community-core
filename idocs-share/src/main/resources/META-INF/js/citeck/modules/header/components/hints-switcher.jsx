@@ -45,11 +45,11 @@ export default class SwitchHintMenu extends React.Component {
             return null;
         }
 
-        let title = "Подсказки выключены";
-        let url = '/share/res/components/images/header/dialog_image_off.png';
+        let title = Alfresco.util.message("hints.disabled");
+        let url = '/share/res/components/images/header/hint_icon_off.png';
         if (isShowHints) {
-            title = "Подсказки включены";
-            url = '/share/res/components/images/header/dialog_image.png';
+            title = Alfresco.util.message("hints.enabled");;
+            url = '/share/res/components/images/header/hint_icon_on.png';
         }
 
         const backgroundImage = `url(${url})`;

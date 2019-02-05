@@ -6,10 +6,7 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.dictionary.ClassDefinition;
-import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
@@ -45,7 +42,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                                 implements RecordsQueryDAO,
                                            RecordsDefinitionDAO,
                                            RecordsMetaDAO,
-                                           MutableRecordsDAO {
+                                           MutableRecordsDAO,
+                                           RecordsActionExecutor {
 
     private static final Log logger = LogFactory.getLog(AlfNodesRecordsDAO.class);
 
@@ -53,14 +51,14 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
     private Map<String, AlfNodesSearch> searchByLanguage = new ConcurrentHashMap<>();
 
-    private DictionaryService dictionaryService;
-    private NamespaceService namespaceService;
-    private MimetypeService mimetypeService;
-    private ContentService contentService;
-    private MessageService messageService;
-    private SearchService searchService;
-    private NodeService nodeService;
     private NodeUtils nodeUtils;
+    private NodeService nodeService;
+    private SearchService searchService;
+    private MessageService messageService;
+    private ContentService contentService;
+    private MimetypeService mimetypeService;
+    private NamespaceService namespaceService;
+    private DictionaryService dictionaryService;
 
     private Map<QName, NodeRef> defaultParentByType = new ConcurrentHashMap<>();
 
@@ -77,6 +75,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             Map<QName, Serializable> props = new HashMap<>();
             Map<QName, JsonNode> contentProps = new HashMap<>();
+            Map<QName, Set<NodeRef>> assocs = new HashMap<>();
 
             ObjectNode fields = record.getAttributes();
             Iterator<String> names = fields.fieldNames();
@@ -97,6 +96,21 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                         contentProps.put(fieldName, fields.path(name));
                     } else {
                         props.put(fieldName, fields.path(name).asText());
+                    }
+                } else {
+
+                    AssociationDefinition assocDef = dictionaryService.getAssociation(fieldName);
+
+                    if (assocDef != null) {
+
+                        Set<NodeRef> nodeRefs = Arrays.stream(fields.path(name).asText().split(","))
+                                                      .filter(NodeRef::isNodeRef)
+                                                      .map(NodeRef::new)
+                                                      .collect(Collectors.toSet());
+
+                        if (nodeRefs.size() > 0) {
+                            assocs.put(fieldName, nodeRefs);
+                        }
                     }
                 }
             }
@@ -170,6 +184,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                     }
                 }
             });
+
+            assocs.forEach((name, value) -> nodeUtils.setAssocs(nodeRef, value, name));
         }
 
         return result;
@@ -256,11 +272,18 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
     @Override
     public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
+
         AlfNodesSearch alfNodesSearch = searchByLanguage.get(query.getLanguage());
+
         if (alfNodesSearch == null) {
-            throw new IllegalArgumentException("Language " + query.getLanguage() +
-                                               " is not supported! Query: " + query);
+            throw new IllegalArgumentException("Language '" + query.getLanguage() +
+                                               "' is not supported! Query: " + query);
         }
+
+        if (query.getLanguage().isEmpty()) {
+            query.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
+        }
+
         Long afterIdValue = null;
         Date afterCreated = null;
         if (query.isAfterIdMode()) {

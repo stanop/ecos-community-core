@@ -64,7 +64,7 @@ public class ImageThumbnailGet extends AbstractWebScript {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "Content not found");
         }
 
-        File tempFile = getTempFile(nodeRef, reader, width, height, stretch);
+        File tempFile = getTempFile(nodeRef, reader, contentProperty, width, height, stretch);
 
         long tempLastModified = tempFile.lastModified();
         if (!tempFile.exists() || tempLastModified < reader.getLastModified()) {
@@ -85,11 +85,15 @@ public class ImageThumbnailGet extends AbstractWebScript {
 
     private File getTempFile(NodeRef imageRef,
                              ContentReader reader,
-                             int width, int height, boolean stretch) {
+                             QName property,
+                             int width, int height,
+                             boolean stretch) {
 
         String extension = mimetypeService.getExtension(reader.getMimetype());
         File tmpDir = TempFileProvider.getTempDir().getAbsoluteFile();
-        return new File(tmpDir, String.format("%s_%s_%s_%s.%s", imageRef.getId(), width, height, stretch, extension));
+        int hash = Objects.hash(imageRef, property, reader.getLastModified(), width, height, stretch);
+
+        return new File(tmpDir, String.format("%s_%s.%s", imageRef.getId(), hash, extension));
     }
 
     private void updateImage(ContentReader reader,

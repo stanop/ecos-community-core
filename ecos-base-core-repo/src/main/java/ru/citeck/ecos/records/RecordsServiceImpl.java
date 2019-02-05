@@ -116,7 +116,11 @@ public class RecordsServiceImpl implements RecordsService {
             if (!recordsQueryDAO.isPresent()) {
 
                 records = new RecordsQueryResult<>();
-
+                if (query.isDebug()) {
+                    records.setDebugInfo(getClass(),
+                                         "RecordsDAO",
+                                         "Source with id '" + query.getSourceId() + "' is not found");
+                }
             } else {
 
                 if (logger.isDebugEnabled()) {

@@ -104,6 +104,7 @@
                 <value>alfresco/module/idocs-repo/messages/route</value>
                 <value>alfresco/module/idocs-repo/messages/menu-config</value>
                 <value>alfresco/module/idocs-repo/messages/working-calendar</value>
+                <value>alfresco/module/idocs-repo/messages/ecosbpm-model</value>
             </list>
         </property>
     </bean>
