@@ -13,6 +13,8 @@
         <property name="nodeDataReader" ref="ecos.formio.formioFormNodeDataReader" />
     </bean>
 
+    <bean id="ecos.formio.formMetadataExtractor" class="ru.citeck.ecos.formio.repo.FormioFormMetadata" />
+
     <bean id="ecos.formio.contentDeployer" class="ru.citeck.ecos.content.deploy.ContentDeployer">
         <property name="artifactType" value="formio-content-deployer" />
         <property name="repoContentDAO" ref="ecos.formio.repoFormsDAO" />
@@ -21,9 +23,7 @@
                 <value>{http://www.citeck.ru/model/ecos/content/1.0}id</value>
             </set>
         </property>
-        <property name="metadataExtractor">
-            <bean class="ru.citeck.ecos.formio.repo.FormioFormMetadata" />
-        </property>
+        <property name="metadataExtractor" ref="ecos.formio.formMetadataExtractor" />
         <property name="locations">
             <bean factory-bean="resourceResolver" factory-method="getResources">
                 <constructor-arg>
@@ -39,11 +39,21 @@
 
     <bean id="ecos.formio.repoFormProvider" class="ru.citeck.ecos.formio.provider.RepoFormProvider">
         <property name="formsContentDAO" ref="ecos.formio.repoFormsDAO" />
+        <property name="metadataExtractor" ref="ecos.formio.formMetadataExtractor" />
     </bean>
 
-    <bean id="ecos.formio.formioFormService" class="ru.citeck.ecos.formio.FormioFormServiceImpl" />
+    <bean id="ecos.formio.formioFormService" class="ru.citeck.ecos.formio.FormioFormServiceImpl">
+        <property name="newFormsStore" ref="ecos.formio.repoFormProvider" />
+    </bean>
 
     <bean id="ecos.formio.formioFormNodeDataReader" class="ru.citeck.ecos.formio.repo.FormioFormNodeDataReader" />
+
+    <bean id="ecos.formio.formioFormServiceJS"
+          class="ru.citeck.ecos.formio.FormioFormServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="ecosFormio" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
 
     <!--<bean class="ru.citeck.ecos.records.source.alfnode.AlfNodesDefaultParentRegistrar">
         <property name="defaultParents">

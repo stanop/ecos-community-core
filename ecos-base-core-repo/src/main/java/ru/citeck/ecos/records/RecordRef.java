@@ -24,7 +24,7 @@ public class RecordRef {
 
     public RecordRef(String sourceId, String id) {
         this.sourceId = sourceId;
-        this.id = id;
+        this.id = id != null ? id : "";
     }
 
     public RecordRef(String sourceId, RecordRef id) {

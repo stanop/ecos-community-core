@@ -475,6 +475,7 @@
         require(['react', 'react-dom', 'js/citeck/formio/formio-form'], function (React, ReactDOM, FormioForm) {
             ReactDOM.render(React.createElement(FormioForm.default, {
                 record: record,
+                attributes: config.attributes || {},
                 onReady: function() {
                     panel.show();
                     setTimeout(function(){
@@ -683,6 +684,11 @@
             editDetails.show();
         };
 
+        if (forceOldDialog) {
+            oldDialog();
+            return;
+        }
+
         var checkUrl = YAHOO.lang.substitute(Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?{paramName}={itemId}&viewId={formId}&mode={mode}", {
             paramName: paramName,
             itemId: itemId,
@@ -693,9 +699,11 @@
         Alfresco.util.Ajax.jsonGet({
             url: checkUrl,
             successCallback: { fn: function(response) {
-                if (forceOldDialog) {
-                    oldDialog();
-                } else if (response.json.exists) {
+                var resp = response.json;
+
+                if (resp.formioExists) {
+                    Citeck.forms.formio(itemId, {});
+                } else if (resp.exists) {
                     newDialog();
                 } else if(response.json.defaultExists) {
                     formId = "";

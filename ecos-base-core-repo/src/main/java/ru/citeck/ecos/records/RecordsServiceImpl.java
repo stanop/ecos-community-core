@@ -196,13 +196,29 @@ public class RecordsServiceImpl implements RecordsService {
     @Override
     public RecordMeta getAttributes(RecordRef record, Map<String, String> attributes) {
 
-        RecordsResult<RecordMeta> values = getAttributes(Collections.singletonList(record), attributes);
+        return extractOne(getAttributes(Collections.singletonList(record), attributes), record);
+    }
+
+    @Override
+    public RecordMeta getAttributes(RecordRef record, Collection<String> attributes) {
+
+        return extractOne(getAttributes(Collections.singletonList(record), attributes), record);
+    }
+
+    private RecordMeta extractOne(RecordsResult<RecordMeta> values, RecordRef record) {
 
         if (values.getRecords().isEmpty()) {
             return new RecordMeta(record);
         }
-
-        return values.getRecords().get(0);
+        RecordMeta meta = values.getRecords()
+                                .stream()
+                                .filter(r -> record.equals(r.getId()))
+                                .findFirst()
+                                .orElse(null);
+        if (meta == null) {
+            meta = new RecordMeta(record);
+        }
+        return meta;
     }
 
     @Override
@@ -271,10 +287,6 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public RecordsMutResult mutate(RecordsMutation mutation) {
-
-        if (mutation.getSourceId() != null) {
-            return needRecordsDAO(mutation.getSourceId(), MutableRecordsDAO.class, mutableDAO).mutate(mutation);
-        }
 
         RecordsMutResult result = new RecordsMutResult();
 

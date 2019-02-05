@@ -29,7 +29,6 @@ import java.util.TreeMap;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
-import org.alfresco.service.namespace.QName;
 
 import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.journals.xml.*;
@@ -41,7 +40,7 @@ class JournalTypeImpl implements JournalType {
     private final String datasource;
 
     private final Map<String, String> options;
-    private final List<QName> attributes;
+    private final List<String> attributes;
     private final List<JournalGroupAction> groupActions;
 
     private final BitSet defaultAttributes;
@@ -50,9 +49,9 @@ class JournalTypeImpl implements JournalType {
     private final BitSet sortableAttributes;
     private final BitSet groupableAttributes;
 
-    private final Map<QName, Map<String, String>> attributeOptions;
-    private final Map<QName, List<JournalBatchEdit>> batchEdit;
-    private final Map<QName, JournalCriterion> criterion;
+    private final Map<String, Map<String, String>> attributeOptions;
+    private final Map<String, List<JournalBatchEdit>> batchEdit;
+    private final Map<String, JournalCriterion> criterion;
 
     public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver, ServiceRegistry serviceRegistry,
                            SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
@@ -61,7 +60,7 @@ class JournalTypeImpl implements JournalType {
         this.options = Collections.unmodifiableMap(getOptions(journal.getOption()));
         this.groupActions = Collections.unmodifiableList(getGroupActions(journal, serviceRegistry));
         List<Header> headers = journal.getHeaders().getHeader();
-        List<QName> allAttributes = new ArrayList<>(headers.size());
+        List<String> allAttributes = new ArrayList<>(headers.size());
 
         String datasource = journal.getDatasource();
         this.datasource = StringUtils.isNotBlank(datasource) ? datasource : "";
@@ -80,7 +79,7 @@ class JournalTypeImpl implements JournalType {
         int index = 0;
         for (Header header : headers) {
 
-            QName attributeKey = QName.createQName(header.getKey(), prefixResolver);
+            String attributeKey = header.getKey();
 
             allAttributes.add(attributeKey);
             if (header.isDefault()) {
@@ -130,68 +129,68 @@ class JournalTypeImpl implements JournalType {
     }
 
     @Override
-    public List<QName> getAttributes() {
+    public List<String> getAttributes() {
         return attributes;
     }
 
     @Override
-    public List<QName> getDefaultAttributes() {
+    public List<String> getDefaultAttributes() {
         return getFeaturedAttributes(defaultAttributes);
     }
 
     @Override
-    public List<QName> getVisibleAttributes() {
+    public List<String> getVisibleAttributes() {
         return getFeaturedAttributes(visibleAttributes);
     }
 
     @Override
-    public List<QName> getSearchableAttributes() {
+    public List<String> getSearchableAttributes() {
         return getFeaturedAttributes(searchableAttributes);
     }
 
     @Override
-    public List<QName> getSortableAttributes() {
+    public List<String> getSortableAttributes() {
         return getFeaturedAttributes(sortableAttributes);
     }
 
     @Override
-    public List<QName> getGroupableAttributes() {
+    public List<String> getGroupableAttributes() {
         return getFeaturedAttributes(groupableAttributes);
     }
 
     @Override
-    public Map<String, String> getAttributeOptions(QName attributeKey) {
+    public Map<String, String> getAttributeOptions(String attributeKey) {
         Map<String, String> result = attributeOptions.get(attributeKey);
-        return result != null ? result : Collections.<String, String>emptyMap();
+        return result != null ? result : Collections.emptyMap();
     }
 
     @Override
-    public boolean isAttributeDefault(QName attributeKey) {
+    public boolean isAttributeDefault(String attributeKey) {
         return checkFeature(attributeKey, defaultAttributes);
     }
 
     @Override
-    public boolean isAttributeVisible(QName attributeKey) {
+    public boolean isAttributeVisible(String attributeKey) {
         return checkFeature(attributeKey, visibleAttributes);
     }
 
     @Override
-    public boolean isAttributeSearchable(QName attributeKey) {
+    public boolean isAttributeSearchable(String attributeKey) {
         return checkFeature(attributeKey, searchableAttributes);
     }
 
     @Override
-    public boolean isAttributeSortable(QName attributeKey) {
+    public boolean isAttributeSortable(String attributeKey) {
         return checkFeature(attributeKey, sortableAttributes);
     }
 
     @Override
-    public boolean isAttributeGroupable(QName attributeKey) {
+    public boolean isAttributeGroupable(String attributeKey) {
         return checkFeature(attributeKey, groupableAttributes);
     }
 
     @Override
-    public List<JournalBatchEdit> getBatchEdit(QName attributeKey) {
+    public List<JournalBatchEdit> getBatchEdit(String attributeKey) {
         List<JournalBatchEdit> batchEdit = this.batchEdit.get(attributeKey);
         List<JournalBatchEdit> result = new ArrayList<>(batchEdit.size());
         for (JournalBatchEdit edit : batchEdit) {
@@ -214,19 +213,19 @@ class JournalTypeImpl implements JournalType {
     }
 
     @Override
-    public JournalCriterion getCriterion(QName attributeKey) {
+    public JournalCriterion getCriterion(String attributeKey) {
         return criterion.get(attributeKey);
     }
 
-    private List<QName> getFeaturedAttributes(BitSet featuredAttributes) {
-        List<QName> result = new LinkedList<>();
+    private List<String> getFeaturedAttributes(BitSet featuredAttributes) {
+        List<String> result = new LinkedList<>();
         for (int i = featuredAttributes.nextSetBit(0); i >= 0; i = featuredAttributes.nextSetBit(i + 1)) {
             result.add(attributes.get(i));
         }
         return Collections.unmodifiableList(result);
     }
 
-    private boolean checkFeature(QName attributeKey, BitSet featuredAttributes) {
+    private boolean checkFeature(String attributeKey, BitSet featuredAttributes) {
         int index = attributes.indexOf(attributeKey);
         return index >= 0 ? featuredAttributes.get(index) : false;
     }

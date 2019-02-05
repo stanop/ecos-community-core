@@ -31,21 +31,47 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
         return toArray(recordsService.executeAction(records, actionConfig));
     }
 
-    public RecordsResult<RecordMeta> getAttributes(Object records, Object attributes) {
+    public Object getAttributes(Object records, Object attributes) {
 
         ParameterCheck.mandatory("records", records);
         ParameterCheck.mandatory("attributes", attributes);
 
-        RecordsList javaRecords = jsUtils.toJava(records, RecordsList.class);
+        Object javaRecords = jsUtils.toJava(records);
         Object javaAttributes = jsUtils.toJava(attributes);
 
-        if (javaAttributes instanceof Collection) {
-            return recordsService.getAttributes(javaRecords, (Collection<String>) javaAttributes);
-        } else if (javaAttributes instanceof Map) {
-            return recordsService.getAttributes(javaRecords, (Map<String, String>) javaAttributes);
+        if (javaRecords instanceof Collection) {
+            return getRecordsAttributes(jsUtils.convert(javaRecords, RecordsList.class), javaAttributes);
+        } else {
+            return getRecordAttributes(jsUtils.convert(javaRecords, RecordRef.class), javaAttributes);
         }
-        throw new IllegalArgumentException("Attributes type is not supported! " +
-                                           javaAttributes.getClass() + " " + attributes.getClass());
+    }
+
+    private Object getRecordAttributes(RecordRef recordRef, Object attributes) {
+
+        if (attributes instanceof Collection) {
+            return recordsService.getAttributes(recordRef, (Collection<String>) attributes);
+        } else if (attributes instanceof Map) {
+            return recordsService.getAttributes(recordRef, (Map<String, String>) attributes);
+        }
+
+        throwIncorrectAttributesType(attributes);
+        return null;
+    }
+
+    private Object getRecordsAttributes(Collection<RecordRef> records, Object attributes) {
+
+        if (attributes instanceof Collection) {
+            return recordsService.getAttributes(records, (Collection<String>) attributes);
+        } else if (attributes instanceof Map) {
+            return recordsService.getAttributes(records, (Map<String, String>) attributes);
+        }
+
+        throwIncorrectAttributesType(attributes);
+        return null;
+    }
+
+    private void throwIncorrectAttributesType(Object attributes) throws RuntimeException {
+        throw new IllegalArgumentException("Attributes type is not supported! " + attributes.getClass());
     }
 
     public RecordsResult<?> getRecords(Object recordsQuery) {

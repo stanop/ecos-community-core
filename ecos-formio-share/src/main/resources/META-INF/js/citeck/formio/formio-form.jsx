@@ -51,12 +51,33 @@ export default class FormioForm extends React.Component {
                     form.ecos.custom = data[0];
 
                     form.submission = {
-                        data: data[1]
+                        data: {
+                            ...(self.props.attributes || {}),
+                            ...data[1]
+                        }
                     };
 
                     form.on('submit', (submission) => {
                         self.submitForm(form, submission);
                     });
+
+                    let handlersPrefix = "onForm";
+
+                    for (let key in self.props) {
+
+                        if (self.props.hasOwnProperty(key) && key.startsWith(handlersPrefix)) {
+
+                            let event = key.slice(handlersPrefix.length).toLowerCase();
+
+                            if (event != 'submit') {
+                                form.on(event, () => {
+                                    self.props[key].apply(form, arguments);
+                                });
+                            } else {
+                                console.warn("Please use onSubmit handler instead of onFormSubmit");
+                            }
+                        }
+                    }
 
                     if (self.props.onReady) {
                         self.props.onReady(form);
@@ -66,7 +87,16 @@ export default class FormioForm extends React.Component {
         });
     }
 
+    fireEvent(event, data) {
+        var handlerName = 'on' + event.charAt(0).toUpperCase() + event.slice(1);
+        if (this.props[handlerName]) {
+            this.props[handlerName](data);
+        }
+    }
+
     submitForm(form, submission) {
+
+        var self = this;
 
         let inputs = FormioForm.getFormInputs(form);
 
@@ -79,8 +109,8 @@ export default class FormioForm extends React.Component {
         }
 
         form.ecos.record.save().then(record => {
-            if (this.props.onSubmit) {
-                this.props.onSubmit(record);
+            if (self.props.onSubmit) {
+                self.props.onSubmit(record);
             }
         });
     }

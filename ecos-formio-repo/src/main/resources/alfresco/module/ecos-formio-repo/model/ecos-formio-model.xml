@@ -21,21 +21,6 @@
                 <property name="ecosFormio:formKey">
                     <type>d:text</type>
                 </property>
-                <property name="ecosFormio:formMode">
-                    <type>d:text</type>
-                    <default>ANY</default>
-                    <constraints>
-                        <constraint name="ecosFormio:formModeConstraint" type="LIST">
-                            <parameter name="allowedValues">
-                                <list>
-                                    <value>ANY</value>
-                                    <value>VIEW</value>
-                                    <value>EDIT</value>
-                                </list>
-                            </parameter>
-                        </constraint>
-                    </constraints>
-                </property>
                 <property name="ecosFormio:customModule">
                     <type>d:text</type>
                 </property>

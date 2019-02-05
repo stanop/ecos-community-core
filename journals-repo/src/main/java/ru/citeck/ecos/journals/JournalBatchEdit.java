@@ -28,15 +28,17 @@ public class JournalBatchEdit {
 
     private DictionaryService dictionaryService;
     private MessageService messageService;
+    private NamespacePrefixResolver prefixResolver;
 
-    public JournalBatchEdit(BatchEdit batchEdit, String journalId, QName attribute,
+    public JournalBatchEdit(BatchEdit batchEdit, String journalId, String attribute,
                             NamespacePrefixResolver prefixResolver, ServiceRegistry serviceRegistry) {
 
+        this.prefixResolver = prefixResolver;
         dictionaryService = serviceRegistry.getDictionaryService();
         messageService = (MessageService) serviceRegistry.getService(AlfrescoServices.MESSAGE_SERVICE);
 
         attributeDefinition = getAttributeDefinition(attribute, dictionaryService);
-        id = journalId + attribute.toPrefixString(prefixResolver).replaceAll(":", "_");
+        id = journalId + attribute.replaceAll(":", "_");
         evaluator = new JournalEvaluator(batchEdit.getEvaluator(), journalId, serviceRegistry);
         options = new HashMap<>();
         for (Option option : batchEdit.getParam()) {
@@ -60,8 +62,12 @@ public class JournalBatchEdit {
     public String getTitle() {
         String localizedTitle = I18NUtil.getMessage(title);
         if (localizedTitle != null) {
-            String attributeTitle = attributeDefinition.getTitle(messageService);
-            return String.format(localizedTitle, attributeTitle);
+            if (attributeDefinition != null) {
+                String attributeTitle = attributeDefinition.getTitle(messageService);
+                return String.format(localizedTitle, attributeTitle);
+            } else {
+                return localizedTitle;
+            }
         } else {
             return title;
         }
@@ -71,12 +77,22 @@ public class JournalBatchEdit {
         return id;
     }
 
-    private ClassAttributeDefinition getAttributeDefinition(QName attribute, DictionaryService dictionaryService) {
-        PropertyDefinition property = dictionaryService.getProperty(attribute);
+    private ClassAttributeDefinition getAttributeDefinition(String attribute, DictionaryService dictionaryService) {
+
+        if (!attribute.contains(":") && !attribute.contains("{")) {
+            return null;
+        }
+
+        QName qname = QName.resolveToQName(prefixResolver, attribute);
+        if (qname == null) {
+            return null;
+        }
+
+        PropertyDefinition property = dictionaryService.getProperty(qname);
         if (property != null) {
             return property;
         } else {
-            return dictionaryService.getAssociation(attribute);
+            return dictionaryService.getAssociation(qname);
         }
     }
 }

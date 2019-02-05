@@ -12,6 +12,7 @@ import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.JournalType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -23,14 +24,20 @@ public class CriterionModelInvariantsProvider extends CriterionInvariantsProvide
     }
 
     @Override
-    protected boolean isAttributeSupported(JournalType journalType, QName typeName, QName attribute) {
-        return dictionaryService.getProperty(attribute) != null;
+    protected boolean isAttributeSupported(JournalType journalType, QName typeName, String attribute) {
+        QName qname = QName.resolveToQName(namespaceService, attribute);
+        return qname != null && dictionaryService.getProperty(qname) != null;
     }
 
     @Override
-    protected List<InvariantDefinition> getInvariantsImpl(JournalType journalType, QName typeName, QName attribute) {
+    protected List<InvariantDefinition> getInvariantsImpl(JournalType journalType, QName typeName, String attribute) {
 
-        PropertyDefinition propDef = dictUtils.getPropDef(typeName, attribute);
+        QName qname = QName.resolveToQName(namespaceService, attribute);
+        if (qname == null) {
+            return Collections.emptyList();
+        }
+
+        PropertyDefinition propDef = dictUtils.getPropDef(typeName, qname);
 
         InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
         builder.pushScope(propDef);
@@ -57,4 +64,6 @@ public class CriterionModelInvariantsProvider extends CriterionInvariantsProvide
 
         return invariants;
     }
+
+
 }

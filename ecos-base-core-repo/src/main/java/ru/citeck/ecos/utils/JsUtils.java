@@ -281,8 +281,12 @@ public class JsUtils {
         return value;
     }
 
+    public <T> T convert(Object obj, Class<T> toClass) {
+        return mapper.convertValue(obj, toClass);
+    }
+
     public <T> T toJava(Object jsObject, Class<T> javaClass) {
-        return mapper.convertValue(toJava(jsObject), javaClass);
+        return convert(toJava(jsObject), javaClass);
     }
 
     @Autowired

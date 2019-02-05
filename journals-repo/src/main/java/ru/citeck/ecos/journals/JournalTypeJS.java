@@ -21,19 +21,12 @@ package ru.citeck.ecos.journals;
 import java.util.List;
 import java.util.Map;
 
-import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.namespace.NamespaceService;
-
-import ru.citeck.ecos.utils.JavaScriptImplUtils;
-
 public class JournalTypeJS {
     
     private JournalType impl;
-    private NamespaceService namespaceService;
     
-    JournalTypeJS(JournalType impl, ServiceRegistry serviceRegistry) {
+    JournalTypeJS(JournalType impl) {
         this.impl = impl;
-        this.namespaceService = serviceRegistry.getNamespaceService();
     }
     
     public String getId() {
@@ -45,55 +38,61 @@ public class JournalTypeJS {
     }
     
     public String[] getAttributes() {
-        return JavaScriptImplUtils.convertQNames(impl.getAttributes(), namespaceService);
+        List<String> attributes = impl.getAttributes();
+        return attributes.toArray(new String[0]);
     }
     
     public String[] getDefaultAttributes() {
-        return JavaScriptImplUtils.convertQNames(impl.getDefaultAttributes(), namespaceService);
+        List<String> attributes = impl.getDefaultAttributes();
+        return attributes.toArray(new String[0]);
     }
     
     public String[] getVisibleAttributes() {
-        return JavaScriptImplUtils.convertQNames(impl.getVisibleAttributes(), namespaceService);
+        List<String> attributes = impl.getVisibleAttributes();
+        return attributes.toArray(new String[0]);
     }
     
     public String[] getSearchableAttributes() {
-        return JavaScriptImplUtils.convertQNames(impl.getSearchableAttributes(), namespaceService);
+        List<String> attributes = impl.getSearchableAttributes();
+        return attributes.toArray(new String[0]);
     }
     
     public String[] getSortableAttributes() {
-        return JavaScriptImplUtils.convertQNames(impl.getSortableAttributes(), namespaceService);
+        List<String> attributes = impl.getSortableAttributes();
+        return attributes.toArray(new String[0]);
     }
     
     public String[] getGroupableAttributes() {
-        return JavaScriptImplUtils.convertQNames(impl.getGroupableAttributes(), namespaceService);
+        List<String> attributes = impl.getGroupableAttributes();
+        return attributes.toArray(new String[0]);
     }
     
     public Map<String, String> getAttributeOptions(String attributeKey) {
-        return impl.getAttributeOptions(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
+        return impl.getAttributeOptions(attributeKey);
     }
 
     public boolean isAttributeDefault(String attributeKey) {
-        return impl.isAttributeDefault(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
+        return impl.isAttributeDefault(attributeKey);
     }
     
     public boolean isAttributeVisible(String attributeKey) {
-        return impl.isAttributeVisible(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
+        return impl.isAttributeVisible(attributeKey);
     }
     
     public boolean isAttributeSearchable(String attributeKey) {
-        return impl.isAttributeSearchable(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
+        return impl.isAttributeSearchable(attributeKey);
     }
     
     public boolean isAttributeSortable(String attributeKey) {
-        return impl.isAttributeSortable(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
+        return impl.isAttributeSortable(attributeKey);
     }
     
     public boolean isAttributeGroupable(String attributeKey) {
-        return impl.isAttributeGroupable(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
+        return impl.isAttributeGroupable(attributeKey);
     }
 
     public List<JournalBatchEdit> getBatchEdit(String attributeKey) {
-        return impl.getBatchEdit(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
+        return impl.getBatchEdit(attributeKey);
     }
 
     public List<JournalGroupAction> getGroupActions() {
@@ -101,7 +100,7 @@ public class JournalTypeJS {
     }
 
     public JournalCriterion getCriterion(String attributeKey) {
-        return impl.getCriterion(JavaScriptImplUtils.convertQName(attributeKey, namespaceService));
+        return impl.getCriterion(attributeKey);
     }
 
     public String getDataSource() {

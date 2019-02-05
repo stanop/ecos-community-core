@@ -22,4 +22,57 @@
         </property>
     </bean>
 
+    <bean id="ecos.formio.module-component.forms-journal" parent="ecos.formio.import-spaces.3-8-0" depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="ecos.formio.module-component.forms-journal" />
+        <property name="description" value="ecos.formio.module-component.forms-journal" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+                <ref bean="idocs.module-component.system-journals-list" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-formio-repo/bootstrap/journals/formio-journal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:formio-forms</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-formio-repo/bootstrap/journals/formio-journal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-formio-repo/bootstrap/journals/formio-journal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="ecos.formio.module-component.forms-journal.create-variant3" parent="ecos.formio.import-spaces.3-8-0" depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="ecos.formio.module-component.forms-journal.create-variant" />
+        <property name="description" value="ecos.formio.module-component.forms-journal.create-variant" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="ecos.formio.module-component.forms-journal" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:formio-forms</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-record-variant.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-formio-repo/bootstrap/journals/formio-journal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
 </beans>

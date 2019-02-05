@@ -17,10 +17,10 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 define([
-    'lib/underscore',
+    'underscore',
     'jquery',
     'xstyle!./citeck.css'
-], function () {
+], function (_) {
 
     if (typeof Citeck == "undefined" || !Citeck) {
         Citeck = {};

@@ -18,12 +18,12 @@ public class CriterionConfigInvariantsProvider extends CriterionInvariantsProvid
     }
 
     @Override
-    protected boolean isAttributeSupported(JournalType journalType, QName typeName, QName attribute) {
+    protected boolean isAttributeSupported(JournalType journalType, QName typeName, String attribute) {
         return true;
     }
 
     @Override
-    public List<InvariantDefinition> getInvariantsImpl(JournalType journalType, QName typeName, QName attribute) {
+    public List<InvariantDefinition> getInvariantsImpl(JournalType journalType, QName typeName, String attribute) {
         JournalCriterion criterion = journalType.getCriterion(attribute);
         return criterion.getInvariants();
     }

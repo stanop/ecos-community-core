@@ -7,7 +7,6 @@ export default class FormioFormCustom {
 
         this.form = params.form;
 
-
         var formId = 'formio-editor-form-panel' + formPanelIdx++;
 
         this.panel = new YAHOO.widget.Panel(formId, {
@@ -37,22 +36,39 @@ export default class FormioFormCustom {
 
         let self = this;
 
-        self.form.ecos.record.load({formModel: 'cm:content'}).then(data => {
+        let processContent = function (formModel) {
 
-            let model = JSON.parse(data.formModel);
+            let model = JSON.parse(formModel);
 
-            Formio.builder(document.getElementById(this.contentId), model.definition).then(editorForm => {
+            Formio.builder(document.getElementById(self.contentId), model).then(editorForm => {
 
-                document.getElementById(this.contentId + '-submit').addEventListener("click", e => {
+                document.getElementById(self.contentId + '-submit').addEventListener("click", e => {
+                    self.form.ecos.record.att('definition', JSON.stringify(editorForm.form));
                     self.panel.hide();
-
-                    model.definition = editorForm.form;
-                    self.form.ecos.record.att('cm:content', JSON.stringify(model));
                 });
 
                 self.panel.show();
                 self.panel.center();
             });
+        };
+
+        self.form.ecos.record.load({definition: 'definition'}).then(data => {
+
+            if (!data.definition) {
+                self.form.ecos.Records.query({
+                    query: {
+                        sourceId: 'formio',
+                        query: {
+                            formKey: 'DEFAULT'
+                        }
+                    },
+                    attributes: ['definition']
+                }).then(data => {
+                    processContent(data.records[0].attributes.definition);
+                });
+            } else {
+                processContent(data.definition);
+            }
         });
     }
 }

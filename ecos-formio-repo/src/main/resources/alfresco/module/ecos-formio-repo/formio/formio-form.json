@@ -1,6 +1,6 @@
 {
-    "id": "ecos-formio-form",
-    "formKey": "alf_ecosFormio:form",
+    "id": "FORMIO_FORM",
+    "formKey": "FORMIO_FORM",
     "customModule": "js/citeck/formio/formio-form-custom",
     "definition": {
         "display": "form",
@@ -14,14 +14,11 @@
                 "type": "textfield",
                 "allowMultipleMasks": false,
                 "input": true,
-                "key": "formTitle",
+                "key": "title",
                 "validate": {
                     "customMessage": "",
                     "json": "",
                     "required": true
-                },
-                "properties": {
-                    "attribute": "cm:title"
                 },
                 "tags": [],
                 "defaultValue": "",
@@ -41,9 +38,6 @@
                 "defaultValue": "",
                 "inputFormat": "plain",
                 "encrypted": false,
-                "properties": {
-                    "attribute": "ecosFormio:formKey"
-                },
                 "tags": [],
                 "validate": {
                     "customMessage": "",
@@ -59,7 +53,7 @@
                 "alwaysEnabled": false,
                 "type": "textarea",
                 "input": true,
-                "key": "formDescription",
+                "key": "description",
                 "defaultValue": "",
                 "validate": {
                     "customMessage": "",
@@ -72,9 +66,6 @@
                 },
                 "inputFormat": "plain",
                 "encrypted": false,
-                "properties": {
-                    "attribute": "cm:description"
-                },
                 "tags": [],
                 "customConditional": "",
                 "logic": []

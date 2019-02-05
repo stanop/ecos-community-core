@@ -36,7 +36,7 @@ public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
 
     public JournalTypeJS getJournalType(String id) {
         JournalType type = impl.getJournalType(id);
-        return type == null ? null : new JournalTypeJS(type, serviceRegistry);
+        return type == null ? null : new JournalTypeJS(type);
     }
     
     public JournalTypeJS[] getAllJournalTypes() {
@@ -44,17 +44,17 @@ public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
         JournalTypeJS[] result = new JournalTypeJS[journalTypes.size()];
         int i = 0;
         for(JournalType type : journalTypes) {
-            result[i++] = new JournalTypeJS(type, serviceRegistry);
+            result[i++] = new JournalTypeJS(type);
         }
         return result;
     }
 
     public InvariantDefinition[] getCriterionInvariants(String journalId, Object attribute) {
-        QName attributeQName;
+        String attributeQName;
         if (attribute instanceof String) {
-            attributeQName = QName.resolveToQName(namespaceService, (String) attribute);
+            attributeQName = (String) attribute;
         } else {
-            attributeQName = (QName) attribute;
+            attributeQName = ((QName) attribute).toPrefixString(namespaceService);
         }
         List<InvariantDefinition> invariants = impl.getCriterionInvariants(journalId, attributeQName);
         return invariants.toArray(new InvariantDefinition[invariants.size()]);

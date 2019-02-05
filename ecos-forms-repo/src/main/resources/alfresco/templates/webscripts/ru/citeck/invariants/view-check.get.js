@@ -35,7 +35,29 @@
         exists = formService.hasNodeView(formType, formKey, formId, null, null),
         defaultExists = formId ? formService.hasNodeView(formType, formKey, null, null, null) : exists;
 
-    model.exists = exists;
-    model.defaultExists = defaultExists;
+    model.result = {
+        exists: exists,
+        defaultExists: defaultExists,
+        formioExists: hasFormioForm()
+    };
 
 })();
+
+function hasFormioForm() {
+
+    if (!this['ecosFormio']) {
+        return false;
+    }
+
+    var record = args.nodeRef || args.formKey;
+
+    if (record) {
+        try {
+            return ecosFormio.hasForm(record);
+        } catch (e) {
+            logger.error(e);
+        }
+    }
+
+    return false;
+}

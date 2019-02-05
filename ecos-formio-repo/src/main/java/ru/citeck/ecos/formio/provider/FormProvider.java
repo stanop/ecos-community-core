@@ -1,11 +1,12 @@
 package ru.citeck.ecos.formio.provider;
 
-import ru.citeck.ecos.formio.FormMode;
-import ru.citeck.ecos.formio.model.FormioForm;
+import ru.citeck.ecos.formio.model.FormioFormModel;
 
 public interface FormProvider {
 
-    FormioForm getForm(String formKey, FormMode mode);
+    FormioFormModel getFormByKey(String formKey);
+
+    FormioFormModel getFormById(String id);
 
     int getOrder();
 }
