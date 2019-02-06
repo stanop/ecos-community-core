@@ -38,14 +38,14 @@
     model.result = {
         exists: exists,
         defaultExists: defaultExists,
-        formioExists: hasFormioForm()
+        eformExists: hasEForm()
     };
 
 })();
 
-function hasFormioForm() {
+function hasEForm() {
 
-    if (!this['ecosFormio']) {
+    if (!this['ecosForms']) {
         return false;
     }
 
@@ -53,7 +53,7 @@ function hasFormioForm() {
 
     if (record) {
         try {
-            return ecosFormio.hasForm(record);
+            return ecosForms.hasForm(record);
         } catch (e) {
             logger.error(e);
         }

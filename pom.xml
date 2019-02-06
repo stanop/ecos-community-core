@@ -868,7 +868,7 @@
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>ecos-formio-repo</artifactId>
+                            <artifactId>ecos-eform-repo</artifactId>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -974,7 +974,7 @@
 
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>ecos-formio-share</artifactId>
+                            <artifactId>ecos-eform-share</artifactId>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -1072,8 +1072,8 @@
         <module>ecos-order-pass-repo</module>
         <module>ecos-flowable-repo</module>
         <module>ecos-flowable-share</module>
-        <module>ecos-formio-repo</module>
-        <module>ecos-formio-share</module>
+        <module>ecos-eform-repo</module>
+        <module>ecos-eform-share</module>
     </modules>
 
     <repositories>

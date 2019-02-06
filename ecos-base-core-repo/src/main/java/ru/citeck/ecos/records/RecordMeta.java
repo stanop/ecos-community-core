@@ -51,7 +51,7 @@ public class RecordMeta {
 
     public boolean hasAttribute(String name) {
         JsonNode att = attributes.path(name);
-        return isEmpty(att);
+        return !isEmpty(att);
     }
 
     public <T> T getAttribute(String name, T orElse) {

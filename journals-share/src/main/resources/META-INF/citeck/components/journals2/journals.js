@@ -143,7 +143,7 @@ CreateVariant
         var self = this;
 
         if (this.recordRef) {
-            Citeck.forms.formio(this.recordRef(), {
+            Citeck.forms.eform(this.recordRef(), {
                 attributes: {
                     _parent: self.destination()
                 },

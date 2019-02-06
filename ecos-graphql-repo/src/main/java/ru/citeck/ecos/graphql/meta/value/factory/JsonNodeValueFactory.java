@@ -23,7 +23,13 @@ public class JsonNodeValueFactory extends AbstractMetaValueFactory<JsonNode> {
             @Override
             public String getString() {
                 try {
-                    return mapper.writeValueAsString(value);
+                    if (value == null || value instanceof NullNode || value instanceof MissingNode) {
+                        return null;
+                    } else if (value.isTextual()) {
+                        return value.asText();
+                    } else {
+                        return mapper.writeValueAsString(value);
+                    }
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException("Error! value: " + value);
                 }

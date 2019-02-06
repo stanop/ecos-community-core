@@ -15,6 +15,17 @@ import ru.citeck.ecos.records.request.result.RecordsResult;
 import java.util.*;
 
 /**
+ * Local records DAO
+ *
+ * Extend this DAO if your data located in the same alfresco instance (when you don't want to execute graphql query remotely)
+ * Important: This class implement only RecordsDAO. All other interfaces should be implemented in children classes
+ *
+ * @see RecordsQueryDAO
+ * @see RecordsMetaDAO
+ * @see RecordsWithMetaDAO
+ * @see RecordsActionExecutor
+ * @see MutableRecordsDAO
+ *
  * @author Pavel Simonov
  */
 public abstract class LocalRecordsDAO extends AbstractRecordsDAO {
@@ -33,23 +44,18 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO {
 
     public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String metaSchema) {
 
-        if (this instanceof RecordsWithMetaDAO) {
-
-            RecordsQueryResult<?> metaValues = getMetaValues(query);
-            RecordsResult<RecordMeta> meta = recordsMetaService.getMeta(metaValues.getRecords(), metaSchema);
-            if (addSourceId) {
-                meta.setRecords(RecordsUtils.convertToRefs(getId(), meta.getRecords()));
-            }
-
-            RecordsQueryResult<RecordMeta> result = new RecordsQueryResult<>();
-            result.merge(meta);
-            result.setTotalCount(metaValues.getTotalCount());
-            result.setHasMore(metaValues.getHasMore());
-
-            return result;
+        RecordsQueryResult<?> metaValues = getMetaValues(query);
+        RecordsResult<RecordMeta> meta = recordsMetaService.getMeta(metaValues.getRecords(), metaSchema);
+        if (addSourceId) {
+            meta.setRecords(RecordsUtils.convertToRefs(getId(), meta.getRecords()));
         }
 
-        throw new RuntimeException("RecordsDAO must implement RecordsWithMetaDAO");
+        RecordsQueryResult<RecordMeta> result = new RecordsQueryResult<>();
+        result.merge(meta);
+        result.setTotalCount(metaValues.getTotalCount());
+        result.setHasMore(metaValues.getHasMore());
+
+        return result;
     }
 
     public RecordsResult<RecordMeta> getMeta(List<RecordRef> records, String gqlSchema) {

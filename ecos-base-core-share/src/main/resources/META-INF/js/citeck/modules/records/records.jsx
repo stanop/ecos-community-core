@@ -6,6 +6,9 @@ class Records {
     }
 
     get(id) {
+        if (id.indexOf("@") == id.length - 1) {
+            return new Record(id);
+        }
         let rec = this._records[id];
         if (!rec) {
             rec = new Record(id);

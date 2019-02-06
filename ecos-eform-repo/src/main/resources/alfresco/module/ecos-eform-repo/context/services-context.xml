@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+    <bean id="ecos.eform.contentDAO" class="ru.citeck.ecos.content.dao.JsonContentDAO">
+        <property name="contentType" value="ru.citeck.ecos.eform.model.EcosFormModel" />
+    </bean>
+
+    <bean id="ecos.eform.repoFormsDAO" class="ru.citeck.ecos.content.RepoContentDAOImpl">
+        <property name="rootNode" value="/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:eform-forms" />
+        <property name="contentDAO" ref="ecos.eform.contentDAO" />
+        <property name="configNodeType" value="{http://www.citeck.ru/model/eform/1.0}form" />
+        <property name="nodeDataReader" ref="ecos.eform.eformFormNodeDataReader" />
+    </bean>
+
+    <bean id="ecos.eform.formMetadataExtractor" class="ru.citeck.ecos.eform.repo.EcosFormMetadata" />
+
+    <bean id="ecos.eform.contentDeployer" class="ru.citeck.ecos.content.deploy.ContentDeployer">
+        <property name="artifactType" value="eform-content-deployer" />
+        <property name="repoContentDAO" ref="ecos.eform.repoFormsDAO" />
+        <property name="metadataKeys">
+            <set>
+                <value>{http://www.citeck.ru/model/ecos/content/1.0}id</value>
+            </set>
+        </property>
+        <property name="metadataExtractor" ref="ecos.eform.formMetadataExtractor" />
+        <property name="locations">
+            <bean factory-bean="resourceResolver" factory-method="getResources">
+                <constructor-arg>
+                    <list>
+                        <value>classpath*:alfresco/ecos-forms/**/*.json</value>
+                        <value>classpath*:alfresco/module/*/ecos-forms/**/*.json</value>
+                        <value>classpath*:alfresco/extension/ecos-forms/**/*.json</value>
+                    </list>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="ecos.eform.repoFormProvider" class="ru.citeck.ecos.eform.provider.RepoFormProvider">
+        <property name="formsContentDAO" ref="ecos.eform.repoFormsDAO" />
+        <property name="metadataExtractor" ref="ecos.eform.formMetadataExtractor" />
+    </bean>
+
+    <bean id="ecos.eform.eformFormService" class="ru.citeck.ecos.eform.EcosFormServiceImpl">
+        <property name="newFormsStore" ref="ecos.eform.repoFormProvider" />
+    </bean>
+
+    <bean id="ecos.eform.eformFormNodeDataReader" class="ru.citeck.ecos.eform.repo.EcosFormNodeDataReader" />
+
+    <bean id="ecos.eform.eformFormServiceJS"
+          class="ru.citeck.ecos.eform.EcosFormServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="ecosForms" />
+        <property name="serviceRegistry" ref="ServiceRegistry" />
+    </bean>
+
+</beans>

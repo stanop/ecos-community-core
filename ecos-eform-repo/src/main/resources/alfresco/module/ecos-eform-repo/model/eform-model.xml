@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model name="ecosForms:model" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+        <import uri="http://www.citeck.ru/model/ecos/content/1.0" prefix="ecosCont"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/eform/1.0" prefix="ecosForms" />
+    </namespaces>
+
+    <types>
+
+        <type name="ecosForms:form">
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="ecosForms:formKey">
+                    <type>d:text</type>
+                </property>
+                <property name="ecosForms:customModule">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>ecosCont:hasContentId</aspect>
+            </mandatory-aspects>
+        </type>
+
+    </types>
+
+</model>
