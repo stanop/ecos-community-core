@@ -164,6 +164,10 @@ public class CreateVariantsGet extends AbstractWebScript {
         return siteCreateVariants;
     }
 
+    public List<ResponseVariant> getVariantsByJournalId(String journalId, Boolean writable) {
+        return convertVariants(getVariantsByJournalId(journalId), writable);
+    }
+
     private List<ResponseVariant> convertVariants(List<CreateVariant> variants, Boolean writable) {
         return variants.stream()
                        .filter(v -> hasPermission(v.nodeRef, PermissionService.READ))
