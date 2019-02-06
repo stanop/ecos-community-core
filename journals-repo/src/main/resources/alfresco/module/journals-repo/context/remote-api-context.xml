@@ -10,4 +10,8 @@
         <property name="cacheAgeSeconds" value="600" />
     </bean>
 
+    <bean id="webscript.ru.citeck.journals2.config.journal-config.get" parent="webscript"
+          class="ru.citeck.ecos.journals.webscripts.JournalConfigGet">
+    </bean>
+
 </beans>
