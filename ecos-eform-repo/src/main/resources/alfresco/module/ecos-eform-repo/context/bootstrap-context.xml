@@ -9,12 +9,12 @@
     <bean id="ecos.eform.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap,idocs.dictionaryBootstrap">
         <property name="models">
             <list>
-                <value>alfresco/module/ecos-eform-repo/model/eform-model.xml</value>
+                <value>alfresco/module/ecos-eform-repo/model/ecos-form-model.xml</value>
             </list>
         </property>
         <property name="labels">
             <list>
-                <value>alfresco/module/ecos-eform-repo/messages/eform-model</value>
+                <value>alfresco/module/ecos-eform-repo/messages/ecos-form-model</value>
             </list>
         </property>
     </bean>

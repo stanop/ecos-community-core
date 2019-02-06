@@ -446,7 +446,7 @@
             config = {};
         }
 
-        var formId = 'eform-form-panel' + eformFormIdx++;
+        var formId = 'ecos-form-panel' + eformFormIdx++;
 
         var panel = new YAHOO.widget.Panel(formId, {
             width: config.width || "500px",
@@ -472,7 +472,7 @@
         panel.setBody('<div class="eform-panel-content" id="' + contentId + '"></div>');
         panel.render(document.body);
 
-        require(['react', 'react-dom', 'js/citeck/eform/eform-form'], function (React, ReactDOM, EcosForm) {
+        require(['react', 'react-dom', 'js/citeck/modules/eform/ecos-form'], function (React, ReactDOM, EcosForm) {
             ReactDOM.render(React.createElement(EcosForm.default, {
                 record: record,
                 attributes: config.attributes || {},

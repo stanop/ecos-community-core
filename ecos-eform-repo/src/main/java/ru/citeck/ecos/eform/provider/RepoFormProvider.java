@@ -13,6 +13,7 @@ import ru.citeck.ecos.content.ContentData;
 import ru.citeck.ecos.content.RepoContentDAO;
 import ru.citeck.ecos.content.metadata.MetadataExtractor;
 import ru.citeck.ecos.eform.model.EcosFormModel;
+import ru.citeck.ecos.model.EFormModel;
 import ru.citeck.ecos.model.EcosContentModel;
 
 import java.io.Serializable;
@@ -51,7 +52,7 @@ public class RepoFormProvider extends AbstractFormProvider implements MutableFor
 
     private Optional<ContentData<EcosFormModel>> getFormDataByKey(String formKey) {
         Map<QName, Serializable> keys = new HashMap<>();
-        keys.put(EcosFormModel.PROP_FORM_KEY, formKey);
+        keys.put(EFormModel.PROP_FORM_KEY, formKey);
         return formsContentDAO.getFirstContentData(keys);
     }
 

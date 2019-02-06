@@ -1,10 +1,10 @@
 {
     "id": "ECOS_FORM",
-    "title": "Ecos form",
+    "title": "ECOS form",
     "description": "Form to edit other forms",
     "formKey": "ECOS_FORM",
     "formMode": null,
-    "customModule": "js/citeck/eform/eform-form-custom",
+    "customModule": "js/citeck/modules/eform/ecos-form-custom",
     "definition": {
         "display": "form",
         "components": [

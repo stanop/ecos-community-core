@@ -21,6 +21,7 @@ import ru.citeck.ecos.content.RepoContentDAO;
 import ru.citeck.ecos.eform.EcosFormService;
 import ru.citeck.ecos.eform.model.EcosFormModel;
 import ru.citeck.ecos.eform.repo.EcosFormMetadata;
+import ru.citeck.ecos.model.EFormModel;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -30,8 +31,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class EcosFormBehaviour extends AbstractBehaviour
-                                 implements NodeServicePolicies.OnCreateNodePolicy,
-                                            ContentServicePolicies.OnContentPropertyUpdatePolicy {
+                               implements NodeServicePolicies.OnCreateNodePolicy,
+                                          ContentServicePolicies.OnContentPropertyUpdatePolicy {
 
     private NodeService nodeService;
     private ContentService contentService;
@@ -43,7 +44,7 @@ public class EcosFormBehaviour extends AbstractBehaviour
 
     @Override
     protected void beforeInit() {
-        setClassName(EcosFormModel.TYPE_FORM);
+        setClassName(EFormModel.TYPE_FORM);
         nodeService = serviceRegistry.getNodeService();
         contentService = serviceRegistry.getContentService();
     }
@@ -78,14 +79,14 @@ public class EcosFormBehaviour extends AbstractBehaviour
             return;
         }
 
-        String formKey = (String) props.get(EcosFormModel.PROP_FORM_KEY);
+        String formKey = (String) props.get(EFormModel.PROP_FORM_KEY);
 
         if (StringUtils.isBlank(formKey)) {
             throw new IllegalStateException("Form key can't be null." + props);
         }
 
         Map<QName, Serializable> key = new HashMap<>();
-        key.put(EcosFormModel.PROP_FORM_KEY, formKey);
+        key.put(EFormModel.PROP_FORM_KEY, formKey);
         List<ContentData<EcosFormModel>> contentData = formsContentDAO.getContentData(key);
 
         if (contentData.size() > 1) {
@@ -113,7 +114,7 @@ public class EcosFormBehaviour extends AbstractBehaviour
         model.setId(formRef.getId());
         model.setDescription((String) props.get(ContentModel.PROP_DESCRIPTION));
         model.setTitle((String) props.get(ContentModel.PROP_TITLE));
-        model.setCustomModule((String) props.get(EcosFormModel.PROP_CUSTOM_MODULE));
+        model.setCustomModule((String) props.get(EFormModel.PROP_CUSTOM_MODULE));
         model.setDefinition(eformFormService.getDefault().getDefinition());
 
         String modelStr;

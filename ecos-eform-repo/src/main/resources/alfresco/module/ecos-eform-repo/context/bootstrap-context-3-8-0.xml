@@ -40,7 +40,7 @@
                     <prop key="encoding">UTF-8</prop>
                 </props>
                 <props>
-                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:eform-forms</prop>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:ecos-forms</prop>
                     <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/criterion.xml</prop>
                     <prop key="messages">alfresco/module/ecos-eform-repo/bootstrap/journals/ecos-forms-journal</prop>
                     <prop key="encoding">UTF-8</prop>
@@ -52,7 +52,7 @@
                     <prop key="encoding">UTF-8</prop>
                 </props>
                 <props>
-                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:eform-forms</prop>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals/cm:ecos-forms</prop>
                     <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/create-record-variant.xml</prop>
                     <prop key="messages">alfresco/module/ecos-eform-repo/bootstrap/journals/ecos-forms-journal</prop>
                     <prop key="encoding">UTF-8</prop>

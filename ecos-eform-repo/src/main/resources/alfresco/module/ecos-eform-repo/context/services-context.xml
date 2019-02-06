@@ -7,7 +7,7 @@
     </bean>
 
     <bean id="ecos.eform.repoFormsDAO" class="ru.citeck.ecos.content.RepoContentDAOImpl">
-        <property name="rootNode" value="/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:eform-forms" />
+        <property name="rootNode" value="/${spaces.company_home.childname}/${spaces.dictionary.childname}/cm:ecos-forms" />
         <property name="contentDAO" ref="ecos.eform.contentDAO" />
         <property name="configNodeType" value="{http://www.citeck.ru/model/eform/1.0}form" />
         <property name="nodeDataReader" ref="ecos.eform.eformFormNodeDataReader" />
