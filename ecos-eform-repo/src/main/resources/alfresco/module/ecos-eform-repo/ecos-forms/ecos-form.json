@@ -75,81 +75,16 @@
                 "mask": false,
                 "inputType": "text",
                 "inputMask": "",
-                "id": "e93pxrrq"
-            },
-            {
-                "label": "Text Field",
-                "allowMultipleMasks": false,
-                "showWordCount": false,
-                "showCharCount": false,
-                "tableView": true,
-                "alwaysEnabled": false,
-                "type": "textfield",
-                "input": true,
-                "key": "textField",
-                "widget": {
-                    "type": "",
-                    "format": "yyyy-MM-dd hh:mm a",
-                    "dateFormat": "yyyy-MM-dd hh:mm a",
-                    "saveAs": "text"
-                },
-                "placeholder": "",
-                "prefix": "",
-                "customClass": "",
-                "suffix": "",
-                "multiple": false,
-                "defaultValue": null,
-                "protected": false,
-                "unique": false,
-                "persistent": true,
-                "hidden": false,
-                "clearOnHide": true,
-                "dataGridLabel": false,
-                "labelPosition": "top",
-                "labelWidth": 30,
-                "labelMargin": 3,
-                "description": "",
-                "errorLabel": "",
-                "tooltip": "",
-                "hideLabel": false,
-                "tabindex": "",
-                "disabled": false,
-                "autofocus": false,
-                "dbIndex": false,
-                "customDefaultValue": "",
-                "calculateValue": "",
-                "allowCalculateOverride": false,
-                "refreshOn": "",
-                "clearOnRefresh": false,
-                "validateOn": "change",
-                "validate": {
-                    "required": false,
-                    "custom": "",
-                    "customPrivate": false,
-                    "minLength": "",
-                    "maxLength": "",
-                    "minWords": "",
-                    "maxWords": "",
-                    "pattern": ""
-                },
-                "conditional": {
-                    "show": null,
-                    "when": null,
-                    "eq": ""
-                },
-                "mask": false,
-                "inputType": "text",
-                "inputMask": "",
-                "id": "eiby5y"
+                "id": "e3mj5hf"
             },
             {
                 "label": "Key",
+                "allowMultipleMasks": false,
                 "showWordCount": false,
                 "showCharCount": false,
                 "tableView": true,
                 "alwaysEnabled": false,
                 "type": "textfield",
-                "allowMultipleMasks": false,
                 "input": true,
                 "key": "formKey",
                 "defaultValue": "",
@@ -168,6 +103,27 @@
                     "maxWords": "",
                     "pattern": ""
                 },
+                "logic": [
+                    {
+                        "name": "Disable for system forms",
+                        "trigger": {
+                            "type": "javascript",
+                            "javascript": "result = instance.parent.ecos.custom.isSystemForm();"
+                        },
+                        "actions": [
+                            {
+                                "name": "Disable field",
+                                "type": "property",
+                                "property": {
+                                    "label": "Disabled",
+                                    "value": "disabled",
+                                    "type": "boolean"
+                                },
+                                "state": "true"
+                            }
+                        ]
+                    }
+                ],
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -209,7 +165,7 @@
                 "mask": false,
                 "inputType": "text",
                 "inputMask": "",
-                "id": "e5zq94"
+                "id": "ermr43t"
             },
             {
                 "label": "Description",
@@ -283,7 +239,7 @@
                 "rows": 3,
                 "wysiwyg": false,
                 "editor": "",
-                "id": "e8a48x"
+                "id": "ej3bkv"
             },
             {
                 "label": "Columns",
@@ -347,7 +303,7 @@
                                 "leftIcon": "",
                                 "rightIcon": "",
                                 "action": "submit",
-                                "id": "ehxosxt"
+                                "id": "e8vt5ik"
                             }
                         ],
                         "width": 4,
@@ -400,7 +356,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "eiykte8"
+                        "id": "efegrdr"
                     },
                     {
                         "components": [
@@ -414,7 +370,7 @@
                                 "mask": false,
                                 "tableView": true,
                                 "alwaysEnabled": false,
-                                "custom": "data.$custom.showFormEditor()",
+                                "custom": "form.ecos.custom.showFormEditor()",
                                 "type": "button",
                                 "input": true,
                                 "key": "editform",
@@ -463,7 +419,7 @@
                                 "rightIcon": "",
                                 "disableOnInvalid": false,
                                 "theme": "default",
-                                "id": "e8dxch9"
+                                "id": "e9df1t"
                             }
                         ],
                         "width": 4,
@@ -516,7 +472,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "e1pyh89"
+                        "id": "emoks1u"
                     },
                     {
                         "width": 4,
@@ -586,7 +542,7 @@
                                 "rightIcon": "",
                                 "disableOnInvalid": false,
                                 "theme": "default",
-                                "id": "ejlbpye"
+                                "id": "e88ffo"
                             }
                         ],
                         "offset": 0,
@@ -632,7 +588,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "encei2"
+                        "id": "ejefyc8"
                     }
                 ],
                 "autoAdjust": true,
@@ -683,7 +639,7 @@
                     "eq": ""
                 },
                 "hideOnChildrenHidden": false,
-                "id": "ewmt03s"
+                "id": "enpxwtfr"
             }
         ]
     }

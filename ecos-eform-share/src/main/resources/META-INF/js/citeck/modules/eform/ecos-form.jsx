@@ -1,13 +1,13 @@
 import React from "react";
 import { connect } from 'react-redux';
 
-import "js/citeck/lib/eform/eform.full";
+import { Form } from "js/citeck/lib/formio/formio.full";
 import Records from "js/citeck/modules/records/records";
 
 import "xstyle!https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css";
 import "xstyle!https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css";
 import "xstyle!js/citeck/lib/formio/formio.full.min.css";
-import "xstyle!js/citeck/modules/formio/formio-form.css";
+import "xstyle!js/citeck/modules/eform/ecos-form.css";
 
 var formCounter = 0;
 
@@ -28,9 +28,12 @@ export default class EcosForm extends React.Component {
 
             var formAtts = data.records[0].attributes;
 
-            Form.createForm(document.getElementById(this.state.containerId), formAtts.formDef).then(form => {
+            Formio.createForm(document.getElementById(this.state.containerId), formAtts.formDef).then(form => {
 
                 let record = Records.get(this.props.record);
+                form.ecos = {
+                    record: record
+                };
 
                 let customModule = new Promise(function(resolve, reject) {
                     if (formAtts.customModule) {
@@ -45,12 +48,13 @@ export default class EcosForm extends React.Component {
                     }
                 });
 
+
                 Promise.all([customModule, EcosForm.getData(record, form)]).then(data => {
+
+                    form.ecos.custom = data[0];
 
                     form.submission = {
                         data: {
-                            $record: record,
-                            $custom: data[0],
                             ...(self.props.attributes || {}),
                             ...data[1]
                         }
@@ -104,10 +108,10 @@ export default class EcosForm extends React.Component {
             let input = inputs[i].component;
             let attribute = inputs[i].attribute;
 
-            submission.data.$record.att(attribute, submission.data[input.key]);
+            form.ecos.record.att(attribute, submission.data[input.key]);
         }
 
-        submission.data.$record.save().then(record => {
+        form.ecos.record.save().then(record => {
             if (self.props.onSubmit) {
                 self.props.onSubmit(record);
             }

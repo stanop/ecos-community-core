@@ -25,9 +25,18 @@ export default class EcosFormCustom {
 
         this.panel.setHeader("");
         this.contentId = formId + '-content';
+        this.submitBtnId = this.contentId + '-submit';
+        this.cancelBtnId = this.contentId + '-cancel';
+
         this.panel.setBody('<div class="eform-panel-content" id="' + this.contentId + '"></div>' +
-                           '<button id="' + this.contentId + '-submit" ' +
-            '                       class="btn btn-default btn-md" type="button">Submit</button>');
+                           '<div class="eform-panel-actions">' +
+                               '<button id="' + this.submitBtnId + '" ' +
+                                       'class="btn btn-default btn-md eform-edit-form-btn btn-primary" ' +
+                                       'type="button">Save</button>' +
+                               '<button id="' + this.cancelBtnId + '" ' +
+                                       'class="btn btn-default btn-md eform-edit-form-btn" ' +
+                                       'type="button">Cancel</button>' +
+                           '</div>');
 
         let children = document.body.children || [];
         this.panel.render(children[children.length - 1]);
@@ -43,10 +52,14 @@ export default class EcosFormCustom {
 
         let processContent = function (formModel) {
 
-            Form.builder(document.getElementById(self.contentId), formModel).then(editorForm => {
+            Formio.builder(document.getElementById(self.contentId), formModel).then(editorForm => {
 
-                document.getElementById(self.contentId + '-submit').addEventListener("click", e => {
+                document.getElementById(self.submitBtnId).addEventListener("click", e => {
                     self.record.att('definition', editorForm.form);
+                    self.panel.hide();
+                });
+
+                document.getElementById(self.cancelBtnId).addEventListener("click", e => {
                     self.panel.hide();
                 });
 

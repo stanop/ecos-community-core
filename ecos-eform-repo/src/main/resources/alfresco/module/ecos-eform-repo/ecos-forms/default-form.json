@@ -1,8 +1,9 @@
 {
     "id": "DEFAULT",
-    "formKey": "DEFAULT",
     "title": "Default form",
     "description": "Template for other forms",
+    "formKey": "DEFAULT",
+    "formMode": null,
     "customModule": null,
     "definition": {
         "display": "form",
@@ -32,9 +33,7 @@
                 },
                 "inputFormat": "plain",
                 "encrypted": false,
-                "properties": {
-                    "attribute": "cm:title"
-                },
+                "properties": "cm:title",
                 "tags": [],
                 "widget": {
                     "type": "",
@@ -78,7 +77,7 @@
                 "mask": false,
                 "inputType": "text",
                 "inputMask": "",
-                "id": "e0k6vyd"
+                "id": "e32og1q"
             },
             {
                 "label": "Description",
@@ -90,9 +89,7 @@
                 "type": "textarea",
                 "input": true,
                 "key": "textArea",
-                "properties": {
-                    "attribute": "cm:description"
-                },
+                "properties": "cm:description",
                 "tags": [],
                 "placeholder": "",
                 "prefix": "",
@@ -149,7 +146,7 @@
                 "rows": 3,
                 "wysiwyg": false,
                 "editor": "",
-                "id": "eddejva"
+                "id": "exkkrx4"
             },
             {
                 "label": "Columns",
@@ -207,13 +204,14 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "ea90roo"
+                        "id": "e47xbpk"
                     },
                     {
                         "components": [
                             {
                                 "label": "Submit",
                                 "state": "",
+                                "theme": "primary",
                                 "shortcut": "",
                                 "block": true,
                                 "disableOnInvalid": true,
@@ -275,8 +273,7 @@
                                 "leftIcon": "",
                                 "rightIcon": "",
                                 "action": "submit",
-                                "theme": "default",
-                                "id": "e89nr4h"
+                                "id": "eq04ir9"
                             }
                         ],
                         "width": 3,
@@ -329,7 +326,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "e6opjpy"
+                        "id": "eqv1dro"
                     },
                     {
                         "width": 3,
@@ -347,6 +344,8 @@
                                 "label": "Cancel",
                                 "action": "event",
                                 "state": "",
+                                "showValidations": false,
+                                "event": "cancel",
                                 "shortcut": "",
                                 "block": true,
                                 "mask": false,
@@ -355,8 +354,6 @@
                                 "type": "button",
                                 "input": true,
                                 "key": "submit2",
-                                "showValidations": false,
-                                "event": "Cancel",
                                 "placeholder": "",
                                 "prefix": "",
                                 "customClass": "",
@@ -402,7 +399,7 @@
                                 "rightIcon": "",
                                 "disableOnInvalid": false,
                                 "theme": "default",
-                                "id": "eel3uh"
+                                "id": "eeka5dl"
                             }
                         ],
                         "placeholder": "",
@@ -445,7 +442,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "e509lod"
+                        "id": "etodnl"
                     },
                     {
                         "width": 3,
@@ -499,7 +496,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "emrjgci"
+                        "id": "eo0o8p"
                     }
                 ],
                 "autoAdjust": true,
@@ -549,7 +546,7 @@
                     "eq": ""
                 },
                 "hideOnChildrenHidden": false,
-                "id": "ebttua"
+                "id": "er6ejfc"
             }
         ]
     }

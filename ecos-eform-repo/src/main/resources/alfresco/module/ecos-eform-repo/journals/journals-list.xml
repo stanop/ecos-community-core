@@ -11,13 +11,21 @@
         <option name="actionFormatter">
             [
                 {
-                    title: Alfresco.util.message('button.edit'),
-                    href: Alfresco.constants.URL_PAGECONTEXT + "node-edit?nodeRef=" + record.nodeRef,
-                    buttonClass: 'edit',
-                    label: '-',
+                    buttonClass: 'custom-button-edit',
                     onclick: {
                         fn: function () {
                             Citeck.forms.eform(oRecord.getData('nodeRef'), {});
+                        }
+                    }
+                },
+                {
+                    buttonClass: 'custom-button-download',
+                    onclick: {
+                        fn: function () {
+                            var record = Citeck.Records.get(oRecord.getData('nodeRef'));
+                            record.load({ formKey: 'formKey', json:'.json' }, true).then(data => {
+                                Citeck.utils.downloadText(JSON.stringify(data.json), data.formKey + '.json', 'text/json');
+                            });
                         }
                     }
                 }
@@ -27,7 +35,6 @@
             <header key="formKey" default="true" />
             <header key="title" default="true" />
             <header key="description" default="true" />
-            <header key="customModule" default="true" />
         </headers>
     </journal>
 

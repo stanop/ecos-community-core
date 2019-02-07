@@ -579,3 +579,17 @@ div[id*="-results-panel"].yui-panel>.bd {
   padding-top: 5px;
   padding-bottom: 5px;
 }
+
+.custom-button-download {
+    background-image: url(/share/res/citeck/components/dynamic-tree/icons/download-active.png) !important;
+    margin: 2px 0 2px 24px;
+    min-width: 16px;
+    min-height: 16px;
+}
+
+.custom-button-edit {
+    background-image: url(/share/res/citeck/components/dynamic-tree/icons/edit-properties.png) !important;
+    margin: 2px 0 2px 24px;
+    min-width: 16px;
+    min-height: 16px;
+}

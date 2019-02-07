@@ -277,6 +277,17 @@ define([
         }
     };
 
+    Citeck.utils.downloadText = function (text, filename, mimetype) {
+
+        var dataStr = "data:" + mimetype + ";charset=utf-8," + encodeURIComponent(text);
+        var downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href",     dataStr);
+        downloadAnchorNode.setAttribute("download", filename);
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    };
+
     /**
      * Format user name
      * @param user{object}

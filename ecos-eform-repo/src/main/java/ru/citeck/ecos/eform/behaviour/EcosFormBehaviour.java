@@ -24,11 +24,8 @@ import ru.citeck.ecos.eform.repo.EcosFormMetadata;
 import ru.citeck.ecos.model.EFormModel;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class EcosFormBehaviour extends AbstractBehaviour
                                implements NodeServicePolicies.OnCreateNodePolicy,
@@ -63,6 +60,8 @@ public class EcosFormBehaviour extends AbstractBehaviour
 
             data.flatMap(ContentData::getData)
                 .ifPresent(model -> nodeService.addProperties(nodeRef, metadataExtractor.getMetadata(model)));
+
+            formsContentDAO.clearCache();
         }
     }
 
@@ -74,39 +73,16 @@ public class EcosFormBehaviour extends AbstractBehaviour
         NodeRef formRef = childAssocRef.getChildRef();
         Map<QName, Serializable> props = nodeService.getProperties(formRef);
 
-        Serializable content = props.get(ContentModel.PROP_CONTENT);
-        if (content != null) {
-            return;
-        }
-
         String formKey = (String) props.get(EFormModel.PROP_FORM_KEY);
 
         if (StringUtils.isBlank(formKey)) {
-            throw new IllegalStateException("Form key can't be null." + props);
+            return;
         }
 
-        Map<QName, Serializable> key = new HashMap<>();
+        //TODO: setup default form definition
+        /*Map<QName, Serializable> key = new HashMap<>();
         key.put(EFormModel.PROP_FORM_KEY, formKey);
         List<ContentData<EcosFormModel>> contentData = formsContentDAO.getContentData(key);
-
-        if (contentData.size() > 1) {
-
-            String nodeRefs = contentData.stream()
-                                         .map(ContentData::getNodeRef)
-                                         .map(NodeRef::toString)
-                                         .collect(Collectors.joining(", "));
-
-            throw new IllegalStateException("Form with key " + formKey + " already exists: " + nodeRefs);
-
-        } else if (contentData.size() == 1) {
-
-            NodeRef nodeRef = contentData.get(0).getNodeRef();
-
-            if (!formRef.equals(nodeRef)) {
-
-                throw new IllegalStateException("Form with key " + formKey + " already exists: " + nodeRef);
-            }
-        }
 
         EcosFormModel model = new EcosFormModel();
 
@@ -123,7 +99,7 @@ public class EcosFormBehaviour extends AbstractBehaviour
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Can't convert model to string", e);
         }
-        contentService.getWriter(formRef, ContentModel.PROP_CONTENT, true).putContent(modelStr);
+        contentService.getWriter(formRef, ContentModel.PROP_CONTENT, true).putContent(modelStr);*/
     }
 
     @Autowired

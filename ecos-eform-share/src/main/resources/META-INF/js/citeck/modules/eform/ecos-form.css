@@ -4,12 +4,25 @@
      margin-left: 0 !important;
 }
 
+.eform-panel-actions {
+    display: block;
+    width: 370px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 7px;
+}
+
 .eform-panel-content {
     background-color: #f2f2f2;
     padding-left: 15px;
     padding-right: 15px;
     padding-top: 15px;
     padding-bottom: 1px;
+}
+
+.eform-edit-form-btn {
+    width: 165px;
+    margin: 10px;
 }
 
 .eform-panel-content select,

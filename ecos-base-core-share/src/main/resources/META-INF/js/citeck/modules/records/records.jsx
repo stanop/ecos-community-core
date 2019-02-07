@@ -112,7 +112,7 @@ class Record {
         throw "id is a constant field!";
     }
 
-    load(attributes) {
+    load(attributes, force) {
 
         let self = this;
 
@@ -123,9 +123,17 @@ class Record {
         for (let att in attributes) {
 
             let attName = attributes[att];
-            let existingValue = self._attributes[attName];
-            if (existingValue) {
-                loaded[att] = existingValue.value;
+
+            if (!force) {
+
+                let existingValue = self._attributes[attName];
+                if (existingValue) {
+                    loaded[att] = existingValue.value;
+                } else {
+                    toLoad.push(attName);
+                    toLoadNames[attName] = att;
+                }
+
             } else {
                 toLoad.push(attName);
                 toLoadNames[attName] = att;
