@@ -46,6 +46,10 @@ public class EcosFormServiceImpl implements EcosFormService {
     @Override
     public Optional<EcosFormModel> getFormByKey(List<String> formKeys) {
 
+        if (formKeys == null || formKeys.isEmpty()) {
+            return Optional.empty();
+        }
+
         return formKeys.stream()
                        .map(this::getFormByKey)
                        .filter(Optional::isPresent)
