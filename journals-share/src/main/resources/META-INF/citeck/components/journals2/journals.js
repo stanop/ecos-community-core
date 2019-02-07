@@ -152,11 +152,20 @@ CreateVariant
                 }
             });
         } else {
-            window.location = this.link();
+
+            var url = this.url();
+            if (!url) {
+                koutils.subscribeOnce(this.url, function () {
+                    window.location = self.link();
+                });
+            } else {
+                window.location = self.link();
+            }
         }
     })
 
     .computed('link', function () {
+
         var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
                 urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
 
