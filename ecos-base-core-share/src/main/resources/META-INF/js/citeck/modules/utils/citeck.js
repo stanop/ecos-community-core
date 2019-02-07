@@ -17,10 +17,10 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 define([
-    'lib/underscore',
+    'underscore',
     'jquery',
     'xstyle!./citeck.css'
-], function () {
+], function (_) {
 
     if (typeof Citeck == "undefined" || !Citeck) {
         Citeck = {};
@@ -275,6 +275,17 @@ define([
                 defaultOptions[key] = newOptions[key];
             }
         }
+    };
+
+    Citeck.utils.downloadText = function (text, filename, mimetype) {
+
+        var dataStr = "data:" + mimetype + ";charset=utf-8," + encodeURIComponent(text);
+        var downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href",     dataStr);
+        downloadAnchorNode.setAttribute("download", filename);
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
     };
 
     /**

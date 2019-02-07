@@ -15,7 +15,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class GqlQueryGenerator {
 
@@ -43,16 +42,14 @@ public class GqlQueryGenerator {
 
         int attrCounter = 0;
 
-        List<QName> attributes = new ArrayList<>(journalType.getAttributes());
+        List<String> attributes = new ArrayList<>(journalType.getAttributes());
         if (StringUtils.isEmpty(journalType.getDataSource())) {
-            attributes.add(AttributeModel.ATTR_ASPECTS);
-            attributes.add(AttributeModel.ATTR_IS_CONTAINER);
-            attributes.add(AttributeModel.ATTR_IS_DOCUMENT);
+            attributes.add(AttributeModel.ATTR_ASPECTS.toPrefixString(namespaceService));
+            attributes.add(AttributeModel.ATTR_IS_CONTAINER.toPrefixString(namespaceService));
+            attributes.add(AttributeModel.ATTR_IS_DOCUMENT.toPrefixString(namespaceService));
         }
 
-        Set<String> strAtts = attributes.stream()
-                                        .map(a -> a.toPrefixString(namespaceService))
-                                        .collect(Collectors.toSet());
+        Set<String> strAtts = new HashSet<>(attributes);
 
         List<MetaAttributeDef> defs = recordsService.getAttributesDef(dataSource, strAtts);
 
@@ -61,18 +58,17 @@ public class GqlQueryGenerator {
             defsByName.put(def.getName(), def);
         }
 
-        for (QName attribute : attributes) {
+        for (String attribute : attributes) {
 
             Map<String, String> attributeOptions = journalType.getAttributeOptions(attribute);
-            String prefixedKey = attribute.toPrefixString(namespaceService);
 
             schemaBuilder.append("a")
                     .append(attrCounter++)
                     .append(":edge(n:\"")
-                    .append(prefixedKey)
+                    .append(attribute)
                     .append("\"){");
 
-            MetaAttributeDef info = defsByName.get(prefixedKey);
+            MetaAttributeDef info = defsByName.get(attribute);
             schemaBuilder.append(getAttributeSchema(attributeOptions, info));
 
             schemaBuilder.append("}");

@@ -1,4 +1,1 @@
-{
-	"exists": ${exists?string},
-	"defaultExists": ${defaultExists?string}
-}
+${jsonUtils.toJSONString(result)}

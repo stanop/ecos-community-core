@@ -35,7 +35,29 @@
         exists = formService.hasNodeView(formType, formKey, formId, null, null),
         defaultExists = formId ? formService.hasNodeView(formType, formKey, null, null, null) : exists;
 
-    model.exists = exists;
-    model.defaultExists = defaultExists;
+    model.result = {
+        exists: exists,
+        defaultExists: defaultExists,
+        eformExists: hasEForm()
+    };
 
 })();
+
+function hasEForm() {
+
+    if (!this['ecosForms']) {
+        return false;
+    }
+
+    var record = args.nodeRef || args.formKey;
+
+    if (record) {
+        try {
+            return ecosForms.hasForm(record);
+        } catch (e) {
+            logger.error(e);
+        }
+    }
+
+    return false;
+}

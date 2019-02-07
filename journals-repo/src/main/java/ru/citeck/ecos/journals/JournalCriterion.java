@@ -20,7 +20,7 @@ public class JournalCriterion extends JournalViewElement {
     private List<InvariantDefinition> invariants = new ArrayList<>();
     private Map<String, JournalViewElement> regions = new HashMap<>();
 
-    public JournalCriterion(QName attributeKey, Criterion criterion, String journalId,
+    public JournalCriterion(String attributeKey, Criterion criterion, String journalId,
                             NamespacePrefixResolver prefixResolver,
                             SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
         super(criterion, journalId, searchCriteriaSettingsRegistry);
@@ -30,13 +30,22 @@ public class JournalCriterion extends JournalViewElement {
             List<Invariant> xmlInvariants = criterion.getInvariant();
 
             if (xmlInvariants != null) {
-                invariants = InvariantDefinition.Builder.buildInvariants(
-                        attributeKey,
-                        InvariantScope.AttributeScopeKind.PROPERTY, //doesn't matter
-                        InvariantPriority.COMMON,
-                        xmlInvariants,
-                        prefixResolver
-                );
+
+                if (attributeKey.contains(":") || attributeKey.contains("{")) {
+
+                    QName qname = QName.resolveToQName(prefixResolver, attributeKey);
+
+                    invariants = InvariantDefinition.Builder.buildInvariants(
+                            qname,
+                            InvariantScope.AttributeScopeKind.PROPERTY, //doesn't matter
+                            InvariantPriority.COMMON,
+                            xmlInvariants,
+                            prefixResolver
+                    );
+                } else {
+
+                    invariants = new ArrayList<>();
+                }
             }
 
             List<CriterionRegion> xmlRegions = criterion.getRegion();

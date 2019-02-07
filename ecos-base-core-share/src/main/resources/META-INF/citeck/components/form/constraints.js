@@ -439,14 +439,14 @@
         return this._loaderPanel;
     };
 
-    var formioFormIdx = 0;
-    Citeck.forms.formio = function (record, config) {
+    var eformFormIdx = 0;
+    Citeck.forms.eform = function (record, config) {
 
         if (!config) {
             config = {};
         }
 
-        var formId = 'formio-form-panel' + formioFormIdx++;
+        var formId = 'ecos-form-panel' + eformFormIdx++;
 
         var panel = new YAHOO.widget.Panel(formId, {
             width: config.width || "500px",
@@ -469,12 +469,13 @@
 
         panel.setHeader(config.header || "");
         var contentId = formId + '-content';
-        panel.setBody('<div class="formio-panel-content" id="' + contentId + '"></div>');
+        panel.setBody('<div class="eform-panel-content" id="' + contentId + '"></div>');
         panel.render(document.body);
 
-        require(['react', 'react-dom', 'js/citeck/formio/formio-form'], function (React, ReactDOM, FormioForm) {
-            ReactDOM.render(React.createElement(FormioForm.default, {
+        require(['react', 'react-dom', 'js/citeck/modules/eform/ecos-form'], function (React, ReactDOM, EcosForm) {
+            ReactDOM.render(React.createElement(EcosForm.default, {
                 record: record,
+                attributes: config.attributes || {},
                 onReady: function() {
                     panel.show();
                     setTimeout(function(){
@@ -482,6 +483,9 @@
                     }, 100);
                 },
                 onSubmit: function () {
+                    panel.destroy();
+                },
+                onFormCancel: function () {
                     panel.destroy();
                 }
             }), document.getElementById(contentId))
@@ -683,6 +687,11 @@
             editDetails.show();
         };
 
+        if (forceOldDialog) {
+            oldDialog();
+            return;
+        }
+
         var checkUrl = YAHOO.lang.substitute(Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?{paramName}={itemId}&viewId={formId}&mode={mode}", {
             paramName: paramName,
             itemId: itemId,
@@ -693,9 +702,11 @@
         Alfresco.util.Ajax.jsonGet({
             url: checkUrl,
             successCallback: { fn: function(response) {
-                if (forceOldDialog) {
-                    oldDialog();
-                } else if (response.json.exists) {
+                var resp = response.json;
+
+                if (resp.eformExists) {
+                    Citeck.forms.eform(itemId, {});
+                } else if (resp.exists) {
                     newDialog();
                 } else if(response.json.defaultExists) {
                     formId = "";

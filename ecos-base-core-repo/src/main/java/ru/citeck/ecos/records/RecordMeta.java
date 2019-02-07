@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.*;
 import org.alfresco.util.ParameterCheck;
 
+import java.util.function.Function;
+
 public class RecordMeta {
 
     private RecordRef id = RecordRef.EMPTY;
@@ -11,6 +13,11 @@ public class RecordMeta {
     private ObjectNode attributes = JsonNodeFactory.instance.objectNode();
 
     public RecordMeta() {
+    }
+
+    public RecordMeta(RecordMeta other, Function<RecordRef, RecordRef> idMapper) {
+        setId(idMapper.apply(other.getId()));
+        setAttributes(other.getAttributes());
     }
 
     public RecordMeta(String id) {
@@ -40,6 +47,11 @@ public class RecordMeta {
 
     public JsonNode getAttribute(String name) {
         return attributes.path(name);
+    }
+
+    public boolean hasAttribute(String name) {
+        JsonNode att = attributes.path(name);
+        return !isEmpty(att);
     }
 
     public <T> T getAttribute(String name, T orElse) {

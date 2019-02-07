@@ -101,6 +101,11 @@ public class AlfNodeRecord implements MetaValue {
                 attribute = Collections.singletonList(new AlfNodeAttValue("alf_" + node.type()));
                 break;
 
+            case RecordConstants.ATT_VIEW_FORM_KEY:
+
+                attribute = Collections.singletonList(new AlfNodeAttValue("alf_" + node.type() + "_view"));
+                break;
+
             default:
 
                 Attribute nodeAtt = node.attribute(name);

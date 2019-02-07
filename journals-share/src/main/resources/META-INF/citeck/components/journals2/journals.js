@@ -19,11 +19,11 @@
 define([
     'lib/knockout',
     'citeck/utils/knockout.utils',
+    'underscore',
     'citeck/components/invariants/invariants',
     'citeck/components/dynamic-tree/cell-formatters',
-    'citeck/components/dynamic-tree/action-renderer',
-    'lib/underscore'
-], function(ko, koutils) {
+    'citeck/components/dynamic-tree/action-renderer'
+], function(ko, koutils, _) {
 
     if (!Citeck) Citeck = {};
     if (!Citeck.constants) Citeck.constants = {};
@@ -136,8 +136,27 @@ CreateVariant
     .property('isDefault', b)
     .property('journal', Journal)
     .property('createArguments', s)
+    .property('recordRef', s)
 
-    .computed('link', function() {
+    .method('onClick', function () {
+
+        var self = this;
+
+        if (this.recordRef()) {
+            Citeck.forms.eform(this.recordRef(), {
+                attributes: {
+                    _parent: self.destination()
+                },
+                onSubmit: function() {
+
+                }
+            });
+        } else {
+            window.location = this.link();
+        }
+    })
+
+    .computed('link', function () {
         var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
                 urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
 
@@ -870,7 +889,12 @@ Record
 
 Column
     .property('id', s)
+    .property('attKey', s)
     .computed('key', function() {
+        var key = this.attKey();
+        if (key) {
+            return key;
+        }
         var id = this.id();
         return id.match(':') ? 'attributes[\'' + id + '\']' : id;
     })
@@ -1144,6 +1168,7 @@ JournalsWidget
                 includeLink = false,
                 withoutMultiple = false,
                 labelByCode = null;
+
             if (options) {
                 formatter = options.settings().formatter;
                 withoutMultiple = options.settings().withoutMultiple;
@@ -1184,6 +1209,7 @@ JournalsWidget
 
             return {
                 id: attr.name(),
+                attKey: 'attributes[\'' + attr.name() + '\']',
                 sortable: options ? options.sortable() : false,
                 formatter: formatter
             };
@@ -1233,7 +1259,7 @@ JournalsWidget
         return _.map(attributes, function(attr) {
             var id = attr.name();
             return {
-                key: id.match(':') ? 'attributes[\'' + id + '\']' : id
+                key: 'attributes[\'' + id + '\']'
             };
         }).concat(defaultFields);
     })

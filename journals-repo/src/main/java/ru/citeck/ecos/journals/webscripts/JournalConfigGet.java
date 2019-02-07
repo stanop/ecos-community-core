@@ -85,10 +85,10 @@ public class JournalConfigGet extends AbstractWebScript {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "Journal with id '" + journalId + "' not found!");
         }
 
-        List<QName> attributes = type.getAttributes();
+        List<String> attributes = type.getAttributes();
         List<Column> columns = new ArrayList<>();
 
-        for (QName name : attributes) {
+        for (String name : attributes) {
 
             Column column = new Column();
 
@@ -97,7 +97,7 @@ public class JournalConfigGet extends AbstractWebScript {
             column.setSearchable(type.isAttributeSearchable(name));
             column.setSortable(type.isAttributeSortable(name));
             column.setVisible(type.isAttributeVisible(name));
-            column.setAttribute(toPrefix(name));
+            column.setAttribute(name);
             column.setParams(type.getAttributeOptions(name));
             column.setText(getColumnLabel(column));
 

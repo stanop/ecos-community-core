@@ -39,7 +39,7 @@ public class HistoryRecordsDAO extends LocalRecordsDAO
             language = LANGUAGE_DOCUMENT;
         }
         if (!LANGUAGE_DOCUMENT.equals(language)) {
-            throw new IllegalArgumentException("Language " + language + " is not supported!");
+            throw new IllegalArgumentException("Language '" + language + "' is not supported!");
         }
 
         Query queryData = query.getQuery(Query.class);

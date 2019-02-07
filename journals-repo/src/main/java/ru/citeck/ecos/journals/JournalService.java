@@ -49,7 +49,7 @@ public interface JournalService {
 
     void clearCache();
 
-    List<InvariantDefinition> getCriterionInvariants(String journalId, QName attribute);
+    List<InvariantDefinition> getCriterionInvariants(String journalId, String attribute);
 
     void registerCriterionInvariantsProvider(CriterionInvariantsProvider provider);
 

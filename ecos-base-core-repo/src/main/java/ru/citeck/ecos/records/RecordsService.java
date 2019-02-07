@@ -87,15 +87,27 @@ public interface RecordsService {
 
     /**
      * Get meta
-     * Fields example: {"name" : "cm:name", "title" : "cm:title"]
+     * Fields example: {"name" : "cm:name", "title" : "cm:title"}
      */
     RecordsResult<RecordMeta> getAttributes(Collection<RecordRef> records, Map<String, String> attributes);
 
     /**
      * Get meta
-     * Fields example: {"name" : "cm:name", "title" : "cm:title"]
+     * Fields example: {"name" : "cm:name", "title" : "cm:title"}
      */
     RecordMeta getAttributes(RecordRef record, Map<String, String> attributes);
+
+    /**
+     * Get meta
+     * Fields example: {"name" : "cm:name", "title" : "cm:title"}
+     */
+    RecordMeta getAttributes(RecordRef record, Collection<String> attributes);
+
+    /**
+     * Get ordered meta
+     * Fields example: {"name" : "cm:name", "title" : "cm:title"]
+     */
+    RecordsResult<RecordMeta> getAttributes(List<RecordRef> records, Map<String, String> attributes);
 
     /**
      * Get ordered meta
@@ -122,12 +134,6 @@ public interface RecordsService {
     <T> RecordsResult<T> getMeta(List<RecordRef> records, Class<T> metaClass);
 
     <T> T getMeta(RecordRef recordRef, Class<T> metaClass);
-
-    /**
-     * Get ordered meta
-     * Fields example: {"name" : "cm:name", "title" : "cm:title"]
-     */
-    RecordsResult<RecordMeta> getAttributes(List<RecordRef> records, Map<String, String> attributes);
 
     /**
      * Create or change records

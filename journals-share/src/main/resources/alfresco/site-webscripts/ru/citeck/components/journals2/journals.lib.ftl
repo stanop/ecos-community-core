@@ -256,7 +256,7 @@
         <div class="bd">
             <ul data-bind="foreach: resolve('journal.availableCreateVariants', [])" class="first-of-type">
                 <li class="yuimenuitem">
-                    <a class="yuimenuitemlabel" data-bind="text: title, attr: { href: link() }, css: { 'default-create-variant': isDefault }"></a>
+                    <a class="yuimenuitemlabel" data-bind="text: title, click: onClick.bind($data), css: { 'default-create-variant': isDefault }"></a>
                 </li>
             </ul>
         </div>

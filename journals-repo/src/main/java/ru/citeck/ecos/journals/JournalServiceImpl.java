@@ -112,7 +112,7 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public List<InvariantDefinition> getCriterionInvariants(String journalId, QName attribute) {
+    public List<InvariantDefinition> getCriterionInvariants(String journalId, String attribute) {
 
         JournalType journalType = journalTypes.get(journalId);
 
@@ -214,7 +214,11 @@ class JournalServiceImpl implements JournalService {
         JournalType journalType = needJournalType(journalId);
         return new RecordsQueryResult<>(
                 recordsDAO.getRecordsWithData(journalType, query, language, pageInfo, debug),
-                RecordMeta::getAttributes
+                meta -> {
+                    ObjectNode attributes = meta.getAttributes();
+                    attributes.put("id", meta.getId().toString());
+                    return attributes;
+                }
         );
     }
 

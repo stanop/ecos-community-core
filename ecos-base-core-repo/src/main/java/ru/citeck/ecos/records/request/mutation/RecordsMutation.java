@@ -4,13 +4,25 @@ import ru.citeck.ecos.records.RecordMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class RecordsMutation {
 
-    private String sourceId;
     private List<RecordMeta> records = new ArrayList<>();
 
     private boolean debug = false;
+
+    public RecordsMutation() {
+    }
+
+    public RecordsMutation(RecordsMutation other, Function<RecordMeta, RecordMeta> convert) {
+        this.debug = other.debug;
+        this.records = other.getRecords()
+                            .stream()
+                            .map(convert)
+                            .collect(Collectors.toList());
+    }
 
     public List<RecordMeta> getRecords() {
         return records;
@@ -22,14 +34,6 @@ public class RecordsMutation {
         } else {
             this.records.clear();
         }
-    }
-
-    public String getSourceId() {
-        return sourceId;
-    }
-
-    public void setSourceId(String sourceId) {
-        this.sourceId = sourceId != null ? sourceId : "";
     }
 
     public boolean isDebug() {
