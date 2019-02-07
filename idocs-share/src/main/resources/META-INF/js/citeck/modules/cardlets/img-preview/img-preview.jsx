@@ -49,8 +49,9 @@ export default class ImgPreview extends NodeCardlet {
                     <div id={`${htmlId}-view`} className="document-view">
                         <img style={{
                             'display': 'block',
-                            'margin-left': 'auto',
-                            'margin-right': 'auto'
+                            'marginLeft': 'auto',
+                            'marginRight': 'auto',
+                            'maxWidth': '100%'
                         }} src={imgSrc + '&modified=' + modified} />
                     </div>
                 </div>
