@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+
+        <import uri="http://www.citeck.ru/model/wcalendar/1.0" prefix="wcal" />
+    </imports>
+
+    <type name="wcal:calendar">
+        <property name="wcal:name">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+        <property name="wcal:year">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="valid" language="javascript" description="message.incorrect.year.range">
+                <![CDATA[value >= 2010 && value <= 2050]]>
+            </invariant>
+            <invariant on="default" language="javascript">(new Date()).getFullYear()</invariant>
+        </property>
+        <property name="wcal:workingDayBegin">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="valid" language="javascript" description="message.incorrect.time.format">value.match(/^\d{1,2}:\d{2}$/) ? true : false</invariant>
+            <invariant on="default" language="explicit">09:00</invariant>
+        </property>
+        <property name="wcal:workingDayEnd">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="valid" language="javascript" description="message.incorrect.time.format">value.match(/^\d{1,2}:\d{2}$/) ? true : false</invariant>
+            <invariant on="default" language="explicit">18:00</invariant>
+        </property>
+        <property name="wcal:country">
+            <invariant on="default" language="explicit">ru</invariant>
+        </property>
+        <property name="cm:content">
+            <invariant on="mandatory" language="explicit">true</invariant>
+        </property>
+    </type>
+
+</invariants>
