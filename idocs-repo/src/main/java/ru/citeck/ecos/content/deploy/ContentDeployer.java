@@ -30,6 +30,7 @@ import ru.citeck.ecos.model.EcosContentModel;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContentDeployer<T> extends AbstractLifecycleBean implements BeanNameAware {
 
@@ -147,20 +148,33 @@ public class ContentDeployer<T> extends AbstractLifecycleBean implements BeanNam
         info.keys = new HashMap<>();
         metadataKeys.forEach(keyName -> {
             Serializable value = info.metadata.get(keyName);
-            if (value instanceof NodeRef) {
-                if (nodeService.exists((NodeRef) value)) {
-                    info.keys.put(keyName, value);
-                }
-            } else {
-                info.keys.put(keyName, value);
-            }
+            info.keys.put(keyName, value);
         });
-        if (info.keys.isEmpty() || info.keys.values().stream().allMatch(Objects::isNull)) {
-            logger.warn("Content keys is empty. Ignore it. File: " + location);
+
+        if (!checkKeys(info.keys)) {
+            logger.warn("Content keys is incorrect. Ignore it. File: " + location);
             return null;
         }
 
         return info;
+    }
+
+    private boolean checkKeys(Map<QName, Serializable> keys) {
+
+        if (keys.isEmpty() || keys.values().stream().allMatch(Objects::isNull)) {
+            logger.warn("Content keys is empty");
+            return false;
+        }
+
+        AtomicBoolean isKeysCorrect = new AtomicBoolean(true);
+        keys.forEach((k, v) -> {
+            if (v instanceof NodeRef && !nodeService.exists((NodeRef) v)) {
+                isKeysCorrect.set(false);
+                logger.warn("Value doesn't exists: key: " + k + " value: " + v);
+            }
+        });
+
+        return isKeysCorrect.get();
     }
 
     private void deployImpl(ContentInfo info) {
