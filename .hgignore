@@ -25,3 +25,4 @@ package-lock.json
 src/test/properties/local/alfresco-global-dev.properties
 syntax: regexp
 desktop\.ini
+rebel.xml
