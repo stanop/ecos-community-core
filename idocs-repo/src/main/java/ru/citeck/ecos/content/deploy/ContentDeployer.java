@@ -15,18 +15,23 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.extensions.surf.util.AbstractLifecycleBean;
 import ru.citeck.ecos.content.ContentData;
 import ru.citeck.ecos.content.RepoContentDAO;
 import ru.citeck.ecos.content.metadata.MetadataExtractor;
 import ru.citeck.ecos.model.EcosContentModel;
-import ru.citeck.ecos.utils.AbstractDeployerBean;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.*;
 
-public class ContentDeployer<T> extends AbstractDeployerBean {
+public class ContentDeployer<T> extends AbstractLifecycleBean implements BeanNameAware {
 
     private static final Log logger = LogFactory.getLog(ContentDeployer.class);
 
@@ -42,6 +47,19 @@ public class ContentDeployer<T> extends AbstractDeployerBean {
 
     private MetadataExtractor<T> metadataExtractor;
 
+    private String beanName;
+    private String artifactType;
+    private List<String> locations;
+
+    private boolean enabled = true;
+
+    public ContentDeployer() {
+    }
+
+    public ContentDeployer(String artifactType) {
+        this.artifactType = artifactType;
+    }
+
     @PostConstruct
     public void init() {
         ParameterCheck.mandatory("repoContentDAO", repoContentDAO);
@@ -50,55 +68,121 @@ public class ContentDeployer<T> extends AbstractDeployerBean {
         }
     }
 
-    @Override
-    protected void load(String location, InputStream inputStream) {
+    public void load() {
+
+        if (locations == null || locations.isEmpty()) {
+            logger.info(beanName + ": nothing to deploy");
+            return;
+        }
+
+        AuthenticationUtil.runAsSystem(() ->
+                txnHelper.doInTransaction(() -> {
+                    deployInTxn(locations);
+                    return null;
+                }, false)
+        );
+    }
+
+    private void deployInTxn(List<String> locations) {
+
+        logger.info(beanName + ": deploying " + artifactType + " (" + locations.size() + " locations)");
+
+        Map<Map<QName, Serializable>, ContentInfo> contentInfo = new HashMap<>();
+
+        for (int i = 0; i < locations.size(); i++) {
+
+            ContentInfo info = getContentInfo(locations.get(i), i);
+            if (info != null) {
+                contentInfo.put(info.keys, info);
+            }
+        }
+
+        List<ContentInfo> infoList = new ArrayList<>(contentInfo.values());
+        infoList.sort(null);
+
+        for (ContentInfo info : infoList) {
+
+            if (logger.isDebugEnabled()) {
+                logger.debug(beanName + ": deploying " + artifactType + ": " + info.location);
+            }
+            deployImpl(info);
+            if (logger.isDebugEnabled()) {
+                logger.debug(beanName + ": successfully deployed " + artifactType + ": " + info.location);
+            }
+        }
+    }
+
+    public void load(String location) {
         AuthenticationUtil.runAsSystem(() ->
             txnHelper.doInTransaction(() -> {
-                deployImpl(location, inputStream);
+                deployImpl(getContentInfo(location, 0));
                 return null;
             }, false)
         );
     }
 
-    private void deployImpl(String location, InputStream inputStream) throws Exception {
+    private ContentInfo getContentInfo(String location, int idx) {
 
-        byte[] inputBytes = IOUtils.toByteArray(inputStream);
-        ByteArrayInputStream inputBytesStream = new ByteArrayInputStream(inputBytes);
+        ContentInfo info = new ContentInfo(idx);
+        info.location = location;
 
-        T parsedObject = repoContentDAO.getContentDAO().read(inputBytes);
-
-        Map<QName, Serializable> metadata = new HashMap<>(metadataExtractor.getMetadata(parsedObject));
-
-        if (!metadata.containsKey(ContentModel.PROP_NAME)) {
-            metadata.put(ContentModel.PROP_NAME, FilenameUtils.getName(location));
+        try {
+            // default protocol is classpath
+            Resource resource = location.contains(":") ? new UrlResource(location) : new ClassPathResource(location);
+            info.data = IOUtils.toByteArray(resource.getInputStream());
+            info.url = resource.getURL().toString();
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not deploy " + artifactType + ", location: " + location
+                    + ", deployer: " + beanName, e);
         }
 
-        Map<QName, Serializable> keys = new HashMap<>();
+        info.parsedObject = repoContentDAO.getContentDAO().read(info.data);
+
+        info.metadata = new HashMap<>(metadataExtractor.getMetadata(info.parsedObject));
+
+        if (!info.metadata.containsKey(ContentModel.PROP_NAME)) {
+            info.metadata.put(ContentModel.PROP_NAME, FilenameUtils.getName(location));
+        }
+
+        info.keys = new HashMap<>();
         metadataKeys.forEach(keyName -> {
-            Serializable value = metadata.get(keyName);
+            Serializable value = info.metadata.get(keyName);
             if (value instanceof NodeRef) {
                 if (nodeService.exists((NodeRef) value)) {
-                    keys.put(keyName, value);
+                    info.keys.put(keyName, value);
                 }
             } else {
-                keys.put(keyName, value);
+                info.keys.put(keyName, value);
             }
         });
-        if (keys.isEmpty() || keys.values().stream().allMatch(Objects::isNull)) {
+        if (info.keys.isEmpty() || info.keys.values().stream().allMatch(Objects::isNull)) {
             logger.warn("Content keys is empty. Ignore it. File: " + location);
+            return null;
+        }
+
+        return info;
+    }
+
+    private void deployImpl(ContentInfo info) {
+
+        if (info == null) {
             return;
         }
 
-        Optional<? extends ContentData<?>> data = repoContentDAO.getFirstContentData(keys, false);
+        ByteArrayInputStream inputBytesStream = new ByteArrayInputStream(info.data);
+
+        Optional<? extends ContentData<?>> data = repoContentDAO.getFirstContentData(info.keys, false);
         NodeRef contentNode = data.map(ContentData::getNodeRef)
-                                  .orElseGet(() -> repoContentDAO.createNode(metadata));
+                                  .orElseGet(() -> repoContentDAO.createNode(info.metadata));
 
         String deployedChecksum = (String) nodeService.getProperty(contentNode,
                                                                    EcosContentModel.PROP_DEPLOYED_CHECKSUM);
 
-        String checksum = DigestUtils.md5Hex(inputBytes);
+        String checksum = DigestUtils.md5Hex(info.data);
 
         if (deployedChecksum == null || !deployedChecksum.equals(checksum)) {
+
+            logger.info(beanName + ": deploy " + artifactType + ": " + info.location);
 
             Map<String, Serializable> versProps = Collections.singletonMap(VersionModel.PROP_VERSION_TYPE,
                                                                            VersionType.MAJOR);
@@ -106,7 +190,7 @@ public class ContentDeployer<T> extends AbstractDeployerBean {
             versionService.createVersion(contentNode, versProps, false);
 
             inputBytesStream.reset();
-            String mimetype = mimetypeService.guessMimetype(location, inputBytesStream);
+            String mimetype = mimetypeService.guessMimetype(info.location, inputBytesStream);
 
             inputBytesStream.reset();
             ContentWriter writer = contentService.getWriter(contentNode, ContentModel.PROP_CONTENT, true);
@@ -127,6 +211,58 @@ public class ContentDeployer<T> extends AbstractDeployerBean {
         mimetypeService = serviceRegistry.getMimetypeService();
     }
 
+    @Override
+    protected void onBootstrap(ApplicationEvent event) {
+        if (enabled) {
+            load();
+        }
+    }
+
+    @Override
+    protected void onShutdown(ApplicationEvent event) {
+        // NOOP
+    }
+
+    @Override
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
+
+    public List<String> getLocations() {
+        return locations;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setLocation(String location) {
+        this.locations = Collections.singletonList(location);
+    }
+
+    public void setLocations(List<String> locations) {
+        this.locations = new ArrayList<>(locations);
+    }
+
+    public String getBeanName() {
+        return beanName;
+    }
+
+    public void addLocation(String location) {
+        if (this.locations == null) {
+            locations = new ArrayList<>();
+        }
+        locations.add(location);
+    }
+
+    public String getArtifactType() {
+        return artifactType;
+    }
+
+    public void setArtifactType(String artifactType) {
+        this.artifactType = artifactType;
+    }
+
     public void setMetadataKeys(Set<QName> metadataKeys) {
         this.metadataKeys = metadataKeys;
     }
@@ -137,5 +273,44 @@ public class ContentDeployer<T> extends AbstractDeployerBean {
 
     public void setMetadataExtractor(MetadataExtractor<T> metadataExtractor) {
         this.metadataExtractor = metadataExtractor;
+    }
+
+    class ContentInfo implements Comparable<ContentInfo> {
+
+        String url;
+        String location;
+
+        int order;
+        byte[] data;
+        T parsedObject;
+
+        Map<QName, Serializable> keys;
+        Map<QName, Serializable> metadata;
+
+        ContentInfo(int order) {
+            this.order = order;
+        }
+
+        @Override
+        public int compareTo(ContentInfo o) {
+            return Integer.compare(order, o.order);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            ContentInfo that = (ContentInfo) o;
+            return Objects.equals(keys, that.keys);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(keys);
+        }
     }
 }
