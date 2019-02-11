@@ -10,19 +10,21 @@
     <view class="ecosbpm:processModel">
         <field prop="cm:title" />
         <field prop="ecosbpm:processId" />
-        <field prop="ecosbpm:category" />
+        <field prop="ecosbpm:category">
+            <region name="input" template="autocomplete">
+                <param name="searchScript">criteria-search</param>
+                <param name="criteria">
+                    [
+                    { attribute: "cm:title", predicate: "string-starts-with" }
+                    ]
+                </param>
+            </region>
+        </field>
         <field prop="ecosbpm:validFrom" />
         <field prop="ecosbpm:validTo" />
         <field prop="cm:description" />
         <field assoc="ecosbpm:processOwnerAssoc" />
         <field assoc="ecosbpm:processReviewerAssoc" />
-
-        <!--<field assoc="icaseRole:assignees">
-            <region name="input" template="view">
-                <param name="attribute">cm:title</param>
-            </region>
-            <region name="select" template="select-orgstruct"/>
-        </field>-->
     </view>
 
 </views>
