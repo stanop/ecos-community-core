@@ -281,33 +281,21 @@ public class LuceneQuery implements SearchQueryBuilder {
         }
 
         private List<CriteriaTriplet> getMiltipleFilteringTriplets(SearchCriteria criteria) {
-            List<CriteriaTriplet> result = new ArrayList<>();
 
-            Iterator<CriteriaTriplet> iterator = criteria.getTripletsIterator();
-            while (iterator.hasNext()) {
+            List<CriteriaTriplet> triplets = criteria.getTriplets();
 
-                CriteriaTriplet criteriaTriplet = iterator.next();
-                String tripletField = criteriaTriplet.getField();
-                String tripletPredicat = criteriaTriplet.getPredicate();
-                int countContains = 0;
-
-                Iterator<CriteriaTriplet> innerIterator = criteria.getTripletsIterator();
-                while (innerIterator.hasNext() && tripletField != null && tripletPredicat != null) {
-
-                    CriteriaTriplet innerCriteriaTriplet = innerIterator.next();
-                    String innerTripletField = innerCriteriaTriplet.getField();
-                    String innerTripletPredicat = innerCriteriaTriplet.getPredicate();
-
-                    if (innerTripletField != null && innerTripletPredicat != null) {
-                        if (tripletField.equals(innerTripletField) && tripletPredicat.equals(innerTripletPredicat)) {
-                            countContains++;
-                        }
-                    }
-                }
-                if (countContains > 1) {
-                    result.add(criteriaTriplet);
-                }
+            if (triplets == null) {
+                return Collections.emptyList();
             }
+
+            Map<CriteriaDoublet, Integer> doubletsCount = new HashMap<>();
+            triplets.forEach(triplet -> doubletsCount.merge(new CriteriaDoublet(triplet), 1, Integer::sum));
+
+            List<CriteriaTriplet> result = new ArrayList<>();
+            triplets.forEach(triplet -> { if (doubletsCount.get(new CriteriaDoublet(triplet)) > 1) {
+                result.add(triplet);
+            }});
+
             return result;
         }
 
@@ -776,6 +764,38 @@ public class LuceneQuery implements SearchQueryBuilder {
 
             String getQueryPart() {
                 return queryPart;
+            }
+        }
+
+        protected class CriteriaDoublet {
+            String predicate;
+            String field;
+
+            CriteriaDoublet(CriteriaTriplet criteriaTriplet) {
+                this.predicate = criteriaTriplet.getPredicate();
+                this.field = criteriaTriplet.getField();
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (this == obj) {
+                    return true;
+                }
+
+                if (!(obj instanceof CriteriaDoublet)) {
+                    return false;
+                }
+
+                CriteriaDoublet that = (CriteriaDoublet) obj;
+
+                return Objects.equals(predicate, that.predicate) && Objects.equals(field, that.field);
+            }
+
+            @Override
+            public int hashCode() {
+                int result = predicate != null ? predicate.hashCode() : 0;
+                result = 31 * result + (field != null ? field.hashCode() : 0);
+                return result;
             }
         }
     }
