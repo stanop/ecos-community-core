@@ -21,6 +21,7 @@ import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.search.ftsquery.OperatorExpected;
 import ru.citeck.ecos.utils.LazyNodeRef;
 
 import java.io.Serializable;
@@ -171,25 +172,29 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
             }
         }
 
-        return FTSQuery.create()
-                       .parent(rootRef.getNodeRef()).and()
-                       .type(configNodeType).and()
-                       .values(notNullProps, BinOperator.AND, true)
-                       .transactional()
-                       .query(searchService)
-                       .stream()
-                       .filter(ref -> {
-                           for (QName propName : nullProps) {
-                               Serializable value = nodeService.getProperty(ref, propName);
-                               if (value != null && (!(value instanceof String) ||
-                                                     StringUtils.isNotBlank((String) value))) {
-                                   return false;
-                               }
-                           }
-                           return true;
-                       })
-                       .map(this::getContentDataImpl)
-                       .collect(Collectors.toList());
+        OperatorExpected query = FTSQuery.create()
+                                         .parent(rootRef.getNodeRef()).and()
+                                         .type(configNodeType)
+                                         .transactional();
+
+        if (notNullProps.size() > 0) {
+            query.and().values(notNullProps, BinOperator.AND, true);
+        }
+
+        return query.query(searchService)
+                    .stream()
+                    .filter(ref -> {
+                        for (QName propName : nullProps) {
+                            Serializable value = nodeService.getProperty(ref, propName);
+                            if (value != null && (!(value instanceof String) ||
+                                    StringUtils.isNotBlank((String) value))) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    })
+                    .map(this::getContentDataImpl)
+                    .collect(Collectors.toList());
     }
 
     private ContentData<T> getContentDataImpl(NodeRef nodeRef) {
