@@ -241,6 +241,8 @@ public class LuceneQuery implements SearchQueryBuilder {
             Iterator<CriteriaTriplet> iterator = criteria.getTripletsIterator();
             extractType(criteria);
 
+            List<CriteriaTriplet> tripletsContainsMoreThanOne = getMiltipleFilteringTriplets(criteria);
+
             while (iterator.hasNext()) {
 
                 CriteriaTriplet criteriaTriplet = iterator.next();
@@ -253,7 +255,7 @@ public class LuceneQuery implements SearchQueryBuilder {
                         shouldAppendQuery = false;
                     }
 
-                    buildSearchTerm(criteriaTriplet);
+                    buildSearchTerm(criteriaTriplet, tripletsContainsMoreThanOne.contains(criteriaTriplet));
 
                     if (!shouldAppendQuery) {
                         query = appendOrLogic(query);
@@ -278,6 +280,37 @@ public class LuceneQuery implements SearchQueryBuilder {
             return finalQuery;
         }
 
+        private List<CriteriaTriplet> getMiltipleFilteringTriplets(SearchCriteria criteria) {
+            List<CriteriaTriplet> result = new ArrayList<>();
+
+            Iterator<CriteriaTriplet> iterator = criteria.getTripletsIterator();
+            while (iterator.hasNext()) {
+
+                CriteriaTriplet criteriaTriplet = iterator.next();
+                String tripletField = criteriaTriplet.getField();
+                String tripletPredicat = criteriaTriplet.getPredicate();
+                int countContains = 0;
+
+                Iterator<CriteriaTriplet> innerIterator = criteria.getTripletsIterator();
+                while (innerIterator.hasNext() && tripletField != null && tripletPredicat != null) {
+
+                    CriteriaTriplet innerCriteriaTriplet = innerIterator.next();
+                    String innerTripletField = innerCriteriaTriplet.getField();
+                    String innerTripletPredicat = innerCriteriaTriplet.getPredicate();
+
+                    if (innerTripletField != null && innerTripletPredicat != null) {
+                        if (tripletField.equals(innerTripletField) && tripletPredicat.equals(innerTripletPredicat)) {
+                            countContains++;
+                        }
+                    }
+                }
+                if (countContains > 1) {
+                    result.add(criteriaTriplet);
+                }
+            }
+            return result;
+        }
+
         private void extractType(SearchCriteria criteria) {
             Iterator<CriteriaTriplet> iterator = criteria.getTripletsIterator();
             while (iterator.hasNext()) {
@@ -292,7 +325,7 @@ public class LuceneQuery implements SearchQueryBuilder {
             }
         }
 
-        private void buildSearchTerm(CriteriaTriplet triplet) {
+        private void buildSearchTerm(CriteriaTriplet triplet, boolean tripletsHasMoreOne) {
 
             SearchPredicate criterion = SearchPredicate.forName(triplet.getPredicate());
 
@@ -312,7 +345,10 @@ public class LuceneQuery implements SearchQueryBuilder {
             }
 
             triplet = convertAssocTriplet(triplet);
-            String field = buildField(triplet.getField(), SearchPredicate.STRING_EQUALS.equals(criterion));
+            String field = buildField(
+                    triplet.getField(),
+                    SearchPredicate.STRING_EQUALS.equals(criterion) && !tripletsHasMoreOne
+            );
 
             switch (criterion) {
                 case STRING_CONTAINS:
