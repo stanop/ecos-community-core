@@ -149,6 +149,7 @@
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.ecos-bpm-groups"/>
+                <ref bean="idocs.all-group"/>
             </list>
         </property>
         <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/patch/add-to-group.js" />
