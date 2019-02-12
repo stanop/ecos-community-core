@@ -165,7 +165,12 @@ public class CreateVariantsGet extends AbstractWebScript {
     }
 
     public List<ResponseVariant> getVariantsByJournalId(String journalId, Boolean writable) {
-        return convertVariants(getVariantsByJournalId(journalId), writable);
+        MLPropertyInterceptor.setMLAware(true);
+        try {
+            return convertVariants(getVariantsByJournalId(journalId), writable);
+        } finally {
+            MLPropertyInterceptor.setMLAware(false);
+        }
     }
 
     private List<ResponseVariant> convertVariants(List<CreateVariant> variants, Boolean writable) {

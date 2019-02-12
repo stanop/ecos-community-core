@@ -25,6 +25,8 @@ import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
+import ru.citeck.ecos.records.RecordsService;
+import ru.citeck.ecos.records.source.MetaAttributeDef;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.server.utils.Utils;
 import ru.citeck.ecos.utils.NodeUtils;
@@ -52,6 +54,7 @@ public class JournalConfigGet extends AbstractWebScript {
     private NodeService nodeService;
     private SearchService searchService;
     private MessageService messageService;
+    private RecordsService recordsService;
     private JournalService journalService;
     private ServiceRegistry serviceRegistry;
     private TemplateService templateService;
@@ -87,6 +90,10 @@ public class JournalConfigGet extends AbstractWebScript {
 
         List<String> attributes = type.getAttributes();
         List<Column> columns = new ArrayList<>();
+        String sourceId = type.getDataSource();
+        if (sourceId == null) {
+            sourceId = "";
+        }
 
         for (String name : attributes) {
 
@@ -101,6 +108,12 @@ public class JournalConfigGet extends AbstractWebScript {
             column.setParams(type.getAttributeOptions(name));
             column.setText(getColumnLabel(column));
 
+            Optional<MetaAttributeDef> def = recordsService.getAttributeDef(sourceId, name);
+            column.setJavaClass(def.map(d -> {
+                Class<?> datatype = d.getDataType();
+                return datatype != null ? datatype.getName() : null;
+            }).orElse(null));
+
             columns.add(column);
         }
 
@@ -108,7 +121,7 @@ public class JournalConfigGet extends AbstractWebScript {
         response.setId(journalId);
         response.setColumns(columns);
         response.setMeta(getJournalMeta(journalId));
-        response.setSourceId(type.getDataSource());
+        response.setSourceId(sourceId);
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getWriter(), response);
@@ -232,6 +245,11 @@ public class JournalConfigGet extends AbstractWebScript {
     }
 
     @Autowired
+    public void setRecordsService(RecordsService recordsService) {
+        this.recordsService = recordsService;
+    }
+
+    @Autowired
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.nodeService = serviceRegistry.getNodeService();
@@ -269,6 +287,7 @@ public class JournalConfigGet extends AbstractWebScript {
     static class Column {
         @Getter @Setter String text;
         @Getter @Setter String type;
+        @Getter @Setter String javaClass;
         @Getter @Setter String attribute;
         @Getter @Setter Formatter formatter;
         @Getter @Setter Map<String, String> params;
