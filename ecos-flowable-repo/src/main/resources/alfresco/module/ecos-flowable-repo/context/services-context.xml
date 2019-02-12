@@ -226,6 +226,8 @@
         <property name="authorityService" ref="authorityService"/>
         <property name="caseRoleService" ref="caseRoleService"/>
         <property name="deputyService" ref="DeputyService"/>
+        <property name="flowableCustomCommentService" ref="flowableCustomCommentService"/>
+        <property name="taskService" ref="flowableTaskService"/>
     </bean>
 
     <bean id="flowableAssignTaskToSingleCandidateListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.create.AssignTaskToSingleCandidateListener">
