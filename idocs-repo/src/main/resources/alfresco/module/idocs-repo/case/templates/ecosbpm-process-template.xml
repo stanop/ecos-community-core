@@ -33,6 +33,7 @@
         <cmmn:caseRoles>
             <cmmn:role name="Автор" id="id-2" ns8:roleVarName="author" ns8:roleAssignees="" ns8:roleScript="var author = (document.assocs['ecosbpm:processAuthorAssoc'] || [])[0];&#xA;if (!author) {&#xA;    author = document.properties['cm:creator'];&#xA;}&#xA;author" ns8:isReferenceRole="false" ns8:nodeType="{http://www.citeck.ru/model/icaseRole/1.0}scriptRole"/>
             <cmmn:role name="Владелец процесса" id="id-3" ns8:roleVarName="owner" ns8:roleAssignees="" ns8:roleScript="document.assocs['ecosbpm:processOwnerAssoc']" ns8:isReferenceRole="false" ns8:nodeType="{http://www.citeck.ru/model/icaseRole/1.0}scriptRole"/>
+            <cmmn:role name="Эксперт процесса" id="id-123" ns8:roleVarName="reviewer" ns8:roleAssignees="" ns8:roleScript="document.assocs['ecosbpm:processReviewerAssoc']" ns8:isReferenceRole="false" ns8:nodeType="{http://www.citeck.ru/model/icaseRole/1.0}scriptRole"/>
         </cmmn:caseRoles>
     </cmmn:case>
 </cmmn:definitions>

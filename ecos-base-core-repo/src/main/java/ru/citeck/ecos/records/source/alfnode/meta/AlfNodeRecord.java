@@ -1,6 +1,9 @@
 package ru.citeck.ecos.records.source.alfnode.meta;
 
+import lombok.Getter;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.security.AccessStatus;
+import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.GqlContext;
@@ -26,10 +29,15 @@ public class AlfNodeRecord implements MetaValue {
     public static final String ATTR_IS_DOCUMENT = "attr:isDocument";
     public static final String ATTR_IS_CONTAINER = "attr:isContainer";
     public static final String ATTR_PARENT = "attr:parent";
+    public static final String ATTR_PERMISSIONS = "permissions";
 
+    private NodeRef nodeRef;
     private RecordRef recordRef;
     private GqlAlfNode node;
     private GqlContext context;
+
+    @Getter(lazy = true)
+    private final Permissions permissions = new Permissions();
 
     public AlfNodeRecord(RecordRef recordRef) {
         this.recordRef = recordRef;
@@ -38,7 +46,8 @@ public class AlfNodeRecord implements MetaValue {
     @Override
     public MetaValue init(GqlContext context) {
         this.context = context;
-        this.node = context.getNode(RecordsUtils.toNodeRef(recordRef)).orElse(null);
+        this.nodeRef = RecordsUtils.toNodeRef(recordRef);
+        this.node = context.getNode(nodeRef).orElse(null);
         return this;
     }
 
@@ -106,6 +115,10 @@ public class AlfNodeRecord implements MetaValue {
                 attribute = Collections.singletonList(new AlfNodeAttValue("alf_" + node.type() + "_view"));
                 break;
 
+            case ATTR_PERMISSIONS:
+
+                return Collections.singletonList(getPermissions());
+
             default:
 
                 Attribute nodeAtt = node.attribute(name);
@@ -128,6 +141,24 @@ public class AlfNodeRecord implements MetaValue {
         }
 
         return attribute != null ? attribute : Collections.emptyList();
+    }
+
+    public class Permissions implements MetaValue {
+
+        @Override
+        public String getString() {
+            return null;
+        }
+
+        @Override
+        public boolean hasAttribute(String permission) {
+            if (nodeRef == null) {
+                return false;
+            }
+            PermissionService permissionService = context.getServiceRegistry().getPermissionService();
+            AccessStatus accessStatus = permissionService.hasPermission(nodeRef, permission);
+            return AccessStatus.ALLOWED.equals(accessStatus);
+        }
     }
 }
 

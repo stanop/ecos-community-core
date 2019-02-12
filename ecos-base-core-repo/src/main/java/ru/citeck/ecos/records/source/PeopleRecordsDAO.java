@@ -16,8 +16,11 @@ import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeRecord;
+import ru.citeck.ecos.utils.AuthorityUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -35,18 +38,22 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     private static final String PROP_IS_AVAILABLE = "isAvailable";
     private static final String PROP_IS_MUTABLE = "isMutable";
     private static final String PROP_IS_ADMIN = "isAdmin";
+    private static final String PROP_AUTHORITIES = "authorities";
 
     private static final Log logger = LogFactory.getLog(PeopleRecordsDAO.class);
 
+    private AuthorityUtils authorityUtils;
     private AuthorityService authorityService;
     private AlfNodesRecordsDAO alfNodesRecordsDAO;
     private MutableAuthenticationService authenticationService;
 
     @Autowired
-    public PeopleRecordsDAO(AuthorityService authorityService,
+    public PeopleRecordsDAO(AuthorityUtils authorityUtils,
+                            AuthorityService authorityService,
                             AlfNodesRecordsDAO alfNodesRecordsDAO,
                             MutableAuthenticationService authenticationService) {
         setId(ID);
+        this.authorityUtils = authorityUtils;
         this.authorityService = authorityService;
         this.alfNodesRecordsDAO = alfNodesRecordsDAO;
         this.authenticationService = authenticationService;
@@ -89,6 +96,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
 
         private AlfNodeRecord alfNode;
         private String userName;
+        private UserAuthorities userAuthorities;
 
         UserValue(String userName) {
             this.userName = userName;
@@ -97,7 +105,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         UserValue(NodeRef nodeRef) {
-            this.alfNode =  new AlfNodeRecord(new RecordRef("", nodeRef.toString()));
+            this.alfNode = new AlfNodeRecord(new RecordRef("", nodeRef.toString()));
         }
 
         UserValue(RecordRef recordRef) {
@@ -136,6 +144,13 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
             return userName;
         }
 
+        private UserAuthorities getUserAuthorities() {
+            if (userAuthorities == null) {
+                userAuthorities = new UserAuthorities(userName);
+            }
+            return userAuthorities;
+        }
+
         @Override
         public Object getAttribute(String attributeName) {
 
@@ -150,9 +165,49 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                     return authenticationService.isAuthenticationMutable(userName);
                 case PROP_IS_ADMIN:
                     return authorityService.isAdminAuthority(userName);
+                case PROP_AUTHORITIES:
+                    return getUserAuthorities();
+                case "_formKey":
+                    return "FORM_KEY_FOR_PERSON";
             }
 
             return alfNode.getAttribute(attributeName);
+        }
+    }
+
+    private class UserAuthorities implements MetaValue {
+
+        private String userName;
+        private Set<String> authorities;
+
+        UserAuthorities(String userName) {
+            this.userName = userName;
+        }
+
+        @Override
+        public String getString() {
+            return null;
+        }
+
+        @Override
+        public Object getAttribute(String name) {
+            switch (name) {
+                case "list":
+                    return new ArrayList<>(getAuthorities());
+            }
+            return null;
+        }
+
+        private Set<String> getAuthorities() {
+            if (authorities == null) {
+                authorities = authorityUtils.getUserAuthorities(userName);
+            }
+            return authorities;
+        }
+
+        @Override
+        public boolean hasAttribute(String authority) {
+            return getAuthorities().contains(authority);
         }
     }
 }

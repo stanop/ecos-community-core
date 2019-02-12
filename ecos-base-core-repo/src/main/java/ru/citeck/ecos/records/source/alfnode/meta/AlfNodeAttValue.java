@@ -1,8 +1,10 @@
 package ru.citeck.ecos.records.source.alfnode.meta;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.ContentReader;
+import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.GqlContext;
@@ -66,16 +68,12 @@ public class AlfNodeAttValue implements MetaValue {
         } else if (rawValue instanceof ContentData) {
 
             String contentUrl = ((ContentData) rawValue).getContentUrl();
+            ContentService contentService = context.getServiceRegistry().getContentService();
 
-            ContentReader reader = context.getServiceRegistry()
-                                          .getContentService()
-                                          .getRawReader(contentUrl);
-
-            if (reader.exists()) {
-                return reader.getContentString();
-            } else {
-                return null;
-            }
+            return AuthenticationUtil.runAsSystem(() -> {
+                ContentReader reader = contentService.getRawReader(contentUrl);
+                return reader.exists() ? reader.getContentString() : null;
+            });
         }
         return rawValue.toString();
     }

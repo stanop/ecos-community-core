@@ -78,6 +78,7 @@
                 <aspect>tk:documentTypeKind</aspect>
                 <aspect>ecosbpm:hasThumbnail</aspect>
                 <aspect>ecosbpm:hasModelImage</aspect>
+                <aspect>ecosbpm:hasProcessType</aspect>
             </mandatory-aspects>
         </type>
 
@@ -120,6 +121,15 @@
                     <index enabled="false" />
                 </property>
             </properties>
+        </aspect>
+
+        <aspect name="ecosbpm:hasProcessType">
+            <parent>tk:documentTypeKind</parent>
+            <overrides>
+                <property name="tk:type">
+                    <default>workspace://SpacesStore/cat-doc-type-ecos-bpm-process</default>
+                </property>
+            </overrides>
         </aspect>
 
     </aspects>
