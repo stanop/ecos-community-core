@@ -165,5 +165,16 @@
             </map>
         </property>
     </bean>
+    
+    <bean id="idocs.module-component.fill-ecos-case-roles" parent="idocs.import-scripts.3-8-0">
+        <property name="name" value="fill-ecos-case-roles" />
+        <property name="description" value="fill-ecos-case-roles" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-case-roles"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/scripts/fill-case-roles.js" />
+    </bean>
 
 </beans>
