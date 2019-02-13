@@ -56,6 +56,10 @@ public class RecordRef {
         return new RecordRef(id);
     }
 
+    public static RecordRef valueOf(RecordRef ref) {
+        return ref != null ? ref : EMPTY;
+    }
+
     public String getSourceId() {
         return sourceId;
     }

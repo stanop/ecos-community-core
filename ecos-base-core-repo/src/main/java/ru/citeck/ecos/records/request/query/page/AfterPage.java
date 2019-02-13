@@ -11,11 +11,11 @@ public class AfterPage extends QueryPage {
     private final RecordRef afterId;
 
     public AfterPage() {
-        afterId = RecordRef.EMPTY;
+        this(RecordRef.EMPTY);
     }
 
     public AfterPage(RecordRef afterId) {
-        this.afterId = afterId;
+        this.afterId = RecordRef.valueOf(afterId);
     }
 
     public AfterPage(String afterId) {
@@ -24,7 +24,7 @@ public class AfterPage extends QueryPage {
 
     public AfterPage(RecordRef afterId, Integer maxItems) {
         super(maxItems);
-        this.afterId = afterId;
+        this.afterId = RecordRef.valueOf(afterId);
     }
 
     public AfterPage(String afterId, Integer maxItems) {
