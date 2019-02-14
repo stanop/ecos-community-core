@@ -5,9 +5,15 @@ import { Form } from "js/citeck/lib/formio/formio.full";
 import Records from "js/citeck/modules/records/records";
 
 import "xstyle!https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css";
-import "xstyle!https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css";
 import "xstyle!js/citeck/lib/formio/formio.full.min.css";
 import "xstyle!js/citeck/modules/eform/ecos-form.css";
+import "xstyle!js/citeck/modules/eform/import/ecos-form-custom.css";
+
+// for (let componentName in CustomComponents) {
+//     if (CustomComponents.hasOwnProperty(componentName)) {
+//         window.Formio.Components.addComponent(componentName, CustomComponents[componentName]);
+//     }
+// }
 
 var formCounter = 0;
 
