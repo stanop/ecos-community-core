@@ -873,6 +873,13 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>org.alfresco.aos-module</groupId>
+                            <artifactId>alfresco-aos-module</artifactId>
+                            <version>1.1.8</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                         <!-- Bring in the integration tests -->
                         <!--<moduleDependency>
                             <groupId>${project.groupId}</groupId>

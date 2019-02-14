@@ -63,6 +63,11 @@
                                     <type>amp</type>
                                 </overlay>
                                 <overlay>
+                                    <groupId>org.alfresco.aos-module</groupId>
+                                    <artifactId>alfresco-aos-module</artifactId>
+                                    <type>amp</type>
+                                </overlay>
+                                <overlay>
                                     <groupId>de.fmaul</groupId>
                                     <artifactId>javascript-console-repo</artifactId>
                                     <type>amp</type>
@@ -265,6 +270,14 @@
             <type>amp</type>
         </dependency>
 
+        <dependency>
+            <groupId>org.alfresco.aos-module</groupId>
+            <artifactId>alfresco-aos-module</artifactId>
+            <version>1.1.8</version>
+            <type>amp</type>
+        </dependency>
+
+
         <!-- TODO: remove this dependency before upgrade project to alfresco 5.2 -->
         <dependency>
             <groupId>org.alfresco</groupId>
@@ -368,6 +381,11 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-flowable-repo</artifactId>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>org.alfresco.aos-module</groupId>
+                            <artifactId>alfresco-aos-module</artifactId>
                             <type>amp</type>
                         </overlay>
 
