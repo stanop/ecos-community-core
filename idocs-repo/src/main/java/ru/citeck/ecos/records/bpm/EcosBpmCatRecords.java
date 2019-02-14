@@ -10,11 +10,11 @@ import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.result.RecordsResult;
-import ru.citeck.ecos.records.source.AbstractRecordsDAO;
-import ru.citeck.ecos.records.source.RecordsMetaDAO;
-import ru.citeck.ecos.records.source.RecordsQueryDAO;
-import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeAttValue;
-import ru.citeck.ecos.records.source.alfnode.search.ChildrenAlfNodesSearch;
+import ru.citeck.ecos.records.source.dao.AbstractRecordsDAO;
+import ru.citeck.ecos.records.source.dao.RecordsMetaDAO;
+import ru.citeck.ecos.records.source.dao.RecordsQueryDAO;
+import ru.citeck.ecos.records.source.alf.meta.AlfNodeAttValue;
+import ru.citeck.ecos.records.source.alf.search.ChildrenAlfNodesSearch;
 
 import java.util.*;
 

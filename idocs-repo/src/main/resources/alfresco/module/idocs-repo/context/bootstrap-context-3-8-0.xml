@@ -35,7 +35,7 @@
         </property>
     </bean>
 
-    <bean class="ru.citeck.ecos.records.source.alfnode.AlfNodesDefaultParentRegistrar">
+    <bean class="ru.citeck.ecos.records.source.alf.AlfNodesDefaultParentRegistrar">
         <property name="defaultParents">
             <map>
                 <entry key="{http://www.citeck.ru/model/ecos/bpm/1.0}processModel" value="workspace://SpacesStore/ecos-bpm-process-root" />

@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source;
+package ru.citeck.ecos.records.source.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.records.RecordsService;

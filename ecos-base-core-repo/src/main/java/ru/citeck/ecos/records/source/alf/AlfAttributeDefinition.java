@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source.alfnode;
+package ru.citeck.ecos.records.source.alf;
 
 import lombok.Getter;
 import org.alfresco.repo.i18n.MessageService;
@@ -43,7 +43,7 @@ public class AlfAttributeDefinition implements MetaAttributeDef {
     }
 
     @Override
-    public Class<?> getDataType() {
+    public Class<?> getJavaClass() {
         ClassAttributeDefinition definition = getDefinition();
         if (definition instanceof PropertyDefinition) {
             PropertyDefinition propDef = (PropertyDefinition) definition;

@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source.alfnode.search;
+package ru.citeck.ecos.records.source.alf.search;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.request.result.RecordsResult;
-import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
+import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 
 import java.util.ArrayList;
 import java.util.Date;

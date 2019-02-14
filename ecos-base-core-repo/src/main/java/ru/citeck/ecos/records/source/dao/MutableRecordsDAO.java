@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source;
+package ru.citeck.ecos.records.source.dao;
 
 import ru.citeck.ecos.records.request.delete.RecordsDelResult;
 import ru.citeck.ecos.records.request.delete.RecordsDeletion;

@@ -1,9 +1,8 @@
-package ru.citeck.ecos.records.source.alfnode.search;
+package ru.citeck.ecos.records.source.alf.search;
 
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.request.result.RecordsResult;
 
 import java.util.Date;
 

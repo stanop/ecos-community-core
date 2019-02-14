@@ -36,8 +36,8 @@ public class JsonNodeValueFactory extends AbstractMetaValueFactory<JsonNode> {
             }
 
             @Override
-            public Object getAttribute(String attributeName) {
-                return value.get(attributeName);
+            public Object getAttribute(String name) {
+                return value.get(name);
             }
         };
     }

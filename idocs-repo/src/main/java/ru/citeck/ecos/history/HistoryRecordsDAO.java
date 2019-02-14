@@ -8,9 +8,8 @@ import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.meta.value.MetaJsonNodeValue;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.source.LocalRecordsDAO;
-import ru.citeck.ecos.records.source.RecordsQueryDAO;
-import ru.citeck.ecos.records.source.RecordsWithMetaDAO;
+import ru.citeck.ecos.records.source.dao.local.LocalRecordsDAO;
+import ru.citeck.ecos.records.source.dao.local.RecordsQueryWithMetaLocalDAO;
 import ru.citeck.ecos.webscripts.history.DocumentHistoryGet;
 
 import java.util.List;
@@ -18,8 +17,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class HistoryRecordsDAO extends LocalRecordsDAO
-                               implements RecordsWithMetaDAO,
-                                          RecordsQueryDAO {
+                               implements RecordsQueryWithMetaLocalDAO<MetaValue> {
 
     private static final String ID = "history";
     private static final String LANGUAGE_DOCUMENT = "document";
@@ -31,7 +29,7 @@ public class HistoryRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
-    protected RecordsQueryResult<?> getMetaValues(RecordsQuery query) {
+    public RecordsQueryResult<MetaValue> getMetaValues(RecordsQuery query) {
 
         String language = query.getLanguage();
 

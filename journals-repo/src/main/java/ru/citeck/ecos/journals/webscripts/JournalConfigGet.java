@@ -110,7 +110,7 @@ public class JournalConfigGet extends AbstractWebScript {
 
             Optional<MetaAttributeDef> def = recordsService.getAttributeDef(sourceId, name);
             column.setJavaClass(def.map(d -> {
-                Class<?> datatype = d.getDataType();
+                Class<?> datatype = d.getJavaClass();
                 return datatype != null ? datatype.getName() : null;
             }).orElse(null));
 

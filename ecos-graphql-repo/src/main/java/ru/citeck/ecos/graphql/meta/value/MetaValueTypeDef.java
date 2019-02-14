@@ -115,7 +115,7 @@ public class MetaValueTypeDef implements GqlTypeDefinition {
         MetaValue value = env.getSource();
         String name = getParameter(env, "n");
         try {
-            return value.hasAttribute(name);
+            return value.has(name);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             logger.error("Failed to get attribute " + name, e);
             return false;

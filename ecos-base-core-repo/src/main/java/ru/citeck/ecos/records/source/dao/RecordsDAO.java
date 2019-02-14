@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source;
+package ru.citeck.ecos.records.source.dao;
 
 public interface RecordsDAO {
 

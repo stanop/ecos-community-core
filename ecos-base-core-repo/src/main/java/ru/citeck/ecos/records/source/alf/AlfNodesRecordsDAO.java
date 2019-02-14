@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source.alfnode;
+package ru.citeck.ecos.records.source.alf;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -27,9 +27,12 @@ import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.source.*;
-import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeRecord;
-import ru.citeck.ecos.records.source.alfnode.search.AlfNodesSearch;
+import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
+import ru.citeck.ecos.records.source.alf.search.AlfNodesSearch;
+import ru.citeck.ecos.records.source.dao.*;
+import ru.citeck.ecos.records.source.dao.local.LocalRecordsDAO;
+import ru.citeck.ecos.records.source.MetaAttributeDef;
+import ru.citeck.ecos.records.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
@@ -41,7 +44,7 @@ import java.util.stream.Collectors;
 public class AlfNodesRecordsDAO extends LocalRecordsDAO
                                 implements RecordsQueryDAO,
                                            RecordsDefinitionDAO,
-                                           RecordsMetaDAO,
+                                           RecordsMetaLocalDAO<MetaValue>,
                                            MutableRecordsDAO,
                                            RecordsActionExecutor {
 
@@ -82,9 +85,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             while (names.hasNext()) {
 
                 String name = names.next();
-                if (name.contains("?")) {
-                    name = name.substring(0, name.indexOf("?"));
-                }
 
                 QName fieldName = QName.resolveToQName(namespaceService, name);
 

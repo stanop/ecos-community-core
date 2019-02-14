@@ -14,8 +14,11 @@ import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
-import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeRecord;
+import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
+import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
+import ru.citeck.ecos.records.source.dao.local.LocalRecordsDAO;
+import ru.citeck.ecos.records.source.dao.local.RecordsMetaLocalDAO;
+import ru.citeck.ecos.records.source.dao.local.RecordsQueryWithMetaLocalDAO;
 import ru.citeck.ecos.utils.AuthorityUtils;
 
 import java.util.ArrayList;
@@ -25,9 +28,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class PeopleRecordsDAO extends LocalRecordsDAO
-                              implements RecordsQueryDAO,
-                                         RecordsWithMetaDAO,
-                                         RecordsMetaDAO {
+                              implements RecordsQueryWithMetaLocalDAO<PeopleRecordsDAO.UserValue>,
+                                         RecordsMetaLocalDAO<PeopleRecordsDAO.UserValue> {
 
     public static final String ID = "people";
 
@@ -60,14 +62,14 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
-    protected List<?> getMetaValues(List<RecordRef> records) {
+    public List<UserValue> getMetaValues(List<RecordRef> records) {
         return records.stream()
                       .map(r -> new UserValue(r.getId()))
                       .collect(Collectors.toList());
     }
 
     @Override
-    protected RecordsQueryResult<?> getMetaValues(RecordsQuery query) {
+    public RecordsQueryResult<UserValue> getMetaValues(RecordsQuery query) {
 
         if (SearchService.LANGUAGE_FTS_ALFRESCO.equals(query.getLanguage())) {
 
@@ -89,7 +91,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
             }
         }
 
-        return super.getMetaValues(query);
+        return new RecordsQueryResult<>();
     }
 
     public class UserValue implements MetaValue {
@@ -152,9 +154,9 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         @Override
-        public Object getAttribute(String attributeName) {
+        public Object getAttribute(String name) {
 
-            switch (attributeName) {
+            switch (name) {
                 case PROP_USER_NAME:
                     return userName;
                 case PROP_FULL_NAME:
@@ -167,11 +169,9 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                     return authorityService.isAdminAuthority(userName);
                 case PROP_AUTHORITIES:
                     return getUserAuthorities();
-                case "_formKey":
-                    return "FORM_KEY_FOR_PERSON";
             }
 
-            return alfNode.getAttribute(attributeName);
+            return alfNode.getAttribute(name);
         }
     }
 
@@ -206,7 +206,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         @Override
-        public boolean hasAttribute(String authority) {
+        public boolean has(String authority) {
             return getAuthorities().contains(authority);
         }
     }

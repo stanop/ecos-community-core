@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source.alfnode.meta;
+package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;

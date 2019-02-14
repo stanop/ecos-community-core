@@ -215,25 +215,6 @@ public class JavaScriptImplUtils {
         return qnames;
     }
 
-    public static RecordRef getRecordRef(Object object) {
-        if (object == null) {
-            return null;
-        }
-        if (object instanceof RecordRef) {
-            return (RecordRef) object;
-        }
-        if (object instanceof NodeRef) {
-            return new RecordRef((NodeRef) object);
-        }
-        if (object instanceof String) {
-            return new RecordRef((String) object);
-        }
-        if (object instanceof ScriptNode) {
-            return new RecordRef(((ScriptNode) object).getNodeRef());
-        }
-        throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to RemoteNodeRef");
-    }
-
     public static NodeRef getNodeRef(Object object) {
         if (object == null) {
             return null;

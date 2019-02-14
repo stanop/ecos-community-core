@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.*;
 import org.alfresco.util.ParameterCheck;
 
+import java.util.Iterator;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class RecordMeta {
@@ -41,6 +43,14 @@ public class RecordMeta {
         this.id = id != null ? id : RecordRef.EMPTY;
     }
 
+    public void forEach(BiConsumer<String, JsonNode> consumer) {
+        Iterator<String> names = attributes.fieldNames();
+        while (names.hasNext()) {
+            String name = names.next();
+            consumer.accept(name, attributes.get(name));
+        }
+    }
+
     public ObjectNode getAttributes() {
         return attributes;
     }
@@ -49,9 +59,17 @@ public class RecordMeta {
         return attributes.path(name);
     }
 
+    public boolean has(String name) {
+        return hasAttribute(name);
+    }
+
     public boolean hasAttribute(String name) {
         JsonNode att = attributes.path(name);
         return !isEmpty(att);
+    }
+
+    public <T> T get(String name, T orElse) {
+        return getAttribute(name, orElse);
     }
 
     public <T> T getAttribute(String name, T orElse) {
@@ -85,6 +103,10 @@ public class RecordMeta {
         }
 
         return (T) value;
+    }
+
+    public void set(String name, String value) {
+        setAttribute(name, value);
     }
 
     public void setAttribute(String name, String value) {

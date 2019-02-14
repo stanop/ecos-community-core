@@ -25,9 +25,9 @@ import ru.citeck.ecos.records.meta.RecordsMetaService;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.query.SortBy;
-import ru.citeck.ecos.records.source.AbstractRecordsDAO;
-import ru.citeck.ecos.records.source.RecordsWithMetaDAO;
-import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeAttValue;
+import ru.citeck.ecos.records.source.dao.AbstractRecordsDAO;
+import ru.citeck.ecos.records.source.dao.RecordsQueryWithMetaDAO;
+import ru.citeck.ecos.records.source.alf.meta.AlfNodeAttValue;
 import ru.citeck.ecos.search.*;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.AuthorityUtils;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  * @author Pavel Simonov
  */
 @Component
-public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsWithMetaDAO {
+public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQueryWithMetaDAO {
 
     public static final String ID = "task-statistic";
 

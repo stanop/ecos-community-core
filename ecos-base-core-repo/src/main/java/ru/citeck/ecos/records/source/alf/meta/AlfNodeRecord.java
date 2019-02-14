@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source.alfnode.meta;
+package ru.citeck.ecos.records.source.alf.meta;
 
 import lombok.Getter;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -62,9 +62,9 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public boolean hasAttribute(String attributeName) {
+    public boolean has(String name) {
 
-        Attribute nodeAtt = node.attribute(attributeName);
+        Attribute nodeAtt = node.attribute(name);
 
         if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {
             return false;
@@ -151,7 +151,7 @@ public class AlfNodeRecord implements MetaValue {
         }
 
         @Override
-        public boolean hasAttribute(String permission) {
+        public boolean has(String permission) {
             if (nodeRef == null) {
                 return false;
             }

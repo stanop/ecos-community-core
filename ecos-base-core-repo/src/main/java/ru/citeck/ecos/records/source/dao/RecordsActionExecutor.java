@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source;
+package ru.citeck.ecos.records.source.dao;
 
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;

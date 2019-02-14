@@ -15,6 +15,8 @@ import java.util.*;
 
 public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
 
+    private static final String TMP_ATT_NAME = "a";
+
     @Autowired
     private RecordsService recordsService;
     @Autowired
@@ -22,13 +24,19 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
 
     private JsUtils jsUtils;
 
-    public ActionResult<RecordRef>[] executeAction(Object nodes,
-                                                   Object config) {
+    public ActionResult<RecordRef>[] executeAction(Object nodes, Object config) {
 
-        RecordsList records = jsUtils.toJava(nodes, RecordsList.class);
+        List<RecordRef> records = jsUtils.getList(nodes, jsUtils::getRecordRef);
         GroupActionConfig actionConfig = jsUtils.toJava(config, GroupActionConfig.class);
 
         return toArray(recordsService.executeAction(records, actionConfig));
+    }
+
+    public String getAttribute(Object record, String attribute) {
+        Map<String, String> attributesMap = new HashMap<>();
+        attributesMap.put(TMP_ATT_NAME, attribute);
+        RecordMeta meta = recordsService.getAttributes(jsUtils.getRecordRef(record), attributesMap);
+        return meta.getAttribute(TMP_ATT_NAME, "");
     }
 
     public Object getAttributes(Object records, Object attributes) {
@@ -40,9 +48,9 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
         Object javaAttributes = jsUtils.toJava(attributes);
 
         if (javaRecords instanceof Collection) {
-            return getRecordsAttributes(jsUtils.convert(javaRecords, RecordsList.class), javaAttributes);
+            return getRecordsAttributes(jsUtils.getList(javaRecords, jsUtils::getRecordRef), javaAttributes);
         } else {
-            return getRecordAttributes(jsUtils.convert(javaRecords, RecordRef.class), javaAttributes);
+            return getRecordAttributes(jsUtils.getRecordRef(javaRecords), javaAttributes);
         }
     }
 
@@ -104,6 +112,4 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
     public void setRecordsService(RecordsService recordsService) {
         this.recordsService = recordsService;
     }
-
-    public static class RecordsList extends ArrayList<RecordRef> {}
 }

@@ -34,11 +34,11 @@ public interface MetaValue {
     /**
      * Get value attribute
      */
-    default Object getAttribute(String attributeName) throws Exception {
+    default Object getAttribute(String name) throws Exception {
         return Collections.emptyList();
     }
 
-    default boolean hasAttribute(String attributeName) throws Exception {
+    default boolean has(String name) throws Exception {
         return false;
     }
 

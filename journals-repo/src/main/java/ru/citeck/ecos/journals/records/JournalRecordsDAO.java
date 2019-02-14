@@ -11,7 +11,7 @@ import ru.citeck.ecos.records.RecordsService;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.query.SortBy;
-import ru.citeck.ecos.records.source.alfnode.search.CriteriaAlfNodesSearch;
+import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 
 import java.util.stream.Collectors;
 

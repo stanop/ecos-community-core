@@ -15,8 +15,8 @@ import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.source.MetaAttributeDef;
-import ru.citeck.ecos.records.source.RecordsDAO;
-import ru.citeck.ecos.records.source.RecordsQueryDAO;
+import ru.citeck.ecos.records.source.dao.RecordsDAO;
+import ru.citeck.ecos.records.source.dao.RecordsQueryDAO;
 
 import java.util.Collection;
 import java.util.List;

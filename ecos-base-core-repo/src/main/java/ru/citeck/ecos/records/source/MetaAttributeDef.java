@@ -6,7 +6,7 @@ public interface MetaAttributeDef {
 
     String getTitle();
 
-    Class<?> getDataType();
+    Class<?> getJavaClass();
 
     boolean isMultiple();
 }

@@ -1,8 +1,9 @@
 package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.MissingNode;
-import org.apache.commons.lang.StringUtils;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,8 @@ import ru.citeck.ecos.records.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.request.result.RecordsResult;
-import ru.citeck.ecos.records.source.*;
+import ru.citeck.ecos.records.source.MetaAttributeDef;
+import ru.citeck.ecos.records.source.dao.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +41,7 @@ public class RecordsServiceImpl implements RecordsService {
     private Map<String, RecordsMetaDAO> metaDAO = new ConcurrentHashMap<>();
     private Map<String, RecordsQueryDAO> queryDAO = new ConcurrentHashMap<>();
     private Map<String, MutableRecordsDAO> mutableDAO = new ConcurrentHashMap<>();
-    private Map<String, RecordsWithMetaDAO> withMetaDAO = new ConcurrentHashMap<>();
+    private Map<String, RecordsQueryWithMetaDAO> withMetaDAO = new ConcurrentHashMap<>();
     private Map<String, RecordsDefinitionDAO> definitionDAO = new ConcurrentHashMap<>();
     private Map<String, RecordsActionExecutor> actionExecutors = new ConcurrentHashMap<>();
 
@@ -52,8 +54,28 @@ public class RecordsServiceImpl implements RecordsService {
 
     @Override
     public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
+
         Optional<RecordsQueryDAO> recordsQueryDAO = getRecordsDAO(query.getSourceId(), queryDAO);
-        return recordsQueryDAO.isPresent() ? recordsQueryDAO.get().getRecords(query) : new RecordsQueryResult<>();
+
+        if (recordsQueryDAO.isPresent()) {
+
+            return recordsQueryDAO.get().getRecords(query);
+
+        } else {
+
+            Optional<RecordsQueryWithMetaDAO> recordsWithMetaDAO = getRecordsDAO(query.getSourceId(), withMetaDAO);
+
+            if (recordsWithMetaDAO.isPresent()) {
+
+                RecordsQueryResult<RecordMeta> records = recordsWithMetaDAO.get().getRecords(query, "");
+                return new RecordsQueryResult<>(records, RecordMeta::getId);
+            }
+        }
+
+        logger.warn("RecordsDAO " + query.getSourceId() + " doesn't exists or " +
+                    "not implement RecordsQueryDAO not RecordsQueryWithMetaDAO");
+
+        return new RecordsQueryResult<>();
     }
 
     @Override
@@ -88,7 +110,7 @@ public class RecordsServiceImpl implements RecordsService {
     @Override
     public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String schema) {
 
-        Optional<RecordsWithMetaDAO> recordsDAO = getRecordsDAO(query.getSourceId(), withMetaDAO);
+        Optional<RecordsQueryWithMetaDAO> recordsDAO = getRecordsDAO(query.getSourceId(), withMetaDAO);
         RecordsQueryResult<RecordMeta> records;
 
         if (recordsDAO.isPresent()) {
@@ -288,6 +310,26 @@ public class RecordsServiceImpl implements RecordsService {
     @Override
     public RecordsMutResult mutate(RecordsMutation mutation) {
 
+        for (RecordMeta record : mutation.getRecords()) {
+
+            ObjectNode attributes = JsonNodeFactory.instance.objectNode();
+
+            record.forEach((name, value) -> {
+
+                if (name.charAt(0) != '.') {
+
+                    int qIdx = name.indexOf('.');
+                    if (qIdx > 0) {
+                        name = name.substring(0, qIdx);
+                    }
+
+                    attributes.put(name, value);
+                }
+            });
+
+            record.setAttributes(attributes);
+        }
+
         RecordsMutResult result = new RecordsMutResult();
 
         RecordsUtils.groupMetaBySource(mutation.getRecords()).forEach((sourceId, records) -> {
@@ -357,8 +399,8 @@ public class RecordsServiceImpl implements RecordsService {
         if (recordsSource instanceof MutableRecordsDAO) {
             mutableDAO.put(recordsSource.getId(), (MutableRecordsDAO) recordsSource);
         }
-        if (recordsSource instanceof RecordsWithMetaDAO) {
-            withMetaDAO.put(recordsSource.getId(), (RecordsWithMetaDAO) recordsSource);
+        if (recordsSource instanceof RecordsQueryWithMetaDAO) {
+            withMetaDAO.put(recordsSource.getId(), (RecordsQueryWithMetaDAO) recordsSource);
         }
         if (recordsSource instanceof RecordsDefinitionDAO) {
             definitionDAO.put(recordsSource.getId(), (RecordsDefinitionDAO) recordsSource);

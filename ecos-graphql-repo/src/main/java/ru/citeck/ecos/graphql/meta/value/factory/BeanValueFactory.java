@@ -45,13 +45,13 @@ public class BeanValueFactory extends AbstractMetaValueFactory<Object> {
         }
 
         @Override
-        public Object getAttribute(String attributeName) throws Exception {
-            return PropertyUtils.getProperty(bean, attributeName);
+        public Object getAttribute(String name) throws Exception {
+            return PropertyUtils.getProperty(bean, name);
         }
 
         @Override
-        public boolean hasAttribute(String attributeName) throws Exception {
-            return PropertyUtils.getPropertyDescriptor(bean, attributeName) != null;
+        public boolean has(String name) throws Exception {
+            return PropertyUtils.getPropertyDescriptor(bean, name) != null;
         }
 
         @Override

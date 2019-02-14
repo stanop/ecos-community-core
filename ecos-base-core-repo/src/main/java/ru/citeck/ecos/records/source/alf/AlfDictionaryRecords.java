@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source;
+package ru.citeck.ecos.records.source.alf;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,9 @@ import ru.citeck.ecos.records.request.delete.RecordsDelResult;
 import ru.citeck.ecos.records.request.delete.RecordsDeletion;
 import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records.request.mutation.RecordsMutation;
-import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
+import ru.citeck.ecos.records.source.dao.MutableRecordsDAO;
+import ru.citeck.ecos.records.source.dao.local.LocalRecordsDAO;
+import ru.citeck.ecos.records.source.dao.local.RecordsMetaLocalDAO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class AlfDictionaryRecords extends LocalRecordsDAO
-                                  implements RecordsMetaDAO,
+                                  implements RecordsMetaLocalDAO<MetaValue>,
                                              MutableRecordsDAO {
 
     public static final String ID = "dict";
@@ -34,15 +36,15 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
     }
 
     @Override
-    protected List<?> getMetaValues(List<RecordRef> records) {
+    public List<MetaValue> getMetaValues(List<RecordRef> records) {
 
-        return (List) records.stream().map(r -> {
+        return records.stream().map(r -> {
 
-            Map<String, String> data = new HashMap<>();
+            Map<String, Object> data = new HashMap<>();
             data.put(RecordConstants.ATT_FORM_KEY, "alf_" + r.getId());
 
             MetaMapValue value = new MetaMapValue(r.toString());
-            value.setAttributes((Map) data);
+            value.setAttributes(data);
 
             return (MetaValue) value;
 

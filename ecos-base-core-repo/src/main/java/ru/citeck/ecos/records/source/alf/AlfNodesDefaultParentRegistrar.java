@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source.alfnode;
+package ru.citeck.ecos.records.source.alf;
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;

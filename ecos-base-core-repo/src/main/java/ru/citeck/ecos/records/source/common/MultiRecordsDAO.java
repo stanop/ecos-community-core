@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source;
+package ru.citeck.ecos.records.source.common;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,6 +10,9 @@ import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records.source.dao.AbstractRecordsDAO;
+import ru.citeck.ecos.records.source.dao.RecordsActionExecutor;
+import ru.citeck.ecos.records.source.dao.RecordsQueryDAO;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

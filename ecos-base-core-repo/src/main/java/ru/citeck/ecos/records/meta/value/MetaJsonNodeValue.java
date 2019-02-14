@@ -9,7 +9,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.GqlContext;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.records.source.alfnode.meta.AlfNodeAttValue;
+import ru.citeck.ecos.records.source.alf.meta.AlfNodeAttValue;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -15,34 +15,21 @@ import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.request.delete.RecordsDelResult;
 import ru.citeck.ecos.records.request.delete.RecordsDeletion;
 import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
-import ru.citeck.ecos.records.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records.request.query.RecordsQuery;
 import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.source.LocalRecordsDAO;
-import ru.citeck.ecos.records.source.MutableRecordsDAO;
-import ru.citeck.ecos.records.source.RecordsMetaDAO;
-import ru.citeck.ecos.records.source.RecordsWithMetaDAO;
-import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
-import ru.citeck.ecos.records.source.alfnode.search.CriteriaAlfNodesSearch;
+import ru.citeck.ecos.records.source.dao.local.*;
+import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
+import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class EcosFormRecords extends LocalRecordsDAO
-                               implements RecordsMetaDAO,
-                                          RecordsWithMetaDAO,
-                                          MutableRecordsDAO {
+public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
 
     public static final String ID = "eform";
 
     private static final String ECOS_FORM_KEY = "ECOS_FORM";
-
-    private static final String ATT_TITLE = "title";
-    private static final String ATT_FORM_KEY = "formKey";
-    private static final String ATT_DEFINITION = "definition";
-    private static final String ATT_DESCRIPTION = "description";
-    private static final String ATT_CUSTOM_MODULE = "customModule";
 
     private AlfNodesRecordsDAO alfNodesRecordsDAO;
     private EcosFormService eformFormService;
@@ -60,58 +47,34 @@ public class EcosFormRecords extends LocalRecordsDAO
     }
 
     @Override
-    public RecordsMutResult mutate(RecordsMutation mutation) {
+    public List<EcosFormModel> getValuesToMutate(List<RecordRef> records) {
+
+        return records.stream().map(record -> {
+
+            if (record.getId().isEmpty()) {
+                return new EcosFormModel();
+            }
+
+            Optional<EcosFormModel> model = eformFormService.getFormById(record.getId());
+            if (!model.isPresent()) {
+                throw new IllegalArgumentException("Form with id " + record.getId() + " not found!");
+            }
+
+            return new EcosFormModel(model.get());
+
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public RecordsMutResult save(List<EcosFormModel> values) {
 
         RecordsMutResult result = new RecordsMutResult();
 
-        for (RecordMeta record : mutation.getRecords()) {
-
-            if (record.getId().getId().isEmpty()) {
-
-                String formKey = record.getAttribute("formKey", "");
-
-                if (StringUtils.isBlank(formKey)) {
-                    throw new RuntimeException("Form key can't be null");
-                }
-
-                EcosFormModel model = new EcosFormModel();
-
-                fillModel(model, record);
-
-                result.addRecord(new RecordMeta(eformFormService.save(model)));
-
-            } else {
-
-                Optional<EcosFormModel> model = eformFormService.getFormById(record.getId().getId());
-                model.ifPresent(m -> {
-
-                    EcosFormModel changedModel = new EcosFormModel(m);
-                    fillModel(changedModel, record);
-
-                    result.addRecord(new RecordMeta(eformFormService.save(changedModel)));
-                });
-            }
+        for (EcosFormModel model : values) {
+            result.addRecord(new RecordMeta(eformFormService.save(model)));
         }
 
         return result;
-    }
-
-    private void fillModel(EcosFormModel model, RecordMeta record) {
-        if (record.hasAttribute(ATT_FORM_KEY)) {
-            model.setFormKey(record.getAttribute(ATT_FORM_KEY, ""));
-        }
-        if (record.hasAttribute(ATT_DEFINITION)) {
-            model.setDefinition(record.getAttribute(ATT_DEFINITION));
-        }
-        if (record.hasAttribute(ATT_DESCRIPTION)) {
-            model.setDescription(record.getAttribute(ATT_DESCRIPTION, ""));
-        }
-        if (record.hasAttribute(ATT_TITLE)) {
-            model.setTitle(record.getAttribute(ATT_TITLE, ""));
-        }
-        if (record.hasAttribute(ATT_CUSTOM_MODULE)) {
-            model.setCustomModule(record.getAttribute(ATT_CUSTOM_MODULE, ""));
-        }
     }
 
     @Override
@@ -120,7 +83,7 @@ public class EcosFormRecords extends LocalRecordsDAO
     }
 
     @Override
-    protected List<EcosFormModel> getMetaValues(List<RecordRef> records) {
+    public List<EcosFormModel> getMetaValues(List<RecordRef> records) {
 
         List<EcosFormModel> models = new ArrayList<>();
 
@@ -154,7 +117,7 @@ public class EcosFormRecords extends LocalRecordsDAO
     }
 
     @Override
-    protected RecordsQueryResult<EcosFormModel> getMetaValues(RecordsQuery recordsQuery) {
+    public RecordsQueryResult<EcosFormModel> getMetaValues(RecordsQuery recordsQuery) {
 
         String lang = recordsQuery.getLanguage();
         RecordsQueryResult<EcosFormModel> result = new RecordsQueryResult<>();
@@ -176,8 +139,8 @@ public class EcosFormRecords extends LocalRecordsDAO
         if (StringUtils.isNotBlank(query.formKey)) {
 
             form = eformFormService.getFormByKey(Arrays.stream(query.formKey.split(","))
-                                                        .filter(StringUtils::isNotBlank)
-                                                        .collect(Collectors.toList()));
+                                                       .filter(StringUtils::isNotBlank)
+                                                       .collect(Collectors.toList()));
 
         } else if (query.record != null) {
 

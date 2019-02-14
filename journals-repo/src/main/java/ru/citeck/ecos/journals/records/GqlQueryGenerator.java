@@ -92,7 +92,7 @@ public class GqlQueryGenerator {
         // attributes
         Set<String> attributesToLoad = new HashSet<>();
         if (info != null) {
-            if (QName.class.isAssignableFrom(info.getDataType())) {
+            if (QName.class.isAssignableFrom(info.getJavaClass())) {
                 attributesToLoad.add("shortName");
             }
         }
@@ -124,7 +124,7 @@ public class GqlQueryGenerator {
         // inner fields
         List<String> innerFields = new ArrayList<>();
 
-        Class dataType = info != null ? info.getDataType() : Object.class;
+        Class dataType = info != null ? info.getJavaClass() : Object.class;
         boolean isNode = NodeRef.class.isAssignableFrom(dataType);
         boolean isQName = QName.class.isAssignableFrom(dataType);
 
