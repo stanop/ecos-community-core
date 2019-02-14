@@ -473,22 +473,36 @@
         panel.render(document.body);
 
         require(['react', 'react-dom', 'js/citeck/modules/eform/ecos-form'], function (React, ReactDOM, EcosForm) {
-            ReactDOM.render(React.createElement(EcosForm.default, {
-                record: record,
-                attributes: config.attributes || {},
-                onReady: function() {
-                    panel.show();
-                    setTimeout(function(){
-                        panel.center();
-                    }, 100);
-                },
-                onSubmit: function () {
-                    panel.destroy();
-                },
-                onFormCancel: function () {
-                    panel.destroy();
+
+            var formParams = Object.assign({
+                record: record
+            }, config.params || {});
+
+            var configParams = config.params || {};
+
+            formParams['onSubmit'] = function () {
+                panel.destroy();
+                if (configParams.onSubmit) {
+                    configParams.onSubmit.apply(arguments);
                 }
-            }), document.getElementById(contentId))
+            };
+            formParams['onFormCancel'] = function () {
+                panel.destroy();
+                if (configParams.onFormCancel) {
+                    configParams.onFormCancel.apply(arguments);
+                }
+            };
+            formParams['onReady'] = function () {
+                panel.show();
+                setTimeout(function(){
+                    panel.center();
+                    if (configParams.onReady) {
+                        configParams.onReady.apply(arguments);
+                    }
+                }, 100);
+            };
+
+            ReactDOM.render(React.createElement(EcosForm.default, formParams), document.getElementById(contentId));
         });
     };
 

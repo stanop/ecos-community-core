@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records.source.dao.local;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +47,10 @@ public abstract class LocalRecordsDAO extends AbstractRecordsDAO {
     protected ObjectMapper objectMapper = new ObjectMapper();
 
     private boolean addSourceId = true;
+
+    {
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    }
 
     public LocalRecordsDAO() {
     }

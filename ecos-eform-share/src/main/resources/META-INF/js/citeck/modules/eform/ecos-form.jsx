@@ -30,7 +30,7 @@ export default class EcosForm extends React.Component {
 
             Formio.createForm(document.getElementById(this.state.containerId), formAtts.formDef).then(form => {
 
-                let record = Records.get(this.props.record);
+                let record = Records.get(self.props.record);
                 form.ecos = {
                     record: record
                 };
@@ -102,13 +102,18 @@ export default class EcosForm extends React.Component {
         var self = this;
 
         let inputs = EcosForm.getFormInputs(form);
+        let keysMapping = {};
 
         for (let i = 0; i < inputs.length; i++) {
+            keysMapping[inputs[i].component.key] = inputs[i].attribute;
+        }
 
-            let input = inputs[i].component;
-            let attribute = inputs[i].attribute;
+        let record = form.ecos.record;
 
-            form.ecos.record.att(attribute, submission.data[input.key]);
+        for (let key in submission.data) {
+            if (submission.data.hasOwnProperty(key)) {
+                record.att(keysMapping[key] || key, submission.data[key]);
+            }
         }
 
         form.ecos.record.save().then(record => {

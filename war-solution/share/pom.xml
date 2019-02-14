@@ -97,6 +97,12 @@
             <version>${project.version}</version>
             <type>amp</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-eform-share</artifactId>
+            <version>${project.version}</version>
+            <type>amp</type>
+        </dependency>
 
     </dependencies>
 
@@ -210,6 +216,11 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-flowable-share</artifactId>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-eform-share</artifactId>
                             <type>amp</type>
                         </overlay>
 
