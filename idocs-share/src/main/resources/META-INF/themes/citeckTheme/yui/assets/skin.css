@@ -20,15 +20,15 @@ version: 2.6.0
 
 /* INPUT COLORS */
 
-.yui-skin-citeckTheme select:not(:disabled):hover,
-.yui-skin-citeckTheme input:not(:disabled):hover,
-.yui-skin-citeckTheme textarea:not(:disabled):hover {
+.yui-skin-citeckTheme .invariants-form select:not(:disabled):hover,
+.yui-skin-citeckTheme .invariants-form input:not(:disabled):hover,
+.yui-skin-citeckTheme .invariants-form textarea:not(:disabled):hover {
     border-color: #aaaaaa !important;
 }
 
-.yui-skin-citeckTheme select:not(:disabled):focus,
-.yui-skin-citeckTheme input:not(:disabled):focus,
-.yui-skin-citeckTheme textarea:not(:disabled):focus {
+.yui-skin-citeckTheme .invariants-form select:not(:disabled):focus,
+.yui-skin-citeckTheme .invariants-form input:not(:disabled):focus,
+.yui-skin-citeckTheme .invariants-form textarea:not(:disabled):focus {
     border-color: #1c55da !important;
 }
 
