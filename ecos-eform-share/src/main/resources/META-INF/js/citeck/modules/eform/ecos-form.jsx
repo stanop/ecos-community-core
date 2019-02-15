@@ -1,7 +1,7 @@
 import React from "react";
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
-import { Form } from "js/citeck/lib/formio/formio.full";
+import {Form} from "js/citeck/lib/formio/formio.full";
 import Records from "js/citeck/modules/records/records";
 
 import "xstyle!https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css";
@@ -32,18 +32,18 @@ export default class EcosForm extends React.Component {
 
         this.getForm().then(data => {
 
-            var formAtts = data.records[0].attributes;
+            var formAtts = data.records[0].attributes,
+                options = self.props.options || {};
 
-            Formio.createForm(document.getElementById(this.state.containerId), formAtts.formDef).then(form => {
-
+            Formio.createForm(document.getElementById(this.state.containerId), formAtts.formDef, options).then(form => {
                 let record = Records.get(self.props.record);
                 form.ecos = {
                     record: record
                 };
 
-                let customModule = new Promise(function(resolve, reject) {
+                let customModule = new Promise(function (resolve, reject) {
                     if (formAtts.customModule) {
-                        require([formAtts.customModule], function(Module) {
+                        require([formAtts.customModule], function (Module) {
                             resolve(new Module.default({
                                 form: form,
                                 record: record
@@ -173,7 +173,7 @@ export default class EcosForm extends React.Component {
     }
 
     render() {
-        return <div id={this.state.containerId} />
+        return <div id={this.state.containerId}/>
     }
 
     getForm() {
