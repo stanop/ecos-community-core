@@ -480,6 +480,8 @@
 
             var configParams = config.params || {};
 
+            formParams['options'] = configParams.options || {};
+
             formParams['onSubmit'] = function () {
                 panel.destroy();
                 if (configParams.onSubmit) {
