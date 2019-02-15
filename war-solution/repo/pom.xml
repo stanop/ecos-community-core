@@ -132,6 +132,11 @@
                                     <artifactId>ecos-flowable-repo</artifactId>
                                     <type>amp</type>
                                 </overlay>
+                                <overlay>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>ecos-eform-repo</artifactId>
+                                    <type>amp</type>
+                                </overlay>
 
                                 <!-- TODO: remove this dependency before upgrade project to alfresco 5.2 -->
                                 <overlay>
@@ -265,6 +270,13 @@
             <type>amp</type>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-eform-repo</artifactId>
+            <version>${project.version}</version>
+            <type>amp</type>
+        </dependency>
+
         <!-- TODO: remove this dependency before upgrade project to alfresco 5.2 -->
         <dependency>
             <groupId>org.alfresco</groupId>
@@ -368,6 +380,11 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-flowable-repo</artifactId>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-eform-repo</artifactId>
                             <type>amp</type>
                         </overlay>
 

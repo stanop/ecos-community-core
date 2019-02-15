@@ -144,11 +144,10 @@ CreateVariant
 
         if (this.recordRef()) {
             Citeck.forms.eform(this.recordRef(), {
-                attributes: {
-                    _parent: self.destination()
-                },
-                onSubmit: function() {
-
+                params: {
+                    attributes: {
+                        _parent: self.destination()
+                    }
                 }
             });
         } else {
