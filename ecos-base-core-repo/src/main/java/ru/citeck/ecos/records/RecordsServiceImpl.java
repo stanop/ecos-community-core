@@ -318,7 +318,7 @@ public class RecordsServiceImpl implements RecordsService {
 
                 if (name.charAt(0) != '.') {
 
-                    int qIdx = name.indexOf('.');
+                    int qIdx = name.indexOf('?');
                     if (qIdx > 0) {
                         name = name.substring(0, qIdx);
                     }
