@@ -47,7 +47,7 @@ public interface MetaValue {
     }
 
     default Boolean getBool() {
-        return null;
+        return Boolean.parseBoolean(getString());
     }
 
     default Object getJson() {
