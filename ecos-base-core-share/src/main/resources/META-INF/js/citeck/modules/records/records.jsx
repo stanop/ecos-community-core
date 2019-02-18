@@ -85,7 +85,11 @@ class Attribute {
     }
 
     get value() {
-        return this._value || this.persisted;
+        if (this._value != null) {
+            return this._value;
+        } else {
+            return this.persisted;
+        }
     }
 
     updatePersisted() {
