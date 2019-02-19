@@ -113,3 +113,63 @@ input::-ms-clear {
     content: '\f00d';
     color: #666;
 }
+
+/* TOP PANEL */
+.ecos-button {
+    display: inline-block;
+    white-space: nowrap;
+    height: 40px;
+    line-height: 40px;
+    margin: 0;
+    padding: 0 15px;
+    text-align: center;
+    letter-spacing: 0.2pt;
+    font-weight: bold;
+    font-size: 14px !important;
+    color: #444444 !important;
+    background-color: #e8edef;
+    border-radius: 8px;
+    border: 1px solid transparent;
+}
+
+.ecos-button:hover {
+    background-color: #d8dee1;
+    text-decoration: none;
+}
+
+.ecos-button:active {
+    background-color: #e8edef;
+    text-decoration: none;
+}
+
+.ecos-button.ecos-button_blue {
+    color: #ffffff;
+    background-color: #4b75b7;
+}
+
+.ecos-button.ecos-button_blue:hover {
+    background-color: #7396cd;
+}
+
+.ecos-button.ecos-button_blue:active {
+    background-color: #4b75b7;
+}
+
+.card-details-top-panel {
+    background: #f0f0f0;
+    padding: 15px;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.card-details-top-panel .ecos-button {
+    margin-right: 10px;
+}
+
+.back-to-list-button {
+    color: #fff !important;
+}
+
+.open-editor-button {
+    color: #fff !important;
+}
