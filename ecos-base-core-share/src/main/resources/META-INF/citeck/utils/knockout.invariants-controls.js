@@ -868,6 +868,14 @@ ko.bindingHandlers.dateControl = {
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
 
+        if (input) {
+            input.addEventListener("change", function() {
+                if (!input.value) {
+                    value(null);
+                }
+            });
+        }
+
         var calendarDialogId = elementId + "-calendarDialog",
             calendarContainerId = elementId + "-calendarContainer",
             calendarAccessorId = elementId + "-calendarAccessor",
