@@ -39,6 +39,8 @@
             if ( newDate !== 'Invalid Date' && !isNaN(newDate) && (newDate > new Date('1000-01-01'))) {
                 newValue = Alfresco.util.fromISO8601(newValue).toISOString();
                 value(newValue);
+            } else {
+                value(null);
             }
         }
     }), disable: protected">
