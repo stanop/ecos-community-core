@@ -7,6 +7,7 @@
 
 <#assign actionIsFirstColumn = params.actionIsFirstColumn!"false" />
 <#assign duplicateButton = params.duplicateButton!"false" />
+<#assign showRemoveButton = params.showRemoveButton!"true" />
 <#assign showDialogAfterDuplicate = params.showDialogAfterDuplicate!"false" />
 <#if params.needPullForDuplicate??>
     <#assign needPullForDuplicate = params.needPullForDuplicate?replace("\\s+", "", "rm") />
@@ -27,6 +28,7 @@
 
         * downloadActionInViewMode - enable additional actions column in view mode with download button.
         * actionIsFirstColumn - moving action column to left
+        * showRemoveButton - show or hide edit button (default - true);
         * duplicateButton - add duplicate button
         * showDialogAfterDuplicate - show item in dialog after duplicateButton was clicked [optional] (only for duplicateButton=true)
         * needPullForDuplicate - pull attributes to duplicated item ("cm:name,tk:type") [optional] (only for duplicateButton=true)
@@ -227,10 +229,12 @@
                             virtualParent: ${((params.virtualParent!"false") == "true")?string},
                         }), clickBubble: false"></a>
             </#if>
-            <a class="delete-value-item" title="${msg('button.delete')}"
-                data-bind="click: function() {
-                    Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })
-                }, clickBubble: false"></a>
+            <#if showRemoveButton == "true">
+                <a class="delete-value-item" title="${msg('button.delete')}"
+                    data-bind="click: function() {
+                        Citeck.forms.simpleDeleteDialog(function() { ($parents[1].remove.bind($parents[1], $index()))() })
+                    }, clickBubble: false"></a>
+            </#if>
         </td>
     <!-- /ko -->
     <!-- ko if: $parents[1].resolve("node.impl.inViewMode") -->
