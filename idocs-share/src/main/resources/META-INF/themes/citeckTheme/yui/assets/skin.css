@@ -159,6 +159,7 @@ version: 2.6.0
 .yui-skin-citeckTheme .yui-button a {
     padding: 0 10px;
     font-size: 1em;
+    border-radius: 6px;
 }
 
 .yui-skin-citeckTheme .yui-button.yui-button-disabled > span.first-child > button {
@@ -1217,6 +1218,7 @@ p#clear {
     color: #008c03;
     font-weight: 900;
     padding: 3px 10px;
+    border-radius: 6px;
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .ft .buttons {
