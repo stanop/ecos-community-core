@@ -1493,6 +1493,8 @@
   z-index: 5;
   border-top: none;
   box-shadow: 0 0 25px -5px gray;
+  border-radius: 6px;
+  margin-top: 2px;
 }
 
 .autocomplete-container .autocomplete-search-container {
@@ -1587,6 +1589,7 @@
   line-height: normal;
   color: black;
   position: relative;
+  border-radius: 6px;
 }
 
 .select2-control .select2-select.disabled {
@@ -1650,6 +1653,8 @@
   z-index: 5;
   border-top: none;
   box-shadow: 0 0 25px -5px gray;
+  border-radius: 6px;
+  margin-top: 2px;
 }
 
 .select2-container .select2-search-container {
