@@ -20,7 +20,10 @@ package ru.citeck.ecos.attr.prov;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Set;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
@@ -29,6 +32,7 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.QNamePattern;
 import org.alfresco.service.namespace.RegexQNamePattern;
 
+import org.alfresco.util.ISO8601DateFormat;
 import ru.citeck.ecos.attr.AbstractAttributeProvider;
 import ru.citeck.ecos.model.AttributeModel;
 import ru.citeck.ecos.node.NodeInfo;
@@ -77,10 +81,24 @@ public class PropertyAttributes extends AbstractAttributeProvider {
 
     @Override
     public void setAttribute(NodeInfo nodeInfo, QName attributeName, Object value) {
+
         PropertyDefinition propDef = needDefinition(attributeName);
-        if(DataTypeDefinition.CONTENT.equals(propDef.getDataType().getName())) {
+
+        QName typeName = propDef.getDataType().getName();
+
+        if (DataTypeDefinition.CONTENT.equals(typeName)) {
             // do not convert content properties
             // it is now done by NodeInfo
+        } else if (DataTypeDefinition.DATE.equals(typeName)) {
+
+            if (value instanceof String) {
+
+                value = ISO8601DateFormat.parseDayOnly((String) value, TimeZone.getTimeZone("GMT"));
+
+            } else if (value instanceof Date) {
+
+                value = new Date(((Date) value).getTime() / TimeUnit.DAYS.toMillis(1));
+            }
         } else {
             value = ConvertUtils.convertValue(value, getValueClass(propDef), propDef.isMultiValued());
         }
