@@ -136,7 +136,9 @@ public class CopyMetadataFromTargetToSourceBehaviour implements NodeServicePolic
                 RepoUtils.removeAssociation(document, caseStatusBefore, caseStatusAssocQName, true, nodeService);
             }
 
-            RepoUtils.createAssociation(document, caseStatusAfter, caseStatusAssocQName, true, nodeService);
+            if (!RepoUtils.isAssociated(document, caseStatusAfter, caseStatusAssocQName, nodeService)) {
+                RepoUtils.createAssociation(document, caseStatusAfter, caseStatusAssocQName, true, nodeService);
+            }
         }
     }
 
