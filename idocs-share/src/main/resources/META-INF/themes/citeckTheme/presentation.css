@@ -2716,11 +2716,11 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 /* CONTENT */
 
-#doc3 {
+.yui-skin-citeckTheme #doc3 {
    margin: 0;
 }
 
-#bd {
+.yui-skin-citeckTheme #bd {
     padding-bottom: 0;
 }
 .yui-skin-citeckTheme #bd, .yui-skin-citeckTheme .sticky-wrapper {
