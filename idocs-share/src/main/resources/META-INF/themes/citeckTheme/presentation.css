@@ -3088,6 +3088,7 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
   border: 2px solid #1c55da;
   color: #1c55da;
   cursor: pointer;
+  border-radius: 6px;
 }
 
 .filter-criteria .criterion .criterion-value .criterion-value-field-input button:hover,
