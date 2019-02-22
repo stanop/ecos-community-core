@@ -267,11 +267,12 @@ ko.components.register("number-generate", {
 
         this.generatedNumber.subscribe(function (num) {
             var input = Dom.get(self.id);
-            if (num > -1) {
+
+            if (!num || (!isNaN(num) && num < 0)) {
+                if (input) input.removeAttribute("disabled");
+            } else {
                 params.value(num);
                 if (input) Dom.setAttribute(self.id, "disabled", "disabled");
-            } else {
-                if (input) input.removeAttribute("disabled");
             }
         });
 
@@ -281,7 +282,7 @@ ko.components.register("number-generate", {
     },
     template:
        '<!-- ko if: isButtonMode -->\
-            <button data-bind="text: label, disable: disable, click: generate"></button>\
+            <button data-bind="text: label, disable: disable, click: flag"></button>\
         <!-- /ko -->\
         <!-- ko if: isCheckboxMode -->\
             <input style="position: relative; top: 2px;" type="checkbox" name="number-generate" data-bind="checked: flag" />\
