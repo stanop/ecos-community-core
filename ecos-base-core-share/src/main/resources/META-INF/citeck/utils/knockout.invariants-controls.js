@@ -237,6 +237,10 @@ ko.components.register("number-generate", {
         this.mode = params.mode;
         this.disable = params.disable;
         this.node = params.node;
+
+        this.isButtonMode = this.mode == "button";
+        this.isCheckboxMode = this.mode == "checkbox";
+
         if (_.isFunction(params.template)) {
             this.numTemplate = ko.computed(params.template.bind(this));
         } else {
@@ -246,7 +250,6 @@ ko.components.register("number-generate", {
             numbers: {}
         };
 
-        // flag for 'checkbox' mode
         this.flag = ko.observable(false);
         this.generatedNumber = ko.computed(function() {
             if (!self.flag()) {
@@ -272,13 +275,9 @@ ko.components.register("number-generate", {
                 if (input) input.removeAttribute("disabled");
             } else {
                 params.value(num);
-                if (input) Dom.setAttribute(self.id, "disabled", "disabled");
+                if (input && self.isCheckboxMode) Dom.setAttribute(self.id, "disabled", "disabled");
             }
         });
-
-        // define mode
-        this.isButtonMode = this.mode == "button";
-        this.isCheckboxMode = this.mode == "checkbox";
     },
     template:
        '<!-- ko if: isButtonMode -->\
