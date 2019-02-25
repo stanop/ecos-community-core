@@ -31,7 +31,7 @@ table, tr, td
 <#-- get list of all decisions -->
 <#assign allDecisions = [] />
 <#assign clazz = "ru.citeck.ecos.history.records.model.HistoryRecordModel" />
-<#assign query = "{\"sourceId\": \"history\", \"language\": \"document\", \"query\": \"{\\\"nodeRef\\\":\\\"" + document.nodeRef + "\\\",\\\"events\\\":\\\"task.complete\\\",\\\"taskTypes\\\": \\\"wfcf:confirmTask\\\"}\"}" />
+<#assign query = "{\"sourceId\": \"history\", \"language\": \"document\", \"query\": \"{\\\"nodeRef\\\":\\\"" + document.nodeRef + "\\\",\\\"events\\\":\\\"task.complete\\\",\\\"taskTypes\\\": \\\"wfcf:confirmTask,ctrwf:confirmTask\\\"}\"}" />
 <#assign records = recordsService.getRecordsForClass(query, clazz).records![] />
 
 <#list records as record>

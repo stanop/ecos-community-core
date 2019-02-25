@@ -21,6 +21,8 @@ node/*
 *.todo
 alf_data_dev
 */overlays/**
+package-lock.json
 src/test/properties/local/alfresco-global-dev.properties
 syntax: regexp
 desktop\.ini
+rebel.xml

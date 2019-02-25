@@ -8,6 +8,7 @@ import { toggleIsOpen } from "../actions";
 
 const mapStateToProps = (state) => ({
     isOpen: state.leftMenu.isOpen,
+    isReady: state.leftMenu.isReady,
     smallLogo: state.leftMenu.smallLogo,
     largeLogo: state.leftMenu.largeLogo
 });
@@ -61,7 +62,11 @@ class SlideMenu extends React.Component {
     };
 
     render() {
-        const { smallLogo, largeLogo, isOpen } = this.props;
+        const { smallLogo, largeLogo, isOpen, isReady } = this.props;
+
+        if (!isReady) {
+            return null;
+        }
 
         const toggleHandleTitle = isOpen ? '' : t('slide_menu_click_to_open.label');
 

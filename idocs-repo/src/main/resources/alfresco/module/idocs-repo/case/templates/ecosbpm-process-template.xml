@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cmmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cmmndi="http://www.omg.org/spec/CMMN/20151109/CMMNDI" xmlns:di="http://www.omg.org/spec/CMMN/20151109/DI" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cmmn="http://www.omg.org/spec/CMMN/20151109/MODEL" xmlns:dc="http://www.omg.org/spec/CMMN/20151109/DC" targetNamespace="http://www.citeck.ru/ecos/case/cmmn/1.0">
+    <cmmn:case xmlns:ns8="http://www.citeck.ru/ecos/case/cmmn/1.0" name="7288b99e-b56a-4bfb-9f25-0ce698e2ae05" id="id-1" ns8:elementTypes="case-tasks,documents,completeness-levels,subcases,events,case-roles" ns8:caseType="{http://www.citeck.ru/model/ecos/bpm/1.0}processModel">
+        <cmmn:casePlanModel autoComplete="true" name="Case plan model" id="id-4" ns8:completnessLevels="workspace-SpacesStore-cl-scan-documents">
+            <cmmn:planItem definitionRef="id-5" id="id-6">
+                <cmmn:entryCriterion sentryRef="id-13" id="id-14"/>
+                <cmmn:exitCriterion sentryRef="id-16" id="id-17"/>
+            </cmmn:planItem>
+            <cmmn:planItem definitionRef="id-18" id="id-19"/>
+            <cmmn:sentry id="id-13" ns8:originalEvent="case-created">
+                <cmmn:planItemOnPart id="id-12" ns8:sourceId="id-1" ns8:nodeType="{http://www.citeck.ru/model/icaseEvent/1.0}caseCreated">
+                    <cmmn:standardEvent>create</cmmn:standardEvent>
+                </cmmn:planItemOnPart>
+            </cmmn:sentry>
+            <cmmn:sentry id="id-16" ns8:originalEvent="stage-children-stopped">
+                <cmmn:planItemOnPart sourceRef="id-6" id="id-15" ns8:sourceId="id-5" ns8:title="Новый" ns8:nodeType="{http://www.citeck.ru/model/icaseEvent/1.0}stageChildrenStopped">
+                    <cmmn:standardEvent>complete</cmmn:standardEvent>
+                </cmmn:planItemOnPart>
+            </cmmn:sentry>
+            <cmmn:stage xmlns:ns9="http://www.citeck.ru/model/activity/1.0" xmlns:ns10="http://www.citeck.ru/model/invariants/1.0" xmlns:ns11="http://www.citeck.ru/model/attribute/1.0" xmlns:ns12="http://www.citeck.ru/model/lifecycle/1.0" autoComplete="true" name="13f9aa8b-78c0-4824-ad00-59e4332b891b" id="id-5" ns9:actualEndDate="" ns9:manualStopped="false" ns10:isDraft="false" ns9:manualStarted="false" ns9:index="1" ns9:autoEvents="true" ns8:startCompletnessLevels="" ns11:isDocument="false" ns12:state="Not started" ns10:canReturnToDraft="false" ns9:typeVersion="1" ns8:caseStatus="new" ns9:repeatable="true" ns11:isContainer="false" ns9:actualStartDate="" ns8:stopCompletnessLevels="" ns8:title="Новый">
+                <cmmn:planItem definitionRef="id-7" id="id-8">
+                    <cmmn:entryCriterion sentryRef="id-10" id="id-11"/>
+                </cmmn:planItem>
+                <cmmn:sentry id="id-10" ns8:originalEvent="activity-started">
+                    <cmmn:planItemOnPart sourceRef="id-6" id="id-9" ns8:sourceId="id-5" ns8:title="Новый" ns8:nodeType="{http://www.citeck.ru/model/icaseEvent/1.0}activityStartedEvent">
+                        <cmmn:standardEvent>start</cmmn:standardEvent>
+                    </cmmn:planItemOnPart>
+                </cmmn:sentry>
+                <cmmn:task xmlns:ns13="http://www.citeck.ru/model/action/1.0" isBlocking="false" name="abd02217-140f-4fa1-8010-5df82d65f857" id="id-7" ns13:execute-script.script="var addPermissions = function (roleName, permission) {&#xA; var assignees = caseRoleService.getAssignees(document, roleName);&#xA; for (var idx in assignees) {&#xA; var a = assignees[idx];&#xA; var name = a.properties['cm:userName'] || a.properties['cm:authorityName'];&#xA; document.setPermission(permission, name);&#xA; }&#xA;};&#xA;caseRoleService.updateRoles(document);&#xA;addPermissions('author', &quot;Coordinator&quot;);&#xA;addPermissions('process-owner', &quot;Coordinator&quot;);&#xA;&#xA;document.setPermission(&quot;Consumer&quot;, &quot;GROUP_EVERYONE&quot;);&#xA;document.setInheritsPermissions(false);" ns9:actualEndDate="" ns9:manualStopped="false" ns10:isDraft="false" ns9:manualStarted="false" ns9:index="0" ns9:autoEvents="false" ns8:startCompletnessLevels="" ns11:isDocument="false" ns12:state="Not started" ns10:canReturnToDraft="false" ns9:typeVersion="1" ns9:repeatable="true" ns11:isContainer="false" ns9:actualStartDate="" ns8:stopCompletnessLevels="" ns8:nodeType="{http://www.citeck.ru/model/action/1.0}execute-script" ns8:title="Обновление прав"/>
+            </cmmn:stage>
+            <cmmn:task xmlns:ns9="http://www.citeck.ru/model/action/1.0" xmlns:ns10="http://www.citeck.ru/model/activity/1.0" xmlns:ns11="http://www.citeck.ru/model/invariants/1.0" xmlns:ns12="http://www.citeck.ru/model/attribute/1.0" xmlns:ns13="http://www.citeck.ru/model/lifecycle/1.0" isBlocking="false" name="827695a6-8684-431d-91bb-1486c19d4ebd" id="id-18" ns9:execute-script.script="caseActivityService.reset(document);" ns10:actualEndDate="" ns10:manualStopped="false" ns11:isDraft="false" ns10:manualStarted="true" ns10:index="2" ns10:autoEvents="false" ns8:startCompletnessLevels="" ns12:isDocument="false" ns13:state="Not started" ns11:canReturnToDraft="false" ns10:typeVersion="1" ns10:repeatable="true" ns12:isContainer="false" ns10:actualStartDate="" ns8:stopCompletnessLevels="" ns8:nodeType="{http://www.citeck.ru/model/action/1.0}execute-script" ns8:title="Reset"/>
+        </cmmn:casePlanModel>
+        <cmmn:caseRoles>
+            <cmmn:role name="Автор" id="id-2" ns8:roleVarName="author" ns8:referenceRoleAssoc="author" ns8:roleAssignees="" ns8:roleScript="var author = (document.assocs['ecosbpm:processAuthorAssoc'] || [])[0];&#xA;if (!author) {&#xA;    author = document.properties['cm:creator'];&#xA;}&#xA;author" ns8:isReferenceRole="false" ns8:nodeType="{http://www.citeck.ru/model/icaseRole/1.0}scriptRole"/>
+            <cmmn:role name="Владелец процесса" id="id-3" ns8:roleVarName="process-owner" ns8:referenceRoleAssoc="process-owner" ns8:roleAssignees="" ns8:roleScript="document.assocs['ecosbpm:processOwnerAssoc']" ns8:isReferenceRole="false" ns8:nodeType="{http://www.citeck.ru/model/icaseRole/1.0}scriptRole"/>
+            <cmmn:role name="Эксперт процесса" id="id-123" ns8:roleVarName="process-reviewer" ns8:referenceRoleAssoc="process-reviewer" ns8:roleAssignees="" ns8:roleScript="document.assocs['ecosbpm:processReviewerAssoc']" ns8:isReferenceRole="false" ns8:nodeType="{http://www.citeck.ru/model/icaseRole/1.0}scriptRole"/>
+        </cmmn:caseRoles>
+    </cmmn:case>
+</cmmn:definitions>

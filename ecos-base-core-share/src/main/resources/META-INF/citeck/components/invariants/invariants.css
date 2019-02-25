@@ -1493,6 +1493,8 @@
   z-index: 5;
   border-top: none;
   box-shadow: 0 0 25px -5px gray;
+  border-radius: 6px;
+  margin-top: 2px;
 }
 
 .autocomplete-container .autocomplete-search-container {
@@ -1587,6 +1589,7 @@
   line-height: normal;
   color: black;
   position: relative;
+  border-radius: 6px;
 }
 
 .select2-control .select2-select.disabled {
@@ -1650,6 +1653,8 @@
   z-index: 5;
   border-top: none;
   box-shadow: 0 0 25px -5px gray;
+  border-radius: 6px;
+  margin-top: 2px;
 }
 
 .select2-container .select2-search-container {
@@ -2028,11 +2033,19 @@ div[id*="multiple-text"] .multiple-text-control input {
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-predicate select,
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"],
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="number"],
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="date"],
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector select {
   width: 100%;
   background-color: white;
   box-sizing: border-box;
   padding: 4px 5px;
+  border-radius: 6px;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector div[id$='-dateControl'],
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .datetime-control {
+  display: flex;
+  align-items: center;
 }
 
 
@@ -2112,7 +2125,8 @@ div[id*="multiple-text"] .multiple-text-control input {
   right: 0px;
 }
 
-#profile-view .invariants-form .template-view span.value-item .value-item-actions {
+#profile-view .invariants-form .template-view span.value-item .value-item-actions,
+.orgstruct-console .invariants-form .user-profile-custom-container .template-view span.value-item .value-item-actions {
   position: relative;
   top: 0;
   left: 2px;

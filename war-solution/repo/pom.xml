@@ -16,7 +16,7 @@
     <parent>
         <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>war-solution</artifactId>
-        <version>3.7.2</version>
+        <version>3.8.0</version>
     </parent>
 
     <profiles>
@@ -26,7 +26,7 @@
                 <dependency>
                     <groupId>net.bull.javamelody</groupId>
                     <artifactId>alfresco-javamelody-addon</artifactId>
-                    <version>1.73.1</version>
+                    <version>1.75.0</version>
                     <type>amp</type>
                 </dependency>
             </dependencies>
@@ -130,6 +130,11 @@
                                 <overlay>
                                     <groupId>${project.groupId}</groupId>
                                     <artifactId>ecos-flowable-repo</artifactId>
+                                    <type>amp</type>
+                                </overlay>
+                                <overlay>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>ecos-eform-repo</artifactId>
                                     <type>amp</type>
                                 </overlay>
 
@@ -265,6 +270,13 @@
             <type>amp</type>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-eform-repo</artifactId>
+            <version>${project.version}</version>
+            <type>amp</type>
+        </dependency>
+
         <!-- TODO: remove this dependency before upgrade project to alfresco 5.2 -->
         <dependency>
             <groupId>org.alfresco</groupId>
@@ -368,6 +380,11 @@
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-flowable-repo</artifactId>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-eform-repo</artifactId>
                             <type>amp</type>
                         </overlay>
 

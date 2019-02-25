@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!-- models -->
+    <bean id="ecos.eform.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap,idocs.dictionaryBootstrap">
+        <property name="models">
+            <list>
+                <value>alfresco/module/ecos-eform-repo/model/ecos-form-model.xml</value>
+            </list>
+        </property>
+        <property name="labels">
+            <list>
+                <value>alfresco/module/ecos-eform-repo/messages/ecos-form-model</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="ecos.eform.import-spaces" abstract="true" parent="idocs.import-spaces">
+        <property name="moduleId" value="ecos-eform-repo" />
+        <property name="importer" ref="spacesBootstrap"/>
+    </bean>
+
+</beans>

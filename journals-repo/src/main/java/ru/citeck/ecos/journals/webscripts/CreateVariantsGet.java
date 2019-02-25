@@ -164,6 +164,15 @@ public class CreateVariantsGet extends AbstractWebScript {
         return siteCreateVariants;
     }
 
+    public List<ResponseVariant> getVariantsByJournalId(String journalId, Boolean writable) {
+        MLPropertyInterceptor.setMLAware(true);
+        try {
+            return convertVariants(getVariantsByJournalId(journalId), writable);
+        } finally {
+            MLPropertyInterceptor.setMLAware(false);
+        }
+    }
+
     private List<ResponseVariant> convertVariants(List<CreateVariant> variants, Boolean writable) {
         return variants.stream()
                        .filter(v -> hasPermission(v.nodeRef, PermissionService.READ))
@@ -259,6 +268,9 @@ public class CreateVariantsGet extends AbstractWebScript {
             qname = (QName) value;
         } else {
             qname = QName.resolveToQName(namespaceService, value.toString());
+        }
+        if (qname == null) {
+            return null;
         }
         return qname.toPrefixString(namespaceService);
     }

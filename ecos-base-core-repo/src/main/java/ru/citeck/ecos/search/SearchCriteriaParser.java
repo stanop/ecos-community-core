@@ -18,6 +18,8 @@
  */
 package ru.citeck.ecos.search;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,10 +57,16 @@ public class SearchCriteriaParser {
         if (something instanceof JSONObject) {
             return parse((JSONObject) something);
         }
+        if (something instanceof ObjectNode) {
+            something = something.toString();
+        }
+        if (something instanceof TextNode) {
+            something = ((TextNode) something).asText();
+        }
         if (something instanceof String) {
             JSONObject jsonObject;
             try {
-                jsonObject = new JSONObject((String) something);
+                jsonObject = new JSONObject(something.toString());
             } catch (JSONException e) {
                 throw new IllegalArgumentException("Wrong json string " + something);
             }

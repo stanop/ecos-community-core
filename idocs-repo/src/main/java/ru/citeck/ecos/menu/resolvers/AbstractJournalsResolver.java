@@ -20,7 +20,8 @@ import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.processor.TemplateExpressionEvaluator;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -120,7 +121,7 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
         String journalId = requestKey.getJournalId();
         NodeRef journalRef = journalService.getJournalRef(journalId);
         String query = buildJournalQuery(journalRef);
-        RecordsResult<RecordRef> result = journalService.getRecords(journalId, query, null, PAGE_INFO);
+        RecordsQueryResult<RecordRef> result = journalService.getRecords(journalId, query, null, PAGE_INFO);
         return result.getTotalCount();
     }
 

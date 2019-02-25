@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<views xmlns="http://www.citeck.ru/ecos/views/1.0">
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+
+        <import uri="http://www.citeck.ru/model/ecos/bpm/1.0" prefix="ecosbpm" />
+    </imports>
+
+    <view class="ecosbpm:processModel">
+        <field prop="cm:title" />
+        <field prop="ecosbpm:processId" />
+        <field prop="ecosbpm:category">
+            <region name="input" template="autocomplete">
+                <param name="searchScript">criteria-search</param>
+                <param name="criteria">
+                    [
+                    { attribute: "cm:title", predicate: "string-starts-with" }
+                    ]
+                </param>
+            </region>
+        </field>
+        <field prop="ecosbpm:validFrom" />
+        <field prop="ecosbpm:validTo" />
+        <field prop="cm:description" />
+        <field assoc="ecosbpm:processOwnerAssoc" />
+        <field assoc="ecosbpm:processReviewerAssoc" />
+    </view>
+
+</views>

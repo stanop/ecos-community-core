@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import graphql.*;
-import graphql.annotations.processor.GraphQLAnnotations;
-import graphql.language.ObjectTypeDefinition;
 import graphql.language.SourceLocation;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
@@ -14,18 +12,12 @@ import org.alfresco.service.ServiceRegistry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.graphql.exceptions.CiteckGraphQLException;
 import ru.citeck.ecos.remote.RestConnection;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,38 +26,47 @@ public class GraphQLServiceImpl implements GraphQLService {
     private static final Log logger = LogFactory.getLog(GraphQLServiceImpl.class);
 
     private static final String TXN_GQL_CONTEXT_KEY = GraphQLServiceImpl.class.getName() + ".context";
-    private static final String GRAPHQL_BASE_PACKAGE = "ru.citeck.ecos";
-    private static final String QUERY_TYPE = "Query";
 
     @Autowired
     private ServiceRegistry serviceRegistry;
+
+    private List<GqlTypeDefinition> graphQLTypes;
 
     private GraphQL graphQL;
 
     @PostConstruct
     void init() {
 
-        ClassPathScanningCandidateComponentProvider scanner;
-        scanner = new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter(new AnnotationTypeFilter(GraphQLQueryDefinition.class));
+        Map<String, GraphQLObjectType.Builder> types = new HashMap<>();
+        graphQLTypes.forEach(def -> {
 
-        GraphQLObjectType.Builder typeBuilder;
-        typeBuilder = GraphQLObjectType.newObject()
-                                       .definition(new ObjectTypeDefinition(QUERY_TYPE))
-                                       .name(QUERY_TYPE);
-
-        for (BeanDefinition bd : scanner.findCandidateComponents(GRAPHQL_BASE_PACKAGE)) {
-            try {
-                Class<?> clazz = Class.forName(bd.getBeanClassName());
-                GraphQLObjectType type = GraphQLAnnotations.object(clazz);
-                typeBuilder.fields(type.getFieldDefinitions());
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            GraphQLObjectType type = def.getType();
+            if (type == null) {
+                logger.warn("Type definition return nothing: " + def.getClass());
+                return;
             }
-        }
+            GraphQLObjectType.Builder builder = types.get(type.getName());
 
-        GraphQLSchema schema = GraphQLSchema.newSchema().query(typeBuilder).build();
-        graphQL = GraphQL.newGraphQL(schema).build();
+            if (builder == null) {
+                builder = GraphQLObjectType.newObject(type);
+                types.put(type.getName(), builder);
+            } else {
+                builder.fields(type.getFieldDefinitions());
+            }
+        });
+
+        GraphQLSchema.Builder schemaBuilder = GraphQLSchema.newSchema();
+        types.values().forEach(t -> {
+            GraphQLObjectType type = t.build();
+            if (type.getName().equals(QUERY_TYPE)) {
+                schemaBuilder.query(type);
+            } else {
+                schemaBuilder.additionalType(type);
+            }
+        });
+        GraphQLSchema graphQLSchema = schemaBuilder.build();
+
+        graphQL = GraphQL.newGraphQL(graphQLSchema).build();
     }
 
     public ExecutionResult execute(String query) {
@@ -94,15 +95,20 @@ public class GraphQLServiceImpl implements GraphQLService {
         ExecutionResult result = graphQL.execute(input);
         result = new GqlExecutionResult(result);
 
-        if (logger.isWarnEnabled()) {
-            for (GraphQLError error : result.getErrors()) {
+        List<GraphQLError> errors = result.getErrors();
+
+        if (errors != null && !errors.isEmpty()) {
+
+            logger.error("GraphQL query completed with errors:\nQuery: " + query + "\nvariables: " + variables);
+
+            for (GraphQLError error : errors) {
 
                 List<SourceLocation> locations = error.getLocations();
                 String locationsMsg = "";
                 if (locations != null && locations.size() > 0) {
                     locationsMsg = " at " + locations.stream()
-                                                     .map(l -> l.getLine() + ":" + l.getColumn())
-                                                     .collect(Collectors.joining(", ")) + " ";
+                            .map(l -> l.getLine() + ":" + l.getColumn())
+                            .collect(Collectors.joining(", ")) + " ";
                 }
 
                 String message = "GraphQL " + error.getErrorType() + locationsMsg + "message: " + error.getMessage();
@@ -188,5 +194,10 @@ public class GraphQLServiceImpl implements GraphQLService {
             error.setLocations(locations);
         }
         return error;
+    }
+
+    @Autowired
+    public void setGraphQLTypes(List<GqlTypeDefinition> graphQLTypes) {
+        this.graphQLTypes = graphQLTypes;
     }
 }

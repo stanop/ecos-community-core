@@ -34,6 +34,7 @@
                 <value>alfresco/module/idocs-repo/model/cardletModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/menuConfigModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/idocsModel.xml</value>
+                <value>alfresco/module/idocs-repo/model/workingCalendarModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/orgstructModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/workflowMirrorModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/associationModel.xml</value>
@@ -59,6 +60,7 @@
                 <value>alfresco/module/idocs-repo/model/case_mt/caseTimerModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/telegramModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/ecosContentModel.xml</value>
+                <value>alfresco/module/idocs-repo/model/ecosBpmModel.xml</value>
             </list>
         </property>
         <property name="labels">
@@ -101,6 +103,8 @@
                 <value>alfresco/module/idocs-repo/messages/associationModel</value>
                 <value>alfresco/module/idocs-repo/messages/route</value>
                 <value>alfresco/module/idocs-repo/messages/menu-config</value>
+                <value>alfresco/module/idocs-repo/messages/working-calendar</value>
+                <value>alfresco/module/idocs-repo/messages/ecosbpm-model</value>
             </list>
         </property>
     </bean>

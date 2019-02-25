@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class XmlObjectTest {
-    private static JournalServiceImpl journalService;
+    /*private static JournalServiceImpl journalService;
     private static NodeService nodeService;
 
     private static final ApplicationContext testContext = ApplicationContextHelper.getApplicationContext(
@@ -65,6 +65,6 @@ public class XmlObjectTest {
         assertEquals(journals.getJournal().size(), journalsClone.getJournal().size());
 
         assertEquals(journals, journalsClone);
-    }
+    }*/
 
 }

@@ -15,7 +15,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class GqlQueryGenerator {
 
@@ -43,36 +42,33 @@ public class GqlQueryGenerator {
 
         int attrCounter = 0;
 
-        List<QName> attributes = new ArrayList<>(journalType.getAttributes());
+        List<String> attributes = new ArrayList<>(journalType.getAttributes());
         if (StringUtils.isEmpty(journalType.getDataSource())) {
-            attributes.add(AttributeModel.ATTR_ASPECTS);
-            attributes.add(AttributeModel.ATTR_IS_CONTAINER);
-            attributes.add(AttributeModel.ATTR_IS_DOCUMENT);
+            attributes.add(AttributeModel.ATTR_ASPECTS.toPrefixString(namespaceService));
+            attributes.add(AttributeModel.ATTR_IS_CONTAINER.toPrefixString(namespaceService));
+            attributes.add(AttributeModel.ATTR_IS_DOCUMENT.toPrefixString(namespaceService));
         }
 
-        Set<String> strAtts = attributes.stream()
-                                        .map(a -> a.toPrefixString(namespaceService))
-                                        .collect(Collectors.toSet());
+        Set<String> strAtts = new HashSet<>(attributes);
 
-        List<MetaAttributeDef> defs = recordsService.getAttsDefinition(dataSource, strAtts);
+        List<MetaAttributeDef> defs = recordsService.getAttributesDef(dataSource, strAtts);
 
         Map<String, MetaAttributeDef> defsByName = new HashMap<>();
         for (MetaAttributeDef def : defs) {
             defsByName.put(def.getName(), def);
         }
 
-        for (QName attribute : attributes) {
+        for (String attribute : attributes) {
 
             Map<String, String> attributeOptions = journalType.getAttributeOptions(attribute);
-            String prefixedKey = attribute.toPrefixString(namespaceService);
 
             schemaBuilder.append("a")
                     .append(attrCounter++)
-                    .append(":att(name:\"")
-                    .append(prefixedKey)
+                    .append(":edge(n:\"")
+                    .append(attribute)
                     .append("\"){");
 
-            MetaAttributeDef info = defsByName.get(prefixedKey);
+            MetaAttributeDef info = defsByName.get(attribute);
             schemaBuilder.append(getAttributeSchema(attributeOptions, info));
 
             schemaBuilder.append("}");
@@ -85,18 +81,18 @@ public class GqlQueryGenerator {
 
         String schema = attributeOptions.get("attributeSchema");
         if (StringUtils.isNotBlank(schema)) {
-            return "name,val{" + schema + "}";
+            return "name,val:vals{" + schema + "}";
         }
 
         String formatter = attributeOptions.get("formatter");
         formatter = formatter != null ? formatter : "";
 
-        StringBuilder schemaBuilder = new StringBuilder("name,val{");
+        StringBuilder schemaBuilder = new StringBuilder("name,val:vals{");
 
         // attributes
         Set<String> attributesToLoad = new HashSet<>();
         if (info != null) {
-            if (QName.class.isAssignableFrom(info.getDataType())) {
+            if (QName.class.isAssignableFrom(info.getJavaClass())) {
                 attributesToLoad.add("shortName");
             }
         }
@@ -119,16 +115,16 @@ public class GqlQueryGenerator {
         for (String attrName : attributesToLoad) {
             schemaBuilder.append("a")
                     .append(attrCounter++)
-                    .append(":att(name:\"")
+                    .append(":edge(n:\"")
                     .append(attrName).append("\")")
-                    .append("{name val{str}}")
+                    .append("{name val:vals{str}}")
                     .append(",");
         }
 
         // inner fields
         List<String> innerFields = new ArrayList<>();
 
-        Class dataType = info != null ? info.getDataType() : Object.class;
+        Class dataType = info != null ? info.getJavaClass() : Object.class;
         boolean isNode = NodeRef.class.isAssignableFrom(dataType);
         boolean isQName = QName.class.isAssignableFrom(dataType);
 

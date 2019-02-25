@@ -13,8 +13,10 @@ import org.json.JSONObject;
 import org.mozilla.javascript.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.records.RecordRef;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.*;
@@ -40,6 +42,38 @@ public class JsUtils {
         } finally {
             Context.exit();
         }
+    }
+
+    public <T> List<T> getList(Object list, java.util.function.Function<Object, T> mapFunc) {
+
+        List<T> result = new ArrayList<>();
+
+        Object javaList = toJava(list);
+        if (javaList instanceof Iterable) {
+            for (Object value : (Iterable) javaList) {
+                result.add(mapFunc.apply(value));
+            }
+        }
+        return result;
+    }
+
+    public RecordRef getRecordRef(Object object) {
+        if (object == null) {
+            return null;
+        }
+        if (object instanceof RecordRef) {
+            return (RecordRef) object;
+        }
+        if (object instanceof NodeRef) {
+            return new RecordRef((NodeRef) object);
+        }
+        if (object instanceof String) {
+            return new RecordRef((String) object);
+        }
+        if (object instanceof ScriptNode) {
+            return new RecordRef(((ScriptNode) object).getNodeRef());
+        }
+        throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to RecordRef");
     }
 
     public Object toJava(Object value) {
@@ -141,12 +175,12 @@ public class JsUtils {
                 // get the value out for the specified key
                 // recursively call this method to convert the value
                 Arrays.stream(propIds)
-                      .filter(propId -> propId instanceof String)
-                      .forEach(propId -> {
+                        .filter(propId -> propId instanceof String)
+                        .forEach(propId -> {
 
-                    Object val = values.get((String) propId, values);
-                    propValues.put((String) propId, toJava(val));
-                });
+                            Object val = values.get((String) propId, values);
+                            propValues.put((String) propId, toJava(val));
+                        });
                 value = propValues;
             }
 
@@ -248,9 +282,9 @@ public class JsUtils {
             try {
                 Context.enter();
                 value = ScriptRuntime.newObject(Context.getCurrentContext(),
-                                                scope,
-                                                TYPE_DATE,
-                                                new Object[]{ date.getTime() });
+                        scope,
+                        TYPE_DATE,
+                        new Object[]{date.getTime()});
             } finally {
                 Context.exit();
             }
@@ -281,8 +315,27 @@ public class JsUtils {
         return value;
     }
 
+    public <T> T convert(Object obj, Class<T> toClass) {
+        if (obj instanceof String) {
+            if (toClass == String.class) {
+                // This cast is correct, because we know this is a String
+                @SuppressWarnings("unchecked") T result = (T) obj;
+                return result;
+            }
+
+            try {
+                return mapper.readValue((String) obj, toClass);
+            } catch (IOException e) {
+                throw new RuntimeException(String.format("Could not read value from object. Object=%s, class=%s", obj,
+                        toClass), e);
+            }
+        }
+
+        return mapper.convertValue(obj, toClass);
+    }
+
     public <T> T toJava(Object jsObject, Class<T> javaClass) {
-        return mapper.convertValue(toJava(jsObject), javaClass);
+        return convert(toJava(jsObject), javaClass);
     }
 
     @Autowired

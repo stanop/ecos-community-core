@@ -22,7 +22,7 @@ public abstract class CriterionInvariantsProvider implements Comparable<Criterio
 
     private static final String TYPE_OPTION = "type";
 
-    private Map<Pair<String, QName>, List<InvariantDefinition>> cache = new ConcurrentHashMap<>();
+    private Map<Pair<String, String>, List<InvariantDefinition>> cache = new ConcurrentHashMap<>();
 
     private boolean enableCache = true;
     private int order = 0;
@@ -33,9 +33,9 @@ public abstract class CriterionInvariantsProvider implements Comparable<Criterio
     protected JournalService journalService;
     protected DictUtils dictUtils;
 
-    public final List<InvariantDefinition> getInvariants(JournalType journalType, QName attribute) {
+    public final List<InvariantDefinition> getInvariants(JournalType journalType, String attribute) {
         if (enableCache) {
-            Pair<String, QName> key = new Pair<>(journalType.getId(), attribute);
+            Pair<String, String> key = new Pair<>(journalType.getId(), attribute);
             return cache.computeIfAbsent(key, k -> getInvariantsInternal(journalType, attribute));
         } else {
             return getInvariantsInternal(journalType, attribute);
@@ -52,7 +52,7 @@ public abstract class CriterionInvariantsProvider implements Comparable<Criterio
         cache.clear();
     }
 
-    private List<InvariantDefinition> getInvariantsInternal(JournalType journalType, QName attribute) {
+    private List<InvariantDefinition> getInvariantsInternal(JournalType journalType, String attribute) {
         String typeOpt = journalType.getOptions().get(TYPE_OPTION);
         QName typeParam = typeOpt != null ? QName.resolveToQName(namespaceService, typeOpt) : null;
         if (isAttributeSupported(journalType, typeParam, attribute)) {
@@ -62,8 +62,8 @@ public abstract class CriterionInvariantsProvider implements Comparable<Criterio
     }
 
     protected void beforeInitImpl() {}
-    protected abstract boolean isAttributeSupported(JournalType journalType, QName typeName, QName attribute);
-    protected abstract List<InvariantDefinition> getInvariantsImpl(JournalType journalType, QName typeName, QName attribute);
+    protected abstract boolean isAttributeSupported(JournalType journalType, QName typeName, String attribute);
+    protected abstract List<InvariantDefinition> getInvariantsImpl(JournalType journalType, QName typeName, String attribute);
 
     public void setEnableCache(boolean enableCache) {
         this.enableCache = enableCache;

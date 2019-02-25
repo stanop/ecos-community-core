@@ -154,6 +154,10 @@
                     <title>Type</title>
                     <type>d:text</type>
                 </property>
+                <property name="journal:recordRef">
+                    <title>Record</title>
+                    <type>d:text</type>
+                </property>
                 <property name="journal:formId">
                     <title>Form ID</title>
                     <type>d:text</type>

@@ -1,20 +1,22 @@
 package ru.citeck.ecos.graphql.journal.datasource;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.JGqlSortBy;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
-import ru.citeck.ecos.graphql.meta.GraphQLMetaServiceImpl;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.query.RecordsResult;
-import ru.citeck.ecos.records.query.SortBy;
-import ru.citeck.ecos.records.source.AbstractRecordsDAO;
-import ru.citeck.ecos.records.source.RecordsDAO;
-import ru.citeck.ecos.records.source.RecordsWithMetaDAO;
+import ru.citeck.ecos.records.meta.RecordsMetaService;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records.request.query.SortBy;
+import ru.citeck.ecos.records.source.dao.AbstractRecordsDAO;
+import ru.citeck.ecos.records.source.dao.RecordsQueryDAO;
+import ru.citeck.ecos.records.source.dao.RecordsQueryWithMetaDAO;
 import ru.citeck.ecos.search.SortOrder;
 
 import javax.annotation.PostConstruct;
@@ -23,15 +25,16 @@ import java.util.List;
 
 /**
  * This records DAO required for backward compatibility. Don't use it for new data sources
- * @see RecordsDAO
+ * @see RecordsQueryDAO
  *
  * @deprecated implement RecordsDAO instead
  */
-public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements RecordsDAO, RecordsWithMetaDAO {
+public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements RecordsQueryWithMetaDAO {
 
     private ServiceRegistry serviceRegistry;
     private JournalDataSource dataSource;
-    private GraphQLMetaServiceImpl graphQLMetaService;
+    private GraphQLService graphQLService;
+    private RecordsMetaService recordsMetaService;
 
     @PostConstruct
     public void init() {
@@ -49,7 +52,7 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
     }
 
     @Override
-    public RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema) {
+    public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String metaSchema) {
 
         List<JGqlSortBy> sortBy = new ArrayList<>();
         for (SortBy sort: query.getSortBy()) {
@@ -58,30 +61,34 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
         }
 
         RecordRef afterId = query.getAfterId();
-        JGqlPageInfoInput pageInfo = new JGqlPageInfoInput(afterId != null ? afterId.getId() : null,
+        JGqlPageInfoInput pageInfo = new JGqlPageInfoInput(afterId != RecordRef.EMPTY ? afterId.getId() : null,
                                                            query.getMaxItems(),
                                                            sortBy,
                                                            query.getSkipCount());
 
-        RecordsResult<ObjectNode> result = new RecordsResult<>();
+        RecordsQueryResult<RecordMeta> result = new RecordsQueryResult<>();
 
-        List<ObjectNode> nodes = graphQLMetaService.getMeta(context -> {
-            JGqlRecordsConnection records = dataSource.getRecords(context,
-                                                                  query.getQuery(),
-                                                                  query.getLanguage(),
-                                                                  pageInfo);
-            result.setTotalCount(records.totalCount());
-            result.setHasMore(records.pageInfo().isHasNextPage());
-            return records.records();
-        }, metaSchema);
+        GqlContext gqlContext = graphQLService.getGqlContext();
+        JGqlRecordsConnection records = dataSource.getRecords(gqlContext,
+                                                              query.getQuery().asText(),
+                                                              query.getLanguage(),
+                                                              pageInfo);
 
-        result.setRecords(nodes);
+        result.setTotalCount(records.totalCount());
+        result.setHasMore(records.pageInfo().isHasNextPage());
+        result.merge(recordsMetaService.getMeta(records.records(), metaSchema));
+
         return result;
     }
 
     @Autowired
-    public void setGraphQLMetaService(GraphQLMetaServiceImpl graphQLMetaService) {
-        this.graphQLMetaService = graphQLMetaService;
+    public void setRecordsMetaService(RecordsMetaService recordsMetaService) {
+        this.recordsMetaService = recordsMetaService;
+    }
+
+    @Autowired
+    public void setGraphQLService(GraphQLService graphQLService) {
+        this.graphQLService = graphQLService;
     }
 
     @Autowired

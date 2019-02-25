@@ -237,6 +237,10 @@ ko.components.register("number-generate", {
         this.mode = params.mode;
         this.disable = params.disable;
         this.node = params.node;
+
+        this.isButtonMode = this.mode == "button";
+        this.isCheckboxMode = this.mode == "checkbox";
+
         if (_.isFunction(params.template)) {
             this.numTemplate = ko.computed(params.template.bind(this));
         } else {
@@ -246,7 +250,6 @@ ko.components.register("number-generate", {
             numbers: {}
         };
 
-        // flag for 'checkbox' mode
         this.flag = ko.observable(false);
         this.generatedNumber = ko.computed(function() {
             if (!self.flag()) {
@@ -267,21 +270,18 @@ ko.components.register("number-generate", {
 
         this.generatedNumber.subscribe(function (num) {
             var input = Dom.get(self.id);
-            if (num > -1) {
-                params.value(num);
-                if (input) Dom.setAttribute(self.id, "disabled", "disabled");
-            } else {
+
+            if (!num || (!isNaN(num) && num < 0)) {
                 if (input) input.removeAttribute("disabled");
+            } else {
+                params.value(num);
+                if (input && self.isCheckboxMode) Dom.setAttribute(self.id, "disabled", "disabled");
             }
         });
-
-        // define mode
-        this.isButtonMode = this.mode == "button";
-        this.isCheckboxMode = this.mode == "checkbox";
     },
     template:
        '<!-- ko if: isButtonMode -->\
-            <button data-bind="text: label, disable: disable, click: generate"></button>\
+            <button data-bind="text: label, disable: disable, click: flag"></button>\
         <!-- /ko -->\
         <!-- ko if: isCheckboxMode -->\
             <input style="position: relative; top: 2px;" type="checkbox" name="number-generate" data-bind="checked: flag" />\
@@ -868,6 +868,14 @@ ko.bindingHandlers.dateControl = {
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
 
+        if (input) {
+            input.addEventListener("change", function() {
+                if (!input.value) {
+                    value(null);
+                }
+            });
+        }
+
         var calendarDialogId = elementId + "-calendarDialog",
             calendarContainerId = elementId + "-calendarContainer",
             calendarAccessorId = elementId + "-calendarAccessor",
@@ -917,10 +925,7 @@ ko.bindingHandlers.dateControl = {
                 // selected date
                 calendar.selectEvent.subscribe(function() {
                     if (calendar.getSelectedDates().length > 0) {
-                        var selectedDate = calendar.getSelectedDates()[0],
-                            nowDate = new Date;
-
-                        selectedDate.setHours(-nowDate.getTimezoneOffset()/60);
+                        var selectedDate = calendar.getSelectedDates()[0];
 
                         value(selectedDate);
                     }

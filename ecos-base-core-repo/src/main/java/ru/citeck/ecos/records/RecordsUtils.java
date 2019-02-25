@@ -1,13 +1,20 @@
 package ru.citeck.ecos.records;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionStatus;
+import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -16,9 +23,12 @@ import java.util.stream.Collectors;
 @Component
 public class RecordsUtils {
 
+    private static final Log logger = LogFactory.getLog(RecordsUtils.class);
+
     public static <T> List<ActionResult<RecordRef>> processList(List<RecordRef> records,
                                                                 Function<RecordRef, T> toNode,
                                                                 Function<List<T>, Map<T, ActionStatus>> process) {
+
         List<ActionResult<RecordRef>> results = new ArrayList<>();
 
         Map<T, RecordRef> mapping = new HashMap<>();
@@ -37,11 +47,17 @@ public class RecordsUtils {
         }
 
         Map<T, ActionStatus> statuses = process.apply(nodes);
-        statuses.forEach((node, status) -> {
-            results.add(new ActionResult<>(mapping.get(node), status));
-        });
+        statuses.forEach((node, status) ->
+            results.add(new ActionResult<>(mapping.get(node), status))
+        );
 
         return results;
+    }
+
+    public static RecordRef getRecordId(ObjectNode recordMeta) {
+        JsonNode idNode = recordMeta.get("id");
+        String id = idNode != null && idNode.isTextual() ? idNode.asText() : null;
+        return id != null ? new RecordRef(id) : null;
     }
 
     public static NodeRef toNodeRef(RecordRef recordRef) {
@@ -75,6 +91,39 @@ public class RecordsUtils {
                       .collect(Collectors.toList());
     }
 
+    public String getMetaValueId(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof MetaValue) {
+            return ((MetaValue) value).getId();
+        }
+        try {
+            Object propValue = PropertyUtils.getProperty(value, "id");
+            return propValue != null ? propValue.toString() : null;
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            logger.error(e);
+        }
+        return null;
+    }
+
+    public static List<RecordMeta> toScopedRecordsMeta(String sourceId, List<RecordMeta> records) {
+        if (StringUtils.isBlank(sourceId)) {
+            return records;
+        }
+        return records.stream()
+                      .map(n -> new RecordMeta(new RecordRef(sourceId, n.getId()), n.getAttributes()))
+                      .collect(Collectors.toList());
+    }
+
+    public static RecordsResult<RecordRef> toScoped(String sourceId, RecordsResult<RecordRef> result) {
+        return new RecordsResult<>(result, r -> new RecordRef(sourceId, r));
+    }
+
+    public static RecordsQueryResult<RecordRef> toScoped(String sourceId, RecordsQueryResult<RecordRef> result) {
+        return new RecordsQueryResult<>(result, r -> new RecordRef(sourceId, r));
+    }
+
     public static List<RecordRef> toScopedRecords(String sourceId, List<RecordRef> records) {
         return records.stream()
                       .map(r -> new RecordRef(sourceId, r))
@@ -101,6 +150,10 @@ public class RecordsUtils {
         return groupBySource(records, RecordInfo::getRef, (r, d) -> d);
     }
 
+    public static Map<String, List<RecordMeta>> groupMetaBySource(Collection<RecordMeta> records) {
+        return groupBySource(records, RecordMeta::getId, (r, d) -> d);
+    }
+
     public static <V> Map<RecordRef, V> convertToRefs(Map<String, V> data) {
         Map<RecordRef, V> result = new HashMap<>();
         data.forEach((id, recMeta) -> result.put(new RecordRef(id), recMeta));
@@ -113,20 +166,8 @@ public class RecordsUtils {
         return result;
     }
 
-    public static  List<ObjectNode> convertToRefs(String sourceId, List<ObjectNode> data) {
-        if (StringUtils.isBlank(sourceId)) {
-            return data;
-        }
-        return data.stream().map(n -> {
-            ObjectNode node;
-            if (n.has("id")) {
-                node = n.deepCopy();
-                node.set("id", TextNode.valueOf(new RecordRef(sourceId, n.get("id").asText()).toString()));
-            } else {
-                node = n;
-            }
-            return node;
-        }).collect(Collectors.toList());
+    public static  List<RecordMeta> convertToRefs(String sourceId, List<RecordMeta> data) {
+        return toScopedRecordsMeta(sourceId, data);
     }
 
     private static <I, O> Map<String, List<O>> groupBySource(Collection<I> records,

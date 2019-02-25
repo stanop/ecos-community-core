@@ -3,7 +3,7 @@
 
 <beans>
 
-    <bean id="ru.citeck.ecos.records.tasksRecordsDAO" class="ru.citeck.ecos.records.source.ExactCriteriaRecordsDAO">
+    <bean id="ru.citeck.ecos.records.tasksRecordsDAO" class="ru.citeck.ecos.records.source.common.ExactCriteriaRecordsDAO">
         <property name="id" value="workflow-tasks" />
         <property name="targetDAO" ref="alfNodesRecordsDAO" />
         <property name="filteredFields">

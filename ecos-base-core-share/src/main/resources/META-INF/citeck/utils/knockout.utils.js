@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['lib/knockout', 'lib/underscore'], function(ko) {
+define(['lib/knockout', 'underscore'], function(ko, _) {
 
     // locale for all yui requests
     var customLocale = YAHOO.util.Cookie.get("alf_share_locale");
@@ -178,7 +178,7 @@ define(['lib/knockout', 'lib/underscore'], function(ko) {
 
             return function(viewModel) {
                 try {
-                    var url = _.isFunction(config.url) 
+                    var url = _.isFunction(config.url)
                             ? config.url.call(viewModel, viewModel) 
                             : koutils.renderTemplate(config.url, viewModel);
                 } catch(e) {

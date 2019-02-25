@@ -1,23 +1,25 @@
 package ru.citeck.ecos.utils;
 
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.AlfrescoTransactionSupport.TxnReadState;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.cmr.dictionary.ChildAssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.repository.AssociationRef;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.search.SearchService;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.alfresco.util.GUID;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.io.Serializable;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -26,6 +28,8 @@ public class NodeUtils {
     private static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
 
     private NodeService nodeService;
+    private SearchService searchService;
+    private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
 
     /**
@@ -45,12 +49,116 @@ public class NodeUtils {
     }
 
     /**
+     * Get node by nodeRef or path
+     */
+    public NodeRef getNodeRef(String node) {
+
+        if (NodeRef.isNodeRef(node)) {
+            return new NodeRef(node);
+        }
+
+        NodeRef root = nodeService.getRootNode(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
+        List<NodeRef> results = searchService.selectNodes(root, node, null,
+                                                          namespaceService, false);
+        if (results.isEmpty()) {
+            throw new IllegalArgumentException("Node not found by path: " + node);
+        }
+        return results.get(0);
+    }
+
+    /**
      * Get node property
      */
     public <T> T getProperty(NodeRef nodeRef, QName propName) {
         @SuppressWarnings("unchecked")
         T result = (T) nodeService.getProperty(nodeRef, propName);
         return result;
+    }
+
+    public String getValidChildName(NodeRef parentRef, String name) {
+        return getValidChildName(parentRef, ContentModel.ASSOC_CONTAINS, name);
+    }
+
+    public String getValidChildName(NodeRef parentRef, QName childAssoc, String name) {
+
+        AssociationDefinition assoc = dictionaryService.getAssociation(childAssoc);
+
+        if (!(assoc instanceof ChildAssociationDefinition) ||
+                ((ChildAssociationDefinition) assoc).getDuplicateChildNamesAllowed()) {
+            return name;
+        }
+
+        NodeRef child = nodeService.getChildByName(parentRef, childAssoc, name);
+        if (child == null) {
+            return name;
+        }
+
+        String extension = "." + FilenameUtils.getExtension(name);
+        String nameWithoutExt = FilenameUtils.removeExtension(name);
+
+        int index = 0;
+        String newNameWithIndex;
+
+        do {
+            newNameWithIndex = nameWithoutExt + " (" + (++index) + ")" + extension;
+            child = nodeService.getChildByName(parentRef, childAssoc, newNameWithIndex);
+        } while (child != null);
+
+        return newNameWithIndex;
+    }
+
+    public NodeRef createNode(NodeRef parentRef, QName type, QName childAssoc, Map<QName, Serializable> props) {
+
+        String name = (String) props.get(ContentModel.PROP_NAME);
+        if (name == null) {
+            name = GUID.generate();
+        }
+
+        name = getValidChildName(parentRef, childAssoc, name);
+        props.put(ContentModel.PROP_NAME, name);
+
+        QName assocName = QName.createQNameWithValidLocalName(childAssoc.getNamespaceURI(), name);
+
+        return nodeService.createNode(parentRef, childAssoc, assocName, type, props).getChildRef();
+    }
+
+    public boolean setAssocs(NodeRef nodeRef, Collection<NodeRef> targets, QName assocName) {
+
+        if (!isValidNode(nodeRef) || assocName == null) {
+            return false;
+        }
+
+        if (targets == null) {
+            targets = Collections.emptySet();
+        }
+
+        Set<NodeRef> targetsSet = new HashSet<>(targets);
+
+        AssociationDefinition assocDef = dictionaryService.getAssociation(assocName);
+
+        if (assocDef != null) {
+
+            List<NodeRef> storedRefs = getAssocsImpl(nodeRef, assocDef, true);
+
+            Set<NodeRef> toAdd = targetsSet.stream()
+                                           .filter(r -> !storedRefs.contains(r))
+                                           .collect(Collectors.toSet());
+            Set<NodeRef> toRemove = storedRefs.stream()
+                                              .filter(r -> !targetsSet.contains(r))
+                                              .collect(Collectors.toSet());
+
+            if (toAdd.size() > 0 || toRemove.size() > 0) {
+
+                for (NodeRef removeRef : toRemove) {
+                    nodeService.removeAssociation(nodeRef, removeRef, assocName);
+                }
+                for (NodeRef addRef : toAdd) {
+                    nodeService.createAssociation(nodeRef, addRef, assocName);
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -166,6 +274,8 @@ public class NodeUtils {
     @Autowired
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         nodeService = serviceRegistry.getNodeService();
+        searchService = serviceRegistry.getSearchService();
+        namespaceService = serviceRegistry.getNamespaceService();
         dictionaryService = serviceRegistry.getDictionaryService();
     }
 }

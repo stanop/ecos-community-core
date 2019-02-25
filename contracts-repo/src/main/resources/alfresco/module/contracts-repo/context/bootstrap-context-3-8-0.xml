@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+
+    <bean id="contracts.import-spaces.3-8-0" parent="contracts.import-spaces" abstract="true">
+        <property name="sinceVersion" value="3.8.0" />
+        <property name="appliesFromVersion" value="3.8.0" />
+    </bean>
+
+    <bean id="contracts.import-scripts.3-8-0" parent="contracts.import-scripts" abstract="true">
+        <property name="sinceVersion" value="3.8.0" />
+        <property name="appliesFromVersion" value="3.8.0" />
+    </bean>
+
+    <bean id="contracts.script.update-contract-documents-wu-cardlet-position" parent="contracts.import-scripts.3-8-0">
+        <property name="executeOnceOnly" value="true"/>
+        <property name="name" value="update-contract-agr-common-documents-wu-cardlet-position.js"/>
+        <property name="description" value="Update contract agr common documents wu cardlet - set position to b7"/>
+        <property name="bootstrapScript" value="alfresco/module/contracts-repo/script/update-contract-agr-common-documents-wu-cardlet-position.js"/>
+    </bean>
+
+</beans>

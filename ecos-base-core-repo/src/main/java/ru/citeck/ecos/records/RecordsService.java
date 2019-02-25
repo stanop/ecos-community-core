@@ -1,23 +1,26 @@
 package ru.citeck.ecos.records;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
-import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.converter.ConvertersProvider;
 import ru.citeck.ecos.graphql.meta.annotation.MetaAtt;
-import ru.citeck.ecos.graphql.meta.converter.MetaConverter;
 import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.actions.RecordsActionFactory;
-import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.request.delete.RecordsDelResult;
+import ru.citeck.ecos.records.request.delete.RecordsDeletion;
+import ru.citeck.ecos.records.request.mutation.RecordsMutation;
+import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.source.MetaAttributeDef;
-import ru.citeck.ecos.records.source.MetaValueTypeDef;
-import ru.citeck.ecos.records.source.RecordsDAO;
+import ru.citeck.ecos.records.source.dao.RecordsDAO;
+import ru.citeck.ecos.records.source.dao.RecordsQueryDAO;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -25,8 +28,11 @@ import java.util.Optional;
  * It may be alfresco nodes, database records, generated data and so on
  * A record id contains two parts: 'sourceId' and 'id'. String representation: sourceId@id
  *
+ * @see MetaValue
  * @see RecordRef
- * @see RecordsDAO
+ * @see RecordsQueryDAO
+ *
+ * @author Pavel Simonov
  */
 public interface RecordsService {
 
@@ -34,13 +40,7 @@ public interface RecordsService {
      * Query records from default RecordsDAO
      * @return list of RecordRef and page info
      */
-    RecordsResult<RecordRef> getRecords(RecordsQuery query);
-
-    /**
-     * Query records with meta
-     * @param metaSchema GraphQL schema for MetaValue
-     */
-    RecordsResult<ObjectNode> getRecords(RecordsQuery query, String metaSchema);
+    RecordsQueryResult<RecordRef> getRecords(RecordsQuery query);
 
     /**
      * Query records with meta
@@ -48,15 +48,72 @@ public interface RecordsService {
      *                  This class must contain constructor without arguments and have public fields
      *                  Getters/setters is not yet supported
      */
-    <T> RecordsResult<T> getRecords(RecordsQuery query, Class<T> metaClass);
+    <T> RecordsQueryResult<T> getRecords(RecordsQuery query, Class<T> metaClass);
 
     /**
-     * Get metadata for specified records
-     *
-     * @param metaSchema GraphQL schema for MetaValue
-     * @see MetaValue
+     * Query records with meta
+     * Fields example: {name: 'cm:name', title: 'cm:title'}
      */
-    List<ObjectNode> getMeta(Collection<RecordRef> records, String metaSchema);
+    RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, Map<String, String> attributes);
+
+    /**
+     * Query records with meta
+     * Fields example: {name: 'cm:name', title: 'cm:title'}
+     */
+    RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String schema);
+
+    /**
+     * Query records with meta
+     * Fields example: ['cm:name', 'cm:title']
+     */
+    RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, Collection<String> attributes);
+
+    /**
+     * Get meta
+     * Fields example: ["cm:name", "cm:title"]
+     */
+    RecordsResult<RecordMeta> getAttributes(Collection<RecordRef> records, Collection<String> attributes);
+
+    /**
+     * Get attribute
+     */
+    JsonNode getAttribute(RecordRef record, String attribute);
+
+    /**
+     * Get ordered meta
+     * Fields example: ["cm:name", "cm:title"]
+     */
+    RecordsResult<RecordMeta> getAttributes(List<RecordRef> records, Collection<String> attributes);
+
+    /**
+     * Get meta
+     * Fields example: {"name" : "cm:name", "title" : "cm:title"}
+     */
+    RecordsResult<RecordMeta> getAttributes(Collection<RecordRef> records, Map<String, String> attributes);
+
+    /**
+     * Get meta
+     * Fields example: {"name" : "cm:name", "title" : "cm:title"}
+     */
+    RecordMeta getAttributes(RecordRef record, Map<String, String> attributes);
+
+    /**
+     * Get meta
+     * Fields example: {"name" : "cm:name", "title" : "cm:title"}
+     */
+    RecordMeta getAttributes(RecordRef record, Collection<String> attributes);
+
+    /**
+     * Get ordered meta
+     * Fields example: {"name" : "cm:name", "title" : "cm:title"]
+     */
+    RecordsResult<RecordMeta> getAttributes(List<RecordRef> records, Map<String, String> attributes);
+
+    /**
+     * Get ordered meta
+     * Fields example: ["cm:name", "cm:title"]
+     */
+    RecordsResult<RecordMeta> getMeta(List<RecordRef> records, String schema);
 
     /**
      * Get metadata for specified records.
@@ -64,11 +121,29 @@ public interface RecordsService {
      *                  This class must contain constructor without arguments and have public fields
      *                  Getters/setters is not yet supported
      *
-     * @see ConvertersProvider
-     * @see MetaConverter
      * @see MetaAtt
      */
-    <T> List<T> getMeta(Collection<RecordRef> records, Class<T> metaClass);
+    <T> RecordsResult<T> getMeta(Collection<RecordRef> records, Class<T> metaClass);
+
+    /**
+     * Get metadata for specified records.
+     * @param metaClass POJO to generate metadata GQL schema and retrieve data
+     *
+     * @see MetaAtt
+     */
+    <T> RecordsResult<T> getMeta(List<RecordRef> records, Class<T> metaClass);
+
+    <T> T getMeta(RecordRef recordRef, Class<T> metaClass);
+
+    /**
+     * Create or change records
+     */
+    RecordsMutResult mutate(RecordsMutation mutation);
+
+    /**
+     * Delete records
+     */
+    RecordsDelResult delete(RecordsDeletion deletion);
 
     /**
      * Execute action with specified records.
@@ -93,11 +168,7 @@ public interface RecordsService {
      */
     void register(RecordsDAO recordsSource);
 
-    List<MetaValueTypeDef> getTypesDefinition(String sourceId, Collection<String> names);
+    List<MetaAttributeDef> getAttributesDef(String sourceId, Collection<String> names);
 
-    Optional<MetaValueTypeDef> getTypeDefinition(String sourceId, String name);
-
-    List<MetaAttributeDef> getAttsDefinition(String sourceId, Collection<String> names);
-
-    Optional<MetaAttributeDef> getAttDefinition(String sourceId, String name);
+    Optional<MetaAttributeDef> getAttributeDef(String sourceId, String name);
 }

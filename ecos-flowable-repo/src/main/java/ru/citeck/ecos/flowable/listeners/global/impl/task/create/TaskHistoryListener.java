@@ -22,7 +22,10 @@ import ru.citeck.ecos.deputy.DeputyService;
 import ru.citeck.ecos.flowable.listeners.global.GlobalAssignmentTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
+import ru.citeck.ecos.flowable.services.FlowableCustomCommentService;
+import org.flowable.engine.TaskService;
 import ru.citeck.ecos.flowable.utils.FlowableListenerUtils;
+import ru.citeck.ecos.flowable.utils.FlowableUtils;
 import ru.citeck.ecos.history.HistoryEventType;
 import ru.citeck.ecos.history.HistoryService;
 import ru.citeck.ecos.model.*;
@@ -64,6 +67,8 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
     private WorkflowService workflowService;
     private List<String> panelOfAuthorized;
     private WorkflowQNameConverter qNameConverter;
+    private FlowableCustomCommentService flowableCustomCommentService;
+    private TaskService taskService;
 
     /**
      * Property names
@@ -108,7 +113,13 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
             outcomeProperty = WorkflowModel.PROP_OUTCOME;
         }
         String taskOutcome = (String) delegateTask.getVariable(qNameConverter.mapQNameToName(outcomeProperty));
+        if (taskOutcome == null) {
+            taskOutcome = getFormCustomOutcome(delegateTask);
+        }
         String taskComment = (String) delegateTask.getVariable(VAR_COMMENT);
+        if (taskComment == null) {
+            taskComment = getFormCustomComment(delegateTask);
+        }
         ArrayList<NodeRef> taskAttachments = FlowableListenerUtils.getTaskAttachments(delegateTask);
         String assignee = delegateTask.getAssignee();
         String originalOwner = (String) delegateTask.getVariableLocal("taskOriginalOwner");
@@ -293,6 +304,23 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         return roleName;
     }
 
+    private String getFormCustomComment(DelegateTask delegateTask) {
+        String customComment = "";
+        List<String> commentFieldIds = flowableCustomCommentService.getFieldIdsByProcessDefinitionId(delegateTask.getProcessDefinitionId());
+        for (String commentFieldId : commentFieldIds) {
+            String comments = (String) taskService.getVariable(delegateTask.getId(), commentFieldId);
+            if (comments != null) {
+                customComment = comments;
+            }
+        }
+        return customComment;
+    }
+
+    private String getFormCustomOutcome(DelegateTask delegateTask) {
+        String fullFormKey = FlowableUtils.getFullFormKey(delegateTask.getFormKey());
+        return (String) delegateTask.getVariable(fullFormKey);
+    }
+
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
     }
@@ -325,4 +353,11 @@ public class TaskHistoryListener implements GlobalCreateTaskListener, GlobalAssi
         this.panelOfAuthorized = panelOfAuthorized;
     }
 
+    public void setFlowableCustomCommentService(FlowableCustomCommentService flowableCustomCommentService) {
+        this.flowableCustomCommentService = flowableCustomCommentService;
+    }
+
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
+    }
 }

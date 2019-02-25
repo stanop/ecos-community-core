@@ -17,10 +17,11 @@ import ru.citeck.ecos.content.dao.ContentDAO;
 import ru.citeck.ecos.content.dao.NodeDataReader;
 import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.query.RecordsQuery;
-import ru.citeck.ecos.records.source.alfnode.AlfNodesRecordsDAO;
+import ru.citeck.ecos.records.request.query.RecordsQuery;
+import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.search.ftsquery.OperatorExpected;
 import ru.citeck.ecos.utils.LazyNodeRef;
 
 import java.io.Serializable;
@@ -171,25 +172,29 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
             }
         }
 
-        return FTSQuery.create()
-                       .parent(rootRef.getNodeRef()).and()
-                       .type(configNodeType).and()
-                       .values(notNullProps, BinOperator.AND, true)
-                       .transactional()
-                       .query(searchService)
-                       .stream()
-                       .filter(ref -> {
-                           for (QName propName : nullProps) {
-                               Serializable value = nodeService.getProperty(ref, propName);
-                               if (value != null && (!(value instanceof String) ||
-                                                     StringUtils.isNotBlank((String) value))) {
-                                   return false;
-                               }
-                           }
-                           return true;
-                       })
-                       .map(this::getContentDataImpl)
-                       .collect(Collectors.toList());
+        OperatorExpected query = FTSQuery.create()
+                                         .parent(rootRef.getNodeRef()).and()
+                                         .type(configNodeType)
+                                         .transactional();
+
+        if (notNullProps.size() > 0) {
+            query.and().values(notNullProps, BinOperator.AND, true);
+        }
+
+        return query.query(searchService)
+                    .stream()
+                    .filter(ref -> {
+                        for (QName propName : nullProps) {
+                            Serializable value = nodeService.getProperty(ref, propName);
+                            if (value != null && (!(value instanceof String) ||
+                                    StringUtils.isNotBlank((String) value))) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    })
+                    .map(this::getContentDataImpl)
+                    .collect(Collectors.toList());
     }
 
     private ContentData<T> getContentDataImpl(NodeRef nodeRef) {
@@ -206,6 +211,10 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
 
     public void setRootNode(LazyNodeRef rootRef) {
         this.rootRef = rootRef;
+    }
+
+    public NodeRef getRootRef() {
+        return rootRef.getNodeRef();
     }
 
     public void setConfigNodeType(QName configNodeType) {
@@ -242,6 +251,10 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
 
     public void setChildAssocType(QName childAssocType) {
         this.childAssocType = childAssocType;
+    }
+
+    public QName getChildAssocType() {
+        return childAssocType;
     }
 
     public NodeDataReader<T> getNodeDataReader() {

@@ -52,7 +52,7 @@ export default class GqlDataSource extends BaseDataSource {
             let {formatter} = this._getFormatter(column.formatter);
             let str = formatter.getQueryString();
 
-            return `id, ${this._getIdByIdx(idx)}: att(name: "${column.field}") {name, val {${str}}}`;
+            return `id, ${this._getIdByIdx(idx)}: edge(n: "${column.field}") {name, val:vals {${str}}}`;
         });
 
         return gqlSchemes.join(',');

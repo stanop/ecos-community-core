@@ -27,7 +27,7 @@ public class GqlContext {
 
     private LoadingCache<NodeRef, GqlAlfNode> nodes;
     private LoadingCache<Object, Optional<GqlQName>> qnames;
-    private List<MetaValue> metaValues;
+    private List<?> metaValues;
 
     private final ServiceRegistry serviceRegistry;
 
@@ -50,7 +50,7 @@ public class GqlContext {
         this.messageService = serviceRegistry.getMessageService();
 
         nodes = CacheBuilder.newBuilder()
-                            .maximumSize(1000)
+                            .maximumSize(500)
                             .build(CacheLoader.from(this::createNode));
         qnames = CacheBuilder.newBuilder()
                              .maximumSize(1000)
@@ -114,11 +114,11 @@ public class GqlContext {
         return result;
     }
 
-    public List<MetaValue> getMetaValues() {
+    public List<?> getMetaValues() {
         return metaValues;
     }
 
-    public void setMetaValues(List<MetaValue> metaValues) {
+    public void setMetaValues(List<?> metaValues) {
         this.metaValues = metaValues;
     }
 

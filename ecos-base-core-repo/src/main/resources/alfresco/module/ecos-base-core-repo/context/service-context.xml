@@ -425,4 +425,12 @@
         <property name="recordsService" ref="ecos-base-core.recordsServiceJS" />
     </bean>
 
+    <bean class="ru.citeck.ecos.records.source.alf.AlfNodesDefaultParentRegistrar">
+        <property name="defaultParents">
+            <map>
+                <entry key="{http://www.alfresco.org/model/system/1.0}base" value="workspace://SpacesStore/attachments-root" />
+            </map>
+        </property>
+    </bean>
+
 </beans>

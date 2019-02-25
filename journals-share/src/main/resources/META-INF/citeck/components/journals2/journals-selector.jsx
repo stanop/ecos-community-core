@@ -169,6 +169,7 @@ export class JournalsSelector extends Component {
         let assocTypeMenu = new YAHOO.widget.ContextMenu(
             id + '-contextmenu',
             {
+                context: [CREATE_BUTTON_ID, 'tl', 'tl', ['beforeShow', 'windowResize'], [10, 10]],
                 trigger: CREATE_BUTTON_ID,
                 lazyLoad: true
             }
@@ -250,11 +251,7 @@ export class JournalsSelector extends Component {
 
         Dom.setStyle(id + '-contextmenu', 'font-size', '13px');
 
-        Event.addListener(
-            CREATE_BUTTON_ID,
-            'click', function(event) {
-                let xy = YAHOO.util.Event.getXY(event);
-                assocTypeMenu.cfg.setProperty('xy', xy);
+        Event.addListener(CREATE_BUTTON_ID, 'click', function() {
                 assocTypeMenu.show();
             }
         );

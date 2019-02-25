@@ -4,8 +4,8 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.flowable.app.domain.editor.Model;
-import org.flowable.app.domain.editor.ModelHistory;
+import org.flowable.ui.modeler.domain.Model;
+import org.flowable.ui.modeler.domain.ModelHistory;
 import java.util.List;
 
 /**

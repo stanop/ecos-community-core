@@ -37,8 +37,10 @@ import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
 import ru.citeck.ecos.model.JournalsModel;
+import ru.citeck.ecos.records.RecordMeta;
 import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.query.RecordsResult;
+import ru.citeck.ecos.records.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.NamespacePrefixResolverMapImpl;
@@ -110,7 +112,7 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public List<InvariantDefinition> getCriterionInvariants(String journalId, QName attribute) {
+    public List<InvariantDefinition> getCriterionInvariants(String journalId, String attribute) {
 
         JournalType journalType = journalTypes.get(journalId);
 
@@ -188,11 +190,11 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public RecordsResult<RecordRef> getRecords(String journalId,
-                                               String query,
-                                               String language,
-                                               JGqlPageInfoInput pageInfo,
-                                               boolean debug) {
+    public RecordsQueryResult<RecordRef> getRecords(String journalId,
+                                                    String query,
+                                                    String language,
+                                                    JGqlPageInfoInput pageInfo,
+                                                    boolean debug) {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }
@@ -201,16 +203,23 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public RecordsResult<ObjectNode> getRecordsWithData(String journalId,
-                                                        String query,
-                                                        String language,
-                                                        JGqlPageInfoInput pageInfo,
-                                                        boolean debug) {
+    public RecordsQueryResult<ObjectNode> getRecordsWithData(String journalId,
+                                                             String query,
+                                                             String language,
+                                                             JGqlPageInfoInput pageInfo,
+                                                             boolean debug) {
         if (pageInfo == null) {
             pageInfo = JGqlPageInfoInput.DEFAULT;
         }
         JournalType journalType = needJournalType(journalId);
-        return recordsDAO.getRecordsWithData(journalType, query, language, pageInfo, debug);
+        return new RecordsQueryResult<>(
+                recordsDAO.getRecordsWithData(journalType, query, language, pageInfo, debug),
+                meta -> {
+                    ObjectNode attributes = meta.getAttributes();
+                    attributes.put("id", meta.getId().toString());
+                    return attributes;
+                }
+        );
     }
 
     @Override
