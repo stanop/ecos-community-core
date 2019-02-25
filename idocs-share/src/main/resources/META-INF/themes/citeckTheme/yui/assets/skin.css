@@ -1002,7 +1002,7 @@ p#clear {
     font-weight: 900;
     line-height: 100%;
     border: none;
-    min-height: 13px;
+    min-height: 33px;
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .hd.topscrollbar,
@@ -1259,7 +1259,7 @@ p#clear {
 
 .yui-skin-citeckTheme .container-close {
     position: absolute;
-    top: 5px;
+    top: 9px;
     right: 10px;
     width: 13px;
     height: 13px;

@@ -2716,11 +2716,11 @@ span.alfresco-header-Header > span.alf-header-js-wrapper-inner > button.alf-head
 
 /* CONTENT */
 
-#doc3 {
+.yui-skin-citeckTheme #doc3 {
    margin: 0;
 }
 
-#bd {
+.yui-skin-citeckTheme #bd {
     padding-bottom: 0;
 }
 .yui-skin-citeckTheme #bd, .yui-skin-citeckTheme .sticky-wrapper {
@@ -5012,54 +5012,20 @@ div#HEADER_USER_STATUS {
     padding-right: 5px;
 }
 
-/*shadow of new menu*/
-body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #alf-hd,
-body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .node-header,
-body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .header-tabs,
-body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet .previewer.PdfJs,
-body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .cardlet .previewer .flat-button,
-body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc:not(.flat-button),
-body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper #bd .yui-gc .first .cardlet,
-body:not(.mobile).yui-skin-citeckTheme #bd .user-profile.node-view.static,
-body:not(.mobile).yui-skin-citeckTheme #bd .profile,
-body:not(.mobile).yui-skin-citeckTheme #bd .customise-layout,
-body:not(.mobile).yui-skin-citeckTheme #bd .customise-dashlets,
-body:not(.mobile).yui-skin-citeckTheme #bd .toolbar.userprofile,
-body:not(.mobile).yui-skin-citeckTheme #bd .grid,
-body:not(.mobile).yui-skin-citeckTheme #bd.static,
-body:not(.mobile).yui-skin-citeckTheme #bd > .share-form,
-body:not(.mobile).yui-skin-citeckTheme #bd #yui-main,
-body:not(.mobile).yui-skin-citeckTheme .items-list li.selected,
-body:not(.mobile).yui-skin-citeckTheme #alf-filters,
-body:not(.mobile).yui-skin-citeckTheme .sticky-wrapper,
-body:not(.mobile).yui-skin-citeckTheme #HEADER_TITLE_BAR,
-body:not(.mobile).yui-skin-citeckTheme #flowable-modeler,
-body:not(.mobile).yui-skin-citeckTheme #bd > div[id*="site-finder"],
-body:not(.mobile).yui-skin-citeckTheme #bd .orgstruct-console .orgstruct-tree-resizer,
-body:not(.mobile).yui-skin-citeckTheme .alfresco-header-Warning .alfresco-header-Warning__warnings,
-/*body:not(.mobile).yui-skin-citeckTheme .ecos-form,*/
-body:not(.mobile).yui-skin-citeckTheme .alfresco-footer-AlfStickyFooter > div.wrapper {
-    /*box-shadow: inset 15px -1px 10px -15px grey;*/
-}
-
 body:not(.mobile).yui-skin-citeckTheme #bd .site-document-types {
-    /*box-shadow: inset 15px -1px 10px -15px grey;*/
     padding-left: 15px;
 }
 
 body:not(.mobile).yui-skin-citeckTheme #bd .cardlet > div[id*="SurfRegion"] > div[id*="case-documents"],
 body:not(.mobile).yui-skin-citeckTheme #bd .cardlet #cardlet-remote-case-documents-container {
-    /*box-shadow: inset 15px -1px 10px -15px grey;*/
     padding-left: 4px;
 }
 
 body:not(.mobile).yui-skin-citeckTheme .sticky-footer .footer {
-    /*box-shadow: inset 15px -1px 10px -15px grey, 0px 10px 15px -10px grey inset;*/
-    box-shadow: 0px 10px 15px -10px grey inset;
+    box-shadow: 0 10px 15px -10px grey inset;
 }
 
 body:not(.mobile).yui-skin-citeckTheme .card-details-top-panel {
-    /*box-shadow: inset 15px -1px 10px -15px grey;*/
     padding-left: 40px;
 }
 
@@ -5071,4 +5037,9 @@ body:not(.mobile).yui-skin-citeckTheme .card-details-top-panel {
 .mm-wrapper_opening .yui-skin-citeckTheme .mm-menu .mm-listitem_selected > a:not(.mm-btn_next),
 .mm-wrapper_opening .yui-skin-citeckTheme .mm-menu .mm-listitem_selected > span {
     background-color: #c6d3de;
+}
+
+/* faceted-search page hack */
+body:not(.mobile).yui-skin-citeckTheme > .sticky-wrapper .sticky-footer {
+    display: none;
 }
