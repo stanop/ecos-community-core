@@ -1003,6 +1003,7 @@ p#clear {
     line-height: 100%;
     border: none;
     min-height: 33px;
+    box-sizing: border-box;
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .hd.topscrollbar,
@@ -1268,6 +1269,7 @@ p#clear {
     background-repeat: no-repeat;
     background-position: center;
     padding: 5px;
+    box-sizing: border-box;
 }
 
 .yui-skin-citeckTheme .container-close:hover {
