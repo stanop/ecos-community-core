@@ -48,9 +48,11 @@
 
         for (var h = 0; h < journalTypeHeaders.size(); h++) {
           var header = journalTypeHeaders.get(h);
-          if (header.indexOf(':') > 0) {
-            header = citeckUtils.createQName(header);
+
+          if (!header || header.indexOf(':') <= 0) {
+            continue;
           }
+          header = citeckUtils.createQName(header);
 
           var assoc = dictionaryService.getAssociation(header);
 
