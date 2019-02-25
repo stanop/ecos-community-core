@@ -135,8 +135,13 @@ function processContainer(model, container, currentLevels) {
 
 
 function fillOurLove(model) {
-    var rootNode = search.findNode("workspace://SpacesStore/category-document-type-root"),
-        allTypes = rootNode.children;
+    var newDocumentRoot = ecosConfigService.getParamValue("document-upload-type-new-root") + "";
+    if (newDocumentRoot === 'true') {
+        var rootNode = search.findNode("workspace://SpacesStore/category-document-type");
+    } else {
+        var rootNode = search.findNode("workspace://SpacesStore/category-document-type-root");
+    }
+    var allTypes = rootNode.children;
 
     // check permission for create types
     model.permissions = {
