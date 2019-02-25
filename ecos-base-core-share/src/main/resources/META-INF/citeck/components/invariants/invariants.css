@@ -2033,11 +2033,19 @@ div[id*="multiple-text"] .multiple-text-control input {
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-predicate select,
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="text"],
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="number"],
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector input[type="date"],
 .selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector select {
   width: 100%;
   background-color: white;
   box-sizing: border-box;
   padding: 4px 5px;
+  border-radius: 6px;
+}
+
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector div[id$='-dateControl'],
+.selected-filter-criteria-container table.filter-criteria-table td.criterion-value-selector .datetime-control {
+  display: flex;
+  align-items: center;
 }
 
 
