@@ -46,3 +46,7 @@
 .eform-panel-content .formio-component-select.formio-component-multiple .form-control .choices__input {
     width: max-content;
 }
+
+.eform-panel-content .form-control {
+    box-shadow: none;
+}
