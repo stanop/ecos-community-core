@@ -22,4 +22,12 @@
           class="ru.citeck.ecos.flowable.webscripts.FlowableRestProxy" parent="webscript">
     </bean>
 
+    <bean id="webscript.ru.citeck.flowable.deploy-process-model.post"
+          class="ru.citeck.ecos.flowable.bpm.DeployBpmProcessModelPost" parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.flowable.deploy-process.post"
+          class="ru.citeck.ecos.flowable.bpm.DeployBpmProcessPost" parent="webscript">
+    </bean>
+
 </beans>
