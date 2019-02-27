@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>business-calendar</shortname>
+	<description>Get calendar date</description>
+	<url>/citeck/ecos/sync-key?key={key}</url>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+</webscript>

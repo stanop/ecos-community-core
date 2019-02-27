@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>rest proxy post</shortname>
+    <description>rest proxy post</description>
+    <url>/citeck/ecos/bpm/process/deploy?nodeRef={nodeRef}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readwrite">required</transaction>
+    <formdata multipart-processing="false" />
+</webscript>

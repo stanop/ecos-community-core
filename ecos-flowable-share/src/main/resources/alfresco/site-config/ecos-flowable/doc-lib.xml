@@ -1,0 +1,34 @@
+<alfresco-config>
+
+    <config evaluator="string-compare" condition="DocLibCustom">
+        <dependencies>
+            <js src="/js/citeck/documentlibrary/ecos-flowable/custom-actions.js" />
+        </dependencies>
+    </config>
+
+    <config evaluator="string-compare" condition="DocLibActions" replace="false">
+
+        <actions>
+
+            <action id="deploy-ecos-bpm-process" label="actions.deploy-ecos-bpm-process" icon="document-copy-to" type="javascript">
+                <param name="function">onActionDeployBpmProcess</param>
+                <evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
+                <evaluator>evaluator.doclib.action.isEcosBpmProcessModel</evaluator>
+                <permissions>
+                    <permission allow="true">Write</permission>
+                </permissions>
+            </action>
+
+        </actions>
+
+        <actionGroups>
+
+            <actionGroup id="document-details">
+                <action index="700" id="deploy-ecos-bpm-process" />
+            </actionGroup>
+
+        </actionGroups>
+
+    </config>
+
+</alfresco-config>

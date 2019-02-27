@@ -456,4 +456,8 @@
           class="ru.citeck.ecos.webscripts.menu.IconGet"
           parent="webscript" />
 
+    <bean id="webscript.ru.citeck.cache.sync.sync-key.get"
+          class="ru.citeck.ecos.cache.sync.SyncKeyGet"
+          parent="webscript" />
+
 </beans>
