@@ -153,6 +153,7 @@ public class ChildrenGet extends AbstractWebScript {
 
         result.firstName = (String) props.get(ContentModel.PROP_FIRSTNAME);
         result.lastName = (String) props.get(ContentModel.PROP_LASTNAME);
+        result.email = (String) props.get(ContentModel.PROP_EMAIL);
         result.displayName = result.firstName + " " + result.lastName;
 
         return result;
@@ -546,6 +547,7 @@ public class ChildrenGet extends AbstractWebScript {
 
         public String firstName;
         public String lastName;
+        public String email;
 
         public boolean available = true;
         public boolean isPersonDisabled = false;
