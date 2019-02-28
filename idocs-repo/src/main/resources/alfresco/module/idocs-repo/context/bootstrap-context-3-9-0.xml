@@ -15,6 +15,41 @@
         <property name="appliesFromVersion" value="3.9.0" />
     </bean>
 
+    <bean id="idocs.module-component.document-upload-type-new-root" parent="idocs.import-spaces.3-9-0">
+        <property name="name" value="document-upload-type-new-root" />
+        <property name="description" value="Config for change type root in documents upload component" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/document-upload-type-new-root</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.ecos-sync-keys-root" parent="idocs.import-spaces.3-9-0">
+        <property name="name" value="ecos-sync-keys-root"/>
+        <property name="description" value="ecos-sync-keys-root"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="ecos-base-core.module-component.idocs-root" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/cm:IDocsRoot</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecos-sync-keys-root.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
     <bean id="idocs.site.personal-documents-site-import" parent="idocs.import-spaces.3-9-0">
         <property name="name" value="personal-documents-site" />
         <property name="description" value="Personal documents site" />

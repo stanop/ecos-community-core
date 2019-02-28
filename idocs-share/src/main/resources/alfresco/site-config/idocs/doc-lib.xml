@@ -285,6 +285,7 @@
 
             <actionGroup id="document-details">
                 <action index="200" id="document-print" />
+                <action index="225" id="document-edit-online-aos"/>
                 <action index="250" id="case-save-as-template" />
                 <action index="99" id="custom-manage-permissions" />
                 <action index="450" id="document-fill-template" />

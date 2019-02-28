@@ -260,9 +260,8 @@ ko.components.register("number-generate", {
                 return -1;
             }
             if (!self._cache.numbers[template]) {
-                var model = params.node().impl().allData.peek().attributes;
                 self._cache.numbers[template] = ko.computed(function() {
-                    return params.enumeration.getNumber(template, model);
+                    return params.enumeration.getNumber(template,  params.node());
                 });
             }
             return self._cache.numbers[template]();
@@ -732,6 +731,7 @@ ko.components.register("datetime", {
         this.disabled = params["protected"];
         this.isFocus = ko.observable(false);
         this.intermediateValue = ko.observable();
+        this.dateFormat = params["dateFormat"];
 
         this.calendar = function() {
             if (!calendarDialog) {
@@ -793,7 +793,7 @@ ko.components.register("datetime", {
 
         this.textValue = ko.pureComputed({
             read: function() {
-                return self.value() instanceof Date ? moment(self.value()).format("YYYY-MM-DD HH:mm:ss") : null;
+                return self.value() instanceof Date ? moment(self.value()).format(self.dateFormat) : null;
             },
             write: function(newValue) {
                 if (newValue) {
@@ -840,7 +840,7 @@ ko.components.register("datetime", {
         });
     },
     template:
-       '<input type="text" data-bind="value: textValue, disable: disabled, attr: { placeholder: localization.formatIE }" />\
+       '<input type="text" data-bind="value: textValue, disable: disabled, attr: { placeholder: localization.placeholderFormatIE }" />\
         <!-- ko if: disabled -->\
             <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">\
         <!-- /ko -->\

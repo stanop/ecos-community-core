@@ -8,4 +8,5 @@ public interface MenuService {
 
     Menu queryMenu(String userName);
 
+    void resetCache();
 }
