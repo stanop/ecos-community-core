@@ -260,9 +260,8 @@ ko.components.register("number-generate", {
                 return -1;
             }
             if (!self._cache.numbers[template]) {
-                var model = params.node().impl().allData.peek().attributes;
                 self._cache.numbers[template] = ko.computed(function() {
-                    return params.enumeration.getNumber(template, model);
+                    return params.enumeration.getNumber(template,  params.node());
                 });
             }
             return self._cache.numbers[template]();

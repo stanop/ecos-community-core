@@ -41,10 +41,11 @@ import ru.citeck.ecos.exception.ExceptionTranslator;
 
 import java.util.*;
 
-public class EnumerationServiceImpl implements EnumerationService 
-{
+public class EnumerationServiceImpl implements EnumerationService {
+
     private static final String FREEMARKER_PROCESSOR = "freemarker";
-    
+    private static final String PARAM_TEMPLATE_NAME = "templateName";
+
     private ServiceRegistry serviceRegistry;
     private NodeService nodeService;
     private NamespaceService namespaceService;
@@ -54,11 +55,11 @@ public class EnumerationServiceImpl implements EnumerationService
     private TemplateService templateService;
     private ExceptionService exceptionService;
     private NodeInfoFactory nodeInfoFactory;
-    
+
     @Override
     public NodeRef getTemplate(String templateName) {
 
-        ParameterCheck.mandatoryString("templateName", templateName);
+        ParameterCheck.mandatoryString(PARAM_TEMPLATE_NAME, templateName);
 
         StringBuilder query = new StringBuilder(String.format("TYPE:\"%s\"", CounterModel.TYPE_AUTONUMBER_TEMPLATE));
         String[] nameTokens = templateName.split("-");
@@ -70,7 +71,7 @@ public class EnumerationServiceImpl implements EnumerationService
         List<NodeRef> resultList = Collections.emptyList();
         try {
             resultSet = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE,
-                                            SearchService.LANGUAGE_FTS_ALFRESCO, query.toString());
+                    SearchService.LANGUAGE_FTS_ALFRESCO, query.toString());
             if (resultSet != null) {
                 resultList = resultSet.getNodeRefs();
             }
@@ -89,36 +90,34 @@ public class EnumerationServiceImpl implements EnumerationService
 
     @Override
     public boolean isTemplate(NodeRef nodeRef) {
-        if(!nodeService.exists(nodeRef)) {
+        if (!nodeService.exists(nodeRef)) {
             throw new InvalidNodeRefException(nodeRef);
         }
         return dictionaryService.isSubClass(
-                nodeService.getType(nodeRef), 
+                nodeService.getType(nodeRef),
                 CounterModel.TYPE_AUTONUMBER_TEMPLATE);
     }
-    
+
     @Override
-    public String getNumber(NodeRef template, NodeInfo nodeInfo) 
-            throws EnumerationException 
-    {
-        Map<String,Object> model = new HashMap<>(1);
+    public String getNumber(NodeRef template, NodeInfo nodeInfo)
+            throws EnumerationException {
+        Map<String, Object> model = new HashMap<>(1);
         model.put(KEY_NODE, newTemplateNode(nodeInfo));
         return getNumber(template, model);
     }
 
     @Override
-    public String getNumber(NodeRef template, NodeRef nodeRef) 
-            throws EnumerationException 
-    {
-        Map<String,Object> model = new HashMap<>(1);
+    public String getNumber(NodeRef template, NodeRef nodeRef)
+            throws EnumerationException {
+        Map<String, Object> model = new HashMap<>(1);
         model.put(KEY_NODE, nodeRef);
         return getNumber(template, model);
     }
-    
+
     @Override
     public String getNumber(NodeRef template, NodeInfo nodeInfo, String count)
             throws EnumerationException {
-        Map<String,Object> model = new HashMap<>(1);
+        Map<String, Object> model = new HashMap<>(1);
         model.put(KEY_NODE, newTemplateNode(nodeInfo));
         model.put(KEY_COUNT, count);
         return getNumber(template, model);
@@ -127,40 +126,37 @@ public class EnumerationServiceImpl implements EnumerationService
     @Override
     public String getNumber(NodeRef template, NodeRef nodeRef, String count)
             throws EnumerationException {
-        Map<String,Object> model = new HashMap<>(1);
+        Map<String, Object> model = new HashMap<>(1);
         model.put(KEY_NODE, nodeRef);
         model.put(KEY_COUNT, count);
         return getNumber(template, model);
     }
 
 
-
     @Override
-    public String getNumber(NodeRef template, Map<String,Object> model) 
-            throws EnumerationException
-    {
-        if(template == null) {
+    public String getNumber(NodeRef template, Map<String, Object> model)
+            throws EnumerationException {
+        if (template == null) {
             throw new IllegalArgumentException("Template is a mandatory parameter");
         }
-        if(!nodeService.exists(template)) {
+        if (!nodeService.exists(template)) {
             throw new InvalidNodeRefException("Template does not exist: " + template, template);
         }
-        if(!isTemplate(template)) {
+        if (!isTemplate(template)) {
             throw new IllegalArgumentException("Specified node is not a template: " + template);
         }
-        
+
         try {
-            
             model = prepareModel(template, model);
-            
+
             String commonTemplate = getTemplatePart(template, CounterModel.PROP_COMMON_TEMPLATE, "");
             String numberTemplate = getTemplatePart(template, CounterModel.PROP_NUMBER_TEMPLATE, null);
 
             // generate number from number template
-            return templateService.processTemplateString(FREEMARKER_PROCESSOR, 
+            return templateService.processTemplateString(FREEMARKER_PROCESSOR,
                     commonTemplate + numberTemplate, model);
-            
-        } catch(Exception e) {
+
+        } catch (Exception e) {
             ExceptionTranslator translator = exceptionService.getExceptionTranslator(
                     template,
                     CounterModel.PROP_ERROR_MESSAGE_CONFIG);
@@ -170,73 +166,74 @@ public class EnumerationServiceImpl implements EnumerationService
     }
 
     private Map<String, Object> prepareModel(NodeRef template, Map<String, Object> initialModel) throws EnumerationException {
-        Map<String,Object> model = new HashMap<String,Object>(initialModel.size()+1);
+        Map<String, Object> model = new HashMap<>(initialModel.size() + 1);
         model.putAll(initialModel);
         model.put(KEY_TEMPLATE, template);
-        
+
         // special processing for 'node' entry
         Object nodeModel = model.get(KEY_NODE);
-        if(nodeModel != null) {
-            if(nodeModel instanceof TemplateNode || nodeModel instanceof TemplateNodeInfo) {
+        if (nodeModel != null) {
+            if (nodeModel instanceof TemplateNode || nodeModel instanceof TemplateNodeInfo) {
                 // everything is cool
-            } else if(nodeModel instanceof NodeRef) {
+            } else if (nodeModel instanceof NodeRef) {
                 nodeModel = newTemplateNode((NodeRef) nodeModel);
-            } else if(nodeModel instanceof String) {
+            } else if (nodeModel instanceof String) {
                 nodeModel = newTemplateNode(new NodeRef((String) nodeModel));
-            } else if(nodeModel instanceof ScriptNode) {
-                nodeModel = newTemplateNode(((ScriptNode)nodeModel).getNodeRef());
-            } else if(nodeModel instanceof Map) {
-                Map<QName, Object> attributes = RepoUtils.convertStringMapToQNameMap((Map<?,?>) nodeModel, namespaceService);
+            } else if (nodeModel instanceof ScriptNode) {
+                nodeModel = newTemplateNode(((ScriptNode) nodeModel).getNodeRef());
+            } else if (nodeModel instanceof Map) {
+                Map<QName, Object> attributes = RepoUtils.convertStringMapToQNameMap((Map<?, ?>) nodeModel,
+                        namespaceService);
                 NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo(attributes);
                 nodeModel = new TemplateNodeInfo(nodeInfo, serviceRegistry, null);
             }
             model.put(KEY_NODE, nodeModel);
         }
-        
+
         // special processing for 'count' entry
         Object count = model.get(KEY_COUNT);
-        if(count == null) {
-            
+        if (count == null) {
+
             String commonTemplate = getTemplatePart(template, CounterModel.PROP_COMMON_TEMPLATE, "");
             String counterTemplate = getTemplatePart(template, CounterModel.PROP_COUNTER_TEMPLATE, null);
             String initialValueTemplate = getTemplatePart(template, CounterModel.PROP_INITIAL_VALUE_TEMPLATE, "1");
-            
-            String counterName = templateService.processTemplateString(FREEMARKER_PROCESSOR, 
+
+            String counterName = templateService.processTemplateString(FREEMARKER_PROCESSOR,
                     commonTemplate + counterTemplate, model);
-            
+
             // if counter is new and we have initialValueTemplate
             // we should apply it
-            if(counterService.getCounterLast(counterName) == null) {
-        
-                String initialValueString = templateService.processTemplateString(FREEMARKER_PROCESSOR, 
+            if (counterService.getCounterLast(counterName) == null) {
+
+                String initialValueString = templateService.processTemplateString(FREEMARKER_PROCESSOR,
                         commonTemplate + initialValueTemplate, model);
-        
+
                 // parse this into long
                 long initialValue;
                 try {
                     initialValue = Long.parseLong(initialValueString);
-                } catch(NumberFormatException e) {
-                    throw new EnumerationException("Initial value evaluated to non-integer: '" + 
+                } catch (NumberFormatException e) {
+                    throw new EnumerationException("Initial value evaluated to non-integer: '" +
                             initialValueString + "' (template " + initialValueTemplate + ")", e);
                 }
-        
+
                 // set the value to initialValue - 1, so that next value = initialValue
                 counterService.setCounterLast(counterName, initialValue - 1);
             }
-        
+
             // get next number from counter
             count = counterService.getCounterNext(counterName, true);
             model.put(KEY_COUNT, count);
         }
-        
+
         return model;
     }
 
     private String getTemplatePart(NodeRef template, QName partName, String defaultValue) {
         String templatePart = (String) nodeService.getProperty(template, partName);
         templatePart = templatePart != null ? Utils.restoreFreemarkerVariables(templatePart) : defaultValue;
-        if(templatePart == null) {
-            throw new IllegalStateException("Template part '" + partName.getLocalName() + "' is not specified " + 
+        if (templatePart == null) {
+            throw new IllegalStateException("Template part '" + partName.getLocalName() + "' is not specified " +
                     "in autonumber template '" + template + "'");
         }
         return templatePart;
@@ -258,7 +255,7 @@ public class EnumerationServiceImpl implements EnumerationService
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.counterService = (CounterService) serviceRegistry.getService(CiteckServices.COUNTER_SERVICE);
-        this.exceptionService = (ExceptionService)serviceRegistry.getService(CiteckServices.EXCEPTION_SERVICE);
+        this.exceptionService = (ExceptionService) serviceRegistry.getService(CiteckServices.EXCEPTION_SERVICE);
         this.nodeInfoFactory = (NodeInfoFactory) serviceRegistry.getService(CiteckServices.NODE_INFO_FACTORY);
     }
 
