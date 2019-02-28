@@ -941,6 +941,16 @@
         </property>
     </bean>
 
+    <bean id="idocs.createPersonalDocumentsForCreatedPersonBehaviour"
+          class="ru.citeck.ecos.behavior.authority.CreatePersonalDocumentsForCreatedPersonBehaviour">
+        <property name="skipPersons">
+            <list>
+                <value>System</value>
+                <value>guest</value>
+            </list>
+        </property>
+    </bean>
+
     <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
           class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
 

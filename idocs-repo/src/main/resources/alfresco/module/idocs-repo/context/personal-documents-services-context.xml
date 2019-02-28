@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+    <bean id="PersonalDocumentsService" class="ru.citeck.ecos.personal.PersonalDocumentsServiceImpl">
+        <property name="nodeService" ref="NodeService"/>
+        <!-- TODO: Путь к папке с личными делами:
+                    /app:company_home/st:sites/cm:personal-documents/cm:documentLibrary/cm:personal-documents
+        -->
+    </bean>
+
+</beans>

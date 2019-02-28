@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-9-0" abstract="true" parent="idocs.import-spaces">
+        <property name="sinceVersion" value="3.9.0" />
+        <property name="appliesFromVersion" value="3.9.0" />
+    </bean>
+
+    <bean id="idocs.import-scripts.3-9-0" abstract="true" parent="idocs.import-scripts">
+        <property name="sinceVersion" value="3.9.0" />
+        <property name="appliesFromVersion" value="3.9.0" />
+    </bean>
+
+    <bean id="idocs.site.personal-documents-site-import" parent="idocs.import-spaces.3-9-0">
+        <property name="name" value="personal-documents-site" />
+        <property name="description" value="Personal documents site" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.script.check-app-share" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/site.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/site/personal-documents-site</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.personal-documents-folder" parent="idocs.import-spaces.3-9-0">
+        <property name="name" value="personal-documents-folder" />
+        <property name="description" value="Personal documents folder" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.site.personal-documents-site-import"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:personal-documents/cm:documentLibrary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/folders/personal-documents</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>
