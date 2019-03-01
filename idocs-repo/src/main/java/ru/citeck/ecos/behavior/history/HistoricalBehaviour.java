@@ -73,6 +73,8 @@ public class HistoricalBehaviour implements
 		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
 		eventProperties.put(HistoryModel.PROP_NAME, NODE_CREATED);
 		eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeRef);
+		Serializable initiator = nodeService.getProperty(nodeRef, ContentModel.PROP_CREATOR);
+		eventProperties.put(HistoryModel.ASSOC_INITIATOR, initiator);
 		historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 	}
 
