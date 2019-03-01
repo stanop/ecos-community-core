@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import _ from 'underscore';
 import SearchDropdown from './search-dropdown';
 import SearchAutocomplete from './search-autocomplete';
 import ClickOutside from '../../common/components/click-outside';
@@ -10,8 +11,6 @@ import {
     fetchMoreAutocompleteDocuments
 } from '../actions';
 import { t, generateSearchTerm } from '../../common/util';
-
-const _ = window._;
 
 const mapStateToProps = state => ({
     autocompleteIsVisible: state.search.autocomplete.isVisible
