@@ -1,7 +1,7 @@
 package ru.citeck.ecos.eform;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JsUtils;
 

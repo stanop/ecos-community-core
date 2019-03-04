@@ -124,17 +124,17 @@ public class GraphQLServiceImpl implements GraphQLService {
         return result;
     }
 
-    public GqlContext getGqlContext() {
+    public AlfGqlContext getGqlContext() {
         AlfrescoTransactionSupport.TxnReadState readState = AlfrescoTransactionSupport.getTransactionReadState();
-        GqlContext context;
+        AlfGqlContext context;
         if (AlfrescoTransactionSupport.TxnReadState.TXN_READ_ONLY.equals(readState)) {
             context = AlfrescoTransactionSupport.getResource(TXN_GQL_CONTEXT_KEY);
             if (context == null) {
-                context = new GqlContext(serviceRegistry);
+                context = new AlfGqlContext(serviceRegistry);
                 AlfrescoTransactionSupport.bindResource(TXN_GQL_CONTEXT_KEY, context);
             }
         } else {
-            context = new GqlContext(serviceRegistry);
+            context = new AlfGqlContext(serviceRegistry);
         }
         return context;
     }

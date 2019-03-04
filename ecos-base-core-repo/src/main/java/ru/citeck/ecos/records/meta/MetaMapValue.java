@@ -1,9 +1,11 @@
-package ru.citeck.ecos.graphql.meta.value;
+package ru.citeck.ecos.records.meta;
 
-import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.MetaUtils;
+import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class MetaMapValue implements MetaValue {
 
@@ -16,9 +18,8 @@ public class MetaMapValue implements MetaValue {
     }
 
     @Override
-    public MetaValue init(GqlContext context) {
+    public <T extends GqlContext> void init(T context) {
         this.context = context;
-        return this;
     }
 
     @Override
@@ -41,3 +42,4 @@ public class MetaMapValue implements MetaValue {
         this.attributes = attributes;
     }
 }
+

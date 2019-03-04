@@ -12,9 +12,9 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.records2.graphql.GqlContext;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,11 +23,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class GqlContext {
+public class AlfGqlContext extends GqlContext {
 
     private LoadingCache<NodeRef, GqlAlfNode> nodes;
     private LoadingCache<Object, Optional<GqlQName>> qnames;
-    private List<?> metaValues;
 
     private final ServiceRegistry serviceRegistry;
 
@@ -42,7 +41,7 @@ public class GqlContext {
 
     private final Map<String, Object> servicesCache = new ConcurrentHashMap<>();
 
-    public GqlContext(ServiceRegistry serviceRegistry) {
+    public AlfGqlContext(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.namespaceService = serviceRegistry.getNamespaceService();
@@ -112,14 +111,6 @@ public class GqlContext {
             result = Optional.empty();
         }
         return result;
-    }
-
-    public List<?> getMetaValues() {
-        return metaValues;
-    }
-
-    public void setMetaValues(List<?> metaValues) {
-        this.metaValues = metaValues;
     }
 
     public SearchService getSearchService() {

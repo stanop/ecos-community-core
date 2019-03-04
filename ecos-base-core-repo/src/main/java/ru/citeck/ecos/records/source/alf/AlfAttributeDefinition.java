@@ -7,7 +7,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
-import ru.citeck.ecos.records.source.MetaAttributeDef;
+import ru.citeck.ecos.records2.source.MetaAttributeDef;
 
 public class AlfAttributeDefinition implements MetaAttributeDef {
 

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.json.mixin.NodeRefMixIn;
 import ru.citeck.ecos.utils.json.mixin.QNameMixIn;
 
@@ -24,7 +25,7 @@ public class RecordsGroupActionPost extends AbstractWebScript {
     private static final Log logger = LogFactory.getLog(RecordsGroupActionPost.class);
 
     private ObjectMapper objectMapper = new ObjectMapper();
-    private RecordsService recordsService;
+    private RecordsServiceImpl recordsService;
 
     @PostConstruct
     public void init() {
@@ -63,7 +64,7 @@ public class RecordsGroupActionPost extends AbstractWebScript {
     }
 
     @Autowired
-    public void setRecordsService(RecordsService recordsService) {
+    public void setRecordsService(RecordsServiceImpl recordsService) {
         this.recordsService = recordsService;
     }
 

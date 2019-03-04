@@ -67,6 +67,7 @@
 
         <flowable.version>6.4.1</flowable.version>
         <ecos.flowable.version>1.5.0-SNAPSHOT</ecos.flowable.version>
+        <ecos.records.version>1.0.0-SNAPSHOT</ecos.records.version>
 
         <web.compression.skip>false</web.compression.skip>
     </properties>
@@ -535,6 +536,13 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-graphql-repo</artifactId>
                 <version>${project.parent.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-records</artifactId>
+                <version>${ecos.records.version}</version>
                 <scope>provided</scope>
             </dependency>
 

@@ -35,7 +35,6 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ScriptableObject;
-import ru.citeck.ecos.records.RecordRef;
 
 public class JavaScriptImplUtils {
 

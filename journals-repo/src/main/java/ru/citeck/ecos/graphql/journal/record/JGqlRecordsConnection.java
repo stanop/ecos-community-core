@@ -1,7 +1,7 @@
 package ru.citeck.ecos.graphql.journal.record;
 
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
 import java.util.Collections;
 import java.util.List;

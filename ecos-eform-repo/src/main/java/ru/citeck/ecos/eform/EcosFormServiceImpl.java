@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.eform.model.EcosFormModel;
 import ru.citeck.ecos.eform.provider.FormProvider;
 import ru.citeck.ecos.eform.provider.MutableFormProvider;
-import ru.citeck.ecos.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.records.RecordConstants;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.RecordsService;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 
 import java.util.*;
 
