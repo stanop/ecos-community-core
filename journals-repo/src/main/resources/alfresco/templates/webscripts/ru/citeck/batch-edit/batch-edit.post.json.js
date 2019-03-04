@@ -30,6 +30,10 @@ const STATUS_SKIPPED = "STATUS_SKIPPED";
     statuses = statuses.join(",");
 
     var changeResult = groupActions.forEach(nodes, function(nodeStr) {
+        var splitedNode = nodeStr.split("@");
+        if(splitedNode.length > 1){
+            nodeStr = splitedNode[1]; // This is necessary because search.findNode does not work with RecordRef's (returns null)
+        }
 
         var node = search.findNode(nodeStr);
 
