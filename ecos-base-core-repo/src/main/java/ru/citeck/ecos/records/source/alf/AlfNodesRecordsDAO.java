@@ -338,8 +338,15 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     @Override
     public List<MetaValue> getMetaValues(List<RecordRef> recordRef) {
         return recordRef.stream()
-                        .map(AlfNodeRecord::new)
+                        .map(this::createMetaValue)
                         .collect(Collectors.toList());
+    }
+
+    private MetaValue createMetaValue(RecordRef recordRef) {
+        if (recordRef == RecordRef.EMPTY) {
+            return new EmptyAlfNode();
+        }
+        return new AlfNodeRecord(recordRef);
     }
 
     @Override
