@@ -33,13 +33,14 @@ public class SetInitiatorStartProcessListener extends AbstractExecutionListener 
 
     private NodeService nodeService;
     private PersonService personService;
+	private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
     @Override
     protected void notifyImpl(DelegateExecution delegateExecution) throws Exception {
 		Object setInitiator = delegateExecution.getVariable("cwf_setInitiator");
 		if (Boolean.TRUE.equals((Boolean)setInitiator))
 		{
-			NodeRef docRef = ListenerUtils.getDocument(delegateExecution, nodeService);
+			NodeRef docRef = documentResolverRegistry.getResolver(delegateExecution).getDocument(delegateExecution);
 			if (docRef == null)
 				return;
 			String docCreatorUserName = (String)nodeService.getProperty(docRef, ContentModel.PROP_CREATOR);
@@ -55,6 +56,7 @@ public class SetInitiatorStartProcessListener extends AbstractExecutionListener 
     protected void initImpl() {
         this.nodeService = serviceRegistry.getNodeService();
         this.personService = serviceRegistry.getPersonService();
+		documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
     }
 
 }

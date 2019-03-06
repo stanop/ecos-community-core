@@ -18,6 +18,7 @@
  */
 package ru.citeck.ecos.workflow.listeners;
 
+import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.VariableScope;
 import org.activiti.engine.task.IdentityLink;
@@ -26,10 +27,13 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.workflow.WorkflowConstants;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.workflow.WorkflowDefinition;
+import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.utils.ReflectionUtils;
@@ -38,6 +42,7 @@ import java.util.*;
 
 public class ListenerUtils {
 
+    public static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
     public static final String VAR_PACKAGE = "bpm_package";
     public static final String VAR_ATTACHMENTS = "cwf_taskAttachments";
 
@@ -50,12 +55,37 @@ public class ListenerUtils {
         return (NodeRef) task.getProperties().get(WorkflowModel.TYPE_PACKAGE);
     }
 
+    public static Object tryGetProcessDefinitionId(DelegateExecution execution) {
+        return ReflectionUtils.callGetterIfDeclared(execution, "getProcessDefinitionId", null);
+    }
+
+    public static WorkflowDefinition tryGetWorkflowDefinition(DelegateExecution execution, WorkflowService workflowService) {
+        WorkflowDefinition workflowDefinition = null;
+        Object workflowDefinitionId = tryGetProcessDefinitionId(execution);
+        if (workflowDefinitionId != null) {
+            workflowDefinition = workflowService.getDefinitionById(ACTIVITI_PREFIX + workflowDefinitionId);
+        }
+        return workflowDefinition;
+    }
+
+    /**
+     * @deprecated use bean WorkflowDocumentResolverRegistry
+     */
+    @Deprecated
     public static NodeRef getDocument(VariableScope execution, NodeService nodeService) {
         NodeRef wfPackage = getWorkflowPackage(execution);
+        return getDocumentByPackage(wfPackage, nodeService);
+    }
+
+    /**
+     * @deprecated use bean WorkflowDocumentResolverRegistry
+     */
+    @Deprecated
+    public static NodeRef getDocumentByPackage(NodeRef wfPackage, NodeService nodeService) {
         if(!nodeService.exists(wfPackage)) {
             return null;
         }
-        
+
         List<ChildAssociationRef> childAssocs;
         childAssocs = nodeService.getChildAssocs(wfPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
         if(childAssocs.size() > 0) {

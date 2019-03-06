@@ -18,12 +18,10 @@
  */
 package ru.citeck.ecos.workflow.listeners;
 
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.impl.context.Context;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-
 import ru.citeck.ecos.lifecycle.LifeCycleService;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.workflow.utils.ActivitiVariableScopeMap;
@@ -35,14 +33,14 @@ import ru.citeck.ecos.workflow.utils.ActivitiVariableScopeMap;
 public class LifeCycleEndProcessListener extends AbstractExecutionListener {
 
     private LifeCycleService lifeCycleService;
-    private NodeService nodeService;
+    private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
     @Override
     protected void notifyImpl(final DelegateExecution delegateExecution) throws Exception {
 		AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
             @Override
             public Object doWork() throws Exception {
-        NodeRef docRef = ListenerUtils.getDocument(delegateExecution, nodeService);
+        NodeRef docRef = documentResolverRegistry.getResolver(delegateExecution).getDocument(delegateExecution);
         if(docRef == null) {return null;}
         String definitionId = "activiti$" + Context.getExecutionContext().getProcessDefinition().getKey();
         lifeCycleService.doTransitionOnEndProcess(docRef, definitionId, 
@@ -54,8 +52,8 @@ public class LifeCycleEndProcessListener extends AbstractExecutionListener {
 
     @Override
     protected void initImpl() {
-        this.nodeService = serviceRegistry.getNodeService();
         this.lifeCycleService = (LifeCycleService) serviceRegistry.getService(CiteckServices.LIFECYCLE_SERVICE);
+        documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
     }
 
 }

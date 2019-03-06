@@ -45,6 +45,7 @@ public class FillDocumentPropertiesFromTask extends AbstractTaskListener
 
     private NodeService nodeService;
     private WorkflowQNameConverter qNameConverter;
+	private WorkflowDocumentResolverRegistry documentResolverRegistry;
     private Map<String,String> propertiesList;
     private Map<String,String> assocsList;
     private Map<String,String> childAssocsList;
@@ -53,7 +54,8 @@ public class FillDocumentPropertiesFromTask extends AbstractTaskListener
     protected void initImpl() {
         this.nodeService = serviceRegistry.getNodeService();
         this.qNameConverter = new WorkflowQNameConverter(serviceRegistry.getNamespaceService());
-    }
+		documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
+	}
 
     @Override
     protected void notifyImpl(final DelegateTask task) {
@@ -63,7 +65,7 @@ public class FillDocumentPropertiesFromTask extends AbstractTaskListener
 				final WorkflowTask wfTask = serviceRegistry.getWorkflowService().getTaskById("activiti$"+task.getId());
 				if(wfTask!=null && wfTask.getName()!=null && wfTask.getName().equals(taskName))
 				{
-					NodeRef docRef = ListenerUtils.getDocument(task.getExecution(), nodeService);
+					NodeRef docRef = documentResolverRegistry.getResolver(task.getExecution()).getDocument(task.getExecution());
 					if(nodeService.exists(docRef))
 					{
 						if(propertiesList!=null)

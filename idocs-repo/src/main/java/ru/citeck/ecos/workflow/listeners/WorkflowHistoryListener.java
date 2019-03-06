@@ -18,41 +18,35 @@
  */
 package ru.citeck.ecos.workflow.listeners;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.workflow.WorkflowConstants;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
-import org.alfresco.repo.workflow.activiti.ActivitiConstants;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowDefinition;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
-
+import ru.citeck.ecos.history.HistoryService;
 import ru.citeck.ecos.model.HistoryModel;
 import ru.citeck.ecos.service.CiteckServices;
-import ru.citeck.ecos.utils.ReflectionUtils;
-import ru.citeck.ecos.history.HistoryService;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WorkflowHistoryListener extends AbstractExecutionListener {
 
 	private static final Log logger = LogFactory.getLog(WorkflowHistoryListener.class);
 	
-	private static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
+	private static final String ACTIVITI_PREFIX = ListenerUtils.ACTIVITI_PREFIX;
 	private static final Map<String, String> eventNames;
 	
 	static {
@@ -65,8 +59,9 @@ public class WorkflowHistoryListener extends AbstractExecutionListener {
 	private HistoryService historyService;
 	private NamespaceService namespaceService;
 	private WorkflowService workflowService;
+	private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
-	private String VAR_PACKAGE, VAR_DESCRIPTION;
+	private String VAR_COMMENT, VAR_DESCRIPTION;
 	
 	/* (non-Javadoc)
 	 * @see ru.citeck.ecos.workflow.listeners.AbstractExecutionListener#notifyImpl(org.activiti.engine.delegate.DelegateExecution)
@@ -94,30 +89,28 @@ public class WorkflowHistoryListener extends AbstractExecutionListener {
 		
 		// workflow definition
 		WorkflowDefinition workflowDefinition = null;
-		Object workflowDefinitionId = ReflectionUtils.callGetterIfDeclared(execution, "getProcessDefinitionId", null);
-		if(workflowDefinitionId != null) {
-			workflowDefinition = workflowService.getDefinitionById(ACTIVITI_PREFIX + workflowDefinitionId);
-			if(workflowDefinition == null) {
+		Object workflowDefinitionId = ListenerUtils.tryGetProcessDefinitionId(execution);
+		if (workflowDefinitionId != null) {
+			workflowDefinition = ListenerUtils.tryGetWorkflowDefinition(execution, workflowService);
+			if (workflowDefinition == null) {
 				logger.warn("Unknown workflow definition: " + workflowDefinitionId);
 				return;
 			}
 		}
 		
 		// document
-		NodeRef document = null;
-		NodeRef wfPackage = ((ScriptNode) execution.getVariable(VAR_PACKAGE)).getNodeRef();
-		if(wfPackage != null) {
-			List<ChildAssociationRef> packageAssocs = nodeService.getChildAssocs(wfPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
-			if(packageAssocs != null && packageAssocs.size() > 0) {
-				document = packageAssocs.get(0).getChildRef();
-			}
+		String workflowDefinitionName = null;
+		if (workflowDefinition != null) {
+			workflowDefinitionName = workflowDefinition.getName();
 		}
+		NodeRef document = documentResolverRegistry.getResolver(workflowDefinitionName).getDocument(execution);
 
 		// persist it
 		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(5);
 		eventProperties.put(HistoryModel.PROP_NAME, eventName);
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ACTIVITI_PREFIX + execution.getProcessInstanceId());
 		eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) execution.getVariable(VAR_DESCRIPTION));
+		eventProperties.put(HistoryModel.PROP_TASK_COMMENT, (Serializable) execution.getVariable(VAR_COMMENT));
 		if(workflowDefinition != null) {
 			eventProperties.put(HistoryModel.PROP_WORKFLOW_TYPE, workflowDefinition.getName());
 		}
@@ -126,16 +119,17 @@ public class WorkflowHistoryListener extends AbstractExecutionListener {
 		eventProperties.put(HistoryModel.ASSOC_DOCUMENT, document);
 		historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, eventProperties);
 	}
-	
+
 	@Override
 	protected void initImpl() {
 		historyService = (HistoryService) serviceRegistry.getService(CiteckServices.HISTORY_SERVICE);
 		nodeService = serviceRegistry.getNodeService();
 		namespaceService = serviceRegistry.getNamespaceService();
 		workflowService = serviceRegistry.getWorkflowService();
+		documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
 		
 		WorkflowQNameConverter qNameConverter = new WorkflowQNameConverter(namespaceService);
-		VAR_PACKAGE = qNameConverter.mapQNameToName(WorkflowModel.ASSOC_PACKAGE);
+		VAR_COMMENT = qNameConverter.mapQNameToName(WorkflowModel.PROP_COMMENT);
 		VAR_DESCRIPTION = qNameConverter.mapQNameToName(WorkflowModel.PROP_WORKFLOW_DESCRIPTION);
 	}
 

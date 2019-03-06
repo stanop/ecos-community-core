@@ -27,10 +27,11 @@ import ru.citeck.ecos.model.CiteckWorkflowModel;
 public class SetPriorityWorkflowListener extends AbstractExecutionListener {
 
 	private NodeService nodeService;
+	private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
 	@Override
 	protected void notifyImpl(DelegateExecution execution) throws Exception {
-		NodeRef docRef = ListenerUtils.getDocument(execution, nodeService);
+		NodeRef docRef = documentResolverRegistry.getResolver(execution).getDocument(execution);
 		if (docRef == null)
 			return;
 
@@ -54,4 +55,8 @@ public class SetPriorityWorkflowListener extends AbstractExecutionListener {
 		this.nodeService = nodeService;
 	}
 
+	@Override
+	protected void initImpl() {
+		documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
+	}
 }

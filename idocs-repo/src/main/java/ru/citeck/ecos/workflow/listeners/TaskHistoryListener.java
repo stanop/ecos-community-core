@@ -21,7 +21,6 @@ package ru.citeck.ecos.workflow.listeners;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
-import org.activiti.engine.task.TaskQuery;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
@@ -74,7 +73,8 @@ public class TaskHistoryListener extends AbstractTaskListener {
 
 	private WorkflowQNameConverter qNameConverter;
 	private String VAR_OUTCOME_PROPERTY_NAME, VAR_COMMENT, VAR_DESCRIPTION;
-	
+	private WorkflowDocumentResolverRegistry documentResolverRegistry;
+
 	/* (non-Javadoc)
 	 * @see ru.citeck.ecos.workflow.listeners.AbstractTaskListener#notifyImpl(org.activiti.engine.delegate.DelegateTask)
 	 */
@@ -86,7 +86,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
 			logger.warn("Unsupported activiti task event: " + task.getEventName());
 			return;
 		}
-        NodeRef document = ListenerUtils.getDocument(task.getExecution(), nodeService);
+		NodeRef document = documentResolverRegistry.getResolver(task.getExecution()).getDocument(task.getExecution());
 
 		Map<QName, Serializable> eventProperties = new HashMap<>();
 		// task type
@@ -261,7 +261,8 @@ public class TaskHistoryListener extends AbstractTaskListener {
 		deputyService = (DeputyService) serviceRegistry.getService(CiteckServices.DEPUTY_SERVICE);
 		caseRoleService = (CaseRoleService) serviceRegistry.getService(QName.createQName("", "caseRoleService"));
 		workflowService = serviceRegistry.getWorkflowService();
-		
+		documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
+
 		qNameConverter = new WorkflowQNameConverter(namespaceService);
 		VAR_OUTCOME_PROPERTY_NAME = qNameConverter.mapQNameToName(WorkflowModel.PROP_OUTCOME_PROPERTY_NAME);
 		VAR_COMMENT = qNameConverter.mapQNameToName(WorkflowModel.PROP_COMMENT);
