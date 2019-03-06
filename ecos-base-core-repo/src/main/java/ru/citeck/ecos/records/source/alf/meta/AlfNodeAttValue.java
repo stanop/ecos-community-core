@@ -2,6 +2,7 @@ package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
@@ -14,17 +15,25 @@ import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
 import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.utils.DictUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class AlfNodeAttValue implements MetaValue {
 
+    private Attribute att;
+
     private Object rawValue;
     private GqlAlfNode alfNode;
     private GqlQName qName;
 
     private AlfGqlContext context;
+
+    public AlfNodeAttValue(Attribute att, Object value) {
+        this.att = att;
+        this.rawValue = value;
+    }
 
     public AlfNodeAttValue(Object value) {
         this.rawValue = value;
@@ -54,6 +63,22 @@ public class AlfNodeAttValue implements MetaValue {
             return qName.shortName();
         }
         return null;
+    }
+
+    @Override
+    public String getDisplayName() {
+
+        if (rawValue instanceof String && att != null && att.type() == Attribute.Type.PROP) {
+
+            QName name = QName.resolveToQName(context.getNamespaceService(), att.name());
+            if (name != null) {
+
+                DictUtils dictUtils = context.getService(DictUtils.QNAME);
+                return dictUtils.getPropertyDisplayName(name, (String) rawValue);
+            }
+        }
+
+        return getString();
     }
 
     @Override

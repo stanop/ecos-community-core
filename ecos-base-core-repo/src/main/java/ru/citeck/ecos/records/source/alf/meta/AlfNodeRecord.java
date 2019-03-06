@@ -138,7 +138,7 @@ public class AlfNodeRecord implements MetaValue {
                 if (attribute == null) {
                     attribute = nodeAtt.getValues()
                                        .stream()
-                                       .map(this::toAlfNodeAtt)
+                                       .map(v -> toAlfNodeAtt(nodeAtt, v))
                                        .collect(Collectors.toList());
                 }
         }
@@ -149,6 +149,12 @@ public class AlfNodeRecord implements MetaValue {
     @Override
     public MetaEdge getEdge(String name) {
         return new AlfNodeMetaEdge(context, name, this);
+    }
+
+    private MetaValue toAlfNodeAtt(Attribute att, Object value) {
+        MetaValue result = new AlfNodeAttValue(att, value);
+        result.init(context);
+        return result;
     }
 
     private MetaValue toAlfNodeAtt(Object value) {

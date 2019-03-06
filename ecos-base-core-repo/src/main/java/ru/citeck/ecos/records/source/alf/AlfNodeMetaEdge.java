@@ -1,7 +1,6 @@
 package ru.citeck.ecos.records.source.alf;
 
 import lombok.Getter;
-import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -11,15 +10,18 @@ import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.EdgeOption;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records2.graphql.meta.value.SimpleMetaEdge;
+import ru.citeck.ecos.utils.DictUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AlfNodeMetaEdge extends SimpleMetaEdge {
 
     private DictionaryService dictionaryService;
     private NamespaceService namespaceService;
     private MessageService messageService;
+    private DictUtils dictUtils;
 
     @Getter(lazy = true)
     private final ClassAttributeDefinition definition = evalDefinition();
@@ -31,6 +33,7 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
         dictionaryService = context.getDictionaryService();
         namespaceService = context.getNamespaceService();
         messageService = context.getMessageService();
+        dictUtils = context.getService(DictUtils.QNAME);
     }
 
     @Override
@@ -40,25 +43,14 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
 
         if (definition instanceof PropertyDefinition) {
 
-            List<ConstraintDefinition> constraints = ((PropertyDefinition) definition).getConstraints();
+            Map<String, String> mapping = dictUtils.getPropertyDisplayNameMapping(definition.getName());
 
-            for (ConstraintDefinition constraintDef : constraints) {
-
-                Constraint constraint = constraintDef.getConstraint();
-
-                if (constraint instanceof ListOfValuesConstraint) {
-
-                    List<EdgeOption> options = new ArrayList<>();
-                    ListOfValuesConstraint constraintList = (ListOfValuesConstraint) constraint;
-
-                    for (String value : constraintList.getAllowedValues()) {
-
-                        String display = constraintList.getDisplayLabel(value, messageService);
-                        options.add(new EdgeOption(display, value));
-                    }
-
-                    return options;
-                }
+            if (mapping != null && mapping.size() > 0) {
+                List<EdgeOption> options = new ArrayList<>();
+                mapping.forEach((value, title) -> {
+                    options.add(new EdgeOption(title, value));
+                });
+                return options;
             }
         }
 
