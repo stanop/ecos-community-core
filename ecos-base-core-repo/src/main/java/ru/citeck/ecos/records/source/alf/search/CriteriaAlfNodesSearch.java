@@ -6,11 +6,11 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.request.query.SortBy;
 import ru.citeck.ecos.search.*;
 
 import java.util.Date;
@@ -80,7 +80,7 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
 
         result.setRecords(criteriaResults.getResults()
                                          .stream()
-                                         .map(RecordRef::new)
+                                         .map(r -> RecordRef.valueOf(r.toString()))
                                          .collect(Collectors.toList()));
         result.setTotalCount(criteriaResults.getTotalCount());
         result.setHasMore(criteriaResults.hasMore());

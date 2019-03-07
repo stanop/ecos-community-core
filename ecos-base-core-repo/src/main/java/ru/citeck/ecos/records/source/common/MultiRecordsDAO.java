@@ -6,15 +6,16 @@ import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsUtils;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.source.dao.AbstractRecordsDAO;
 import ru.citeck.ecos.records.source.dao.RecordsActionExecutor;
-import ru.citeck.ecos.records.source.dao.RecordsQueryDAO;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.source.dao.AbstractRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.RecordsQueryDAO;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

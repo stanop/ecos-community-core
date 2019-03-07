@@ -38,6 +38,12 @@
             <artifactId>ecos-graphql-repo</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ecos-records</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

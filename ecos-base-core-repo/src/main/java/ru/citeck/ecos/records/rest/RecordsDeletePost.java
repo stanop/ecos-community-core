@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.request.delete.RecordsDeletion;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.records2.request.delete.RecordsDeletion;
 
 import java.io.IOException;
 

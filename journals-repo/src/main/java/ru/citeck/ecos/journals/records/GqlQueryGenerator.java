@@ -8,8 +8,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.AttributeModel;
-import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.source.MetaAttributeDef;
+import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.records2.source.MetaAttributeDef;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

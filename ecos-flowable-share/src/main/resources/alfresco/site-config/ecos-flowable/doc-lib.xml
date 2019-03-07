@@ -10,7 +10,7 @@
 
         <actions>
 
-            <action id="deploy-ecos-bpm-process" label="actions.deploy-ecos-bpm-process" icon="document-copy-to" type="javascript">
+            <action id="deploy-ecos-bpm-process" label="actions.deploy-ecos-bpm-process" icon="document-approve" type="javascript">
                 <param name="function">onActionDeployBpmProcess</param>
                 <evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
                 <evaluator>evaluator.doclib.action.isEcosBpmProcessModel</evaluator>

@@ -63,16 +63,7 @@ public class CheckListsTaskListener extends AbstractServiceProvider implements T
     }
 
     private boolean processEnabledState(VariableScope variableScope) {
-        if (checkEnabled == null) {
-            return Boolean.TRUE;
-        }
-
-        final String expText = checkEnabled.getExpressionText();
-        if (Boolean.TRUE.toString().equals(expText) || Boolean.FALSE.toString().equals(expText)) {
-            return Boolean.valueOf(expText);
-        }
-
-        return (boolean) checkEnabled.getValue(variableScope);
+        return FlowableListenerUtils.getBooleanFromExpressionOrDefault(checkEnabled, variableScope, true);
     }
 
     public void setCheckEnabled(Expression checkEnabled) {

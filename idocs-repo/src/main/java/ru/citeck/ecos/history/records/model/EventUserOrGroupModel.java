@@ -1,7 +1,7 @@
 package ru.citeck.ecos.history.records.model;
 
 import org.alfresco.service.cmr.repository.NodeRef;
-import ru.citeck.ecos.graphql.meta.annotation.MetaAtt;
+import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 
 public class EventUserOrGroupModel {
 

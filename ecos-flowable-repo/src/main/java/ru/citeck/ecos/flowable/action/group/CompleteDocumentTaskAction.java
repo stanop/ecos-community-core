@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.action.group.impl.TxnGroupAction;
-import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.AuthorityUtils;
 
 import java.io.IOException;

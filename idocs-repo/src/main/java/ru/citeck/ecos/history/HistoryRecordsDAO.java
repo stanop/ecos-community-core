@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records.meta.value.MetaJsonNodeValue;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.source.dao.local.LocalRecordsDAO;
-import ru.citeck.ecos.records.source.dao.local.RecordsQueryWithMetaLocalDAO;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.local.RecordsQueryWithMetaLocalDAO;
 import ru.citeck.ecos.webscripts.history.DocumentHistoryGet;
 
 import java.util.List;

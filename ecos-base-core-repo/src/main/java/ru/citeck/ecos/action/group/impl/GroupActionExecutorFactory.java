@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.transaction.TransactionService;
 import ru.citeck.ecos.action.group.*;
-import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records2.RecordRef;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -96,7 +96,7 @@ public class GroupActionExecutorFactory implements GroupActionFactory<RecordRef>
             results.forEach((ref, res) -> {
                 RecordRef recordRef = recordsMapping.get(ref);
                 if (recordRef == null) {
-                    recordRef = new RecordRef(ref);
+                    recordRef = new RecordRef(ref.toString());
                 }
                 output.add(new ActionResult<>(recordRef, res));
             });

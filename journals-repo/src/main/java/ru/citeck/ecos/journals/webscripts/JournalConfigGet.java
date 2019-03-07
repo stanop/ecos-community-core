@@ -25,8 +25,8 @@ import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
-import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.source.MetaAttributeDef;
+import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.records2.source.MetaAttributeDef;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.server.utils.Utils;
 import ru.citeck.ecos.utils.NodeUtils;
@@ -122,6 +122,7 @@ public class JournalConfigGet extends AbstractWebScript {
         response.setColumns(columns);
         response.setMeta(getJournalMeta(journalId));
         response.setSourceId(sourceId);
+        response.setParams(type.getOptions());
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getWriter(), response);
@@ -270,6 +271,7 @@ public class JournalConfigGet extends AbstractWebScript {
         @Getter @Setter String sourceId;
         @Getter @Setter JournalMeta meta;
         @Getter @Setter List<Column> columns;
+        @Getter @Setter Map<String, String> params;
     }
 
     static class JournalMeta {

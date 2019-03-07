@@ -2,49 +2,57 @@ package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.MetaUtils;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.utils.DictUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class AlfNodeAttValue implements MetaValue {
 
+    private Attribute att;
+
     private Object rawValue;
     private GqlAlfNode alfNode;
     private GqlQName qName;
 
-    private GqlContext context;
+    private AlfGqlContext context;
+
+    public AlfNodeAttValue(Attribute att, Object value) {
+        this.att = att;
+        this.rawValue = value;
+    }
 
     public AlfNodeAttValue(Object value) {
         this.rawValue = value;
     }
 
     @Override
-    public MetaValue init(GqlContext context) {
+    public <T extends GqlContext> void init(T context) {
 
-        this.context = context;
+        this.context = (AlfGqlContext) context;
 
         if (rawValue instanceof GqlAlfNode) {
             alfNode = (GqlAlfNode) rawValue;
         } else if (rawValue instanceof NodeRef) {
-            alfNode = context.getNode(rawValue).orElse(null);
+            alfNode = this.context.getNode(rawValue).orElse(null);
         } else if (rawValue instanceof QName) {
-            qName = context.getQName(rawValue).orElse(null);
+            qName = this.context.getQName(rawValue).orElse(null);
         } else if (rawValue instanceof GqlQName) {
             qName = (GqlQName) rawValue;
         }
-
-        return this;
     }
 
     @Override
@@ -55,6 +63,22 @@ public class AlfNodeAttValue implements MetaValue {
             return qName.shortName();
         }
         return null;
+    }
+
+    @Override
+    public String getDisplayName() {
+
+        if (rawValue instanceof String && att != null && att.type() == Attribute.Type.PROP) {
+
+            QName name = QName.resolveToQName(context.getNamespaceService(), att.name());
+            if (name != null) {
+
+                DictUtils dictUtils = context.getService(DictUtils.QNAME);
+                return dictUtils.getPropertyDisplayName(name, (String) rawValue);
+            }
+        }
+
+        return getString();
     }
 
     @Override
@@ -79,12 +103,16 @@ public class AlfNodeAttValue implements MetaValue {
     }
 
     @Override
-    public List<MetaValue> getAttribute(String name) {
+    public Object getAttribute(String name) {
         if (alfNode != null) {
             Attribute attribute = alfNode.attribute(name);
             return attribute.getValues()
                             .stream()
-                            .map(v -> new AlfNodeAttValue(v).init(context))
+                            .map(v -> {
+                                AlfNodeAttValue value = new AlfNodeAttValue(v);
+                                value.init(context);
+                                return value;
+                            })
                             .collect(Collectors.toList());
         } else if (qName != null) {
             return MetaUtils.getReflectionValue(qName, name);

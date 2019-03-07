@@ -2,12 +2,12 @@ package ru.citeck.ecos.graphql.journal.datasource;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
-import ru.citeck.ecos.graphql.meta.value.MetaExplicitValue;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records.meta.MetaExplicitValue;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
 import javax.sql.DataSource;
 import java.sql.ResultSetMetaData;
@@ -20,7 +20,7 @@ public class DbJournalDataSource implements JournalDataSource {
     private String sqlQueryTemplate;
 
     @Override
-    public JGqlRecordsConnection getRecords(GqlContext context,
+    public JGqlRecordsConnection getRecords(AlfGqlContext context,
                                             String query,
                                             String language,
                                             JGqlPageInfoInput pageInfo) {

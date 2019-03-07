@@ -9,16 +9,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
-import ru.citeck.ecos.records.source.dao.local.LocalRecordsDAO;
-import ru.citeck.ecos.records.source.dao.local.RecordsMetaLocalDAO;
-import ru.citeck.ecos.records.source.dao.local.RecordsQueryWithMetaLocalDAO;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
+import ru.citeck.ecos.records2.source.dao.local.RecordsQueryWithMetaLocalDAO;
 import ru.citeck.ecos.utils.AuthorityUtils;
 
 import java.util.ArrayList;
@@ -115,7 +115,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         @Override
-        public MetaValue init(GqlContext context) {
+        public <T extends GqlContext> void init(T context) {
 
             alfNode.init(context);
 
@@ -133,7 +133,6 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                     userName = "";
                 }
             }
-            return this;
         }
 
         @Override

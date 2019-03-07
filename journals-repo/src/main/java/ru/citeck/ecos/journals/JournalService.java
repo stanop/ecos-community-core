@@ -24,9 +24,9 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.journals.invariants.CriterionInvariantsProvider;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.request.result.RecordsResult;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.request.result.RecordsResult;
 
 import java.io.InputStream;
 import java.util.Collection;
@@ -70,9 +70,9 @@ public interface JournalService {
                                              boolean debug);
 
     default RecordsResult<ObjectNode> getRecordsWithData(String journalId,
-                                                 String query,
-                                                 String language,
-                                                 JGqlPageInfoInput pageInfo) {
+                                                         String query,
+                                                         String language,
+                                                         JGqlPageInfoInput pageInfo) {
 
         return getRecordsWithData(journalId, query, language, pageInfo, false);
     }
