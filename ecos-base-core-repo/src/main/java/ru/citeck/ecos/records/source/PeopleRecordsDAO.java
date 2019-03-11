@@ -103,11 +103,11 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         UserValue(String userName) {
             this.userName = userName;
             NodeRef nodeRef = authorityService.getAuthorityNodeRef(userName);
-            alfNode = new AlfNodeRecord(new RecordRef("", nodeRef.toString()));
+            alfNode = new AlfNodeRecord(RecordRef.create("", nodeRef.toString()));
         }
 
         UserValue(NodeRef nodeRef) {
-            this.alfNode = new AlfNodeRecord(new RecordRef("", nodeRef.toString()));
+            this.alfNode = new AlfNodeRecord(RecordRef.create("", nodeRef.toString()));
         }
 
         UserValue(RecordRef recordRef) {
