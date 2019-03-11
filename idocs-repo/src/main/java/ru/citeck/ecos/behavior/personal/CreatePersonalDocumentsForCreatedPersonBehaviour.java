@@ -1,4 +1,4 @@
-package ru.citeck.ecos.behavior.authority;
+package ru.citeck.ecos.behavior.personal;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
@@ -12,9 +12,6 @@ import ru.citeck.ecos.behavior.base.PolicyMethod;
 import ru.citeck.ecos.personal.PersonalDocumentsService;
 import ru.citeck.ecos.utils.RepoUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class CreatePersonalDocumentsForCreatedPersonBehaviour extends AbstractBehaviour
                                                               implements NodeServicePolicies.OnCreateNodePolicy {
 
@@ -24,8 +21,6 @@ public class CreatePersonalDocumentsForCreatedPersonBehaviour extends AbstractBe
 
     @Autowired
     private PersonalDocumentsService personalDocumentsService;
-
-    private List<String> skipPersons = new ArrayList<>();
 
     @Override
     protected void beforeInit() {
@@ -39,14 +34,10 @@ public class CreatePersonalDocumentsForCreatedPersonBehaviour extends AbstractBe
         String personName = RepoUtils.getProperty(childAssocRef.getChildRef(), ContentModel.PROP_USERNAME, String.class,
                 nodeService);
 
-        if (StringUtils.isNoneBlank(personName) && !skipPersons.contains(personName)) {
+        if (StringUtils.isNoneBlank(personName)) {
             logger.info(PERSONAL_DOCUMENTS_DIR_CREATION + personName);
             personalDocumentsService.ensureDirectory(personName);
         }
-    }
-
-    public void setSkipPersons(List<String> skipPersons) {
-        this.skipPersons = skipPersons;
     }
 
 }
