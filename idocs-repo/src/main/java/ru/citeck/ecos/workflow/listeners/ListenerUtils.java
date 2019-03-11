@@ -18,6 +18,7 @@
  */
 package ru.citeck.ecos.workflow.listeners;
 
+import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.VariableScope;
 import org.activiti.engine.task.IdentityLink;
@@ -26,10 +27,13 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.jscript.ScriptNode;
 import org.alfresco.repo.workflow.WorkflowConstants;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.workflow.WorkflowDefinition;
+import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.utils.ReflectionUtils;
@@ -38,6 +42,7 @@ import java.util.*;
 
 public class ListenerUtils {
 
+    public static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
     public static final String VAR_PACKAGE = "bpm_package";
     public static final String VAR_ATTACHMENTS = "cwf_taskAttachments";
 
@@ -50,19 +55,44 @@ public class ListenerUtils {
         return (NodeRef) task.getProperties().get(WorkflowModel.TYPE_PACKAGE);
     }
 
+    public static Object tryGetProcessDefinitionId(DelegateExecution execution) {
+        return ReflectionUtils.callGetterIfDeclared(execution, "getProcessDefinitionId", null);
+    }
+
+    public static WorkflowDefinition tryGetWorkflowDefinition(DelegateExecution execution, WorkflowService workflowService) {
+        WorkflowDefinition workflowDefinition = null;
+        Object workflowDefinitionId = tryGetProcessDefinitionId(execution);
+        if (workflowDefinitionId != null) {
+            workflowDefinition = workflowService.getDefinitionById(ACTIVITI_PREFIX + workflowDefinitionId);
+        }
+        return workflowDefinition;
+    }
+
+    /**
+     * @deprecated use bean WorkflowDocumentResolverRegistry
+     */
+    @Deprecated
     public static NodeRef getDocument(VariableScope execution, NodeService nodeService) {
         NodeRef wfPackage = getWorkflowPackage(execution);
-        if(!nodeService.exists(wfPackage)) {
+        return getDocumentByPackage(wfPackage, nodeService);
+    }
+
+    /**
+     * @deprecated use bean WorkflowDocumentResolverRegistry
+     */
+    @Deprecated
+    public static NodeRef getDocumentByPackage(NodeRef wfPackage, NodeService nodeService) {
+        if (!nodeService.exists(wfPackage)) {
             return null;
         }
-        
+
         List<ChildAssociationRef> childAssocs;
         childAssocs = nodeService.getChildAssocs(wfPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
-        if(childAssocs.size() > 0) {
+        if (childAssocs.size() > 0) {
             return childAssocs.get(0).getChildRef();
         }
         childAssocs = nodeService.getChildAssocs(wfPackage, ContentModel.ASSOC_CONTAINS, RegexQNamePattern.MATCH_ALL);
-        if(childAssocs.size() > 0) {
+        if (childAssocs.size() > 0) {
             return childAssocs.get(0).getChildRef();
         }
         return null;
@@ -70,53 +100,53 @@ public class ListenerUtils {
 
     // get workflow initiator
     public static String getInitiator(VariableScope execution) {
-    	return (String) ((ScriptNode) execution.getVariable(WorkflowConstants.PROP_INITIATOR)).getProperties().get(ContentModel.PROP_USERNAME);
+        return (String) ((ScriptNode) execution.getVariable(WorkflowConstants.PROP_INITIATOR)).getProperties().get(ContentModel.PROP_USERNAME);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static ArrayList<NodeRef> getPooledActors(DelegateTask task, AuthorityService authorityService) {
         Set<IdentityLink> candidates = (Set) ReflectionUtils.callGetterIfDeclared(task, "getCandidates", new HashSet());
-    	ArrayList<NodeRef> pooledActors = new ArrayList<NodeRef>(candidates.size());
-    	for(IdentityLink candidate : candidates) {
-    		if(!candidate.getType().equals(IdentityLinkType.CANDIDATE)) {
-    			continue;
-    		}
-    		String userId = candidate.getUserId();
-    		if(userId != null) {
-    			NodeRef person = authorityService.getAuthorityNodeRef(userId);
-    			if(person != null) {
-    				pooledActors.add(person);
-    			}
-    		}
-    		
-    		String groupId = candidate.getGroupId();
-    		if(groupId != null) {
-    			NodeRef group = authorityService.getAuthorityNodeRef(groupId);
-    			if(group != null) {
-    				pooledActors.add(group);
-    			}
-    		}
-    	}
+        ArrayList<NodeRef> pooledActors = new ArrayList<NodeRef>(candidates.size());
+        for (IdentityLink candidate : candidates) {
+            if (!candidate.getType().equals(IdentityLinkType.CANDIDATE)) {
+                continue;
+            }
+            String userId = candidate.getUserId();
+            if (userId != null) {
+                NodeRef person = authorityService.getAuthorityNodeRef(userId);
+                if (person != null) {
+                    pooledActors.add(person);
+                }
+            }
+
+            String groupId = candidate.getGroupId();
+            if (groupId != null) {
+                NodeRef group = authorityService.getAuthorityNodeRef(groupId);
+                if (group != null) {
+                    pooledActors.add(group);
+                }
+            }
+        }
         return pooledActors;
     }
-    
+
     public static ArrayList<NodeRef> getTaskAttachments(DelegateTask task) {
         Object taskAttachments = task.getVariable(VAR_ATTACHMENTS);
-        if(!(taskAttachments instanceof Collection)) {
+        if (!(taskAttachments instanceof Collection)) {
             return null;
         }
         @SuppressWarnings("rawtypes")
         Collection source = (Collection) taskAttachments;
         ArrayList<NodeRef> target = new ArrayList<NodeRef>(source.size());
-        for(Object item : source) {
-            if(item == null) {
+        for (Object item : source) {
+            if (item == null) {
                 continue;
-            } else if(item instanceof NodeRef) {
-                target.add((NodeRef)item);
-            } else if(item instanceof ScriptNode) {
-                target.add(((ScriptNode)item).getNodeRef());
-            } else if(item instanceof String) {
-                target.add(new NodeRef((String)item));
+            } else if (item instanceof NodeRef) {
+                target.add((NodeRef) item);
+            } else if (item instanceof ScriptNode) {
+                target.add(((ScriptNode) item).getNodeRef());
+            } else if (item instanceof String) {
+                target.add(new NodeRef((String) item));
             } else {
                 throw new IllegalArgumentException("Unsupported task attachment class: " + item.getClass());
             }

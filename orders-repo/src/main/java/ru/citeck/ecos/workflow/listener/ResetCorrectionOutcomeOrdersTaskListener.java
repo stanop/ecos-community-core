@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.model.ConfirmWorkflowModel;
 import ru.citeck.ecos.model.OrdersModel;
 import ru.citeck.ecos.workflow.listeners.AbstractTaskListener;
-import ru.citeck.ecos.workflow.listeners.ListenerUtils;
+import ru.citeck.ecos.workflow.listeners.WorkflowDocumentResolverRegistry;
 
 import java.util.Objects;
 
@@ -22,7 +22,7 @@ public class ResetCorrectionOutcomeOrdersTaskListener extends AbstractTaskListen
 
     @Autowired
     private NodeService nodeService;
-
+    private WorkflowDocumentResolverRegistry documentResolverRegistry;
     private String taskTypeName = null;
 
     @Override
@@ -31,7 +31,7 @@ public class ResetCorrectionOutcomeOrdersTaskListener extends AbstractTaskListen
             return;
         }
 
-        NodeRef document = ListenerUtils.getDocument(task.getExecution(), nodeService);
+        NodeRef document = documentResolverRegistry.getResolver(task.getExecution()).getDocument(task.getExecution());
         if (document == null || !nodeService.exists(document)) {
             return;
         }
@@ -49,5 +49,10 @@ public class ResetCorrectionOutcomeOrdersTaskListener extends AbstractTaskListen
             taskTypeName = ConfirmWorkflowModel.TYPE_CONFIRM_TASK.toPrefixString(namespaceService);
         }
         return taskTypeName;
+    }
+
+    @Override
+    protected void initImpl() {
+        documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
     }
 }
