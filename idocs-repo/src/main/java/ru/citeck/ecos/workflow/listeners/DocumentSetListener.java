@@ -21,22 +21,21 @@ package ru.citeck.ecos.workflow.listeners;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
 
 public class DocumentSetListener extends AbstractExecutionListener {
     
     private static final String VAR_DOCUMENT = "document";
     
-    private NodeService nodeService;
-    
+    private WorkflowDocumentResolverRegistry documentResolverRegistry;
+
     @Override
     protected void initImpl() {
-        this.nodeService = serviceRegistry.getNodeService();
+        documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
     }
 
     @Override
-    protected void notifyImpl(DelegateExecution execution) throws Exception {
-        NodeRef document = ListenerUtils.getDocument(execution, nodeService);
+    protected void notifyImpl(DelegateExecution execution) {
+        NodeRef document = documentResolverRegistry.getResolver(execution).getDocument(execution);
         if(document != null) {
             execution.setVariable(VAR_DOCUMENT, new ActivitiScriptNode(document, serviceRegistry));
         } else {
