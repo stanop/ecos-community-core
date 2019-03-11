@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:tk="http://www.citeck.ru/model/content/classification/tk/1.0">
+
+    <cm:category>
+        <view:properties>
+            <sys:node-uuid>cat-doc-type-ecos-bpm-process</sys:node-uuid>
+            <cm:name>BPM Process</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">BPM Process</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">BPM Процесс</view:mlvalue>
+            </cm:title>
+            <tk:appliedType>{http://www.citeck.ru/model/ecos/bpm/1.0}processModel</tk:appliedType>
+            <tk:appliedAspects>{http://www.citeck.ru/model/icase/1.0}case</tk:appliedAspects>
+        </view:properties>
+    </cm:category>
+
+</view:view>

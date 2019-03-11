@@ -2,8 +2,8 @@ package ru.citeck.ecos.flowable.listeners;
 
 
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.flowable.engine.common.api.delegate.Expression;
-import org.flowable.engine.common.api.variable.VariableContainer;
+import org.flowable.common.engine.api.delegate.Expression;
+import org.flowable.common.engine.api.variable.VariableContainer;
 import org.flowable.engine.delegate.DelegateExecution;
 
 /**

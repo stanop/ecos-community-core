@@ -16,6 +16,7 @@ import ru.citeck.ecos.model.ClassificationModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,26 +34,32 @@ public class TypeKindCriterionInvariantsProvider extends CriterionInvariantsProv
     }
 
     @Override
-    protected boolean isAttributeSupported(JournalType journalType, QName typeName, QName attribute) {
-        return SUPPORTED_TYPES.contains(attribute);
+    protected boolean isAttributeSupported(JournalType journalType, QName typeName, String attribute) {
+        QName qname = QName.resolveToQName(namespaceService, attribute);
+        return qname != null && SUPPORTED_TYPES.contains(qname);
     }
 
     @Override
-    protected List<InvariantDefinition> getInvariantsImpl(JournalType journalType, QName typeName, QName attribute) {
+    protected List<InvariantDefinition> getInvariantsImpl(JournalType journalType, QName typeName, String attribute) {
+
+        QName qname = QName.resolveToQName(namespaceService, attribute);
+        if (qname == null) {
+            return Collections.emptyList();
+        }
 
         List<InvariantDefinition> invariants = new ArrayList<>();
 
         InvariantDefinition.Builder builder = new InvariantDefinition.Builder(namespaceService);
-        builder.pushScope(attribute, InvariantScope.AttributeScopeKind.PROPERTY);
+        builder.pushScope(qname, InvariantScope.AttributeScopeKind.PROPERTY);
 
-        if (ClassificationModel.PROP_DOCUMENT_TYPE.equals(attribute)) {
+        if (ClassificationModel.PROP_DOCUMENT_TYPE.equals(qname)) {
 
             invariants.add(builder
                       .feature(Feature.OPTIONS)
                       .explicit(getSubCategories(TYPES_ROOT))
                       .build());
 
-        } else if (ClassificationModel.PROP_DOCUMENT_KIND.equals(attribute)) {
+        } else if (ClassificationModel.PROP_DOCUMENT_KIND.equals(qname)) {
 
             PropertyDefinition typePropDef = dictUtils.getPropDef(typeName, ClassificationModel.PROP_DOCUMENT_TYPE);
             String defaultType = typePropDef.getDefaultValue();

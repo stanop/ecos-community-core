@@ -38,6 +38,7 @@ public interface EcosModel {
     QName PROP_OLD_PASS = QName.createQName(ECOS_NAMESPACE, "oldPass");
     QName PROP_PASS = QName.createQName(ECOS_NAMESPACE, "pass");
     QName PROP_PASS_VERIFY = QName.createQName(ECOS_NAMESPACE, "passVerify");
+    QName PROP_TIMEZONE = QName.createQName(ECOS_NAMESPACE, "timezone");
     QName PROP_IS_PERSON_DISABLED = QName.createQName(ECOS_NAMESPACE, "isPersonDisabled");
     QName PROP_ICON_TYPE = QName.createQName(ECOS_NAMESPACE, "iconType");
     QName PROP_FA_ICON_NAME = QName.createQName(ECOS_NAMESPACE, "faIconName");

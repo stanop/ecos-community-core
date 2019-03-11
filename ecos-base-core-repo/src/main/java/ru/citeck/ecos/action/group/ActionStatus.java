@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.extensions.surf.util.I18NUtil;
 
 /**
  * @author Pavel Simonov
@@ -19,7 +20,7 @@ public class ActionStatus {
 
     @Getter @Setter
     private String key = STATUS_OK;
-    @Getter @Setter
+    @Getter
     private String message = "";
     @Getter @Setter
     private String url;
@@ -38,6 +39,15 @@ public class ActionStatus {
 
     public ActionStatus(String statusKey) {
         this.key = statusKey;
+    }
+
+    public void setMessage(String msg) {
+        if (msg != null) {
+            String message = I18NUtil.getMessage(msg);
+            this.message = message != null ? message : msg;
+        } else {
+            this.message = null;
+        }
     }
 
     @JsonIgnore
@@ -103,7 +113,7 @@ public class ActionStatus {
         }
         this.exception = e;
         if (StringUtils.isBlank(message)) {
-            this.message = e.getMessage();
+            setMessage(e.getMessage());
         }
     }
 

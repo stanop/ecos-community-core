@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<journals xmlns="http://www.citeck.ru/ecos/journals/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/eform/1.0" prefix="ecosForms" />
+    </imports>
+
+    <journal id="ecos-forms">
+        <datasource>eform</datasource>
+        <option name="actionFormatter">
+            [
+                {
+                    buttonClass: 'custom-button-edit',
+                    onclick: {
+                        fn: function () {
+                            Citeck.forms.eform(oRecord.getData('nodeRef'), {});
+                        }
+                    }
+                },
+                {
+                    buttonClass: 'custom-button-download',
+                    onclick: {
+                        fn: function () {
+                            var record = Citeck.Records.get(oRecord.getData('nodeRef'));
+                            record.load({ formKey: 'formKey', json:'.json' }, true).then(data => {
+                                Citeck.utils.downloadText(JSON.stringify(data.json), data.formKey + '.json', 'text/json');
+                            });
+                        }
+                    }
+                }
+            ]
+        </option>
+        <headers>
+            <header key="formKey" default="true" />
+            <header key="title" default="true" />
+            <header key="description" default="true" />
+        </headers>
+    </journal>
+
+</journals>

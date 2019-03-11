@@ -216,6 +216,11 @@
                     <param name="maxlength">256</param>
                 </region>
             </field>
+
+            <field prop="org:showHints"  template="row">
+                <invariant on="default" language="explicit">true</invariant>
+            </field>
+
             <field prop="org:preset">
                 <region name="input">
                     <param name="maxlength">256</param>
@@ -226,6 +231,24 @@
                         return !!val.match(/^\S.*/);
                     })();
                 ]]></invariant>
+            </field>
+            <field assoc="org:workingCalendar">
+                <region name="input" template="view"/>
+                <region name="select" template="select-journal">
+                    <param name="journalType">working-calendar</param>
+                </region>
+                <invariant on="multiple" language="explicit">false</invariant>
+            </field>
+            <field prop="ecos:timezone">
+                <region name="input" template="select"/>
+                <invariant on="default" language="javascript">'GMT+3'</invariant>
+                <invariant on="options" language="javascript">
+                    <![CDATA[(function() {
+                        return ['GMT-12', 'GMT-11', 'GMT-10', 'GMT-9', 'GMT-8', 'GMT-7', 'GMT-6', 'GMT-5', 'GMT-4',
+                                'GMT-3', 'GMT-2', 'GMT-1', 'GMT', 'GMT+1', 'GMT+2', 'GMT+3', 'GMT+4', 'GMT+5',
+                                'GMT+6', 'GMT+7', 'GMT+8', 'GMT+9', 'GMT+10', 'GMT+11', 'GMT+12', 'GMT+13', 'GMT+14'];
+                    })()]]>
+                </invariant>
             </field>
             <view class="deputy:availability">
                 <field prop="deputy:available" template="row">
@@ -552,6 +575,14 @@
                     <param name="maxlength">256</param>
                 </region>
             </field>
+
+            <view class="org:showHints">
+                <field prop="org:showHints" template="row">
+                    <invariant on="mandatory" language="explicit">true</invariant>
+                    <invariant on="default" language="explicit">true</invariant>
+                </field>
+            </view>
+
             <field prop="org:preset">
                 <region name="input">
                     <param name="maxlength">256</param>
@@ -563,6 +594,25 @@
                     })();
                 ]]></invariant>
             </field>
+            <field assoc="org:workingCalendar">
+                <region name="input" template="view"/>
+                <region name="select" template="select-journal">
+                    <param name="journalType">working-calendar</param>
+                </region>
+                <invariant on="multiple" language="explicit">false</invariant>
+            </field>
+            <field prop="ecos:timezone">
+                <region name="input" template="select"/>
+                <invariant on="default" language="javascript">'GMT+3'</invariant>
+                <invariant on="options" language="javascript">
+                    <![CDATA[(function() {
+                        return ['GMT-12', 'GMT-11', 'GMT-10', 'GMT-9', 'GMT-8', 'GMT-7', 'GMT-6', 'GMT-5', 'GMT-4',
+                                'GMT-3', 'GMT-2', 'GMT-1', 'GMT', 'GMT+1', 'GMT+2', 'GMT+3', 'GMT+4', 'GMT+5',
+                                'GMT+6', 'GMT+7', 'GMT+8', 'GMT+9', 'GMT+10', 'GMT+11', 'GMT+12', 'GMT+13', 'GMT+14'];
+                    })()]]>
+                </invariant>
+            </field>
+
             <view class="deputy:availability">
                 <param name="showNoneIfEmty">false</param>
                 <field prop="deputy:available" template="row">

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invariants xmlns="http://www.citeck.ru/ecos/invariants/1.0">
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/ecos/bpm/1.0" prefix="ecosbpm" />
+    </imports>
+
+    <type name="ecosbpm:processModel">
+        <property name="ecosbpm:category">
+            <invariant on="options" language="criteria">
+                <criterion attribute="type" predicate="type-equals" value="cm:category" />
+                <criterion attribute="parent" predicate="parent-equals" value="workspace://SpacesStore/ecos-bpm-category-root" />
+            </invariant>
+        </property>
+    </type>
+
+</invariants>
+

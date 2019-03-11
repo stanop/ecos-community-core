@@ -311,7 +311,9 @@
 
     <bean id="idocs.LegalEntityNamingBehaviour" parent="AutoNameBehaviour">
         <property name="className" value="idocs:legalEntity"/>
-        <property name="nameTemplate" value="#{'$'}{node.properties['idocs:fullOrganizationName']}"/>
+        <property name="nameTemplate">
+            <value><![CDATA[#{'$'}{node.properties['idocs:fullOrganizationName']!(node.properties['cm:name'])}]]></value>
+        </property>
     </bean>
 
     <!--<bean id="idocs.DocumentTypeNamingBehaviour" parent="AutoNameBehaviour">-->
@@ -868,6 +870,14 @@
         <property name="order" value="40"/>
     </bean>
 
+    <bean id="idocs.workingCalendar.nameBehaviour" parent="AutoNameBehaviour">
+        <property name="className" value="wcal:calendar"/>
+        <property name="nameTemplate">
+            <value><![CDATA[#{'$'}{node.properties['wcal:name']!'No-name calendar'}]]></value>
+        </property>
+        <property name="order" value="40"/>
+    </bean>
+
     <bean id="ecos.document.historyBehaviour" parent="history.historicalPropertiesBehaviour">
         <property name="className" value="ecos:document"/>
         <property name="allowedProperties">
@@ -949,6 +959,9 @@
         <property name="className" value="{http://www.citeck.ru/model/content/ecos/1.0}case" />
         <property name="generateFromTitle" value="true" />
         <property name="order" value="40"/>
+    </bean>
+
+    <bean id="idocs.resetMenuCacheBehaviour" class="ru.citeck.ecos.behavior.menu.ResetMenuCacheBehaviour">
     </bean>
 
     <!--<bean id="ru.citeck.ecos.copy-metadata-from-target-to-source-assoc"-->

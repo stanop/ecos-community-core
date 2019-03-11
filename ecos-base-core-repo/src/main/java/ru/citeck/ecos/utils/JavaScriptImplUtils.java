@@ -35,7 +35,6 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mozilla.javascript.ScriptableObject;
-import ru.citeck.ecos.records.RecordRef;
 
 public class JavaScriptImplUtils {
 
@@ -43,94 +42,107 @@ public class JavaScriptImplUtils {
     private static final ValueConverter valueConverter = new ValueConverter();
 
     public static ScriptNode wrapNode(String nodeRef,
-            AlfrescoScopableProcessorExtension scopeProvider) {
+                                      AlfrescoScopableProcessorExtension scopeProvider) {
+
         return wrapNode(new NodeRef(nodeRef), scopeProvider);
     }
 
-	public static ScriptNode wrapNode(NodeRef nodeRef,
-			AlfrescoScopableProcessorExtension scopeProvider)
-	{
-	    if(nodeRef == null) return null;
-		return new ScriptNode(nodeRef, scopeProvider.getServiceRegistry(), scopeProvider.getScope());
-	}
-	
-	public static ScriptNode[] wrapNodes(Collection<NodeRef> nodeRefs, 
-			AlfrescoScopableProcessorExtension scopeProvider) 
-	{
-		List<ScriptNode> nodes = new ArrayList<ScriptNode>(nodeRefs.size());
-		for(NodeRef nodeRef : nodeRefs) {
-			ScriptNode node = wrapNode(nodeRef, scopeProvider);
-			if(node != null) {
-				nodes.add(node);
-			}
-		}
-		return nodes.toArray(new ScriptNode[nodes.size()]);
-	}
-	
-	public static ScriptGroup wrapGroup(String groupName, 
-			AlfrescoScopableProcessorExtension scopeProvider) 
-	{
-		if(groupName == null) {
-			return null;
-		}
-		return new ScriptGroup(groupName, scopeProvider.getServiceRegistry(), scopeProvider.getScope());
-	}
-	
-	public static ScriptGroup[] wrapGroups(Collection<String> groupNames, 
-			AlfrescoScopableProcessorExtension scopeProvider) 
-	{
-		ScriptGroup[] groups = new ScriptGroup[groupNames.size()];
-		int i = 0;
-		for(String groupName : groupNames) {
-			groups[i++] = wrapGroup(groupName, scopeProvider);
-		}
-		return groups;
-	}
-	
-	public static ScriptUser wrapUser(String userName, 
-			AlfrescoScopableProcessorExtension scopeProvider) 
-	{
-		return new ScriptUser(userName, null, scopeProvider.getServiceRegistry(), scopeProvider.getScope());
-	}
-	
-	public static ScriptUser[] wrapUsers(Collection<String> userNames, 
-			AlfrescoScopableProcessorExtension scopeProvider) 
-	{
-		ScriptUser[] users = new ScriptUser[userNames.size()];
-		int i = 0;
-		for(String userName : userNames) {
-			users[i++] = wrapUser(userName, scopeProvider);
-		}
-		return users;
-	}
-	
-    public static ScriptNode wrapAuthorityAsNode(String authorityName, 
+    public static ScriptNode wrapNode(NodeRef nodeRef,
+                                      AlfrescoScopableProcessorExtension scopeProvider) {
+
+        if (nodeRef == null) {
+            return null;
+        }
+        return new ScriptNode(nodeRef, scopeProvider.getServiceRegistry(), scopeProvider.getScope());
+    }
+
+    public static ScriptNode[] wrapNodes(Collection<NodeRef> nodeRefs,
+                                         AlfrescoScopableProcessorExtension scopeProvider) {
+
+        List<ScriptNode> nodes = new ArrayList<>(nodeRefs.size());
+        for (NodeRef nodeRef : nodeRefs) {
+            ScriptNode node = wrapNode(nodeRef, scopeProvider);
+            if (node != null) {
+                nodes.add(node);
+            }
+        }
+        return nodes.toArray(new ScriptNode[nodes.size()]);
+    }
+
+    public static ScriptGroup wrapGroup(String groupName,
             AlfrescoScopableProcessorExtension scopeProvider) {
-        NodeRef nodeRef = null;
-        if(authorityName.startsWith(AuthorityType.GROUP.getPrefixString())) {
+
+        if (groupName == null) {
+            return null;
+        }
+        return new ScriptGroup(groupName, scopeProvider.getServiceRegistry(), scopeProvider.getScope());
+    }
+
+    public static ScriptGroup[] wrapGroups(Collection<String> groupNames,
+                                           AlfrescoScopableProcessorExtension scopeProvider) {
+
+        ScriptGroup[] groups = new ScriptGroup[groupNames.size()];
+        int i = 0;
+        for (String groupName : groupNames) {
+            groups[i++] = wrapGroup(groupName, scopeProvider);
+        }
+        return groups;
+    }
+
+    public static ScriptUser wrapUser(String userName,
+                                      AlfrescoScopableProcessorExtension scopeProvider) {
+
+        return new ScriptUser(userName,
+                              null,
+                              scopeProvider.getServiceRegistry(),
+                              scopeProvider.getScope());
+    }
+
+    public static ScriptUser[] wrapUsers(Collection<String> userNames,
+            AlfrescoScopableProcessorExtension scopeProvider) {
+
+        ScriptUser[] users = new ScriptUser[userNames.size()];
+        int i = 0;
+        for (String userName : userNames) {
+            users[i++] = wrapUser(userName, scopeProvider);
+        }
+        return users;
+    }
+
+    public static ScriptNode wrapAuthorityAsNode(String authorityName, 
+                                                 AlfrescoScopableProcessorExtension scopeProvider) {
+        NodeRef nodeRef;
+        if (authorityName.startsWith(AuthorityType.GROUP.getPrefixString())) {
             AuthorityService authorityService = scopeProvider.getServiceRegistry().getAuthorityService();
             nodeRef = authorityService.getAuthorityNodeRef(authorityName);
         } else {
             PersonService personService = scopeProvider.getServiceRegistry().getPersonService();
             nodeRef = personService.getPerson(authorityName);
         }
-        if(nodeRef == null) return null;
+        if (nodeRef == null) {
+            return null;
+        }
         return wrapNode(nodeRef, scopeProvider);
     }
     
     public static ScriptNode[] wrapAuthoritiesAsNodes(Collection<String> authorityNames, 
-            AlfrescoScopableProcessorExtension scopeProvider) {
-        List<ScriptNode> nodes = new ArrayList<ScriptNode>(authorityNames.size());
-        for(String authorityName : authorityNames) {
+                                                      AlfrescoScopableProcessorExtension scopeProvider) {
+
+        List<ScriptNode> nodes = new ArrayList<>(authorityNames.size());
+        for (String authorityName : authorityNames) {
             ScriptNode node = wrapAuthorityAsNode(authorityName, scopeProvider);
-            if(node != null) {
+            if (node != null) {
                 nodes.add(node);
             }
         }
         return nodes.toArray(new ScriptNode[nodes.size()]);
     }
     
-    public static void extractPropertiesMap(ScriptableObject scriptable, Map<QName, Serializable> map, ValueConverter converter, NamespaceService namespaceService) {
+    public static void extractPropertiesMap(ScriptableObject scriptable,
+                                            Map<QName, Serializable> map,
+                                            ValueConverter converter,
+                                            NamespaceService namespaceService) {
+
         for (Object propertyName : scriptable.getIds()) {
             if (propertyName instanceof String) {
                 String name = (String) propertyName;
@@ -144,7 +156,7 @@ public class JavaScriptImplUtils {
     }
 
     public static Map<String, Object> convertScriptableToMap(ScriptableObject scriptable) {
-        Map<String, Object> values = new HashMap<String, Object>();
+        Map<String, Object> values = new HashMap<>();
         for (Object propertyName : scriptable.getIds()) {
             if (propertyName instanceof String) {
                 String name = (String) propertyName;
@@ -156,7 +168,7 @@ public class JavaScriptImplUtils {
     }
     
     public static Map<String, Serializable> convertScriptableToSerializableMap(ScriptableObject scriptable) {
-        Map<String, Serializable> values = new HashMap<String, Serializable>();
+        Map<String, Serializable> values = new HashMap<>();
         ValueConverter converter = new ValueConverter();
         for (Object propertyName : scriptable.getIds()) {
             if (propertyName instanceof String) {
@@ -200,25 +212,6 @@ public class JavaScriptImplUtils {
             qnames.add(convertQName(string, namespaceService));
         }
         return qnames;
-    }
-
-    public static RecordRef getRecordRef(Object object) {
-        if (object == null) {
-            return null;
-        }
-        if (object instanceof RecordRef) {
-            return (RecordRef) object;
-        }
-        if (object instanceof NodeRef) {
-            return new RecordRef((NodeRef) object);
-        }
-        if (object instanceof String) {
-            return new RecordRef((String) object);
-        }
-        if (object instanceof ScriptNode) {
-            return new RecordRef(((ScriptNode) object).getNodeRef());
-        }
-        throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to RemoteNodeRef");
     }
 
     public static NodeRef getNodeRef(Object object) {
@@ -265,12 +258,19 @@ public class JavaScriptImplUtils {
         return authorities;
     }
 
-    private static void fillAuthorities(Collection<NodeRef> collection, Object value, AuthorityService authorityService) {
+    private static void fillAuthorities(Collection<NodeRef> collection,
+                                        Object value,
+                                        AuthorityService authorityService) {
+
         fillAuthoritiesJava(collection, valueConverter.convertValueForJava(value), authorityService);
     }
 
-    private static void fillAuthoritiesJava(Collection<NodeRef> collection, Object value, AuthorityService authorityService) {
-        if (value == null) return;
+    private static void fillAuthoritiesJava(Collection<NodeRef> collection,
+                                            Object value,
+                                            AuthorityService authorityService) {
+        if (value == null) {
+            return;
+        }
         if (value instanceof NodeRef) {
             collection.add((NodeRef) value);
         } else if (value instanceof String) {

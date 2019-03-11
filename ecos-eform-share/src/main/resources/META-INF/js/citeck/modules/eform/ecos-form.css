@@ -1,0 +1,52 @@
+
+.eform-panel-content.formbuilder {
+     margin-right: 0 !important;
+     margin-left: 0 !important;
+}
+
+.eform-panel-actions {
+    display: block;
+    width: 370px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 7px;
+}
+
+.eform-panel-content {
+    background-color: #fff;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 15px;
+    padding-bottom: 1px;
+}
+
+.eform-edit-form-btn {
+    width: 165px;
+    margin: 10px;
+}
+
+.eform-panel-content select,
+.eform-panel-content input[type="file"],
+.eform-panel-content input[type="text"],
+.eform-panel-content input[type="password"],
+.eform-panel-content textarea {
+    width: 100%;
+    padding: 6px 12px;
+}
+
+.eform-panel-content .panel {
+    box-shadow: none;
+}
+
+.eform-panel-content .formio-component-checkbox {
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+
+.eform-panel-content .formio-component-select.formio-component-multiple .form-control .choices__input {
+    width: max-content;
+}
+
+.eform-panel-content .form-control {
+    box-shadow: none;
+}

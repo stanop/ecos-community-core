@@ -6,4 +6,28 @@
           class="ru.citeck.ecos.flowable.webscripts.tasks.DocumentTasksManualGet" parent="webscript">
     </bean>
 
+    <bean id="webscript.ru.citeck.flowable.rest-proxy.get"
+          class="ru.citeck.ecos.flowable.webscripts.FlowableRestProxy" parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.flowable.rest-proxy.post"
+          class="ru.citeck.ecos.flowable.webscripts.FlowableRestProxy" parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.flowable.rest-proxy.put"
+          class="ru.citeck.ecos.flowable.webscripts.FlowableRestProxy" parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.flowable.rest-proxy.delete"
+          class="ru.citeck.ecos.flowable.webscripts.FlowableRestProxy" parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.flowable.deploy-process-model.post"
+          class="ru.citeck.ecos.flowable.bpm.DeployBpmProcessModelPost" parent="webscript">
+    </bean>
+
+    <bean id="webscript.ru.citeck.flowable.deploy-process.post"
+          class="ru.citeck.ecos.flowable.bpm.DeployBpmProcessPost" parent="webscript">
+    </bean>
+
 </beans>

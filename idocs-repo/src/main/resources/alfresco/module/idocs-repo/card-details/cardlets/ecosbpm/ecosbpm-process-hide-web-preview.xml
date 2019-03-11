@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
+    <id>ecosbpm-process-hide-web-preview</id>
+    <regionId>web-preview</regionId>
+    <allowed-type>{http://www.citeck.ru/model/ecos/bpm/1.0}processModel</allowed-type>
+    <position>
+        <column>disabled</column>
+        <order>a0</order>
+        <mobile-order>0</mobile-order>
+    </position>
+    <control />
+</cardlet>

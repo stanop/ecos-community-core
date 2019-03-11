@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.cache.sync.SyncKeysService;
 import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.content.ContentData;
 import ru.citeck.ecos.content.RepoContentDAOImpl;
@@ -19,15 +20,18 @@ import java.util.*;
 
 public class MenuServiceImpl implements MenuService {
 
+    private static final String MENU_SYNC_KEY = "ecos-menu";
+
+    private static final String DEFAULT_AUTHORITY = "GROUP_EVERYONE";
+    private static final String AUTHORITY_ORDER_KEY = "menu-config-authority-order";
+
     private AuthorityUtils authorityUtils;
     private RepoContentDAOImpl<MenuConfig> registry;
     private MenuFactory factory;
 
     private PersonService personService;
-
-    private static final String DEFAULT_AUTHORITY = "GROUP_EVERYONE";
-    private static final String AUTHORITY_ORDER_KEY = "menu-config-authority-order";
     private EcosConfigService ecosConfigService;
+    private SyncKeysService syncKeysService;
 
     @Override
     public Menu queryMenu() {
@@ -86,6 +90,11 @@ public class MenuServiceImpl implements MenuService {
         return orderedAuthorities;
     }
 
+    @Override
+    public void resetCache() {
+        syncKeysService.update(MENU_SYNC_KEY);
+    }
+
     public void setAuthorityUtils(AuthorityUtils authorityUtils) {
         this.authorityUtils = authorityUtils;
     }
@@ -104,6 +113,11 @@ public class MenuServiceImpl implements MenuService {
 
     public MenuFactory getFactory() {
         return factory;
+    }
+
+    @Autowired
+    public void setSyncKeysService(SyncKeysService syncKeysService) {
+        this.syncKeysService = syncKeysService;
     }
 
     @Autowired

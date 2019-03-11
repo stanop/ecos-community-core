@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.model.ConfirmWorkflowModel;
 import ru.citeck.ecos.workflow.listeners.AbstractTaskListener;
 import ru.citeck.ecos.workflow.listeners.ListenerUtils;
+import ru.citeck.ecos.workflow.listeners.WorkflowDocumentResolverRegistry;
 
 import java.util.Objects;
 
@@ -19,6 +20,7 @@ public class SetLastTasksOutcomeToOrdersListener extends AbstractTaskListener {
 
     private NodeService nodeService;
     private NamespaceService namespaceService;
+    private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
     private QName fieldToSetConfirmOutcome;
     private QName fieldToSetCorrectOutcome;
@@ -27,7 +29,7 @@ public class SetLastTasksOutcomeToOrdersListener extends AbstractTaskListener {
     @Override
     protected void notifyImpl(DelegateTask delegateTask) {
 
-        NodeRef document = ListenerUtils.getDocument(delegateTask, nodeService);
+        NodeRef document = documentResolverRegistry.getResolver(delegateTask.getExecution()).getDocument(delegateTask);
         if (document == null || !nodeService.exists(document)) {
             return;
         }
@@ -70,5 +72,10 @@ public class SetLastTasksOutcomeToOrdersListener extends AbstractTaskListener {
 
     public void setRequiredDocType(QName requiredDocType) {
         this.requiredDocType = requiredDocType;
+    }
+
+    @Override
+    protected void initImpl() {
+        documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
     }
 }

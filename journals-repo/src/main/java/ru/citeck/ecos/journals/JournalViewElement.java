@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class JournalViewElement {
+
     private static final Logger logger = Logger.getLogger(JournalType.class);
     private static final String PREDICATE_OR = SearchPredicate.QUERY_OR.getValue();
     private static final String SEARCH_CRITERIA = "searchCriteria";

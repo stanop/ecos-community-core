@@ -216,7 +216,11 @@ public class LuceneQuery implements SearchQueryBuilder {
         return result.toString();
     }
 
-    private static String buildField(String field) {
+    private String buildField(String field) {
+        return buildField(field, false);
+    }
+
+    protected String buildField(String field, boolean exact) {
         try {
             return FieldType.forName(field).toString();
         } catch (IllegalArgumentException e) {
@@ -237,6 +241,8 @@ public class LuceneQuery implements SearchQueryBuilder {
             Iterator<CriteriaTriplet> iterator = criteria.getTripletsIterator();
             extractType(criteria);
 
+            List<CriteriaTriplet> tripletsContainsMoreThanOne = getMiltipleFilteringTriplets(criteria);
+
             while (iterator.hasNext()) {
 
                 CriteriaTriplet criteriaTriplet = iterator.next();
@@ -249,7 +255,7 @@ public class LuceneQuery implements SearchQueryBuilder {
                         shouldAppendQuery = false;
                     }
 
-                    buildSearchTerm(criteriaTriplet);
+                    buildSearchTerm(criteriaTriplet, tripletsContainsMoreThanOne.contains(criteriaTriplet));
 
                     if (!shouldAppendQuery) {
                         query = appendOrLogic(query);
@@ -274,6 +280,25 @@ public class LuceneQuery implements SearchQueryBuilder {
             return finalQuery;
         }
 
+        private List<CriteriaTriplet> getMiltipleFilteringTriplets(SearchCriteria criteria) {
+
+            List<CriteriaTriplet> triplets = criteria.getTriplets();
+
+            if (triplets == null) {
+                return Collections.emptyList();
+            }
+
+            Map<CriteriaDoublet, Integer> doubletsCount = new HashMap<>();
+            triplets.forEach(triplet -> doubletsCount.merge(new CriteriaDoublet(triplet), 1, Integer::sum));
+
+            List<CriteriaTriplet> result = new ArrayList<>();
+            triplets.forEach(triplet -> { if (doubletsCount.get(new CriteriaDoublet(triplet)) > 1) {
+                result.add(triplet);
+            }});
+
+            return result;
+        }
+
         private void extractType(SearchCriteria criteria) {
             Iterator<CriteriaTriplet> iterator = criteria.getTripletsIterator();
             while (iterator.hasNext()) {
@@ -288,7 +313,7 @@ public class LuceneQuery implements SearchQueryBuilder {
             }
         }
 
-        private void buildSearchTerm(CriteriaTriplet triplet) {
+        private void buildSearchTerm(CriteriaTriplet triplet, boolean tripletsHasMoreOne) {
 
             SearchPredicate criterion = SearchPredicate.forName(triplet.getPredicate());
 
@@ -308,7 +333,10 @@ public class LuceneQuery implements SearchQueryBuilder {
             }
 
             triplet = convertAssocTriplet(triplet);
-            String field = buildField(triplet.getField());
+            String field = buildField(
+                    triplet.getField(),
+                    SearchPredicate.STRING_EQUALS.equals(criterion) && !tripletsHasMoreOne
+            );
 
             switch (criterion) {
                 case STRING_CONTAINS:
@@ -736,6 +764,38 @@ public class LuceneQuery implements SearchQueryBuilder {
 
             String getQueryPart() {
                 return queryPart;
+            }
+        }
+
+        protected class CriteriaDoublet {
+            String predicate;
+            String field;
+
+            CriteriaDoublet(CriteriaTriplet criteriaTriplet) {
+                this.predicate = criteriaTriplet.getPredicate();
+                this.field = criteriaTriplet.getField();
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (this == obj) {
+                    return true;
+                }
+
+                if (!(obj instanceof CriteriaDoublet)) {
+                    return false;
+                }
+
+                CriteriaDoublet that = (CriteriaDoublet) obj;
+
+                return Objects.equals(predicate, that.predicate) && Objects.equals(field, that.field);
+            }
+
+            @Override
+            public int hashCode() {
+                int result = predicate != null ? predicate.hashCode() : 0;
+                result = 31 * result + (field != null ? field.hashCode() : 0);
+                return result;
             }
         }
     }

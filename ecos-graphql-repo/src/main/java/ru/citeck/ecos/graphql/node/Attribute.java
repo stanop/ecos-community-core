@@ -3,7 +3,7 @@ package ru.citeck.ecos.graphql.node;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import lombok.Getter;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.AlfGqlContext;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,17 +20,17 @@ public class Attribute {
     @Getter(lazy = true)
     private final List<?> values = evalValues();
 
-    private GqlContext context;
+    private AlfGqlContext context;
     private GqlAlfNode scope;
 
-    Attribute(QName name, Type type, GqlAlfNode scope, GqlContext context) {
+    Attribute(QName name, Type type, GqlAlfNode scope, AlfGqlContext context) {
         this.scope = scope;
         this.name = name;
         this.type = type;
         this.context = context;
     }
 
-    Attribute(QName name, Object value, Type type, GqlAlfNode scope, GqlContext context) {
+    Attribute(QName name, Object value, Type type, GqlAlfNode scope, AlfGqlContext context) {
         this(name, type, scope, context);
         rawValue = value;
     }

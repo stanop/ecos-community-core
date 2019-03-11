@@ -33,6 +33,10 @@
     border-top-right-radius: 3px;
 }
 
+.orgstruct-console .ecos-form.invariants-form .user-profile-custom-container .form-view .title {
+    padding-left: 25px;
+}
+
 .ecos-form.invariants-form:not(.view-form) .user-profile-custom-container .template-rowset .title {
     margin: 0 0 13px 0;
 }
@@ -126,6 +130,10 @@
 
 .ecos-form.invariants-form .form-fields .user-profile-custom-container > div:not(.user-profile-header) .form-field.template-block {
     width: calc(30% - 15px);
+}
+
+.ecos-form.invariants-form .form-fields .user-profile-custom-container .user-profile-header .user-profile-header__column--fio .form-field.template-block {
+    width: auto;
 }
 
 .ecos-form.invariants-form .user-profile-custom-container .template-wide .template-blockset:after {

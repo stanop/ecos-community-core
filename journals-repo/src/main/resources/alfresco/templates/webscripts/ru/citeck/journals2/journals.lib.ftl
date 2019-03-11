@@ -123,10 +123,12 @@
     {
         "title": "${createVariant.properties["cm:title"]!createVariant.properties["cm:name"]}",
         "destination": <#if createVariant.assocs["journal:destination"]??>"${createVariant.assocs["journal:destination"][0].nodeRef}"<#else>null</#if>,
-        "type": "${shortQName(createVariant.properties["journal:type"])}",
-        "formId": "${createVariant.properties["journal:formId"]}",
+        "type": "<#if createVariant.properties["journal:type"]??>${shortQName(createVariant.properties["journal:type"])}</#if>",
+        "formId": "${createVariant.properties["journal:formId"]!}",
         "canCreate": ${createVariant.assocs["journal:destination"][0].hasPermission("CreateChildren")?string("true","false")},
-        "isDefault": ${(createVariant.properties["journal:isDefault"]!false)?string}
+        "isDefault": ${(createVariant.properties["journal:isDefault"]!false)?string},
+        "createArguments": "${(createVariant.properties["journal:createArguments"]!"")}",
+        "recordRef": "${(createVariant.properties["journal:recordRef"]!"")}"
     }
     </#escape>
 </#macro>

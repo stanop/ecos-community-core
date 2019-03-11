@@ -108,30 +108,26 @@
 </#macro>
 
 <#macro renderJournalTable>
-    <script type="text/javascript">//<![CDATA[
-    var longUniqueNameOfColumnTemplate = function(c) {
-        return {
-            key: c.key(),
-            label: c.label() || '',
-            sortable: c.sortable(),
-            formatter: this.getFormatter(c)
-        };
-    };
-    var longUniqueNameOfSettings = {
-        'MSG_EMPTY': '${msg('message.dynamic-table.empty')?html}',
-        'MSG_ERROR': '${msg('message.dynamic-table.error')?html}',
-        'MSG_LOADING': '${msg('message.dynamic-table.loading')?html}',
-        'MSG_SORTASC': '${msg('message.dynamic-table.sortasc')?html}',
-        'MSG_SORTDESC': '${msg('message.dynamic-table.sortdesc')?html}',
-    };
-    //]]></script>
     <div class="journal-content-table content-table hide-buttons" data-bind="yuiDataTable: {
         fields: fields,
         columns: columns,
         records: records,
         sortedBy: sortBy,
-        columnTemplate: longUniqueNameOfColumnTemplate,
-        set: longUniqueNameOfSettings,
+        columnTemplate: function(c) {
+            return {
+                key: c.key(),
+                label: c.label() || '',
+                sortable: c.sortable(),
+                formatter: this.getFormatter(c)
+            };
+        },
+        set: {
+            'MSG_EMPTY': '${msg('message.dynamic-table.empty')?html}',
+            'MSG_ERROR': '${msg('message.dynamic-table.error')?html}',
+            'MSG_LOADING': '${msg('message.dynamic-table.loading')?html}',
+            'MSG_SORTASC': '${msg('message.dynamic-table.sortasc')?html}',
+            'MSG_SORTDESC': '${msg('message.dynamic-table.sortdesc')?html}',
+        },
         sortedBy: sortByFirst,
         loadingProp: externalLoading,
         doubleClickConfig: {
@@ -260,7 +256,7 @@
         <div class="bd">
             <ul data-bind="foreach: resolve('journal.availableCreateVariants', [])" class="first-of-type">
                 <li class="yuimenuitem">
-                    <a class="yuimenuitemlabel" data-bind="text: title, attr: { href: link() }, css: { 'default-create-variant': isDefault }"></a>
+                    <a class="yuimenuitemlabel" data-bind="text: title, click: onClick.bind($data), css: { 'default-create-variant': isDefault }"></a>
                 </li>
             </ul>
         </div>

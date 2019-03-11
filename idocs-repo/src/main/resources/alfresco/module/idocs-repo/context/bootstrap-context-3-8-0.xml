@@ -28,14 +28,14 @@
                 <props>
                     <prop key="uuidBinding">UPDATE_EXISTING</prop>
                     <prop key="path">/cm:IDocsRoot</prop>
-                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecos-bpm-process-root.xml</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecosbpm/ecos-bpm-process-root.xml</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
             </list>
         </property>
     </bean>
 
-    <bean class="ru.citeck.ecos.records.source.alfnode.AlfNodesDefaultParentRegistrar">
+    <bean class="ru.citeck.ecos.records.source.alf.AlfNodesDefaultParentRegistrar">
         <property name="defaultParents">
             <map>
                 <entry key="{http://www.citeck.ru/model/ecos/bpm/1.0}processModel" value="workspace://SpacesStore/ecos-bpm-process-root" />
@@ -50,10 +50,131 @@
             <props>
                 <prop key="uuidBinding">UPDATE_EXISTING</prop>
                 <prop key="path">/cm:categoryRoot/cm:generalclassifiable</prop>
-                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecos-bpm-category-root.xml</prop>
+                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecosbpm/ecos-bpm-category-root.xml</prop>
                 <prop key="encoding">UTF-8</prop>
             </props>
         </property>
+    </bean>
+
+    <bean id="idocs.module-component.cardlet-cmobject-association-disable" parent="idocs.import-spaces.3-8-0">
+        <property name="name" value="cardlet-cmobject-association-disable"/>
+        <property name="description" value="Common Cardlet association disable"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.cardlets-cmobject"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/disable-cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmobject/associations</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.cardlet-cmobject-advanced-association" parent="idocs.import-spaces.3-8-0">
+        <property name="name" value="cardlet-cmobject-advanced-association"/>
+        <property name="description" value="Common Cardlet advanced association"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.system-journals.cardlets"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmobject/advanced-associations</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.ecos-bpm-groups" parent="idocs.import-spaces.3-8-0">
+        <property name="name" value="ecos-bpm-groups" />
+        <property name="description" value="ecos-bpm-groups" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.ecos-bpm-process-category-root"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/group.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/groups/ecosbpm/bpm-app-editor</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/group.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/groups/ecosbpm/bpm-app-admin</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">workspace://SpacesStore/ecos-bpm-category-root</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecosbpm/ecos-bpm-groups-permissions.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.ecos-bpm-process-type" parent="idocs.import-spaces.3-8-0">
+        <property name="name" value="ecos-bpm-process-type" />
+        <property name="description" value="ecos-bpm-process-type" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.doctype-categories" />
+            </list>
+        </property>
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">workspace://SpacesStore/category-document-type-root</prop>
+                <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/ecosbpm/ecos-bpm-type-category.xml</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="idocs.module-component.ecos-bpm-add-editors2" parent="idocs.import-scripts.3-8-0">
+        <property name="name" value="ecos-bpm-add-editors" />
+        <property name="description" value="ecos-bpm-add-editors" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.ecos-bpm-groups"/>
+                <ref bean="idocs.all-group"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/patch/add-to-group.js" />
+        <property name="args">
+            <map>
+                <entry key="group" value="BPM_APP_EDITOR" />
+                <entry key="members">
+                    <list>
+                        <value>GROUP_all</value>
+                        <value>GROUP_BPM_APP_ADMIN</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
+    
+    <bean id="idocs.module-component.fill-ecos-case-roles" parent="idocs.import-scripts.3-8-0">
+        <property name="name" value="fill-ecos-case-roles" />
+        <property name="description" value="fill-ecos-case-roles" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-case-roles"/>
+            </list>
+        </property>
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/scripts/fill-case-roles.js" />
     </bean>
 
 </beans>

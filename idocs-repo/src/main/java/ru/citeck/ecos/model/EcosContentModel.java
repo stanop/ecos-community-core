@@ -8,6 +8,8 @@ public final class EcosContentModel {
     public static final String PREFIX = "ecosCont";
 
     public static final QName PROP_DEPLOYED_CHECKSUM = QName.createQName(NAMESPACE, "deployedChecksum");
+    public static final QName PROP_ID = QName.createQName(NAMESPACE, "id");
 
     public static final QName ASPECT_HAS_CONTENT_CHECKSUM = QName.createQName(NAMESPACE, "hasContentChecksum");
+    public static final QName ASPECT_HAS_CONTENT_ID = QName.createQName(NAMESPACE, "hasContentId");
 }

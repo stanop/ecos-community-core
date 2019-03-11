@@ -1,31 +1,13 @@
 package ru.citeck.ecos.flowable.services.rest;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.flowable.form.model.SimpleFormModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import ru.citeck.ecos.http.BasicAuthInterceptor;
 
 import javax.annotation.PostConstruct;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,10 +18,6 @@ public class RestFormService {
 
     private final static Log logger = LogFactory.getLog(RestFormService.class);
 
-    @Value("${flowable.rest-api.username}")
-    private String username;
-    @Value("${flowable.rest-api.password}")
-    private String password;
     @Value(FLOWABLE_REST_API_KEY)
     private String restApiUrl;
 
@@ -49,9 +27,11 @@ public class RestFormService {
     private String formModelUrl;
 
     private String baseUrl;
-    private RestTemplate restTemplate;
 
     private boolean initialized = false;
+
+    @Autowired
+    private FlowableRestTemplate restTemplate;
 
     @PostConstruct
     public void init() {
@@ -61,69 +41,10 @@ public class RestFormService {
             return;
         }
 
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        converter.setObjectMapper(mapper);
-
-        List<HttpMessageConverter<?>> converters = new ArrayList<>();
-        converters.add(converter);
-
-        HttpComponentsClientHttpRequestFactory factory = createHttpFactory();
-        if (factory == null) {
-            restTemplate = new RestTemplate(converters);
-        } else {
-            restTemplate = new RestTemplate(factory);
-            restTemplate.setMessageConverters(converters);
-        }
-
-        restTemplate.getInterceptors().add(new BasicAuthInterceptor(username, password));
-
         baseUrl = restApiUrl.endsWith("/") ? restApiUrl : restApiUrl + "/";
         baseUrl += "form-api/form-repository/";
 
         initialized = true;
-    }
-
-    private HttpComponentsClientHttpRequestFactory createHttpFactory() {
-        /** Disable ssl verification */
-        TrustStrategy acceptingTrustStrategy = new TrustStrategy() {
-            @Override
-            public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-                return true;
-            }
-        };
-
-        SSLContext sslContext = null;
-        try {
-            sslContext = org.apache.http.ssl.SSLContexts.custom()
-                    .loadTrustMaterial(null, acceptingTrustStrategy)
-                    .build();
-        } catch (NoSuchAlgorithmException e) {
-            logger.error(e.getMessage(), e);
-            return null;
-        } catch (KeyManagementException e) {
-            logger.error(e.getMessage(), e);
-            return null;
-        } catch (KeyStoreException e) {
-            logger.error(e.getMessage(), e);
-            return null;
-        }
-
-        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
-
-        HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
-
-        CloseableHttpClient httpClient = HttpClients.custom()
-                .setSSLSocketFactory(csf)
-                .setSSLHostnameVerifier(hostnameVerifier)
-                .build();
-
-        HttpComponentsClientHttpRequestFactory requestFactory =
-                new HttpComponentsClientHttpRequestFactory();
-
-        requestFactory.setHttpClient(httpClient);
-        return requestFactory;
     }
 
     public Optional<SimpleFormModel> getFormByKey(String formKey) {

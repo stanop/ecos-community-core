@@ -53,6 +53,7 @@ function CardDetailsImpl(props) {
                         <StartMessage />
                     </div>
                     <div id="bd">
+                        <TopPanel />
                         <CardletsBodyView {...props} />
                     </div>
                     <div id="card-details-uploaders" style={{display: 'none'}}>
@@ -98,6 +99,69 @@ const StartMessage = connect(
         closeMessage: () => dispatch(setStartMessage(''))
     }),
 )(StartMessageComponent);
+
+
+/*======TopPanel=======*/
+
+const PROCESS_MODEL_NODE_TYPE = 'ecosbpm:processModel';
+const EDITOR_PAGE_CONTEXT = '/share/page/bpmn-editor/';
+const DESIGNER_PAGE_CONTEXT = '/share/page/bpmn-designer';
+
+class TopPanelComponent extends React.Component {
+    render() {
+        const { nodeInfo, nodeRef } = this.props;
+        const nodeType = nodeInfo.nodeType;
+
+        const permissions = nodeInfo.permissions;
+
+        const buttons = [];
+        switch (nodeType) {
+            case PROCESS_MODEL_NODE_TYPE:
+                const recordId = nodeRef.replace('workspace://SpacesStore/', '');
+                buttons.push({
+                    className: 'ecos-button ecos-button_blue back-to-list-button',
+                    href: DESIGNER_PAGE_CONTEXT,
+                    text: Alfresco.util.message('bpmn-card.go-back-to-list-button.text')
+                });
+                if (permissions.Write) {
+                    buttons.push({
+                        className: 'ecos-button ecos-button_blue open-editor-button',
+                        href: `${EDITOR_PAGE_CONTEXT}#/editor/${recordId}`,
+                        text: Alfresco.util.message('bpmn-card.open-editor-button.text')
+                    });
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (buttons.length < 1) {
+            return null;
+        }
+
+        return (
+            <div className={'card-details-top-panel'}>
+                {buttons.map((button, idx) => {
+                    return (
+                        <a key={idx} className={button.className} href={button.href}>
+                            {button.text}
+                        </a>
+                    );
+                })}
+            </div>
+        );
+    }
+}
+
+const TopPanel = connect(
+    (state, ownProps) => {
+        let nodeRef = state.pageArgs.nodeRef;
+        return {
+            nodeRef,
+            nodeInfo: state.nodes[nodeRef]
+        };
+    }
+)(TopPanelComponent);
 
 /*======CARDLETS_BODY=======*/
 

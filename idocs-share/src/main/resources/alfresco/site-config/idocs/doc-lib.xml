@@ -17,6 +17,7 @@
             </action>
             <action id="document-edit-metadata" type="pagelink">
                 <param name="page">node-edit?nodeRef={node.nodeRef}</param>
+                <evaluator>evaluator.doclib.dms.isAdmin</evaluator>
             </action>
             <action id="role-edit-properties" type="javascript" label="actions.role.edit-properties">
                 <param name="function">onActionDialogForm</param>
@@ -34,10 +35,12 @@
                 <param name="page">node-edit?nodeRef={node.nodeRef}&amp;viewId=doclib-inline-edit</param>
                 <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
                 <evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+                <evaluator>evaluator.doclib.dms.isAdmin</evaluator>
             </action>
             <action id="document-move-to">
                 <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
                 <evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+                <evaluator>evaluator.doclib.dms.isAdmin</evaluator>
             </action>
             <action id="document-assign-workflow">
                 <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
@@ -56,10 +59,12 @@
             <action id="document-manage-aspects">
                 <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
                 <evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+                <evaluator>evaluator.doclib.dms.isAdmin</evaluator>
             </action>
             <action id="document-change-type">
                 <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
                 <evaluator negate="true">evaluator.doclib.idocs.isDataListItem</evaluator>
+                <evaluator>evaluator.doclib.dms.isAdmin</evaluator>
             </action>
             <action id="document-delete">
                 <evaluator negate="true">evaluator.doclib.action.isUndeletable</evaluator>
@@ -77,6 +82,18 @@
             <action id="import-case-template" type="javascript" label="actions.document.import-case-template"
                     icon="import-case-template">
                 <param name="function">importCaseTemplate</param>
+            </action>
+
+            <action id="document-take-ownership" type="javascript" icon="document-manage-permissions" label="actions.document.take-ownership">
+                <!-- Take Ownership is the same permission level as delete -->
+                <permissions>
+                    <permission allow="true">Delete</permission>
+                </permissions>
+                <param name="function">onActionTakeOwnership</param>
+                <param name="action">take-ownership</param>
+                <param name="successMessage">message.take-ownership.success</param>
+                <param name="failureMessage">message.take-ownership.failure</param>
+                <evaluator>evaluator.doclib.dms.isAdmin</evaluator>
             </action>
         </actions>
     </config>
@@ -231,6 +248,7 @@
                 <!--<param name="formId"></param>-->
                 <!--<param name="header"></param>-->
                 <!--<param name="reload">true</param>-->
+                <evaluator>evaluator.doclib.dms.isAdmin</evaluator>
             </action>
 
             <!-- task actions -->
@@ -267,6 +285,7 @@
 
             <actionGroup id="document-details">
                 <action index="200" id="document-print" />
+                <action index="225" id="document-edit-online-aos"/>
                 <action index="250" id="case-save-as-template" />
                 <action index="99" id="custom-manage-permissions" />
                 <action index="450" id="document-fill-template" />

@@ -200,7 +200,19 @@
 }
 
 .yui-skin-citeckTheme.mobile #HEADER_SEARCHBOX_FORM_FIELD {
-    max-width: 22px !important;
+    max-width: 50px;
+}
+
+@media screen and (min-width: 360px) {
+    .yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header #HEADER_SEARCHBOX_FORM_FIELD {
+        max-width: 105px;
+    }
+}
+
+@media screen and (min-width: 600px) {
+    .yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header #HEADER_SEARCHBOX_FORM_FIELD {
+        max-width: 200px;
+    }
 }
 
 .yui-skin-citeckTheme.mobile .alfresco-header-Header .dijitMenuBar #HEADER_CHANGE_LANGUAGE {
@@ -216,25 +228,6 @@
 .mobile.yui-skin-citeckTheme.alfresco-share .mm-slideout #HEADER_USER_MENU_BAR #HEADER_USER_MENU {
     padding-right: 0;
 }
-
-@media screen and (min-width: 360px) {
-    .yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header #HEADER_SEARCHBOX_FORM_FIELD {
-        max-width: 55px !important;
-    }
-}
-
-@media screen and (min-width: 400px) {
-    .yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header #HEADER_SEARCHBOX_FORM_FIELD {
-        max-width: 105px !important;
-    }
-}
-
-@media screen and (min-width: 600px) {
-    .yui-skin-citeckTheme.mobile #alf-hd .alfresco-header-Header #HEADER_SEARCHBOX_FORM_FIELD {
-        max-width: 200px !important;
-    }
-}
-
 
 .yui-skin-citeckTheme.mobile #share-header .widgets > .left-and-right {
     padding: 0 15px !important;

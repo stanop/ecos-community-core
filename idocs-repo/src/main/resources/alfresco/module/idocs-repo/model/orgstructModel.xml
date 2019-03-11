@@ -1,131 +1,132 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <model name="org:orgstruct" xmlns="http://www.alfresco.org/model/dictionary/1.0">
-	<description>Organizational Structure Model</description>
-	<version>1.0</version>
+    <description>Organizational Structure Model</description>
+    <version>1.0</version>
 
-	<imports>
-		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
-		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
-		<import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
-		<import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
-	</imports>
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+        <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
+        <import uri="http://www.citeck.ru/model/wcalendar/1.0" prefix="wcal"/>
+    </imports>
 
-	<namespaces>
-		<namespace uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org" />
-	</namespaces>
-	
-	<types>
-	
-		<type name="org:simpleBranchType">
-			<parent>cm:cmobject</parent>
-			<mandatory-aspects>
-				<aspect>org:branchType</aspect>
-			</mandatory-aspects>
-		</type>
-	
-		<type name="org:simpleRoleType">
-			<parent>cm:cmobject</parent>
-			<mandatory-aspects>
-				<aspect>org:roleType</aspect>
-			</mandatory-aspects>
-		</type>
-	
-	</types>
-	
-	<aspects>
-	
-		<aspect name="org:customFields">
-			<properties>
-				<property name="org:customAspect">
-					<type>d:qname</type>
-				</property>
-			</properties>
-		</aspect>
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org" />
+    </namespaces>
 
-		<!-- this aspect marks nodes, that represent branch types -->
-		<!-- they should have cm:name and cm:title properties -->
-		<aspect name="org:branchType">
-			<mandatory-aspects>
-				<aspect>cm:titled</aspect>
-				<aspect>org:customFields</aspect>
-			</mandatory-aspects>
-		</aspect>
-	
-		<!-- this aspect marks nodes, that represent role types -->
-		<!-- they should have cm:name and cm:title properties -->
-		<aspect name="org:roleType">
-			<properties>
-				<property name="org:roleIsManager">
-					<type>d:boolean</type>
-					<default>false</default>
-				</property>
-			</properties>
-			<mandatory-aspects>
-				<aspect>cm:titled</aspect>
-				<aspect>org:customFields</aspect>
-			</mandatory-aspects>
-		</aspect>
-	
-		<!-- this aspect marks groups, that represent branches -->
-		<!-- they should have cm:name and cm:title properties -->
-		<aspect name="org:branch">
-			<properties>
-				<property name="org:branchType">
-					<type>d:text</type>
-				</property>
-			</properties>
-			<associations>
-				<association name="org:branchTypeAssoc">
-					<source>
-						<mandatory>false</mandatory>
-						<many>true</many>
-					</source>
-					<target>
-						<class>org:simpleBranchType</class>
-						<mandatory>false</mandatory>
-						<many>false</many>
-					</target>
-				</association>
-			</associations>
-			<mandatory-aspects>
-				<aspect>org:customFields</aspect>
-			</mandatory-aspects>
-		</aspect>
-		
-		<aspect name="org:branchIndex">
-			<properties>
-				<!-- index for registration -->
-				<property name="org:branchIndex">
-					<type>d:text</type>
-				</property>
-			</properties>
-		</aspect>
+    <types>
 
-		<!-- this aspect marks groups, that represent roles -->
-		<!-- they should have cm:name and cm:title properties -->
-		<aspect name="org:role">
-			<properties>
-				<property name="org:roleType">
-					<type>d:text</type>
-				</property>
-			</properties>
-			<associations>
-				<association name="org:roleTypeAssoc">
-					<source>
-						<mandatory>false</mandatory>
-						<many>true</many>
-					</source>
-					<target>
-						<class>org:simpleRoleType</class>
-						<mandatory>false</mandatory>
-						<many>false</many>
-					</target>
-				</association>
-			</associations>
-			<mandatory-aspects>
-				<aspect>org:customFields</aspect>
-			</mandatory-aspects>
-		</aspect>
+        <type name="org:simpleBranchType">
+            <parent>cm:cmobject</parent>
+            <mandatory-aspects>
+                <aspect>org:branchType</aspect>
+            </mandatory-aspects>
+        </type>
+
+        <type name="org:simpleRoleType">
+            <parent>cm:cmobject</parent>
+            <mandatory-aspects>
+                <aspect>org:roleType</aspect>
+            </mandatory-aspects>
+        </type>
+
+    </types>
+
+    <aspects>
+
+        <aspect name="org:customFields">
+            <properties>
+                <property name="org:customAspect">
+                    <type>d:qname</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <!-- this aspect marks nodes, that represent branch types -->
+        <!-- they should have cm:name and cm:title properties -->
+        <aspect name="org:branchType">
+            <mandatory-aspects>
+                <aspect>cm:titled</aspect>
+                <aspect>org:customFields</aspect>
+            </mandatory-aspects>
+        </aspect>
+
+        <!-- this aspect marks nodes, that represent role types -->
+        <!-- they should have cm:name and cm:title properties -->
+        <aspect name="org:roleType">
+            <properties>
+                <property name="org:roleIsManager">
+                    <type>d:boolean</type>
+                    <default>false</default>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>cm:titled</aspect>
+                <aspect>org:customFields</aspect>
+            </mandatory-aspects>
+        </aspect>
+
+        <!-- this aspect marks groups, that represent branches -->
+        <!-- they should have cm:name and cm:title properties -->
+        <aspect name="org:branch">
+            <properties>
+                <property name="org:branchType">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="org:branchTypeAssoc">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>org:simpleBranchType</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+            <mandatory-aspects>
+                <aspect>org:customFields</aspect>
+            </mandatory-aspects>
+        </aspect>
+
+        <aspect name="org:branchIndex">
+            <properties>
+                <!-- index for registration -->
+                <property name="org:branchIndex">
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <!-- this aspect marks groups, that represent roles -->
+        <!-- they should have cm:name and cm:title properties -->
+        <aspect name="org:role">
+            <properties>
+                <property name="org:roleType">
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="org:roleTypeAssoc">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>org:simpleRoleType</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+            <mandatory-aspects>
+                <aspect>org:customFields</aspect>
+            </mandatory-aspects>
+        </aspect>
 
         <aspect name="org:personName">
             <title>Person name</title>
@@ -147,7 +148,7 @@
                 </property>
             </properties>
         </aspect>
-	
+
         <aspect name="org:preset">
             <properties>
                 <!-- user preset for share -->
@@ -159,21 +160,48 @@
             </properties>
         </aspect>
 
-		<aspect name="org:hasLegalEntity">
-			<associations>
-				<association name="org:legalEntity">
-					<source>
-						<mandatory>false</mandatory>
-						<many>true</many>
-					</source>
-					<target>
-						<class>idocs:legalEntity</class>
-						<mandatory>false</mandatory>
-						<many>false</many>
-					</target>
-				</association>
-			</associations>
-		</aspect>
-	</aspects>
+        <!-- aspect to add availability to user -->
+        <aspect name="org:showHints">
+            <properties>
+                <property name="org:showHints">
+                    <type>d:boolean</type>
+                    <default>true</default>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="org:hasLegalEntity">
+            <associations>
+                <association name="org:legalEntity">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:legalEntity</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="org:hasWorkingCalendar">
+            <associations>
+                <association name="org:workingCalendar">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>wcal:calendar</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+    </aspects>
 
 </model>

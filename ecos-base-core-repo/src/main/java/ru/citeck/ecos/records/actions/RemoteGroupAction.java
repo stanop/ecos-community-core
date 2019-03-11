@@ -5,8 +5,8 @@ import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.impl.BaseGroupAction;
 import ru.citeck.ecos.records.RecordInfo;
-import ru.citeck.ecos.records.RecordRef;
 import ru.citeck.ecos.records.RecordsGroupActionPost;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.remote.RestConnection;
 
 import java.util.*;
@@ -41,7 +41,7 @@ public class RemoteGroupAction<T> extends BaseGroupAction<RecordInfo<T>> {
         data.config = targetConfig;
 
         data.nodes = nodes.stream().map(info -> {
-            RecordRef id = new RecordRef(info.getRef().getId());
+            RecordRef id = RecordRef.valueOf(info.getRef().getId());
             infoMapping.put(id, info);
             return id;
         }).collect(Collectors.toList());

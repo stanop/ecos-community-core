@@ -379,6 +379,27 @@ div#FCTSRCH_SEARCH_RESULTS_LIST .data-failure {
   padding-left: 5px;
 }
 
+.alfresco-share div.show-hint {
+  height: 26px;
+  width: 26px;
+  border-radius: 50%;
+  padding-left: 0px;
+  padding-right: 10px;
+}
+
+.alfresco-share div.headHintIcon {
+  width:   30px;
+  height:  30px;
+  margin:  5px 1px 1px 2px;
+}
+
+.alfresco-share div.show-hint-header {
+  height: 25px;
+  width: 25px;
+  border-radius: 50%;
+  padding-left: 5px;
+}
+
 .alfresco-share.mobile img.user-photo-header {
   height: 25px;
   width: 25px;
@@ -543,4 +564,32 @@ div#FCTSRCH_SEARCH_RESULTS_LIST .data-failure {
 
 .web-preview canvas[id*="viewer-canvas"] {
   visibility:inherit !important;
+}
+
+#group-action-result-dialog td,
+#group-action-result-dialog th,
+div[id*="-results-panel"].yui-panel td,
+div[id*="-results-panel"].yui-panel th {
+  padding-left: 10px;
+  padding-top: 5px;
+}
+
+#group-action-result-dialog>.bd,
+div[id*="-results-panel"].yui-panel>.bd {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.custom-button-download {
+    background-image: url(/share/res/citeck/components/dynamic-tree/icons/download-active.png) !important;
+    margin: 2px 0 2px 24px;
+    min-width: 16px;
+    min-height: 16px;
+}
+
+.custom-button-edit {
+    background-image: url(/share/res/citeck/components/dynamic-tree/icons/edit-properties.png) !important;
+    margin: 2px 0 2px 24px;
+    min-width: 16px;
+    min-height: 16px;
 }

@@ -58,7 +58,9 @@
             <header key="wfm:documentTypeTitle" default="true"/>
             <header key="wfm:documentKindTitle" default="true"/>
             <header key="bpm:startDate" />
-            <header key="bpm:dueDate" default="true" />
+            <header key="bpm:dueDate" default="true">
+                <option name="formatter">dateOrDateTime</option>
+            </header>
             <header key="bpm:comment" />
             <header key="attr:aspects" visible="false" searchable="false" />
             <header key="attr:isContainer" visible="false" searchable="false" />
@@ -114,7 +116,9 @@
             <header key="wfm:documentTypeTitle" default="true"/>
             <header key="wfm:documentKindTitle" default="true"/>
             <header key="bpm:startDate" />
-            <header key="bpm:dueDate" default="true" />
+            <header key="bpm:dueDate" default="true">
+                <option name="formatter">dateOrDateTime</option>
+            </header>
             <header key="bpm:comment" />
             <header key="cwf:taskTitle" visible="false" />
             <header key="cm:title" visible="false" searchable="false" />
@@ -159,7 +163,9 @@
             <header key="wfm:documentTypeTitle" default="true"/>
             <header key="wfm:documentKindTitle" default="true"/>
             <header key="bpm:startDate" />
-            <header key="bpm:dueDate" default="true" />
+            <header key="bpm:dueDate" default="true">
+                <option name="formatter">dateOrDateTime</option>
+            </header>
             <header key="bpm:completionDate" default="true" />
             <header key="bpm:comment" default="true" />
             <header key="cwf:taskTitle" visible="false" />
@@ -173,11 +179,11 @@
         <option name="defaultSortBy">[{id: 'event:date', order: 'desc'}]</option>
         <headers>
             <header key="event:taskType" default="true" searchable="false" sortable="false">
-                <option name="customLabel">Тип задачи</option>
+                <option name="customLabel">journal.task.statistics.task_type.title</option>
                 <option name="formatter">typeName</option>
             </header>
             <header key="event:initiator" default="true" sortable="false">
-                <option name="customLabel">Исполнитель</option>
+                <option name="customLabel">journal.task.statistics.initiator.title</option>
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER,GROUP</param>
@@ -185,25 +191,25 @@
                 </criterion>
             </header>
             <header key="event:document" default="true" searchable="false" sortable="false">
-                <option name="customLabel">Документ</option>
+                <option name="customLabel">journal.task.statistics.document.title</option>
                 <option name="formatter">documentLink</option>
             </header>
             <header key="event:date" default="true">
-                <option name="customLabel">Дата начала</option>
+                <option name="customLabel">journal.task.statistics.date.title</option>
                 <option name="formatter">datetime</option>
             </header>
             <header key="history:completionDate" default="true" searchable="false" sortable="false">
-                <option name="customLabel">Дата завершения</option>
+                <option name="customLabel">journal.task.statistics.completion_date.title</option>
                 <option name="formatter">datetime</option>
             </header>
             <header key="history:actualPerformTime" default="true" searchable="false" sortable="false">
-                <option name="customLabel">Время выполнения, ч.</option>
+                <option name="customLabel">journal.task.statistics.actual_perform_time.title</option>
             </header>
             <header key="history:expectedPerformTime" default="true" searchable="false" sortable="false">
-                <option name="customLabel">Ожидаемое время выполнения, ч</option>
+                <option name="customLabel">journal.task.statistics.expected_perform_time.title</option>
             </header>
             <header key="history:performTimeRatio" default="true" searchable="false" sortable="false">
-                <option name="customLabel">Ожидаемое время / Время выполнения</option>
+                <option name="customLabel">journal.task.statistics.perform_time_ration.title</option>
                 <option name="formatter">percent</option>
             </header>
         </headers>
@@ -254,7 +260,9 @@
             <header key="wfm:documentTypeTitle" default="true"/>
             <header key="wfm:documentKindTitle" default="true"/>
             <header key="bpm:startDate" />
-            <header key="bpm:dueDate" default="true" />
+            <header key="bpm:dueDate" default="true">
+                <option name="formatter">dateOrDateTime</option>
+            </header>
             <header key="bpm:comment" />
             <header key="wfm:workflowName" default="true">
                 <option name="formatter">workflowName</option>
@@ -310,7 +318,9 @@
             <header key="wfm:documentTypeTitle" default="true"/>
             <header key="wfm:documentKindTitle" default="true"/>
             <header key="bpm:startDate"/>
-            <header key="bpm:dueDate" default="true"/>
+            <header key="bpm:dueDate" default="true">
+                <option name="formatter">dateOrDateTime</option>
+            </header>
             <header key="bpm:comment"/>
             <header key="wfm:workflowInitiator" />
             <header key="cwf:taskTitle" visible="false" />

@@ -1,4 +1,5 @@
 require([
     'js/citeck/modules/utils/citeck',
-    'citeck/mobile/mobile'
+    'citeck/mobile/mobile',
+    'js/citeck/modules/records/records'
 ]);

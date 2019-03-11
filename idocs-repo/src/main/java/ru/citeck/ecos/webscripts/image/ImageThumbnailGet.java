@@ -60,7 +60,11 @@ public class ImageThumbnailGet extends AbstractWebScript {
         }
 
         ContentReader reader = contentService.getReader(nodeRef, contentProperty);
-        File tempFile = getTempFile(nodeRef, reader, width, height, stretch);
+        if (reader == null || !reader.exists()) {
+            throw new WebScriptException(Status.STATUS_NOT_FOUND, "Content not found");
+        }
+
+        File tempFile = getTempFile(nodeRef, reader, contentProperty, width, height, stretch);
 
         long tempLastModified = tempFile.lastModified();
         if (!tempFile.exists() || tempLastModified < reader.getLastModified()) {
@@ -81,11 +85,15 @@ public class ImageThumbnailGet extends AbstractWebScript {
 
     private File getTempFile(NodeRef imageRef,
                              ContentReader reader,
-                             int width, int height, boolean stretch) {
+                             QName property,
+                             int width, int height,
+                             boolean stretch) {
 
         String extension = mimetypeService.getExtension(reader.getMimetype());
         File tmpDir = TempFileProvider.getTempDir().getAbsoluteFile();
-        return new File(tmpDir, String.format("%s_%s_%s_%s.%s", imageRef.getId(), width, height, stretch, extension));
+        int hash = Objects.hash(imageRef, property, reader.getLastModified(), width, height, stretch);
+
+        return new File(tmpDir, String.format("%s_%s.%s", imageRef.getId(), hash, extension));
     }
 
     private void updateImage(ContentReader reader,
@@ -103,7 +111,10 @@ public class ImageThumbnailGet extends AbstractWebScript {
         }
 
         BufferedImage thumbnailImg;
-        if (width > 0 && height == -1) {
+
+        if (width == -1 && height == -1) {
+            thumbnailImg = originalImage;
+        } else if (width > 0 && height == -1) {
             thumbnailImg = Scalr.resize(originalImage, Scalr.Mode.FIT_TO_WIDTH, width);
         } else if (height > 0 && width == -1) {
             thumbnailImg = Scalr.resize(originalImage, Scalr.Mode.FIT_TO_HEIGHT, height);

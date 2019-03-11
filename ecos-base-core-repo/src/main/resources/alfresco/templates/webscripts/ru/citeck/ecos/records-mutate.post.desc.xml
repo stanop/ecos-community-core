@@ -6,4 +6,5 @@
     <authentication>user</authentication>
     <transaction allow="readwrite">required</transaction>
     <lifecycle>public_api</lifecycle>
+    <formdata multipart-processing="false" />
 </webscript>

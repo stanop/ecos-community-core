@@ -1,5 +1,7 @@
 package ru.citeck.ecos.records;
 
+import ru.citeck.ecos.records2.RecordRef;
+
 import java.util.Objects;
 
 public class RecordInfo<T> {

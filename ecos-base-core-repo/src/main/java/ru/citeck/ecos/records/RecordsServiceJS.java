@@ -1,78 +1,102 @@
 package ru.citeck.ecos.records;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.alfresco.repo.jscript.ValueConverter;
-import org.json.JSONArray;
+import org.alfresco.util.ParameterCheck;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsResult;
+import ru.citeck.ecos.records.rest.RecordsQueryPost;
+import ru.citeck.ecos.records2.RecordMeta;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.result.RecordsResult;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
-import ru.citeck.ecos.utils.JavaScriptImplUtils;
+import ru.citeck.ecos.utils.JsUtils;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
 
+    private static final String TMP_ATT_NAME = "a";
+
     @Autowired
-    private RecordsService recordsService;
+    private RecordsServiceImpl recordsService;
+    @Autowired
+    private RecordsQueryPost recordsQueryPost;
 
-    private static ValueConverter converter = new ValueConverter();
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private JsUtils jsUtils;
 
-    public ActionResult<RecordRef>[] executeAction(Object nodes,
-                                                   Object config) {
+    public ActionResult<RecordRef>[] executeAction(Object nodes, Object config) {
 
-        Collection<RecordRef> records = toRecords(nodes);
-        GroupActionConfig actionConfig = convertConfig(config, GroupActionConfig.class);
+        List<RecordRef> records = jsUtils.getList(nodes, jsUtils::getRecordRef);
+        GroupActionConfig actionConfig = jsUtils.toJava(config, GroupActionConfig.class);
 
         return toArray(recordsService.executeAction(records, actionConfig));
     }
 
-    public RecordsResult<RecordRef> getRecords(Object recordsQuery) {
-        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
-        return recordsService.getRecords(convertedQuery);
+    public String getAttribute(Object record, String attribute) {
+        Map<String, String> attributesMap = new HashMap<>();
+        attributesMap.put(TMP_ATT_NAME, attribute);
+        RecordMeta meta = recordsService.getAttributes(jsUtils.getRecordRef(record), attributesMap);
+        return meta.getAttribute(TMP_ATT_NAME, "");
     }
 
-    public RecordsResult<ObjectNode> getRecords(Object recordsQuery, String metaSchema) {
-        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
-        return recordsService.getRecords(convertedQuery, metaSchema);
+    public Object getAttributes(Object records, Object attributes) {
+
+        ParameterCheck.mandatory("records", records);
+        ParameterCheck.mandatory("attributes", attributes);
+
+        Object javaRecords = jsUtils.toJava(records);
+        Object javaAttributes = jsUtils.toJava(attributes);
+
+        if (javaRecords instanceof Collection) {
+            return getRecordsAttributes(jsUtils.getList(javaRecords, jsUtils::getRecordRef), javaAttributes);
+        } else {
+            return getRecordAttributes(jsUtils.getRecordRef(javaRecords), javaAttributes);
+        }
+    }
+
+    private Object getRecordAttributes(RecordRef recordRef, Object attributes) {
+
+        if (attributes instanceof Collection) {
+            return recordsService.getAttributes(recordRef, (Collection<String>) attributes);
+        } else if (attributes instanceof Map) {
+            return recordsService.getAttributes(recordRef, (Map<String, String>) attributes);
+        }
+
+        throwIncorrectAttributesType(attributes);
+        return null;
+    }
+
+    private Object getRecordsAttributes(Collection<RecordRef> records, Object attributes) {
+
+        if (attributes instanceof Collection) {
+            return recordsService.getAttributes(records, (Collection<String>) attributes);
+        } else if (attributes instanceof Map) {
+            return recordsService.getAttributes(records, (Map<String, String>) attributes);
+        }
+
+        throwIncorrectAttributesType(attributes);
+        return null;
+    }
+
+    private void throwIncorrectAttributesType(Object attributes) throws RuntimeException {
+        throw new IllegalArgumentException("Attributes type is not supported! " + attributes.getClass());
+    }
+
+    public RecordsResult<?> getRecords(Object recordsQuery) {
+        RecordsQueryPost.Request request = jsUtils.toJava(recordsQuery, RecordsQueryPost.Request.class);
+        return recordsQueryPost.queryRecords(request);
     }
 
     public <T> RecordsResult<T> getRecords(Object recordsQuery, Class<T> schemaClass) {
-        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
+        RecordsQuery convertedQuery = jsUtils.toJava(recordsQuery, RecordsQuery.class);
         return recordsService.getRecords(convertedQuery, schemaClass);
     }
 
     public Iterable<RecordRef> getIterableRecords(Object recordsQuery) {
-        RecordsQuery convertedQuery = convertConfig(recordsQuery, RecordsQuery.class);
+        RecordsQuery convertedQuery = jsUtils.toJava(recordsQuery, RecordsQuery.class);
         return recordsService.getIterableRecords(convertedQuery);
-    }
-
-    public Collection<RecordRef> toRecords(Object nodes) {
-        Object jNodes = converter.convertValueForJava(nodes);
-        final List<RecordRef> resultList = new ArrayList<>();
-        if (jNodes instanceof List) {
-            for (Object obj : (List) jNodes) {
-                resultList.add(JavaScriptImplUtils.getRecordRef(obj));
-            }
-        } else if (jNodes instanceof JSONArray) {
-            JSONArray jsonArray = (JSONArray) jNodes;
-            for (int i = 0; i < jsonArray.length(); i++) {
-                resultList.add(JavaScriptImplUtils.getRecordRef(jsonArray.opt(i)));
-            }
-        } else if (jNodes instanceof Iterable) {
-            @SuppressWarnings("unchecked")
-            Iterable<Object> iterableNodes = (Iterable<Object>) jNodes;
-            iterableNodes.forEach(r -> resultList.add(JavaScriptImplUtils.getRecordRef(r)));
-        }
-        return resultList;
     }
 
     private static <T> ActionResult<T>[] toArray(ActionResults<T> results) {
@@ -81,23 +105,13 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
         return results.getResults().toArray(result);
     }
 
-    private static <T> T convertConfig(Object config, Class<T> type) {
-        if (config == null) {
-            return null;
-        }
-        Object configObj = converter.convertValueForJava(config);
-        if (configObj instanceof String) {
-            try {
-                configObj = objectMapper.readTree((String) configObj);
-            } catch (IOException e) {
-                throw new RuntimeException("Can't cast config to type: " + type, e);
-            }
-        }
-        return objectMapper.convertValue(configObj, type);
+    @Autowired
+    public void setJsUtils(JsUtils jsUtils) {
+        this.jsUtils = jsUtils;
     }
 
     @Autowired
-    public void setRecordsService(RecordsService recordsService) {
+    public void setRecordsService(RecordsServiceImpl recordsService) {
         this.recordsService = recordsService;
     }
 }

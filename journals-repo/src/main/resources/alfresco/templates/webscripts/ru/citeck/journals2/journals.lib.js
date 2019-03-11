@@ -7,7 +7,7 @@ var journalsLib = {
         return {
             id: journalType.getId(),
             settings: this.renderOptions(journalType.getOptions()),
-            groupActions: this.renderGroupActions(journalType.getGroupActions()),
+            groupActions: this.renderGroupActions(journalType.getGroupActions(), journalType.getId()),
             attributes: this.renderAttributes(journalType)
         };
     },
@@ -83,12 +83,12 @@ var journalsLib = {
         return result;
     },
 
-    renderGroupActions: function (actions) {
+    renderGroupActions: function (actions, journalTypeId) {
         var result = [];
         for (var i = 0; i < actions.size(); i++) {
             var action = actions.get(i);
             result.push({
-                id: "group-action-" + i,
+                id: "group-action-" + i + "-" + action.getId() + "-" + journalTypeId,
                 label: action.getTitle(),
                 func: "onGroupAction",
                 isDoclib: false,

@@ -9,7 +9,7 @@ const STATUS_SKIPPED = "STATUS_SKIPPED";
         attrs = json.get('attributes'),
         skipInStatuses = json.get('skipInStatuses'),
         isChildMode = json.get('childMode'),
-        permService = services.get("attributesPermissionService");
+        permService = services.getOrNull("attributesPermissionService");
 
     if (!exists("nodes", nodes) ||
         !exists("attributes", attrs)) {
@@ -17,7 +17,6 @@ const STATUS_SKIPPED = "STATUS_SKIPPED";
         return;
     }
 
-    var results = {};
     var statuses = [];
     if (skipInStatuses) {
         for (var i = 0; i < skipInStatuses.length(); i++) {
@@ -30,11 +29,18 @@ const STATUS_SKIPPED = "STATUS_SKIPPED";
     }
     statuses = statuses.join(",");
 
-    for (var i = 0; i < nodes.length(); i++) {
-        var node = search.findNode(nodes.get(i));
-        var changeResult  = {};
+    var changeResult = groupActions.forEach(nodes, function(nodeStr) {
+        var splitedNode = nodeStr.split("@");
+        if(splitedNode.length > 1){
+            nodeStr = splitedNode[1]; // This is necessary because search.findNode does not work with RecordRef's (returns null)
+        }
+
+        var node = search.findNode(nodeStr);
+
         var it = attrs.keys();
+
         while (it.hasNext()) {
+
             var key = it.next();
             var skipInThisStatus = false;
 
@@ -46,29 +52,47 @@ const STATUS_SKIPPED = "STATUS_SKIPPED";
                 skipInThisStatus = (statuses.indexOf(caseStatusRef) >= 0);
             }
 
-            try {
-                if (!skipInThisStatus) {
-                    if (checkPermission(node, key, permService)) {
-                        attributes.set(node, key, attrs.get(key));
-                        changeResult[key] = STATUS_SUCCESS;
-                    } else {
-                        changeResult[key] = STATUS_PERMISSION_DENIED;
-                    }
+            if (!skipInThisStatus) {
+                if (checkPermission(node, key, permService)) {
+                    attributes.set(node, key, attrs.get(key));
+                    return STATUS_SUCCESS;
                 } else {
-                    changeResult[key] = STATUS_SKIPPED;
+                    return STATUS_PERMISSION_DENIED;
                 }
-            } catch (e) {
-                logger.error(e);
-                changeResult[key] = STATUS_ERROR;
+            } else {
+                return STATUS_SKIPPED;
             }
         }
-        results[node.nodeRef] = changeResult;
+    });
+
+    var actionResults = changeResult.getResults();
+    var formattedResults = {};
+
+    for (var i = 0; i < actionResults.length; i++) {
+
+        var result = actionResults[i];
+
+        var statusKey = result.getStatus().getKey();
+        var actStatus = {};
+
+        var it = attrs.keys();
+        while (it.hasNext()) {
+            actStatus[it.next()] = statusKey;
+        }
+
+        var nodeRef = result.getData();
+
+        formattedResults[nodeRef + ""] = actStatus;
     }
 
-    model.results = results;
+    model.results = formattedResults;
+
 })();
 
 function checkPermission(node, attr, permService) {
+    if (permService == null) {
+        return true;
+    }
     return permService.isFieldEditable(citeckUtils.createQName(attr), node.nodeRef, "edit");
 }
 

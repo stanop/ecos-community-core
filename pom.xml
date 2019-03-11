@@ -4,7 +4,7 @@
 
     <groupId>ru.citeck.ecos.community</groupId>
     <artifactId>ecos-community</artifactId>
-    <version>3.8.0-SNAPSHOT</version>
+    <version>3.10.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>ecos-community</name>
@@ -65,8 +65,9 @@
         <default.locale>en</default.locale>
         <yuicompressor.compress.skip>false</yuicompressor.compress.skip>
 
-        <flowable.version>6.3.0</flowable.version>
-        <ecos.flowable.version>1.5.0-SNAPSHOT</ecos.flowable.version>
+        <flowable.version>6.4.1</flowable.version>
+        <ecos.flowable.version>1.5.0</ecos.flowable.version>
+        <ecos.records.version>1.1.0-SNAPSHOT</ecos.records.version>
 
         <web.compression.skip>false</web.compression.skip>
     </properties>
@@ -540,6 +541,13 @@
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>ecos-records</artifactId>
+                <version>${ecos.records.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -868,6 +876,13 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-eform-repo</artifactId>
+                            <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                         <!-- Bring in the integration tests -->
                         <!--<moduleDependency>
                             <groupId>${project.groupId}</groupId>
@@ -967,6 +982,13 @@
                             <type>amp</type>
                         </moduleDependency>
 
+                        <moduleDependency>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>ecos-eform-share</artifactId>
+                            <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                     </shareModules>
                 </configuration>
             </plugin>
@@ -1060,6 +1082,8 @@
         <module>ecos-order-pass-repo</module>
         <module>ecos-flowable-repo</module>
         <module>ecos-flowable-share</module>
+        <module>ecos-eform-repo</module>
+        <module>ecos-eform-share</module>
     </modules>
 
     <repositories>

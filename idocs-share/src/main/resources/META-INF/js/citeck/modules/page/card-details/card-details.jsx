@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import {utils as CiteckUtils} from 'js/citeck/modules/utils/citeck';
 import 'citeck/mobile/mobile';
-import 'lib/underscore'
+import 'underscore'
 import CardDetails from './components';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';

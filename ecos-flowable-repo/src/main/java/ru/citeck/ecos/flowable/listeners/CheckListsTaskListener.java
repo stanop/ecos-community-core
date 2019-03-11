@@ -3,7 +3,7 @@ package ru.citeck.ecos.flowable.listeners;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.apache.commons.lang.StringUtils;
-import org.flowable.engine.common.api.delegate.Expression;
+import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.flowable.variable.api.delegate.VariableScope;
@@ -63,16 +63,7 @@ public class CheckListsTaskListener extends AbstractServiceProvider implements T
     }
 
     private boolean processEnabledState(VariableScope variableScope) {
-        if (checkEnabled == null) {
-            return Boolean.TRUE;
-        }
-
-        final String expText = checkEnabled.getExpressionText();
-        if (Boolean.TRUE.toString().equals(expText) || Boolean.FALSE.toString().equals(expText)) {
-            return Boolean.valueOf(expText);
-        }
-
-        return (boolean) checkEnabled.getValue(variableScope);
+        return FlowableListenerUtils.getBooleanFromExpressionOrDefault(checkEnabled, variableScope, true);
     }
 
     public void setCheckEnabled(Expression checkEnabled) {

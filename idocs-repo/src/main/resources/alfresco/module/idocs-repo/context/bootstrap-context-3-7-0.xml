@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-7-0" abstract="true" parent="idocs.import-spaces.3-5-0">
+        <property name="sinceVersion" value="3.7.0" />
+        <property name="appliesFromVersion" value="3.7.0" />
+    </bean>
+
+    <bean id="idocs.import-scripts.3-7-0" abstract="true" parent="idocs.import-scripts.3-5-0">
+        <property name="sinceVersion" value="3.7.0" />
+        <property name="appliesFromVersion" value="3.7.0" />
+    </bean>
+
+    <bean id="idocs.module-component.icons.dev-tools" parent="idocs.import-spaces.3-7-0">
+        <property name="name" value="Icons dev-tools"/>
+        <property name="description" value="Icons dev-tools"/>
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.icons" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                    <prop key="path">/app:company_home/app:dictionary/cm:ecosIconsRoot</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/explicit/dev-tools-icon.xml</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>

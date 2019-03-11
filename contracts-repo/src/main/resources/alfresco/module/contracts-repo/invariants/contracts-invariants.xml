@@ -23,6 +23,15 @@
                 ]]>
             </invariant>
         </property>
+        <association name="idocs:attachmentRkkCreatedFrom">
+            <invariant on="value" language="javascript"><![CDATA[
+                (function() {
+                    var attachment = view.params.idocs_attachmentRkkCreatedFrom;
+                    if (attachment) return attachment;
+                    return null;
+                })()
+            ]]></invariant>
+        </association>
         <property name="parent">
             <invariant on="default" language="criteria">
                 <criterion attribute="path" predicate="path-equals" value="/app:company_home/st:sites/cm:contracts/cm:documentLibrary/cm:contracts" />
@@ -339,6 +348,15 @@
     </type>
 
     <type name="contracts:supplementaryAgreement">
+        <association name="idocs:attachmentRkkCreatedFrom">
+            <invariant on="value" language="javascript"><![CDATA[
+                (function() {
+                    var attachment = view.params.idocs_attachmentRkkCreatedFrom;
+                    if (attachment) return attachment;
+                    return null;
+                })()
+            ]]></invariant>
+        </association>
         <association name="idocs:signatory">
             <invariant on="mandatory" language="explicit">true</invariant>
         </association>

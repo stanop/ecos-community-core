@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="wcal:wcal" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+    <description>Working Calendar Model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/wcalendar/1.0" prefix="wcal" />
+    </namespaces>
+
+    <types>
+        <type name="wcal:calendar">
+            <title>Working Calendar</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="wcal:name">
+                    <title>Name</title>
+                    <type>d:text</type>
+                </property>
+                <property name="wcal:year">
+                    <title>Year</title>
+                    <type>d:int</type>
+                </property>
+                <property name="wcal:workingDayBegin">
+                    <title>Working Day Begin</title>
+                    <type>d:text</type>
+                </property>
+                <property name="wcal:workingDayEnd">
+                    <title>Working Day End</title>
+                    <type>d:text</type>
+                </property>
+                <property name="wcal:country">
+                    <title>Country</title>
+                    <type>d:text</type>
+                </property>
+                <property name="wcal:scheduleName">
+                    <title>Schedule Name</title>
+                    <type>d:text</type>
+                </property>
+                <property name="wcal:registered">
+                    <title>Registered</title>
+                    <type>d:boolean</type>
+                    <default>true</default>
+                </property>
+            </properties>
+        </type>
+    </types>
+
+</model>

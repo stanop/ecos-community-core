@@ -21,13 +21,17 @@ public interface ContentDAO<T> {
      * Unmarshal config data
      */
     default T read(byte[] bytes) {
-        return read(new ByteArrayInputStream(bytes));
+        try {
+            return read(new ByteArrayInputStream(bytes));
+        } catch (IOException e) {
+            throw new AlfrescoRuntimeException("Exception while read value from bytes array", e);
+        }
     }
 
     /**
      * Unmarshal config data
      */
-    T read(InputStream stream);
+    T read(InputStream stream) throws IOException;
 
     /**
      * Marshal config data
@@ -43,5 +47,5 @@ public interface ContentDAO<T> {
     /**
      * Marshal config data
      */
-    void write(T value, OutputStream stream);
+    void write(T value, OutputStream stream) throws IOException;
 }

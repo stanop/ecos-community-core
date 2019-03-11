@@ -21,8 +21,6 @@ package ru.citeck.ecos.journals;
 import java.util.List;
 import java.util.Map;
 
-import org.alfresco.service.namespace.QName;
-
 public interface JournalType {
 
     String getDataSource();
@@ -31,33 +29,33 @@ public interface JournalType {
     
     Map<String, String> getOptions();
     
-    List<QName> getAttributes();
+    List<String> getAttributes();
     
-    List<QName> getDefaultAttributes();
+    List<String> getDefaultAttributes();
     
-    List<QName> getVisibleAttributes();
+    List<String> getVisibleAttributes();
     
-    List<QName> getSearchableAttributes();
+    List<String> getSearchableAttributes();
     
-    List<QName> getSortableAttributes();
+    List<String> getSortableAttributes();
     
-    List<QName> getGroupableAttributes();
+    List<String> getGroupableAttributes();
     
-    Map<String, String> getAttributeOptions(QName attributeKey);
+    Map<String, String> getAttributeOptions(String attributeKey);
     
-    boolean isAttributeDefault(QName attributeKey);
+    boolean isAttributeDefault(String attributeKey);
     
-    boolean isAttributeVisible(QName attributeKey);
+    boolean isAttributeVisible(String attributeKey);
     
-    boolean isAttributeSearchable(QName attributeKey);
+    boolean isAttributeSearchable(String attributeKey);
     
-    boolean isAttributeSortable(QName attributeKey);
+    boolean isAttributeSortable(String attributeKey);
     
-    boolean isAttributeGroupable(QName attributeKey);
+    boolean isAttributeGroupable(String attributeKey);
 
-    List<JournalBatchEdit> getBatchEdit(QName attributeKey);
+    List<JournalBatchEdit> getBatchEdit(String attributeKey);
 
     List<JournalGroupAction> getGroupActions();
 
-    JournalCriterion getCriterion(QName attributeKey);
+    JournalCriterion getCriterion(String attributeKey);
 }

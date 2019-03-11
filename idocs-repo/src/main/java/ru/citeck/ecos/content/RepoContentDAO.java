@@ -45,4 +45,12 @@ public interface RepoContentDAO<T> {
     void forEach(Consumer<ContentData<T>> consumer);
 
     void clearCache();
+
+    QName getConfigNodeType();
+
+    QName getContentFieldName();
+
+    QName getChildAssocType();
+
+    NodeRef getRootRef();
 }

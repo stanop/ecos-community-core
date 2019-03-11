@@ -19,11 +19,11 @@
 define([
     'lib/knockout',
     'citeck/utils/knockout.utils',
+    'underscore',
     'citeck/components/invariants/invariants',
     'citeck/components/dynamic-tree/cell-formatters',
-    'citeck/components/dynamic-tree/action-renderer',
-    'lib/underscore'
-], function(ko, koutils) {
+    'citeck/components/dynamic-tree/action-renderer'
+], function(ko, koutils, _) {
 
     if (!Citeck) Citeck = {};
     if (!Citeck.constants) Citeck.constants = {};
@@ -135,10 +135,42 @@ CreateVariant
     .property('canCreate', b)
     .property('isDefault', b)
     .property('journal', Journal)
+    .property('createArguments', s)
+    .property('recordRef', s)
 
-    .computed('link', function() {
+    .method('onClick', function () {
+
+        var self = this;
+
+        if (this.recordRef()) {
+            Citeck.forms.eform(this.recordRef(), {
+                params: {
+                    attributes: {
+                        _parent: self.destination()
+                    }
+                }
+            });
+        } else {
+
+            var url = this.url();
+            if (!url) {
+                koutils.subscribeOnce(this.url, function () {
+                    window.location = self.link();
+                });
+            } else {
+                window.location = self.link();
+            }
+        }
+    })
+
+    .computed('link', function () {
+
         var defaultUrlTemplate = 'create-content?itemId={type}&destination={destination}&viewId={formId}',
                 urlTemplate = this.url() ? this.url().replace(/(^\s+|\s+$)/g,'') : defaultUrlTemplate;
+
+        if (this.createArguments()) {
+            urlTemplate += "&" + this.createArguments();
+        }
 
         // redirect back after submit from journal page only
         var options = this.resolve("journal.type.options");
@@ -148,7 +180,7 @@ CreateVariant
         }
 
         return Alfresco.util.siteURL(YAHOO.lang.substitute(urlTemplate, this, function(key, value) {
-            if(typeof value == "function") { return value(); }
+            if (typeof value == "function") { return value(); }
             return value;
         }));
     })
@@ -177,6 +209,7 @@ CreateVariant
         .shortcut('separator', 'attribute._info.separator')
         .shortcut('allowMultipleFilterValue', 'attribute._info.allowMultipleFilterValue') // multiple value, using separator
         .shortcut('allowableMultipleFilterPredicates', 'attribute._info.allowableMultipleFilterPredicates')
+        .shortcut('multipleFilterMaxCount', 'attribute._info.multipleFilterMaxCount')
         .shortcut('name', 'field.name')
 
         /*====== Value ======*/
@@ -481,6 +514,29 @@ CreateVariant
             }
             return result;
         })
+        .method('validateForError', function() {
+            var textValue                         = this.textValue(),
+                separator                         = this.separator(),
+                predicateId                       = this.resolve('predicate.id'),
+                allowableMultipleFilterPredicates = this.allowableMultipleFilterPredicates(),
+                multipleFilterMaxCount            = this.multipleFilterMaxCount();
+
+            if (textValue &&
+                this.allowMultipleFilterValue() &&
+                textValue.indexOf(separator) != -1 &&
+                allowableMultipleFilterPredicates.indexOf(predicateId) != -1) {
+
+                var values = _.uniq((textValue.split(separator)).filter(Boolean));
+
+                if (multipleFilterMaxCount !== -1 && values.length > multipleFilterMaxCount) {
+                    throw {
+                        errorName: "Too many multiple values",
+                        actualCount: values.length,
+                        maxCount: multipleFilterMaxCount
+                    };
+                }
+            }
+        })
         .init(function() {
             var predicateId = this.resolve('predicate.id');
             if (predicateId && predicateId.indexOf("boolean") != -1){
@@ -720,6 +776,7 @@ AttributeInfo
     .property('attribute', Attribute)
 
     .shortcut('separator', 'attribute.settings.separator', ';')
+    .shortcut('multipleFilterMaxCount', 'attribute.settings.multipleFilterMaxCount', -1)
 
     .method('customDisplayName', function() {
         var optionLabel = null;
@@ -854,13 +911,23 @@ Record
         return _.contains(this.aspects(), aspect);
     })
     .method('hasPermission', function(permission) {
-        return this.permissions()[permission] === true;
+        //if we see record we have Read permission
+        if (permission === "Read") {
+            return true;
+        }
+        //if permissions is unknown allow to send requests
+        return (this.permissions() || {})[permission] !== false;
     })
     ;
 
 Column
     .property('id', s)
+    .property('attKey', s)
     .computed('key', function() {
+        var key = this.attKey();
+        if (key) {
+            return key;
+        }
         var id = this.id();
         return id.match(':') ? 'attributes[\'' + id + '\']' : id;
     })
@@ -1134,6 +1201,7 @@ JournalsWidget
                 includeLink = false,
                 withoutMultiple = false,
                 labelByCode = null;
+
             if (options) {
                 formatter = options.settings().formatter;
                 withoutMultiple = options.settings().withoutMultiple;
@@ -1174,6 +1242,7 @@ JournalsWidget
 
             return {
                 id: attr.name(),
+                attKey: 'attributes[\'' + attr.name() + '\']',
                 sortable: options ? options.sortable() : false,
                 formatter: formatter
             };
@@ -1223,7 +1292,7 @@ JournalsWidget
         return _.map(attributes, function(attr) {
             var id = attr.name();
             return {
-                key: id.match(':') ? 'attributes[\'' + id + '\']' : id
+                key: 'attributes[\'' + id + '\']'
             };
         }).concat(defaultFields);
     })
@@ -1471,6 +1540,15 @@ JournalsWidget
     })
 
     .method('performSearch', function() {
+        var error = this.validateForError();
+        if (error) {
+            var startMessagePart = msg("label.too-many-multiple-values.start");
+            var endMessagePart = msg("label.too-many-multiple-values.end");
+            Alfresco.util.PopupManager.displayPrompt({
+                text: startMessagePart + " " + error.maxCount + " " + endMessagePart
+            });
+            return;
+        }
         this.recordsLoaded(false);
         this.records.reload();
     })
@@ -1576,6 +1654,24 @@ JournalsWidget
             record.selected(false);
         });
     })
+    .method('validateForError', function() {
+        var filter = this._filter();
+        if (filter) {
+            var filterCriteria = filter.usableCriteria();
+            if (filter.criteria.loaded()) {
+                try {
+                    filterCriteria.forEach(function (criteria) {
+                        criteria.validateForError();
+                    });
+                } catch (err) {
+                    if (err.errorName && err.errorName === "Too many multiple values") {
+                        return err;
+                    }
+                }
+            }
+        }
+        return null;
+    })
 
     /*********************************************************/
     /*             FILTERS AND SETTINGS FUNCTIONS            */
@@ -1592,6 +1688,15 @@ JournalsWidget
         },
 
         applyCriteria: function() {
+            var error = this.validateForError();
+            if (error) {
+                var startMessagePart = msg("label.too-many-multiple-values.start");
+                var endMessagePart = msg("label.too-many-multiple-values.end");
+                Alfresco.util.PopupManager.displayPrompt({
+                    text: startMessagePart + " " + error.maxCount + " " + endMessagePart
+                });
+                return;
+            }
             this.skipCount(0);
             this.filter(this._filter());
         },

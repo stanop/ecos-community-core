@@ -64,6 +64,43 @@ YAHOO.widget.Tooltip.prototype.onContextMouseOut = function (e, obj) {
 
 // TODO:
 // - init tooltip only if text not empty
+function getHintPropertyByCurrentUser(callback) {
+
+    if (!window.getHintPropertyByCurrentUser) {
+        window.getHintPropertyByCurrentUser = ko.observable(null);
+
+        Alfresco.util.Ajax.jsonGet({
+            url: Alfresco.constants.PROXY_URI + "citeck/search/query",
+            dataObj: {
+                query: '=cm:userName:"' + Alfresco.constants.USERNAME + '"',
+                schema: JSON.stringify({attributes:{'org:showHints':''}})
+            },
+            successCallback: {
+                scope: this,
+                fn: function(response) {
+                    window.getHintPropertyByCurrentUser(response.json);
+                }
+            },
+            failureCallback: {
+                scope: this,
+                fn: function() {
+                    window.getHintPropertyByCurrentUser({});
+                }
+            }
+        });
+    }
+
+    var value = window.getHintPropertyByCurrentUser();
+    if (value) {
+        callback(value);
+    } else {
+        koutils.subscribeOnce(window.getHintPropertyByCurrentUser, function(value) {
+            if (value) {
+                callback(value);
+            }
+        }, this);
+    }
+}
 
 ko.components.register("help", {
     viewModel: function(params) {
@@ -74,6 +111,7 @@ ko.components.register("help", {
         self.labelZIndex = ko.observable(0);
 
         // private methods
+
         this._createTooltip = _.bind(function(text) {
             if (!this.tooltip) {
                 this.tooltip = new YAHOO.widget.Tooltip(this.id + "-tooltip", {
@@ -117,6 +155,14 @@ ko.components.register("help", {
 
         // create tooltip if text already calculated
         this._createTooltip(this.text());
+
+        var func = function (json) {
+            var showHintValue = json.results[0].attributes["org:showHints"];
+            if (showHintValue === "false") {
+                self.tooltip.cfg.setProperty("disabled", true);
+            }
+        }
+        getHintPropertyByCurrentUser(func);
     },
     template: '\
         <span data-bind="style: { \'z-index\': containerZIndex, position: \'relative\' }, attr: { id: id }, if: text, click: onclick">\
@@ -191,6 +237,10 @@ ko.components.register("number-generate", {
         this.mode = params.mode;
         this.disable = params.disable;
         this.node = params.node;
+
+        this.isButtonMode = this.mode == "button";
+        this.isCheckboxMode = this.mode == "checkbox";
+
         if (_.isFunction(params.template)) {
             this.numTemplate = ko.computed(params.template.bind(this));
         } else {
@@ -200,7 +250,6 @@ ko.components.register("number-generate", {
             numbers: {}
         };
 
-        // flag for 'checkbox' mode
         this.flag = ko.observable(false);
         this.generatedNumber = ko.computed(function() {
             if (!self.flag()) {
@@ -211,9 +260,8 @@ ko.components.register("number-generate", {
                 return -1;
             }
             if (!self._cache.numbers[template]) {
-                var model = params.node().impl().allData.peek().attributes;
                 self._cache.numbers[template] = ko.computed(function() {
-                    return params.enumeration.getNumber(template, model);
+                    return params.enumeration.getNumber(template,  params.node());
                 });
             }
             return self._cache.numbers[template]();
@@ -221,21 +269,18 @@ ko.components.register("number-generate", {
 
         this.generatedNumber.subscribe(function (num) {
             var input = Dom.get(self.id);
-            if (num > -1) {
-                params.value(num);
-                if (input) Dom.setAttribute(self.id, "disabled", "disabled");
-            } else {
+
+            if (!num || (!isNaN(num) && num < 0)) {
                 if (input) input.removeAttribute("disabled");
+            } else {
+                params.value(num);
+                if (input && self.isCheckboxMode) Dom.setAttribute(self.id, "disabled", "disabled");
             }
         });
-
-        // define mode
-        this.isButtonMode = this.mode == "button";
-        this.isCheckboxMode = this.mode == "checkbox";
     },
     template:
        '<!-- ko if: isButtonMode -->\
-            <button data-bind="text: label, disable: disable, click: generate"></button>\
+            <button data-bind="text: label, disable: disable, click: flag"></button>\
         <!-- /ko -->\
         <!-- ko if: isCheckboxMode -->\
             <input style="position: relative; top: 2px;" type="checkbox" name="number-generate" data-bind="checked: flag" />\
@@ -286,7 +331,17 @@ ko.components.register("number", {
         this.textInputValue = ko.observable(this.value());
 
         this.textInputValue.subscribe(function(value){
-            self.value(value);
+            var floatVal = parseFloat(value);
+            if (value === "" || _.isFinite(floatVal) && floatVal != self.value()) {
+                self.value(value);
+            }
+        });
+
+        self.value.subscribe(function(value) {
+            var existing = parseFloat(self.textInputValue());
+            if (_.isFinite(value) && value != existing) {
+                self.textInputValue(value);
+            }
         });
 
         this.validation = function(data, event) {
@@ -676,6 +731,7 @@ ko.components.register("datetime", {
         this.disabled = params["protected"];
         this.isFocus = ko.observable(false);
         this.intermediateValue = ko.observable();
+        this.dateFormat = params["dateFormat"];
 
         this.calendar = function() {
             if (!calendarDialog) {
@@ -737,7 +793,7 @@ ko.components.register("datetime", {
 
         this.textValue = ko.pureComputed({
             read: function() {
-                return self.value() instanceof Date ? moment(self.value()).format("YYYY-MM-DD HH:mm:ss") : null;
+                return self.value() instanceof Date ? moment(self.value()).format(self.dateFormat) : null;
             },
             write: function(newValue) {
                 if (newValue) {
@@ -784,7 +840,7 @@ ko.components.register("datetime", {
         });
     },
     template:
-       '<input type="text" data-bind="value: textValue, disable: disabled, attr: { placeholder: localization.formatIE }" />\
+       '<input type="text" data-bind="value: textValue, disable: disabled, attr: { placeholder: localization.placeholderFormatIE }" />\
         <!-- ko if: disabled -->\
             <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">\
         <!-- /ko -->\
@@ -812,72 +868,77 @@ ko.bindingHandlers.dateControl = {
         var elementId = element.id.replace("-dateControl", ""),
             input = Dom.get(elementId);
 
-        if (mode == "alfresco" || !Citeck.HTML5.supportedInputTypes.date) {
-            var calendarDialogId = elementId + "-calendarDialog",
-                calendarContainerId = elementId + "-calendarContainer",
-                calendarAccessorId = elementId + "-calendarAccessor",
-                calendarDialog, calendar;
-
-            var showCalendarButton = document.getElementById(calendarAccessorId);
-            showCalendarButton.classList.remove("hidden");
-
-            Event.on(showCalendarButton, "click", function() {
-                if (!calendarDialog) {
-                    var formContainer = $(element).closest(".yui-panel-container"),
-                        zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
-
-                    calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
-                        visible:    false,
-                        context:    [calendarAccessorId, "tl", "bl"],
-                        draggable:  false,
-                        close:      true,
-                        zindex:     zindex
-                    });
-                    calendarDialog.setHeader(localization.labels.header);
-                    calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
-                    calendarDialog.render(document.body);
+        if (input) {
+            input.addEventListener("change", function() {
+                if (!input.value) {
+                    value(null);
                 }
-
-                if (!calendar) {
-                    calendar = new YAHOO.widget.Calendar(calendarContainerId, {
-                        LOCALE_WEEKDAYS: "short",
-                        LOCALE_MONTHS: "long",
-                        START_WEEKDAY: 1,
-
-                        iframe: false,
-                        navigator: {
-                            strings: {
-                                month:  localization.labels.month,
-                                year:   localization.labels.year,
-                                submit: localization.buttons.submit,
-                                cancel: localization.buttons.cancel
-                            }
-                        }
-                    });
-
-                    // localization months and days
-                    calendar.cfg.setProperty("MONTHS_LONG", localization.months.split(","));
-                    calendar.cfg.setProperty("WEEKDAYS_SHORT", localization.days.split(","));
-
-                    // selected date
-                    calendar.selectEvent.subscribe(function() {
-                        if (calendar.getSelectedDates().length > 0) {
-                            var selectedDate = calendar.getSelectedDates()[0],
-                                nowDate = new Date;
-
-                            selectedDate.setHours(-nowDate.getTimezoneOffset()/60);
-
-                            value(selectedDate);
-                        }
-                        calendarDialog.hide();
-                    });
-
-                    calendar.render();
-                }
-
-                if (calendarDialog) calendarDialog.show();
             });
-        } else {
+        }
+
+        var calendarDialogId = elementId + "-calendarDialog",
+            calendarContainerId = elementId + "-calendarContainer",
+            calendarAccessorId = elementId + "-calendarAccessor",
+            calendarDialog, calendar;
+
+        var showCalendarButton = document.getElementById(calendarAccessorId);
+        showCalendarButton.classList.remove("hidden");
+
+        Event.on(showCalendarButton, "click", function() {
+            if (!calendarDialog) {
+                var formContainer = $(element).closest(".yui-panel-container"),
+                    zindex = formContainer.css("z-index") ? parseInt(formContainer.css("z-index")) + 1 : 15;
+
+                calendarDialog = new YAHOO.widget.Dialog(calendarDialogId, {
+                    visible:    false,
+                    context:    [calendarAccessorId, "tl", "bl"],
+                    draggable:  false,
+                    close:      true,
+                    zindex:     zindex
+                });
+                calendarDialog.setHeader(localization.labels.header);
+                calendarDialog.setBody("<div id=\"" + calendarContainerId + "\"></div>");
+                calendarDialog.render(document.body);
+            }
+
+            if (!calendar) {
+                calendar = new YAHOO.widget.Calendar(calendarContainerId, {
+                    LOCALE_WEEKDAYS: "short",
+                    LOCALE_MONTHS: "long",
+                    START_WEEKDAY: 1,
+
+                    iframe: false,
+                    navigator: {
+                        strings: {
+                            month:  localization.labels.month,
+                            year:   localization.labels.year,
+                            submit: localization.buttons.submit,
+                            cancel: localization.buttons.cancel
+                        }
+                    }
+                });
+
+                // localization months and days
+                calendar.cfg.setProperty("MONTHS_LONG", localization.months.split(","));
+                calendar.cfg.setProperty("WEEKDAYS_SHORT", localization.days.split(","));
+
+                // selected date
+                calendar.selectEvent.subscribe(function() {
+                    if (calendar.getSelectedDates().length > 0) {
+                        var selectedDate = calendar.getSelectedDates()[0];
+
+                        value(selectedDate);
+                    }
+                    calendarDialog.hide();
+                });
+
+                calendar.render();
+            }
+
+            if (calendarDialog) calendarDialog.show();
+        });
+
+        if (mode != "alfresco" && Citeck.HTML5.supportedInputTypes.date) {
             // set max and min attributes
             var date = new Date(),
                 year = date.getFullYear();
@@ -1422,7 +1483,7 @@ ko.bindingHandlers.journalControl = {
                             });
 
                             if(optionsFiltersTemp.length){
-                                criteria(optionsFiltersTemp);
+                                criteria(optionsFiltersTemp.concat(actualCriteria));
                             }
                         }
 

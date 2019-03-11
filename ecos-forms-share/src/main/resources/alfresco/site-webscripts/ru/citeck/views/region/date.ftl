@@ -36,19 +36,16 @@
         },
         write: function(newValue) {
             var newDate = new Date(newValue);
-            if ( newDate !== 'Invalid Date' && !isNaN(newDate) && (newDate > new Date('1000-01-01'))) {
+            if (newDate !== 'Invalid Date' && !isNaN(newDate) && (newDate > new Date('1000-01-01'))) {
+                newValue = Alfresco.util.fromISO8601(newValue).toISOString();
                 value(newValue);
             }
         }
     }), disable: protected">
 
-    <!-- ko ifnot: protected -->
-        <a id="${fieldId}-calendarAccessor" class="calendar-link-button hidden">
-            <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">
-        </a>
-    <!-- /ko -->
-
-    <!-- ko if: protected -->
+    <a data-bind="visible: !protected()" id="${fieldId}-calendarAccessor" class="calendar-link-button hidden">
         <img src="/share/res/components/form/images/calendar.png" class="datepicker-icon">
-    <!-- /ko -->
+    </a>
+
+    <img data-bind="visible: protected" src="/share/res/components/form/images/calendar.png" class="datepicker-icon">
 </div>
