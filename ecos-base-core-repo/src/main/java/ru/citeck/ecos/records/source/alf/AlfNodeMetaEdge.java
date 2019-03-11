@@ -7,7 +7,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.AlfGqlContext;
-import ru.citeck.ecos.records2.graphql.meta.value.EdgeOption;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records2.graphql.meta.value.SimpleMetaEdge;
 import ru.citeck.ecos.utils.DictUtils;
@@ -37,7 +36,7 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
     }
 
     @Override
-    public List<EdgeOption> getOptions() {
+    public List<AttOption> getOptions() {
 
         ClassAttributeDefinition definition = getDefinition();
 
@@ -46,10 +45,10 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
             Map<String, String> mapping = dictUtils.getPropertyDisplayNameMapping(definition.getName());
 
             if (mapping != null && mapping.size() > 0) {
-                List<EdgeOption> options = new ArrayList<>();
-                mapping.forEach((value, title) -> {
-                    options.add(new EdgeOption(title, value));
-                });
+                List<AttOption> options = new ArrayList<>();
+                mapping.forEach((value, title) ->
+                    options.add(new AttOption(value, title))
+                );
                 return options;
             }
         }
@@ -119,5 +118,26 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
             return property;
         }
         return dictionaryService.getAssociation(qName);
+    }
+
+    public static class AttOption implements MetaValue {
+
+        private String value;
+        private String title;
+
+        public AttOption(String value, String title) {
+            this.value = value;
+            this.title = title;
+        }
+
+        @Override
+        public String getString() {
+            return value;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return title;
+        }
     }
 }
