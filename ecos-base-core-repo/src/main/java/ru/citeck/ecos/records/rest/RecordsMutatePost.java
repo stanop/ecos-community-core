@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 
 import org.springframework.extensions.webscripts.servlet.FormData;
-import ru.citeck.ecos.records.RecordMeta;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.request.mutation.RecordsMutation;
-import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
+import ru.citeck.ecos.records2.RecordMeta;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
+import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
 
 import java.io.IOException;
 
@@ -65,7 +65,7 @@ public class RecordsMutatePost extends AbstractWebScript {
                 String fieldName = field.getName();
 
                 if (FIELD_ID.equals(fieldName)) {
-                    recordMeta.setId(new RecordRef(field.getValue()));
+                    recordMeta.setId(RecordRef.valueOf(field.getValue()));
                 } else {
 
                     if (field.getIsFile()) {

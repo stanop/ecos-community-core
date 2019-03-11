@@ -2,7 +2,7 @@ package ru.citeck.ecos.eform;
 
 import ru.citeck.ecos.eform.model.EcosFormModel;
 import ru.citeck.ecos.eform.provider.FormProvider;
-import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records2.RecordRef;
 
 import java.util.List;
 import java.util.Optional;

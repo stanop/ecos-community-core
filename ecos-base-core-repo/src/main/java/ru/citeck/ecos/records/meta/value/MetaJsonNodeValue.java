@@ -7,9 +7,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.graphql.GqlContext;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeAttValue;
+import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +20,7 @@ public class MetaJsonNodeValue implements MetaValue {
 
     private String id;
     private JsonNode data;
-    private GqlContext context;
+    private AlfGqlContext context;
 
     public MetaJsonNodeValue(String id, JsonNode data) {
         this.id = id;
@@ -27,9 +28,8 @@ public class MetaJsonNodeValue implements MetaValue {
     }
 
     @Override
-    public MetaValue init(GqlContext context) {
-        this.context = context;
-        return this;
+    public <T extends GqlContext> void init(T context) {
+        this.context = (AlfGqlContext) context;
     }
 
     @Override
@@ -71,12 +71,12 @@ public class MetaJsonNodeValue implements MetaValue {
                 JsonNode nodeRefNode = attNode.get("nodeRef");
                 if (nodeRefNode instanceof TextNode) {
                     NodeRef nodeRef = new NodeRef(nodeRefNode.asText());
-                    attValue.add(new AlfNodeAttValue(nodeRef).init(context));
+                    attValue.add(toAlfNodeAtt(nodeRef));
                 } else {
                     JsonNode qnameNode = attNode.get("fullQName");
                     if (qnameNode instanceof TextNode) {
                         QName qName = QName.createQName(qnameNode.asText());
-                        attValue.add(new AlfNodeAttValue(qName).init(context));
+                        attValue.add(toAlfNodeAtt(qName));
                     }
                 }
             }
@@ -86,5 +86,11 @@ public class MetaJsonNodeValue implements MetaValue {
         }
 
         return attValue;
+    }
+
+    private MetaValue toAlfNodeAtt(Object value) {
+        MetaValue result = new AlfNodeAttValue(value);
+        result.init(context);
+        return result;
     }
 }

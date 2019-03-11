@@ -7,11 +7,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.records.RecordMeta;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.result.RecordsResult;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
+import ru.citeck.ecos.records2.RecordMeta;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.records2.RecordsServiceAware;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.result.RecordsResult;
 import ru.citeck.ecos.search.*;
 
 import java.util.*;
@@ -20,11 +22,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO {
+public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO implements RecordsServiceAware {
 
     private static final Log logger = LogFactory.getLog(ExactCriteriaRecordsDAO.class);
 
     private SearchCriteriaParser criteriaParser;
+    private RecordsService recordsService;
 
     private List<String> filteredFields = Collections.emptyList();
     private Map<String, PredicateFilter> filters = new HashMap<>();
@@ -118,6 +121,11 @@ public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO {
 
     public void setFilteredFields(List<String> filteredFields) {
         this.filteredFields = filteredFields;
+    }
+
+    @Override
+    public void setRecordsService(RecordsService recordsService) {
+        this.recordsService = recordsService;
     }
 
     private class CriterionFilter {

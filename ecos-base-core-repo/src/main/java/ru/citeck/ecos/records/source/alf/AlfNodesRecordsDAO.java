@@ -17,22 +17,28 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.records.RecordMeta;
-import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.action.group.ActionResults;
+import ru.citeck.ecos.action.group.GroupActionConfig;
+import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.records.RecordConstants;
-import ru.citeck.ecos.records.request.delete.RecordsDelResult;
-import ru.citeck.ecos.records.request.delete.RecordsDeletion;
-import ru.citeck.ecos.records.request.mutation.RecordsMutResult;
-import ru.citeck.ecos.records.request.mutation.RecordsMutation;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records.source.alf.search.AlfNodesSearch;
 import ru.citeck.ecos.records.source.dao.*;
-import ru.citeck.ecos.records.source.dao.local.LocalRecordsDAO;
-import ru.citeck.ecos.records.source.MetaAttributeDef;
-import ru.citeck.ecos.records.source.dao.local.RecordsMetaLocalDAO;
+import ru.citeck.ecos.records2.RecordMeta;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records2.request.delete.RecordsDelResult;
+import ru.citeck.ecos.records2.request.delete.RecordsDeletion;
+import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
+import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.source.MetaAttributeDef;
+import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.RecordsDefinitionDAO;
+import ru.citeck.ecos.records2.source.dao.RecordsQueryDAO;
+import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
@@ -62,6 +68,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private MimetypeService mimetypeService;
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
+    private GroupActionService groupActionService;
 
     private Map<QName, NodeRef> defaultParentByType = new ConcurrentHashMap<>();
 
@@ -143,7 +150,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 props.put(ContentModel.PROP_NAME, name);
 
                 nodeRef = nodeUtils.createNode(parent, type, parentAssoc, props);
-                result.addRecord(new RecordMeta(new RecordRef(nodeRef)));
+                result.addRecord(new RecordMeta(RecordRef.valueOf(nodeRef.toString())));
 
             } else {
 
@@ -331,8 +338,15 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     @Override
     public List<MetaValue> getMetaValues(List<RecordRef> recordRef) {
         return recordRef.stream()
-                        .map(AlfNodeRecord::new)
+                        .map(this::createMetaValue)
                         .collect(Collectors.toList());
+    }
+
+    private MetaValue createMetaValue(RecordRef recordRef) {
+        if (recordRef == RecordRef.EMPTY) {
+            return new EmptyAlfNode();
+        }
+        return new AlfNodeRecord(recordRef);
     }
 
     @Override
@@ -340,6 +354,15 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         return names.stream()
                     .map(n -> new AlfAttributeDefinition(n, namespaceService, dictionaryService, messageService))
                     .collect(Collectors.toList());
+    }
+
+    public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {
+        return groupActionService.execute(records, config);
+    }
+
+    @Autowired
+    public void setGroupActionService(GroupActionService groupActionService) {
+        this.groupActionService = groupActionService;
     }
 
     @Autowired

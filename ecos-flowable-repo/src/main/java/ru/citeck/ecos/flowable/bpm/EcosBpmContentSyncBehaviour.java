@@ -21,6 +21,7 @@ import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.StartEvent;
 import org.flowable.editor.language.json.converter.BpmnJsonConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.Format;
 import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
@@ -33,14 +34,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
                                          implements NodeServicePolicies.OnCreateNodePolicy,
-                                                    ContentServicePolicies.OnContentPropertyUpdatePolicy {
+                                                    ContentServicePolicies.OnContentPropertyUpdatePolicy,
+                                                    NodeServicePolicies.OnUpdatePropertiesPolicy {
 
     private static final QName PROP_XML = ContentModel.PROP_CONTENT;
     private static final QName PROP_JSON = EcosBpmModel.PROP_JSON_MODEL;
@@ -79,7 +79,7 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
         if (content == null) {
 
             String procId = (String) props.get(EcosBpmModel.PROP_PROCESS_ID);
-            String name = (String) props.get(ContentModel.PROP_NAME);
+            String name = (String) props.get(ContentModel.PROP_TITLE);
 
             BpmnModel bpmnModel = new BpmnModel();
             Process process = new Process();
@@ -98,30 +98,14 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
 
         } else {
 
-            ContentReader reader = contentService.getReader(nodeRef, PROP_XML);
-            if (reader == null || !reader.exists()) {
-                return;
-            }
+            BpmnModel model = readModelFromXml(nodeRef);
 
-            try (InputStream in = reader.getContentInputStream()) {
-
-                BpmnModel model = readModelFromXml(in);
+            if (model != null) {
 
                 List<Process> processes = model.getProcesses();
                 if (processes.size() > 0) {
-
-                    Process process = processes.get(0);
-
-                    Map<QName, Serializable> nodeProps = new HashMap<>();
-                    nodeProps.put(EcosBpmModel.PROP_PROCESS_ID, process.getId());
-                    nodeProps.put(ContentModel.PROP_TITLE, process.getName());
-                    nodeProps.put(ContentModel.PROP_DESCRIPTION, process.getDocumentation());
-
-                    nodeService.addProperties(nodeRef, nodeProps);
+                    nodeService.addProperties(nodeRef, readProperties(processes.get(0)));
                 }
-
-            } catch (IOException e) {
-                logger.error(e);
             }
         }
     }
@@ -134,10 +118,88 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
                                         ContentData beforeValue,
                                         ContentData afterValue) {
 
+        BpmnModel model = null;
         if (PROP_XML.equals(propertyQName)) {
-            xmlToJson(nodeRef, afterValue);
+            model = xmlToJson(nodeRef, afterValue);
         } else if (PROP_JSON.equals(propertyQName)) {
-            jsonToXml(nodeRef, afterValue);
+            model = jsonToXml(nodeRef, afterValue);
+        }
+
+        if (model != null) {
+
+            Process process = model.getProcesses()
+                                   .stream()
+                                   .findFirst()
+                                   .orElse(null);
+
+            nodeService.addProperties(nodeRef, readProperties(process));
+        }
+    }
+
+    private Map<QName, Serializable> readProperties(Process process) {
+
+        if (process == null) {
+            return Collections.emptyMap();
+        }
+
+        Map<QName, Serializable> nodeProps = new HashMap<>();
+        nodeProps.put(EcosBpmModel.PROP_PROCESS_ID, process.getId());
+        nodeProps.put(ContentModel.PROP_TITLE, process.getName());
+        nodeProps.put(ContentModel.PROP_DESCRIPTION, process.getDocumentation());
+
+        return nodeProps;
+    }
+
+    @PolicyMethod(policy = NodeServicePolicies.OnUpdatePropertiesPolicy.class,
+                  frequency = Behaviour.NotificationFrequency.TRANSACTION_COMMIT,
+                  runAsSystem = true)
+    public void onUpdateProperties(NodeRef nodeRef,
+                                   Map<QName, Serializable> before,
+                                   Map<QName, Serializable> after) {
+
+        List<QName> procProps = Arrays.asList(
+                EcosBpmModel.PROP_PROCESS_ID,
+                ContentModel.PROP_TITLE,
+                ContentModel.PROP_DESCRIPTION
+        );
+
+        Map<QName, String> changed = new HashMap<>();
+        after.forEach((prop, value) -> {
+            if (procProps.contains(prop) && !Objects.equals(before.get(prop), value)) {
+                if (value instanceof MLText) {
+                    changed.put(prop, ((MLText) value).getClosestValue(Locale.ENGLISH));
+                } else if (value instanceof String) {
+                    changed.put(prop, (String) value);
+                }
+            }
+        });
+
+        if (changed.isEmpty()) {
+            return;
+        }
+
+        BpmnModel bpmnModel = readModelFromXml(nodeRef);
+        Process process;
+
+        if (bpmnModel != null && !bpmnModel.getProcesses().isEmpty()) {
+            process = bpmnModel.getProcesses().get(0);
+        } else {
+            process = null;
+        }
+        if (process != null) {
+            changed.forEach((prop, value) -> {
+                if (EcosBpmModel.PROP_PROCESS_ID.equals(prop)) {
+                    process.setId(value);
+                } else if (ContentModel.PROP_TITLE.equals(prop)) {
+                    process.setName(value);
+                } else if (ContentModel.PROP_DESCRIPTION.equals(prop)) {
+                    process.setDocumentation(value);
+                }
+            });
+
+            BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
+            byte[] bytes = xmlConverter.convertToXML(bpmnModel, ENCODING);
+            writeBytes(nodeRef, PROP_XML, Format.XML.mimetype(), bytes);
         }
     }
 
@@ -163,6 +225,24 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
                 throw new IllegalStateException("Could not write JSON", e);
             }
         });
+    }
+
+    private BpmnModel readModelFromXml(NodeRef nodeRef) {
+
+        ContentReader reader = contentService.getReader(nodeRef, PROP_XML);
+        if (reader == null || !reader.exists()) {
+            return null;
+        }
+
+        try (InputStream in = reader.getContentInputStream()) {
+
+            return readModelFromXml(in);
+
+        } catch (IOException e) {
+            logger.error(e);
+        }
+
+        return null;
     }
 
     private BpmnModel readModelFromXml(InputStream input) {
@@ -222,14 +302,7 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
     private void generateImage(NodeRef nodeRef, BpmnModel model, QName targetProp, int maxWidth) {
 
         byte[] modelImage = imageService.generateImage(model, maxWidth);
-
-        if (modelImage != null) {
-
-            ContentWriter writer = contentService.getWriter(nodeRef, targetProp, true);
-            writer.setEncoding(ENCODING);
-            writer.setMimetype(THUMBNAIL_MIMETYPE);
-            writer.putContent(new ByteArrayInputStream(modelImage));
-        }
+        writeBytes(nodeRef, targetProp, THUMBNAIL_MIMETYPE, modelImage);
     }
 
     private BpmnModel convert(NodeRef nodeRef,
@@ -249,18 +322,26 @@ public class EcosBpmContentSyncBehaviour extends AbstractBehaviour
 
         try (InputStream input = reader.getContentInputStream()) {
 
-            ContentWriter writer = contentService.getWriter(nodeRef, targetProp, true);
-            writer.setEncoding(ENCODING);
-            writer.setMimetype(targetMimetype);
-
             BpmnModelData bpmnModelData = convert.apply(input);
-            writer.putContent(new ByteArrayInputStream(bpmnModelData.getBytes()));
+            writeBytes(nodeRef, targetProp, targetMimetype, bpmnModelData.getBytes());
 
             return bpmnModelData.getModel();
 
         } catch (IOException e) {
             throw new IllegalStateException("Could not convert", e);
         }
+    }
+
+    private void writeBytes(NodeRef nodeRef, QName property, String mimetype, byte[] bytes) {
+
+        if (bytes == null) {
+            return;
+        }
+
+        ContentWriter writer = contentService.getWriter(nodeRef, property, true);
+        writer.setEncoding(ENCODING);
+        writer.setMimetype(mimetype);
+        writer.putContent(new ByteArrayInputStream(bytes));
     }
 
     @Autowired

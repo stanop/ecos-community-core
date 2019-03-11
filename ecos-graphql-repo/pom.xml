@@ -13,7 +13,7 @@
     <parent>
         <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>ecos-community</artifactId>
-        <version>3.9.0-SNAPSHOT</version>
+        <version>3.10.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -26,6 +26,12 @@
             <groupId>com.graphql-java</groupId>
             <artifactId>graphql-java</artifactId>
             <version>11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.citeck.ecos.community</groupId>
+            <artifactId>ecos-records</artifactId>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

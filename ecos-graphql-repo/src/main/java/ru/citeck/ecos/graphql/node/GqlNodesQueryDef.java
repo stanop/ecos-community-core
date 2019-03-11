@@ -8,7 +8,7 @@ import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.graphql.GqlTypeDefinition;
 import ru.citeck.ecos.graphql.GraphQLService;
 
@@ -77,7 +77,7 @@ public class GqlNodesQueryDef implements GqlTypeDefinition {
             parameters.setSkipCount(offset);
         }
 
-        GqlContext context = env.getContext();
+        AlfGqlContext context = env.getContext();
 
         ResultSet resultSet = context.getSearchService()
                 .query(parameters);

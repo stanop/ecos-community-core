@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.StoreRef;
+import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
@@ -12,12 +13,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.search.AlfNodesSearch.AfterIdType;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.request.query.SortBy;
 
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -59,7 +60,9 @@ public class SearchServiceAlfNodesSearch {
         searchParameters.setMaxItems(recordsQuery.getMaxItems());
         searchParameters.setBulkFetchEnabled(false);
         searchParameters.setLanguage(recordsQuery.getLanguage());
-        searchParameters.setQueryConsistency(recordsQuery.getConsistency());
+
+        String consistency = recordsQuery.getConsistency().name();
+        searchParameters.setQueryConsistency(QueryConsistency.valueOf(consistency));
 
         boolean afterIdMode = false;
         String afterIdSortField = "";
@@ -110,7 +113,7 @@ public class SearchServiceAlfNodesSearch {
             RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
             result.setRecords(resultSet.getNodeRefs()
                                        .stream()
-                                       .map(RecordRef::new)
+                                       .map(r -> RecordRef.valueOf(r.toString()))
                                        .collect(Collectors.toList()));
             result.setHasMore(resultSet.hasMore());
             result.setTotalCount(resultSet.getNumberFound());

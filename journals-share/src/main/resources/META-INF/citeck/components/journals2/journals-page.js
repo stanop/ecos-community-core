@@ -436,6 +436,13 @@ define([
                     var actionId  = action.settings().actionId;
                     var formId    = action.settings().formId;
 
+                    var onCancel = function () {
+                        YAHOO.Bubbling.unsubscribe("node-view-cancel", onCancel);
+                        self.widgets.waitingDialog.hide();
+                    };
+
+                    YAHOO.Bubbling.on("node-view-cancel", onCancel);
+
                     Citeck.forms.dialog(journalId + "_" + actionId, formId, {
                         scope: this,
                         fn: function (rsp) {

@@ -1,17 +1,17 @@
 package ru.citeck.ecos.journals.records;
 
-import org.alfresco.service.cmr.search.QueryConsistency;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.journals.JournalType;
-import ru.citeck.ecos.records.RecordMeta;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.RecordsService;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.request.query.SortBy;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
+import ru.citeck.ecos.records2.RecordMeta;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.records2.request.query.QueryConsistency;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.request.query.SortBy;
 
 import java.util.stream.Collectors;
 

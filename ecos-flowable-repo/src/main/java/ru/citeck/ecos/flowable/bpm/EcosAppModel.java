@@ -60,7 +60,7 @@ public class EcosAppModel {
     }
 
     public void setData(byte[] data) {
-            this.data = data;
-        }
+        this.data = data;
+    }
 
 }
