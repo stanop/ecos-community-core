@@ -42,6 +42,7 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
 
     private CaseActivityService caseActivityService;
     private NodeService nodeService;
+    private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
     @Override
     protected void notifyImpl(final DelegateExecution delegateExecution) throws Exception {
@@ -55,7 +56,7 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
     }
 
     private void doWork(DelegateExecution delegateExecution) {
-        if (ListenerUtils.getDocument(delegateExecution, nodeService) == null) {
+        if (documentResolverRegistry.getResolver(delegateExecution).getDocument(delegateExecution) == null) {
             return;
         }
         stopActivity(delegateExecution);
@@ -85,5 +86,6 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
     protected void initImpl() {
         this.nodeService = serviceRegistry.getNodeService();
         this.caseActivityService = (CaseActivityService) serviceRegistry.getService(CiteckServices.CASE_ACTIVITY_SERVICE);
+        documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
     }
 }

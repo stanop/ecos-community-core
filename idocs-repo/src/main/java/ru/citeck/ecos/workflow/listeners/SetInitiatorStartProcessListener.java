@@ -19,11 +19,11 @@
 package ru.citeck.ecos.workflow.listeners;
 
 import org.activiti.engine.delegate.DelegateExecution;
+import org.alfresco.model.ContentModel;
+import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
-import org.alfresco.model.ContentModel;
-import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
 
 /**
  * @author: Elena Zaripova
@@ -33,28 +33,28 @@ public class SetInitiatorStartProcessListener extends AbstractExecutionListener 
 
     private NodeService nodeService;
     private PersonService personService;
+    private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
     @Override
     protected void notifyImpl(DelegateExecution delegateExecution) throws Exception {
-		Object setInitiator = delegateExecution.getVariable("cwf_setInitiator");
-		if (Boolean.TRUE.equals((Boolean)setInitiator))
-		{
-			NodeRef docRef = ListenerUtils.getDocument(delegateExecution, nodeService);
-			if (docRef == null)
-				return;
-			String docCreatorUserName = (String)nodeService.getProperty(docRef, ContentModel.PROP_CREATOR);
-			NodeRef creatorUser = personService.getPerson(docCreatorUserName);
-			if(creatorUser!=null)
-			{
-				delegateExecution.setVariable("initiator", new ActivitiScriptNode(creatorUser, serviceRegistry));
-			}
-		}
+        Object setInitiator = delegateExecution.getVariable("cwf_setInitiator");
+        if (Boolean.TRUE.equals((Boolean) setInitiator)) {
+            NodeRef docRef = documentResolverRegistry.getResolver(delegateExecution).getDocument(delegateExecution);
+            if (docRef == null)
+                return;
+            String docCreatorUserName = (String) nodeService.getProperty(docRef, ContentModel.PROP_CREATOR);
+            NodeRef creatorUser = personService.getPerson(docCreatorUserName);
+            if (creatorUser != null) {
+                delegateExecution.setVariable("initiator", new ActivitiScriptNode(creatorUser, serviceRegistry));
+            }
+        }
     }
 
     @Override
     protected void initImpl() {
         this.nodeService = serviceRegistry.getNodeService();
         this.personService = serviceRegistry.getPersonService();
+        documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
     }
 
 }
