@@ -84,3 +84,8 @@
 .yui-panel .collapse:not(.panel-collapse) {
     display: block;
 }
+
+.formio-dialog.formio-dialog-theme-default .formio-dialog-content {
+    background-color: #fff !important;
+}
+
