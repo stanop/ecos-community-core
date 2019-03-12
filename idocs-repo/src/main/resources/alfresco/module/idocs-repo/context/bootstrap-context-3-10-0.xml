@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="idocs.import-spaces.3-10-0" abstract="true" parent="idocs.import-spaces">
+        <property name="sinceVersion" value="3.10.0" />
+        <property name="appliesFromVersion" value="3.10.0" />
+    </bean>
+
+    <bean id="idocs.import-scripts.3-10-0" abstract="true" parent="idocs.import-scripts">
+        <property name="sinceVersion" value="3.10.0" />
+        <property name="appliesFromVersion" value="3.10.0" />
+    </bean>
+
+    <bean id="CyrUserNameGenerator" class="ru.citeck.ecos.user.CyrillicUserNameGenerator">
+        <property name="personService" ref="PersonService"/>
+    </bean>
+
+    <bean id="userAutoCreationService" class="ru.citeck.ecos.user.UserAutoCreationServiceImpl">
+        <property name="cyrillicUserNameGenerator" ref="CyrUserNameGenerator"/>
+        <property name="nodeInfoFactory" ref="nodeInfoFactory" />
+    </bean>
+
+    <bean name="userAutoCreationServiceJS" class="ru.citeck.ecos.user.UserAutoCreationServiceJs" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="userAutoCreation" />
+        <property name="userAutoCreationService" ref="userAutoCreationService" />
+        <property name="services" ref="ServiceRegistry" />
+    </bean>
+
+</beans>
