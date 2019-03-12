@@ -122,6 +122,7 @@ public class JournalConfigGet extends AbstractWebScript {
         response.setColumns(columns);
         response.setMeta(getJournalMeta(journalId));
         response.setSourceId(sourceId);
+        response.setParams(type.getOptions());
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getWriter(), response);
@@ -270,6 +271,7 @@ public class JournalConfigGet extends AbstractWebScript {
         @Getter @Setter String sourceId;
         @Getter @Setter JournalMeta meta;
         @Getter @Setter List<Column> columns;
+        @Getter @Setter Map<String, String> params;
     }
 
     static class JournalMeta {

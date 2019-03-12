@@ -65,13 +65,13 @@ public class JsUtils {
             return (RecordRef) object;
         }
         if (object instanceof NodeRef) {
-            return new RecordRef(((NodeRef) object).toString());
+            return RecordRef.valueOf(((NodeRef) object).toString());
         }
         if (object instanceof String) {
-            return new RecordRef((String) object);
+            return RecordRef.valueOf((String) object);
         }
         if (object instanceof ScriptNode) {
-            return new RecordRef(((ScriptNode) object).getNodeRef().toString());
+            return RecordRef.valueOf(((ScriptNode) object).getNodeRef().toString());
         }
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to RecordRef");
     }

@@ -21,8 +21,6 @@ package ru.citeck.ecos.workflow.listeners;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.impl.context.Context;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-
 import ru.citeck.ecos.lifecycle.LifeCycleService;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.workflow.utils.ActivitiVariableScopeMap;
@@ -34,11 +32,11 @@ import ru.citeck.ecos.workflow.utils.ActivitiVariableScopeMap;
 public class LifeCycleStartProcessListener extends AbstractExecutionListener {
 
     private LifeCycleService lifeCycleService;
-    private NodeService nodeService;
+    private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
     @Override
     protected void notifyImpl(DelegateExecution delegateExecution) throws Exception {
-        NodeRef docRef = ListenerUtils.getDocument(delegateExecution, nodeService);
+        NodeRef docRef = documentResolverRegistry.getResolver(delegateExecution).getDocument(delegateExecution);
         if(docRef == null) {return;}
         String definitionId = "activiti$" + Context.getExecutionContext().getProcessDefinition().getKey();
         lifeCycleService.doTransitionOnStartProcess(docRef, definitionId, 
@@ -47,8 +45,8 @@ public class LifeCycleStartProcessListener extends AbstractExecutionListener {
 
     @Override
     protected void initImpl() {
-        this.nodeService = serviceRegistry.getNodeService();
         this.lifeCycleService = (LifeCycleService) serviceRegistry.getService(CiteckServices.LIFECYCLE_SERVICE);
+        documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
     }
 
 }

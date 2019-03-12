@@ -616,4 +616,6 @@
 
     <bean id="documentToMessage.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
 
+    <bean id="ecos.workflowDocumentResolverRegistry" class="ru.citeck.ecos.workflow.listeners.WorkflowDocumentResolverRegistry"/>
+
 </beans>

@@ -13,8 +13,10 @@ import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
 import java.util.*;
@@ -136,12 +138,23 @@ public class AlfNodeRecord implements MetaValue {
                 if (attribute == null) {
                     attribute = nodeAtt.getValues()
                                        .stream()
-                                       .map(this::toAlfNodeAtt)
+                                       .map(v -> toAlfNodeAtt(nodeAtt, v))
                                        .collect(Collectors.toList());
                 }
         }
 
         return attribute != null ? attribute : Collections.emptyList();
+    }
+
+    @Override
+    public MetaEdge getEdge(String name) {
+        return new AlfNodeMetaEdge(context, name, this);
+    }
+
+    private MetaValue toAlfNodeAtt(Attribute att, Object value) {
+        MetaValue result = new AlfNodeAttValue(att, value);
+        result.init(context);
+        return result;
     }
 
     private MetaValue toAlfNodeAtt(Object value) {
