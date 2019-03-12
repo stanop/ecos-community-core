@@ -50,4 +50,19 @@
         </property>
     </bean>
 
+    <bean id="CyrUserNameGenerator" class="ru.citeck.ecos.user.CyrillicUserNameGenerator">
+        <property name="personService" ref="PersonService"/>
+    </bean>
+
+    <bean id="userAutoCreationService" class="ru.citeck.ecos.user.UserAutoCreationServiceImpl">
+        <property name="cyrillicUserNameGenerator" ref="CyrUserNameGenerator"/>
+        <property name="nodeInfoFactory" ref="nodeInfoFactory" />
+    </bean>
+
+    <bean name="userAutoCreationServiceJS" class="ru.citeck.ecos.user.UserAutoCreationServiceJs" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="userAutoCreation" />
+        <property name="userAutoCreationService" ref="userAutoCreationService" />
+        <property name="services" ref="ServiceRegistry" />
+    </bean>
+
 </beans>

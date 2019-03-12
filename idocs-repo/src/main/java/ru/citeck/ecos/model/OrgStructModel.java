@@ -41,6 +41,12 @@ public interface OrgStructModel {
     public static final QName ASPECT_CUSTOM_FIELDS = QName.createQName(NAMESPACE, "customFields");
     public static final QName PROP_CUSTOM_ASPECT = QName.createQName(NAMESPACE, "customAspect");
 
+    public static final QName ASPECT_SHOW_HINTS = QName.createQName(NAMESPACE, "showHints");
+    public static final QName PROP_SHOW_HINTS = QName.createQName(NAMESPACE, "showHints");
+
+    public static final QName ASPECT_PRESET = QName.createQName(NAMESPACE, "preset");
+    public static final QName PROP_PRESET = QName.createQName(NAMESPACE, "preset");
+
     public static final QName PROP_FIRST_NAME = QName.createQName(NAMESPACE, "firstName");
     public static final QName PROP_LAST_NAME = QName.createQName(NAMESPACE, "lastName");
 
