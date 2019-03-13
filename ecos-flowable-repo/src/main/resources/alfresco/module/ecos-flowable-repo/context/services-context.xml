@@ -15,12 +15,6 @@
 	<bean id="flowableManagementService" factory-bean="flowableEngine" factory-method="getManagementService" />
 	<bean id="flowableFormService" factory-bean="flowableEngine" factory-method="getFormService" />
 
-	<!--TODO: need to implement transaction manager-->
-	<bean id="flowableTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="flowableDataSource" />
-	</bean>
-
-    <!-- Flowable engine -->
     <bean id="flowableWorkflowComponent" class="ru.citeck.ecos.flowable.FlowableWorkflowComponent">
         <property name="bpmEngineRegistry" ref="bpm_engineRegistry"/>
         <property name="workflowAdminService" ref="workflowAdminService"/>

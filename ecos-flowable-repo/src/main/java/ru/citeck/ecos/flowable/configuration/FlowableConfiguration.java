@@ -8,18 +8,14 @@ import org.alfresco.repo.workflow.DefaultWorkflowPropertyHandler;
 import org.alfresco.repo.workflow.WorkflowObjectFactory;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.flowable.common.engine.impl.interceptor.CommandInterceptor;
 import org.flowable.engine.FormService;
 import org.flowable.engine.ProcessEngineConfiguration;
-import org.flowable.engine.impl.jobexecutor.AsyncContinuationJobHandler;
-import org.flowable.engine.impl.jobexecutor.AsyncTriggerJobHandler;
-import org.flowable.engine.impl.jobexecutor.TriggerTimerEventJobHandler;
 import org.flowable.engine.parse.BpmnParseHandler;
-import org.flowable.job.service.JobHandler;
 import org.flowable.spring.SpringProcessEngineConfiguration;
 import org.flowable.variable.api.types.VariableType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +28,7 @@ import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.converters.FlowableNodeConverter;
 import ru.citeck.ecos.flowable.handlers.ProcessBpmnParseHandler;
 import ru.citeck.ecos.flowable.handlers.UserTaskBpmnParseHandler;
-import ru.citeck.ecos.flowable.jobexecutor.AuthenticatedAsyncJobHandler;
-import ru.citeck.ecos.flowable.jobexecutor.AuthenticatedTimerJobHandler;
+import ru.citeck.ecos.flowable.interceptors.FlowableAuthenticationInterceptor;
 import ru.citeck.ecos.flowable.services.FlowableEngineProcessService;
 import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.services.impl.FlowableTaskTypeManagerImpl;
@@ -161,21 +156,23 @@ public class FlowableConfiguration {
      */
     @Bean(name = "flowableEngineConfiguration")
     public SpringProcessEngineConfiguration flowableEngineConfiguration(@Qualifier("flowableDataSource") DataSource dataSource,
-                                                                  @Qualifier("workflow.variable.EcosPojoTypeHandler")
-                                                                          EcosPojoTypeHandler<?> ecosPojoTypeHandler,
-                                                                  ServiceDescriptorRegistry descriptorRegistry,
-                                                                  @Qualifier("flowableScriptNodeType") FlowableScriptNodeVariableType
-                                                                          flowableScriptNodeVariableType,
-                                                                  @Qualifier("flowableScriptNodeListType") FlowableScriptNodeListVariableType
-                                                                          flowableScriptNodeListVariableType,
-                                                                  @Qualifier("transactionManager") PlatformTransactionManager
-                                                                          transactionManager,
-                                                                  @Qualifier("nodeService") NodeService nodeService) {
+                                                                        @Qualifier("workflow.variable.EcosPojoTypeHandler")
+                                                                                EcosPojoTypeHandler<?> ecosPojoTypeHandler,
+                                                                        ServiceDescriptorRegistry descriptorRegistry,
+                                                                        @Qualifier("flowableScriptNodeType")
+                                                                                FlowableScriptNodeVariableType
+                                                                                flowableScriptNodeVariableType,
+                                                                        @Qualifier("flowableScriptNodeListType")
+                                                                                FlowableScriptNodeListVariableType
+                                                                                flowableScriptNodeListVariableType,
+                                                                        @Qualifier("transactionManager")
+                                                                                PlatformTransactionManager
+                                                                                transactionManager) {
         if (dataSource != null) {
             SpringProcessEngineConfiguration engineConfiguration = new SpringProcessEngineConfiguration();
             engineConfiguration.setDataSource(dataSource);
 
-            //TODO: Need to implement transaction manager flowableTransactionManager
+            //TODO: Need to implement transaction manager with multiple data source? alfresco + flowable
             engineConfiguration.setTransactionManager(transactionManager);
 
             engineConfiguration.setAsyncExecutorActivate(true);
@@ -185,14 +182,18 @@ public class FlowableConfiguration {
                     AlfrescoTransactionSupport.SESSION_SYNCHRONIZATION_ORDER - 100
             );
 
+            List<CommandInterceptor> customPreCommandInterceptors = new ArrayList<>();
+            CommandInterceptor authenticationInterceptor = new FlowableAuthenticationInterceptor();
+            customPreCommandInterceptors.add(authenticationInterceptor);
+            engineConfiguration.setCustomPostCommandInterceptors(customPreCommandInterceptors);
+
             Set<Class<?>> customMybatisMappers = new HashSet<>();
             customMybatisMappers.add(ModelMapper.class);
             engineConfiguration.setCustomMybatisMappers(customMybatisMappers);
-
             engineConfiguration.setBeans(getEngineBeans(descriptorRegistry));
 
             setMailConfiguration(engineConfiguration);
-            // Listeners and handlers
+
             List<BpmnParseHandler> parseHandlers = new ArrayList<>(2);
             parseHandlers.add(new ProcessBpmnParseHandler());
             parseHandlers.add(new UserTaskBpmnParseHandler());
@@ -204,20 +205,6 @@ public class FlowableConfiguration {
             types.add(flowableScriptNodeVariableType);
             types.add(flowableScriptNodeListVariableType);
             engineConfiguration.setCustomPreVariableTypes(types);
-
-            List<JobHandler> customJobHandlers = engineConfiguration.getCustomJobHandlers();
-            customJobHandlers = customJobHandlers != null ? new ArrayList<>(customJobHandlers) : new ArrayList<>();
-
-            AsyncContinuationJobHandler asyncContinuationJobHandler = new AsyncContinuationJobHandler();
-            customJobHandlers.add(new AuthenticatedAsyncJobHandler(asyncContinuationJobHandler));
-
-            AsyncTriggerJobHandler asyncTriggerJobHandler = new AsyncTriggerJobHandler();
-            customJobHandlers.add(new AuthenticatedAsyncJobHandler(asyncTriggerJobHandler));
-
-            TriggerTimerEventJobHandler triggerTimerEventJobHandler = new TriggerTimerEventJobHandler();
-            customJobHandlers.add(new AuthenticatedTimerJobHandler(triggerTimerEventJobHandler, nodeService));
-
-            engineConfiguration.setCustomJobHandlers(customJobHandlers);
 
             return engineConfiguration;
         } else {
@@ -312,13 +299,13 @@ public class FlowableConfiguration {
             FlowableNodeConverter flowableNodeConverter,
             MessageService messageService,
             NamespaceService namespaceService) {
-        /** Qname converter */
+        /* Qname converter */
         WorkflowQNameConverter workflowQNameConverter = new WorkflowQNameConverter(namespaceService);
-        /** Default workflow property handler */
+        /* Default workflow property handler */
         DefaultWorkflowPropertyHandler defaultWorkflowPropertyHandler = new DefaultWorkflowPropertyHandler();
         defaultWorkflowPropertyHandler.setMessageService(messageService);
         defaultWorkflowPropertyHandler.setNodeConverter(flowableNodeConverter);
-        /** Workflow property register handler */
+        /* Workflow property register handler */
         return new FlowableWorkflowPropertyHandlerRegistry(defaultWorkflowPropertyHandler, workflowQNameConverter);
     }
 
@@ -337,8 +324,7 @@ public class FlowableConfiguration {
                                                            NamespaceService namespaceService,
                                                            TenantService tenantService,
                                                            MessageService messageService,
-                                                           DictionaryService dictionaryService
-    ) {
+                                                           DictionaryService dictionaryService) {
         // QName converter
         WorkflowQNameConverter workflowQNameConverter = new WorkflowQNameConverter(namespaceService);
         WorkflowObjectFactory workflowObjectFactory = new WorkflowObjectFactory(workflowQNameConverter,
