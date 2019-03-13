@@ -182,10 +182,9 @@ public class FlowableConfiguration {
                     AlfrescoTransactionSupport.SESSION_SYNCHRONIZATION_ORDER - 100
             );
 
-            List<CommandInterceptor> customPreCommandInterceptors = new ArrayList<>();
-            CommandInterceptor authenticationInterceptor = new FlowableAuthenticationInterceptor();
-            customPreCommandInterceptors.add(authenticationInterceptor);
-            engineConfiguration.setCustomPostCommandInterceptors(customPreCommandInterceptors);
+            List<CommandInterceptor> customPostCommandInterceptors = new ArrayList<>();
+            customPostCommandInterceptors.add(new FlowableAuthenticationInterceptor());
+            engineConfiguration.setCustomPostCommandInterceptors(customPostCommandInterceptors);
 
             Set<Class<?>> customMybatisMappers = new HashSet<>();
             customMybatisMappers.add(ModelMapper.class);
