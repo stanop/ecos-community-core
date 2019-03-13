@@ -2,7 +2,6 @@ package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
@@ -74,7 +73,7 @@ public class AlfNodeAttValue implements MetaValue {
             if (name != null) {
 
                 DictUtils dictUtils = context.getService(DictUtils.QNAME);
-                return dictUtils.getPropertyDisplayName(name, (String) rawValue);
+                return dictUtils.getPropertyDisplayName(att.getScopeType(), name, (String) rawValue);
             }
         }
 

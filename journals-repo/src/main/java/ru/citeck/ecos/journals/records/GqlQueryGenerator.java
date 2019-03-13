@@ -117,7 +117,7 @@ public class GqlQueryGenerator {
                     .append(attrCounter++)
                     .append(":edge(n:\"")
                     .append(attrName).append("\")")
-                    .append("{name val:vals{str}}")
+                    .append("{name val:vals{str:disp}}")
                     .append(",");
         }
 
@@ -130,9 +130,9 @@ public class GqlQueryGenerator {
 
         if (formatter.contains("Link") || formatter.contains("nodeRef")) {
             innerFields.add("id");
-            innerFields.add("str");
+            innerFields.add("str:disp");
         } else if (attributesToLoad.isEmpty() || (!isNode && !isQName)) {
-            innerFields.add("str");
+            innerFields.add("str:disp");
         }
 
         for (String field : innerFields) {

@@ -58,6 +58,11 @@ public class AlfNodeRecord implements MetaValue {
 
     @Override
     public String getString() {
+        return node.nodeRef();
+    }
+
+    @Override
+    public String getDisplayName() {
         return node.displayName();
     }
 
@@ -148,7 +153,11 @@ public class AlfNodeRecord implements MetaValue {
 
     @Override
     public MetaEdge getEdge(String name) {
-        return new AlfNodeMetaEdge(context, name, this);
+        QName type = null;
+        if (node != null) {
+            type = node.getType();
+        }
+        return new AlfNodeMetaEdge(context, type, name, this);
     }
 
     private MetaValue toAlfNodeAtt(Attribute att, Object value) {

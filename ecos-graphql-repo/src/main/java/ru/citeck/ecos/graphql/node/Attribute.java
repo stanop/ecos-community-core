@@ -80,6 +80,10 @@ public class Attribute {
         return nodes.size() > 0 ? Optional.of(nodes.get(0)) : Optional.empty();
     }
 
+    public QName getScopeType() {
+        return scope != null ? scope.getType() : null;
+    }
+
     private List<?> evalValues() {
         List<?> result;
         if (rawValue == null) {

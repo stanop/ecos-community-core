@@ -16,7 +16,7 @@ public class EmptyAlfNode implements MetaValue {
 
     @Override
     public MetaEdge getEdge(String name) {
-        return new AlfNodeMetaEdge(context, name, this);
+        return new AlfNodeMetaEdge(context, null, name, this);
     }
 
     @Override
