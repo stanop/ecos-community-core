@@ -41,7 +41,7 @@ public class UserAutoCreationServiceImpl implements UserAutoCreationService {
             String firstName = properties.get(ContentModel.PROP_FIRSTNAME).toString();
             String lastName = properties.get(ContentModel.PROP_LASTNAME).toString();
             String middleName = properties.get(AlfrescoMissingQNamesModel.PROP_MIDDLE_NAME).toString();
-            properties.put(ContentModel.PROP_USERNAME, cyrillicUserNameGenerator.getUserName(lastName,firstName,middleName));
+            properties.put(ContentModel.PROP_USERNAME, cyrillicUserNameGenerator.getUserName(lastName, firstName, middleName));
         }
         Date birthDate = (Date) properties.get(EcosModel.PROP_BIRTH_DATE);
         if (birthDate != null) {
@@ -63,7 +63,7 @@ public class UserAutoCreationServiceImpl implements UserAutoCreationService {
         return nodeInfoFactory.persist(personInfo, false);
     }
 
-    private List<QName> fillCheckedMandatoryProps () {
+    private List<QName> fillCheckedMandatoryProps() {
         List<QName> mandatoryProps = new ArrayList<>();
         mandatoryProps.add(ContentModel.PROP_FIRSTNAME);
         mandatoryProps.add(ContentModel.PROP_LASTNAME);
