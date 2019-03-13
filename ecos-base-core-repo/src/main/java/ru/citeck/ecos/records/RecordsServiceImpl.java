@@ -4,6 +4,7 @@ import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.ActionStatus;
 import ru.citeck.ecos.action.group.GroupActionConfig;
+import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.records.source.dao.*;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.meta.RecordsMetaService;
@@ -17,8 +18,8 @@ public class RecordsServiceImpl extends ru.citeck.ecos.records2.RecordsServiceIm
 
     private Map<String, RecordsActionExecutor> actionExecutors = new ConcurrentHashMap<>();
 
-    public RecordsServiceImpl(RecordsMetaService recordsMetaService) {
-        super(recordsMetaService);
+    public RecordsServiceImpl(RecordsMetaService recordsMetaService, PredicateService predicateService) {
+        super(recordsMetaService, predicateService);
     }
 
     public ActionResults<RecordRef> executeAction(Collection<RecordRef> records,
