@@ -22,17 +22,23 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
     private MessageService messageService;
     private DictUtils dictUtils;
 
+    private QName scopeType;
+
     @Getter(lazy = true)
     private final ClassAttributeDefinition definition = evalDefinition();
 
     public AlfNodeMetaEdge(AlfGqlContext context,
+                           QName scopeType,
                            String name,
                            MetaValue scope) {
         super(name, scope);
+
         dictionaryService = context.getDictionaryService();
         namespaceService = context.getNamespaceService();
         messageService = context.getMessageService();
         dictUtils = context.getService(DictUtils.QNAME);
+
+        this.scopeType = scopeType;
     }
 
     @Override
@@ -42,7 +48,7 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
 
         if (definition instanceof PropertyDefinition) {
 
-            Map<String, String> mapping = dictUtils.getPropertyDisplayNameMapping(definition.getName());
+            Map<String, String> mapping = dictUtils.getPropertyDisplayNameMapping(scopeType, definition.getName());
 
             if (mapping != null && mapping.size() > 0) {
                 List<AttOption> options = new ArrayList<>();
@@ -113,7 +119,8 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
             return null;
         }
 
-        PropertyDefinition property = dictionaryService.getProperty(qName);
+        PropertyDefinition property = dictUtils.getPropDef(scopeType, qName);
+
         if (property != null) {
             return property;
         }
