@@ -52,6 +52,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -124,8 +125,8 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
 
         Map<QName, Serializable> all = task.getProperties();
         removeNotExistingNodeRefs(all);
-        Map<QName, Serializable> props = new HashMap<QName, Serializable>(all.size());
-        Map<QName, List<NodeRef>> assocs = new HashMap<QName, List<NodeRef>>(all.size() / 2);
+        Map<QName, Serializable> props = new HashMap<>(all.size());
+        Map<QName, List<NodeRef>> assocs = new HashMap<>(all.size() / 2);
         splitPropsAndAssocs(all, props, assocs);
 
         QName taskType = QName.createQName(task.getName(), namespaceService);
@@ -197,7 +198,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
         QName originalType = nodeService.getType(nodeRef),
                 requiredType = getRequiredType(nodeRef, originalType, nodeInfo.getType());
         Set<QName> originalAspects = nodeService.getAspects(nodeRef),
-                requiredAspects = nodeInfo.getAspects() != null ? new HashSet<QName>(nodeInfo.getAspects()) : new HashSet<QName>();
+                requiredAspects = nodeInfo.getAspects() != null ? new HashSet<>(nodeInfo.getAspects()) : new HashSet<>();
 
         Map<QName, Serializable> properties = nodeInfo.getProperties();
         Map<QName, List<NodeRef>> targetAssocs = nodeInfo.getTargetAssocs();
@@ -269,7 +270,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
         }
 
         boolean isAuthorityContainer =
-                requiredType != null ? requiredType.equals(ContentModel.TYPE_AUTHORITY_CONTAINER) : false;
+                requiredType != null && requiredType.equals(ContentModel.TYPE_AUTHORITY_CONTAINER);
 
         if (!isAuthorityContainer) {
             NodeRef parent = nodeInfo.getParent();
@@ -401,12 +402,12 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
     /////////////////////////////////////////////////////////////////
 
     private Map<QName, List<NodeRef>> getAssocMap(List<AssociationRef> assocs, boolean sourceAssocs) {
-        Map<QName, List<NodeRef>> assocMap = new HashMap<QName, List<NodeRef>>();
+        Map<QName, List<NodeRef>> assocMap = new HashMap<>();
         for (AssociationRef assoc : assocs) {
             QName qname = assoc.getTypeQName();
             List<NodeRef> nodes = assocMap.get(qname);
             if (nodes == null) {
-                nodes = new ArrayList<NodeRef>();
+                nodes = new ArrayList<>();
                 assocMap.put(qname, nodes);
             }
             nodes.add(sourceAssocs ? assoc.getSourceRef() : assoc.getTargetRef());
@@ -415,12 +416,12 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
     }
 
     private Map<QName, List<NodeRef>> getChildMap(List<ChildAssociationRef> assocs, boolean parentAssocs) {
-        Map<QName, List<NodeRef>> assocMap = new HashMap<QName, List<NodeRef>>();
+        Map<QName, List<NodeRef>> assocMap = new HashMap<>();
         for (ChildAssociationRef assoc : assocs) {
             QName qname = assoc.getTypeQName();
             List<NodeRef> nodes = assocMap.get(qname);
             if (nodes == null) {
-                nodes = new ArrayList<NodeRef>();
+                nodes = new ArrayList<>();
                 assocMap.put(qname, nodes);
             }
             nodes.add(parentAssocs ? assoc.getParentRef() : assoc.getChildRef());
@@ -431,8 +432,8 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
     private void persistProperties(NodeRef nodeRef, Map<QName, Serializable> properties, boolean full) {
 
         // split content properties from other properties
-        Map<QName, Serializable> notContentProperties = new HashMap<QName, Serializable>(properties.size());
-        Map<QName, Serializable> contentProperties = new HashMap<QName, Serializable>();
+        Map<QName, Serializable> notContentProperties = new HashMap<>(properties.size());
+        Map<QName, Serializable> contentProperties = new HashMap<>();
         for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
             Serializable value = entry.getValue();
             QName propertyName = entry.getKey();
@@ -444,7 +445,11 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
             } else {
                 if (DataTypeDefinition.DATE.equals(propType)) {
                     if (value instanceof String) {
-                        value = ISO8601DateFormat.parseDayOnly((String) value, TimeZone.getDefault());
+                        value = ISO8601DateFormat.parseDayOnly((String) value, TimeZone.getTimeZone("GMT"));
+                    } else if (value instanceof Date) {
+                        long millisInDay = TimeUnit.DAYS.toMillis(1);
+                        long daysCount = TimeUnit.MILLISECONDS.toDays(((Date) value).getTime());
+                        value = new Date(millisInDay * daysCount);
                     }
                 }
 
@@ -537,7 +542,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
                 if (value instanceof Collection) {
                     @SuppressWarnings("rawtypes")
                     Collection<?> objects = (Collection) value;
-                    List<NodeRef> targets = new ArrayList<NodeRef>(objects.size());
+                    List<NodeRef> targets = new ArrayList<>(objects.size());
                     for (Object object : objects) {
                         if (object == null) {
                             continue;
