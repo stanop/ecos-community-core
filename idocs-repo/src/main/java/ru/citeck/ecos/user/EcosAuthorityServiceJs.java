@@ -11,10 +11,10 @@ import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserAutoCreationServiceJs extends AlfrescoScopableProcessorExtension {
+public class EcosAuthorityServiceJs extends AlfrescoScopableProcessorExtension {
 
     private ServiceRegistry services;
-    private UserAutoCreationService userAutoCreationService;
+    private EcosAuthorityService ecosAuthorityService;
 
     public ScriptNode createPerson(String lastName, String firstName, String middleName) {
         return createPerson(lastName, firstName, middleName, null);
@@ -36,16 +36,16 @@ public class UserAutoCreationServiceJs extends AlfrescoScopableProcessorExtensio
         ScriptNode person = null;
         NodeRef personRef;
         if (group != null) {
-            personRef = userAutoCreationService.createPerson(properties, group.getNodeRef());
+            personRef = ecosAuthorityService.createPerson(properties, group.getNodeRef());
         } else {
-            personRef = userAutoCreationService.createPerson(properties);
+            personRef = ecosAuthorityService.createPerson(properties);
         }
         person = new ScriptNode(personRef, services, getScope());
         return person;
     }
 
-    public void setUserAutoCreationService(UserAutoCreationService userAutoCreationService) {
-        this.userAutoCreationService = userAutoCreationService;
+    public void setEcosAuthorityService(EcosAuthorityService ecosAuthorityService) {
+        this.ecosAuthorityService = ecosAuthorityService;
     }
 
     public void setServices(ServiceRegistry services) {

@@ -14,7 +14,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class UserAutoCreationServiceImpl implements UserAutoCreationService {
+public class EcosAuthorityServiceImpl implements EcosAuthorityService {
 
     private static final String DEFAULT_EMAIL = "";
     private static final String DEFAULT_PASSWORD = "12345";

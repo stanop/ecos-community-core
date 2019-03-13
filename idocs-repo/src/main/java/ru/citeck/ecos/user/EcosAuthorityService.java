@@ -5,7 +5,7 @@ import org.alfresco.service.namespace.QName;
 
 import java.util.Map;
 
-public interface UserAutoCreationService {
+public interface EcosAuthorityService {
 
     /**
      * Creates user with given properties.
