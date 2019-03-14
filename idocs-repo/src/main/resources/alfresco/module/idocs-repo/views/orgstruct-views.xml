@@ -93,6 +93,20 @@
         </view>
     </view>
 
+    <view class="cm:authorityContainer" id="group">
+        <param name="preloadInvariants">true</param>
+
+        <field prop="cm:authorityName"/>
+        <field prop="cm:authorityDisplayName"/>
+        <field assoc="org:workingCalendar">
+            <region name="input" template="view"/>
+            <region name="select" template="select-journal">
+                <param name="journalType">working-calendar</param>
+            </region>
+            <invariant on="multiple" language="explicit">false</invariant>
+        </field>
+    </view>
+
     <view class="org:simpleRoleType">
         <field prop="cm:name"/>
         <field prop="cm:title"/>

@@ -34,9 +34,7 @@ import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records2.request.query.lang.DistinctQuery;
-import ru.citeck.ecos.records2.source.MetaAttributeDef;
 import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
-import ru.citeck.ecos.records2.source.dao.RecordsDefinitionDAO;
 import ru.citeck.ecos.records2.source.dao.RecordsQueryDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
@@ -51,7 +49,6 @@ import java.util.stream.Collectors;
 @Component
 public class AlfNodesRecordsDAO extends LocalRecordsDAO
                                 implements RecordsQueryDAO,
-                                           RecordsDefinitionDAO,
                                            RecordsMetaLocalDAO<MetaValue>,
                                            RecordsQueryWithMetaLocalDAO<Object>,
                                            MutableRecordsDAO,
@@ -293,16 +290,19 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             return result;
         }
 
-        RecordsQueryResult<RecordRef> records = getRecords(recordsQuery);
+        RecordsQueryResult<RecordRef> records = queryRecords(recordsQuery);
+
         RecordsQueryResult<Object> result = new RecordsQueryResult<>();
         result.merge(records);
+        result.setHasMore(records.getHasMore());
+        result.setTotalCount(records.getTotalCount());
         result.setRecords((List) getMetaValues(records.getRecords()));
 
         return result;
     }
 
     @Override
-    public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
+    public RecordsQueryResult<RecordRef> queryRecords(RecordsQuery query) {
 
         if (query.getLanguage().isEmpty()) {
             query.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
@@ -366,13 +366,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             return new EmptyAlfNode();
         }
         return new AlfNodeRecord(recordRef);
-    }
-
-    @Override
-    public List<MetaAttributeDef> getAttributesDef(Collection<String> names) {
-        return names.stream()
-                    .map(n -> new AlfAttributeDefinition(n, namespaceService, dictionaryService, messageService))
-                    .collect(Collectors.toList());
     }
 
     public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {

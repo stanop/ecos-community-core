@@ -6,6 +6,7 @@ import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -70,18 +71,28 @@ public class DictUtils {
     }
 
     public String getPropertyDisplayName(QName name, String value) {
+        return getPropertyDisplayName(null, name, value);
+    }
 
-        Map<String, String> mapping = getPropertyDisplayNameMapping(name);
+    public String getPropertyDisplayName(QName scope, QName name, String value) {
+        Map<String, String> mapping = getPropertyDisplayNameMapping(scope, name);
         return mapping != null && mapping.containsKey(value) ? mapping.get(value) : value;
     }
 
     public Map<String, String> getPropertyDisplayNameMapping(QName name) {
+        return getPropertyDisplayNameMapping(null, name);
+    }
 
-        Map<QName, Map<String, String>> cache = TransactionalResourceHelper.getMap(TXN_CONSTRAINTS_CACHE);
+    public Map<String, String> getPropertyDisplayNameMapping(QName scope, QName name) {
 
-        return cache.computeIfAbsent(name, n -> {
+        Map<Pair<QName, QName>, Map<String, String>> cache = TransactionalResourceHelper.getMap(TXN_CONSTRAINTS_CACHE);
+        Pair<QName, QName> key = new Pair<>(scope, name);
 
-            ListOfValuesConstraint constraint = getListOfValuesConstraint(name);
+        return cache.computeIfAbsent(key, n -> {
+
+            PropertyDefinition propDef = getPropDef(scope, name);
+
+            ListOfValuesConstraint constraint = getListOfValuesConstraint(propDef);
             if (constraint == null) {
                 return null;
             }
