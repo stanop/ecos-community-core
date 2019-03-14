@@ -89,3 +89,8 @@
     background-color: #fff !important;
 }
 
+/* Hack for select-journal component */
+.eform-panel-content .select-journal .button {
+    font-size: 14px;
+    font-weight: 600;
+}
