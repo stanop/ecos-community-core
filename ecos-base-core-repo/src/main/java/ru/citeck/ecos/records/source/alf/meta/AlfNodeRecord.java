@@ -46,6 +46,11 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
+    public <T extends GqlContext> void init(T context) {
+        init(context, null);
+    }
+
+    @Override
     public <T extends GqlContext> void init(T context, MetaField field) {
         this.context = (AlfGqlContext) context;
         this.nodeRef = RecordsUtils.toNodeRef(recordRef);

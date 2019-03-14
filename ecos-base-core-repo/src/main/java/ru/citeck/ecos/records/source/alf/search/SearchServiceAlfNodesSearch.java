@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.search.ResultSet;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,11 @@ import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records2.request.query.SortBy;
+import ru.citeck.ecos.records2.request.query.lang.DistinctQuery;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,14 +36,17 @@ public class SearchServiceAlfNodesSearch {
 
     private SearchService searchService;
     private NamespaceService namespaceService;
+    private AlfSearchUtils searchUtils;
 
     @Autowired
     public SearchServiceAlfNodesSearch(SearchService searchService,
                                        AlfNodesRecordsDAO recordsSource,
-                                       NamespaceService namespaceService) {
+                                       NamespaceService namespaceService,
+                                       AlfSearchUtils searchUtils) {
 
         this.searchService = searchService;
         this.namespaceService = namespaceService;
+        this.searchUtils = searchUtils;
 
         recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_FTS_ALFRESCO, AfterIdType.DB_ID));
         recordsSource.register(new SearchWithLanguage(SearchService.LANGUAGE_LUCENE, AfterIdType.DB_ID));
@@ -146,6 +153,17 @@ public class SearchServiceAlfNodesSearch {
         @Override
         public RecordsQueryResult<RecordRef> queryRecords(RecordsQuery query, Long afterDbId, Date afterCreated) {
             return queryRecordsImpl(query, afterDbId, afterCreated);
+        }
+
+        @Override
+        public List<Object> queryDistinctValues(DistinctQuery query, int max) {
+
+            if (!SearchService.LANGUAGE_FTS_ALFRESCO.equals(query.getLanguage())) {
+                return Collections.emptyList();
+            }
+
+            QName distinctProp = QName.resolveToQName(namespaceService, query.getAttribute());
+            return searchUtils.queryFtsDistinctValues(query.getQuery().asText(), distinctProp, max);
         }
 
         @Override

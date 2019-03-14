@@ -118,7 +118,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         @Override
         public <T extends GqlContext> void init(T context, MetaField metaField) {
 
-            alfNode.init(context);
+            alfNode.init(context, metaField);
 
             if (userName == null) {
                 try {
@@ -160,7 +160,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                 case PROP_USER_NAME:
                     return userName;
                 case PROP_FULL_NAME:
-                    return alfNode.getString();
+                    return alfNode.getDisplayName();
                 case PROP_IS_AVAILABLE:
                     return authenticationService.getAuthenticationEnabled(userName);
                 case PROP_IS_MUTABLE:

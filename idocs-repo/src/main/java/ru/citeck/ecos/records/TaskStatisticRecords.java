@@ -322,7 +322,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
                                                         .node()
                                                         .map(n -> new NodeRef(n.nodeRef()))
                                                         .orElse(null));
-        value.init(context);
+        value.init(context, null);
         return value;
     }
 }
