@@ -9,4 +9,6 @@
     <Environment name="flowable.common.app.idm-admin.user" value="${flowable.webapps.admin.userid}" type="java.lang.String"/>
     <Environment name="flowable.common.app.idm-admin.password" value="${flowable.webapps.admin.password}" type="java.lang.String"/>
     <Environment name="flowable.common.app.idm-url" value="${flowable.webapps.idm.app.url}" type="java.lang.String"/>
+
+    <Environment name="flowable.async-executor-activate" value="${flowable.webapps.async-executor-activate}" type="java.lang.Boolean"/>
 </Context>

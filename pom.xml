@@ -142,6 +142,8 @@
                                 <flowable.webapps.admin.rest.app.port>${flowable.webapps.admin.rest.app.port}</flowable.webapps.admin.rest.app.port>
                                 <flowable.webapps.admin.rest.app.user>${flowable.webapps.admin.rest.app.user}</flowable.webapps.admin.rest.app.user>
                                 <flowable.webapps.admin.rest.app.password>${flowable.webapps.admin.rest.app.password}</flowable.webapps.admin.rest.app.password>
+
+                                <flowable.webapps.async-executor-activate>${flowable.webapps.async-executor-activate}</flowable.webapps.async-executor-activate>
                             </tomcatSystemProperties>
 
                             <tomcatCustomWebapps>
