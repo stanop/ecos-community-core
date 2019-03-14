@@ -26,7 +26,7 @@ import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.records2.RecordsService;
-import ru.citeck.ecos.records2.source.MetaAttributeDef;
+import ru.citeck.ecos.records2.utils.RecordsUtils;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.server.utils.Utils;
 import ru.citeck.ecos.utils.NodeUtils;
@@ -95,6 +95,10 @@ public class JournalConfigGet extends AbstractWebScript {
             sourceId = "";
         }
 
+        Map<String, Class<?>> columnClasses = RecordsUtils.getAttributesClasses(sourceId,
+                                                                                attributes,
+                                                                                null,
+                                                                                recordsService);
         for (String name : attributes) {
 
             Column column = new Column();
@@ -108,11 +112,8 @@ public class JournalConfigGet extends AbstractWebScript {
             column.setParams(type.getAttributeOptions(name));
             column.setText(getColumnLabel(column));
 
-            Optional<MetaAttributeDef> def = recordsService.getAttributeDef(sourceId, name);
-            column.setJavaClass(def.map(d -> {
-                Class<?> datatype = d.getJavaClass();
-                return datatype != null ? datatype.getName() : null;
-            }).orElse(null));
+            Class<?> javaClass = columnClasses.get(name);
+            column.setJavaClass(javaClass != null ? javaClass.getName() : null);
 
             columns.add(column);
         }

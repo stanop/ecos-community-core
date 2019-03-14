@@ -2,6 +2,7 @@ package ru.citeck.ecos.records.meta;
 
 import org.alfresco.util.ISO8601DateFormat;
 import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
 import java.util.Date;
@@ -24,9 +25,9 @@ public class MetaExplicitValue implements MetaValue {
     }
 
     @Override
-    public <T extends GqlContext> void init(T context) {
+    public <T extends GqlContext> void init(T context, MetaField field) {
         if (metaVal != null) {
-            metaVal.init(context);
+            metaVal.init(context, field);
         }
     }
 
@@ -52,9 +53,9 @@ public class MetaExplicitValue implements MetaValue {
     }
 
     @Override
-    public Object getAttribute(String name) throws Exception {
+    public Object getAttribute(String name, MetaField field) throws Exception {
         if (metaVal != null) {
-            return metaVal.getAttribute(name);
+            return metaVal.getAttribute(name, field);
         }
         return MetaUtils.getReflectionValue(val, name);
     }

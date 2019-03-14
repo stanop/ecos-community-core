@@ -13,6 +13,7 @@ import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
 import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.utils.DictUtils;
 
@@ -39,7 +40,7 @@ public class AlfNodeAttValue implements MetaValue {
     }
 
     @Override
-    public <T extends GqlContext> void init(T context) {
+    public <T extends GqlContext> void init(T context, MetaField field) {
 
         this.context = (AlfGqlContext) context;
 
@@ -102,7 +103,7 @@ public class AlfNodeAttValue implements MetaValue {
     }
 
     @Override
-    public Object getAttribute(String name) {
+    public Object getAttribute(String name, MetaField field) {
         if (alfNode != null) {
             Attribute attribute = alfNode.attribute(name);
             return attribute.getValues()

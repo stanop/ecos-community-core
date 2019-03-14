@@ -13,6 +13,7 @@ import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
@@ -115,13 +116,13 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         @Override
-        public <T extends GqlContext> void init(T context) {
+        public <T extends GqlContext> void init(T context, MetaField metaField) {
 
             alfNode.init(context);
 
             if (userName == null) {
                 try {
-                    List<? extends MetaValue> attribute = alfNode.getAttribute(PROP_CM_USER_NAME);
+                    List<? extends MetaValue> attribute = alfNode.getAttribute(PROP_CM_USER_NAME, metaField);
                     userName = attribute.stream()
                                         .findFirst()
                                         .map(MetaValue::getString)
@@ -153,7 +154,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         @Override
-        public Object getAttribute(String name) {
+        public Object getAttribute(String name, MetaField field) {
 
             switch (name) {
                 case PROP_USER_NAME:
@@ -170,7 +171,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                     return getUserAuthorities();
             }
 
-            return alfNode.getAttribute(name);
+            return alfNode.getAttribute(name, field);
         }
     }
 
@@ -189,7 +190,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         @Override
-        public Object getAttribute(String name) {
+        public Object getAttribute(String name, MetaField field) {
             switch (name) {
                 case "list":
                     return new ArrayList<>(getAuthorities());
