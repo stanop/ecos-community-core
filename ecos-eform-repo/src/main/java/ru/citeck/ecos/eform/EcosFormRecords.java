@@ -124,7 +124,7 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
 
         if (lang.equals(SearchService.LANGUAGE_FTS_ALFRESCO) || lang.equals(CriteriaAlfNodesSearch.LANGUAGE)) {
 
-            RecordsQueryResult<RecordRef> records = alfNodesRecordsDAO.getRecords(recordsQuery);
+            RecordsQueryResult<RecordRef> records = alfNodesRecordsDAO.queryRecords(recordsQuery);
 
             result.setHasMore(records.getHasMore());
             result.setTotalCount(records.getTotalCount());
