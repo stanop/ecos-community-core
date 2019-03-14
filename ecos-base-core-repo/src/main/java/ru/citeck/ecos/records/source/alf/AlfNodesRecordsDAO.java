@@ -291,8 +291,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         }
 
         RecordsQueryResult<RecordRef> records = queryRecords(recordsQuery);
+
         RecordsQueryResult<Object> result = new RecordsQueryResult<>();
         result.merge(records);
+        result.setHasMore(records.getHasMore());
+        result.setTotalCount(records.getTotalCount());
         result.setRecords((List) getMetaValues(records.getRecords()));
 
         return result;
