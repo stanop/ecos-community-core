@@ -74,7 +74,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
 
         if (SearchService.LANGUAGE_FTS_ALFRESCO.equals(query.getLanguage())) {
 
-            RecordsQueryResult<RecordRef> records = alfNodesRecordsDAO.getRecords(query);
+            RecordsQueryResult<RecordRef> records = alfNodesRecordsDAO.queryRecords(query);
             return new RecordsQueryResult<>(records, UserValue::new);
         }
 

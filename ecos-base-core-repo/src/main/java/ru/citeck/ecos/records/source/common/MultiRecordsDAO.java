@@ -50,7 +50,7 @@ public class MultiRecordsDAO extends AbstractRecordsDAO
 
             localQuery.setMaxItems(query.getMaxItems() - result.getRecords().size());
             RecordsQueryDAO recordsDAO = recordsDao.get(sourceIdx);
-            RecordsQueryResult<RecordRef> daoRecords = recordsDAO.getRecords(localQuery);
+            RecordsQueryResult<RecordRef> daoRecords = recordsDAO.queryRecords(localQuery);
 
             result.merge(daoRecords);
 

@@ -302,6 +302,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
+    public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
+        return queryRecords(query);
+    }
+
+    @Override
     public RecordsQueryResult<RecordRef> queryRecords(RecordsQuery query) {
 
         if (query.getLanguage().isEmpty()) {
