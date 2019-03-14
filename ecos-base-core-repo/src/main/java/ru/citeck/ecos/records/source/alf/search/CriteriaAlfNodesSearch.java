@@ -2,12 +2,6 @@ package ru.citeck.ecos.records.source.alf.search;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.repository.StoreRef;
-import org.alfresco.service.cmr.search.QueryConsistency;
-import org.alfresco.service.cmr.search.ResultSet;
-import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -29,26 +23,26 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
 
     public static final String LANGUAGE = "criteria";
 
-    private SearchService searchService;
     private FTSQueryBuilder ftsQueryBuilder;
     private NamespaceService namespaceService;
     private SearchCriteriaParser criteriaParser;
     private CriteriaSearchService criteriaSearchService;
-    private NodeService nodeService;
+
+    private AlfSearchUtils searchUtils;
 
     @Autowired
     public CriteriaAlfNodesSearch(CriteriaSearchService criteriaSearchService,
                                   SearchCriteriaParser criteriaParser,
                                   ServiceRegistry serviceRegistry,
                                   FTSQueryBuilder ftsQueryBuilder,
-                                  AlfNodesRecordsDAO recordsSource) {
+                                  AlfNodesRecordsDAO recordsSource,
+                                  AlfSearchUtils searchUtils) {
 
         this.criteriaSearchService = criteriaSearchService;
         this.criteriaParser = criteriaParser;
         this.ftsQueryBuilder = ftsQueryBuilder;
         this.namespaceService = serviceRegistry.getNamespaceService();
-        this.searchService = serviceRegistry.getSearchService();
-        this.nodeService = serviceRegistry.getNodeService();
+        this.searchUtils = searchUtils;
 
         recordsSource.register(this);
     }
@@ -107,56 +101,10 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
     public List<Object> queryDistinctValues(DistinctQuery query, int max) {
 
         SearchCriteria criteria = criteriaParser.parse(query.getQuery());
-        String ftsQuery = "(" + ftsQueryBuilder.buildQuery(criteria) + ")";
-
+        String ftsQuery = ftsQueryBuilder.buildQuery(criteria);
         QName distinctProp = QName.resolveToQName(namespaceService, query.getAttribute());
 
-        Set<Object> values = new HashSet<>();
-        Set<Object> newValues = new HashSet<>();
-
-        int found, requests = 0;
-        do {
-
-            SearchParameters parameters = new SearchParameters();
-            parameters.setMaxItems(max);
-            parameters.setLimit(max);
-            parameters.setQuery(ftsQuery);
-            parameters.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
-            parameters.addStore(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE);
-            parameters.setQueryConsistency(QueryConsistency.EVENTUAL);
-
-            ResultSet resultSet = null;
-
-            try {
-
-                resultSet = searchService.query(parameters);
-                found = resultSet.length();
-
-                newValues.clear();
-
-                for (NodeRef nodeRef : resultSet.getNodeRefs()) {
-
-                    Object property = nodeService.getProperty(nodeRef, distinctProp);
-                    if (property != null && !values.contains(property)) {
-                        newValues.add(property);
-                    }
-                }
-
-                for (Object value : newValues) {
-                    ftsQuery +=  " AND NOT @" + distinctProp + ":\"" + value + "\"";
-                }
-
-                values.addAll(newValues);
-
-            } finally {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            }
-
-        } while (found > 0 && values.size() <= max && ++requests <= max);
-
-        return new ArrayList<>(values);
+        return searchUtils.queryFtsDistinctValues(ftsQuery, distinctProp, max);
     }
 
     @Override

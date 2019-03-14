@@ -3,7 +3,7 @@ import DefaultGqlFormatter from './defaultGqlFormatter';
 
 export default class UserNameLink extends DefaultGqlFormatter {
     static getQueryString(){
-        return 'str, userName: edge(n: "cm:userName"){vals{str}}';
+        return 'str:disp, userName: edge(n: "cm:userName"){vals{str}}';
     }
 
     getUrl(cell){

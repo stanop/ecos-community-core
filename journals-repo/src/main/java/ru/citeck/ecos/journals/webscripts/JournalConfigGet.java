@@ -1,5 +1,6 @@
 package ru.citeck.ecos.journals.webscripts;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -25,8 +26,11 @@ import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
+import ru.citeck.ecos.predicate.model.Predicate;
+import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.utils.RecordsUtils;
+import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.server.utils.Utils;
 import ru.citeck.ecos.utils.NodeUtils;
@@ -174,6 +178,7 @@ public class JournalConfigGet extends AbstractWebScript {
         meta.setNodeRef(String.valueOf(journalData.getNodeRef()));
 
         List<Criterion> criteriaList = new ArrayList<>();
+        SearchCriteria criteria = new SearchCriteria(namespaceService);
 
         for (NodeRef criterionRef : journalData.getCriteria()) {
 
@@ -184,7 +189,18 @@ public class JournalConfigGet extends AbstractWebScript {
             criterion.setPredicate((String) props.get(JournalsModel.PROP_PREDICATE));
             criterion.setValue(getCriterionValue((String) props.get(JournalsModel.PROP_CRITERION_VALUE)));
 
+            criteria.addCriteriaTriplet(criterion.getField(), criterion.getPredicate(), criterion.getValue());
+
             criteriaList.add(criterion);
+        }
+
+        JsonNode criteriaJson = objectMapper.valueToTree(criteria);
+        try {
+            meta.setPredicate(recordsService.convertQueryLanguage(criteriaJson,
+                                                                  CriteriaAlfNodesSearch.LANGUAGE,
+                                                                  RecordsService.LANGUAGE_PREDICATE));
+        } catch (Exception e) {
+            logger.error("Language conversion error. criteria: " + criteriaJson);
         }
 
         meta.setCreateVariants(createVariantsGet.getVariantsByJournalId(id, true));
@@ -278,6 +294,7 @@ public class JournalConfigGet extends AbstractWebScript {
     static class JournalMeta {
         @Getter @Setter String nodeRef;
         @Getter @Setter List<Criterion> criteria;
+        @Getter @Setter JsonNode predicate;
         @Getter @Setter List<CreateVariantsGet.ResponseVariant> createVariants;
     }
 

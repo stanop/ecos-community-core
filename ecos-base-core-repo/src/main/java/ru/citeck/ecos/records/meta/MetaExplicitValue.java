@@ -25,6 +25,11 @@ public class MetaExplicitValue implements MetaValue {
     }
 
     @Override
+    public <T extends GqlContext> void init(T context) {
+        init(context, null);
+    }
+
+    @Override
     public <T extends GqlContext> void init(T context, MetaField field) {
         if (metaVal != null) {
             metaVal.init(context, field);

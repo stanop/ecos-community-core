@@ -355,6 +355,13 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
+    public List<String> getSupportedLanguages() {
+        List<String> languages = new ArrayList<>(searchByLanguage.keySet());
+        languages.add(DistinctQuery.LANGUAGE);
+        return languages;
+    }
+
+    @Override
     public List<MetaValue> getMetaValues(List<RecordRef> recordRef) {
         return recordRef.stream()
                         .map(this::createMetaValue)
