@@ -930,7 +930,7 @@ function buildCreateVariantsForSite(sitename, forSlideMenu) {
             for (var cv = 0; cv < createVariants.length; cv++) {
                 var url = "node-create?type=" + createVariants[cv].type;
                 url += "&viewId=" + createVariants[cv].formId;
-                url += "&destination" + createVariants[cv].destination;
+                url += "&destination=" + createVariants[cv].destination;
                 if (createVariants[cv].createArguments) {
                     url += "&" + createVariants[cv].createArguments;
                 }
