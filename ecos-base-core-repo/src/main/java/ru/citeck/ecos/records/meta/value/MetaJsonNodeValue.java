@@ -10,6 +10,7 @@ import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeAttValue;
 import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class MetaJsonNodeValue implements MetaValue {
     }
 
     @Override
-    public <T extends GqlContext> void init(T context) {
+    public <T extends GqlContext> void init(T context, MetaField field) {
         this.context = (AlfGqlContext) context;
     }
 
@@ -46,7 +47,7 @@ public class MetaJsonNodeValue implements MetaValue {
     }
 
     @Override
-    public List<MetaValue> getAttribute(String name) {
+    public List<MetaValue> getAttribute(String name, MetaField field) {
 
         JsonNode attNode = data.get(name);
 

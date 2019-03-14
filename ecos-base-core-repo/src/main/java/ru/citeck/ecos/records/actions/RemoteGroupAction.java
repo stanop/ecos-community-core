@@ -41,7 +41,7 @@ public class RemoteGroupAction<T> extends BaseGroupAction<RecordInfo<T>> {
         data.config = targetConfig;
 
         data.nodes = nodes.stream().map(info -> {
-            RecordRef id = new RecordRef(info.getRef().getId());
+            RecordRef id = RecordRef.valueOf(info.getRef().getId());
             infoMapping.put(id, info);
             return id;
         }).collect(Collectors.toList());

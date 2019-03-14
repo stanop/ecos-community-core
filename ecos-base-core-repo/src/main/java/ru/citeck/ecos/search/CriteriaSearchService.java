@@ -125,7 +125,7 @@ public class CriteriaSearchService {
         }
         
         boolean hasMore = false;
-        if(criteria.isLimitSet()) {
+        if (criteria.isLimitSet()) {
             hasMore = results.size() > criteria.getLimit();
             if(hasMore) {
                 results = results.subList(0, criteria.getLimit());

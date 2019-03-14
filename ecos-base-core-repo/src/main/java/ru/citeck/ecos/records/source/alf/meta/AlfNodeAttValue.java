@@ -2,7 +2,6 @@ package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
@@ -14,6 +13,7 @@ import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
 import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.utils.DictUtils;
 
@@ -40,7 +40,7 @@ public class AlfNodeAttValue implements MetaValue {
     }
 
     @Override
-    public <T extends GqlContext> void init(T context) {
+    public <T extends GqlContext> void init(T context, MetaField field) {
 
         this.context = (AlfGqlContext) context;
 
@@ -74,7 +74,7 @@ public class AlfNodeAttValue implements MetaValue {
             if (name != null) {
 
                 DictUtils dictUtils = context.getService(DictUtils.QNAME);
-                return dictUtils.getPropertyDisplayName(name, (String) rawValue);
+                return dictUtils.getPropertyDisplayName(att.getScopeType(), name, (String) rawValue);
             }
         }
 
@@ -103,7 +103,7 @@ public class AlfNodeAttValue implements MetaValue {
     }
 
     @Override
-    public Object getAttribute(String name) {
+    public Object getAttribute(String name, MetaField field) {
         if (alfNode != null) {
             Attribute attribute = alfNode.attribute(name);
             return attribute.getValues()

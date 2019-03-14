@@ -65,7 +65,7 @@ public class RecordsMutatePost extends AbstractWebScript {
                 String fieldName = field.getName();
 
                 if (FIELD_ID.equals(fieldName)) {
-                    recordMeta.setId(new RecordRef(field.getValue()));
+                    recordMeta.setId(RecordRef.valueOf(field.getValue()));
                 } else {
 
                     if (field.getIsFile()) {

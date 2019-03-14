@@ -9,7 +9,7 @@ import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.workflow.listeners.AbstractExecutionListener;
-import ru.citeck.ecos.workflow.listeners.ListenerUtils;
+import ru.citeck.ecos.workflow.listeners.WorkflowDocumentResolverRegistry;
 
 import java.util.Objects;
 
@@ -20,15 +20,16 @@ public class SetConfirmationStatusToOrdersListener extends AbstractExecutionList
 
     private NodeService nodeService;
     private WorkflowService workflowService;
+    private WorkflowDocumentResolverRegistry documentResolverRegistry;
     private QName requiredDocType;
     private String requiredWorkflowName;
     private QName fieldToSet;
     private String statusToSet;
 
     @Override
-    protected void notifyImpl(DelegateExecution execution) throws Exception {
+    protected void notifyImpl(DelegateExecution execution) {
 
-        NodeRef document = ListenerUtils.getDocument(execution, nodeService);
+        NodeRef document = documentResolverRegistry.getResolver(execution).getDocument(execution);
         if (document == null || !nodeService.exists(document)) {
             return;
         }
@@ -78,5 +79,10 @@ public class SetConfirmationStatusToOrdersListener extends AbstractExecutionList
 
     public void setStatusToSet(String statusToSet) {
         this.statusToSet = statusToSet;
+    }
+
+    @Override
+    protected void initImpl() {
+        documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
     }
 }

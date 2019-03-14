@@ -33,7 +33,7 @@ public class DatePropertyEditor extends PropertyEditorSupport {
             if(ISO8601DateFormat.isTimeComponentDefined(text)) {
                 date = ISO8601DateFormat.parse(text);
             } else {
-                date = ISO8601DateFormat.parseDayOnly(text, TimeZone.getDefault());
+                date = ISO8601DateFormat.parseDayOnly(text, TimeZone.getTimeZone("GMT"));
             }
             setValue(date);
         } catch (RuntimeException e) {

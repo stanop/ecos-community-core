@@ -21,37 +21,41 @@ package ru.citeck.ecos.workflow.listeners;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 
 public class SetPriorityWorkflowListener extends AbstractExecutionListener {
 
-	private NodeService nodeService;
+    private NodeService nodeService;
+    private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
-	@Override
-	protected void notifyImpl(DelegateExecution execution) throws Exception {
-		NodeRef docRef = ListenerUtils.getDocument(execution, nodeService);
-		if (docRef == null)
-			return;
+    @Override
+    protected void notifyImpl(DelegateExecution execution) throws Exception {
+        NodeRef docRef = documentResolverRegistry.getResolver(execution).getDocument(execution);
+        if (docRef == null)
+            return;
 
-		Object bpmPriorityObj = execution.getVariable("bpm_workflowPriority");
-		Integer bpmPriority = null;
-		if (bpmPriorityObj instanceof Integer)
-			bpmPriority = (Integer)bpmPriorityObj;
+        Object bpmPriorityObj = execution.getVariable("bpm_workflowPriority");
+        Integer bpmPriority = null;
+        if (bpmPriorityObj instanceof Integer)
+            bpmPriority = (Integer) bpmPriorityObj;
 
-		if (bpmPriority == null)
-			return;
+        if (bpmPriority == null)
+            return;
 
-		Object docPriorityObj = nodeService.getProperty(docRef, CiteckWorkflowModel.PROP_PRIORITY);
-		Integer docPriority = null;
-		if (docPriorityObj instanceof Integer)
-			docPriority = (Integer)docPriorityObj;
-		if (!bpmPriority.equals(docPriority))
-			nodeService.setProperty(docRef, CiteckWorkflowModel.PROP_PRIORITY, bpmPriority);
-	}
+        Object docPriorityObj = nodeService.getProperty(docRef, CiteckWorkflowModel.PROP_PRIORITY);
+        Integer docPriority = null;
+        if (docPriorityObj instanceof Integer)
+            docPriority = (Integer) docPriorityObj;
+        if (!bpmPriority.equals(docPriority))
+            nodeService.setProperty(docRef, CiteckWorkflowModel.PROP_PRIORITY, bpmPriority);
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
+    @Override
+    protected void initImpl() {
+        documentResolverRegistry = getBean(WorkflowDocumentResolverRegistry.BEAN_NAME, WorkflowDocumentResolverRegistry.class);
+    }
 }

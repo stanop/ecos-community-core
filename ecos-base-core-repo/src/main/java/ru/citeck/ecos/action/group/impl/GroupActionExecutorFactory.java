@@ -96,7 +96,7 @@ public class GroupActionExecutorFactory implements GroupActionFactory<RecordRef>
             results.forEach((ref, res) -> {
                 RecordRef recordRef = recordsMapping.get(ref);
                 if (recordRef == null) {
-                    recordRef = new RecordRef(ref.toString());
+                    recordRef = RecordRef.valueOf(ref.toString());
                 }
                 output.add(new ActionResult<>(recordRef, res));
             });
