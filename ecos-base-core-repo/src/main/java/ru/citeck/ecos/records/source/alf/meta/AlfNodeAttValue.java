@@ -83,15 +83,22 @@ public class AlfNodeAttValue implements MetaValue {
             }
         }
 
+        if (alfNode != null) {
+            return alfNode.displayName();
+        }
+        if (qName != null) {
+            return qName.classTitle();
+        }
+
         return getString();
     }
 
     @Override
     public String getString() {
         if (alfNode != null) {
-            return alfNode.displayName();
+            return alfNode.nodeRef();
         } else if (qName != null) {
-            return qName.classTitle();
+            return qName.shortName();
         } else if (rawValue instanceof Date) {
             return ISO8601Utils.format((Date) rawValue);
         } else if (rawValue instanceof ContentData) {

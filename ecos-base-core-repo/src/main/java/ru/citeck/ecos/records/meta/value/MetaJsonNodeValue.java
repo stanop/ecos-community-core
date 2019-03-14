@@ -60,29 +60,29 @@ public class MetaJsonNodeValue implements MetaValue {
             return Collections.emptyList();
         }
 
-        return getValue(attNode);
+        return getValue(attNode, field);
     }
 
-    private List<MetaValue> getValue(JsonNode attNode) {
+    private List<MetaValue> getValue(JsonNode attNode, MetaField field) {
 
         List<MetaValue> attValue = new ArrayList<>();
 
         if (attNode instanceof ArrayNode) {
             ArrayNode array = (ArrayNode) attNode;
             for (int i = 0; i < array.size(); i++) {
-                attValue.addAll(getValue(array.get(i)));
+                attValue.addAll(getValue(array.get(i), field));
             }
         } else {
             if (attNode instanceof ObjectNode) {
                 JsonNode nodeRefNode = attNode.get("nodeRef");
                 if (nodeRefNode instanceof TextNode) {
                     NodeRef nodeRef = new NodeRef(nodeRefNode.asText());
-                    attValue.add(toAlfNodeAtt(nodeRef));
+                    attValue.add(toAlfNodeAtt(nodeRef, field));
                 } else {
                     JsonNode qnameNode = attNode.get("fullQName");
                     if (qnameNode instanceof TextNode) {
                         QName qName = QName.createQName(qnameNode.asText());
-                        attValue.add(toAlfNodeAtt(qName));
+                        attValue.add(toAlfNodeAtt(qName, field));
                     }
                 }
             }
@@ -94,9 +94,9 @@ public class MetaJsonNodeValue implements MetaValue {
         return attValue;
     }
 
-    private MetaValue toAlfNodeAtt(Object value) {
+    private MetaValue toAlfNodeAtt(Object value, MetaField field) {
         MetaValue result = new AlfNodeAttValue(value);
-        result.init(context);
+        result.init(context, field);
         return result;
     }
 }
