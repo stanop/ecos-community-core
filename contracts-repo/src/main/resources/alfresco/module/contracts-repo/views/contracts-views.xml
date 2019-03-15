@@ -86,7 +86,14 @@
                     <param name="key">agreement.form.tk_kind.title</param>
                 </region>
             </field>
-            <field prop="tk:type" template="none"/>
+            <field prop="tk:type" template="none">
+                <invariant on="value" language="javascript"><![CDATA[(function() {
+                    if (view.params.tk_type) {
+                        return view.params.tk_type;
+                    }
+                    return 'workspace://SpacesStore/contracts-cat-doctype-contract';
+                })()]]></invariant>
+            </field>
         </view>
         <view>
             <field prop="contracts:agreementNumber">
