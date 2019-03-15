@@ -114,6 +114,35 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                         case LIKE:
                             query.value(field, valueStr.replaceAll("%", "*"));
                             break;
+                        case GE:
+                        case GT:
+                        case LE:
+                        case LT:
+
+                            String predValue;
+                            if (value instanceof String) {
+                                predValue = "\"" + valueStr + "\"";
+                            } else {
+                                predValue = valueStr;
+                            }
+
+                            switch (valuePred.getType()) {
+
+                                case GE:
+                                    query.range(field, predValue, true, null, false);
+                                    break;
+                                case GT:
+                                    query.range(field, predValue, false, null, false);
+                                    break;
+                                case LE:
+                                    query.range(field, null, false, predValue, true);
+                                    break;
+                                case LT:
+                                    query.range(field, null, false, predValue, false);
+                                    break;
+                            }
+
+                            break;
                         default:
                             throw new RuntimeException("Unknown value predicate type: " + valuePred.getType());
                     }
