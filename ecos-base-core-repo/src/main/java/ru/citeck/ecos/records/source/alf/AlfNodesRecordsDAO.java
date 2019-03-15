@@ -298,6 +298,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         result.setTotalCount(records.getTotalCount());
         result.setRecords((List) getMetaValues(records.getRecords()));
 
+        if (recordsQuery.isDebug()) {
+            result.setDebugInfo(getClass(), "query", recordsQuery.getQuery());
+            result.setDebugInfo(getClass(), "language", recordsQuery.getLanguage());
+        }
+
         return result;
     }
 

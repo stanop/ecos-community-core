@@ -122,6 +122,17 @@ public interface OperandExpected {
     FTSQuery range(QName field, String from, String to);
 
     /**
+     * Search by any field from "from" to "to" arguments
+     * at least one of "from" or "to" arguments must be specified
+     * @param from converts to MIN if null
+     * @param to converts to MAX if null
+     * @param field field name. mandatory
+     * @param frIncl include 'from' value to search or not
+     * @param toIncl include 'to' value to search or not
+     */
+    FTSQuery range(QName field, String from, boolean frIncl, String to, boolean toIncl);
+
+    /**
      * Add path term
      */
     OperatorExpected path(String path);
