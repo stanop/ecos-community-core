@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records.source.alf;
 
 import lombok.Getter;
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -110,6 +111,60 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
         }
 
         return null;
+    }
+
+    @Override
+    public String getEditorKey() {
+
+        ClassAttributeDefinition definition = getDefinition();
+
+        if (definition instanceof AssociationDefinition) {
+
+            ClassDefinition targetClass = ((AssociationDefinition) definition).getTargetClass();
+
+            return "alf_" + targetClass.getName().toPrefixString(namespaceService);
+        }
+
+        return null;
+    }
+
+    @Override
+    public String getType() {
+
+        ClassAttributeDefinition definition = getDefinition();
+
+        if (definition instanceof PropertyDefinition) {
+
+            DataTypeDefinition dataType = ((PropertyDefinition) definition).getDataType();
+            QName typeName = dataType.getName();
+
+            if (DataTypeDefinition.TEXT.equals(typeName)) {
+
+                List<AttOption> options = getOptions();
+                if (options != null && !options.isEmpty()) {
+                    return "options";
+                }
+            }
+
+            return typeName != null ? typeName.getLocalName() : DataTypeDefinition.TEXT.getLocalName();
+
+        } else if (definition instanceof AssociationDefinition) {
+
+            ClassDefinition targetClass = ((AssociationDefinition) definition).getTargetClass();
+            QName name = targetClass.getName();
+
+            if (ContentModel.TYPE_AUTHORITY_CONTAINER.equals(name)) {
+                return "authorityGroup";
+            } else if (ContentModel.TYPE_AUTHORITY.equals(name)) {
+                return "authority";
+            } else if (ContentModel.TYPE_PERSON.equals(name)) {
+                return "person";
+            }
+
+            return "assoc";
+        }
+
+        return DataTypeDefinition.TEXT.getLocalName();
     }
 
     private ClassAttributeDefinition evalDefinition() {

@@ -16,6 +16,7 @@
         <import uri="http://www.citeck.ru/model/history/1.0" prefix="history"/>
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
         <import uri="http://www.citeck.ru/model/orgstruct/1.0" prefix="org"/>
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase" />
     </imports>
 
     <namespaces>
@@ -54,6 +55,7 @@
             <parent>ecos:document</parent>
             <mandatory-aspects>
                 <aspect>ecos:hasResponsible</aspect>
+                <aspect>icase:case</aspect>
             </mandatory-aspects>
         </type>
 

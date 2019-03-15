@@ -92,6 +92,8 @@ public final class IdocsModel {
     public static final QName PROP_CUSTOM_FORM_ACTION_DATA = QName.createQName(IDOCS_NAMESPACE, "customFormActionData");
     public static final QName PROP_USE_NEW_HISTORY = QName.createQName(IDOCS_NAMESPACE, "useNewHistory");
     public static final QName PROP_ENG_ORGANIZATION_NAME = QName.createQName(IDOCS_NAMESPACE, "engOrganizationName");
+    public static final QName PROP_MANAGER_GROUP = QName.createQName(IDOCS_NAMESPACE, "managerGroup");
+    public static final QName PROP_MANAGER_PERMISSION = QName.createQName(IDOCS_NAMESPACE, "managerPermission");
 
     //assocs
     public static final QName ASSOC_GENERAL_DIRECTOR = QName.createQName(IDOCS_NAMESPACE, "generalDirector");
