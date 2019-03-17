@@ -35,7 +35,7 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
     private static final String PATH = "PATH";
     private static final String ASPECT = "ASPECT";
 
-    private static final String RANGE_TEMPLATE = "[%s TO %s]";
+    private static final String RANGE_TEMPLATE = "%s TO %s";
     private static final String QUOTES_TEMPLATE = "\"%s\"";
 
     private SearchParameters searchParameters;
@@ -238,16 +238,28 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
     @Override
     public FTSQuery range(QName field, String from, String to) {
+        return range(field, from, true, to, true);
+    }
+
+    @Override
+    public FTSQuery range(QName field, String from, boolean frIncl, String to, boolean toIncl) {
         if (from == null && to == null) {
             throw new IllegalArgumentException("At least one of 'from' or 'to' arguments " +
                                                "must be specified. Field: " + field);
         }
-        String first = from != null ? from : "MIN";
-        String second = to != null ? to : "MAX";
+
+        if (from == null) {
+            frIncl = false;
+            from = "MIN";
+        }
+        if (to == null) {
+            toIncl = false;
+            to = "MAX";
+        }
 
         ValueOperator valueOperator = new ValueOperator();
         valueOperator.field = field;
-        valueOperator.value = new Range(first, second);
+        valueOperator.value = new Range(from, frIncl, to, toIncl);
         valueOperator.exact = false;
         group.addTerm(valueOperator);
         return this;
@@ -439,14 +451,21 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         public String from;
         public String to;
 
-        Range(String from, String to) {
+        public boolean frIncl;
+        public boolean toIncl;
+
+        Range(String from, boolean frIncl, String to, boolean toIncl) {
             this.from = from;
             this.to = to;
+            this.frIncl = frIncl;
+            this.toIncl = toIncl;
         }
 
         @Override
         public String toString() {
-            return String.format(RANGE_TEMPLATE, from, to);
+            return (frIncl ? '[' : '<')
+                    + String.format(RANGE_TEMPLATE, from, to)
+                    + (toIncl ? ']' : '>');
         }
     }
 

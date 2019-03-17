@@ -88,7 +88,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
     }
 
     @Override
-    public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String metaSchema) {
+    public RecordsQueryResult<RecordMeta> queryRecords(RecordsQuery query, String metaSchema) {
 
         RecordsQueryResult<RecordMeta> records = new RecordsQueryResult<>();
         RecordsQueryResult<MetaValue> metaValues = getRecordsImpl(query);
@@ -322,7 +322,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
                                                         .node()
                                                         .map(n -> new NodeRef(n.nodeRef()))
                                                         .orElse(null));
-        value.init(context);
+        value.init(context, null);
         return value;
     }
 }

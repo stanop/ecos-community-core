@@ -29,7 +29,7 @@ public class JournalRecordsDAO {
         String gqlQuery = gqlQueryGenerator.generate(journalType);
         RecordsQuery recordsQuery = createQuery(journalType.getDataSource(), query, language, pageInfo, debug);
 
-        return recordsService.getRecords(recordsQuery, gqlQuery);
+        return recordsService.queryRecords(recordsQuery, gqlQuery);
     }
 
     public RecordsQueryResult<RecordRef> getRecords(JournalType journalType,
@@ -39,7 +39,7 @@ public class JournalRecordsDAO {
                                                     boolean debug) {
 
         RecordsQuery recordsQuery = createQuery(journalType.getDataSource(), query, language, pageInfo, debug);
-        return recordsService.getRecords(recordsQuery);
+        return recordsService.queryRecords(recordsQuery);
     }
 
     public RecordsQuery createQuery(String sourceId,

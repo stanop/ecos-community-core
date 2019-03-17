@@ -1,6 +1,10 @@
 package ru.citeck.ecos.journals.webscripts;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -25,8 +29,13 @@ import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
+import ru.citeck.ecos.predicate.model.Predicate;
+import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
+import ru.citeck.ecos.records2.RecordMeta;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
-import ru.citeck.ecos.records2.source.MetaAttributeDef;
+import ru.citeck.ecos.records2.utils.RecordsUtils;
+import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.server.utils.Utils;
 import ru.citeck.ecos.utils.NodeUtils;
@@ -78,11 +87,17 @@ public class JournalConfigGet extends AbstractWebScript {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "journalId is a mandatory parameter!");
         }
 
-        if (NodeRef.isNodeRef(journalId)) {
-            journalId = nodeUtils.getProperty(new NodeRef(journalId), JournalsModel.PROP_JOURNAL_TYPE);
-        }
+        JournalType type;
 
-        JournalType type = journalService.getJournalType(journalId);
+        if (journalId.startsWith("alf_")) {
+            QName typeQName = QName.resolveToQName(namespaceService, journalId.substring(4));
+            type = journalService.getJournalForType(typeQName).orElse(null);
+        } else {
+            if (NodeRef.isNodeRef(journalId)) {
+                journalId = nodeUtils.getProperty(new NodeRef(journalId), JournalsModel.PROP_JOURNAL_TYPE);
+            }
+            type = journalService.getJournalType(journalId);
+        }
 
         if (type == null) {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "Journal with id '" + journalId + "' not found!");
@@ -95,6 +110,7 @@ public class JournalConfigGet extends AbstractWebScript {
             sourceId = "";
         }
 
+        Map<String, AttInfo> columnInfo = getAttributesInfo(sourceId, attributes);
         for (String name : attributes) {
 
             Column column = new Column();
@@ -108,11 +124,10 @@ public class JournalConfigGet extends AbstractWebScript {
             column.setParams(type.getAttributeOptions(name));
             column.setText(getColumnLabel(column));
 
-            Optional<MetaAttributeDef> def = recordsService.getAttributeDef(sourceId, name);
-            column.setJavaClass(def.map(d -> {
-                Class<?> datatype = d.getJavaClass();
-                return datatype != null ? datatype.getName() : null;
-            }).orElse(null));
+            AttInfo info = columnInfo.get(name);
+            column.setJavaClass(info.getJavaClass() != null ? info.getJavaClass().getName() : null);
+            column.setEditorKey(info.getEditorKey());
+            column.setType(info.getType());
 
             columns.add(column);
         }
@@ -173,6 +188,7 @@ public class JournalConfigGet extends AbstractWebScript {
         meta.setNodeRef(String.valueOf(journalData.getNodeRef()));
 
         List<Criterion> criteriaList = new ArrayList<>();
+        SearchCriteria criteria = new SearchCriteria(namespaceService);
 
         for (NodeRef criterionRef : journalData.getCriteria()) {
 
@@ -183,7 +199,18 @@ public class JournalConfigGet extends AbstractWebScript {
             criterion.setPredicate((String) props.get(JournalsModel.PROP_PREDICATE));
             criterion.setValue(getCriterionValue((String) props.get(JournalsModel.PROP_CRITERION_VALUE)));
 
+            criteria.addCriteriaTriplet(criterion.getField(), criterion.getPredicate(), criterion.getValue());
+
             criteriaList.add(criterion);
+        }
+
+        JsonNode criteriaJson = objectMapper.valueToTree(criteria);
+        try {
+            meta.setPredicate(recordsService.convertQueryLanguage(criteriaJson,
+                                                                  CriteriaAlfNodesSearch.LANGUAGE,
+                                                                  RecordsService.LANGUAGE_PREDICATE));
+        } catch (Exception e) {
+            logger.error("Language conversion error. criteria: " + criteriaJson);
         }
 
         meta.setCreateVariants(createVariantsGet.getVariantsByJournalId(id, true));
@@ -224,6 +251,37 @@ public class JournalConfigGet extends AbstractWebScript {
         }
 
         return repoData;
+    }
+
+    private Map<String, AttInfo> getAttributesInfo(String sourceId, List<String> attributes) {
+
+        Map<String, String> attributesEdges = new HashMap<>();
+        for (String attribute : attributes) {
+            attributesEdges.put(attribute, ".edge(n:\"" + attribute + "\"){type,editorKey,javaClass}");
+        }
+
+        RecordRef recordRef = RecordRef.create(sourceId, "");
+        RecordMeta attInfoMeta = recordsService.getAttributes(recordRef, attributesEdges);
+
+        Map<String, AttInfo> result = new HashMap<>();
+
+        for (String attribute : attributes) {
+
+            AttInfo info = null;
+
+            JsonNode attInfoNode = attInfoMeta.get(attribute);
+            if (attInfoNode instanceof ObjectNode) {
+                try {
+                    info = objectMapper.treeToValue(attInfoNode, AttInfo.class);
+                } catch (JsonProcessingException e) {
+                    logger.warn("Error", e);
+                }
+            }
+
+            result.put(attribute, info != null ? info : new AttInfo());
+        }
+
+        return result;
     }
 
     private String toPrefix(QName name) {
@@ -277,6 +335,7 @@ public class JournalConfigGet extends AbstractWebScript {
     static class JournalMeta {
         @Getter @Setter String nodeRef;
         @Getter @Setter List<Criterion> criteria;
+        @Getter @Setter JsonNode predicate;
         @Getter @Setter List<CreateVariantsGet.ResponseVariant> createVariants;
     }
 
@@ -289,6 +348,7 @@ public class JournalConfigGet extends AbstractWebScript {
     static class Column {
         @Getter @Setter String text;
         @Getter @Setter String type;
+        @Getter @Setter String editorKey;
         @Getter @Setter String javaClass;
         @Getter @Setter String attribute;
         @Getter @Setter Formatter formatter;
@@ -303,5 +363,11 @@ public class JournalConfigGet extends AbstractWebScript {
     static class Formatter {
         @Getter @Setter String name;
         @Getter @Setter Map<String, String> params;
+    }
+
+    static class AttInfo {
+        @Getter @Setter String type;
+        @Getter @Setter String editorKey;
+        @Getter @Setter Class<?> javaClass;
     }
 }

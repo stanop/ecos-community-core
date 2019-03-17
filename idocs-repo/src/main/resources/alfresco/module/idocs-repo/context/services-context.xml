@@ -618,4 +618,22 @@
 
     <bean id="ecos.workflowDocumentResolverRegistry" class="ru.citeck.ecos.workflow.listeners.WorkflowDocumentResolverRegistry"/>
 
+    <!-- EcosAuthorityService -->
+
+    <bean id="CyrUserNameGenerator" class="ru.citeck.ecos.user.CyrillicUserNameGenerator">
+        <property name="personService" ref="PersonService"/>
+    </bean>
+
+    <bean id="ecosAuthorityService" class="ru.citeck.ecos.user.EcosAuthorityServiceImpl">
+        <property name="cyrillicUserNameGenerator" ref="CyrUserNameGenerator"/>
+        <property name="nodeInfoFactory" ref="nodeInfoFactory" />
+    </bean>
+
+    <bean name="ecosAuthorityServiceJS" class="ru.citeck.ecos.user.EcosAuthorityServiceJs" parent="baseJavaScriptExtension">
+        <property name="extensionName" value="ecosAuthorityService" />
+        <property name="ecosAuthorityService" ref="ecosAuthorityService" />
+        <property name="services" ref="ServiceRegistry" />
+    </bean>
+
+
 </beans>

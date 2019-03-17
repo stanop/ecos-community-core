@@ -997,5 +997,7 @@
         <!--</property>-->
     <!--</bean>-->
 
+    <bean class="ru.citeck.ecos.behavior.EcosCasePermBehaviour" />
+
 </beans>
 

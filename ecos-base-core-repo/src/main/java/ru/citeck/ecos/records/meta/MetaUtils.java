@@ -3,6 +3,7 @@ package ru.citeck.ecos.records.meta;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +17,7 @@ public class MetaUtils {
 
     private static final Log logger = LogFactory.getLog(MetaUtils.class);
 
-    public static List<MetaValue> toMetaValues(Object value, GqlContext context) {
+    public static List<MetaValue> toMetaValues(Object value, GqlContext context, MetaField field) {
 
         List<MetaValue> values;
 
@@ -28,7 +29,7 @@ public class MetaUtils {
             values = Collections.singletonList(new MetaExplicitValue(value));
         }
 
-        values.forEach(v -> v.init(context));
+        values.forEach(v -> v.init(context, field));
 
         return values;
     }

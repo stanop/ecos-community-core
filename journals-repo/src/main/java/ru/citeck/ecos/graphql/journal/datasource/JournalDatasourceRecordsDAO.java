@@ -50,7 +50,7 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
     }
 
     @Override
-    public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String metaSchema) {
+    public RecordsQueryResult<RecordMeta> queryRecords(RecordsQuery query, String metaSchema) {
 
         List<JGqlSortBy> sortBy = new ArrayList<>();
         for (SortBy sort : query.getSortBy()) {

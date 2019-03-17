@@ -4,6 +4,7 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
@@ -11,9 +12,10 @@ import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records2.request.query.SortBy;
+import ru.citeck.ecos.records2.request.query.lang.DistinctQuery;
 import ru.citeck.ecos.search.*;
 
-import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -21,19 +23,26 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
 
     public static final String LANGUAGE = "criteria";
 
-    private CriteriaSearchService searchService;
-    private SearchCriteriaParser criteriaParser;
+    private FTSQueryBuilder ftsQueryBuilder;
     private NamespaceService namespaceService;
+    private SearchCriteriaParser criteriaParser;
+    private CriteriaSearchService criteriaSearchService;
+
+    private AlfSearchUtils searchUtils;
 
     @Autowired
-    public CriteriaAlfNodesSearch(CriteriaSearchService searchService,
+    public CriteriaAlfNodesSearch(CriteriaSearchService criteriaSearchService,
                                   SearchCriteriaParser criteriaParser,
                                   ServiceRegistry serviceRegistry,
-                                  AlfNodesRecordsDAO recordsSource) {
+                                  FTSQueryBuilder ftsQueryBuilder,
+                                  AlfNodesRecordsDAO recordsSource,
+                                  AlfSearchUtils searchUtils) {
 
-        this.searchService = searchService;
+        this.criteriaSearchService = criteriaSearchService;
         this.criteriaParser = criteriaParser;
+        this.ftsQueryBuilder = ftsQueryBuilder;
         this.namespaceService = serviceRegistry.getNamespaceService();
+        this.searchUtils = searchUtils;
 
         recordsSource.register(this);
     }
@@ -70,7 +79,7 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
             }
         }
 
-        CriteriaSearchResults criteriaResults = searchService.query(criteria, SearchService.LANGUAGE_FTS_ALFRESCO);
+        CriteriaSearchResults criteriaResults = criteriaSearchService.query(criteria, SearchService.LANGUAGE_FTS_ALFRESCO);
 
         RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
 
@@ -86,6 +95,16 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
         result.setHasMore(criteriaResults.hasMore());
 
         return result;
+    }
+
+    @Override
+    public List<Object> queryDistinctValues(DistinctQuery query, int max) {
+
+        SearchCriteria criteria = criteriaParser.parse(query.getQuery());
+        String ftsQuery = ftsQueryBuilder.buildQuery(criteria);
+        QName distinctProp = QName.resolveToQName(namespaceService, query.getAttribute());
+
+        return searchUtils.queryFtsDistinctValues(ftsQuery, distinctProp, max);
     }
 
     @Override

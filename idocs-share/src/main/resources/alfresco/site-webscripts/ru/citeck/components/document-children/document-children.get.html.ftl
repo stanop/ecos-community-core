@@ -41,6 +41,8 @@
                 'citeck/components/orgstruct/form-dialogs',
                 'citeck/components/dynamic-tree/dynamic-tree-picker'], function() {
 
+                require(['citeck/components/documentlibrary/custom-actions']);
+
                 <#if params.buttonsInHeader??>
                     (new Citeck.widget.ButtonPanel("${dcid}-heading-actions")).setOptions({
                         args: {

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.AttributeModel;
 import ru.citeck.ecos.records2.RecordsService;
-import ru.citeck.ecos.records2.source.MetaAttributeDef;
+import ru.citeck.ecos.records2.utils.RecordsUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,8 +34,6 @@ public class GqlQueryGenerator {
 
     private String generateGqlQueryWithData(JournalType journalType) {
 
-        String dataSource = journalType.getDataSource();
-
         StringBuilder schemaBuilder = new StringBuilder();
 
         schemaBuilder.append("id\n");
@@ -51,12 +49,10 @@ public class GqlQueryGenerator {
 
         Set<String> strAtts = new HashSet<>(attributes);
 
-        List<MetaAttributeDef> defs = recordsService.getAttributesDef(dataSource, strAtts);
-
-        Map<String, MetaAttributeDef> defsByName = new HashMap<>();
-        for (MetaAttributeDef def : defs) {
-            defsByName.put(def.getName(), def);
-        }
+        Map<String, Class<?>> attJavaClasses = RecordsUtils.getAttributesClasses(journalType.getDataSource(),
+                                                                                 strAtts,
+                                                                                 Object.class,
+                                                                                 recordsService);
 
         for (String attribute : attributes) {
 
@@ -68,8 +64,7 @@ public class GqlQueryGenerator {
                     .append(attribute)
                     .append("\"){");
 
-            MetaAttributeDef info = defsByName.get(attribute);
-            schemaBuilder.append(getAttributeSchema(attributeOptions, info));
+            schemaBuilder.append(getAttributeSchema(attributeOptions, attJavaClasses.get(attribute)));
 
             schemaBuilder.append("}");
         }
@@ -77,7 +72,7 @@ public class GqlQueryGenerator {
         return schemaBuilder.toString();
     }
 
-    private String getAttributeSchema(Map<String, String> attributeOptions, MetaAttributeDef info) {
+    private String getAttributeSchema(Map<String, String> attributeOptions, Class<?> javaClass) {
 
         String schema = attributeOptions.get("attributeSchema");
         if (StringUtils.isNotBlank(schema)) {
@@ -91,8 +86,8 @@ public class GqlQueryGenerator {
 
         // attributes
         Set<String> attributesToLoad = new HashSet<>();
-        if (info != null) {
-            if (QName.class.isAssignableFrom(info.getJavaClass())) {
+        if (javaClass != null) {
+            if (QName.class.isAssignableFrom(javaClass)) {
                 attributesToLoad.add("shortName");
             }
         }
@@ -117,22 +112,22 @@ public class GqlQueryGenerator {
                     .append(attrCounter++)
                     .append(":edge(n:\"")
                     .append(attrName).append("\")")
-                    .append("{name val:vals{str}}")
+                    .append("{name val:vals{str:disp}}")
                     .append(",");
         }
 
         // inner fields
         List<String> innerFields = new ArrayList<>();
 
-        Class dataType = info != null ? info.getJavaClass() : Object.class;
+        Class dataType = javaClass != null ? javaClass : Object.class;
         boolean isNode = NodeRef.class.isAssignableFrom(dataType);
         boolean isQName = QName.class.isAssignableFrom(dataType);
 
         if (formatter.contains("Link") || formatter.contains("nodeRef")) {
             innerFields.add("id");
-            innerFields.add("str");
+            innerFields.add("str:disp");
         } else if (attributesToLoad.isEmpty() || (!isNode && !isQName)) {
-            innerFields.add("str");
+            innerFields.add("str:disp");
         }
 
         for (String field : innerFields) {

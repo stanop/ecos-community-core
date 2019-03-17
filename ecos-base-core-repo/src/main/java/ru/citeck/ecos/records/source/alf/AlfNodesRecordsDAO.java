@@ -23,7 +23,7 @@ import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records.source.alf.search.AlfNodesSearch;
-import ru.citeck.ecos.records.source.dao.*;
+import ru.citeck.ecos.records.source.dao.RecordsActionExecutor;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -33,12 +33,12 @@ import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records2.source.MetaAttributeDef;
+import ru.citeck.ecos.records2.request.query.lang.DistinctQuery;
 import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
-import ru.citeck.ecos.records2.source.dao.RecordsDefinitionDAO;
 import ru.citeck.ecos.records2.source.dao.RecordsQueryDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
+import ru.citeck.ecos.records2.source.dao.local.RecordsQueryWithMetaLocalDAO;
 import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
@@ -49,8 +49,8 @@ import java.util.stream.Collectors;
 @Component
 public class AlfNodesRecordsDAO extends LocalRecordsDAO
                                 implements RecordsQueryDAO,
-                                           RecordsDefinitionDAO,
                                            RecordsMetaLocalDAO<MetaValue>,
+                                           RecordsQueryWithMetaLocalDAO<Object>,
                                            MutableRecordsDAO,
                                            RecordsActionExecutor {
 
@@ -278,18 +278,42 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
-    public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
+    public RecordsQueryResult<Object> getMetaValues(RecordsQuery recordsQuery) {
 
-        AlfNodesSearch alfNodesSearch = searchByLanguage.get(query.getLanguage());
+        if (recordsQuery.getLanguage().equals(DistinctQuery.LANGUAGE)) {
 
-        if (alfNodesSearch == null) {
-            throw new IllegalArgumentException("Language '" + query.getLanguage() +
-                                               "' is not supported! Query: " + query);
+            DistinctQuery distinctQuery = recordsQuery.getQuery(DistinctQuery.class);
+            AlfNodesSearch alfNodesSearch = needNodesSearch(distinctQuery.getLanguage());
+
+            RecordsQueryResult<Object> result = new RecordsQueryResult<>();
+            result.setRecords(alfNodesSearch.queryDistinctValues(distinctQuery, recordsQuery.getMaxItems()));
+            return result;
         }
+
+        RecordsQueryResult<RecordRef> records = queryRecords(recordsQuery);
+
+        RecordsQueryResult<Object> result = new RecordsQueryResult<>();
+        result.merge(records);
+        result.setHasMore(records.getHasMore());
+        result.setTotalCount(records.getTotalCount());
+        result.setRecords((List) getMetaValues(records.getRecords()));
+
+        if (recordsQuery.isDebug()) {
+            result.setDebugInfo(getClass(), "query", recordsQuery.getQuery());
+            result.setDebugInfo(getClass(), "language", recordsQuery.getLanguage());
+        }
+
+        return result;
+    }
+
+    @Override
+    public RecordsQueryResult<RecordRef> queryRecords(RecordsQuery query) {
 
         if (query.getLanguage().isEmpty()) {
             query.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
         }
+
+        AlfNodesSearch alfNodesSearch = needNodesSearch(query.getLanguage());
 
         Long afterIdValue = null;
         Date afterCreated = null;
@@ -336,6 +360,13 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
+    public List<String> getSupportedLanguages() {
+        List<String> languages = new ArrayList<>(searchByLanguage.keySet());
+        languages.add(DistinctQuery.LANGUAGE);
+        return languages;
+    }
+
+    @Override
     public List<MetaValue> getMetaValues(List<RecordRef> recordRef) {
         return recordRef.stream()
                         .map(this::createMetaValue)
@@ -349,15 +380,19 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         return new AlfNodeRecord(recordRef);
     }
 
-    @Override
-    public List<MetaAttributeDef> getAttributesDef(Collection<String> names) {
-        return names.stream()
-                    .map(n -> new AlfAttributeDefinition(n, namespaceService, dictionaryService, messageService))
-                    .collect(Collectors.toList());
-    }
-
     public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {
         return groupActionService.execute(records, config);
+    }
+
+    private AlfNodesSearch needNodesSearch(String language) {
+
+        AlfNodesSearch alfNodesSearch = searchByLanguage.get(language);
+
+        if (alfNodesSearch == null) {
+            throw new IllegalArgumentException("Language '" + language + "' is not supported!");
+        }
+
+        return alfNodesSearch;
     }
 
     @Autowired
