@@ -46,11 +46,11 @@ public class NamespacePrefixResolverMapImpl implements NamespacePrefixResolver {
     @Auditable(parameters = "namespaceURI")
     public Collection<String> getPrefixes(String namespaceURI) throws NamespaceException {
         List<String> prefixes = new LinkedList<>();
-        for(String prefix : prefixToUriMap.keySet()) {
-            if(prefixToUriMap.get(prefix).equals(namespaceURI)) {
+        prefixToUriMap.forEach((prefix, ns) -> {
+            if (ns.equals(namespaceURI)) {
                 prefixes.add(prefix);
             }
-        }
+        });
         return prefixes;
     }
 

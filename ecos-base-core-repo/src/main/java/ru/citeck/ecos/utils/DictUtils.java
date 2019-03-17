@@ -17,7 +17,7 @@ import java.util.Map;
 @Component
 public class DictUtils {
 
-    public static QName QNAME = QName.createQName("", "dictUtils");
+    public static final QName QNAME = QName.createQName("", "dictUtils");
 
     private static String TXN_CONSTRAINTS_CACHE = DictUtils.class.getName();
 

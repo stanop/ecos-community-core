@@ -51,15 +51,15 @@ public class RecordsQueryPost extends AbstractWebScript {
 
             if (request.attributes != null && !request.attributes.isNull()) {
 
-                recordsResult = recordsService.getRecords(request.query, getAttributes(request));
+                recordsResult = recordsService.queryRecords(request.query, getAttributes(request));
 
             } else if (request.schema != null) {
 
-                recordsResult = recordsService.getRecords(request.query, request.schema);
+                recordsResult = recordsService.queryRecords(request.query, request.schema);
 
             } else {
 
-                recordsResult = recordsService.getRecords(request.query);
+                recordsResult = recordsService.queryRecords(request.query);
             }
         } else {
 

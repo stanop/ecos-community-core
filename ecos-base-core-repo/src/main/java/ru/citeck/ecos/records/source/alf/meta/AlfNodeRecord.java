@@ -46,11 +46,6 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public <T extends GqlContext> void init(T context) {
-        init(context, null);
-    }
-
-    @Override
     public <T extends GqlContext> void init(T context, MetaField field) {
         this.context = (AlfGqlContext) context;
         this.nodeRef = RecordsUtils.toNodeRef(recordRef);
@@ -102,19 +97,19 @@ public class AlfNodeRecord implements MetaValue {
 
             case ATTR_IS_CONTAINER:
 
-                attribute = MetaUtils.toMetaValues(node.isContainer(), context);
+                attribute = MetaUtils.toMetaValues(node.isContainer(), context, field);
                 break;
 
             case ATTR_IS_DOCUMENT:
 
-                attribute = MetaUtils.toMetaValues(node.isDocument(), context);
+                attribute = MetaUtils.toMetaValues(node.isDocument(), context, field);
                 break;
 
             case ATTR_PARENT:
             case RecordConstants.ATT_PARENT:
 
                 AlfNodeAttValue parentValue = new AlfNodeAttValue(node.getParent());
-                parentValue.init(context);
+                parentValue.init(context, field);
                 attribute = Collections.singletonList(parentValue);
 
                 break;
@@ -142,7 +137,7 @@ public class AlfNodeRecord implements MetaValue {
                         VirtualScriptAttributes attributes = context.getService(VIRTUAL_SCRIPT_ATTS_ID);
                         if (attributes != null && attributes.provides(attQname.get())) {
                             Object value = attributes.getAttribute(new NodeRef(node.nodeRef()), attQname.get());
-                            attribute = MetaUtils.toMetaValues(value, context);
+                            attribute = MetaUtils.toMetaValues(value, context, field);
                         }
                     }
                 }

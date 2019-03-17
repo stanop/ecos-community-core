@@ -31,7 +31,7 @@ public class MultiRecordsDAO extends AbstractRecordsDAO
     private Map<String, RecordsQueryDAO> daoBySource = new ConcurrentHashMap<>();
 
     @Override
-    public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
+    public RecordsQueryResult<RecordRef> queryRecords(RecordsQuery query) {
 
         RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
 

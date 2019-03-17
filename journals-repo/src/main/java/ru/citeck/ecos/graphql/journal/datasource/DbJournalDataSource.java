@@ -7,6 +7,7 @@ import ru.citeck.ecos.graphql.journal.JGqlPageInfo;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
 import ru.citeck.ecos.records.meta.MetaExplicitValue;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
 import javax.sql.DataSource;
@@ -87,7 +88,7 @@ public class DbJournalDataSource implements JournalDataSource {
         }
 
         @Override
-        public List<MetaValue> getAttribute(String name) {
+        public List<MetaValue> getAttribute(String name, MetaField field) {
             return Collections.singletonList(new MetaExplicitValue(attributes.get(name)));
         }
     }

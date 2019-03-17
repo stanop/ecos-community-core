@@ -757,6 +757,8 @@
                     <!-- Enable the REST API Explorer -->
                     <enableApiExplorer>true</enableApiExplorer>
 
+                    <tomcatPort>8080</tomcatPort>
+
                     <tomcatCustomConfigs>
                         <tomcatUsers>${project.build.testOutputDirectory}/tomcat/tomcat-users.xml</tomcatUsers>
                         <contextFile>${project.build.testOutputDirectory}/tomcat/tomcat-context.xml</contextFile>

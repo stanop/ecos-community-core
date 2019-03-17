@@ -23,7 +23,7 @@
 
         var records = [];
         for (var idx in nodes) {
-            records.push(new Packages.ru.citeck.ecos.records2.RecordRef(nodes[idx]));
+            records.push(Packages.ru.citeck.ecos.records2.RecordRef.valueOf(nodes[idx]));
         }
 
         actionResultsData = groupActions.execute(records, {
