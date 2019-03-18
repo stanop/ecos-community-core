@@ -209,6 +209,7 @@ CreateVariant
         .shortcut('separator', 'attribute._info.separator')
         .shortcut('allowMultipleFilterValue', 'attribute._info.allowMultipleFilterValue') // multiple value, using separator
         .shortcut('allowableMultipleFilterPredicates', 'attribute._info.allowableMultipleFilterPredicates')
+        .shortcut('multipleFilterMaxCount', 'attribute._info.multipleFilterMaxCount')
         .shortcut('name', 'field.name')
 
         /*====== Value ======*/
@@ -513,6 +514,29 @@ CreateVariant
             }
             return result;
         })
+        .method('validateForError', function() {
+            var textValue                         = this.textValue(),
+                separator                         = this.separator(),
+                predicateId                       = this.resolve('predicate.id'),
+                allowableMultipleFilterPredicates = this.allowableMultipleFilterPredicates(),
+                multipleFilterMaxCount            = this.multipleFilterMaxCount();
+
+            if (textValue &&
+                this.allowMultipleFilterValue() &&
+                textValue.indexOf(separator) != -1 &&
+                allowableMultipleFilterPredicates.indexOf(predicateId) != -1) {
+
+                var values = _.uniq((textValue.split(separator)).filter(Boolean));
+
+                if (multipleFilterMaxCount !== -1 && values.length > multipleFilterMaxCount) {
+                    throw {
+                        errorName: "Too many multiple values",
+                        actualCount: values.length,
+                        maxCount: multipleFilterMaxCount
+                    };
+                }
+            }
+        })
         .init(function() {
             var predicateId = this.resolve('predicate.id');
             if (predicateId && predicateId.indexOf("boolean") != -1){
@@ -752,6 +776,7 @@ AttributeInfo
     .property('attribute', Attribute)
 
     .shortcut('separator', 'attribute.settings.separator', ';')
+    .shortcut('multipleFilterMaxCount', 'attribute.settings.multipleFilterMaxCount', -1)
 
     .method('customDisplayName', function() {
         var optionLabel = null;
@@ -1515,6 +1540,15 @@ JournalsWidget
     })
 
     .method('performSearch', function() {
+        var error = this.validateForError();
+        if (error) {
+            var startMessagePart = msg("label.too-many-multiple-values.start");
+            var endMessagePart = msg("label.too-many-multiple-values.end");
+            Alfresco.util.PopupManager.displayPrompt({
+                text: startMessagePart + " " + error.maxCount + " " + endMessagePart
+            });
+            return;
+        }
         this.recordsLoaded(false);
         this.records.reload();
     })
@@ -1620,6 +1654,24 @@ JournalsWidget
             record.selected(false);
         });
     })
+    .method('validateForError', function() {
+        var filter = this._filter();
+        if (filter) {
+            var filterCriteria = filter.usableCriteria();
+            if (filter.criteria.loaded()) {
+                try {
+                    filterCriteria.forEach(function (criteria) {
+                        criteria.validateForError();
+                    });
+                } catch (err) {
+                    if (err.errorName && err.errorName === "Too many multiple values") {
+                        return err;
+                    }
+                }
+            }
+        }
+        return null;
+    })
 
     /*********************************************************/
     /*             FILTERS AND SETTINGS FUNCTIONS            */
@@ -1636,6 +1688,15 @@ JournalsWidget
         },
 
         applyCriteria: function() {
+            var error = this.validateForError();
+            if (error) {
+                var startMessagePart = msg("label.too-many-multiple-values.start");
+                var endMessagePart = msg("label.too-many-multiple-values.end");
+                Alfresco.util.PopupManager.displayPrompt({
+                    text: startMessagePart + " " + error.maxCount + " " + endMessagePart
+                });
+                return;
+            }
             this.skipCount(0);
             this.filter(this._filter());
         },

@@ -9,10 +9,10 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,7 +44,7 @@ public class ChildrenAlfNodesSearch implements AlfNodesSearch {
 
         RecordsQueryResult<RecordRef> results = new RecordsQueryResult<>();
         results.setRecords(children.stream()
-                                   .map(RecordRef::new)
+                                   .map(r -> RecordRef.valueOf(r.toString()))
                                    .collect(Collectors.toList()));
         results.setHasMore(false);
         results.setTotalCount(children.size());

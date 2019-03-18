@@ -10,6 +10,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.identitylink.service.IdentityLinkType;
 import org.flowable.task.service.delegate.DelegateTask;
@@ -144,5 +145,18 @@ public class FlowableListenerUtils {
             }
         }
         return target;
+    }
+
+    public static boolean getBooleanFromExpressionOrDefault(Expression exp, VariableScope scope, boolean defaultValue) {
+        if (exp == null) {
+            return defaultValue;
+        }
+
+        final String expText = exp.getExpressionText();
+        if (Boolean.TRUE.toString().equals(expText) || Boolean.FALSE.toString().equals(expText)) {
+            return Boolean.valueOf(expText);
+        }
+
+        return (boolean) exp.getValue(scope);
     }
 }

@@ -19,9 +19,8 @@ import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.menu.dto.Element;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.processor.TemplateExpressionEvaluator;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.request.result.RecordsResult;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
 import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.utils.RepoUtils;
 

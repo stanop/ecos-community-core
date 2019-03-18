@@ -3,20 +3,19 @@ package ru.citeck.ecos.graphql.journal.datasource;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.graphql.journal.JGqlSortBy;
 import ru.citeck.ecos.graphql.journal.record.JGqlRecordsConnection;
-import ru.citeck.ecos.records.RecordMeta;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.meta.RecordsMetaService;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.request.query.SortBy;
-import ru.citeck.ecos.records.source.dao.AbstractRecordsDAO;
-import ru.citeck.ecos.records.source.dao.RecordsQueryDAO;
-import ru.citeck.ecos.records.source.dao.RecordsQueryWithMetaDAO;
+import ru.citeck.ecos.records2.RecordMeta;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.meta.RecordsMetaService;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.request.query.SortBy;
+import ru.citeck.ecos.records2.source.dao.AbstractRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.RecordsQueryWithMetaDAO;
 import ru.citeck.ecos.search.SortOrder;
 
 import javax.annotation.PostConstruct;
@@ -25,7 +24,6 @@ import java.util.List;
 
 /**
  * This records DAO required for backward compatibility. Don't use it for new data sources
- * @see RecordsQueryDAO
  *
  * @deprecated implement RecordsDAO instead
  */
@@ -55,7 +53,7 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
     public RecordsQueryResult<RecordMeta> getRecords(RecordsQuery query, String metaSchema) {
 
         List<JGqlSortBy> sortBy = new ArrayList<>();
-        for (SortBy sort: query.getSortBy()) {
+        for (SortBy sort : query.getSortBy()) {
             String order = (sort.isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING).getValue();
             sortBy.add(new JGqlSortBy(sort.getAttribute(), order));
         }
@@ -68,7 +66,7 @@ public class JournalDatasourceRecordsDAO extends AbstractRecordsDAO implements R
 
         RecordsQueryResult<RecordMeta> result = new RecordsQueryResult<>();
 
-        GqlContext gqlContext = graphQLService.getGqlContext();
+        AlfGqlContext gqlContext = graphQLService.getGqlContext();
         JGqlRecordsConnection records = dataSource.getRecords(gqlContext,
                                                               query.getQuery().asText(),
                                                               query.getLanguage(),

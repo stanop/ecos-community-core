@@ -27,5 +27,5 @@ public interface GraphQLService {
     ExecutionResult execute(RestConnection restConn, String uri, String query, Map<String, Object> variables);
 
 
-    GqlContext getGqlContext();
+    AlfGqlContext getGqlContext();
 }

@@ -3,7 +3,7 @@ package ru.citeck.ecos.graphql.node;
 import graphql.Scalars;
 import graphql.schema.*;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.graphql.GqlTypeDefinition;
 import ru.citeck.ecos.graphql.GraphQLService;
 
@@ -29,7 +29,7 @@ public class GqlNodeQueryDef implements GqlTypeDefinition {
 
 
     private GqlAlfNode node(DataFetchingEnvironment env) {
-        GqlContext context = env.getContext();
+        AlfGqlContext context = env.getContext();
         String id = env.getArgument("id");
         return context.getNode(id).orElse(null);
     }

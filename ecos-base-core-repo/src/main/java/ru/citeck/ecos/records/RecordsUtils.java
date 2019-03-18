@@ -10,9 +10,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionStatus;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.request.result.RecordsResult;
+import ru.citeck.ecos.records2.RecordMeta;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.request.result.RecordsResult;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -57,7 +59,7 @@ public class RecordsUtils {
     public static RecordRef getRecordId(ObjectNode recordMeta) {
         JsonNode idNode = recordMeta.get("id");
         String id = idNode != null && idNode.isTextual() ? idNode.asText() : null;
-        return id != null ? new RecordRef(id) : null;
+        return RecordRef.valueOf(id);
     }
 
     public static NodeRef toNodeRef(RecordRef recordRef) {
@@ -74,7 +76,7 @@ public class RecordsUtils {
 
     public static List<RecordRef> toLocalRecords(Collection<RecordRef> records) {
         return records.stream()
-                      .map(r -> new RecordRef(r.getId()))
+                      .map(r -> RecordRef.valueOf(r.getId()))
                       .collect(Collectors.toList());
     }
 
@@ -112,21 +114,21 @@ public class RecordsUtils {
             return records;
         }
         return records.stream()
-                      .map(n -> new RecordMeta(new RecordRef(sourceId, n.getId()), n.getAttributes()))
+                      .map(n -> new RecordMeta(RecordRef.create(sourceId, n.getId()), n.getAttributes()))
                       .collect(Collectors.toList());
     }
 
     public static RecordsResult<RecordRef> toScoped(String sourceId, RecordsResult<RecordRef> result) {
-        return new RecordsResult<>(result, r -> new RecordRef(sourceId, r));
+        return new RecordsResult<>(result, r -> RecordRef.create(sourceId, r));
     }
 
     public static RecordsQueryResult<RecordRef> toScoped(String sourceId, RecordsQueryResult<RecordRef> result) {
-        return new RecordsQueryResult<>(result, r -> new RecordRef(sourceId, r));
+        return new RecordsQueryResult<>(result, r -> RecordRef.create(sourceId, r));
     }
 
     public static List<RecordRef> toScopedRecords(String sourceId, List<RecordRef> records) {
         return records.stream()
-                      .map(r -> new RecordRef(sourceId, r))
+                      .map(r -> RecordRef.create(sourceId, r))
                       .collect(Collectors.toList());
     }
 
@@ -138,7 +140,7 @@ public class RecordsUtils {
 
     public static List<RecordRef> nodeRefsToRecords(String sourceId, List<NodeRef> records) {
         return records.stream()
-                      .map(r -> new RecordRef(sourceId, r.toString()))
+                      .map(r -> RecordRef.create(sourceId, r.toString()))
                       .collect(Collectors.toList());
     }
 
@@ -156,13 +158,13 @@ public class RecordsUtils {
 
     public static <V> Map<RecordRef, V> convertToRefs(Map<String, V> data) {
         Map<RecordRef, V> result = new HashMap<>();
-        data.forEach((id, recMeta) -> result.put(new RecordRef(id), recMeta));
+        data.forEach((id, recMeta) -> result.put(RecordRef.valueOf(id), recMeta));
         return result;
     }
 
     public static <V> Map<RecordRef, V> convertToRefs(String sourceId, Map<String, V> data) {
         Map<RecordRef, V> result = new HashMap<>();
-        data.forEach((id, recMeta) -> result.put(new RecordRef(sourceId, id), recMeta));
+        data.forEach((id, recMeta) -> result.put(RecordRef.create(sourceId, id), recMeta));
         return result;
     }
 
@@ -184,6 +186,6 @@ public class RecordsUtils {
     }
 
     public static List<RecordRef> toRecords(Collection<String> strRecords) {
-        return strRecords.stream().map(RecordRef::new).collect(Collectors.toList());
+        return strRecords.stream().map(RecordRef::valueOf).collect(Collectors.toList());
     }
 }

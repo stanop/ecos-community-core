@@ -90,14 +90,12 @@ public class PropertyAttributes extends AbstractAttributeProvider {
             // do not convert content properties
             // it is now done by NodeInfo
         } else if (DataTypeDefinition.DATE.equals(typeName)) {
-
             if (value instanceof String) {
-
                 value = ISO8601DateFormat.parseDayOnly((String) value, TimeZone.getTimeZone("GMT"));
-
             } else if (value instanceof Date) {
-
-                value = new Date(((Date) value).getTime() / TimeUnit.DAYS.toMillis(1));
+                long millisInDay = TimeUnit.DAYS.toMillis(1);
+                long daysCount = TimeUnit.MILLISECONDS.toDays(((Date) value).getTime());
+                value = new Date(millisInDay * daysCount);
             }
         } else {
             value = ConvertUtils.convertValue(value, getValueClass(propDef), propDef.isMultiValued());

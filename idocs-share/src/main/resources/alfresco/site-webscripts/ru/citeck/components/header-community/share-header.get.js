@@ -928,10 +928,16 @@ function buildCreateVariantsForSite(sitename, forSlideMenu) {
 
         if (createVariants && createVariants.length > 0) {
             for (var cv = 0; cv < createVariants.length; cv++) {
+                var url = "node-create?type=" + createVariants[cv].type;
+                url += "&viewId=" + createVariants[cv].formId;
+                url += "&destination=" + createVariants[cv].destination;
+                if (createVariants[cv].createArguments) {
+                    url += "&" + createVariants[cv].createArguments;
+                }
                 createVariantsPresets.push({
                     label: createVariants[cv].title,
                     id: "HEADER_" + ((sitename + "_" + createVariants[cv].type).replace(/\-/g, "_")).toUpperCase(),
-                    url: "node-create?type=" + createVariants[cv].type + "&viewId=" + createVariants[cv].formId + "&destination=" + createVariants[cv].destination
+                    url: url
                 });
             }
         }

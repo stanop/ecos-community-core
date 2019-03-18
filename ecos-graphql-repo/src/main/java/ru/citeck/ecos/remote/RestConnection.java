@@ -19,6 +19,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.web.client.RestTemplate;
+import ru.citeck.ecos.records2.source.dao.remote.RecordsRestConnection;
 import ru.citeck.ecos.utils.json.mixin.NodeRefMixIn;
 import ru.citeck.ecos.utils.json.mixin.QNameMixIn;
 
@@ -28,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RestConnection {
+public class RestConnection implements RecordsRestConnection {
 
     private static final Log logger = LogFactory.getLog(RestConnection.class);
 
@@ -83,7 +84,7 @@ public class RestConnection {
         return new CommonsClientHttpRequestFactory(client);
     }
 
-    public <I, O> O jsonPost(String strUrl, I postData, Class<O> responseType) {
+    public <O> O jsonPost(String strUrl, Object postData, Class<O> responseType) {
         if (!initialized || !enabled) {
             logger.warn("Rest connection is not initialized or disabled! " +
                         "Return null for query " + strUrl + " with data: " + postData + ". " +
@@ -99,7 +100,7 @@ public class RestConnection {
         URI uri = URIBuilder.fromUri(hostUrl).build();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<I> requestEntity = new HttpEntity<>(postData, headers);
+        HttpEntity<?> requestEntity = new HttpEntity<>(postData, headers);
         try {
             return restTemplate.postForObject(uri, requestEntity, responseType);
         } catch (Exception e) {

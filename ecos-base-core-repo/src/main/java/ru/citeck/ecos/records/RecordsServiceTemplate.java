@@ -1,7 +1,7 @@
 package ru.citeck.ecos.records;
 
 import org.alfresco.repo.template.BaseTemplateProcessorExtension;
-import ru.citeck.ecos.records.request.result.RecordsResult;
+import ru.citeck.ecos.records2.request.result.RecordsResult;
 
 public class RecordsServiceTemplate extends BaseTemplateProcessorExtension {
 

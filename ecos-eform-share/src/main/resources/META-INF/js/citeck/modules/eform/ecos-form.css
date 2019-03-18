@@ -13,7 +13,7 @@
 }
 
 .eform-panel-content {
-    background-color: #f2f2f2;
+    background-color: #fff;
     padding-left: 15px;
     padding-right: 15px;
     padding-top: 15px;
@@ -30,7 +30,23 @@
 .eform-panel-content input[type="text"],
 .eform-panel-content input[type="password"],
 .eform-panel-content textarea {
+    width: 100%;
+    padding: 6px 12px;
+}
 
-    width: 100% !important;
-    padding: 6px 12px !important;
+.eform-panel-content .panel {
+    box-shadow: none;
+}
+
+.eform-panel-content .formio-component-checkbox {
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+
+.eform-panel-content .formio-component-select.formio-component-multiple .form-control .choices__input {
+    width: max-content;
+}
+
+.eform-panel-content .form-control {
+    box-shadow: none;
 }

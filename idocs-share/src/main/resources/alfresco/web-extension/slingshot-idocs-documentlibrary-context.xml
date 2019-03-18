@@ -142,6 +142,14 @@
         </property>
     </bean>
 
+    <bean id="evaluator.doclib.action.isEcosBpmProcessModel" parent="evaluator.doclib.action.nodeType">
+        <property name="types">
+            <list>
+                <value>ecosbpm:processModel</value>
+            </list>
+        </property>
+    </bean>
+
     <bean id="evaluator.doclib.ia.hasFromDate" class="org.alfresco.web.evaluator.ValueEvaluator">
         <property name="accessor">
             <value>node.properties.ia:fromDate</value>

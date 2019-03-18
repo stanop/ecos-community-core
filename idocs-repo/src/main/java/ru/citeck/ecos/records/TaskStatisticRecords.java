@@ -14,20 +14,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
-import ru.citeck.ecos.graphql.meta.value.MetaMapValue;
-import ru.citeck.ecos.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.history.HistoryEventType;
 import ru.citeck.ecos.model.HistoryModel;
-import ru.citeck.ecos.records.meta.RecordsMetaService;
-import ru.citeck.ecos.records.request.query.RecordsQuery;
-import ru.citeck.ecos.records.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records.request.query.SortBy;
-import ru.citeck.ecos.records.source.dao.AbstractRecordsDAO;
-import ru.citeck.ecos.records.source.dao.RecordsQueryWithMetaDAO;
+import ru.citeck.ecos.records.meta.MetaMapValue;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeAttValue;
+import ru.citeck.ecos.records2.RecordMeta;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.records2.meta.RecordsMetaService;
+import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.request.query.SortBy;
+import ru.citeck.ecos.records2.source.dao.AbstractRecordsDAO;
+import ru.citeck.ecos.records2.source.dao.RecordsQueryWithMetaDAO;
 import ru.citeck.ecos.search.*;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.AuthorityUtils;
@@ -102,7 +103,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
 
     private RecordsQueryResult<MetaValue> getRecordsImpl(RecordsQuery query) {
 
-        GqlContext context = graphQLService.getGqlContext();
+        AlfGqlContext context = graphQLService.getGqlContext();
 
         SearchResult<NodeRef> assignSearchResult = getAssignEvents(query);
         List<GqlAlfNode> assignNodes = wrapNodes(assignSearchResult.getItems(), context);
@@ -196,7 +197,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
         return result;
     }
 
-    private List<GqlAlfNode> wrapNodes(List<NodeRef> nodeRefs, GqlContext context) {
+    private List<GqlAlfNode> wrapNodes(List<NodeRef> nodeRefs, AlfGqlContext context) {
         return nodeRefs.stream()
                        .map(context::getNode)
                        .filter(Optional::isPresent)
@@ -263,7 +264,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
     private Map<String, Object> getRecord(GqlAlfNode startEvent,
                                           GqlAlfNode endEvent,
                                           GqlAlfNode assignEvent,
-                                          GqlContext context) {
+                                          AlfGqlContext context) {
 
         if (startEvent == null || assignEvent == null) {
             return null;
@@ -316,10 +317,12 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
         return recordAttributes;
     }
 
-    private MetaValue getAssocAttribute(GqlAlfNode node, String key, GqlContext context) {
-        return new AlfNodeAttValue(node.attribute(key)
-                                       .node()
-                                       .map(n -> new NodeRef(n.nodeRef()))
-                                       .orElse(null)).init(context);
+    private MetaValue getAssocAttribute(GqlAlfNode node, String key, AlfGqlContext context) {
+        AlfNodeAttValue value = new AlfNodeAttValue(node.attribute(key)
+                                                        .node()
+                                                        .map(n -> new NodeRef(n.nodeRef()))
+                                                        .orElse(null));
+        value.init(context);
+        return value;
     }
 }

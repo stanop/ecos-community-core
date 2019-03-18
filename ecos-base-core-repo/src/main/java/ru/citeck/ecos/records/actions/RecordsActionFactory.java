@@ -6,8 +6,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.group.*;
 import ru.citeck.ecos.action.group.impl.BaseGroupAction;
-import ru.citeck.ecos.records.RecordRef;
-import ru.citeck.ecos.records.RecordsService;
+import ru.citeck.ecos.records.RecordsServiceImpl;
+import ru.citeck.ecos.records2.RecordRef;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public abstract class RecordsActionFactory implements GroupActionFactory<RecordR
 
     private static final Log logger = LogFactory.getLog(RecordsActionFactory.class);
 
-    private RecordsService recordsService;
+    private RecordsServiceImpl recordsService;
     private GroupActionService groupActionService;
 
     @PostConstruct
@@ -41,7 +41,6 @@ public abstract class RecordsActionFactory implements GroupActionFactory<RecordR
      * Because of that config must contain only data which can be serialized by jackson ObjectMapper
      *
      * @see ObjectMapper
-     * @see RecordsService
      */
     protected abstract GroupActionConfig getRecordsActionConfig(GroupActionConfig baseConfig);
 
@@ -133,7 +132,7 @@ public abstract class RecordsActionFactory implements GroupActionFactory<RecordR
     }
 
     @Autowired
-    public void setRecordsService(RecordsService recordsService) {
+    public void setRecordsService(RecordsServiceImpl recordsService) {
         this.recordsService = recordsService;
     }
 

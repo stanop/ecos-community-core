@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.AlfGqlContext;
 
 import java.util.Collection;
 
@@ -20,14 +20,14 @@ public class GqlQName {
 
     private QName qname;
 
-    private GqlContext context;
+    private AlfGqlContext context;
 
-    public GqlQName(QName name, GqlContext context) {
+    public GqlQName(QName name, AlfGqlContext context) {
         this.qname = name;
         this.context = context;
     }
 
-    public GqlQName(String name, GqlContext context) {
+    public GqlQName(String name, AlfGqlContext context) {
         this.qname = QName.resolveToQName(context.getNamespaceService(), name);
     }
 

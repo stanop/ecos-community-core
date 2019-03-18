@@ -13,7 +13,7 @@ import org.json.JSONObject;
 import org.mozilla.javascript.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.records.RecordRef;
+import ru.citeck.ecos.records2.RecordRef;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -65,13 +65,13 @@ public class JsUtils {
             return (RecordRef) object;
         }
         if (object instanceof NodeRef) {
-            return new RecordRef((NodeRef) object);
+            return RecordRef.valueOf(((NodeRef) object).toString());
         }
         if (object instanceof String) {
-            return new RecordRef((String) object);
+            return RecordRef.valueOf((String) object);
         }
         if (object instanceof ScriptNode) {
-            return new RecordRef(((ScriptNode) object).getNodeRef());
+            return RecordRef.valueOf(((ScriptNode) object).getNodeRef().toString());
         }
         throw new IllegalArgumentException("Can not convert from " + object.getClass() + " to RecordRef");
     }

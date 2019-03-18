@@ -20,15 +20,15 @@ version: 2.6.0
 
 /* INPUT COLORS */
 
-.yui-skin-citeckTheme select:not(:disabled):hover,
-.yui-skin-citeckTheme input:not(:disabled):hover,
-.yui-skin-citeckTheme textarea:not(:disabled):hover {
+.yui-skin-citeckTheme .invariants-form select:not(:disabled):hover,
+.yui-skin-citeckTheme .invariants-form input:not(:disabled):hover,
+.yui-skin-citeckTheme .invariants-form textarea:not(:disabled):hover {
     border-color: #aaaaaa !important;
 }
 
-.yui-skin-citeckTheme select:not(:disabled):focus,
-.yui-skin-citeckTheme input:not(:disabled):focus,
-.yui-skin-citeckTheme textarea:not(:disabled):focus {
+.yui-skin-citeckTheme .invariants-form select:not(:disabled):focus,
+.yui-skin-citeckTheme .invariants-form input:not(:disabled):focus,
+.yui-skin-citeckTheme .invariants-form textarea:not(:disabled):focus {
     border-color: #1c55da !important;
 }
 
@@ -1002,7 +1002,8 @@ p#clear {
     font-weight: 900;
     line-height: 100%;
     border: none;
-    min-height: 13px;
+    min-height: 33px;
+    box-sizing: border-box;
 }
 
 .yui-skin-citeckTheme .yui-panel-container .yui-panel .hd.topscrollbar,
@@ -1259,7 +1260,7 @@ p#clear {
 
 .yui-skin-citeckTheme .container-close {
     position: absolute;
-    top: 5px;
+    top: 9px;
     right: 10px;
     width: 13px;
     height: 13px;
@@ -1268,6 +1269,7 @@ p#clear {
     background-repeat: no-repeat;
     background-position: center;
     padding: 5px;
+    box-sizing: border-box;
 }
 
 .yui-skin-citeckTheme .container-close:hover {

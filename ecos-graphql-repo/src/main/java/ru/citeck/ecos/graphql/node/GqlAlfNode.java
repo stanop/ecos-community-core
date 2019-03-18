@@ -9,7 +9,7 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
-import ru.citeck.ecos.graphql.GqlContext;
+import ru.citeck.ecos.graphql.AlfGqlContext;
 
 import java.io.Serializable;
 import java.util.*;
@@ -36,9 +36,9 @@ public class GqlAlfNode {
     private Map<QName, List<NodeRef>> assocs = new ConcurrentHashMap<>();
     private Map<QName, Attribute> attributes = new ConcurrentHashMap<>();
 
-    private GqlContext context;
+    private AlfGqlContext context;
 
-    public GqlAlfNode(NodeRef nodeRef, GqlContext context) {
+    public GqlAlfNode(NodeRef nodeRef, AlfGqlContext context) {
         this.nodeRef = nodeRef;
         this.context = context;
     }
