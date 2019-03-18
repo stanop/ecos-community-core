@@ -2,6 +2,9 @@ package ru.citeck.ecos.records.language;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.dictionary.AssociationDefinition;
+import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
@@ -12,6 +15,7 @@ import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.*;
 import ru.citeck.ecos.records2.QueryLangConverter;
 import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 
 import java.util.List;
@@ -21,14 +25,19 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
     private PredicateService predicateService;
     private NamespaceService namespaceService;
+    private DictionaryService dictionaryService;
+    private AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
 
     @Autowired
     public PredicateToFtsAlfrescoConverter(RecordsService recordsService,
                                            PredicateService predicateService,
-                                           NamespaceService namespaceService) {
+                                           ServiceRegistry serviceRegistry,
+                                           AssociationIndexPropertyRegistry associationIndexPropertyRegistry) {
 
         this.predicateService = predicateService;
-        this.namespaceService = namespaceService;
+        this.namespaceService = serviceRegistry.getNamespaceService();
+        this.dictionaryService = serviceRegistry.getDictionaryService();
+        this.associationIndexPropertyRegistry = associationIndexPropertyRegistry;
 
         recordsService.register(this,
                 RecordsService.LANGUAGE_PREDICATE,
@@ -107,12 +116,24 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
                     QName field = QName.resolveToQName(namespaceService, attribute);
 
+                    AssociationDefinition assocDef = dictionaryService.getAssociation(field);
+                    if (assocDef != null) {
+                        field = associationIndexPropertyRegistry.getAssociationIndexProperty(field);
+                    }
+
                     switch (valuePred.getType()) {
                         case EQ:
                             query.exact(field, valueStr);
                             break;
                         case LIKE:
                             query.value(field, valueStr.replaceAll("%", "*"));
+                            break;
+                        case CONTAINS:
+                            if (assocDef == null) {
+                                query.value(field, "*" + valueStr + "*");
+                            } else {
+                                query.value(field, valueStr);
+                            }
                             break;
                         case GE:
                         case GT:
