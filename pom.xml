@@ -70,6 +70,8 @@
         <ecos.records.version>1.1.0-SNAPSHOT</ecos.records.version>
 
         <web.compression.skip>false</web.compression.skip>
+
+        <ecos.community.tomcat.port>8080</ecos.community.tomcat.port>
     </properties>
 
     <profiles>
@@ -756,6 +758,8 @@
                     <enableShare>true</enableShare>
                     <!-- Enable the REST API Explorer -->
                     <enableApiExplorer>true</enableApiExplorer>
+
+                    <tomcatPort>${ecos.community.tomcat.port}</tomcatPort>
 
                     <tomcatCustomConfigs>
                         <tomcatUsers>${project.build.testOutputDirectory}/tomcat/tomcat-users.xml</tomcatUsers>

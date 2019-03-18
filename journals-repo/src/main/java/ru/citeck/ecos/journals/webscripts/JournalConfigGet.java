@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -29,12 +28,10 @@ import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
-import ru.citeck.ecos.predicate.model.Predicate;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
-import ru.citeck.ecos.records2.utils.RecordsUtils;
 import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.server.utils.Utils;
@@ -87,25 +84,25 @@ public class JournalConfigGet extends AbstractWebScript {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "journalId is a mandatory parameter!");
         }
 
-        JournalType type;
+        JournalType journalType;
 
         if (journalId.startsWith("alf_")) {
             QName typeQName = QName.resolveToQName(namespaceService, journalId.substring(4));
-            type = journalService.getJournalForType(typeQName).orElse(null);
+            journalType = journalService.getJournalForType(typeQName).orElse(null);
         } else {
             if (NodeRef.isNodeRef(journalId)) {
                 journalId = nodeUtils.getProperty(new NodeRef(journalId), JournalsModel.PROP_JOURNAL_TYPE);
             }
-            type = journalService.getJournalType(journalId);
+            journalType = journalService.getJournalType(journalId);
         }
 
-        if (type == null) {
+        if (journalType == null) {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "Journal with id '" + journalId + "' not found!");
         }
 
-        List<String> attributes = type.getAttributes();
+        List<String> attributes = journalType.getAttributes();
         List<Column> columns = new ArrayList<>();
-        String sourceId = type.getDataSource();
+        String sourceId = journalType.getDataSource();
         if (sourceId == null) {
             sourceId = "";
         }
@@ -115,13 +112,13 @@ public class JournalConfigGet extends AbstractWebScript {
 
             Column column = new Column();
 
-            column.setDefault(type.isAttributeDefault(name));
-            column.setGroupable(type.isAttributeGroupable(name));
-            column.setSearchable(type.isAttributeSearchable(name));
-            column.setSortable(type.isAttributeSortable(name));
-            column.setVisible(type.isAttributeVisible(name));
+            column.setDefault(journalType.isAttributeDefault(name));
+            column.setGroupable(journalType.isAttributeGroupable(name));
+            column.setSearchable(journalType.isAttributeSearchable(name));
+            column.setSortable(journalType.isAttributeSortable(name));
+            column.setVisible(journalType.isAttributeVisible(name));
             column.setAttribute(name);
-            column.setParams(type.getAttributeOptions(name));
+            column.setParams(journalType.getAttributeOptions(name));
             column.setText(getColumnLabel(column));
 
             AttInfo info = columnInfo.get(name);
@@ -133,11 +130,11 @@ public class JournalConfigGet extends AbstractWebScript {
         }
 
         Response response = new Response();
-        response.setId(journalId);
+        response.setId(journalType.getId());
         response.setColumns(columns);
-        response.setMeta(getJournalMeta(journalId));
+        response.setMeta(getJournalMeta(journalType.getId()));
         response.setSourceId(sourceId);
-        response.setParams(type.getOptions());
+        response.setParams(journalType.getOptions());
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getWriter(), response);

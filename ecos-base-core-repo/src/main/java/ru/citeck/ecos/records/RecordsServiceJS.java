@@ -90,8 +90,12 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
     }
 
     public <T> RecordsResult<T> getRecords(Object recordsQuery, Class<T> schemaClass) {
+        return queryRecords(recordsQuery, schemaClass);
+    }
+
+    public <T> RecordsResult<T> queryRecords(Object recordsQuery, Class<T> schemaClass) {
         RecordsQuery convertedQuery = jsUtils.toJava(recordsQuery, RecordsQuery.class);
-        return recordsService.getRecords(convertedQuery, schemaClass);
+        return recordsService.queryRecords(convertedQuery, schemaClass);
     }
 
     public Iterable<RecordRef> getIterableRecords(Object recordsQuery) {

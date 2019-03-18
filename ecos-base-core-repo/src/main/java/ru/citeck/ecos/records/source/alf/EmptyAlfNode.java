@@ -11,11 +11,6 @@ public class EmptyAlfNode implements MetaValue {
     private AlfGqlContext context;
 
     @Override
-    public <T extends GqlContext> void init(T context) {
-        init(context, null);
-    }
-
-    @Override
     public <T extends GqlContext> void init(T context, MetaField field) {
         this.context = (AlfGqlContext) context;
     }

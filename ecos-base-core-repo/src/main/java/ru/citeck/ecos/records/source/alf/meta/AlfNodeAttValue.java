@@ -40,11 +40,6 @@ public class AlfNodeAttValue implements MetaValue {
     }
 
     @Override
-    public <T extends GqlContext> void init(T context) {
-        init(context, null);
-    }
-
-    @Override
     public <T extends GqlContext> void init(T context, MetaField field) {
 
         this.context = (AlfGqlContext) context;
@@ -122,7 +117,7 @@ public class AlfNodeAttValue implements MetaValue {
                             .stream()
                             .map(v -> {
                                 AlfNodeAttValue value = new AlfNodeAttValue(v);
-                                value.init(context);
+                                value.init(context, field);
                                 return value;
                             })
                             .collect(Collectors.toList());
