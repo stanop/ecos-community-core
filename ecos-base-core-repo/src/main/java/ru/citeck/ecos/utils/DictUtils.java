@@ -5,6 +5,7 @@ import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ public class DictUtils {
     private static String TXN_CONSTRAINTS_CACHE = DictUtils.class.getName();
 
     private DictionaryService dictionaryService;
+    private NamespaceService namespaceService;
     private MessageService messageService;
 
     /**
@@ -68,6 +70,22 @@ public class DictUtils {
         }
 
         return propDef;
+    }
+
+    public ClassAttributeDefinition getAttDefinition(String name) {
+
+        QName field = QName.resolveToQName(namespaceService, name);
+
+        AssociationDefinition assocDef = dictionaryService.getAssociation(field);
+        if (assocDef != null) {
+            return assocDef;
+        } else {
+            PropertyDefinition propDef = dictionaryService.getProperty(field);
+            if (propDef != null) {
+                return propDef;
+            }
+        }
+        return null;
     }
 
     public String getPropertyDisplayName(QName name, String value) {
@@ -141,5 +159,6 @@ public class DictUtils {
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         dictionaryService = serviceRegistry.getDictionaryService();
         messageService = serviceRegistry.getMessageService();
+        namespaceService = serviceRegistry.getNamespaceService();
     }
 }

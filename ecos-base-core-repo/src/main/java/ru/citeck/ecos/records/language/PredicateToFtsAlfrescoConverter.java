@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.ClassAttributeDefinition;
+import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
@@ -17,26 +18,28 @@ import ru.citeck.ecos.records2.QueryLangConverter;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.utils.DictUtils;
 
 import java.util.List;
 
 @Component
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
+    private DictUtils dictUtils;
     private PredicateService predicateService;
     private NamespaceService namespaceService;
-    private DictionaryService dictionaryService;
     private AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
 
     @Autowired
-    public PredicateToFtsAlfrescoConverter(RecordsService recordsService,
+    public PredicateToFtsAlfrescoConverter(DictUtils dictUtils,
+                                           RecordsService recordsService,
                                            PredicateService predicateService,
                                            ServiceRegistry serviceRegistry,
                                            AssociationIndexPropertyRegistry associationIndexPropertyRegistry) {
 
+        this.dictUtils = dictUtils;
         this.predicateService = predicateService;
         this.namespaceService = serviceRegistry.getNamespaceService();
-        this.dictionaryService = serviceRegistry.getDictionaryService();
         this.associationIndexPropertyRegistry = associationIndexPropertyRegistry;
 
         recordsService.register(this,
@@ -104,22 +107,18 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                     break;
                 case "ISNOTNULL":
 
-                    query.isNotNull(QName.resolveToQName(namespaceService, valueStr));
+                    query.isNotNull(getQueryField(dictUtils.getAttDefinition(valueStr)));
 
                     break;
                 case "ISUNSET":
 
-                    query.isUnset(QName.resolveToQName(namespaceService, valueStr));
+                    query.isUnset(getQueryField(dictUtils.getAttDefinition(valueStr)));
 
                     break;
                 default:
 
-                    QName field = QName.resolveToQName(namespaceService, attribute);
-
-                    AssociationDefinition assocDef = dictionaryService.getAssociation(field);
-                    if (assocDef != null) {
-                        field = associationIndexPropertyRegistry.getAssociationIndexProperty(field);
-                    }
+                    ClassAttributeDefinition attDef = dictUtils.getAttDefinition(attribute);
+                    QName field = getQueryField(attDef);
 
                     switch (valuePred.getType()) {
                         case EQ:
@@ -129,7 +128,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                             query.value(field, valueStr.replaceAll("%", "*"));
                             break;
                         case CONTAINS:
-                            if (assocDef == null) {
+                            if (attDef instanceof PropertyDefinition) {
                                 query.value(field, "*" + valueStr + "*");
                             } else {
                                 query.value(field, valueStr);
@@ -171,12 +170,18 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         } else if (predicate instanceof EmptyPredicate) {
 
             String attribute = ((EmptyPredicate) predicate).getAttribute();
-            QName field = QName.resolveToQName(namespaceService, attribute);
-            query.empty(field);
+            query.empty(getQueryField(dictUtils.getAttDefinition(attribute)));
 
         } else {
             throw new RuntimeException("Unknown predicate type: " + predicate);
         }
+    }
+
+    private QName getQueryField(ClassAttributeDefinition def) {
+        if (def instanceof AssociationDefinition) {
+            return associationIndexPropertyRegistry.getAssociationIndexProperty(def.getName());
+        }
+        return def.getName();
     }
 
     @Override
