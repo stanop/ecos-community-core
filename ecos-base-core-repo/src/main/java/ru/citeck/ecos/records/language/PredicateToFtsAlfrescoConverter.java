@@ -2,9 +2,9 @@ package ru.citeck.ecos.records.language;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.dictionary.AssociationDefinition;
-import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
@@ -16,27 +16,36 @@ import ru.citeck.ecos.predicate.model.*;
 import ru.citeck.ecos.records2.QueryLangConverter;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
+import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.utils.DictUtils;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
+    private DictUtils dictUtils;
+    private SearchService searchService;
     private PredicateService predicateService;
     private NamespaceService namespaceService;
-    private DictionaryService dictionaryService;
     private AssociationIndexPropertyRegistry associationIndexPropertyRegistry;
 
     @Autowired
-    public PredicateToFtsAlfrescoConverter(RecordsService recordsService,
+    public PredicateToFtsAlfrescoConverter(DictUtils dictUtils,
+                                           SearchService searchService,
+                                           RecordsService recordsService,
                                            PredicateService predicateService,
                                            ServiceRegistry serviceRegistry,
                                            AssociationIndexPropertyRegistry associationIndexPropertyRegistry) {
 
+        this.dictUtils = dictUtils;
+        this.searchService = searchService;
         this.predicateService = predicateService;
         this.namespaceService = serviceRegistry.getNamespaceService();
-        this.dictionaryService = serviceRegistry.getDictionaryService();
         this.associationIndexPropertyRegistry = associationIndexPropertyRegistry;
 
         recordsService.register(this,
@@ -104,22 +113,18 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                     break;
                 case "ISNOTNULL":
 
-                    query.isNotNull(QName.resolveToQName(namespaceService, valueStr));
+                    query.isNotNull(getQueryField(dictUtils.getAttDefinition(valueStr)));
 
                     break;
                 case "ISUNSET":
 
-                    query.isUnset(QName.resolveToQName(namespaceService, valueStr));
+                    query.isUnset(getQueryField(dictUtils.getAttDefinition(valueStr)));
 
                     break;
                 default:
 
-                    QName field = QName.resolveToQName(namespaceService, attribute);
-
-                    AssociationDefinition assocDef = dictionaryService.getAssociation(field);
-                    if (assocDef != null) {
-                        field = associationIndexPropertyRegistry.getAssociationIndexProperty(field);
-                    }
+                    ClassAttributeDefinition attDef = dictUtils.getAttDefinition(attribute);
+                    QName field = getQueryField(attDef);
 
                     switch (valuePred.getType()) {
                         case EQ:
@@ -129,10 +134,75 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                             query.value(field, valueStr.replaceAll("%", "*"));
                             break;
                         case CONTAINS:
-                            if (assocDef == null) {
+
+                            if (valueStr == null || valueStr.isEmpty()) {
+                                return;
+                            }
+
+                            if (attDef instanceof PropertyDefinition) {
+
                                 query.value(field, "*" + valueStr + "*");
-                            } else {
-                                query.value(field, valueStr);
+
+                            } else if (attDef instanceof AssociationDefinition) {
+
+                                if (NodeRef.isNodeRef(valueStr)) {
+
+                                    query.value(field, valueStr);
+
+                                } else {
+
+                                    //search assoc by text
+
+                                    ClassDefinition targetClass = ((AssociationDefinition) attDef).getTargetClass();
+
+                                    FTSQuery innerQuery = FTSQuery.createRaw();
+                                    innerQuery.maxItems(20);
+                                    innerQuery.type(targetClass.getName());
+
+                                    String assocVal = "*" + valueStr + "*";
+
+                                    Map<QName, Serializable> attributes = new HashMap<>();
+                                    attributes.put(ContentModel.PROP_TITLE, assocVal);
+                                    attributes.put(ContentModel.PROP_NAME, assocVal);
+
+                                    Map<QName, PropertyDefinition> props = new HashMap<>(targetClass.getProperties());
+                                    targetClass.getDefaultAspects(true)
+                                               .forEach(a -> props.putAll(a.getProperties()));
+
+                                    props.forEach((name, def) -> {
+
+                                        QName dataType = def.getDataType().getName();
+
+                                        if (DataTypeDefinition.TEXT.equals(dataType)
+                                                || DataTypeDefinition.MLTEXT.equals(dataType)) {
+
+                                            String ns = def.getName().getNamespaceURI();
+
+                                            if (!ns.equals(NamespaceService.SYSTEM_MODEL_1_0_URI)
+                                                    && !ns.equals(NamespaceService.CONTENT_MODEL_1_0_URI)) {
+
+                                                attributes.put(def.getName(), assocVal);
+                                            }
+                                        }
+                                    });
+
+                                    if (!attributes.isEmpty()) {
+
+                                        innerQuery.and().values(attributes, BinOperator.OR, false);
+
+                                        List<NodeRef> assocs = innerQuery.query(searchService);
+
+                                        if (assocs.size() > 0) {
+                                            query.any(field, new ArrayList<>(assocs));
+                                        } else {
+                                            query.value(field, valueStr);
+                                        }
+
+                                    } else {
+
+                                        query.value(field, valueStr);
+                                    }
+                                }
                             }
                             break;
                         case GE:
@@ -171,12 +241,18 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         } else if (predicate instanceof EmptyPredicate) {
 
             String attribute = ((EmptyPredicate) predicate).getAttribute();
-            QName field = QName.resolveToQName(namespaceService, attribute);
-            query.empty(field);
+            query.empty(getQueryField(dictUtils.getAttDefinition(attribute)));
 
         } else {
             throw new RuntimeException("Unknown predicate type: " + predicate);
         }
+    }
+
+    private QName getQueryField(ClassAttributeDefinition def) {
+        if (def instanceof AssociationDefinition) {
+            return associationIndexPropertyRegistry.getAssociationIndexProperty(def.getName());
+        }
+        return def.getName();
     }
 
     @Override
