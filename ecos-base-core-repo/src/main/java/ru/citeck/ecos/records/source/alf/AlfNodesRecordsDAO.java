@@ -280,16 +280,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     @Override
     public RecordsQueryResult<Object> getMetaValues(RecordsQuery recordsQuery) {
 
-        if (recordsQuery.getLanguage().equals(DistinctQuery.LANGUAGE)) {
-
-            DistinctQuery distinctQuery = recordsQuery.getQuery(DistinctQuery.class);
-            AlfNodesSearch alfNodesSearch = needNodesSearch(distinctQuery.getLanguage());
-
-            RecordsQueryResult<Object> result = new RecordsQueryResult<>();
-            result.setRecords(alfNodesSearch.queryDistinctValues(distinctQuery, recordsQuery.getMaxItems()));
-            return result;
-        }
-
         RecordsQueryResult<RecordRef> records = queryRecords(recordsQuery);
 
         RecordsQueryResult<Object> result = new RecordsQueryResult<>();
@@ -361,9 +351,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
     @Override
     public List<String> getSupportedLanguages() {
-        List<String> languages = new ArrayList<>(searchByLanguage.keySet());
-        languages.add(DistinctQuery.LANGUAGE);
-        return languages;
+        return new ArrayList<>(searchByLanguage.keySet());
     }
 
     @Override
