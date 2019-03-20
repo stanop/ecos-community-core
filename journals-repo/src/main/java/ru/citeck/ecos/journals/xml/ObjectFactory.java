@@ -94,6 +94,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GroupBy }
+     * 
+     */
+    public GroupBy createGroupBy() {
+        return new GroupBy();
+    }
+
+    /**
+     * Create an instance of {@link Predicate }
+     * 
+     */
+    public Predicate createPredicate() {
+        return new Predicate();
+    }
+
+    /**
      * Create an instance of {@link Header }
      * 
      */
