@@ -4,6 +4,7 @@ import filterFactory, { textFilter, dateFilter } from 'js/citeck/lib/react-boots
 
 import 'xstyle!js/citeck/lib/react-bootstrap-table-next/react-bootstrap-table.css';
 import 'xstyle!js/citeck/lib/react-bootstrap-table-next/react-bootstrap-table2-filter.css';
+import 'xstyle!js/citeck/modules/grid/grid.css';
 
 export default class Grid extends Component  {
     _setFilter(column){
@@ -57,7 +58,17 @@ export default class Grid extends Component  {
             classes: 'table_table-layout_auto table_header-nowrap',
             bootstrap4: true,
             bordered: false,
-            filter: filterFactory()
+            filter: filterFactory(),
+            // rowEvents: {
+            //     onMouseEnter: e => {
+            //         let $currentTr = $(e.target).closest('tr').addClass('tr_overlay-container');
+            //
+            //         $('<div class="tr_overlay">test</div>').appendTo($currentTr).mouseleave(function() {
+            //             $currentTr.removeClass('tr_overlay-container');
+            //             $(this).remove();
+            //         });
+            //     }
+            // }
         };
 
         props = this._setAdditionalOptions(props);
