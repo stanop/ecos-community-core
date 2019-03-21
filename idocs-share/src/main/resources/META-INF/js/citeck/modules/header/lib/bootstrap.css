@@ -1078,7 +1078,7 @@ button.close {
 .hide {
   display: none !important;
 }
-.show {
+.show:not(.ecos-dropdown) {
   display: block !important;
 }
 .invisible {

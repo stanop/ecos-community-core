@@ -3,6 +3,8 @@ import NodeCardlet from '../node-cardlet';
 import Grid from '../../grid/grid';
 import dataSourceStore from '../../grid/dataSource/dataSourceStore';
 
+
+
 export default class GridCardlet extends NodeCardlet {
     static fetchData(ownProps, onSuccess, onFailure) {
         require([
@@ -10,16 +12,10 @@ export default class GridCardlet extends NodeCardlet {
         ], function() {
             let controlProps = ownProps.controlProps;
             let htmlId = 'card-details-cardlet_' + ownProps.id + "_grid";
-            let dataSourceName = controlProps.dataSourceName.trim();
-            let url = eval('(' + controlProps.url + ')');
-            let ajax = eval('(' + controlProps.ajax + ')');
-            let columns = eval('(' + controlProps.columns + ')');
+            let gridOptions = eval('(' + controlProps.gridOptions + ')');
+            let dataSourceName = gridOptions.dataSourceName.trim();
 
-            const dataSource = new dataSourceStore[dataSourceName]({
-                url: url,
-                ajax: ajax,
-                columns: columns
-            });
+            const dataSource = new dataSourceStore[dataSourceName](gridOptions);
 
             let success = (data) => onSuccess({
                 data: data,

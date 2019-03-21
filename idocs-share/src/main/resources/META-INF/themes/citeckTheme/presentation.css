@@ -44,7 +44,7 @@
 .yui-overlay input,
 .alfresco-share .sticky-wrapper textarea,
 .yui-overlay textarea,
-.alfresco-share .sticky-wrapper button,
+.alfresco-share .sticky-wrapper button:not(.ecos-btn),
 .yui-overlay button
 {
   font:99% Open Sans,arial,helvetica,clean,sans-serif;
