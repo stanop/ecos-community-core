@@ -90,13 +90,20 @@ public class AlfNodeAttValue implements MetaValue {
 
     @Override
     public String getString() {
+
+        if (rawValue == null) {
+            return null;
+        }
         if (alfNode != null) {
             return alfNode.nodeRef();
-        } else if (qName != null) {
+        }
+        if (qName != null) {
             return qName.shortName();
-        } else if (rawValue instanceof Date) {
+        }
+        if (rawValue instanceof Date) {
             return ISO8601Utils.format((Date) rawValue);
-        } else if (rawValue instanceof ContentData) {
+        }
+        if (rawValue instanceof ContentData) {
 
             String contentUrl = ((ContentData) rawValue).getContentUrl();
             ContentService contentService = context.getServiceRegistry().getContentService();

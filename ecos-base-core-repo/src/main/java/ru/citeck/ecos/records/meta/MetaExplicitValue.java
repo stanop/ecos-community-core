@@ -40,6 +40,14 @@ public class MetaExplicitValue implements MetaValue {
     }
 
     @Override
+    public String getDisplayName() {
+        if (metaVal != null) {
+            return metaVal.getDisplayName();
+        }
+        return getString();
+    }
+
+    @Override
     public String getString() {
         if (metaVal != null) {
             return metaVal.getString();

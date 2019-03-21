@@ -236,6 +236,11 @@
           parent="webscript">
     </bean>
 
+    <bean id="webscript.ru.citeck.ecos.records-query.get"
+          class="ru.citeck.ecos.records.rest.RecordsQueryGet"
+          parent="webscript">
+    </bean>
+
     <bean id="webscript.ru.citeck.ecos.records-mutate.post"
           class="ru.citeck.ecos.records.rest.RecordsMutatePost"
           parent="webscript">

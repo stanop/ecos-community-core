@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>Query record attribute</shortname>
+    <description>Query record attribute</description>
+    <url>/citeck/ecos/records/query?rec={recordRef}&amp;att={attribute}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

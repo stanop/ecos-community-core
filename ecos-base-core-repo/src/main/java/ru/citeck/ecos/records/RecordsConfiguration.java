@@ -9,6 +9,7 @@ import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.RecordsServiceFactory;
 import ru.citeck.ecos.records2.graphql.RecordsMetaGql;
 import ru.citeck.ecos.records2.meta.RecordsMetaService;
+import ru.citeck.ecos.records2.request.rest.RestQueryHandler;
 import ru.citeck.ecos.records2.source.common.group.RecordsGroupDAO;
 
 @Configuration
@@ -36,6 +37,11 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Bean
     public RecordsMetaService createRecordsMetaService() {
         return super.createRecordsMetaService();
+    }
+
+    @Bean
+    public RestQueryHandler createRestQueryHandler(RecordsService recordsService) {
+        return new RestQueryHandler(recordsService);
     }
 
     @Override
