@@ -2016,7 +2016,9 @@ Record
     // TODO define load method - to load selected records
     .load('doclib', function(record) {
         if(record.isDoclibNode() === true) {
-            customRecordLoader().load(record.nodeRef(), function(id, model) {
+            var recordNodeRef = record.nodeRef(),
+                recodrId = recordNodeRef ? recordNodeRef.replace(/.*@/, "") : "";
+            customRecordLoader().load(recodrId, function(id, model) {
                 record.model({ doclib: model });
             });
         } else if(record.isDoclibNode() === false) {
