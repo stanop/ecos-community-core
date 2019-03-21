@@ -50,3 +50,41 @@
 .eform-panel-content .form-control {
     box-shadow: none;
 }
+
+.eform-panel-content .input-group>.form-control {
+    width: 1%;
+}
+
+.formio-dialog.formio-dialog-theme-default .formio-dialog-content {
+    background-color: #fff;
+}
+
+.yui-panel-container .btn-primary {
+    background-color: #4b75b7;
+    border-color: #4b75b7;
+}
+
+.yui-panel-container .btn-primary:hover {
+    color: #fff;
+    background-color: #7396cd;
+    border-color: #7396cd;
+}
+
+.formio-dialog-content .preview-panel + div > button {
+    font-size: 14px;
+}
+
+/* bootstrap fixes TODO: move to another css file */
+.yui-panel .collapse:not(.panel-collapse) {
+    display: block;
+}
+
+.formio-dialog.formio-dialog-theme-default .formio-dialog-content {
+    background-color: #fff !important;
+}
+
+/* Hack for select-journal component */
+.eform-panel-content .select-journal .button {
+    font-size: 14px;
+    font-weight: 600;
+}

@@ -107,6 +107,7 @@ body > .sticky-footer, /* faceted-search page hack */
 }
 
 .slide-menu-logo__small {
+    box-sizing: content-box;
     width: 25px;
     padding: 7px 17px;
     float: left;
