@@ -243,7 +243,7 @@
                                             <div class="bd">
                                                 <ul data-bind="foreach: resolve('journal.type.searchableAttributes', [])" class="first-of-type">
                                                     <li class="yuimenuitem">
-                                                        <span class="yuimenuitemlabel" data-bind="text: displayName, click: $root.addCriterion.bind($root,name(),'','')"></span>
+                                                        <span class="yuimenuitemlabel" data-bind="text: customDisplayNameText, click: $root.addCriterion.bind($root,name(),'','')"></span>
                                                     </li>
                                                 </ul>
                                             </div>

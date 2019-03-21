@@ -802,6 +802,16 @@ AttributeInfo
 
         return allowableMultipleFilterPredicates;
     })
+    .computed('customDisplayNameText', function() {
+        var optionLabel = null;
+        if (this.attribute() && this.attribute().settings()) {
+            optionLabel = this.attribute().settings().customLabel;
+        }
+        if (optionLabel) {
+            return Alfresco.util.message(optionLabel);
+        }
+        return this.displayName();
+    })
     ;
 
 Datatype
