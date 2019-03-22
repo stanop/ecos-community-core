@@ -261,7 +261,7 @@ function _attachmentFilter(attachment) {
         return false;
     }
     var status = attachment.properties['sam:packageAttachmentStatus'];
-    return ['RECEIVED'].indexOf(status) != -1;
+    return ['RECEIVED', 'DELIVERY_FAILED'].indexOf(status) != -1;
 }
 
 function resetCase() {
