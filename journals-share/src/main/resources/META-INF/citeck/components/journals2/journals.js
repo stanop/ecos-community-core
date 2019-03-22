@@ -802,6 +802,9 @@ AttributeInfo
 
         return allowableMultipleFilterPredicates;
     })
+    .computed('customDisplayNameText', function() {
+        return this.customDisplayName();
+    })
     ;
 
 Datatype
