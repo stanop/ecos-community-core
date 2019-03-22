@@ -34,8 +34,12 @@ export default class EcosForm extends React.Component {
 
         this.getForm().then(data => {
 
-            var formAtts = data.records[0].attributes,
+            let formAtts = data.records[0].attributes,
                 options = self.props.options || {};
+
+            let proxyUri = ((Alfresco || {}).constants || {}).PROXY_URI || '/';
+            proxyUri = proxyUri.substring(0, proxyUri.length - 1);
+            Formio.setProjectUrl(proxyUri);
 
             Formio.createForm(document.getElementById(this.state.containerId), formAtts.formDef, options).then(form => {
                 let record = Records.get(self.props.record);

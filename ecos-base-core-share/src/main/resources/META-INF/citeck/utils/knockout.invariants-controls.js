@@ -16,7 +16,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
-define(['jquery', 'lib/knockout', 'citeck/utils/knockout.utils', 'citeck/utils/knockout.components', 'citeck/components/invariants/invariants', 'citeck/components/journals2/journals', 'lib/moment'], function ($, ko, koutils, kocomponents, invariants, journals, moment) {
+define([
+    'jquery',
+    'lib/knockout',
+    'citeck/utils/knockout.utils',
+    'citeck/utils/knockout.components',
+    'citeck/components/invariants/invariants',
+    'citeck/components/journals2/journals',
+    'lib/moment',
+    'underscore'
+], function ($, ko, koutils, kocomponents, invariants, journals, moment, _) {
 
 // ----------------
 // GLOBAL FUNCTIONS
