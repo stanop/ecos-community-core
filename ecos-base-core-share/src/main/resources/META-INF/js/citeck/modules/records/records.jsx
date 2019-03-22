@@ -92,10 +92,6 @@ class Attribute {
         }
     }
 
-    updatePersisted() {
-        this._persisted = this.value;
-    }
-
     isPersisted() {
         return this._value === this.persisted;
     }
@@ -214,11 +210,14 @@ class Record {
                     return response.json();
                 }).then(response => {
 
-                    for (let attName in self._attributes) {
-                        self._attributes[attName].updatePersisted();
+                    var attributesToLoad = {};
+                    for (let att in attributesToPersist) {
+                        attributesToLoad[att] = att;
                     }
-                    
-                    resolve(self);
+
+                    self.load(attributesToLoad, true).then(() => {
+                        resolve(self);
+                    });
                 });
             } else {
 
