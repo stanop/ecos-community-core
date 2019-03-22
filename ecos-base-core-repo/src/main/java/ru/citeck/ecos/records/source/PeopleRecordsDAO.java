@@ -159,7 +159,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                 case PROP_USER_NAME:
                     return userName;
                 case PROP_FULL_NAME:
-                    return alfNode.getString();
+                    return alfNode.getDisplayName();
                 case PROP_IS_AVAILABLE:
                     return authenticationService.getAuthenticationEnabled(userName);
                 case PROP_IS_MUTABLE:
