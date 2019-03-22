@@ -16,15 +16,23 @@
             <@views.nodeViewWidget nodeRef=userRef />
         </@>
 
-        <@markup id="html">
-            <div id="${el}-body" class="user-profile node-view static" <#if mode == "view">style="padding: 20px 40px;"</#if>>
-                <div id="profile-view">
-                    <@views.renderViewContainer view args.htmlid />
-                    <#if mode == "view" && writeMode>
-                        <a class="user-profile__edit-link" href="${page.url.getUrl() + "?mode=edit"}">${msg("profile.edit")}</a>
-                    </#if>
-                </div>
-            </div>
-        </@>
+        <div id="user-profile-root"></div>
+
+        <script type="text/javascript">//<![CDATA[
+
+        require(['js/citeck/modules/page/user-profile/user-profile'], function(UserProfile) {
+            UserProfile.render('user-profile-root', {
+                el: "${((el)!"")?js_string}",
+                userRef: "${((userRef)!"")?js_string}",
+                mode: "${((mode)!"")?js_string}",
+                <#if mode == "view" && writeMode>
+                    writeMode: true,
+                    href: "${page.url.getUrl() + "?mode=edit"}",
+                    label: "${msg("profile.edit")}",
+                </#if>
+            });
+        });
+
+        //]]></script>
     </@>
 </#if>
