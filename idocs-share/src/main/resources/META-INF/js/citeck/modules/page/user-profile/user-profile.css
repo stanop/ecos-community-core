@@ -19,3 +19,20 @@
     margin-top: 20px;
 }
 
+.user-profile-documents-tab__advanced-associations {
+    margin-top: 20px;
+}
+
+.user-profile-documents-tab__case-documents {}
+
+.user-profile-documents-tab__case-documents-buttons {
+    display: flex;
+    justify-content: flex-end;
+
+    position: relative;
+    top: 15px;
+}
+
+.user-profile-documents-tab__case-documents-button {
+    margin-left: 10px;
+}

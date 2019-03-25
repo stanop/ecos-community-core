@@ -26,9 +26,7 @@
                 userRef: "${((userRef)!"")?js_string}",
                 mode: "${((mode)!"")?js_string}",
                 <#if mode == "view" && writeMode>
-                    writeMode: true,
-                    href: "${page.url.getUrl() + "?mode=edit"}",
-                    label: "${msg("profile.edit")}",
+                    canWrite: true,
                 </#if>
             });
         });

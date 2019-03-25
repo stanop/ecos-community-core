@@ -22,12 +22,12 @@ import "xstyle!./lib/bootstrap.css";
 
 const api = new API(window.Alfresco.constants.PROXY_URI);
 
-let composeEnhancers = compose;
-if (typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) {
-    composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
-}
+// let composeEnhancers = compose;
+// if (typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) {
+//     composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+// }
 
-const store = createStore(rootReducer, {}, composeEnhancers(
+const store = createStore(rootReducer, {}, compose(
         applyMiddleware(thunk.withExtraArgument(api)),
     )
 );
