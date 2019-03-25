@@ -231,7 +231,7 @@ function sendESignsForInboundPackage() {
 
     var caseDocs = document.childAssocs["icase:documents"] || [];
     var contentFromInboundPackage = (document.assocs["sam:contentFromInboundPackage"] ||
-        document.assocs["idocs:attachmentRkkCreatedFrom"] ||[])[0];
+            document.assocs["idocs:attachmentRkkCreatedFrom"] || [])[0];
 
     var inboundDocs = [];
 
