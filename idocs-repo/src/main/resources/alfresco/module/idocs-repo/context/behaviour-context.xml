@@ -941,6 +941,16 @@
         </property>
     </bean>
 
+    <bean id="idocs.createPersonalDocumentsForCreatedPersonBehaviour"
+          class="ru.citeck.ecos.behavior.personal.CreatePersonalDocumentsForCreatedPersonBehaviour"/>
+
+    <bean id="idocs.personal.documents.setDefaultTypeKindBehaviour"
+          class="ru.citeck.ecos.behavior.personal.SetDefaultTypeKindBehaviour"
+          depends-on="idocs.module-component.document-categories">
+        <property name="defaultType" value="workspace://SpacesStore/cat-personal-documents"/>
+        <property name="defaultKind" value="workspace://SpacesStore/kind-d-miscellaneous"/>
+    </bean>
+
     <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
           class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
 

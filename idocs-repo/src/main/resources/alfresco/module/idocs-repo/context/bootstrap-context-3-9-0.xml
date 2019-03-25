@@ -50,4 +50,78 @@
         </property>
     </bean>
 
+    <bean id="idocs.site.personal-documents-site-import" parent="idocs.import-spaces.3-9-0">
+        <property name="name" value="personal-documents-site" />
+        <property name="description" value="Personal documents site" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.script.check-app-share" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/site.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/site/personal-documents-site</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.personal-documents-folder" parent="idocs.import-spaces.3-9-0">
+        <property name="name" value="personal-documents-folder" />
+        <property name="description" value="Personal documents folder" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.site.personal-documents-site-import"/>
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/st:sites/cm:personal-documents/cm:documentLibrary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/folder.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/folders/personal-documents</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.script.personal-documents-site-add-users" parent="idocs.import-scripts.3-9-0">
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="personal-documents-site-add-users" />
+        <property name="description" value="Add all users to the personal-documents site" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/personal-documents-site-add-users.js"/>
+    </bean>
+
+    <bean id="idocs.groups.personal-documents-managers" parent="idocs.import-spaces.3-9-0">
+        <property name="name" value="personal-documents-managers-group" />
+        <property name="description" value="Personal documents managers group" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/group.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/groups/personal-documents-managers</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.script.completeness-levels" parent="idocs.import-scripts.3-9-0">
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.document-categories" />
+            </list>
+        </property>
+        <property name="executeOnceOnly" value="false" />
+        <property name="name" value="create-or-update-idocs-completeness-levels" />
+        <property name="description" value="Create or update idocs completeness levels" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/completeness-levels.js"/>
+    </bean>
+
 </beans>

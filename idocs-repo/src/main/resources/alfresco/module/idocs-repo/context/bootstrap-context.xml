@@ -35,6 +35,7 @@
                 <value>alfresco/module/idocs-repo/model/menuConfigModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/idocsModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/workingCalendarModel.xml</value>
+                <value>alfresco/module/idocs-repo/model/personalDocumentsModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/orgstructModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/workflowMirrorModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/associationModel.xml</value>

@@ -89,14 +89,159 @@
             <cm:category view:childName="cm:scan-documents">
                 <view:properties>
                     <sys:node-uuid>kind-d-scan-documents</sys:node-uuid>
-                    <cm:name>Scan documents</cm:name>
+                    <cm:name>${document.scan.name}</cm:name>
                     <cm:title>
-                        <view:mlvalue view:locale="en_US">Scan documents</view:mlvalue>
-                        <view:mlvalue view:locale="ru_RU">Отсканированные документы</view:mlvalue>
+                        <view:mlvalue view:locale="en_US">${document.scan.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${document.scan.title_ru}</view:mlvalue>
                     </cm:title>
                 </view:properties>
             </cm:category>
 
+            <!-- Personal documents -->
+            <cm:category view:childName="cm:personal-documents">
+                <view:properties>
+                    <sys:node-uuid>cat-personal-documents</sys:node-uuid>
+                    <cm:name>${document.personal.name}</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">${document.personal.title_en}</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">${document.personal.title_ru}</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+                <view:associations>
+                    <cm:subcategories>
+                        <cm:category view:childName="cm:kind-d-questionnaire">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-questionnaire</sys:node-uuid>
+                                <cm:name>${document.questionnaire.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.questionnaire.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.questionnaire.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-cv">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-cv</sys:node-uuid>
+                                <cm:name>${document.cv.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.cv.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.cv.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-recommendations">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-recommendations</sys:node-uuid>
+                                <cm:name>${document.recommendations.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.recommendations.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.recommendations.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-conviction-cert">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-conviction-cert</sys:node-uuid>
+                                <cm:name>${document.conviction-cert.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.conviction-cert.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.conviction-cert.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-health-cert">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-health-cert</sys:node-uuid>
+                                <cm:name>${document.health-cert.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.health-cert.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.health-cert.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-marriage-cert">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-marriage-cert</sys:node-uuid>
+                                <cm:name>${document.marriage-cert.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.marriage-cert.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.marriage-cert.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-birth-cert">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-birth-cert</sys:node-uuid>
+                                <cm:name>${document.birth-cert.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.birth-cert.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.birth-cert.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-enc-or-punish-order">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-enc-or-punish-order</sys:node-uuid>
+                                <cm:name>${document.enc-or-punish-order.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.enc-or-punish-order.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.enc-or-punish-order.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-disability-docs">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-disability-docs</sys:node-uuid>
+                                <cm:name>${document.disability-docs.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.disability-docs.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.disability-docs.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-explaining-note">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-explaining-note</sys:node-uuid>
+                                <cm:name>${document.explaining-note.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.explaining-note.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.explaining-note.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-official-note">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-official-note</sys:node-uuid>
+                                <cm:name>${document.official-note.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.official-note.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.official-note.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-acts-and-notif">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-acts-and-notif</sys:node-uuid>
+                                <cm:name>${document.acts-and-notif.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.acts-and-notif.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.acts-and-notif.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                        <cm:category view:childName="cm:kind-d-miscellaneous">
+                            <view:properties>
+                                <sys:node-uuid>kind-d-miscellaneous</sys:node-uuid>
+                                <cm:name>${document.miscellaneous.name}</cm:name>
+                                <cm:title>
+                                    <view:mlvalue view:locale="en_US">${document.miscellaneous.title_en}</view:mlvalue>
+                                    <view:mlvalue view:locale="ru_RU">${document.miscellaneous.title_ru}</view:mlvalue>
+                                </cm:title>
+                            </view:properties>
+                        </cm:category>
+                    </cm:subcategories>
+                </view:associations>
+            </cm:category>
         </cm:subcategories>
 
     </cm:category>
