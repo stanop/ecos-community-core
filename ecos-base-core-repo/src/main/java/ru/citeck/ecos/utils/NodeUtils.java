@@ -15,6 +15,7 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.alfresco.util.GUID;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +32,58 @@ public class NodeUtils {
     private SearchService searchService;
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
+
+    public String getDisplayName(NodeRef nodeRef) {
+
+        if (nodeRef == null) {
+            return null;
+        }
+
+        QName type = nodeService.getType(nodeRef);
+        Map<QName, Serializable> props = nodeService.getProperties(nodeRef);
+
+        if (ContentModel.TYPE_PERSON.equals(type)) {
+
+            String firstName = (String) props.get(ContentModel.PROP_FIRSTNAME);
+            String lastName = (String) props.get(ContentModel.PROP_LASTNAME);
+
+            StringBuilder result = new StringBuilder();
+            if (StringUtils.isNotBlank(firstName)) {
+                result.append(firstName);
+            }
+            if (StringUtils.isNotBlank(lastName)) {
+                if (result.length() > 0) {
+                    result.append(" ");
+                }
+                result.append(lastName);
+            }
+
+            if (result.length() == 0) {
+                String userName = (String) props.get(ContentModel.PROP_USERNAME);
+                if (StringUtils.isNotBlank(userName)) {
+                    result.append(userName);
+                } else {
+                    result.append(nodeRef.toString());
+                }
+            }
+
+            return result.toString();
+
+        } else if (ContentModel.TYPE_AUTHORITY_CONTAINER.equals(type)) {
+
+            String displayName = (String) props.get(ContentModel.PROP_AUTHORITY_DISPLAY_NAME);
+            String authorityName = (String) props.get(ContentModel.PROP_AUTHORITY_NAME);
+
+            return StringUtils.isNotBlank(displayName) ? displayName : authorityName;
+
+        } else {
+
+            String title = (String) props.get(ContentModel.PROP_TITLE);
+            String name = (String) props.get(ContentModel.PROP_NAME);
+
+            return StringUtils.isNotBlank(title) ? title : name;
+        }
+    }
 
     /**
      * Check is node pending for delete or not exist
