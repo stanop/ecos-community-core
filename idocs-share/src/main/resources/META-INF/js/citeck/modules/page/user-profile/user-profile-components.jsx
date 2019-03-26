@@ -62,18 +62,37 @@ export const Documents = () => {
 
     const onPrintAll = () => {
         fetchAllDocumentsNodeRefs(folderNodeRef).then(nodeRefs => {
-            console.log('onPrintAll nodeRefs', nodeRefs);
+            // console.log('onPrintAll nodeRefs', nodeRefs);
         })
     };
 
     const onDownloadAll = () => {
         fetchAllDocumentsNodeRefs(folderNodeRef).then(nodeRefs => {
-            console.log('onDownloadAll nodeRefs', nodeRefs);
+            require(['components/download/archive-and-download'], function() {
+                let downloadDialog = Alfresco.getArchiveAndDownloadInstance();
+                const config = { nodesToArchive: [] };
+
+                for (let i = 0; i < nodeRefs.length; i++) {
+                    config.nodesToArchive.push({"nodeRef": nodeRefs[i]})
+                }
+
+                downloadDialog.show(config);
+            });
         })
     };
 
     return (
         <div className='user-profile-documents-tab'>
+            <SurfRegion
+                args={{
+                    regionId: 'archive-and-download',
+                    scope: 'template',
+                    pageid: 'card-details',
+                    theme: theme,
+                    cacheAge: 600
+                }}
+            />
+
             <div className='user-profile-documents-tab__case-documents'>
                 <div className='user-profile-documents-tab__case-documents-buttons'>
                     <button
