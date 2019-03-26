@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
-import { Dropdown } from 'react-bootstrap';
+import { UncontrolledDropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
 import DropDownMenuItem from './dropdown-menu-item';
-import CustomToggle from './dropdown-menu-custom-toggle';
 
 const SearchDropdown = () => {
     const searchDropdownListItems = [
@@ -17,14 +16,14 @@ const SearchDropdown = () => {
 
     return (
         <Fragment>
-            <Dropdown className='search-dropdown-menu' pullLeft>
-                <CustomToggle bsRole='toggle' className='search-dropdown-menu__toggle'>
+            <UncontrolledDropdown className="search-dropdown-menu">
+                <DropdownToggle tag="span" className="search-dropdown-menu__toggle">
                     <i className={'fa fa-chevron-circle-down'} />
-                </CustomToggle>
-                <Dropdown.Menu className='custom-dropdown-menu__body' id='HEADER_SEARCH__DROPDOWN'>
+                </DropdownToggle>
+                <DropdownMenu className="custom-dropdown-menu__body" id="HEADER_SEARCH__DROPDOWN">
                     {searchDropdownListItems}
-                </Dropdown.Menu>
-            </Dropdown>
+                </DropdownMenu>
+            </UncontrolledDropdown>
         </Fragment>
     );
 };

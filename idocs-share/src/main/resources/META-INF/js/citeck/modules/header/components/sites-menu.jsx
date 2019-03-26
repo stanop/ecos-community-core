@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Dropdown } from 'react-bootstrap';
+import { UncontrolledDropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
 import DropDownMenuItem from './dropdown-menu-item';
-import CustomToggle from './dropdown-menu-custom-toggle';
 
 const SitesMenu = ({ items }) => {
     if (!Array.isArray(items) || items.length < 1) {
@@ -13,14 +12,14 @@ const SitesMenu = ({ items }) => {
 
     return (
         <div id='HEADER_SITE_MENU'>
-            <Dropdown className='custom-dropdown-menu' pullRight>
-                <CustomToggle bsRole='toggle' className='site-dropdown-menu__toggle custom-dropdown-menu__toggle'>
+            <UncontrolledDropdown className="custom-dropdown-menu">
+                <DropdownToggle tag="div" className="site-dropdown-menu__toggle custom-dropdown-menu__toggle">
                     <i className={'fa fa-cog'} />
-                </CustomToggle>
-                <Dropdown.Menu bsRole='menu' className='custom-dropdown-menu__body' id='HEADER_SITE_MENU__DROPDOWN'>
+                </DropdownToggle>
+                <DropdownMenu className="custom-dropdown-menu__body" id="HEADER_SITE_MENU__DROPDOWN" right>
                     {menuListItems}
-                </Dropdown.Menu>
-            </Dropdown>
+                </DropdownMenu>
+            </UncontrolledDropdown>
         </div>
     );
 };

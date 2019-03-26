@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from "react-redux";
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
 import { hideModal } from "../actions";
 
 const mapStateToProps = state => ({
@@ -34,47 +34,60 @@ class CustomModal extends React.Component {
             onHideCallback = () => {
                 onCloseCallback();
                 hideModal();
-            }
+            };
         }
 
         if (!isOpen) {
             return null;
         }
 
-        const header = title ? (
-            <Modal.Header closeButton>
-                <Modal.Title>{title}</Modal.Title>
-            </Modal.Header>
-        ) : null;
+        const header = title ? <ModalHeader toggle={onHideCallback}>{title}</ModalHeader> : null;
 
         let footer = null;
         if (Array.isArray(buttons) && buttons.length > 0) {
+            let mdSize = 12 / buttons.length;
+            if (buttons.length === 1) {
+                mdSize = { size: 6, offset: 6 };
+            }
             const buttonList = buttons.map((button, idx) => {
                 let onButtonClick = button.onClick;
                 if (button.isCloseButton) {
                     onButtonClick = onHideCallback;
                 }
+                const buttonClassNames = ['button_full_width'];
+                if (button.className) {
+                    buttonClassNames.push(button.className)
+                }
                 return (
-                    <Button
-                        key={idx}
-                        onClick={onButtonClick}
-                        bsStyle={button.bsStyle}
-                    >
-                        {button.label}
-                    </Button>
+                    <Col md={mdSize} sm={12} key={idx}>
+                        <Button
+                            key={idx}
+                            onClick={onButtonClick}
+                            className={buttonClassNames.join(' ')}
+                            color={button.color ? button.color : 'secondary'}
+                        >
+                            {button.label}
+                        </Button>
+                    </Col>
                 );
             });
 
-            footer = <Modal.Footer>{buttonList}</Modal.Footer>;
+            footer = (
+                <ModalFooter>
+                    <div className="modal__full-width-block">
+                        <Row>{buttonList}</Row>
+                    </div>
+                </ModalFooter>
+            );
         }
 
         return ReactDOM.createPortal(
-            <Modal show onHide={onHideCallback}>
+            <Modal isOpen toggle={onHideCallback}>
                 {header}
-                <Modal.Body>{content}</Modal.Body>
+                <ModalBody>{content}</ModalBody>
                 {footer}
             </Modal>,
-            this.el,
+            this.el
         );
     }
 }
