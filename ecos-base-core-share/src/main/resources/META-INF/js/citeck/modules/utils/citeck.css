@@ -597,3 +597,8 @@ div[id*="-results-panel"].yui-panel>.bd {
     min-width: 16px;
     min-height: 16px;
 }
+
+/* bootstrap fixes */
+.yui-panel .collapse:not(.panel-collapse) {
+    display: block;
+}
