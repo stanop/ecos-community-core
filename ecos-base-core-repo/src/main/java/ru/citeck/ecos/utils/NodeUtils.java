@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 @Component
 public class NodeUtils {
 
+    public static final QName QNAME = QName.createQName("", "nodeUtils");
+
     private static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
 
     private NodeService nodeService;
