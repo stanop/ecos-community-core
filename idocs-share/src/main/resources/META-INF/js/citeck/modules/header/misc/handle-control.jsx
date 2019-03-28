@@ -65,7 +65,7 @@ export default function handleControl(type, payload, dispatch) {
                             dispatch(leaveSiteRequest(payload));
                             dispatch(hideModal());
                         },
-                        bsStyle: "primary"
+                        color: 'primary'
                     },
                     {
                         label: t('button.leave-site.cancel-label'),

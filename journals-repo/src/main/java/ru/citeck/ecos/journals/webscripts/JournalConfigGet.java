@@ -193,7 +193,9 @@ public class JournalConfigGet extends AbstractWebScript {
             return meta;
         }
 
-        meta.setNodeRef(String.valueOf(journalData.getNodeRef()));
+        NodeRef journalRef = journalData.getNodeRef();
+        meta.setNodeRef(String.valueOf(journalRef));
+        meta.setTitle(nodeUtils.getDisplayName(journalRef));
 
         List<Criterion> criteriaList = new ArrayList<>();
         SearchCriteria criteria = new SearchCriteria(namespaceService);
@@ -363,6 +365,7 @@ public class JournalConfigGet extends AbstractWebScript {
     static class JournalMeta {
         @Getter @Setter String nodeRef;
         @Getter @Setter List<Criterion> criteria;
+        @Getter @Setter String title;
         @Getter @Setter JsonNode predicate;
         @Getter @Setter JsonNode groupBy;
         @Getter @Setter List<CreateVariantsGet.ResponseVariant> createVariants;

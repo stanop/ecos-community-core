@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Dropdown } from 'react-bootstrap';
+import { UncontrolledDropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
 import DropDownMenuItem from './dropdown-menu-item';
-import CustomToggle from './dropdown-menu-custom-toggle';
 
 const UserMenu = ({ userFullName, userPhotoUrl, items, isMobile }) => {
     let userImage = userPhotoUrl ? (
@@ -29,15 +28,15 @@ const UserMenu = ({ userFullName, userPhotoUrl, items, isMobile }) => {
 
     return (
         <div id='HEADER_USER_MENU'>
-            <Dropdown className='custom-dropdown-menu' pullRight>
-                <CustomToggle bsRole='toggle' className='user-dropdown-menu__toggle custom-dropdown-menu__toggle'>
+            <UncontrolledDropdown className="custom-dropdown-menu">
+                <DropdownToggle tag="div" className="user-dropdown-menu__toggle custom-dropdown-menu__toggle">
                     <span className='user-menu-username'>{userFullName}</span>
                     {userImage}
-                </CustomToggle>
-                <Dropdown.Menu bsRole='menu' className='custom-dropdown-menu__body' id='HEADER_USER_MENU__DROPDOWN'>
+                </DropdownToggle>
+                <DropdownMenu right className="custom-dropdown-menu__body" id="HEADER_USER_MENU__DROPDOWN">
                     {menuListItems}
-                </Dropdown.Menu>
-            </Dropdown>
+                </DropdownMenu>
+            </UncontrolledDropdown>
         </div>
     )
 };
