@@ -91,7 +91,7 @@
                     if (view.params.tk_type) {
                         return view.params.tk_type;
                     }
-                    return 'workspace://SpacesStore/contracts-cat-doctype-contract';
+                    return value || 'workspace://SpacesStore/contracts-cat-doctype-contract';
                 })()]]></invariant>
             </field>
         </view>
