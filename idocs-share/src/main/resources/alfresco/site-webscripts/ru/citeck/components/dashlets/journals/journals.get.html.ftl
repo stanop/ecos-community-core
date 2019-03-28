@@ -13,8 +13,8 @@
 
         <script type="text/javascript">
             require([
-                'js/citeck/ui/components/Journals/journalsDashlet/js/journalsDashlet.min',
-                'xstyle!js/citeck/ui/components/Journals/journalsDashlet/css/journalsDashlet.min.css'
+                'static/ecos/journalsDashlet/js/journalsDashlet',
+                'xstyle!static/ecos/journalsDashlet/css/journalsDashlet.min.css'
             ], function(JournalsDashlet) {
                 JournalsDashlet.render('${componentId}', {id: 'dashletId-1-0-0'});
             });

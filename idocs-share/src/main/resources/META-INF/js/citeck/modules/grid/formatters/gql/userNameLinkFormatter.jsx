@@ -15,8 +15,6 @@ export default class UserNameLinkFormatter extends DefaultGqlFormatter {
         let cell = props.cell || {};
         let userName = cell.userName || '';
 
-        console.log(props);
-
         return <a href={`/share/page/user/${userName}/profile`}>{this.value(cell)}</a>;
     }
 }
