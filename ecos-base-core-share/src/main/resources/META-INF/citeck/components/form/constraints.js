@@ -449,7 +449,8 @@
         var formId = 'ecos-form-panel' + eformFormIdx++;
 
         var panel = new YAHOO.widget.Panel(formId, {
-            width: config.width || "500px",
+            //TODO: revert
+            width: config.width || "1000px",
             height: config.height || "auto",
             fixedcenter:  "contained",
             constraintoviewport: true,
