@@ -17,7 +17,9 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+require([
+    'static/ecos/records/js/records'
+], function() {
 
     if(typeof Citeck == "undefined") Citeck = {};
     Citeck.forms = Citeck.forms || {};
@@ -437,6 +439,59 @@
         this._loaderPanel.center();
 
         return this._loaderPanel;
+    };
+
+    Citeck.forms.createRecord = function (recordRef, type, destination, fallback) {
+
+        var showForm = function(recordRef) {
+
+            if (recordRef) {
+                Citeck.forms.eform(recordRef, {
+                    params: {
+                        attributes: {
+                            _parent: destination
+                        }
+                    }
+                });
+            } else {
+
+                fallback();
+            }
+        };
+
+        if (recordRef) {
+
+            showForm(recordRef);
+
+        } else {
+
+            recordRef = 'dict@' + type;
+
+            Citeck.Records.get('ecos-config@ecos-forms-enable').loadAttribute('.bool').then(function(enabled) {
+                if (enabled) {
+                    Citeck.Records.query({
+                        query: {
+                            query: { record: recordRef },
+                            sourceId: 'eform'
+                        }
+                    }).then(function(result) {
+                        if ((result.records || []).length) {
+                            showForm(recordRef);
+                        } else {
+                            showForm(null);
+                        }
+                    }).catch(function(e) {
+                        console.error(e);
+                        showForm(null);
+                    });
+                } else {
+                    showForm(null);
+                }
+            }).catch(function (e) {
+                console.error(e);
+                showForm(null);
+            });
+        }
     };
 
     var eformFormIdx = 0;
@@ -1154,4 +1209,4 @@
         });
     };
 
-})();
+});
