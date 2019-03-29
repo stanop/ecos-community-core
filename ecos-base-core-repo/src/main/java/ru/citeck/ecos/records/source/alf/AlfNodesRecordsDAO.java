@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
-import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.*;
@@ -33,7 +32,6 @@ import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records2.request.query.lang.DistinctQuery;
 import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.RecordsQueryDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
@@ -63,7 +61,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private NodeUtils nodeUtils;
     private NodeService nodeService;
     private SearchService searchService;
-    private MessageService messageService;
     private ContentService contentService;
     private MimetypeService mimetypeService;
     private NamespaceService namespaceService;
@@ -74,6 +71,34 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
     public AlfNodesRecordsDAO() {
         setId(ID);
+    }
+
+    private Serializable convertValue(JsonNode node) {
+
+        if (node == null || node.isNull()) {
+            return null;
+        }
+
+        if (node.isArray()) {
+
+            ArrayList<Serializable> values = new ArrayList<>();
+
+            for (JsonNode subNode : node) {
+                values.add(convertValue(subNode));
+            }
+
+            return values;
+
+        } else if (node.isNumber()) {
+
+            return node.isIntegralNumber() ? node.asLong() : node.asDouble();
+
+        } else if (node.isBoolean()) {
+
+            return node.asBoolean();
+        }
+
+        return node.asText();
     }
 
     @Override
@@ -102,7 +127,13 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                     if (DataTypeDefinition.CONTENT.equals(propDef.getDataType().getName())) {
                         contentProps.put(fieldName, fields.path(name));
                     } else {
-                        props.put(fieldName, fields.path(name).asText());
+
+                        JsonNode value = fields.path(name);
+
+                        if (!value.isMissingNode()) {
+
+                            props.put(fieldName, convertValue(value));
+                        }
                     }
                 } else {
 
@@ -394,7 +425,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.mimetypeService = serviceRegistry.getMimetypeService();
         this.contentService = serviceRegistry.getContentService();
-        this.messageService = serviceRegistry.getMessageService();
         this.searchService = serviceRegistry.getSearchService();
         this.nodeService = serviceRegistry.getNodeService();
     }

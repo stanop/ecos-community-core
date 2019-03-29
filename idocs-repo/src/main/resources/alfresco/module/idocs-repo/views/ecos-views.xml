@@ -95,7 +95,7 @@
                     if (view.params.tk_type) {
                         return view.params.tk_type;
                     }
-                    return 'workspace://SpacesStore/cat-doc-type-general-case';
+                    return value || 'workspace://SpacesStore/cat-doc-type-general-case';
                 })()]]></invariant>
             </field>
 

@@ -7,7 +7,8 @@
         'case-templates': 'caseAutoDeployer',
         'fields-perm-matrix': 'permissionsMatrixDeployer',
         'perm-matrix': 'docACLDeployer',
-        'cardlets': 'ecos.cardlets.contentDeployer'
+        'cardlets': 'ecos.cardlets.contentDeployer',
+        'forms': 'ecos.eform.contentDeployer'
     };
 
     var additionalActions = {

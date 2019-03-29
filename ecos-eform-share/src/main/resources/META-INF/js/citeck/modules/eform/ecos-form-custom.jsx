@@ -7,6 +7,6 @@ export default class EcosFormCustom {
     }
 
     isSystemForm() {
-        return ['eform@DEFAULT', 'eform@ECOS_FORM'].indexOf(this.record.id) >= 0;
+        return ['eform@DEFAULT', 'eform@ECOS_FORM'].indexOf(this.recordId) >= 0;
     }
 }
