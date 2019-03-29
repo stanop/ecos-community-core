@@ -494,40 +494,14 @@ require([
         }
     };
 
-    var eformFormIdx = 0;
     Citeck.forms.eform = function (record, config) {
 
         if (!config) {
             config = {};
         }
 
-        var formId = 'ecos-form-panel' + eformFormIdx++;
-
-        var panel = new YAHOO.widget.Panel(formId, {
-            width: config.width || "500px",
-            height: config.height || "auto",
-            fixedcenter:  "contained",
-            constraintoviewport: true,
-            visible: false,
-            modal: false,
-            postmethod: "none", // Will make Dialogs not auto submit <form>s it finds in the dialog
-            hideaftersubmit: false, // Will stop Dialogs from hiding themselves on submits
-            fireHideShowEvents: true
-        });
-
-        // hide dialog on click 'esc' button
-        panel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, { keys: 27 }, {
-            fn: panel.hide,
-            scope: panel,
-            correctScope: true
-        }));
-
-        panel.setHeader(config.header || "");
-        var contentId = formId + '-content';
-        panel.setBody('<div class="eform-panel-content" id="' + contentId + '"></div>');
-        panel.render(document.body);
-
-        require(['react', 'react-dom', 'js/citeck/modules/eform/ecos-form'], function (React, ReactDOM, EcosForm) {
+        require(['react', 'react-dom', 'js/citeck/modules/eform/ecos-form', 'static/ecos/modal/js/modal'], function (React, ReactDOM, EcosForm, Modal) {
+            var modal = new Modal.default();
 
             var formParams = Object.assign({
                 record: record
