@@ -33,7 +33,9 @@
                 },
                 "inputFormat": "plain",
                 "encrypted": false,
-                "properties": "cm:title",
+                "properties": {
+                    "attribute": "cm:title"
+                },
                 "tags": [],
                 "widget": {
                     "type": "",
@@ -89,7 +91,9 @@
                 "type": "textarea",
                 "input": true,
                 "key": "textArea",
-                "properties": "cm:description",
+                "properties": {
+                    "attribute": "cm:description"
+                },
                 "tags": [],
                 "placeholder": "",
                 "prefix": "",
