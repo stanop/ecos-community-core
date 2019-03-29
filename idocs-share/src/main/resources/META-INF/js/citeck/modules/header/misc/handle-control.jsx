@@ -87,6 +87,23 @@ export default function handleControl(type, payload, dispatch) {
             dispatch(requestSiteMembership(payload));
             break;
 
+        case 'ECOS_CREATE_VARIANT':
+
+            Citeck.forms.createRecord(payload.recordRef, payload.type, payload.destination, function() {
+
+                var createArguments = "type=" + payload.type +
+                                      "&viewId=" + payload.formId +
+                                      "&destination=" + payload.destination;
+
+                if (payload.createArguments) {
+                    createArguments += "&" + payload.createArguments;
+                }
+
+                window.location = "/share/page/node-create?" + createArguments;
+            });
+
+            break;
+
         default:
             console.log('Unknown control type: ', type);
     }
