@@ -37,6 +37,7 @@ import ru.citeck.ecos.records2.source.dao.RecordsQueryDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryWithMetaLocalDAO;
+import ru.citeck.ecos.security.EcosPermissionService;
 import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
@@ -66,6 +67,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
     private GroupActionService groupActionService;
+    private EcosPermissionService ecosPermissionService;
 
     private Map<QName, NodeRef> defaultParentByType = new ConcurrentHashMap<>();
 
@@ -112,11 +114,23 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             Map<QName, JsonNode> contentProps = new HashMap<>();
             Map<QName, Set<NodeRef>> assocs = new HashMap<>();
 
+            NodeRef nodeRef = null;
+            if (record.getId().getId().startsWith("workspace://SpacesStore/")) {
+                nodeRef = new NodeRef(record.getId().getId());
+            }
+
             ObjectNode fields = record.getAttributes();
             Iterator<String> names = fields.fieldNames();
             while (names.hasNext()) {
 
                 String name = names.next();
+
+                if (ecosPermissionService.isAttributeProtected(nodeRef, name)) {
+                    logger.warn("You can't change '" + name +
+                                "' attribute of '" + nodeRef +
+                                "' because it is protected! Value: " + fields.get(name));
+                    continue;
+                }
 
                 QName fieldName = QName.resolveToQName(namespaceService, name);
 
@@ -153,8 +167,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 }
             }
 
-            NodeRef nodeRef;
-
             if (record.getId() == RecordRef.EMPTY) {
 
                 QName type = getNodeType(record);
@@ -185,14 +197,15 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             } else {
 
-                nodeRef = new NodeRef(record.getId().getId());
                 nodeService.addProperties(nodeRef, props);
                 result.addRecord(new RecordMeta(record.getId()));
             }
 
+            final NodeRef finalNodeRef = nodeRef;
+
             contentProps.forEach((name, value) -> {
 
-                ContentWriter writer = contentService.getWriter(nodeRef, name, true);
+                ContentWriter writer = contentService.getWriter(finalNodeRef, name, true);
 
                 if (value.isTextual()) {
 
@@ -223,7 +236,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 }
             });
 
-            assocs.forEach((name, value) -> nodeUtils.setAssocs(nodeRef, value, name));
+            assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name));
         }
 
         return result;
@@ -427,6 +440,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         this.contentService = serviceRegistry.getContentService();
         this.searchService = serviceRegistry.getSearchService();
         this.nodeService = serviceRegistry.getNodeService();
+    }
+
+    @Autowired
+    public void setEcosPermissionService(EcosPermissionService ecosPermissionService) {
+        this.ecosPermissionService = ecosPermissionService;
     }
 
     @Autowired

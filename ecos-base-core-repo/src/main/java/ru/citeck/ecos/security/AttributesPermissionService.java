@@ -7,6 +7,7 @@ import org.alfresco.service.namespace.QName;
  * @author Maxim Strizhov (maxim.strizhov@citeck.com)
  */
 public interface AttributesPermissionService {
+
     boolean isFieldVisible(QName fieldQName, NodeRef caseRef, String mode);
 
     boolean isFieldOfAssocVisible(QName fieldQName, NodeRef childRef, QName assocQName, NodeRef caseRef, String mode);
