@@ -451,7 +451,8 @@ require([
                         attributes: {
                             _parent: destination
                         }
-                    }
+                    },
+                    class: 'ecos-modal_width-lg'
                 });
             } else {
 
@@ -498,6 +499,12 @@ require([
 
         if (!config) {
             config = {};
+        }
+        if (!config.reactstrapProps) {
+            config.reactstrapProps = {};
+        }
+        if (!config.reactstrapProps.backdrop) {
+            config.reactstrapProps.backdrop = 'static';
         }
 
         require(['react', 'react-dom', 'js/citeck/modules/eform/ecos-form', 'static/ecos/modal/js/modal'], function (React, ReactDOM, EcosForm, Modal) {
@@ -751,7 +758,9 @@ require([
                 var resp = response.json;
 
                 if (resp.eformExists) {
-                    Citeck.forms.eform(itemId, {});
+                    Citeck.forms.eform(itemId, {
+                        class: 'ecos-modal_width-lg'
+                    });
                 } else if (resp.exists) {
                     newDialog();
                 } else if(response.json.defaultExists) {
