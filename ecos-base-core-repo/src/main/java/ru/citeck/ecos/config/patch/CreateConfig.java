@@ -1,6 +1,5 @@
 package ru.citeck.ecos.config.patch;
 
-import com.sun.imageio.plugins.common.I18N;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.module.AbstractModuleComponent;
 import org.alfresco.service.cmr.repository.MLText;
