@@ -508,6 +508,7 @@ require([
         }
 
         require(['react', 'react-dom', 'js/citeck/modules/eform/ecos-form', 'static/ecos/modal/js/modal'], function (React, ReactDOM, EcosForm, Modal) {
+
             var modal = new Modal.default();
 
             var formParams = Object.assign({
@@ -538,10 +539,22 @@ require([
                 }, 100);
             };
 
-            modal.open(
-                React.createElement(EcosForm.default, formParams),
-                config
-            );
+            Citeck.Records.get(record).loadAttribute('.disp').then(function(displayName) {
+
+                var prefixId;
+
+                if (!record || record[record.length - 1] === '@' || record.indexOf("dict@") == 0) {
+                    prefixId = 'eform.header.create.title';
+                } else {
+                    prefixId = 'eform.header.edit.title';
+                }
+                config.header = Alfresco.util.message(prefixId) + " " + displayName;
+
+                modal.open(
+                    React.createElement(EcosForm.default, formParams),
+                    config
+                );
+            });
         });
     };
 

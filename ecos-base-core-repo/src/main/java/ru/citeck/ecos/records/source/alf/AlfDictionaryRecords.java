@@ -19,6 +19,7 @@ import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
+import ru.citeck.ecos.utils.DictUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,8 +77,9 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
         private String formKey;
 
         private AlfGqlContext context;
+        private DictUtils dictUtils;
 
-        public DictRecord(QName typeName, String formKey) {
+        DictRecord(QName typeName, String formKey) {
             this.formKey = formKey;
             this.typeName = typeName;
         }
@@ -85,6 +87,7 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
         @Override
         public <T extends GqlContext> void init(T context, MetaField field) {
             this.context = (AlfGqlContext) context;
+            this.dictUtils = this.context.getService(DictUtils.QNAME);
         }
 
         @Override
@@ -95,6 +98,11 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
             }
 
             return null;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return dictUtils.getTypeTitle(typeName);
         }
 
         @Override
