@@ -95,7 +95,8 @@
                     if (view.params.tk_type) {
                         return view.params.tk_type;
                     }
-                    return value || 'workspace://SpacesStore/cat-doc-type-general-case';
+                    var persisted = node.impl().attribute('tk:type').persistedValue();
+                    return persisted || 'workspace://SpacesStore/cat-doc-type-general-case';
                 })()]]></invariant>
             </field>
 
