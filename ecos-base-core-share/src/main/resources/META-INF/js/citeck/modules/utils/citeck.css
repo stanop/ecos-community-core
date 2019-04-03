@@ -526,6 +526,7 @@ div#FCTSRCH_SEARCH_RESULTS_LIST .data-failure {
   white-space: nowrap;
   max-width: 150px;
   height: 20px;
+  box-sizing: content-box;
 }
 
 .alfresco-share .alfresco-menus-AlfMenuBarPopup__arrow {
