@@ -593,6 +593,15 @@ div[id*="-results-panel"].yui-panel>.bd {
   min-height: 16px;
 }
 
+.custom-button-remove {
+  background-image: url(/share/res/citeck/components/dynamic-tree/icons/remove.png) !important;
+  background-position: 0 2px !important;
+  background-repeat: no-repeat;
+  margin: 2px 10px;
+  min-width: 16px;
+  min-height: 16px;
+}
+
 .custom-button-download:hover {
   background-image: url(/share/res/citeck/components/dynamic-tree/icons/download-active.png) !important;
 }

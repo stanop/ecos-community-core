@@ -31,6 +31,11 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
 
     private static final String ECOS_FORM_KEY = "ECOS_FORM";
 
+    private static final RecordRef DEFAULT_FORM_ID = RecordRef.create(ID , "DEFAULT");
+    private static final RecordRef ECOS_FORM_ID = RecordRef.create(ID , "ECOS_FORM");
+
+    private static final Set<RecordRef> SYSTEM_FORMS = new HashSet<>(Arrays.asList(DEFAULT_FORM_ID, ECOS_FORM_ID));
+
     private AlfNodesRecordsDAO alfNodesRecordsDAO;
     private EcosFormService eformFormService;
 
@@ -79,7 +84,20 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
 
     @Override
     public RecordsDelResult delete(RecordsDeletion deletion) {
-        return new RecordsDelResult();
+
+        List<RecordMeta> resultRecords = new ArrayList<>();
+
+        deletion.getRecords()
+                .stream()
+                .filter(r -> !SYSTEM_FORMS.contains(r))
+                .forEach(r -> {
+                    repoFormProvider.delete(r.getId());
+                    resultRecords.add(new RecordMeta(r));
+                });
+
+        RecordsDelResult result = new RecordsDelResult();
+        result.setRecords(resultRecords);
+        return result;
     }
 
     @Override
