@@ -8,6 +8,8 @@ import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.node.AlfNodeInfo;
+import ru.citeck.ecos.node.DisplayNameService;
 import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
@@ -17,6 +19,7 @@ import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.utils.DictUtils;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -79,7 +82,9 @@ public class AlfNodeAttValue implements MetaValue {
         }
 
         if (alfNode != null) {
-            return alfNode.displayName();
+
+            DisplayNameService displayNameService = context.getService(DisplayNameService.QNAME);
+            return displayNameService.getDisplayName(new NodeInfo(alfNode));
         }
         if (qName != null) {
             return qName.classTitle();
@@ -132,6 +137,30 @@ public class AlfNodeAttValue implements MetaValue {
             return MetaUtils.getReflectionValue(qName, name);
         }
         return null;
+    }
+
+    public static class NodeInfo implements AlfNodeInfo {
+
+        private GqlAlfNode alfNode;
+
+        private NodeInfo(GqlAlfNode node) {
+            alfNode = node;
+        }
+
+        @Override
+        public QName getType() {
+            return alfNode.getType();
+        }
+
+        @Override
+        public NodeRef getNodeRef() {
+            return new NodeRef(alfNode.nodeRef());
+        }
+
+        @Override
+        public Map<QName, Serializable> getProperties() {
+            return alfNode.getProperties();
+        }
     }
 }
 

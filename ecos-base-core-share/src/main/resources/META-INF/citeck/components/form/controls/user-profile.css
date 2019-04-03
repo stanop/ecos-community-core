@@ -22,6 +22,7 @@
 
 .ecos-form.invariants-form .user-profile-custom-container .form-view .title,
 .user-profile-custom-container .form-view .title {
+    box-sizing: content-box;
     padding-top: 13px;
     padding-left: 11px;
     margin: 0 0 13px 0;

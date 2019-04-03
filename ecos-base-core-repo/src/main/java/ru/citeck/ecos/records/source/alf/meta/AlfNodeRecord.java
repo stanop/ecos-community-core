@@ -7,6 +7,8 @@ import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.node.AlfNodeInfo;
+import ru.citeck.ecos.node.DisplayNameService;
 import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
@@ -20,6 +22,7 @@ import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,7 +67,8 @@ public class AlfNodeRecord implements MetaValue {
 
     @Override
     public String getDisplayName() {
-        return node.displayName();
+        DisplayNameService displayNameService = context.getService(DisplayNameService.QNAME);
+        return displayNameService.getDisplayName(new NodeInfo());
     }
 
     @Override
@@ -188,6 +192,24 @@ public class AlfNodeRecord implements MetaValue {
             PermissionService permissionService = context.getServiceRegistry().getPermissionService();
             AccessStatus accessStatus = permissionService.hasPermission(nodeRef, permission);
             return AccessStatus.ALLOWED.equals(accessStatus);
+        }
+    }
+
+    public class NodeInfo implements AlfNodeInfo {
+
+        @Override
+        public QName getType() {
+            return node.getType();
+        }
+
+        @Override
+        public NodeRef getNodeRef() {
+            return new NodeRef(node.nodeRef());
+        }
+
+        @Override
+        public Map<QName, Serializable> getProperties() {
+            return node.getProperties();
         }
     }
 }
