@@ -72,6 +72,7 @@
                                 <package name='react-dom' location='/share/res/js/citeck/lib' main="react-dom.min" />
                                 <package name='redux' location='/share/res/js/citeck/lib' main="redux.min" />
                                 <package name='reactstrap' location='/share/res/js/citeck/lib' main="reactstrap.full.min" />
+                                <package name='react-draggable' location='/share/res/js/citeck/lib' main="react-draggable.min" />
                                 <package name='react-redux' location='/share/res/js/citeck/lib' main="react-redux.min" />
                                 <package name='react-custom-scrollbars' location='/share/res/js/citeck/lib' main="react-custom-scrollbars.min" />
                                 <package name='xstyle' location='/share/res/js/citeck/lib/xstyle' main="css.min" />
