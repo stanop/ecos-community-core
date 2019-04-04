@@ -17,6 +17,7 @@ import org.alfresco.util.GUID;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.node.DisplayNameService;
 
 import java.io.Serializable;
 import java.util.*;
@@ -25,12 +26,19 @@ import java.util.stream.Collectors;
 @Component
 public class NodeUtils {
 
+    public static final QName QNAME = QName.createQName("", "nodeUtils");
+
     private static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
 
     private NodeService nodeService;
     private SearchService searchService;
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
+    private DisplayNameService displayNameService;
+
+    public String getDisplayName(NodeRef nodeRef) {
+        return displayNameService.getDisplayName(nodeRef);
+    }
 
     /**
      * Check is node pending for delete or not exist
@@ -269,6 +277,11 @@ public class NodeUtils {
                              .map(r -> nodeIsSource ? r.getTargetRef() : r.getSourceRef())
                              .collect(Collectors.toList());
         }
+    }
+
+    @Autowired
+    public void setDisplayNameService(DisplayNameService displayNameService) {
+        this.displayNameService = displayNameService;
     }
 
     @Autowired

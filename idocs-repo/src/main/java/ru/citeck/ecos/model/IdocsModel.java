@@ -41,6 +41,7 @@ public final class IdocsModel {
     public static final QName TYPE_CURRENCY_RATE_RECORD = QName.createQName(IDOCS_NAMESPACE, "currencyRateRecord");
     public static final QName TYPE_CURRENCY_RATES_XML = QName.createQName(IDOCS_NAMESPACE, "currencyRatesXML");
     public static final QName TYPE_ABSTRACT_ATTORNEY = QName.createQName(IDOCS_NAMESPACE, "abstractAttorney");
+    public static final QName TYPE_CONTRACTOR = QName.createQName(IDOCS_NAMESPACE, "contractor");
 
     // aspects
     public static final QName ASPECT_LIFECYCLE = QName.createQName(IDOCS_NAMESPACE, "lifeCycle");

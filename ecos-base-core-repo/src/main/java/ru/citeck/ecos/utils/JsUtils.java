@@ -316,18 +316,30 @@ public class JsUtils {
     }
 
     public <T> T convert(Object obj, Class<T> toClass) {
+
         if (obj instanceof String) {
+
             if (toClass == String.class) {
                 // This cast is correct, because we know this is a String
                 @SuppressWarnings("unchecked") T result = (T) obj;
                 return result;
             }
 
+            String objStr = (String) obj;
+            int i = 0;
+            while (i < objStr.length() && Character.isWhitespace(objStr.charAt(i))) {
+                i++;
+            }
+
+            char firstChar = i < objStr.length() ? objStr.charAt(i) : ' ';
+
             try {
-                return mapper.readValue((String) obj, toClass);
+                if (firstChar == '{' || firstChar == '[') {
+                    return mapper.readValue(objStr, toClass);
+                }
             } catch (IOException e) {
-                throw new RuntimeException(String.format("Could not read value from object. Object=%s, class=%s", obj,
-                        toClass), e);
+                String msg = "Could not read value from object. Object=%s, class=%s";
+                throw new RuntimeException(String.format(msg, obj, toClass), e);
             }
         }
 

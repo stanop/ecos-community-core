@@ -16,8 +16,6 @@ import {
     setCreateCaseWidgetIsCascade
 } from './actions';
 
-import "xstyle!./lib/bootstrap.css";
-
 // TODO include polyfills
 
 const api = new API(window.Alfresco.constants.PROXY_URI);

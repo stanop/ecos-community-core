@@ -72,6 +72,11 @@ public class DictUtils {
         return propDef;
     }
 
+    public String getTypeTitle(QName typeName) {
+        TypeDefinition type = dictionaryService.getType(typeName);
+        return type.getTitle(messageService);
+    }
+
     public ClassAttributeDefinition getAttDefinition(String name) {
 
         QName field = QName.resolveToQName(namespaceService, name);

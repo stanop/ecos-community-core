@@ -17,7 +17,9 @@
  * along with Citeck EcoS. If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+require([
+    'static/ecos/records/js/records'
+], function() {
 
     if(typeof Citeck == "undefined") Citeck = {};
     Citeck.forms = Citeck.forms || {};
@@ -439,40 +441,75 @@
         return this._loaderPanel;
     };
 
-    var eformFormIdx = 0;
+    Citeck.forms.createRecord = function (recordRef, type, destination, fallback) {
+
+        var showForm = function(recordRef) {
+
+            if (recordRef) {
+                Citeck.forms.eform(recordRef, {
+                    params: {
+                        attributes: {
+                            _parent: destination
+                        }
+                    },
+                    class: 'ecos-modal_width-lg'
+                });
+            } else {
+
+                fallback();
+            }
+        };
+
+        if (recordRef) {
+
+            showForm(recordRef);
+
+        } else {
+
+            recordRef = 'dict@' + type;
+
+            Citeck.Records.get('ecos-config@ecos-forms-enable').loadAttribute('.bool').then(function(enabled) {
+                if (enabled) {
+                    Citeck.Records.query({
+                        query: {
+                            query: { record: recordRef },
+                            sourceId: 'eform'
+                        }
+                    }).then(function(result) {
+                        if ((result.records || []).length) {
+                            showForm(recordRef);
+                        } else {
+                            showForm(null);
+                        }
+                    }).catch(function(e) {
+                        console.error(e);
+                        showForm(null);
+                    });
+                } else {
+                    showForm(null);
+                }
+            }).catch(function (e) {
+                console.error(e);
+                showForm(null);
+            });
+        }
+    };
+
     Citeck.forms.eform = function (record, config) {
 
         if (!config) {
             config = {};
         }
+        if (!config.reactstrapProps) {
+            config.reactstrapProps = {};
+        }
+        if (!config.reactstrapProps.backdrop) {
+            config.reactstrapProps.backdrop = 'static';
+        }
 
-        var formId = 'ecos-form-panel' + eformFormIdx++;
+        require(['react', 'react-dom', 'js/citeck/modules/eform/ecos-form', 'static/ecos/modal/js/modal'], function (React, ReactDOM, EcosForm, Modal) {
 
-        var panel = new YAHOO.widget.Panel(formId, {
-            width: config.width || "500px",
-            height: config.height || "auto",
-            fixedcenter:  "contained",
-            constraintoviewport: true,
-            visible: false,
-            modal: false,
-            postmethod: "none", // Will make Dialogs not auto submit <form>s it finds in the dialog
-            hideaftersubmit: false, // Will stop Dialogs from hiding themselves on submits
-            fireHideShowEvents: true
-        });
-
-        // hide dialog on click 'esc' button
-        panel.cfg.queueProperty("keylisteners", new YAHOO.util.KeyListener(document, { keys: 27 }, {
-            fn: panel.hide,
-            scope: panel,
-            correctScope: true
-        }));
-
-        panel.setHeader(config.header || "");
-        var contentId = formId + '-content';
-        panel.setBody('<div class="eform-panel-content" id="' + contentId + '"></div>');
-        panel.render(document.body);
-
-        require(['react', 'react-dom', 'js/citeck/modules/eform/ecos-form'], function (React, ReactDOM, EcosForm) {
+            var modal = new Modal.default();
 
             var formParams = Object.assign({
                 record: record
@@ -483,28 +520,41 @@
             formParams['options'] = configParams.options || {};
 
             formParams['onSubmit'] = function () {
-                panel.destroy();
+                modal.close();
                 if (configParams.onSubmit) {
                     configParams.onSubmit.apply(arguments);
                 }
             };
             formParams['onFormCancel'] = function () {
-                panel.destroy();
+                modal.close();
                 if (configParams.onFormCancel) {
                     configParams.onFormCancel.apply(arguments);
                 }
             };
             formParams['onReady'] = function () {
-                panel.show();
                 setTimeout(function(){
-                    panel.center();
                     if (configParams.onReady) {
                         configParams.onReady.apply(arguments);
                     }
                 }, 100);
             };
 
-            ReactDOM.render(React.createElement(EcosForm.default, formParams), document.getElementById(contentId));
+            Citeck.Records.get(record).loadAttribute('.disp').then(function(displayName) {
+
+                var prefixId;
+
+                if (!record || record[record.length - 1] === '@' || record.indexOf("dict@") == 0) {
+                    prefixId = 'eform.header.create.title';
+                } else {
+                    prefixId = 'eform.header.edit.title';
+                }
+                config.header = Alfresco.util.message(prefixId) + " " + displayName;
+
+                modal.open(
+                    React.createElement(EcosForm.default, formParams),
+                    config
+                );
+            });
         });
     };
 
@@ -721,7 +771,9 @@
                 var resp = response.json;
 
                 if (resp.eformExists) {
-                    Citeck.forms.eform(itemId, {});
+                    Citeck.forms.eform(itemId, {
+                        class: 'ecos-modal_width-lg'
+                    });
                 } else if (resp.exists) {
                     newDialog();
                 } else if(response.json.defaultExists) {
@@ -1153,4 +1205,4 @@
         });
     };
 
-})();
+});

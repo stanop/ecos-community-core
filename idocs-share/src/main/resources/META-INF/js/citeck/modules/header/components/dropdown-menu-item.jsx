@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from "react-redux";
-import { MenuItem } from 'react-bootstrap';
 import { t } from '../../common/util';
 import handleControl from '../misc/handle-control';
 
@@ -20,18 +19,19 @@ const DropDownMenuItem = ({ key, data, dispatch }) => {
     }
 
     return (
-        <MenuItem
-            eventKey={key}
-            href={targetUrl}
-            target={target}
-            id={id}
-            className="custom-dropdown-menu__item"
-            onClick={clickHandler}
-        >
-            <i className={"fa fa-custom fa-custom__" + id} />
-            {label && t(label)}
-        </MenuItem>
-    )
+        <li className="custom-dropdown-menu__item">
+            <a
+                // eventKey={key}
+                href={targetUrl}
+                target={target}
+                id={id}
+                onClick={clickHandler}
+            >
+                <i className={'fa fa-custom fa-custom__' + id} />
+                {label && t(label)}
+            </a>
+        </li>
+    );
 };
 
 export default connect(null, mapDispatchToProps)(DropDownMenuItem);

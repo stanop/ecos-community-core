@@ -26,6 +26,7 @@ public class RepoFormProvider extends AbstractFormProvider implements MutableFor
     private RepoContentDAO<EcosFormModel> formsContentDAO;
     private MetadataExtractor<EcosFormModel> metadataExtractor;
     private ContentService contentService;
+    private NodeService nodeService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -53,6 +54,16 @@ public class RepoFormProvider extends AbstractFormProvider implements MutableFor
         Map<QName, Serializable> keys = new HashMap<>();
         keys.put(EFormModel.PROP_FORM_KEY, formKey);
         return formsContentDAO.getFirstContentData(keys);
+    }
+
+    @Override
+    public void delete(String formId) {
+
+        ContentData<EcosFormModel> data = getFormDataById(formId)
+                .orElseThrow(() ->
+                        new RuntimeException("Form not found " + formId));
+
+        nodeService.deleteNode(data.getNodeRef());
     }
 
     @Override
@@ -85,6 +96,11 @@ public class RepoFormProvider extends AbstractFormProvider implements MutableFor
     @Override
     public int getOrder() {
         return 0;
+    }
+
+    @Autowired
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
     }
 
     @Autowired

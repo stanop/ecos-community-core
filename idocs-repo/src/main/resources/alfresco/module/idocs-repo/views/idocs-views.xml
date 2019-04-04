@@ -66,6 +66,7 @@
                     </invariant>
                 </field>
                 <field prop="idocs:kpp"/>
+                <field prop="idocs:ogrn"/>
             </view>
             <view>
                 <field prop="idocs:psrnsp"/>

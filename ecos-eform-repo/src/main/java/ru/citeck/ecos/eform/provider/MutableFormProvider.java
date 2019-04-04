@@ -7,4 +7,6 @@ public interface MutableFormProvider {
     void save(EcosFormModel model);
 
     void create(EcosFormModel model);
+
+    void delete(String formId);
 }

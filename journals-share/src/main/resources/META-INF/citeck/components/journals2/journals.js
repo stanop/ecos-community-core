@@ -142,25 +142,17 @@ CreateVariant
 
         var self = this;
 
-        if (this.recordRef()) {
-            Citeck.forms.eform(this.recordRef(), {
-                params: {
-                    attributes: {
-                        _parent: self.destination()
-                    }
-                }
-            });
-        } else {
+        Citeck.forms.createRecord(this.recordRef(), this.type(), this.destination(), function() {
 
-            var url = this.url();
+            var url = self.url();
             if (!url) {
-                koutils.subscribeOnce(this.url, function () {
+                koutils.subscribeOnce(self.url, function () {
                     window.location = self.link();
                 });
             } else {
                 window.location = self.link();
             }
-        }
+        });
     })
 
     .computed('link', function () {

@@ -36,7 +36,7 @@
             <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
         </property>
         <property name="idocs:ogrn">
-            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] == null || node.properties["idocs:contractorKind"] !== "individual-entrepreneur"</invariant>
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] === "legal-entity" || node.properties["idocs:contractorKind"] === "public-body"</invariant>
         </property>
         <property name="idocs:series">
             <invariant on="mandatory" language="explicit">true</invariant>
