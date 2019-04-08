@@ -589,16 +589,7 @@ div[id*="-results-panel"].yui-panel>.bd {
   background-image: url(/share/res/citeck/components/dynamic-tree/icons/download.png) !important;
   background-position: 0 2px !important;
   background-repeat: no-repeat;
-  margin: 2px 10px;
-  min-width: 16px;
-  min-height: 16px;
-}
-
-.custom-button-remove {
-  background-image: url(/share/res/citeck/components/dynamic-tree/icons/remove.png) !important;
-  background-position: 0 2px !important;
-  background-repeat: no-repeat;
-  margin: 2px 10px;
+  margin: 2px 5px;
   min-width: 16px;
   min-height: 16px;
 }
@@ -611,13 +602,26 @@ div[id*="-results-panel"].yui-panel>.bd {
   background-image: url(/share/res/citeck/components/dynamic-tree/icons/edit-properties.png) !important;
   background-position: 0 0 !important;
   background-repeat: no-repeat;
-  margin: 2px 10px;
+  margin: 2px 5px;
   min-width: 16px;
   min-height: 16px;
 }
 
 .custom-button-edit:hover {
   background-image: url(/share/res/citeck/components/dynamic-tree/icons/edit-properties-active.png) !important;
+}
+
+.custom-button-remove {
+  background-image: url(/share/res/citeck/components/dynamic-tree/icons/remove.png) !important;
+  background-position: 0 2px !important;
+  background-repeat: no-repeat;
+  margin: 2px 0;
+  min-width: 16px;
+  min-height: 16px;
+}
+
+.custom-button-remove:hover {
+  background-image: url(/share/res/citeck/components/dynamic-tree/icons/remove-active.png) !important;
 }
 
 /* bootstrap fixes */
