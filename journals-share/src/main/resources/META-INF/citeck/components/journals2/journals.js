@@ -656,8 +656,10 @@ Filter
         };
     })
     .computed('usableCriteria', function() {
-
         return _.filter(this.criteria(), function(criterion) {
+            if (!criterion || !criterion.predicate() || !criterion.predicate().id()) {
+                return false;
+            }
 
             var predicateId = criterion.predicate().id();
 
