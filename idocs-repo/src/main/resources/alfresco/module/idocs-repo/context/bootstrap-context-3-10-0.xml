@@ -95,7 +95,21 @@
         </property>
     </bean>
 
-    <bean id="idocs.script.completeness-levels" parent="idocs.import-scripts.3-9-0">
+    <bean id="idocs.module-component.cardlet-personal-documents-case-levels-disable" parent="idocs.import-spaces.3-10-0">
+        <property name="name" value="cardlet-personal-documents-case-levels-disable"/>
+        <property name="description" value="Disable cardlet case-levels for personal-documents"/>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/personal-documents/disable-case-levels</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="idocs.script.completeness-levels" parent="idocs.import-scripts.3-10-0">
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.document-categories" />

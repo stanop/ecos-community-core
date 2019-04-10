@@ -2,6 +2,8 @@ package ru.citeck.ecos.personal;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.transaction.RetryingTransactionHelper;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -11,10 +13,13 @@ import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.util.ParameterCheck;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.extensions.surf.util.AbstractLifecycleBean;
+import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.OrgStructModel;
 import ru.citeck.ecos.model.PersonalDocumentsModel;
+import ru.citeck.ecos.model.RequirementModel;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.RepoUtils;
 
@@ -31,9 +36,11 @@ public class PersonalDocumentsServiceImpl extends AbstractLifecycleBean implemen
     private AuthorityService authorityService;
     private NodeService nodeService;
     private PermissionService permissionService;
+    private RetryingTransactionHelper txnHelper;
 
     private LazyNodeRef personalDocumentsRoot;
     private List<String> skipPersons = new ArrayList<>();
+    private List<NodeRef> checkLists;
 
     @Override
     protected void onBootstrap(ApplicationEvent event) {
@@ -90,7 +97,9 @@ public class PersonalDocumentsServiceImpl extends AbstractLifecycleBean implemen
                             userFullName);
 
                     createAssocToPersonalDocs(userPersonRef, personalDocumentsFolderRef);
+                    fillCheckLists(personalDocumentsFolderRef);
                     setPermissions(personalDocumentsFolderRef, userName);
+                    addCaseAspect(personalDocumentsFolderRef);
                 }
             }
         }
@@ -124,7 +133,10 @@ public class PersonalDocumentsServiceImpl extends AbstractLifecycleBean implemen
 
         for (String authorityName : authorities) {
             if (!skipPersons.contains(authorityName)) {
-                ensureDirectory(authorityName);
+                txnHelper.doInTransaction(() -> {
+                    ensureDirectory(authorityName);
+                    return null;
+                }, false);
             }
         }
     }
@@ -137,10 +149,33 @@ public class PersonalDocumentsServiceImpl extends AbstractLifecycleBean implemen
                 nodeService);
     }
 
+    private void fillCheckLists(NodeRef personalDocsFolder) {
+        if (checkLists != null && checkLists.size() > 0) {
+            for (NodeRef checkList : checkLists) {
+                if (checkList != null && nodeService.exists(checkList)) {
+                    RepoUtils.createAssociation(personalDocsFolder,
+                            checkList,
+                            RequirementModel.ASSOC_COMPLETENESS_LEVELS,
+                            true,
+                            nodeService);
+                }
+            }
+        }
+    }
+
     private void setPermissions(NodeRef folderRef, String userName) {
         permissionService.setInheritParentPermissions(folderRef, false);
         permissionService.setPermission(folderRef, userName, PermissionService.COORDINATOR, true);
         permissionService.setPermission(folderRef, GROUP_PERSONAL_DOCUMENTS_MANAGERS, PermissionService.COORDINATOR, true);
+    }
+
+    @Autowired
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        txnHelper = serviceRegistry.getRetryingTransactionHelper();
+    }
+
+    private void addCaseAspect(NodeRef personalDocsFolder) {
+        nodeService.addAspect(personalDocsFolder, ICaseModel.ASPECT_CASE, null);
     }
 
     public void setAuthorityService(AuthorityService authorityService) {
@@ -163,4 +198,7 @@ public class PersonalDocumentsServiceImpl extends AbstractLifecycleBean implemen
         this.skipPersons = skipPersons;
     }
 
+    public void setCheckLists(List<NodeRef> checkLists) {
+        this.checkLists = checkLists;
+    }
 }

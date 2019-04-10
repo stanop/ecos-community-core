@@ -942,7 +942,8 @@
     </bean>
 
     <bean id="idocs.createPersonalDocumentsForCreatedPersonBehaviour"
-          class="ru.citeck.ecos.behavior.personal.CreatePersonalDocumentsForCreatedPersonBehaviour"/>
+          class="ru.citeck.ecos.behavior.personal.CreatePersonalDocumentsForCreatedPersonBehaviour"
+          depends-on="idocs.script.completeness-levels"/>
 
     <bean id="idocs.personal.documents.setDefaultTypeKindBehaviour"
           class="ru.citeck.ecos.behavior.personal.SetDefaultTypeKindBehaviour"

@@ -17,6 +17,7 @@
 
 .user-profile-documents-tab__case-levels {
     margin-top: 20px;
+    display: none;
 }
 
 .user-profile-documents-tab__advanced-associations {

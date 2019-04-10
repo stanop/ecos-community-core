@@ -112,16 +112,4 @@
         </property>
     </bean>
 
-    <bean id="idocs.script.completeness-levels" parent="idocs.import-scripts.3-9-0">
-        <property name="dependsOn">
-            <list>
-                <ref bean="idocs.module-component.document-categories" />
-            </list>
-        </property>
-        <property name="executeOnceOnly" value="false" />
-        <property name="name" value="create-or-update-idocs-completeness-levels" />
-        <property name="description" value="Create or update idocs completeness levels" />
-        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/completeness-levels.js"/>
-    </bean>
-
 </beans>

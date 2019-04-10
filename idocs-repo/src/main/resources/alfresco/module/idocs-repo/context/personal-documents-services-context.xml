@@ -3,7 +3,7 @@
 <beans>
 
     <bean id="PersonalDocumentsService" class="ru.citeck.ecos.personal.PersonalDocumentsServiceImpl"
-        depends-on="idocs.module-component.ecos-sync-keys-root, idocs.groups.personal-documents-managers">
+        depends-on="idocs.module-component.ecos-sync-keys-root, idocs.groups.personal-documents-managers, idocs.script.completeness-levels">
         <property name="authorityService" ref="AuthorityService"/>
         <property name="nodeService" ref="NodeService"/>
         <property name="permissionService" ref="PermissionService"/>
@@ -13,6 +13,23 @@
             <list>
                 <value>System</value>
                 <value>guest</value>
+            </list>
+        </property>
+        <property name="checkLists">
+            <list>
+                <value>workspace://SpacesStore/cl-questionnaire</value>
+                <value>workspace://SpacesStore/cl-cv</value>
+                <value>workspace://SpacesStore/cl-recommendations</value>
+                <value>workspace://SpacesStore/cl-conviction-cert</value>
+                <value>workspace://SpacesStore/cl-health-cert</value>
+                <value>workspace://SpacesStore/cl-marriage-cert</value>
+                <value>workspace://SpacesStore/cl-birth-cert</value>
+                <value>workspace://SpacesStore/cl-enc-or-punish-order</value>
+                <value>workspace://SpacesStore/cl-disability-docs</value>
+                <value>workspace://SpacesStore/cl-explaining-note</value>
+                <value>workspace://SpacesStore/cl-official-note</value>
+                <value>workspace://SpacesStore/cl-acts-and-notif</value>
+                <value>workspace://SpacesStore/cl-miscellaneous</value>
             </list>
         </property>
     </bean>
