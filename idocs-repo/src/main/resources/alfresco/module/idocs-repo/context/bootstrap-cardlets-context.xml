@@ -104,6 +104,18 @@
 					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
 					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/cmobject/card-modes</prop>
 				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/history-mode</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
+				<props>
+					<prop key="path">/app:company_home/app:dictionary/cm:cardmodes</prop>
+					<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/card-mode.xml</prop>
+					<prop key="messages">alfresco/module/idocs-repo/bootstrap/cardlets/case/links-mode</prop>
+					<prop key="encoding">UTF-8</prop>
+				</props>
 			</list>
 		</property>
 	</bean>

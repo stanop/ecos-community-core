@@ -452,7 +452,8 @@ require([
                             _parent: destination
                         }
                     },
-                    class: 'ecos-modal_width-lg'
+                    class: 'ecos-modal_width-lg',
+                    isBigHeader: true
                 });
             } else {
 
@@ -772,7 +773,8 @@ require([
 
                 if (resp.eformExists) {
                     Citeck.forms.eform(itemId, {
-                        class: 'ecos-modal_width-lg'
+                        class: 'ecos-modal_width-lg',
+                        isBigHeader: true
                     });
                 } else if (resp.exists) {
                     newDialog();

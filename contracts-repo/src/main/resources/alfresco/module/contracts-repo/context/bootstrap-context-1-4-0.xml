@@ -42,7 +42,7 @@
             <list>
                 <props>
                     <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
                     <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/advanced-associations</prop>
                 </props>
             </list>
@@ -84,7 +84,7 @@
             <list>
                 <props>
                     <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
                     <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/barcode</prop>
                 </props>
             </list>
