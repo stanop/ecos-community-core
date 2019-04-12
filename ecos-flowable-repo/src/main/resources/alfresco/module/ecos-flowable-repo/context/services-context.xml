@@ -341,4 +341,11 @@
         <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
 
+    <bean id="rollbackFlowableTasksService" class="ru.citeck.ecos.flowable.services.RollbackFlowableTasksService">
+        <property name="runtimeService" ref="flowableRuntimeService"/>
+        <property name="flowableTaskService" ref="flowableCustomTaskService"/>
+        <property name="workflowService" ref="WorkflowService"/>
+        <property name="workflowMirrorService" ref="workflowMirrorService"/>
+    </bean>
+
 </beans>
