@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.util.ISO8601DateFormat;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -21,6 +22,8 @@ public class EcosCalendarEntryDTO implements EcosCalendarEntry, MetaValue, Seria
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
     private static final String UTC_MIDNIGHT = "T00:00:00Z";
+
+    private static final String DISPLAY_NAME_KEY = "ia_CalendarEventModel.type.ia_calendarEvent.title";
 
     private NodeRef nodeRef;
     private NodeRef containerNodeRef;
@@ -164,6 +167,10 @@ public class EcosCalendarEntryDTO implements EcosCalendarEntry, MetaValue, Seria
         return this.nodeRef != null ? nodeRef.toString() : "";
     }
 
+    @Override
+    public String getDisplayName() {
+        return I18NUtil.getMessage(DISPLAY_NAME_KEY);
+    }
 
     @Override
     public NodeRef getNodeRef() {
