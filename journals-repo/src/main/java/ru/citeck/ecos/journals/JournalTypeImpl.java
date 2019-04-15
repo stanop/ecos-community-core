@@ -39,6 +39,9 @@ class JournalTypeImpl implements JournalType {
     private final String id;
     private final String datasource;
 
+    private final String groupBy;
+    private final String predicate;
+
     private final Map<String, String> options;
     private final List<String> attributes;
     private final List<JournalGroupAction> groupActions;
@@ -59,6 +62,9 @@ class JournalTypeImpl implements JournalType {
         this.id = journal.getId();
         this.options = Collections.unmodifiableMap(getOptions(journal.getOption()));
         this.groupActions = Collections.unmodifiableList(getGroupActions(journal, serviceRegistry));
+        this.predicate = journal.getPredicate() != null ? journal.getPredicate().getValue() : null;
+        this.groupBy = journal.getGroupBy() != null ? journal.getGroupBy().getValue() : null;
+
         List<Header> headers = journal.getHeaders().getHeader();
         List<String> allAttributes = new ArrayList<>(headers.size());
 
@@ -248,6 +254,14 @@ class JournalTypeImpl implements JournalType {
             }
         }
         return result;
+    }
+
+    public String getGroupBy() {
+        return groupBy;
+    }
+
+    public String getPredicate() {
+        return predicate;
     }
 
     @Override

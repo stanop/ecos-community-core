@@ -8,14 +8,18 @@ import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.node.AlfNodeInfo;
+import ru.citeck.ecos.node.DisplayNameService;
 import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
 import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.utils.DictUtils;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,7 +43,7 @@ public class AlfNodeAttValue implements MetaValue {
     }
 
     @Override
-    public <T extends GqlContext> void init(T context) {
+    public <T extends GqlContext> void init(T context, MetaField field) {
 
         this.context = (AlfGqlContext) context;
 
@@ -77,18 +81,34 @@ public class AlfNodeAttValue implements MetaValue {
             }
         }
 
+        if (alfNode != null) {
+
+            DisplayNameService displayNameService = context.getService(DisplayNameService.QNAME);
+            return displayNameService.getDisplayName(new NodeInfo(alfNode));
+        }
+        if (qName != null) {
+            return qName.classTitle();
+        }
+
         return getString();
     }
 
     @Override
     public String getString() {
+
+        if (rawValue == null) {
+            return null;
+        }
         if (alfNode != null) {
-            return alfNode.displayName();
-        } else if (qName != null) {
-            return qName.classTitle();
-        } else if (rawValue instanceof Date) {
+            return alfNode.nodeRef();
+        }
+        if (qName != null) {
+            return qName.shortName();
+        }
+        if (rawValue instanceof Date) {
             return ISO8601Utils.format((Date) rawValue);
-        } else if (rawValue instanceof ContentData) {
+        }
+        if (rawValue instanceof ContentData) {
 
             String contentUrl = ((ContentData) rawValue).getContentUrl();
             ContentService contentService = context.getServiceRegistry().getContentService();
@@ -102,14 +122,14 @@ public class AlfNodeAttValue implements MetaValue {
     }
 
     @Override
-    public Object getAttribute(String name) {
+    public Object getAttribute(String name, MetaField field) {
         if (alfNode != null) {
             Attribute attribute = alfNode.attribute(name);
             return attribute.getValues()
                             .stream()
                             .map(v -> {
                                 AlfNodeAttValue value = new AlfNodeAttValue(v);
-                                value.init(context);
+                                value.init(context, field);
                                 return value;
                             })
                             .collect(Collectors.toList());
@@ -117,6 +137,30 @@ public class AlfNodeAttValue implements MetaValue {
             return MetaUtils.getReflectionValue(qName, name);
         }
         return null;
+    }
+
+    public static class NodeInfo implements AlfNodeInfo {
+
+        private GqlAlfNode alfNode;
+
+        private NodeInfo(GqlAlfNode node) {
+            alfNode = node;
+        }
+
+        @Override
+        public QName getType() {
+            return alfNode.getType();
+        }
+
+        @Override
+        public NodeRef getNodeRef() {
+            return new NodeRef(alfNode.nodeRef());
+        }
+
+        @Override
+        public Map<QName, Serializable> getProperties() {
+            return alfNode.getProperties();
+        }
     }
 }
 

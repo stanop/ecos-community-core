@@ -2,14 +2,18 @@ package ru.citeck.ecos.eform;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.content.ContentData;
 import ru.citeck.ecos.eform.model.EcosFormModel;
 import ru.citeck.ecos.eform.provider.RepoFormProvider;
+import ru.citeck.ecos.node.DisplayNameService;
+import ru.citeck.ecos.records.source.alf.AlfDictionaryRecords;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.records2.RecordMeta;
@@ -30,6 +34,11 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
     public static final String ID = "eform";
 
     private static final String ECOS_FORM_KEY = "ECOS_FORM";
+
+    private static final RecordRef DEFAULT_FORM_ID = RecordRef.create(ID , "DEFAULT");
+    private static final RecordRef ECOS_FORM_ID = RecordRef.create(ID , "ECOS_FORM");
+
+    private static final Set<RecordRef> SYSTEM_FORMS = new HashSet<>(Arrays.asList(DEFAULT_FORM_ID, ECOS_FORM_ID));
 
     private AlfNodesRecordsDAO alfNodesRecordsDAO;
     private EcosFormService eformFormService;
@@ -79,7 +88,20 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
 
     @Override
     public RecordsDelResult delete(RecordsDeletion deletion) {
-        return new RecordsDelResult();
+
+        List<RecordMeta> resultRecords = new ArrayList<>();
+
+        deletion.getRecords()
+                .stream()
+                .filter(r -> !SYSTEM_FORMS.contains(r))
+                .forEach(r -> {
+                    repoFormProvider.delete(r.getId());
+                    resultRecords.add(new RecordMeta(r));
+                });
+
+        RecordsDelResult result = new RecordsDelResult();
+        result.setRecords(resultRecords);
+        return result;
     }
 
     @Override
@@ -101,6 +123,7 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
 
                     EcosFormModel form = new EcosFormModel();
                     form.setId("");
+                    form.setTitle(I18NUtil.getMessage("ecosForms_model.type.ecosForms_form.title"));
                     models.add(form);
 
                 } else {
@@ -124,7 +147,7 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
 
         if (lang.equals(SearchService.LANGUAGE_FTS_ALFRESCO) || lang.equals(CriteriaAlfNodesSearch.LANGUAGE)) {
 
-            RecordsQueryResult<RecordRef> records = alfNodesRecordsDAO.getRecords(recordsQuery);
+            RecordsQueryResult<RecordRef> records = alfNodesRecordsDAO.queryRecords(recordsQuery);
 
             result.setHasMore(records.getHasMore());
             result.setTotalCount(records.getTotalCount());

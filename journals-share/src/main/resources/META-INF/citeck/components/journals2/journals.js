@@ -142,25 +142,17 @@ CreateVariant
 
         var self = this;
 
-        if (this.recordRef()) {
-            Citeck.forms.eform(this.recordRef(), {
-                params: {
-                    attributes: {
-                        _parent: self.destination()
-                    }
-                }
-            });
-        } else {
+        Citeck.forms.createRecord(this.recordRef(), this.type(), this.destination(), function() {
 
-            var url = this.url();
+            var url = self.url();
             if (!url) {
-                koutils.subscribeOnce(this.url, function () {
+                koutils.subscribeOnce(self.url, function () {
                     window.location = self.link();
                 });
             } else {
                 window.location = self.link();
             }
-        }
+        });
     })
 
     .computed('link', function () {
@@ -664,8 +656,10 @@ Filter
         };
     })
     .computed('usableCriteria', function() {
-
         return _.filter(this.criteria(), function(criterion) {
+            if (!criterion || !criterion.predicate() || !criterion.predicate().id()) {
+                return false;
+            }
 
             var predicateId = criterion.predicate().id();
 
@@ -801,6 +795,9 @@ AttributeInfo
         }
 
         return allowableMultipleFilterPredicates;
+    })
+    .computed('customDisplayNameText', function() {
+        return this.customDisplayName();
     })
     ;
 
@@ -2016,7 +2013,9 @@ Record
     // TODO define load method - to load selected records
     .load('doclib', function(record) {
         if(record.isDoclibNode() === true) {
-            customRecordLoader().load(record.nodeRef(), function(id, model) {
+            var recordNodeRef = record.nodeRef(),
+                recodrId = recordNodeRef ? recordNodeRef.replace(/.*@/, "") : "";
+            customRecordLoader().load(recodrId, function(id, model) {
                 record.model({ doclib: model });
             });
         } else if(record.isDoclibNode() === false) {

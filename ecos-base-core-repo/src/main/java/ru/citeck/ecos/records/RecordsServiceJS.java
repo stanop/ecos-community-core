@@ -9,6 +9,8 @@ import ru.citeck.ecos.records.rest.RecordsQueryPost;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.request.rest.QueryBody;
+import ru.citeck.ecos.records2.request.rest.RestQueryHandler;
 import ru.citeck.ecos.records2.request.result.RecordsResult;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JsUtils;
@@ -22,7 +24,7 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
     @Autowired
     private RecordsServiceImpl recordsService;
     @Autowired
-    private RecordsQueryPost recordsQueryPost;
+    private RestQueryHandler restQueryHandler;
 
     private JsUtils jsUtils;
 
@@ -84,14 +86,18 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
         throw new IllegalArgumentException("Attributes type is not supported! " + attributes.getClass());
     }
 
-    public RecordsResult<?> getRecords(Object recordsQuery) {
-        RecordsQueryPost.Request request = jsUtils.toJava(recordsQuery, RecordsQueryPost.Request.class);
-        return recordsQueryPost.queryRecords(request);
+    public Object getRecords(Object recordsQuery) {
+        QueryBody request = jsUtils.toJava(recordsQuery, QueryBody.class);
+        return restQueryHandler.queryRecords(request);
     }
 
     public <T> RecordsResult<T> getRecords(Object recordsQuery, Class<T> schemaClass) {
+        return queryRecords(recordsQuery, schemaClass);
+    }
+
+    public <T> RecordsResult<T> queryRecords(Object recordsQuery, Class<T> schemaClass) {
         RecordsQuery convertedQuery = jsUtils.toJava(recordsQuery, RecordsQuery.class);
-        return recordsService.getRecords(convertedQuery, schemaClass);
+        return recordsService.queryRecords(convertedQuery, schemaClass);
     }
 
     public Iterable<RecordRef> getIterableRecords(Object recordsQuery) {
@@ -103,6 +109,11 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
         @SuppressWarnings("unchecked")
         ActionResult<T>[] result = new ActionResult[results.getResults().size()];
         return results.getResults().toArray(result);
+    }
+
+    @Autowired
+    public void setRestQueryHandler(RestQueryHandler restQueryHandler) {
+        this.restQueryHandler = restQueryHandler;
     }
 
     @Autowired

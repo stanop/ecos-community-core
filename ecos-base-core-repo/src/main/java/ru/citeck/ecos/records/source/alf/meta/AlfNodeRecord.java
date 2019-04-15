@@ -7,6 +7,8 @@ import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.node.AlfNodeInfo;
+import ru.citeck.ecos.node.DisplayNameService;
 import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
@@ -17,8 +19,10 @@ import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,7 +49,7 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public <T extends GqlContext> void init(T context) {
+    public <T extends GqlContext> void init(T context, MetaField field) {
         this.context = (AlfGqlContext) context;
         this.nodeRef = RecordsUtils.toNodeRef(recordRef);
         this.node = this.context.getNode(nodeRef).orElse(null);
@@ -63,7 +67,8 @@ public class AlfNodeRecord implements MetaValue {
 
     @Override
     public String getDisplayName() {
-        return node.displayName();
+        DisplayNameService displayNameService = context.getService(DisplayNameService.QNAME);
+        return displayNameService.getDisplayName(new NodeInfo());
     }
 
     @Override
@@ -81,7 +86,7 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public List<? extends MetaValue> getAttribute(String name) {
+    public List<? extends MetaValue> getAttribute(String name, MetaField field) {
 
        List<? extends MetaValue> attribute = null;
 
@@ -90,25 +95,25 @@ public class AlfNodeRecord implements MetaValue {
 
                 attribute = node.aspects()
                                 .stream()
-                                .map(this::toAlfNodeAtt)
+                                .map(o -> toAlfNodeAtt(o, field))
                                 .collect(Collectors.toList());
                 break;
 
             case ATTR_IS_CONTAINER:
 
-                attribute = MetaUtils.toMetaValues(node.isContainer(), context);
+                attribute = MetaUtils.toMetaValues(node.isContainer(), context, field);
                 break;
 
             case ATTR_IS_DOCUMENT:
 
-                attribute = MetaUtils.toMetaValues(node.isDocument(), context);
+                attribute = MetaUtils.toMetaValues(node.isDocument(), context, field);
                 break;
 
             case ATTR_PARENT:
             case RecordConstants.ATT_PARENT:
 
                 AlfNodeAttValue parentValue = new AlfNodeAttValue(node.getParent());
-                parentValue.init(context);
+                parentValue.init(context, field);
                 attribute = Collections.singletonList(parentValue);
 
                 break;
@@ -136,14 +141,14 @@ public class AlfNodeRecord implements MetaValue {
                         VirtualScriptAttributes attributes = context.getService(VIRTUAL_SCRIPT_ATTS_ID);
                         if (attributes != null && attributes.provides(attQname.get())) {
                             Object value = attributes.getAttribute(new NodeRef(node.nodeRef()), attQname.get());
-                            attribute = MetaUtils.toMetaValues(value, context);
+                            attribute = MetaUtils.toMetaValues(value, context, field);
                         }
                     }
                 }
                 if (attribute == null) {
                     attribute = nodeAtt.getValues()
                                        .stream()
-                                       .map(v -> toAlfNodeAtt(nodeAtt, v))
+                                       .map(v -> toAlfNodeAtt(nodeAtt, v, field))
                                        .collect(Collectors.toList());
                 }
         }
@@ -152,7 +157,7 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public MetaEdge getEdge(String name) {
+    public MetaEdge getEdge(String name, MetaField field) {
         QName type = null;
         if (node != null) {
             type = node.getType();
@@ -160,15 +165,15 @@ public class AlfNodeRecord implements MetaValue {
         return new AlfNodeMetaEdge(context, type, name, this);
     }
 
-    private MetaValue toAlfNodeAtt(Attribute att, Object value) {
+    private MetaValue toAlfNodeAtt(Attribute att, Object value, MetaField metaField) {
         MetaValue result = new AlfNodeAttValue(att, value);
-        result.init(context);
+        result.init(context, metaField);
         return result;
     }
 
-    private MetaValue toAlfNodeAtt(Object value) {
+    private MetaValue toAlfNodeAtt(Object value, MetaField metaField) {
         MetaValue result = new AlfNodeAttValue(value);
-        result.init(context);
+        result.init(context, metaField);
         return result;
     }
 
@@ -187,6 +192,24 @@ public class AlfNodeRecord implements MetaValue {
             PermissionService permissionService = context.getServiceRegistry().getPermissionService();
             AccessStatus accessStatus = permissionService.hasPermission(nodeRef, permission);
             return AccessStatus.ALLOWED.equals(accessStatus);
+        }
+    }
+
+    public class NodeInfo implements AlfNodeInfo {
+
+        @Override
+        public QName getType() {
+            return node.getType();
+        }
+
+        @Override
+        public NodeRef getNodeRef() {
+            return new NodeRef(node.nodeRef());
+        }
+
+        @Override
+        public Map<QName, Serializable> getProperties() {
+            return node.getProperties();
         }
     }
 }

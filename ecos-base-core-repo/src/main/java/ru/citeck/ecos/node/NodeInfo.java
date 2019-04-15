@@ -57,9 +57,9 @@ public class NodeInfo implements Serializable
 	private Map<QName,List<NodeRef>> childAssocs;
 
 	public NodeInfo() {
-		properties = new HashMap<QName,Serializable>();
-		targetAssocs = new HashMap<QName,List<NodeRef>>();
-		childAssocs = new HashMap<QName,List<NodeRef>>();
+		properties = new HashMap<>();
+		targetAssocs = new HashMap<>();
+		childAssocs = new HashMap<>();
 	}
 	
 	public QName getType() {

@@ -120,10 +120,10 @@ public class NodeAttributeServiceImpl implements NodeAttributeService {
 
     @Override
     public void setAttributes(NodeInfo nodeInfo, Map<QName, Object> attributes) {
-        for(QName attributeName : attributes.keySet()) {
+        attributes.forEach((attributeName, value) -> {
             AttributeProvider provider = needProvider(attributeName);
-            provider.setAttribute(nodeInfo, attributeName, attributes.get(attributeName));
-        }
+            provider.setAttribute(nodeInfo, attributeName, value);
+        });
     }
 
     @Override

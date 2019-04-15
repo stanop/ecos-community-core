@@ -252,6 +252,7 @@ public class CreateVariantsGet extends AbstractWebScript {
         result.type = getShortQName(properties.get(JournalsModel.PROP_TYPE));
         result.formId = (String) properties.get(JournalsModel.PROP_FORM_ID);
         result.createArguments = (String) properties.get(JournalsModel.PROP_CREATE_ARGUMENTS);
+        result.recordRef = (String) properties.get(JournalsModel.PROP_RECORD_REF);
 
         Boolean isDefault = (Boolean) properties.get(JournalsModel.PROP_IS_DEFAULT);
         result.isDefault = Boolean.TRUE.equals(isDefault);
@@ -359,6 +360,7 @@ public class CreateVariantsGet extends AbstractWebScript {
         public String formId;
         public boolean isDefault;
         public String createArguments;
+        public String recordRef;
 
         public CreateVariant(NodeRef nodeRef) {
             this.nodeRef = nodeRef;

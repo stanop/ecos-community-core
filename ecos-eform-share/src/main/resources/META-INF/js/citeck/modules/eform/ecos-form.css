@@ -6,7 +6,7 @@
 
 .eform-panel-actions {
     display: block;
-    width: 370px;
+    width: 380px;
     margin-left: auto;
     margin-right: auto;
     padding-bottom: 7px;
@@ -14,10 +14,8 @@
 
 .eform-panel-content {
     background-color: #fff;
-    padding-left: 15px;
-    padding-right: 15px;
-    padding-top: 15px;
-    padding-bottom: 1px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .eform-edit-form-btn {
@@ -49,4 +47,38 @@
 
 .eform-panel-content .form-control {
     box-shadow: none;
+}
+
+.eform-panel-content .input-group>.form-control {
+    width: 1%;
+}
+
+.formio-dialog.formio-dialog-theme-default .formio-dialog-content {
+    background-color: #fff;
+    border-radius: 12px;
+}
+
+.formio-dialog.formio-dialog-theme-default .formio-dialog-content .lead {
+    margin-top: 5px;
+}
+
+.yui-panel-container .btn-primary {
+    background-color: #4b75b7;
+    border-color: #4b75b7;
+}
+
+.yui-panel-container .btn-primary:hover {
+    color: #fff;
+    background-color: #7396cd;
+    border-color: #7396cd;
+}
+
+.formio-dialog-content .preview-panel + div > button {
+    font-size: 14px;
+}
+
+/* Hack for select-journal component */
+.eform-panel-content .select-journal .button {
+    font-size: 14px;
+    font-weight: 600;
 }

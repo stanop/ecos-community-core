@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.util.ISO8601DateFormat;
 import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.records.RecordConstants;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
 import java.io.Serializable;
@@ -110,7 +111,7 @@ public class EcosCalendarEntryDTO implements EcosCalendarEntry, MetaValue, Seria
     }
 
     @Override
-    public Object getAttribute(String attributeName) {
+    public Object getAttribute(String attributeName, MetaField field) {
         switch (attributeName) {
             case CalendarEntryAttrs.ATT_TITLE:
                 return this.getTitle();

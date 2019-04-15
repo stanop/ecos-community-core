@@ -10,4 +10,6 @@
     <Environment name="flowable.rest.app.admin.user-id" value="${flowable.webapps.admin.userid}" type="java.lang.String"/>
     <Environment name="flowable.rest.app.admin.password" value="${flowable.webapps.admin.password}" type="java.lang.String"/>
     <Environment name="flowable.rest.app.create-demo-definitions" value="${flowable.webapps.rest.create.demo.definitions}" type="java.lang.Boolean"/>
+
+    <Environment name="flowable.async-executor-activate" value="${flowable.webapps.async-executor-activate}" type="java.lang.Boolean"/>
 </Context>

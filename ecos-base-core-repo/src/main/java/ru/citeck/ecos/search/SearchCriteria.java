@@ -114,7 +114,7 @@ public class SearchCriteria {
     }
 
     public boolean isLimitSet() {
-        return limit != null;
+        return limit != null && limit > -1;
     }
 
     public Map<String, Boolean> getSort() {

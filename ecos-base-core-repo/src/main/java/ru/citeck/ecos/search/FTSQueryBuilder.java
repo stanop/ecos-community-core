@@ -23,6 +23,15 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
             return legacyBuilder.buildQuery(criteria);
         }
 
+        TermGroup group = getTermGroup(criteria);
+
+        StringBuilder searchString = new StringBuilder();
+        group.append(searchString);
+        return searchString.toString();
+    }
+
+    public TermGroup getTermGroup(SearchCriteria criteria) {
+
         TermGroup group = new TermGroup(JoinOperator.AND, false);
 
         for (CriteriaTriplet triplet : criteria.getTriplets()) {
@@ -40,9 +49,7 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
 
         group.stopAll();
 
-        StringBuilder searchString = new StringBuilder();
-        group.append(searchString);
-        return searchString.toString();
+        return group;
     }
 
     private Optional<Term> buildSearchTerm(CriteriaTriplet triplet) {
@@ -266,7 +273,7 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
         this.legacyBuilder = legacyBuilder;
     }
 
-    interface Term {
+    public interface Term {
         void append(StringBuilder sb);
 
         default boolean isEmpty() {
@@ -274,25 +281,40 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
         }
     }
 
-    static class FixedTerm implements Term {
+    public static class FixedTerm implements Term {
 
         final String value;
+        final boolean inverse;
 
-        FixedTerm(String value, boolean inverse) {
-            this.value = inverse ? "NOT " + value : value;
+        public FixedTerm(String value) {
+            this(value, false);
+        }
+
+        public FixedTerm(String value, boolean inverse) {
+            this.inverse = inverse;
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public boolean isInverse() {
+            return inverse;
         }
 
         @Override
         public void append(StringBuilder sb) {
-            sb.append(value);
+            sb.append(inverse ? "NOT " + value : value);
         }
     }
 
-    static class FieldTerm implements Term {
+    public static class FieldTerm implements Term {
 
         final String field;
         final String value;
         final boolean exact;
+
         public FieldTerm(String field, String value, boolean exact) {
             this.field = field;
             this.value = value;
@@ -309,11 +331,11 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
         }
     }
 
-    enum JoinOperator {
+    public enum JoinOperator {
         OR, AND
     }
 
-    static class TermGroup implements Term {
+    public static class TermGroup implements Term {
 
         private final JoinOperator joinBy;
         private final List<Term> terms = new ArrayList<>();
@@ -321,16 +343,16 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
 
         private TermGroup childGroup = null;
 
-        TermGroup(JoinOperator joinBy) {
+        public TermGroup(JoinOperator joinBy) {
             this(joinBy, true);
         }
 
-        TermGroup(JoinOperator joinBy, boolean withBrackets) {
+        public TermGroup(JoinOperator joinBy, boolean withBrackets) {
             this.joinBy = joinBy;
             this.withBrackets = withBrackets;
         }
 
-        void startGroup(JoinOperator joinBy) {
+        public void startGroup(JoinOperator joinBy) {
             if (childGroup != null) {
                 childGroup.startGroup(joinBy);
             } else {
@@ -338,7 +360,7 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
             }
         }
 
-        boolean stopGroup() {
+        public boolean stopGroup() {
             if (childGroup != null) {
                 if (childGroup.childGroup != null) {
                     childGroup.stopGroup();
@@ -404,6 +426,19 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
             if (withBrackets) {
                 sb.append(')');
             }
+        }
+
+        public JoinOperator getJoinBy() {
+            return joinBy;
+        }
+
+        public List<Term> getTerms() {
+            return terms;
+        }
+
+        public void setTerms(List<Term> terms) {
+            this.terms.clear();
+            this.terms.addAll(terms);
         }
     }
 }

@@ -13,6 +13,7 @@ import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
@@ -73,7 +74,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
 
         if (SearchService.LANGUAGE_FTS_ALFRESCO.equals(query.getLanguage())) {
 
-            RecordsQueryResult<RecordRef> records = alfNodesRecordsDAO.getRecords(query);
+            RecordsQueryResult<RecordRef> records = alfNodesRecordsDAO.queryRecords(query);
             return new RecordsQueryResult<>(records, UserValue::new);
         }
 
@@ -115,13 +116,13 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         @Override
-        public <T extends GqlContext> void init(T context) {
+        public <T extends GqlContext> void init(T context, MetaField metaField) {
 
-            alfNode.init(context);
+            alfNode.init(context, metaField);
 
             if (userName == null) {
                 try {
-                    List<? extends MetaValue> attribute = alfNode.getAttribute(PROP_CM_USER_NAME);
+                    List<? extends MetaValue> attribute = alfNode.getAttribute(PROP_CM_USER_NAME, metaField);
                     userName = attribute.stream()
                                         .findFirst()
                                         .map(MetaValue::getString)
@@ -153,13 +154,13 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         @Override
-        public Object getAttribute(String name) {
+        public Object getAttribute(String name, MetaField field) {
 
             switch (name) {
                 case PROP_USER_NAME:
                     return userName;
                 case PROP_FULL_NAME:
-                    return alfNode.getString();
+                    return alfNode.getDisplayName();
                 case PROP_IS_AVAILABLE:
                     return authenticationService.getAuthenticationEnabled(userName);
                 case PROP_IS_MUTABLE:
@@ -170,7 +171,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                     return getUserAuthorities();
             }
 
-            return alfNode.getAttribute(name);
+            return alfNode.getAttribute(name, field);
         }
     }
 
@@ -189,7 +190,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         @Override
-        public Object getAttribute(String name) {
+        public Object getAttribute(String name, MetaField field) {
             switch (name) {
                 case "list":
                     return new ArrayList<>(getAuthorities());

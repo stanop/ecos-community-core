@@ -23,6 +23,9 @@ alf_data_dev
 */overlays/**
 package-lock.json
 src/test/properties/local/alfresco-global-dev.properties
+
+ecos-base-core-share/src/main/resources/META-INF/static/ecos/**/*.map
+
 syntax: regexp
 desktop\.ini
 rebel.xml

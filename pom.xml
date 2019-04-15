@@ -4,7 +4,7 @@
 
     <groupId>ru.citeck.ecos.community</groupId>
     <artifactId>ecos-community</artifactId>
-    <version>3.9.0</version>
+    <version>3.10.0</version>
     <packaging>pom</packaging>
 
     <name>ecos-community</name>
@@ -67,9 +67,11 @@
 
         <flowable.version>6.4.1</flowable.version>
         <ecos.flowable.version>1.5.0</ecos.flowable.version>
-        <ecos.records.version>1.0.0</ecos.records.version>
+        <ecos.records.version>1.1.0-SNAPSHOT</ecos.records.version>
 
         <web.compression.skip>false</web.compression.skip>
+
+        <ecos.community.tomcat.port>8080</ecos.community.tomcat.port>
     </properties>
 
     <profiles>
@@ -142,6 +144,8 @@
                                 <flowable.webapps.admin.rest.app.port>${flowable.webapps.admin.rest.app.port}</flowable.webapps.admin.rest.app.port>
                                 <flowable.webapps.admin.rest.app.user>${flowable.webapps.admin.rest.app.user}</flowable.webapps.admin.rest.app.user>
                                 <flowable.webapps.admin.rest.app.password>${flowable.webapps.admin.rest.app.password}</flowable.webapps.admin.rest.app.password>
+
+                                <flowable.webapps.async-executor-activate>${flowable.webapps.async-executor-activate}</flowable.webapps.async-executor-activate>
                             </tomcatSystemProperties>
 
                             <tomcatCustomWebapps>
@@ -754,6 +758,8 @@
                     <enableShare>true</enableShare>
                     <!-- Enable the REST API Explorer -->
                     <enableApiExplorer>true</enableApiExplorer>
+
+                    <tomcatPort>${ecos.community.tomcat.port}</tomcatPort>
 
                     <tomcatCustomConfigs>
                         <tomcatUsers>${project.build.testOutputDirectory}/tomcat/tomcat-users.xml</tomcatUsers>

@@ -58,4 +58,8 @@ public interface JournalType {
     List<JournalGroupAction> getGroupActions();
 
     JournalCriterion getCriterion(String attributeKey);
+
+    String getGroupBy();
+
+    String getPredicate();
 }

@@ -91,7 +91,8 @@
                     if (view.params.tk_type) {
                         return view.params.tk_type;
                     }
-                    return 'workspace://SpacesStore/contracts-cat-doctype-contract';
+                    var persisted = node.impl().attribute('tk:type').persistedValue();
+                    return persisted || 'workspace://SpacesStore/contracts-cat-doctype-contract';
                 })()]]></invariant>
             </field>
         </view>

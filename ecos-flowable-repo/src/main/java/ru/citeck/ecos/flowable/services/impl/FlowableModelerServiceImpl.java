@@ -320,9 +320,9 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
                 logger.info("Import: " + path);
 
                 importProcessModel(resource.getInputStream());
-                ecosConfigService.setValue(IMPORT_CONFIG_KEY, Boolean.TRUE.toString(), null);
+                ecosConfigService.setValue(IMPORT_CONFIG_KEY, Boolean.TRUE.toString());
             } catch (Exception e) {
-                ecosConfigService.setValue(IMPORT_CONFIG_KEY, Boolean.FALSE.toString(), null);
+                ecosConfigService.setValue(IMPORT_CONFIG_KEY, Boolean.FALSE.toString());
                 throw new IllegalStateException("Could not import process to Flowable Modeler. Location: " + location, e);
             }
         });

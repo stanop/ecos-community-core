@@ -3,7 +3,6 @@
 const MSG_TRANSLATOR = Packages.org.springframework.extensions.surf.util.I18NUtil;
 
 function onCaseCreate() {
-
     if (document.properties['contracts:agreementNumber'] == null) {
             if (document.type == "{http://www.citeck.ru/model/contracts/1.0}agreement") {
                 var numberTemplate = search.findNode("workspace://SpacesStore/agreement-number-template");
@@ -16,10 +15,7 @@ function onCaseCreate() {
             var registrationNumber = document.properties['contracts:agreementNumber'];
     }
 
-    //var signingEDS = document.properties['contracts:digiSign'];
-    //if (!signingEDS) {
     document.properties['contracts:barcode'] = registrationNumber;
-    //}
     document.save();
 }
 
@@ -103,17 +99,31 @@ function doNotSendContractToEdiFlag() {
 }
 
 function isEdiConterpartyDocumentReceived() {
+    var notReceivedStatuses = [
+        'BUYER_TITLE_SIGNED',
+        'SIGNED',
+        'SIGN_SENT',
+        'REJECTED',
+        'REJECTION_SENT',
+        'DELIVERED',
+        'DELIVERY_FAILED'
+    ];
+
     var caseDocuments = document.childAssocs['icase:documents'] != null ? document.childAssocs['icase:documents'] : null;
     for each (var attachment in caseDocuments) {
         var status = attachment.properties['sam:packageAttachmentStatus'];
-        if (attachment.properties['sam:messageId'] != null && attachment.properties['sam:messageId'] !== ""
-        && attachment.properties['tk:kind'] != null && attachment.properties['tk:kind'].nodeRef == 'workspace://SpacesStore/kind-d-counterparty-documents'
-        && attachment.properties['tk:type'] && attachment.properties['tk:type'].nodeRef == 'workspace://SpacesStore/category-document-type'
-            && ['BUYER_TITLE_SIGNED', 'SIGNED', 'SIGN_SENT', 'REJECTED', 'REJECTION_SENT', 'DELIVERED', 'DELIVERY_FAILED'].indexOf(status) == -1
-        ) {
+        var messageId = attachment.properties['sam:messageId'];
+        if (messageId && messageId !== "" && notReceivedStatuses.indexOf(status) < 0) {
             return true;
         }
     }
+
+    var content = (document.assocs["sam:contentFromInboundPackage"] ||
+        document.assocs["idocs:attachmentRkkCreatedFrom"] || [])[0];
+    if (content != null) {
+        return true;
+    }
+
     return false;
 }
 
@@ -146,7 +156,6 @@ function cancelRepeal() {
 }
 
 function changeSigner() {
-
     var signer = (additionalData.assocs['ctrEvent:signer'] || [])[0];
 
     if (signer) {
@@ -160,26 +169,12 @@ function changeSigner() {
 
 function sendToContractorForESigning() {
     var docPackages = document.sourceAssocs["sam:packageDocumentLink"] || [];
-    if (docPackages.length == 0) {
+    if (docPackages.length === 0) {
         throw (MSG_TRANSLATOR.getMessage("actions.messages.cant-find-link-to-sam-package"));
     }
 
     var contractor = (document.assocs["contracts:contractor"] || [])[0];
-    if (!contractor) {
-        throw (MSG_TRANSLATOR.getMessage("actions.messages.field-contractor-is-not-completed"));
-    } else if (!contractor.properties["idocs:diadocBoxId"]) {
-        throw (MSG_TRANSLATOR.getMessage("actions.messages.contractors-field-diadocBoxId-is-not-completed"));
-    } else {
-        var inn = contractor.properties["idocs:inn"];
-        var boxId = contractor.properties["idocs:diadocBoxId"];
-        if (!inn || !boxId || !diadocService.isCounterpartyExists(inn, boxId)) {
-            throw (MSG_TRANSLATOR.getMessage("actions.messages.contractor-not-found-at-diadoc"));
-        }
-    }
-
-    var caseDocs = document.childAssocs["icase:documents"] || [];
-    var contentFromInboundPackage = (document.assocs["sam:contentFromInboundPackage"] ||
-        document.assocs["idocs:attachmentRkkCreatedFrom"] ||[])[0];
+    checkContractorBeforeSending(contractor);
 
     for (var i = 0; i < docPackages.length; i++) {
         if (docPackages[i].typeShort.equals("sam:outboundPackage")) {
@@ -187,15 +182,34 @@ function sendToContractorForESigning() {
         }
     }
 
-    var inboundDocs = [];
-
-    if (contentFromInboundPackage != null) {
-        inboundDocs.push(contentFromInboundPackage);
-    }
+    var inboundDocs = getCaseDocs();
+    var caseDocs = document.childAssocs["icase:documents"] || [];
 
     for (var i = 0; i < caseDocs.length; i++) {
         var pack = (caseDocs[i].sourceAssocs["sam:packageAttachments"] || [])[0];
+        if (pack != null && pack.typeShort.equals("sam:inboundPackage")) {
+            inboundDocs.push(caseDocs[i]);
+        }
+    }
 
+    inboundDocs = inboundDocs.filter(function (att) {
+        return _attachmentFilter(att);
+    });
+
+    if (inboundDocs.length > 0) {
+        diadocService.signInboundDocs(inboundDocs);
+    }
+}
+
+function sendESignsForInboundPackage() {
+    var contractor = (document.assocs["contracts:contractor"] || [])[0];
+    checkContractorBeforeSending(contractor);
+
+    var inboundDocs = getCaseDocs();
+    var caseDocs = document.childAssocs["icase:documents"] || [];
+
+    for (var i = 0; i < caseDocs.length; i++) {
+        var pack = (caseDocs[i].sourceAssocs["sam:packageAttachments"] || [])[0];
         if (pack != null && pack.typeShort.equals("sam:inboundPackage")) {
             inboundDocs.push(caseDocs[i]);
         }
@@ -215,11 +229,54 @@ function _attachmentFilter(attachment) {
         return false;
     }
     var status = attachment.properties['sam:packageAttachmentStatus'];
-    return ['RECEIVED'].indexOf(status) != -1;
+    return ['RECEIVED', 'DELIVERY_FAILED'].indexOf(status) != -1;
+}
+
+function checkContractorBeforeSending(contractor) {
+    if (!contractor) {
+        throw (MSG_TRANSLATOR.getMessage("actions.messages.field-contractor-is-not-completed"));
+    } else if (!contractor.properties["idocs:diadocBoxId"]) {
+        throw (MSG_TRANSLATOR.getMessage("actions.messages.contractors-field-diadocBoxId-is-not-completed"));
+    } else {
+        var inn = contractor.properties["idocs:inn"];
+        var boxId = contractor.properties["idocs:diadocBoxId"];
+        if (!inn || !boxId || !diadocService.isCounterpartyExists(inn, boxId)) {
+            throw (MSG_TRANSLATOR.getMessage("actions.messages.contractor-not-found-at-diadoc"));
+        }
+    }
+}
+
+function allDocsAreSigned() {
+    var completeStatuses = ["SIGNED"],
+        caseDocs = getCaseDocs(),
+        result = true;
+
+    for (var i = 0; i < caseDocs.length; i++) {
+        var status = caseDocs[i].properties["sam:packageAttachmentStatus"] || "";
+        var shouldBeSigned = caseDocs[i].properties["sam:shouldBeSigned"];
+
+        if (completeStatuses.indexOf(status) < 0 && shouldBeSigned) {
+            result = false;
+            break;
+        }
+    }
+
+    return result;
+}
+
+function getCaseDocs() {
+    var caseDocs = document.childAssocs["icase:documents"] || [];
+    var content = (document.assocs["sam:contentFromInboundPackage"] ||
+        document.assocs["idocs:attachmentRkkCreatedFrom"] || [])[0];
+
+    if (content != null) {
+        caseDocs.push(content);
+    }
+
+    return caseDocs;
 }
 
 function resetCase() {
-
     //reset activities
     caseActivityService.reset(document);
 

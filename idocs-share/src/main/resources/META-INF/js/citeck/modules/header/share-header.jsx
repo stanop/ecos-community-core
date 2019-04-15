@@ -8,6 +8,7 @@ import SwitchHintMenu from './components/hints-switcher';
 import "xstyle!js/citeck/modules/header/share-header.css";
 
 import CustomModal from './components/custom-modal';
+import 'xstyle!lib/bootstrap.min.css';
 
 const mapStateToProps = state => ({
     isMobile: state.view.isMobile

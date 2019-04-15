@@ -725,7 +725,7 @@ YAHOO.Bubbling.fire("registerAction", {
             nodeRef = record.nodeRef,
             jsNode = record.jsNode,
             params = this.getAction(record, owner).params,
-            formId = params.formId || '';
+            formId = (params && params.formId) ? params.formId : '';
 
         var successCallback = function(response)
         {
@@ -759,7 +759,8 @@ YAHOO.Bubbling.fire("registerAction", {
                                 text: this.msg("message.details.success")
                             });
 
-                        if(params.reload == "true") {
+                        var reload = (params && params.reload) ? params.reload : false;
+                        if (reload == "true") {
 //                          // Issue #4236
                             location.reload();
                         } else {
@@ -783,12 +784,13 @@ YAHOO.Bubbling.fire("registerAction", {
                 }
             });
         };
-        
+
         Citeck.forms.dialog(nodeRef, formId, {
             scope: this,
             fn: successCallback
-        }, { title : params.header });
-        
+        }, {
+            title: (params && params.header) ? params.header : "actions.document.dialog-form"
+        });
     }
 });
 

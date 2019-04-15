@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
-import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.*;
@@ -23,7 +22,7 @@ import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records.source.alf.search.AlfNodesSearch;
-import ru.citeck.ecos.records.source.dao.*;
+import ru.citeck.ecos.records.source.dao.RecordsActionExecutor;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -33,12 +32,12 @@ import ru.citeck.ecos.records2.request.mutation.RecordsMutResult;
 import ru.citeck.ecos.records2.request.mutation.RecordsMutation;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
-import ru.citeck.ecos.records2.source.MetaAttributeDef;
 import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
-import ru.citeck.ecos.records2.source.dao.RecordsDefinitionDAO;
 import ru.citeck.ecos.records2.source.dao.RecordsQueryDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
+import ru.citeck.ecos.records2.source.dao.local.RecordsQueryWithMetaLocalDAO;
+import ru.citeck.ecos.security.EcosPermissionService;
 import ru.citeck.ecos.utils.NodeUtils;
 
 import java.io.Serializable;
@@ -49,8 +48,8 @@ import java.util.stream.Collectors;
 @Component
 public class AlfNodesRecordsDAO extends LocalRecordsDAO
                                 implements RecordsQueryDAO,
-                                           RecordsDefinitionDAO,
                                            RecordsMetaLocalDAO<MetaValue>,
+                                           RecordsQueryWithMetaLocalDAO<Object>,
                                            MutableRecordsDAO,
                                            RecordsActionExecutor {
 
@@ -63,17 +62,45 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private NodeUtils nodeUtils;
     private NodeService nodeService;
     private SearchService searchService;
-    private MessageService messageService;
     private ContentService contentService;
     private MimetypeService mimetypeService;
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
     private GroupActionService groupActionService;
+    private EcosPermissionService ecosPermissionService;
 
     private Map<QName, NodeRef> defaultParentByType = new ConcurrentHashMap<>();
 
     public AlfNodesRecordsDAO() {
         setId(ID);
+    }
+
+    private Serializable convertValue(JsonNode node) {
+
+        if (node == null || node.isNull()) {
+            return null;
+        }
+
+        if (node.isArray()) {
+
+            ArrayList<Serializable> values = new ArrayList<>();
+
+            for (JsonNode subNode : node) {
+                values.add(convertValue(subNode));
+            }
+
+            return values;
+
+        } else if (node.isNumber()) {
+
+            return node.isIntegralNumber() ? node.asLong() : node.asDouble();
+
+        } else if (node.isBoolean()) {
+
+            return node.asBoolean();
+        }
+
+        return node.asText();
     }
 
     @Override
@@ -87,11 +114,23 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             Map<QName, JsonNode> contentProps = new HashMap<>();
             Map<QName, Set<NodeRef>> assocs = new HashMap<>();
 
+            NodeRef nodeRef = null;
+            if (record.getId().getId().startsWith("workspace://SpacesStore/")) {
+                nodeRef = new NodeRef(record.getId().getId());
+            }
+
             ObjectNode fields = record.getAttributes();
             Iterator<String> names = fields.fieldNames();
             while (names.hasNext()) {
 
                 String name = names.next();
+
+                if (ecosPermissionService.isAttributeProtected(nodeRef, name)) {
+                    logger.warn("You can't change '" + name +
+                                "' attribute of '" + nodeRef +
+                                "' because it is protected! Value: " + fields.get(name));
+                    continue;
+                }
 
                 QName fieldName = QName.resolveToQName(namespaceService, name);
 
@@ -102,7 +141,13 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                     if (DataTypeDefinition.CONTENT.equals(propDef.getDataType().getName())) {
                         contentProps.put(fieldName, fields.path(name));
                     } else {
-                        props.put(fieldName, fields.path(name).asText());
+
+                        JsonNode value = fields.path(name);
+
+                        if (!value.isMissingNode()) {
+
+                            props.put(fieldName, convertValue(value));
+                        }
                     }
                 } else {
 
@@ -121,8 +166,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                     }
                 }
             }
-
-            NodeRef nodeRef;
 
             if (record.getId() == RecordRef.EMPTY) {
 
@@ -154,14 +197,15 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             } else {
 
-                nodeRef = new NodeRef(record.getId().getId());
                 nodeService.addProperties(nodeRef, props);
                 result.addRecord(new RecordMeta(record.getId()));
             }
 
+            final NodeRef finalNodeRef = nodeRef;
+
             contentProps.forEach((name, value) -> {
 
-                ContentWriter writer = contentService.getWriter(nodeRef, name, true);
+                ContentWriter writer = contentService.getWriter(finalNodeRef, name, true);
 
                 if (value.isTextual()) {
 
@@ -192,7 +236,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 }
             });
 
-            assocs.forEach((name, value) -> nodeUtils.setAssocs(nodeRef, value, name));
+            assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name));
         }
 
         return result;
@@ -278,18 +322,32 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
-    public RecordsQueryResult<RecordRef> getRecords(RecordsQuery query) {
+    public RecordsQueryResult<Object> getMetaValues(RecordsQuery recordsQuery) {
 
-        AlfNodesSearch alfNodesSearch = searchByLanguage.get(query.getLanguage());
+        RecordsQueryResult<RecordRef> records = queryRecords(recordsQuery);
 
-        if (alfNodesSearch == null) {
-            throw new IllegalArgumentException("Language '" + query.getLanguage() +
-                                               "' is not supported! Query: " + query);
+        RecordsQueryResult<Object> result = new RecordsQueryResult<>();
+        result.merge(records);
+        result.setHasMore(records.getHasMore());
+        result.setTotalCount(records.getTotalCount());
+        result.setRecords((List) getMetaValues(records.getRecords()));
+
+        if (recordsQuery.isDebug()) {
+            result.setDebugInfo(getClass(), "query", recordsQuery.getQuery());
+            result.setDebugInfo(getClass(), "language", recordsQuery.getLanguage());
         }
+
+        return result;
+    }
+
+    @Override
+    public RecordsQueryResult<RecordRef> queryRecords(RecordsQuery query) {
 
         if (query.getLanguage().isEmpty()) {
             query.setLanguage(SearchService.LANGUAGE_FTS_ALFRESCO);
         }
+
+        AlfNodesSearch alfNodesSearch = needNodesSearch(query.getLanguage());
 
         Long afterIdValue = null;
         Date afterCreated = null;
@@ -336,6 +394,11 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     }
 
     @Override
+    public List<String> getSupportedLanguages() {
+        return new ArrayList<>(searchByLanguage.keySet());
+    }
+
+    @Override
     public List<MetaValue> getMetaValues(List<RecordRef> recordRef) {
         return recordRef.stream()
                         .map(this::createMetaValue)
@@ -349,15 +412,19 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         return new AlfNodeRecord(recordRef);
     }
 
-    @Override
-    public List<MetaAttributeDef> getAttributesDef(Collection<String> names) {
-        return names.stream()
-                    .map(n -> new AlfAttributeDefinition(n, namespaceService, dictionaryService, messageService))
-                    .collect(Collectors.toList());
-    }
-
     public ActionResults<RecordRef> executeAction(List<RecordRef> records, GroupActionConfig config) {
         return groupActionService.execute(records, config);
+    }
+
+    private AlfNodesSearch needNodesSearch(String language) {
+
+        AlfNodesSearch alfNodesSearch = searchByLanguage.get(language);
+
+        if (alfNodesSearch == null) {
+            throw new IllegalArgumentException("Language '" + language + "' is not supported!");
+        }
+
+        return alfNodesSearch;
     }
 
     @Autowired
@@ -371,9 +438,13 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.mimetypeService = serviceRegistry.getMimetypeService();
         this.contentService = serviceRegistry.getContentService();
-        this.messageService = serviceRegistry.getMessageService();
         this.searchService = serviceRegistry.getSearchService();
         this.nodeService = serviceRegistry.getNodeService();
+    }
+
+    @Autowired
+    public void setEcosPermissionService(EcosPermissionService ecosPermissionService) {
+        this.ecosPermissionService = ecosPermissionService;
     }
 
     @Autowired

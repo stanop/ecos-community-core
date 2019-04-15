@@ -1,6 +1,9 @@
 package ru.citeck.ecos.journals.webscripts;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -25,8 +28,11 @@ import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
+import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
+import ru.citeck.ecos.records2.RecordMeta;
+import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
-import ru.citeck.ecos.records2.source.MetaAttributeDef;
+import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.server.utils.Utils;
 import ru.citeck.ecos.utils.NodeUtils;
@@ -78,51 +84,64 @@ public class JournalConfigGet extends AbstractWebScript {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "journalId is a mandatory parameter!");
         }
 
-        if (NodeRef.isNodeRef(journalId)) {
-            journalId = nodeUtils.getProperty(new NodeRef(journalId), JournalsModel.PROP_JOURNAL_TYPE);
+        JournalType journalType;
+
+        if (journalId.startsWith("alf_")) {
+            QName typeQName = QName.resolveToQName(namespaceService, journalId.substring(4));
+            journalType = journalService.getJournalForType(typeQName).orElse(null);
+        } else {
+            if (NodeRef.isNodeRef(journalId)) {
+                journalId = nodeUtils.getProperty(new NodeRef(journalId), JournalsModel.PROP_JOURNAL_TYPE);
+            }
+            journalType = journalService.getJournalType(journalId);
         }
 
-        JournalType type = journalService.getJournalType(journalId);
-
-        if (type == null) {
+        if (journalType == null) {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "Journal with id '" + journalId + "' not found!");
         }
 
-        List<String> attributes = type.getAttributes();
+        List<String> attributes = journalType.getAttributes();
         List<Column> columns = new ArrayList<>();
-        String sourceId = type.getDataSource();
+        String sourceId = journalType.getDataSource();
         if (sourceId == null) {
             sourceId = "";
         }
 
+        Map<String, AttInfo> columnInfo = getAttributesInfo(sourceId, attributes);
         for (String name : attributes) {
 
             Column column = new Column();
 
-            column.setDefault(type.isAttributeDefault(name));
-            column.setGroupable(type.isAttributeGroupable(name));
-            column.setSearchable(type.isAttributeSearchable(name));
-            column.setSortable(type.isAttributeSortable(name));
-            column.setVisible(type.isAttributeVisible(name));
+            column.setDefault(journalType.isAttributeDefault(name));
+            column.setGroupable(journalType.isAttributeGroupable(name));
+            column.setSearchable(journalType.isAttributeSearchable(name));
+            column.setSortable(journalType.isAttributeSortable(name));
+            column.setVisible(journalType.isAttributeVisible(name));
             column.setAttribute(name);
-            column.setParams(type.getAttributeOptions(name));
+            column.setParams(journalType.getAttributeOptions(name));
             column.setText(getColumnLabel(column));
 
-            Optional<MetaAttributeDef> def = recordsService.getAttributeDef(sourceId, name);
-            column.setJavaClass(def.map(d -> {
-                Class<?> datatype = d.getJavaClass();
-                return datatype != null ? datatype.getName() : null;
-            }).orElse(null));
+            if (column.getParams() != null) {
+                String schema = column.getParams().get("schema");
+                if (StringUtils.isNotBlank(schema)) {
+                    column.setSchema(schema);
+                }
+            }
+
+            AttInfo info = columnInfo.get(name);
+            column.setJavaClass(info.getJavaClass() != null ? info.getJavaClass().getName() : null);
+            column.setEditorKey(info.getEditorKey());
+            column.setType(info.getType());
 
             columns.add(column);
         }
 
         Response response = new Response();
-        response.setId(journalId);
+        response.setId(journalType.getId());
         response.setColumns(columns);
-        response.setMeta(getJournalMeta(journalId));
+        response.setMeta(getJournalMeta(journalType));
         response.setSourceId(sourceId);
-        response.setParams(type.getOptions());
+        response.setParams(journalType.getOptions());
 
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getWriter(), response);
@@ -143,17 +162,21 @@ public class JournalConfigGet extends AbstractWebScript {
         if (column.getAttribute().contains(":")) {
 
             QName attQName = QName.resolveToQName(namespaceService, column.getAttribute());
-            ClassAttributeDefinition attDef = dictionaryService.getProperty(attQName);
 
-            if (attDef == null) {
-                attDef = dictionaryService.getAssociation(attQName);
-            }
+            if (attQName != null) {
 
-            if (attDef != null) {
+                ClassAttributeDefinition attDef = dictionaryService.getProperty(attQName);
 
-                String title = attDef.getTitle(messageService);
-                if (StringUtils.isNotBlank(title)) {
-                    return title;
+                if (attDef == null) {
+                    attDef = dictionaryService.getAssociation(attQName);
+                }
+
+                if (attDef != null) {
+
+                    String title = attDef.getTitle(messageService);
+                    if (StringUtils.isNotBlank(title)) {
+                        return title;
+                    }
                 }
             }
         }
@@ -161,18 +184,21 @@ public class JournalConfigGet extends AbstractWebScript {
         return column.getAttribute();
     }
 
-    private JournalMeta getJournalMeta(String id) {
+    private JournalMeta getJournalMeta(JournalType journal) {
 
-        JournalRepoData journalData = journalRefById.getUnchecked(id);
+        JournalRepoData journalData = journalRefById.getUnchecked(journal.getId());
 
         JournalMeta meta = new JournalMeta();
         if (journalData.getNodeRef() == null) {
             return meta;
         }
 
-        meta.setNodeRef(String.valueOf(journalData.getNodeRef()));
+        NodeRef journalRef = journalData.getNodeRef();
+        meta.setNodeRef(String.valueOf(journalRef));
+        meta.setTitle(nodeUtils.getDisplayName(journalRef));
 
         List<Criterion> criteriaList = new ArrayList<>();
+        SearchCriteria criteria = new SearchCriteria(namespaceService);
 
         for (NodeRef criterionRef : journalData.getCriteria()) {
 
@@ -183,10 +209,41 @@ public class JournalConfigGet extends AbstractWebScript {
             criterion.setPredicate((String) props.get(JournalsModel.PROP_PREDICATE));
             criterion.setValue(getCriterionValue((String) props.get(JournalsModel.PROP_CRITERION_VALUE)));
 
+            criteria.addCriteriaTriplet(criterion.getField(), criterion.getPredicate(), criterion.getValue());
+
             criteriaList.add(criterion);
         }
 
-        meta.setCreateVariants(createVariantsGet.getVariantsByJournalId(id, true));
+        if (StringUtils.isNotBlank(journal.getPredicate())) {
+
+            try {
+                meta.setPredicate(objectMapper.readTree(journal.getPredicate()));
+            } catch (IOException e) {
+                logger.error("Predicate is invalid: " + journal.getPredicate(), e);
+            }
+        }
+
+        if (meta.getPredicate() == null) {
+
+            JsonNode criteriaJson = objectMapper.valueToTree(criteria);
+            try {
+                meta.setPredicate(recordsService.convertQueryLanguage(criteriaJson,
+                                                                      CriteriaAlfNodesSearch.LANGUAGE,
+                                                                      RecordsService.LANGUAGE_PREDICATE));
+            } catch (Exception e) {
+                logger.error("Language conversion error. criteria: " + criteriaJson, e);
+            }
+        }
+
+        try {
+            if (StringUtils.isNotBlank(journal.getGroupBy())) {
+                meta.setGroupBy(objectMapper.readTree(journal.getGroupBy()));
+            }
+        } catch (IOException e) {
+            logger.error("GroupBy is invalid: " + journal.getGroupBy(), e);
+        }
+
+        meta.setCreateVariants(createVariantsGet.getVariantsByJournalId(journal.getId(), true));
         meta.setCriteria(criteriaList);
 
         return meta;
@@ -224,6 +281,37 @@ public class JournalConfigGet extends AbstractWebScript {
         }
 
         return repoData;
+    }
+
+    private Map<String, AttInfo> getAttributesInfo(String sourceId, List<String> attributes) {
+
+        Map<String, String> attributesEdges = new HashMap<>();
+        for (String attribute : attributes) {
+            attributesEdges.put(attribute, ".edge(n:\"" + attribute + "\"){type,editorKey,javaClass}");
+        }
+
+        RecordRef recordRef = RecordRef.create(sourceId, "");
+        RecordMeta attInfoMeta = recordsService.getAttributes(recordRef, attributesEdges);
+
+        Map<String, AttInfo> result = new HashMap<>();
+
+        for (String attribute : attributes) {
+
+            AttInfo info = null;
+
+            JsonNode attInfoNode = attInfoMeta.get(attribute);
+            if (attInfoNode instanceof ObjectNode) {
+                try {
+                    info = objectMapper.treeToValue(attInfoNode, AttInfo.class);
+                } catch (JsonProcessingException e) {
+                    logger.warn("Error", e);
+                }
+            }
+
+            result.put(attribute, info != null ? info : new AttInfo());
+        }
+
+        return result;
     }
 
     private String toPrefix(QName name) {
@@ -277,6 +365,9 @@ public class JournalConfigGet extends AbstractWebScript {
     static class JournalMeta {
         @Getter @Setter String nodeRef;
         @Getter @Setter List<Criterion> criteria;
+        @Getter @Setter String title;
+        @Getter @Setter JsonNode predicate;
+        @Getter @Setter JsonNode groupBy;
         @Getter @Setter List<CreateVariantsGet.ResponseVariant> createVariants;
     }
 
@@ -289,8 +380,10 @@ public class JournalConfigGet extends AbstractWebScript {
     static class Column {
         @Getter @Setter String text;
         @Getter @Setter String type;
+        @Getter @Setter String editorKey;
         @Getter @Setter String javaClass;
         @Getter @Setter String attribute;
+        @Getter @Setter String schema;
         @Getter @Setter Formatter formatter;
         @Getter @Setter Map<String, String> params;
         @Getter @Setter boolean isDefault;
@@ -303,5 +396,11 @@ public class JournalConfigGet extends AbstractWebScript {
     static class Formatter {
         @Getter @Setter String name;
         @Getter @Setter Map<String, String> params;
+    }
+
+    static class AttInfo {
+        @Getter @Setter String type;
+        @Getter @Setter String editorKey;
+        @Getter @Setter Class<?> javaClass;
     }
 }

@@ -252,21 +252,18 @@ export function loadTopMenuData(userName, isUserAvailable, isUserMutable, isExte
             for (let site of sites) {
                 let createVariants = [];
                 for (let variant of site.createVariants) {
-                    // variant.isDefault
+
                     if (!variant.canCreate) {
                         continue;
-                    }
-                    var createArguments = "type=" + variant.type +
-                                          "&viewId=" + variant.formId +
-                                          "&destination=" + variant.destination;
-                    if (variant.createArguments) {
-                        createArguments += "&" + variant.createArguments;
                     }
 
                     createVariants.push({
                         id: "HEADER_" + ((site.siteId + "_" + variant.type).replace(/\-/g, "_")).toUpperCase(),
                         label: variant.title,
-                        targetUrl: "/share/page/node-create?" + createArguments
+                        control: {
+                            type: "ECOS_CREATE_VARIANT",
+                            payload: variant
+                        }
                     });
                 }
 

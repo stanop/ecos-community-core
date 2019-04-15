@@ -13,7 +13,7 @@ import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records2.request.query.SortBy;
 import ru.citeck.ecos.search.*;
 
-import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -21,17 +21,17 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
 
     public static final String LANGUAGE = "criteria";
 
-    private CriteriaSearchService searchService;
-    private SearchCriteriaParser criteriaParser;
     private NamespaceService namespaceService;
+    private SearchCriteriaParser criteriaParser;
+    private CriteriaSearchService criteriaSearchService;
 
     @Autowired
-    public CriteriaAlfNodesSearch(CriteriaSearchService searchService,
+    public CriteriaAlfNodesSearch(CriteriaSearchService criteriaSearchService,
                                   SearchCriteriaParser criteriaParser,
                                   ServiceRegistry serviceRegistry,
                                   AlfNodesRecordsDAO recordsSource) {
 
-        this.searchService = searchService;
+        this.criteriaSearchService = criteriaSearchService;
         this.criteriaParser = criteriaParser;
         this.namespaceService = serviceRegistry.getNamespaceService();
 
@@ -70,7 +70,7 @@ public class CriteriaAlfNodesSearch implements AlfNodesSearch {
             }
         }
 
-        CriteriaSearchResults criteriaResults = searchService.query(criteria, SearchService.LANGUAGE_FTS_ALFRESCO);
+        CriteriaSearchResults criteriaResults = criteriaSearchService.query(criteria, SearchService.LANGUAGE_FTS_ALFRESCO);
 
         RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
 

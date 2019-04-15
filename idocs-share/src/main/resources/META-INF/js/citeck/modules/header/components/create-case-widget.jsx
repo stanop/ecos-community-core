@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Dropdown } from 'react-bootstrap';
-import CustomToggle from './dropdown-menu-custom-toggle';
+import { UncontrolledDropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
 import DropDownMenuGroup from './dropdown-menu-group';
 import DropdownMenuCascade from './dropdown-menu-cascade';
 import { t } from '../../common/util';
@@ -25,17 +24,17 @@ const CreateCaseWidget = ({ items, isCascade }) => {
 
     return (
         <div id='HEADER_CREATE_CASE'>
-            <Dropdown className='custom-dropdown-menu' pullLeft>
-                <CustomToggle bsRole='toggle' className='create-case-dropdown-menu__toggle custom-dropdown-menu__toggle'>
+            <UncontrolledDropdown className='custom-dropdown-menu' pullLeft>
+                <DropdownToggle tag="span" className="create-case-dropdown-menu__toggle custom-dropdown-menu__toggle">
                     <div>
                         <i className={'fa fa-plus'} />
                         <span>{t('create_case.label')}</span>
                     </div>
-                </CustomToggle>
-                <Dropdown.Menu bsRole='menu' className={dropdownMenuClasses.join(' ')} id='HEADER_CREATE_CASE__DROPDOWN'>
+                </DropdownToggle>
+                <DropdownMenu className={dropdownMenuClasses.join(' ')} id='HEADER_CREATE_CASE__DROPDOWN'>
                     {menuListItems}
-                </Dropdown.Menu>
-            </Dropdown>
+                </DropdownMenu>
+            </UncontrolledDropdown>
         </div>
     )
 };

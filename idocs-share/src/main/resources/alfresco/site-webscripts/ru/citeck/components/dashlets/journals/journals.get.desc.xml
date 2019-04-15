@@ -1,0 +1,6 @@
+<webscript>
+    <shortname>Journals</shortname>
+    <description>This dashlet displays a journals.</description>
+    <family>dashlet</family>
+    <url>/components/dashlets/journals/journals</url>
+</webscript>

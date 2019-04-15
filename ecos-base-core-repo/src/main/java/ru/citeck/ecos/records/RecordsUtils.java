@@ -134,7 +134,7 @@ public class RecordsUtils {
 
     public static List<RecordRef> strToRecords(String sourceId, List<String> records) {
         return records.stream()
-                      .map(r -> new RecordRef(sourceId, r))
+                      .map(r -> RecordRef.create(sourceId, r))
                       .collect(Collectors.toList());
     }
 

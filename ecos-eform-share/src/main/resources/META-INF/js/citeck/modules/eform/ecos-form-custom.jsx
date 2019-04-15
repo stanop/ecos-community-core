@@ -3,10 +3,10 @@ export default class EcosFormCustom {
 
     constructor(params) {
         this.form = params.form;
-        this.record = params.record;
+        this.recordId = params.recordId;
     }
 
     isSystemForm() {
-        return ['eform@DEFAULT', 'eform@ECOS_FORM'].indexOf(this.record.id) >= 0;
+        return ['eform@DEFAULT', 'eform@ECOS_FORM'].indexOf(this.recordId) >= 0;
     }
 }

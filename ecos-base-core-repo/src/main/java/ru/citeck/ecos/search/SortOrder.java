@@ -48,7 +48,7 @@ public enum SortOrder {
 
     @Override
     public String toString() {
-        return value.equals(SortOrder.ASCENDING) ? "true" : "false";
+        return value.equals(ASCENDING.getValue()) ? "true" : "false";
     }
 
     public Boolean toBoolean() {

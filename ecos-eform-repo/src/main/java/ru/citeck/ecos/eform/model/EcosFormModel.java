@@ -1,8 +1,10 @@
 package ru.citeck.ecos.eform.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
+import ru.citeck.ecos.records2.graphql.meta.annotation.DisplayName;
 
 public class EcosFormModel {
 
@@ -25,5 +27,11 @@ public class EcosFormModel {
         this.formKey = model.getFormKey();
         this.customModule = model.getCustomModule();
         this.definition = model.getDefinition();
+    }
+
+    @DisplayName
+    @JsonIgnore
+    public String getDisplayName() {
+        return title;
     }
 }
