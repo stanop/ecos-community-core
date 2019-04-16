@@ -1,7 +1,5 @@
 package ru.citeck.ecos.calendar.eform;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.util.ISO8601DateFormat;
 import org.apache.commons.lang.StringUtils;
@@ -114,40 +112,37 @@ public class EcosCalendarEntryDTO implements EcosCalendarEntry, MetaValue, Seria
     public Object getAttribute(String attributeName, MetaField field) {
         switch (attributeName) {
             case CalendarEntryAttrs.ATT_TITLE:
-                return this.getTitle();
+                return getTitle();
             case CalendarEntryAttrs.ATT_DESCRIPTION:
-                return this.getDescription();
+                return getDescription();
             case CalendarEntryAttrs.ATT_LOCATION:
-                return this.getLocation();
+                return getLocation();
             case CalendarEntryAttrs.ATT_ALL_DAY:
-                return isAllDay(this.getStart(), this.getEnd());
+                return isAllDay(getStart(), getEnd());
             case CalendarEntryAttrs.ATT_START:
-                if (this.getStart() == null) {
+                if (getStart() == null) {
                     return null;
                 }
-                return ISO8601DateFormat.format(this.getStart());
+                return ISO8601DateFormat.format(getStart());
             case CalendarEntryAttrs.ATT_END:
-                if (this.getEnd() == null) {
+                if (getEnd() == null) {
                     return null;
                 }
-                return ISO8601DateFormat.format(this.getEnd());
+                return ISO8601DateFormat.format(getEnd());
             case CalendarEntryAttrs.ATT_CREATED_AT:
-                if (this.getCreatedAt() == null) {
+                if (getCreatedAt() == null) {
                     return null;
                 }
-                return ISO8601DateFormat.format(this.getCreatedAt());
+                return ISO8601DateFormat.format(getCreatedAt());
             case CalendarEntryAttrs.ATT_MODIFIED_AT:
-                if (this.getModifiedAt() == null) {
+                if (getModifiedAt() == null) {
                     return null;
                 }
-                return ISO8601DateFormat.format(this.getModifiedAt());
+                return ISO8601DateFormat.format(getModifiedAt());
             case CalendarEntryAttrs.ATT_TYPE:
                 return getType();
             case CalendarEntryAttrs.ATT_PARTICIPANTS:
-                ArrayNode jsonNodes = JsonNodeFactory.instance.arrayNode();
-                List<String> participants = getParticipants();
-                participants.forEach(jsonNodes::add);
-                return jsonNodes;
+                return getParticipants();
             case CalendarEntryAttrs.ATT_HAS_SYNC_CONFLICTS:
                 return getHasSyncConflicts();
             case CalendarEntryAttrs.ATT_LINK_TO_ENTRY:
