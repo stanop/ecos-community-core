@@ -124,7 +124,6 @@ var roles = {
     };
     roles.rolesData[ROLE_SIGNER] = {
         fn: function () {
-            logger.warn('Fill signer role');
             var signer = (document.assocs['idocs:signatory'] || [])[0];
             return signer ? [signer] : [];
         }
