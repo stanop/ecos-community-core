@@ -386,7 +386,7 @@
                     <!--<prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/supplementaryAgreement/comments</prop>-->
                 <!--</props>-->
                 <props>
-                    <prop key="path">/payments-listapp:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
                     <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
                     <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/supplementaryAgreement/document-tasks</prop>
                 </props>
