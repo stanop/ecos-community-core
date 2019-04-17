@@ -1,33 +1,29 @@
-(function () {
+(function() {
 
-    var onRedirectToCreatePaymentPage = {type: "payments:payment", from: "contract"},
-        onRedirectToCreateClosingDocPage = {type: "contracts:closingDocument", from: "contract"},
-        onRedirectToCreateSupAgreementPage = {type: "contracts:supplementaryAgreement", from: "contract"},
-        onRedirectToCreateClosingDocForInvoice = {type: "contracts:closingDocument", from: "invoice"};
+    var onRedirectToCreatePaymentPage =  { type: "payments:payment", from: "contract" },
+        onRedirectToCreateClosingDocPage = { type: "contracts:closingDocument", from: "contract" },
+        onRedirectToCreateSupAgreementPage = { type: "contracts:supplementaryAgreement", from: "contract" },
+        onRedirectToCreateClosingDocForInvoice = { type: "contracts:closingDocument", from: "invoice" };
 
-    YAHOO.Bubbling.fire("registerAction", {
-        actionName: "onRedirectToCreatePaymentPage",
+    YAHOO.Bubbling.fire("registerAction", { actionName: "onRedirectToCreatePaymentPage",
         fn: function (record) {
             redirectToCreatePage(record, onRedirectToCreatePaymentPage)
         }
     });
 
-    YAHOO.Bubbling.fire("registerAction", {
-        actionName: "onRedirectToCreateClosingDocPage",
+    YAHOO.Bubbling.fire("registerAction", { actionName: "onRedirectToCreateClosingDocPage",
         fn: function (record) {
             redirectToCreatePage(record, onRedirectToCreateClosingDocPage)
         }
     });
 
-    YAHOO.Bubbling.fire("registerAction", {
-        actionName: "onRedirectToCreateSupAgreementPage",
+    YAHOO.Bubbling.fire("registerAction", { actionName: "onRedirectToCreateSupAgreementPage",
         fn: function (record) {
             redirectToCreatePage(record, onRedirectToCreateSupAgreementPage)
         }
     });
 
-    YAHOO.Bubbling.fire("registerAction", {
-        actionName: "onRedirectToCreateClosingDocForInvoice",
+    YAHOO.Bubbling.fire("registerAction", { actionName: "onRedirectToCreateClosingDocForInvoice",
         fn: function (record) {
             redirectToCreatePage(record, onRedirectToCreateClosingDocForInvoice)
         }
@@ -61,22 +57,26 @@
     });
 
     function redirectToCreatePage(record, pageOfCreate) {
+        var jsNode = record.jsNode;
+
+        var newWindow = window.open("", "on-redirect-from-" + pageOfCreate.from);
+        newWindow.document.body.innerHTML = "<p>" + Alfresco.util.message("label.loading") + "</p>";
+
         Alfresco.util.Ajax.jsonGet({
             url: Alfresco.constants.PROXY_URI + "api/journals/create-variants/site/contracts",
             successCallback: {
                 scope: this,
-                fn: function (response) {
-                    var jsNode = record.jsNode,
-                        destNodeRef = "";
+                fn: function(response) {
+                    var destNodeRef = "";
 
-                    for (var i = 0; i < response.json.createVariants.length; i++) {
-                        if (response.json.createVariants[i].type == pageOfCreate.type) {
+                    for(var i = 0; i < response.json.createVariants.length; i++) {
+                        if(response.json.createVariants[i].type == pageOfCreate.type) {
                             destNodeRef = response.json.createVariants[i].destination;
                             break;
                         }
                     }
 
-                    if (destNodeRef) {
+                    if(destNodeRef) {
                         var redirection = '/share/page/node-create?type=' + pageOfCreate.type + '&destination=' + destNodeRef;
 
                         if (pageOfCreate.from == "invoice") {
@@ -90,25 +90,10 @@
                             redirection += '&param_' + pageOfCreate.from + '=' + jsNode.nodeRef;
                         }
 
-                        window.open(redirection);
-                    } else {
-                        showErrorPrompt();
+                        newWindow.location = redirection;
                     }
                 }
-            },
-            failureCallback: {
-                fn: function () {
-                    showErrorPrompt();
-                },
-                scope: this
             }
-        });
-    }
-
-    function showErrorPrompt() {
-        Alfresco.util.PopupManager.displayPrompt({
-            title: Alfresco.util.message("message.failure"),
-            text: Alfresco.util.message("Error getting url for redirection. Please contact administrator.")
         });
     }
 })();
