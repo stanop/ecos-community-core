@@ -90,7 +90,6 @@ var roles = {
 (function() {
     roles.rolesData[ROLE_CONFIRMERS] = {
         fn: function () {
-            logger.warn('Fill confirmers role');
             var type = document.properties['tk:type'];
             var kind = document.properties['tk:kind'];
             var confirmersRefs = {};
