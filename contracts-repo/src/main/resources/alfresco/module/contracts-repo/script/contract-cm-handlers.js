@@ -169,12 +169,26 @@ function changeSigner() {
 
 function sendToContractorForESigning() {
     var docPackages = document.sourceAssocs["sam:packageDocumentLink"] || [];
-    if (docPackages.length === 0) {
+    if (docPackages.length == 0) {
         throw (MSG_TRANSLATOR.getMessage("actions.messages.cant-find-link-to-sam-package"));
     }
 
     var contractor = (document.assocs["contracts:contractor"] || [])[0];
-    checkContractorBeforeSending(contractor);
+    if (!contractor) {
+        throw (MSG_TRANSLATOR.getMessage("actions.messages.field-contractor-is-not-completed"));
+    } else if (!contractor.properties["idocs:diadocBoxId"]) {
+        throw (MSG_TRANSLATOR.getMessage("actions.messages.contractors-field-diadocBoxId-is-not-completed"));
+    } else {
+        var inn = contractor.properties["idocs:inn"];
+        var boxId = contractor.properties["idocs:diadocBoxId"];
+        if (!inn || !boxId || !diadocService.isCounterpartyExists(inn, boxId)) {
+            throw (MSG_TRANSLATOR.getMessage("actions.messages.contractor-not-found-at-diadoc"));
+        }
+    }
+
+    var caseDocs = document.childAssocs["icase:documents"] || [];
+    var contentFromInboundPackage = (document.assocs["sam:contentFromInboundPackage"] ||
+        document.assocs["idocs:attachmentRkkCreatedFrom"] || [])[0];
 
     for (var i = 0; i < docPackages.length; i++) {
         if (docPackages[i].typeShort.equals("sam:outboundPackage")) {
@@ -182,11 +196,15 @@ function sendToContractorForESigning() {
         }
     }
 
-    var inboundDocs = getCaseDocs();
-    var caseDocs = document.childAssocs["icase:documents"] || [];
+    var inboundDocs = [];
+
+    if (contentFromInboundPackage != null) {
+        inboundDocs.push(contentFromInboundPackage);
+    }
 
     for (var i = 0; i < caseDocs.length; i++) {
         var pack = (caseDocs[i].sourceAssocs["sam:packageAttachments"] || [])[0];
+
         if (pack != null && pack.typeShort.equals("sam:inboundPackage")) {
             inboundDocs.push(caseDocs[i]);
         }
@@ -202,11 +220,33 @@ function sendToContractorForESigning() {
 }
 
 function sendESignsForInboundPackage() {
-    var contractor = (document.assocs["contracts:contractor"] || [])[0];
-    checkContractorBeforeSending(contractor);
+    var docPackages = document.sourceAssocs["sam:packageDocumentLink"] || [];
+    if (docPackages.length == 0) {
+        throw (MSG_TRANSLATOR.getMessage("actions.messages.cant-find-link-to-sam-package"));
+    }
 
-    var inboundDocs = getCaseDocs();
+    var contractor = (document.assocs["contracts:contractor"] || [])[0];
+    if (!contractor) {
+        throw (MSG_TRANSLATOR.getMessage("actions.messages.field-contractor-is-not-completed"));
+    } else if (!contractor.properties["idocs:diadocBoxId"]) {
+        throw (MSG_TRANSLATOR.getMessage("actions.messages.contractors-field-diadocBoxId-is-not-completed"));
+    } else {
+        var inn = contractor.properties["idocs:inn"];
+        var boxId = contractor.properties["idocs:diadocBoxId"];
+        if (!inn || !boxId || !diadocService.isCounterpartyExists(inn, boxId)) {
+            throw (MSG_TRANSLATOR.getMessage("actions.messages.contractor-not-found-at-diadoc"));
+        }
+    }
+
     var caseDocs = document.childAssocs["icase:documents"] || [];
+    var contentFromInboundPackage = (document.assocs["sam:contentFromInboundPackage"] ||
+            document.assocs["idocs:attachmentRkkCreatedFrom"] || [])[0];
+
+    var inboundDocs = [];
+
+    if (contentFromInboundPackage != null) {
+        inboundDocs.push(contentFromInboundPackage);
+    }
 
     for (var i = 0; i < caseDocs.length; i++) {
         var pack = (caseDocs[i].sourceAssocs["sam:packageAttachments"] || [])[0];
@@ -232,24 +272,10 @@ function _attachmentFilter(attachment) {
     return ['RECEIVED', 'DELIVERY_FAILED'].indexOf(status) != -1;
 }
 
-function checkContractorBeforeSending(contractor) {
-    if (!contractor) {
-        throw (MSG_TRANSLATOR.getMessage("actions.messages.field-contractor-is-not-completed"));
-    } else if (!contractor.properties["idocs:diadocBoxId"]) {
-        throw (MSG_TRANSLATOR.getMessage("actions.messages.contractors-field-diadocBoxId-is-not-completed"));
-    } else {
-        var inn = contractor.properties["idocs:inn"];
-        var boxId = contractor.properties["idocs:diadocBoxId"];
-        if (!inn || !boxId || !diadocService.isCounterpartyExists(inn, boxId)) {
-            throw (MSG_TRANSLATOR.getMessage("actions.messages.contractor-not-found-at-diadoc"));
-        }
-    }
-}
-
 function allDocsAreSigned() {
-    var completeStatuses = ["SIGNED"],
-        caseDocs = getCaseDocs(),
-        result = true;
+    var completeStatuses = ["SIGNED"];
+    var caseDocs = getCaseDocs();
+    var result = true;
 
     for (var i = 0; i < caseDocs.length; i++) {
         var status = caseDocs[i].properties["sam:packageAttachmentStatus"] || "";
