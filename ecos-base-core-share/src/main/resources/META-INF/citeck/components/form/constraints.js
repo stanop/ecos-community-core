@@ -549,7 +549,8 @@ require([
                 } else {
                     prefixId = 'eform.header.edit.title';
                 }
-                config.header = Alfresco.util.message(prefixId) + " " + displayName;
+                var prefix = Alfresco.util.message(prefixId);
+                config.header = prefix + (displayName ? " " + displayName : "");
 
                 modal.open(
                     React.createElement(EcosForm.default, formParams),
