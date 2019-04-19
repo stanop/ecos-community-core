@@ -25,6 +25,11 @@
   src: url(../../css/fonts/opensansbold.woff) format('woff');
 }
 
+.formio-component-dadata_loader {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
 
 .info {
   margin-bottom: 10px;
