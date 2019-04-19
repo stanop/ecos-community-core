@@ -496,6 +496,59 @@ require([
         }
     };
 
+    var confirmIdx = 0;
+    Citeck.forms.confirm = function (text, okCallback, cancelCallback) {
+        var confirmId = 'ecos-confirm-' + confirmIdx++;
+        var contentId = confirmId + '-content';
+        var submitBtnId = contentId + '-submit';
+        var cancelBtnId = contentId + '-cancel';
+
+        require(['static/ecos/modal/js/modal', 'xstyle!static/ecos/ecos-form/css/ecos-form.min.css'], function (Modal) {
+            var modal = new Modal.default();
+
+            modal.open(
+                '<h3 class="ecos-caption ecos-caption_middle">' + text + '</h3>' +
+                '<div class="text-center" style="margin-top: 15px">' +
+                '<button id="'+cancelBtnId+'" disabled class="ecos-btn ecos-btn_x-step_15" type="button">' + Alfresco.util.message('actions.button.cancel') + '</button>' +
+                '<button id="'+submitBtnId+'" disabled class="ecos-btn ecos-btn_blue" type="button">' + Alfresco.util.message('actions.button.ok') + '</button>' +
+                '</div>',
+                {
+                    rawHtml: true,
+                    reactstrapProps: {
+                        onExit: function() {typeof cancelCallback === 'function' && cancelCallback();}
+                    }
+                },
+                function() {
+                    var submitBtn = document.getElementById(submitBtnId);
+
+                    var onSubmit = function() {
+                        typeof okCallback === 'function' && okCallback();
+                        if (typeof cancelCallback === 'function') {
+                            cancelCallback = function() {};
+                        }
+                        modal.close(function() {
+                            submitBtn.removeEventListener('click', onSubmit);
+                        });
+                    };
+
+                    var cancelBtn = document.getElementById(cancelBtnId);
+
+                    var onCancel = function() {
+                        modal.close(function() {
+                            cancelBtn.removeEventListener('click', onCancel);
+                        });
+                    };
+
+                    submitBtn.disabled = false;
+                    submitBtn.addEventListener('click', onSubmit);
+
+                    cancelBtn.disabled = false;
+                    cancelBtn.addEventListener('click', onCancel);
+                }
+            );
+        });
+    };
+
     Citeck.forms.eform = function (record, config) {
 
         if (!config) {
