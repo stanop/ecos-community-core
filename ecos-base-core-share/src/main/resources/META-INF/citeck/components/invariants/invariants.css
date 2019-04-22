@@ -2426,6 +2426,10 @@ div[id*="multiple-text"] .multiple-text-control input {
   padding: 0px 30px;
 }
 
+.cardlet #cardlet-remote-node-view-container .invariants-form .template-tabs .tabs-title {
+  height: auto;
+}
+
 .invariants-form .template-tabs .tabs-title ul {
   overflow: auto;
   white-space: nowrap;
