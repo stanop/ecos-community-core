@@ -45,8 +45,8 @@ table, tr, td
     </#if>
 <#-- User in taskPooledActors authority container is not available for now.
     Trying to get it from taskRole -->
-    <#if !user?has_content && record.taskRole?has_content>
-        <#assign user = record.taskRole!"" />
+    <#if !user?has_content && record.initiator?has_content>
+        <#assign user = record.initiator!"" />
     </#if>
     <#assign allDecisions = allDecisions + [ {
         "date": date,
@@ -77,7 +77,7 @@ table, tr, td
     <tr>
         <td>${decision.date?string[dateFormat]}</td>
         <td><#if decision.role?has_content && people.getGroup(decision.role)??>${people.getGroup(decision.role).properties.authorityDisplayName!""}</#if></td>
-        <td><#if decision.user?has_content && people.getPerson(decision.user)??>${people.getPerson(decision.user).properties.firstName!""} ${people.getPerson(decision.user).properties.lastName!""}</#if></td>
+        <td><#if decision.user.displayName??>#{decision.user.displayName}<#else>${decision.user.lastName!""} ${decision.user.firstName!""} ${decision.user.middleName!""}</#if></td>
         <td>${decision.outcome}</td>
         <td>${decision.comment}</td>
         <td> &nbsp;</td>
