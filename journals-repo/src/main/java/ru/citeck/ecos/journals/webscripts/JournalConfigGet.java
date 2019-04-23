@@ -25,6 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
+import ru.citeck.ecos.journals.JournalBatchEdit;
+import ru.citeck.ecos.journals.JournalGroupAction;
 import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
@@ -120,6 +122,7 @@ public class JournalConfigGet extends AbstractWebScript {
             column.setAttribute(name);
             column.setParams(journalType.getAttributeOptions(name));
             column.setText(getColumnLabel(column));
+            column.setBatchEdit(getBatchEdit(journalType, name));
 
             if (column.getParams() != null) {
                 String schema = column.getParams().get("schema");
@@ -146,6 +149,25 @@ public class JournalConfigGet extends AbstractWebScript {
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getWriter(), response);
         res.setStatus(Status.STATUS_OK);
+    }
+
+    private List<BatchEdit> getBatchEdit(JournalType type, String attribute) {
+
+        List<JournalBatchEdit> batchEdits = type.getBatchEdit(attribute);
+        if (batchEdits == null) {
+            batchEdits = Collections.emptyList();
+        }
+
+        List<BatchEdit> result = new ArrayList<>();
+
+        for (JournalBatchEdit batchEdit : batchEdits) {
+            BatchEdit edit = new BatchEdit();
+            edit.setId(batchEdit.getId());
+            edit.setTitle(batchEdit.getTitle());
+            edit.setParams(batchEdit.getOptions());
+            result.add(edit);
+        }
+        return result;
     }
 
     private String getColumnLabel(Column column) {
@@ -196,6 +218,7 @@ public class JournalConfigGet extends AbstractWebScript {
         NodeRef journalRef = journalData.getNodeRef();
         meta.setNodeRef(String.valueOf(journalRef));
         meta.setTitle(nodeUtils.getDisplayName(journalRef));
+        meta.setGroupActions(getGroupActions(journal));
 
         List<Criterion> criteriaList = new ArrayList<>();
         SearchCriteria criteria = new SearchCriteria(namespaceService);
@@ -247,6 +270,23 @@ public class JournalConfigGet extends AbstractWebScript {
         meta.setCriteria(criteriaList);
 
         return meta;
+    }
+
+    private List<GroupAction> getGroupActions(JournalType type) {
+
+        List<GroupAction> resultActions = new ArrayList<>();
+
+        for (JournalGroupAction groupAction : type.getGroupActions()) {
+
+            GroupAction action = new GroupAction();
+            action.setId(groupAction.getId());
+            action.setTitle(groupAction.getTitle());
+            action.setParams(groupAction.getOptions());
+            action.setType(groupAction.getType());
+            action.setFormKey("alf_" + groupAction.getViewClass());
+        }
+
+        return resultActions;
     }
 
     private String getCriterionValue(String value) {
@@ -369,6 +409,15 @@ public class JournalConfigGet extends AbstractWebScript {
         @Getter @Setter JsonNode predicate;
         @Getter @Setter JsonNode groupBy;
         @Getter @Setter List<CreateVariantsGet.ResponseVariant> createVariants;
+        @Getter @Setter List<GroupAction> groupActions;
+    }
+
+    static class GroupAction {
+        @Getter @Setter String id;
+        @Getter @Setter String title;
+        @Getter @Setter Map<String, String> params;
+        @Getter @Setter String type;
+        @Getter @Setter String formKey;
     }
 
     static class Criterion {
@@ -391,6 +440,13 @@ public class JournalConfigGet extends AbstractWebScript {
         @Getter @Setter boolean isSortable;
         @Getter @Setter boolean isVisible;
         @Getter @Setter boolean isGroupable;
+        @Getter @Setter List<BatchEdit> batchEdit;
+    }
+
+    static class BatchEdit {
+        @Getter @Setter String id;
+        @Getter @Setter String title;
+        @Getter @Setter Map<String, String> params;
     }
 
     static class Formatter {
