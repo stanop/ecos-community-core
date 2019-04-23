@@ -122,7 +122,6 @@ public class JournalConfigGet extends AbstractWebScript {
             column.setAttribute(name);
             column.setParams(journalType.getAttributeOptions(name));
             column.setText(getColumnLabel(column));
-            column.setBatchEdit(getBatchEdit(journalType, name));
 
             if (column.getParams() != null) {
                 String schema = column.getParams().get("schema");
@@ -149,25 +148,6 @@ public class JournalConfigGet extends AbstractWebScript {
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getWriter(), response);
         res.setStatus(Status.STATUS_OK);
-    }
-
-    private List<BatchEdit> getBatchEdit(JournalType type, String attribute) {
-
-        List<JournalBatchEdit> batchEdits = type.getBatchEdit(attribute);
-        if (batchEdits == null) {
-            batchEdits = Collections.emptyList();
-        }
-
-        List<BatchEdit> result = new ArrayList<>();
-
-        for (JournalBatchEdit batchEdit : batchEdits) {
-            BatchEdit edit = new BatchEdit();
-            edit.setId(batchEdit.getId());
-            edit.setTitle(batchEdit.getTitle());
-            edit.setParams(batchEdit.getOptions());
-            result.add(edit);
-        }
-        return result;
     }
 
     private String getColumnLabel(Column column) {
@@ -283,7 +263,30 @@ public class JournalConfigGet extends AbstractWebScript {
             action.setTitle(groupAction.getTitle());
             action.setParams(groupAction.getOptions());
             action.setType(groupAction.getType());
-            action.setFormKey("alf_" + groupAction.getViewClass());
+            if (groupAction.getViewClass() != null) {
+                action.setFormKey("alf_" + groupAction.getViewClass());
+            }
+
+            resultActions.add(action);
+        }
+
+        for (String attribute : type.getAttributes()) {
+
+            List<JournalBatchEdit> batchEdits = type.getBatchEdit(attribute);
+
+            for (JournalBatchEdit batchEdit : batchEdits) {
+
+                GroupAction action = new GroupAction();
+                action.setTitle(batchEdit.getTitle());
+
+                Map<String, String> params = new HashMap<>(batchEdit.getOptions());
+                params.put("attribute", attribute);
+                action.setParams(params);
+                action.setId("batch-edit");
+                action.setType("selected");
+
+                resultActions.add(action);
+            }
         }
 
         return resultActions;
@@ -440,13 +443,6 @@ public class JournalConfigGet extends AbstractWebScript {
         @Getter @Setter boolean isSortable;
         @Getter @Setter boolean isVisible;
         @Getter @Setter boolean isGroupable;
-        @Getter @Setter List<BatchEdit> batchEdit;
-    }
-
-    static class BatchEdit {
-        @Getter @Setter String id;
-        @Getter @Setter String title;
-        @Getter @Setter Map<String, String> params;
     }
 
     static class Formatter {
