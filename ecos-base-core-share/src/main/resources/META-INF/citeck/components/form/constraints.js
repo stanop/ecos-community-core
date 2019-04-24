@@ -593,17 +593,28 @@ require([
                 }, 100);
             };
 
-            Citeck.Records.get(record).loadAttribute('.disp').then(function(displayName) {
+            Citeck.Records.get(record).load({
+                'displayName': '.disp',
+                'formMode': '_formMode'
+            }).then(function(recordData) {
+
+                var displayName = recordData.displayName || '';
+                var formMode = recordData.formMode || 'EDIT';
+
+                var options = formParams.options || {};
+                options.formMode = formMode;
+                formParams.options = options;
 
                 var prefixId;
 
-                if (!record || record[record.length - 1] === '@' || record.indexOf("dict@") == 0) {
-                    prefixId = 'eform.header.create.title';
-                } else {
-                    prefixId = 'eform.header.edit.title';
-                }
+                prefixId = 'eform.header.' + formMode + ".title";
                 var prefix = Alfresco.util.message(prefixId);
-                config.header = prefix + (displayName ? " " + displayName : "");
+
+                if (!prefix || prefix === prefixId) {
+                    config.header = displayName;
+                } else {
+                    config.header = prefix + " " + displayName;
+                }
 
                 modal.open(
                     React.createElement(EcosForm.default, formParams),
