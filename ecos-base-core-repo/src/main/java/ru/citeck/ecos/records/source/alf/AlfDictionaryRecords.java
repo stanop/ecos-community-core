@@ -5,7 +5,7 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.AlfGqlContext;
-import ru.citeck.ecos.records.RecordConstants;
+import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.GqlContext;
@@ -93,11 +93,14 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
         @Override
         public Object getAttribute(String name, MetaField field) {
 
-            if (RecordConstants.ATT_FORM_KEY.equals(name)){
-                return formKey;
+            switch (name) {
+                case RecordConstants.ATT_FORM_KEY:
+                    return formKey;
+                case RecordConstants.ATT_FORM_MODE:
+                    return "CREATE";
+                default:
+                    return null;
             }
-
-            return null;
         }
 
         @Override

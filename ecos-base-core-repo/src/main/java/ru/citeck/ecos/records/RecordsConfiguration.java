@@ -45,7 +45,7 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     }
 
     @Override
-    protected RecordsMetaGql createRecordsMetaGraphQL() {
+    public RecordsMetaGql createRecordsMetaGraphQL() {
         return new RecordsMetaGql(this.getGqlTypes(), () -> new AlfGqlContext(serviceRegistry));
     }
 }
