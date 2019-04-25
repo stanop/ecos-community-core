@@ -379,6 +379,95 @@ h4 .lighter
    background-image: url(images/dashlet-help.png);
 }
 
+/*-----------new ui styles*/
+.dashlet {
+    border-radius: 12px;
+}
+
+.dashlet > .title {
+   padding: 20px;
+   background-color: #fff;
+   line-height: 1;
+   border-bottom: 2px solid #e8edef;
+   color: #767676;
+   font-family: Open Sans,sans-serif;
+   font-size: 18px;
+   font-weight: 700;
+   font-style: normal;
+   border-radius: 12px 12px 0 0;
+   text-transform: none;
+}
+
+.dashlet .titleBarActions {
+   top: 18px;
+   right: 27px;
+}
+
+.dashlet .titleBarActions.titleBarActions_move {
+   top: 12px;
+   right: 0;
+   opacity: 1;
+}
+
+.dashlet .titleBarActions.titleBarActions_move .ecos-btn_i.ecos-btn_bg-img_none{
+   color: #d8dee1;
+   font-size: 28px;
+}
+
+.dashlet .titleBarActions.titleBarActions_move .ecos-btn_i.ecos-btn_bg-img_none:hover  {
+   color: #d8dee1;
+}
+
+.dashlet .titleBarActions.titleBarActions_move .ecos-btn_i.ecos-btn_bg-img_none:active  {
+   color: #d8dee1;
+}
+
+.dashlet .titleBarActionIcon.ecos-btn_i {
+   margin-right: 20px;
+}
+
+.dashlet .titleBarActionIcon.ecos-btn_i.rss {
+    margin-top: 5px;
+}
+
+.dashlet .titleBarActionIcon.ecos-btn_i.ecos-btn_bg-img_none {
+    background-image: none;
+    font-size: 20px;
+    color: #b7b7b7;
+    width: auto;
+}
+
+.dashlet .titleBarActionIcon.ecos-btn_i.ecos-btn_bg-img_none::before {
+   width: auto;
+   margin: 0;
+}
+
+.dashlet .titleBarActionIcon.ecos-btn_i.ecos-btn_bg-img_none:hover {
+   color: #7396cd;
+}
+
+.dashlet .titleBarActionIcon.ecos-btn_i.ecos-btn_bg-img_none:active {
+   color: #4b75b7;
+}
+
+.dashlet.yui-resize .yui-resize-handle {
+   height: 26px;
+   padding: 0;
+   border-top: 0;
+   text-align: center;
+   position: static;
+}
+
+.dashlet.yui-resize .yui-resize-handle-inner-b {
+   background: url(images/resize_1x.png);
+   height: 12px;
+   width: 44px;
+   margin-top: 7px;
+   position: static;
+   display: inline-block;
+}
+/*----------end new ui styles*/
+
 /* end dashlet title actions */
 
 /* dashlet sitesearch */

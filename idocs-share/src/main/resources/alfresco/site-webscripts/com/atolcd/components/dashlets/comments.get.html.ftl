@@ -60,12 +60,12 @@
       actions:
       [
          {
-            cssClass: "rss",
+            cssClass: "rss ecos-btn_i",
             eventOnClick: activitiesFeedDashletEvent,
             tooltip: "${msg("dashlet.rss.tooltip")?js_string}"
          },
          {
-            cssClass: "refresh",
+            cssClass: "refresh ecos-btn_i icon-reload ecos-btn_bg-img_none",
             id: "-refresh",
             eventOnClick: refreshDashletEvent,
             tooltip: "${msg("dashlet.refresh.tooltip")?js_string}"
@@ -77,6 +77,11 @@
 
 <div class="dashlet dashlet-comments">
    <div class="title">${msg('header')}</div>
+
+    <div class="titleBarActions titleBarActions_move">
+        <div title="${msg("dashlet.move.title")}" class="titleBarActionIcon help ecos-btn_i icon-drag ecos-btn_bg-img_none" tabindex="0"></div>
+    </div>
+
    <div class="toolbar flat-button">
       <input id="${id}-all" type="checkbox" name="all" value="${msg('filter.all')}" checked="checked" />
 
