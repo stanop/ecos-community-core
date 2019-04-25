@@ -2424,10 +2424,7 @@ div[id*="multiple-text"] .multiple-text-control input {
   overflow: hidden;
   height: 27px;
   padding: 0px 30px;
-}
-
-.cardlet #cardlet-remote-node-view-container .invariants-form .template-tabs .tabs-title {
-  height: auto;
+  box-sizing: content-box;
 }
 
 .invariants-form .template-tabs .tabs-title ul {
