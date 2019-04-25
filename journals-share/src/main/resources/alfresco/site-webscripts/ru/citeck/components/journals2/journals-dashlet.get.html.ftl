@@ -48,13 +48,13 @@ new Alfresco.widget.DashletTitleBarActions("${id}").setOptions({
     actions: [
         <#if isPrivileged>
         {
-            cssClass: "edit",
+            cssClass: "edit ecos-btn_i icon-edit ecos-btn_bg-img_none",
             tooltip: "${msg("dashlet.edit.tooltip")}",
             eventOnClick: editEvent
         },
         </#if>
         {
-            cssClass: "help",
+            cssClass: "help ecos-btn_i icon-question ecos-btn_bg-img_none",
             tooltip: "${msg("dashlet.help.tooltip")}",
             bubbleOnClick: {
                 message: "${msg("dashlet.help.text")}"
@@ -90,6 +90,10 @@ editEvent.subscribe(dashlet.onEditConfig, dashlet, true);
  <!-- ko if: journalsList() == null && journal() == null -->
     <div class="title">${msg("dashlet.title")}</div>
  <!-- /ko -->
+
+    <div class="titleBarActions titleBarActions_move">
+        <div title="${msg("dashlet.move.title")}" class="titleBarActionIcon help ecos-btn_i icon-drag ecos-btn_bg-img_none" tabindex="0"></div>
+    </div>
 
     <div class="toolbar flat-button icon-buttons">
 
