@@ -450,6 +450,14 @@ require([
                     params: {
                         attributes: {
                             _parent: destination
+                        },
+                        onSubmit: function(record, form) {
+
+                            if (record.id && record.id.indexOf('workspace://SpacesStore/') === 0
+                                          && form.options.formMode === 'CREATE') {
+
+                                window.location = Alfresco.util.siteURL("card-details?nodeRef=" + record.id);
+                            }
                         }
                     },
                     class: 'ecos-modal_width-lg',
@@ -573,22 +581,22 @@ require([
 
             formParams['options'] = configParams.options || {};
 
-            formParams['onSubmit'] = function () {
+            formParams['onSubmit'] = function (record, form) {
                 modal.close();
                 if (configParams.onSubmit) {
-                    configParams.onSubmit.apply(arguments);
+                    configParams.onSubmit(record, form);
                 }
             };
-            formParams['onFormCancel'] = function () {
+            formParams['onFormCancel'] = function (record, form) {
                 modal.close();
                 if (configParams.onFormCancel) {
-                    configParams.onFormCancel.apply(arguments);
+                    configParams.onFormCancel(record, form);
                 }
             };
             formParams['onReady'] = function () {
-                setTimeout(function(){
+                setTimeout(function (record, form) {
                     if (configParams.onReady) {
-                        configParams.onReady.apply(arguments);
+                        configParams.onReady(record, form);
                     }
                 }, 100);
             };
