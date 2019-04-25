@@ -3,23 +3,23 @@
 const MSG_TRANSLATOR = Packages.org.springframework.extensions.surf.util.I18NUtil;
 
 function onCaseCreate() {
+}
+
+function onProcessStart() {
     if (document.properties['contracts:agreementNumber'] == null) {
-            if (document.type == "{http://www.citeck.ru/model/contracts/1.0}agreement") {
-                var numberTemplate = search.findNode("workspace://SpacesStore/agreement-number-template");
-            } else {
-                var numberTemplate = search.findNode("workspace://SpacesStore/supAgreement-number-template");
-            }
-            var registrationNumber = enumeration.getNumber(numberTemplate, document);
-            document.properties['contracts:agreementNumber'] = registrationNumber;
+        if (document.type == "{http://www.citeck.ru/model/contracts/1.0}agreement") {
+            var numberTemplate = search.findNode("workspace://SpacesStore/agreement-number-template");
+        } else {
+            var numberTemplate = search.findNode("workspace://SpacesStore/supAgreement-number-template");
+        }
+        var registrationNumber = enumeration.getNumber(numberTemplate, document);
+        document.properties['contracts:agreementNumber'] = registrationNumber;
     } else {
-            var registrationNumber = document.properties['contracts:agreementNumber'];
+        var registrationNumber = document.properties['contracts:agreementNumber'];
     }
 
     document.properties['contracts:barcode'] = registrationNumber;
     document.save();
-}
-
-function onProcessStart() {
 }
 
 function beforeConfirm() {
