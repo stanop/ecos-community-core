@@ -11,28 +11,43 @@ public class HistoryRecordModel {
 
     @MetaAtt("event:initiator")
     private EventUserModel initiator;
+
     @MetaAtt("event:documentId")
     private String documentId;
+
     @MetaAtt("event:date")
     private Date date;
+
     @MetaAtt("event:documentVersion")
     private String documentVersion;
+
     @MetaAtt("event:taskComment")
     private String taskComment;
+
     @MetaAtt("event:name")
     private String eventType;
+
     @MetaAtt("event:taskRole")
     private String taskRole;
+
+    @MetaAtt("event:taskTitle")
+    private String taskTitle;
+
     @MetaAtt("event:taskOutcome")
     private String taskOutcome;
+
     @MetaAtt("event:taskOutcomeTitle")
     private String taskOutcomeTitle;
+
     @MetaAtt("event:taskType")
     private TaskType taskType;
+
     @MetaAtt("event:taskAttachments")
     private List<TaskAttachmentModel> taskAttachments;
+
     @MetaAtt("event:taskInstanceId")
     private String taskInstanceId;
+
     @MetaAtt("event:taskPooledActors")
     private List<EventUserOrGroupModel> taskPooledActors;
 
@@ -146,5 +161,13 @@ public class HistoryRecordModel {
 
     public void setTaskPooledActors(List<EventUserOrGroupModel> taskPooledActors) {
         this.taskPooledActors = taskPooledActors;
+    }
+
+    public String getTaskTitle() {
+        return taskTitle;
+    }
+
+    public void setTaskTitle(String taskTitle) {
+        this.taskTitle = taskTitle;
     }
 }
