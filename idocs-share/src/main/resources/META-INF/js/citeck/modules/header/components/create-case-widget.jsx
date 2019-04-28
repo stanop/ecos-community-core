@@ -1,6 +1,6 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { UncontrolledDropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
+import React from 'ecosui!react';
+import { connect } from 'ecosui!react-redux';
+import { UncontrolledDropdown, DropdownMenu, DropdownToggle } from 'ecosui!reactstrap';
 import DropDownMenuGroup from './dropdown-menu-group';
 import DropdownMenuCascade from './dropdown-menu-cascade';
 import { t } from '../../common/util';

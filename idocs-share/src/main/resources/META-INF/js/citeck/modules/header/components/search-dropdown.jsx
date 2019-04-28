@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import { UncontrolledDropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
+import React, { Fragment } from 'ecosui!react';
+import { UncontrolledDropdown, DropdownMenu, DropdownToggle } from 'ecosui!reactstrap';
 import DropDownMenuItem from './dropdown-menu-item';
 
 const SearchDropdown = () => {

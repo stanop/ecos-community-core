@@ -1,5 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from "ecosui!react";
+import ReactDOM from "ecosui!react-dom";
 import {utils as CiteckUtils} from 'js/citeck/modules/utils/citeck';
 import 'citeck/mobile/mobile';
 import 'underscore'

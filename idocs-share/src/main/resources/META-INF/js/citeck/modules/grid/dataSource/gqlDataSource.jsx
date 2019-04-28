@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'ecosui!react';
 import BaseDataSource from './baseDataSource';
 import formatterStore from '../formatters/formatterStore';
 
