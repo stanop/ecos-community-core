@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import SurfRegion from "../../surf/surf-region";
-import { fetchAllDocumentsNodeRefs, getFolderNodeRef } from './user-profile-api';
+import { fetchAllDocumentsNodeRefs, getFolderNodeRef, getTempFolderNodeRef } from './user-profile-api';
 import { UserProfileContext } from './user-profile-context';
 import { DOCUMENTS_TAB, setCurrentTabUrl } from './user-profile-util';
 
@@ -52,6 +52,12 @@ export const Documents = () => {
         getFolderNodeRef(userRef).then(nodeRef => {
             if (nodeRef) {
                 setFolderNodeRef(nodeRef);
+            } else {
+                getTempFolderNodeRef().then(tempNodeRef => {
+                    if (tempNodeRef) {
+                        setFolderNodeRef(tempNodeRef);
+                    }
+                })
             }
         });
     }, [userRef]);

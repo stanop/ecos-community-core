@@ -19,11 +19,27 @@ public interface PersonalDocumentsService {
     NodeRef ensureDirectory(String userName);
 
     /**
+     * Get nodeRef of the temporary 'personal documents' directory.
+     * Create the temporary 'personal documents' directory if it doesn't exist.
+     *
+     * @return
+     */
+    NodeRef ensureTempDirectory();
+
+    /**
      * Get list of the personal documents for user with userName.
      *
      * @param userName
      * @return
      */
     List<NodeRef> getDocuments(String userName);
+
+    /**
+     * Move document to the personal folder. Do nothing if document is already in personal folder.
+     *
+     * @param document - document to move
+     * @param userName
+     */
+    void ensureInPersonalFolder(NodeRef document, String userName);
 
 }

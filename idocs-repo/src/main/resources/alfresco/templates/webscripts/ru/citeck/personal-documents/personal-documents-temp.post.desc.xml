@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Ensure Personal Documents Temp</shortname>
+	<description>Ensure Personal Documents Temp Directory</description>
+	<url>/citeck/personal/documents/temp</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction>required</transaction>
+</webscript>

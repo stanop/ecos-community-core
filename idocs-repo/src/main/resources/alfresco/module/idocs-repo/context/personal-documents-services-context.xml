@@ -9,12 +9,6 @@
         <property name="permissionService" ref="PermissionService"/>
         <property name="personalDocumentsRoot"
                   value="/app:company_home/st:sites/cm:personal-documents/cm:documentLibrary/cm:personal-documents"/>
-        <property name="skipPersons">
-            <list>
-                <value>System</value>
-                <value>guest</value>
-            </list>
-        </property>
         <property name="checkLists">
             <list>
                 <value>workspace://SpacesStore/cl-questionnaire</value>
@@ -32,6 +26,12 @@
                 <value>workspace://SpacesStore/cl-miscellaneous</value>
             </list>
         </property>
+    </bean>
+
+    <bean id="PersonalDocumentsJSService" class="ru.citeck.ecos.personal.PersonalDocumentsJSImpl"  parent="baseJavaScriptExtension">
+        <property name="extensionName" value="personalDocuments"/>
+        <property name="personalDocumentsService" ref="PersonalDocumentsService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
     </bean>
 
 </beans>

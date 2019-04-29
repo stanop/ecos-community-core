@@ -42,3 +42,19 @@ export function getFolderNodeRef(userRef) {
             return null;
         });
 }
+
+export function getTempFolderNodeRef() {
+    return fetch('/share/proxy/alfresco/citeck/personal/documents/temp', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-type': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify({
+        })
+    })
+        .then(resp => resp.json())
+        .then(resp => {
+            return resp.nodeRef ? resp.nodeRef : null;
+        });
+}

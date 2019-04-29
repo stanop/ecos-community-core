@@ -1,25 +1,29 @@
 package ru.citeck.ecos.behavior.personal;
 
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.security.AuthenticationService;
 import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
 import ru.citeck.ecos.model.ClassificationModel;
+import ru.citeck.ecos.model.ICaseModel;
 import ru.citeck.ecos.model.PersonalDocumentsModel;
+import ru.citeck.ecos.personal.PersonalDocumentsService;
 
-public class SetDefaultTypeKindBehaviour extends AbstractBehaviour
+public class SetDefaultTypeKindAndMoveBehaviour extends AbstractBehaviour
                                          implements NodeServicePolicies.OnCreateChildAssociationPolicy  {
 
+    AuthenticationService authenticationService;
+    PersonalDocumentsService personalDocumentsService;
     private NodeRef defaultType;
     private NodeRef defaultKind;
 
     @Override
     protected void beforeInit() {
         setClassName(PersonalDocumentsModel.TYPE_PERSONAL_DOCUMENTS);
-        setAssocName(ContentModel.ASSOC_CONTAINS);
+        setAssocName(ICaseModel.ASSOC_DOCUMENTS);
     }
 
     @PolicyMethod(policy = NodeServicePolicies.OnCreateChildAssociationPolicy.class,
@@ -37,7 +41,18 @@ public class SetDefaultTypeKindBehaviour extends AbstractBehaviour
             if (kind == null && defaultKind != null && nodeService.exists(defaultKind)) {
                 nodeService.setProperty(newPersonalDocument, ClassificationModel.PROP_DOCUMENT_KIND, defaultKind);
             }
+
+            String userName = authenticationService.getCurrentUserName();
+            personalDocumentsService.ensureInPersonalFolder(newPersonalDocument, userName);
         }
+    }
+
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
+
+    public void setPersonalDocumentsService(PersonalDocumentsService personalDocumentsService) {
+        this.personalDocumentsService = personalDocumentsService;
     }
 
     public void setDefaultType(NodeRef defaultType) {
