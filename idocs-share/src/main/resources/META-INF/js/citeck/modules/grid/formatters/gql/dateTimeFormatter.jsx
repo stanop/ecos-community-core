@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, {Fragment} from 'ecosui!react';
 import DefaultGqlFormatter from './defaultGqlFormatter';
 
 export default class DateTimeFormatter extends DefaultGqlFormatter {

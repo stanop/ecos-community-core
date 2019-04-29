@@ -1,5 +1,5 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React from 'ecosui!react';
+import { connect } from 'ecosui!react-redux';
 import _ from 'underscore';
 import SearchDropdown from './search-dropdown';
 import SearchAutocomplete from './search-autocomplete';

@@ -1,6 +1,6 @@
-import React, {Fragment} from 'react';
-import ReactDOM from "react-dom";
-import { connect } from "react-redux";
+import React, {Fragment} from 'ecosui!react';
+import ReactDOM from "ecosui!react-dom";
+import { connect } from "ecosui!react-redux";
 import LogoBlock from "./logo-block";
 import RootList from "./root-list";
 import { t } from "../../common/util";

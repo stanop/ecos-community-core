@@ -1,5 +1,5 @@
-import React from "react";
-import { connect } from "react-redux";
+import React from "ecosui!react";
+import { connect } from "ecosui!react-redux";
 import { t } from '../../common/util';
 import handleControl from '../misc/handle-control';
 

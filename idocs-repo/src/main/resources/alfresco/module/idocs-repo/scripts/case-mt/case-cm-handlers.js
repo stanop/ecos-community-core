@@ -4,6 +4,26 @@ function onCaseCreate() {
 }
 
 function onProcessStart() {
+    if (document.properties['ecos:documentNumber'] == null ) {
+        if (document.type == "{http://www.citeck.ru/model/content/ecos/1.0}case") {
+            var mapping = {
+                'workspace://SpacesStore/cat-doc-kind-application':         'ecos-case-application-num-template',
+                'workspace://SpacesStore/cat-doc-kind-claim':               'ecos-case-claim-num-template',
+                'workspace://SpacesStore/cat-doc-kind-work-plan':           'ecos-case-work-plan-num-template',
+                'workspace://SpacesStore/cat-doc-kind-customer-request':    'ecos-case-customer-req-num-template',
+                'workspace://SpacesStore/cat-doc-kind-complaint':           'ecos-case-complaint-num-template'
+            };
+            var kindNode = document.properties['tk:kind'] ? document.properties['tk:kind'].nodeRef : "";
+            if (kindNode) {
+                var numberTemplate = search.findNode("workspace://SpacesStore/" + mapping[kindNode]);
+            } else {
+                var numberTemplate = search.findNode("workspace://SpacesStore/" + "ecos-case-number-template");
+            }
+        }
+        var registrationNumber = enumeration.getNumber(numberTemplate, document);
+        document.properties['ecos:documentNumber'] = registrationNumber;
+        document.save();
+    }
 }
 
 function beforeConfirm() {

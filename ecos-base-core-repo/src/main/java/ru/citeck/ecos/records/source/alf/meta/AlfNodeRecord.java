@@ -13,7 +13,7 @@ import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
-import ru.citeck.ecos.records.RecordConstants;
+import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
 import ru.citeck.ecos.records2.RecordRef;

@@ -1,4 +1,4 @@
-import React from "react";
+import React from "ecosui!react";
 import "xstyle!./upcoming-birthdays.css";
 
 export class UpcomingBirthdays extends React.Component {

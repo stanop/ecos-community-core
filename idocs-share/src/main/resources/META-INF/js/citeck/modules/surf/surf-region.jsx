@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'ecosui!react';
 import {utils as CiteckUtils} from 'js/citeck/modules/utils/citeck';
 import 'underscore';
 

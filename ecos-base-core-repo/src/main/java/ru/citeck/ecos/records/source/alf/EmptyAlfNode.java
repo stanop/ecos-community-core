@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records.source.alf;
 
 import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
@@ -22,6 +23,16 @@ public class EmptyAlfNode implements MetaValue {
 
     @Override
     public String getString() {
+        return null;
+    }
+
+    @Override
+    public Object getAttribute(String name, MetaField field) {
+
+        if (RecordConstants.ATT_FORM_MODE.equals(name)) {
+            return "CREATE";
+        }
+
         return null;
     }
 }

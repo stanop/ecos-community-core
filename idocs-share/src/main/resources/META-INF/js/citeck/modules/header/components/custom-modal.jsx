@@ -1,7 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { connect } from "react-redux";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
+import React from 'ecosui!react';
+import ReactDOM from 'ecosui!react-dom';
+import { connect } from "ecosui!react-redux";
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'ecosui!reactstrap';
 import { hideModal } from "../actions";
 
 const mapStateToProps = state => ({

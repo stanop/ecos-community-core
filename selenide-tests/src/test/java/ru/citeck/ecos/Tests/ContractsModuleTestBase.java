@@ -23,6 +23,7 @@ public class ContractsModuleTestBase extends SelenideTests {
         contractCreatePage.setContractWith(valueContractWith);
         contractCreatePage.selectKindDocument(kindOfDocument);
         contractCreatePage.clickOnButtonGenerate();
+        contractCreatePage.clickOnButtonSimpleCheckbox();
         contractCreatePage.setDocumentDate(documentDate);
         contractCreatePage.setAgreementAmount(agreementAmount);
         contractCreatePage.setVAT(vat);
@@ -61,6 +62,7 @@ public class ContractsModuleTestBase extends SelenideTests {
         mainAgreement.clickOnButtonCreate();
         supplementaryAgreementCreatePage.selectMainAgreement().shouldBe(present);
         supplementaryAgreementCreatePage.clickOnButtonGenerate();
+        supplementaryAgreementCreatePage.clickOnButtonSimpleCheckbox();
         supplementaryAgreementCreatePage.setDocumentDate(documentDate);
     }
 
