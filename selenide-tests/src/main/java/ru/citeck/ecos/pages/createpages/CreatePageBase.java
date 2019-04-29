@@ -61,6 +61,10 @@ public class CreatePageBase {
 
     }
 
+    public void clickOnButtonSimpleCheckbox() {
+        $("[name = \"simple-checkbox\"]").shouldBe(present).click();
+    }
+
     public void selectCurrency(String value) {
         $("[id *= \"Currency\"]").shouldBe(present).selectOption(value);
     }

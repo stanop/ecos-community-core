@@ -115,19 +115,7 @@
                     </region>
                 </field>
                 <field prop="ecos:documentNumber">
-                    <region name="select" template="number-generate">
-                        <param name="template"><![CDATA[function() {
-                            var mapping = {
-                                'cat-doc-kind-application':         'ecos-case-application-num-template',
-                                'cat-doc-kind-claim':               'ecos-case-claim-num-template',
-                                'cat-doc-kind-work-plan':           'ecos-case-work-plan-num-template',
-                                'cat-doc-kind-customer-request':    'ecos-case-customer-req-num-template',
-                                'cat-doc-kind-complaint':           'ecos-case-complaint-num-template'
-                            };
-                            var kindNode = this.node().properties['tk:kind'];
-                            var kind = kindNode ? kindNode.nodeRef.replace(/^workspace:\/\/SpacesStore\//, "") : "";
-                            return mapping[kind] || 'ecos-case-number-template';
-                        }]]></param>
+                    <region name="select" template="simple-checkbox">
                         <param name="mode">checkbox</param>
                     </region>
                 </field>
