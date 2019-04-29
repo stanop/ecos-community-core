@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "ecosui!react";
 import { getCurrentTab } from './user-profile-util';
 
 export const UserProfileContext = React.createContext();

@@ -1,5 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from "ecosui!react";
+import ReactDOM from "ecosui!react-dom";
 import { UserProfileRoot } from './user-profile-components';
 import { UserProfileProvider } from './user-profile-context';
 import { DOCUMENTS_TAB, PROFILE_TAB } from './user-profile-util';

@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <component>
-	<scope>page</scope>
-	<source-id>user-profile</source-id>
-	<region-id>node-view</region-id>
-	<url>/citeck/components/node-details/node-view</url>
-	<properties>
-		<nodeRef>{nodeRef}</nodeRef>
-		<mode>view</mode>
-		<hideTwister>true</hideTwister>
-		<hideHeading>true</hideHeading>
-	</properties>
+    <scope>page</scope>
+    <source-id>user-profile</source-id>
+    <region-id>node-view</region-id>
+    <url>/citeck/components/node-details/node-view</url>
+    <properties>
+        <nodeRef>{nodeRef}</nodeRef>
+        <mode>view</mode>
+        <hideTwister>true</hideTwister>
+        <hideHeading>true</hideHeading>
+    </properties>
 </component>

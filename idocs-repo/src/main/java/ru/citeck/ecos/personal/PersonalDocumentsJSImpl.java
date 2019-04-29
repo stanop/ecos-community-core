@@ -6,21 +6,20 @@ import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
 import static ru.citeck.ecos.utils.JavaScriptImplUtils.wrapNode;
 
-public class PersonalDocumentsJSImpl extends AlfrescoScopableProcessorExtension
-{
+public class PersonalDocumentsJSImpl extends AlfrescoScopableProcessorExtension {
 
-	PersonalDocumentsService personalDocumentsService;
+    PersonalDocumentsService personalDocumentsService;
 
-	public ScriptNode ensureTempDirectory() {
-		return wrapNode(personalDocumentsService.ensureTempDirectory(), this);
-	}
+    public ScriptNode ensureTempDirectory() {
+        return wrapNode(personalDocumentsService.ensureTempDirectory(), this);
+    }
 
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
-	}
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+    }
 
-	public void setPersonalDocumentsService(PersonalDocumentsService personalDocumentsService) {
-		this.personalDocumentsService = personalDocumentsService;
-	}
+    public void setPersonalDocumentsService(PersonalDocumentsService personalDocumentsService) {
+        this.personalDocumentsService = personalDocumentsService;
+    }
 
 }
