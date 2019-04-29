@@ -42,10 +42,7 @@ public class PersonalDocumentsServiceImpl extends AbstractLifecycleBean implemen
 
     @Override
     protected void onBootstrap(ApplicationEvent event) {
-        AuthenticationUtil.runAsSystem(() -> {
-            ensureTempDirectory();
-            return null;
-        });
+        ensureTempDirectory();
     }
 
     @Override
@@ -55,81 +52,85 @@ public class PersonalDocumentsServiceImpl extends AbstractLifecycleBean implemen
 
     @Override
     public NodeRef ensureDirectory(String userName) {
-        ParameterCheck.mandatoryString("userName", userName);
+        return AuthenticationUtil.runAsSystem(() -> {
+            ParameterCheck.mandatoryString("userName", userName);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(ENSURE_DIRECTORY_FOR_USER + userName);
-        }
+            if (logger.isDebugEnabled()) {
+                logger.debug(ENSURE_DIRECTORY_FOR_USER + userName);
+            }
 
-        NodeRef userPersonRef = authorityService.getAuthorityNodeRef(userName);
-        String userFullName = RepoUtils.getPersonFullName(userPersonRef, nodeService);
-        NodeRef personalDocumentsFolderRef = null;
+            NodeRef userPersonRef = authorityService.getAuthorityNodeRef(userName);
+            String userFullName = RepoUtils.getPersonFullName(userPersonRef, nodeService);
+            NodeRef personalDocumentsFolderRef = null;
 
-        if (userPersonRef != null && nodeService.exists(userPersonRef)) {
+            if (userPersonRef != null && nodeService.exists(userPersonRef)) {
 
-            NodeRef personalDocsRef = RepoUtils.getFirstTargetAssoc(userPersonRef,
-                    PersonalDocumentsModel.TYPE_PERSONAL_DOCUMENTS,
-                    nodeService);
+                NodeRef personalDocsRef = RepoUtils.getFirstTargetAssoc(userPersonRef,
+                        PersonalDocumentsModel.TYPE_PERSONAL_DOCUMENTS,
+                        nodeService);
 
-            if (personalDocsRef == null || !nodeService.exists(personalDocsRef)) {
-                NodeRef personalDocsRootRef = personalDocumentsRoot.getNodeRef();
+                if (personalDocsRef == null || !nodeService.exists(personalDocsRef)) {
+                    NodeRef personalDocsRootRef = personalDocumentsRoot.getNodeRef();
 
-                personalDocumentsFolderRef = nodeService.getChildByName(personalDocsRootRef,
-                        ContentModel.ASSOC_CONTAINS,
-                        userName);
-
-                if (personalDocumentsFolderRef != null && nodeService.exists(personalDocumentsFolderRef)) {
-                    boolean isAssociated = RepoUtils.isAssociated(userPersonRef,
-                            personalDocumentsFolderRef,
-                            OrgStructModel.ASSOC_PERSONAL_DOCUMENTS,
-                            nodeService);
-
-                    if (!isAssociated) {
-                        createAssocToPersonalDocs(userPersonRef, personalDocumentsFolderRef);
-                    }
-                } else {
-                    personalDocumentsFolderRef = RepoUtils.createChildWithName(personalDocsRootRef,
+                    personalDocumentsFolderRef = nodeService.getChildByName(personalDocsRootRef,
                             ContentModel.ASSOC_CONTAINS,
-                            PersonalDocumentsModel.TYPE_PERSONAL_DOCUMENTS,
-                            userName,
-                            nodeService);
+                            userName);
 
-                    nodeService.setProperty(personalDocumentsFolderRef,
-                            ContentModel.PROP_TITLE,
-                            userFullName);
+                    if (personalDocumentsFolderRef != null && nodeService.exists(personalDocumentsFolderRef)) {
+                        boolean isAssociated = RepoUtils.isAssociated(userPersonRef,
+                                personalDocumentsFolderRef,
+                                OrgStructModel.ASSOC_PERSONAL_DOCUMENTS,
+                                nodeService);
 
-                    createAssocToPersonalDocs(userPersonRef, personalDocumentsFolderRef);
-                    ensureCheckLists(personalDocumentsFolderRef);
-                    setPermissions(personalDocumentsFolderRef, userName);
-                    addCaseAspect(personalDocumentsFolderRef);
+                        if (!isAssociated) {
+                            createAssocToPersonalDocs(userPersonRef, personalDocumentsFolderRef);
+                        }
+                    } else {
+                        personalDocumentsFolderRef = RepoUtils.createChildWithName(personalDocsRootRef,
+                                ContentModel.ASSOC_CONTAINS,
+                                PersonalDocumentsModel.TYPE_PERSONAL_DOCUMENTS,
+                                userName,
+                                nodeService);
+
+                        nodeService.setProperty(personalDocumentsFolderRef,
+                                ContentModel.PROP_TITLE,
+                                userFullName);
+
+                        createAssocToPersonalDocs(userPersonRef, personalDocumentsFolderRef);
+                        ensureCheckLists(personalDocumentsFolderRef);
+                        setPermissions(personalDocumentsFolderRef, userName);
+                        addCaseAspect(personalDocumentsFolderRef);
+                    }
                 }
             }
-        }
-        return personalDocumentsFolderRef;
+            return personalDocumentsFolderRef;
+        });
     }
 
     @Override
     public NodeRef ensureTempDirectory() {
-        NodeRef tempPersonalDocsRootRef = null;
-        NodeRef personalDocsRootRef = personalDocumentsRoot.getNodeRef();
+        return AuthenticationUtil.runAsSystem(() -> {
+            NodeRef tempPersonalDocsRootRef = null;
+            NodeRef personalDocsRootRef = personalDocumentsRoot.getNodeRef();
 
-        if (personalDocsRootRef != null && nodeService.exists(personalDocsRootRef)) {
-            tempPersonalDocsRootRef = nodeService.getChildByName(personalDocsRootRef,
-                    ContentModel.ASSOC_CONTAINS,
-                    TEMP_DIR_NAME);
-
-            if (tempPersonalDocsRootRef == null || !nodeService.exists(tempPersonalDocsRootRef)) {
-                tempPersonalDocsRootRef = RepoUtils.createChildWithName(personalDocsRootRef,
+            if (personalDocsRootRef != null && nodeService.exists(personalDocsRootRef)) {
+                tempPersonalDocsRootRef = nodeService.getChildByName(personalDocsRootRef,
                         ContentModel.ASSOC_CONTAINS,
-                        PersonalDocumentsModel.TYPE_PERSONAL_DOCUMENTS,
-                        TEMP_DIR_NAME,
-                        nodeService);
-            }
+                        TEMP_DIR_NAME);
 
-            addCaseAspect(tempPersonalDocsRootRef);
-            ensureCheckLists(tempPersonalDocsRootRef);
-        }
-        return tempPersonalDocsRootRef;
+                if (tempPersonalDocsRootRef == null || !nodeService.exists(tempPersonalDocsRootRef)) {
+                    tempPersonalDocsRootRef = RepoUtils.createChildWithName(personalDocsRootRef,
+                            ContentModel.ASSOC_CONTAINS,
+                            PersonalDocumentsModel.TYPE_PERSONAL_DOCUMENTS,
+                            TEMP_DIR_NAME,
+                            nodeService);
+                }
+
+                addCaseAspect(tempPersonalDocsRootRef);
+                ensureCheckLists(tempPersonalDocsRootRef);
+            }
+            return tempPersonalDocsRootRef;
+        });
     }
 
     @Override
