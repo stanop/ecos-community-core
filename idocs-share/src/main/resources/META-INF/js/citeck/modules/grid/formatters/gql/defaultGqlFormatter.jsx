@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'ecosui!react';
 import BaseFormatter from '../baseFormatter';
 
 export default class DefaultGqlFormatter extends BaseFormatter {

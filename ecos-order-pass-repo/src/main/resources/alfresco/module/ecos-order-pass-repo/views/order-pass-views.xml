@@ -44,8 +44,7 @@
         <field property="op:visitorFullName"/>
         <field property="op:visitorOrganization"/>
         <field property="idocs:registrationNumber">
-            <region name="select" template="number-generate">
-                <param name="template">idocs-order-pass-number-template</param>
+            <region name="select" template="simple-checkbox">
                 <param name="mode">checkbox</param>
             </region>
         </field>

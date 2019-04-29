@@ -42,6 +42,9 @@ public interface EcosModel {
     QName PROP_IS_PERSON_DISABLED = QName.createQName(ECOS_NAMESPACE, "isPersonDisabled");
     QName PROP_ICON_TYPE = QName.createQName(ECOS_NAMESPACE, "iconType");
     QName PROP_FA_ICON_NAME = QName.createQName(ECOS_NAMESPACE, "faIconName");
+    QName PROP_USER_INILA = QName.createQName(ECOS_NAMESPACE, "inila");
+    QName PROP_USER_INN = QName.createQName(ECOS_NAMESPACE, "inn");
+    QName PROP_TYPE_OF_EMPLOYMENT = QName.createQName(ECOS_NAMESPACE, "typeOfEmployment");
 
     //Associations
     QName ASSOC_RESPONSIBLE = QName.createQName(ECOS_NAMESPACE, "responsible");

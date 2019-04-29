@@ -1,5 +1,5 @@
-import React from 'react';
-import { connect } from "react-redux";
+import React from 'ecosui!react';
+import { connect } from "ecosui!react-redux";
 import ListItemLink from "./list-item-link";
 import ListItemCreateSite from "./list-item-create-site";
 import { setScrollTop, toggleExpanded } from "../actions";

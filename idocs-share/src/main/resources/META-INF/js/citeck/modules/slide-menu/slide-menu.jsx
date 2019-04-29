@@ -1,8 +1,8 @@
-import React from 'react';
-import ReactDOM from "react-dom";
-import { createStore, applyMiddleware, compose } from 'redux';
-import { Provider } from 'react-redux';
-import thunk from 'js/citeck/lib/redux-thunk';
+import React from 'ecosui!react';
+import ReactDOM from "ecosui!react-dom";
+import { createStore, applyMiddleware, compose } from 'ecosui!redux';
+import { Provider } from 'ecosui!react-redux';
+import thunk from 'ecosui!redux-thunk';
 import SlideMenu from "./components/slide-menu";
 import rootReducer from './reducers';
 import API from '../common/api';

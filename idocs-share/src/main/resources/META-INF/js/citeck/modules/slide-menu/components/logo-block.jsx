@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'ecosui!react';
 
 const logoLinkHref = '/share/page';
 

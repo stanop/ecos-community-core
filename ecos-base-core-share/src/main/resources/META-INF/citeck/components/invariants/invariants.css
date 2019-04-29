@@ -2424,6 +2424,7 @@ div[id*="multiple-text"] .multiple-text-control input {
   overflow: hidden;
   height: 27px;
   padding: 0px 30px;
+  box-sizing: content-box;
 }
 
 .invariants-form .template-tabs .tabs-title ul {

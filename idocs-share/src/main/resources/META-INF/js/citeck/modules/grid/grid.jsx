@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component} from 'ecosui!react';
 import BootstrapTable from 'js/citeck/lib/react-bootstrap-table-next/react-bootstrap-table-next';
 import filterFactory, { textFilter, dateFilter } from 'js/citeck/lib/react-bootstrap-table-next/react-bootstrap-table2-filter';
 

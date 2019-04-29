@@ -76,6 +76,7 @@
                                 <package name='react-redux' location='/share/res/js/citeck/lib' main="react-redux.min" />
                                 <package name='react-custom-scrollbars' location='/share/res/js/citeck/lib' main="react-custom-scrollbars.min" />
                                 <package name='xstyle' location='/share/res/js/citeck/lib/xstyle' main="css.min" />
+                                <package name='ecosui' location='/share/res/js/citeck/ecosui' main="ecosui.min" />
                                 <package name='underscore' location='/share/res/lib' main="underscore.min" />
                             </packages>
                         </dojo-pages>

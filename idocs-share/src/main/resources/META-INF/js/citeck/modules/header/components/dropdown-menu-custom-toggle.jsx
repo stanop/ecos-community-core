@@ -1,4 +1,4 @@
-import React from "react";
+import React from "ecosui!react";
 
 export default class CustomToggle extends React.Component {
     constructor(props, context) {

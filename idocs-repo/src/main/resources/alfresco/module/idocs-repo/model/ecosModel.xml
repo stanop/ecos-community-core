@@ -32,6 +32,15 @@
                 </list>
             </parameter>
         </constraint>
+        <constraint name="ecos:constraint:typeOfEmployment" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>main</value>
+                    <value>external</value>
+                    <value>internal</value>
+                </list>
+            </parameter>
+        </constraint>
     </constraints>
 
     <types>
@@ -218,6 +227,23 @@
                 <property name="ecos:isPersonDisabled">
                     <title>Disable Account</title>
                     <type>d:boolean</type>
+                </property>
+
+                <!-- Legal properties -->
+                <property name="ecos:inila">
+                    <title>SNILS</title>
+                    <type>d:text</type>
+                </property>
+                <property name="ecos:inn">
+                    <title>INN</title>
+                    <type>d:text</type>
+                </property>
+                <property name="ecos:typeOfEmployment">
+                    <title>Employment type</title>
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="ecos:constraint:typeOfEmployment"/>
+                    </constraints>
                 </property>
             </properties>
         </aspect>

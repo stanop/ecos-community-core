@@ -1,4 +1,4 @@
-import React, {Fragment, Component} from 'react';
+import React, {Fragment, Component} from 'ecosui!react';
 
 export default class BaseFormatter extends Component {
     static getFilterValue(cell){

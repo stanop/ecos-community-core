@@ -9,7 +9,7 @@
       actions:
       [
          {
-            cssClass: "help",
+            cssClass: "help ecos-btn_i icon-question ecos-btn_bg-img_none",
             bubbleOnClick:
             {
                message: "${msg("dashlet.help")?js_string}"
@@ -25,6 +25,11 @@
 <#assign favorites = ['activiti$perform', 'activiti$confirm']>
 <div class="dashlet favorites">
 	<div class="title">${msg("header")}</div>
+
+    <div class="titleBarActions titleBarActions_move">
+        <div title="${msg("dashlet.move.title")}" class="titleBarActionIcon help ecos-btn_i icon-drag ecos-btn_bg-img_none" tabindex="0"></div>
+    </div>
+
 	<div class="body scrollableList">
 		<table border="0" width="100%" cellpadding="0" cellspacing="0">
 			<#if workflowDefs?size != 0>

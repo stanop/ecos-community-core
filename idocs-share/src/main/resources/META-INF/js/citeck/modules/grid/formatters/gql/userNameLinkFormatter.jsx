@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'ecosui!react';
 import DefaultGqlFormatter from './defaultGqlFormatter';
 
 export default class UserNameLinkFormatter extends DefaultGqlFormatter {
