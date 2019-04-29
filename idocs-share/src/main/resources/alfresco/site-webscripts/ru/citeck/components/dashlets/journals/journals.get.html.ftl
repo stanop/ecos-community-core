@@ -12,10 +12,7 @@
         </div>
 
         <script type="text/javascript">
-            require([
-                'static/ecos/journalsDashlet/js/journalsDashlet',
-                'xstyle!static/ecos/journalsDashlet/css/journalsDashlet.min.css'
-            ], function(JournalsDashlet) {
+            require(['ecosui!journals-dashlet'], function(JournalsDashlet) {
                 JournalsDashlet.render('${componentId}', {id: 'dashletId-1-0-0'});
             });
         </script>

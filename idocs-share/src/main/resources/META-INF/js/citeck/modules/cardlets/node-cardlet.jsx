@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'ecosui!react';
 
 export default class NodeCardlet extends React.Component {
 

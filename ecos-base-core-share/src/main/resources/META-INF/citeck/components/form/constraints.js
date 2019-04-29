@@ -18,7 +18,7 @@
  */
 
 require([
-    'static/ecos/records/js/records'
+    'ecosui!ecos-records'
 ], function() {
 
     if(typeof Citeck == "undefined") Citeck = {};
@@ -511,7 +511,7 @@ require([
         var submitBtnId = contentId + '-submit';
         var cancelBtnId = contentId + '-cancel';
 
-        require(['static/ecos/modal/js/modal', 'xstyle!static/ecos/ecos-form/css/ecos-form.min.css'], function (Modal) {
+        require(['ecosui!ecos-modal', 'ecosui!ecos-form'], function (Modal) {
             var modal = new Modal.default();
 
             modal.open(
@@ -569,7 +569,7 @@ require([
             config.reactstrapProps.backdrop = 'static';
         }
 
-        require(['react', 'react-dom', 'js/citeck/modules/eform/ecos-form', 'static/ecos/modal/js/modal'], function (React, ReactDOM, EcosForm, Modal) {
+        require(['ecosui!react', 'ecosui!react-dom', 'ecosui!ecos-form', 'ecosui!ecos-modal'], function (React, ReactDOM, EcosForm, Modal) {
 
             var modal = new Modal.default();
 

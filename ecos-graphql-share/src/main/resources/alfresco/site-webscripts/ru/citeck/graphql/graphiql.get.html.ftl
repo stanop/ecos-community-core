@@ -12,8 +12,8 @@
      var requireGraphiQL = function (callback) {
 
          require(['js/citeck/lib/es6-promise.auto',
-                  'react',
-                  'react-dom'], function(ES6Promise, React, ReactDOM) {
+                  'ecosui!react',
+                  'ecosui!react-dom'], function(ES6Promise, React, ReactDOM) {
 
              if ("undefined" == typeof window.React) {
                  window.React = React;

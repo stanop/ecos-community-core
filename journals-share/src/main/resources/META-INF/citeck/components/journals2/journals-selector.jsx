@@ -1,4 +1,4 @@
-import React, {Fragment, Component} from 'react';
+import React, {Fragment, Component} from 'ecosui!react';
 
 import journals from 'citeck/components/journals2/journals';
 import koutils from 'citeck/utils/knockout.utils';
