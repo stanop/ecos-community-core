@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>Touch method to update session</shortname>
+    <description>Touch method to update session</description>
+    <url>/citeck/ecos/touch</url>
+    <authentication>user</authentication>
+    <format default="json" />
+    <transaction allow="readonly">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>
