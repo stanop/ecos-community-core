@@ -1,2 +1,2 @@
-export ALFRESCO_HOST=host.docker.internal:8080
+export ALFRESCO_HOST=$(hostname -I | cut -d' ' -f1):8080
 docker-compose up
