@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+    <bean id="PersonalDocumentsService" class="ru.citeck.ecos.personal.PersonalDocumentsServiceImpl"
+        depends-on="idocs.module-component.ecos-sync-keys-root, idocs.groups.personal-documents-managers, idocs.script.completeness-levels">
+        <property name="authorityService" ref="AuthorityService"/>
+        <property name="nodeService" ref="NodeService"/>
+        <property name="permissionService" ref="PermissionService"/>
+        <property name="personalDocumentsRoot"
+                  value="/app:company_home/st:sites/cm:personal-documents/cm:documentLibrary/cm:personal-documents"/>
+        <property name="checkLists">
+            <list>
+                <value>workspace://SpacesStore/cl-questionnaire</value>
+                <value>workspace://SpacesStore/cl-cv</value>
+                <value>workspace://SpacesStore/cl-recommendations</value>
+                <value>workspace://SpacesStore/cl-conviction-cert</value>
+                <value>workspace://SpacesStore/cl-health-cert</value>
+                <value>workspace://SpacesStore/cl-marriage-cert</value>
+                <value>workspace://SpacesStore/cl-birth-cert</value>
+                <value>workspace://SpacesStore/cl-enc-or-punish-order</value>
+                <value>workspace://SpacesStore/cl-disability-docs</value>
+                <value>workspace://SpacesStore/cl-explaining-note</value>
+                <value>workspace://SpacesStore/cl-official-note</value>
+                <value>workspace://SpacesStore/cl-acts-and-notif</value>
+                <value>workspace://SpacesStore/cl-miscellaneous</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="PersonalDocumentsJSService" class="ru.citeck.ecos.personal.PersonalDocumentsJSImpl"  parent="baseJavaScriptExtension">
+        <property name="extensionName" value="personalDocuments"/>
+        <property name="personalDocumentsService" ref="PersonalDocumentsService"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+</beans>

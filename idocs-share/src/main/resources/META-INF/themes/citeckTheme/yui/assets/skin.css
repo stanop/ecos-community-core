@@ -5106,6 +5106,11 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
     padding: 0;
 }
 
+.user-profile-documents-tab__case-documents-button {
+    background-color: #fff;
+}
+
+.user-profile-documents-tab__case-documents-button,
 .yui-skin-citeckTheme .form-buttons .yui-button > span.first-child > button,
 .yui-skin-citeckTheme .form-field.suggested-actions .yui-button > span.first-child > button,
 .yui-skin-citeckTheme .share-form .form-fields .form-field .yui-button > span.first-child > button,
@@ -5141,6 +5146,7 @@ h2.yui-editor-skipheader,h3.yui-editor-skipheader {
     padding: 10px 0 10px 26px;
 }
 
+.user-profile-documents-tab__case-documents-button:hover,
 .yui-skin-citeckTheme .form-buttons .yui-button.yui-button-hover > span.first-child > button,
 .yui-skin-citeckTheme .form-field.suggested-actions .yui-button.yui-button-hover > span.first-child > button,
 .yui-skin-citeckTheme .share-form .form-fields .form-field .yui-button.yui-button-hover > span.first-child > button,

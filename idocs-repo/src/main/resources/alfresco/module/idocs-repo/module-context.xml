@@ -19,6 +19,7 @@
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-2-10-0.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-system-journals-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-cardlets-context.xml"/>
+    <import resource="classpath:alfresco/module/idocs-repo/context/personal-documents-services-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/behaviour-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/versions-diff-services-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/remote-api-context.xml"/>

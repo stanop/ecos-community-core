@@ -4,15 +4,17 @@
 
     <div id="${el}-body" class="document-details-panel node-view <#if args.class??>${args.class?string}</#if>">
 
-        <h2 id="${el}-heading" class="thin dark">
-            ${msg(args.header!"header.view")}
-            <span class="alfresco-twister-actions <#if args.hideEditAction?? && args.hideEditAction == "true">hidden</#if>">
-                <#if writePermission?? && writePermission>
-                    <a class="edit"
-                       href="${url.context}/page/node-edit?nodeRef=${viewNodeRef!args.nodeRef}<#if args.viewId??>&viewId=${args.viewId}</#if>"></a>
-                </#if>
-             </span>
-        </h2>
+        <#if !args.hideHeading??>
+            <h2 id="${el}-heading" class="thin dark">
+                ${msg(args.header!"header.view")}
+                <span class="alfresco-twister-actions <#if args.hideEditAction?? && args.hideEditAction == "true">hidden</#if>">
+                    <#if writePermission?? && writePermission>
+                        <a class="edit"
+                           href="${url.context}/page/node-edit?nodeRef=${viewNodeRef!args.nodeRef}<#if args.viewId??>&viewId=${args.viewId}</#if>"></a>
+                    </#if>
+                 </span>
+            </h2>
+        </#if>
 
         <div class="panel-body">
             <#include "/ru/citeck/components/invariants/view.get.html.ftl" />
@@ -49,7 +51,9 @@
 
             YAHOO.Bubbling.on("metadataRefresh", listener);
 
-            Alfresco.util.createTwister("${el}-heading", "node-view");
+            <#if !args.hideTwister??>
+                Alfresco.util.createTwister("${el}-heading", "node-view");
+            </#if>
 
         //]]></script>
 

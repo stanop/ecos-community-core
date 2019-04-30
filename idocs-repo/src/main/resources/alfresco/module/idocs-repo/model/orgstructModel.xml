@@ -9,6 +9,7 @@
         <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs"/>
         <import uri="http://www.citeck.ru/model/wcalendar/1.0" prefix="wcal"/>
+        <import uri="http://www.citeck.ru/model/personal/documents/1.0" prefix="pd"/>
     </imports>
 
     <namespaces>
@@ -195,6 +196,22 @@
                     </source>
                     <target>
                         <class>wcal:calendar</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+        </aspect>
+
+        <aspect name="org:hasPersonalDocuments">
+            <associations>
+                <association name="org:personalDocuments">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>pd:personalDocuments</class>
                         <mandatory>false</mandatory>
                         <many>true</many>
                     </target>
