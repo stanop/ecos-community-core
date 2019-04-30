@@ -6,4 +6,4 @@ services:
       - 80:80/tcp
     image: nexus.citeck.ru/ecos-ui:develop-extdev
     environment:
-      - PROXY_TARGET=host.docker.internal:8080
+      - PROXY_TARGET=$ALFRESCO_HOST

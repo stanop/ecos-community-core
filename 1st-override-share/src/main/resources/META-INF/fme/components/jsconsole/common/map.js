@@ -1,0 +1,1 @@
+//replace map.js from javascript-console to avoid conflicts with embedded Map
