@@ -80,7 +80,9 @@ public class DataBundleProcessorService {
         argsMap.put("nodeRef", document.toString());
         argsMap.put("templateType", templateType);
         argsMap.put("format", format.getValue());
-        argsMap.putAll(additionalArgs);
+        if(additionalArgs != null && !additionalArgs.isEmpty()) {
+            argsMap.putAll(additionalArgs);
+        }
         model.put(KEY_ARGS, argsMap);
         model.put(ProcessorConstants.KEY_ENCODING, "UTF-8");
         model.put(ProcessorConstants.KEY_MIMETYPE, mimetypeService.getMimetype(format.getValue()));
