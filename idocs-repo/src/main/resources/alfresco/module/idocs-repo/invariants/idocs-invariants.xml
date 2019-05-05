@@ -6,6 +6,7 @@
         <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
         <import uri="http://www.citeck.ru/model/content/idocs/1.0" prefix="idocs" />
         <import uri="http://www.citeck.ru/model/deputy/1.0" prefix="deputy" />
+        <import uri="http://www.citeck.ru/model/content/ecos/1.0" prefix="ecos" />
     </imports>
 
     <associations type="idocs:legalEntity">
@@ -22,6 +23,18 @@
     </aspect>
 
     <type name="idocs:contractor">
+        <property name="idocs:fullOrganizationName">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] != "individual"</invariant>
+        </property>
+        <property name="idocs:okpo">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] != "individual"</invariant>
+        </property>
+        <property name="idocs:kpp">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] != "individual"</invariant>
+        </property>
+        <property name="idocs:shortOrganizationName">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] != "individual"</invariant>
+        </property>
         <property name="idocs:contractorKind">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
@@ -65,9 +78,46 @@
                 })()
             </invariant>
         </property>
+        <property name="idocs:registrationAddress">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual"</invariant>
+        </property>
+        <property name="idocs:lastName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual"</invariant>
+        </property>
+        <property name="idocs:firstName">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual"</invariant>
+        </property>
+        <property name="idocs:patronymicName">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual"</invariant>
+        </property>
+        <property name="ecos:birthDate">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual"</invariant>
+        </property>
+        <property name="idocs:inila">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual"</invariant>
+        </property>
+        <property name="idocs:numberPass">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual"</invariant>
+        </property>
+        <property name="idocs:whoIssuedPass">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual"</invariant>
+        </property>
+        <property name="idocs:passIssueDate">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "individual"</invariant>
+        </property>
+        <association name="idocs:legalForm">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] === "legal-entity"</invariant>
+        </association>
+        <property name="idocs:juridicalAddress">
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] != "individual"</invariant>
+        </property>
 
         <property name="idocs:CEOname">
             <invariant on="mandatory" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] != "individual-entrepreneur"</invariant>
+            <invariant on="relevant" language="javascript">node.properties["idocs:contractorKind"] != null &amp;&amp; node.properties["idocs:contractorKind"] != "individual"</invariant>
         </property>
     </type>
 
