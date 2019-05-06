@@ -9,12 +9,8 @@ import ru.citeck.ecos.processor.DataBundle;
 import ru.citeck.ecos.processor.DataBundleProcessor;
 import ru.citeck.ecos.processor.ProcessorConstants;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static ru.citeck.ecos.webscripts.processor.DataBundleProcessorWebscript.KEY_ARGS;
 
@@ -29,62 +25,67 @@ public class DataBundleProcessorService {
         }
     }
 
-    public ProcessionResult getProcessedDataStream(NodeRef document, String templateType, Format format) throws IOException {
-        DataBundle inputBundle = getInputBundle(document, templateType, format);
+    public ProcessionResult getProcessedDataStream(
+            NodeRef document, String templateType, Format format, Map<String, Object> additionalArgs) {
 
-        List<DataBundle> inputs = Arrays.asList(new DataBundle[]{inputBundle});
+        DataBundle inputBundle = getInputBundle(document, templateType, format, additionalArgs);
+
+        List<DataBundle> inputs = Collections.singletonList(inputBundle);
 
         // get actual input stream and model
         InputStream inputStream = null;
         ProcessionResult processionResult = null;
-        try {
-            // do the processing
-            List<DataBundle> outputs = processor.process(inputs);
+        // do the processing
+        List<DataBundle> outputs = processor.process(inputs);
 
-            Map<String, Object> outputModel = null;
-            for (DataBundle output : outputs) {
-                if (output == null) continue;
-                InputStream str = output.getInputStream();
-                if (str != null) {
-                    inputStream = str;
-                    outputModel = output.getModel();
-                    break;
-                }
+        Map<String, Object> outputModel = null;
+        for (DataBundle output : outputs) {
+            if (output == null) {
+                continue;
             }
-
-            if (inputStream != null) {
-
-                // first set the headers
-                String encoding = (String) outputModel.get(ProcessorConstants.KEY_ENCODING);
-                String mimetype = (String) outputModel.get(ProcessorConstants.KEY_MIMETYPE);
-                String filename = (String) outputModel.get(ProcessorConstants.KEY_FILENAME);
-
-                if (mimetype != null) {
-                    String extension = mimetypeService.getExtension(mimetype);
-                    if (filename != null && extension != null && !filename.endsWith(extension)
-                            && !extension.equals(MimetypeMap.EXTENSION_BINARY)) {
-                        filename = filename + "." + extension;
-                    }
-                }
-                processionResult = new ProcessionResult(inputStream, encoding,mimetype, filename);
-
+            InputStream str = output.getInputStream();
+            if (str != null) {
+                inputStream = str;
+                outputModel = output.getModel();
+                break;
             }
-
-        } finally {
-            IOUtils.closeQuietly(inputStream);
         }
+
+        if (inputStream != null) {
+
+            // first set the headers
+            String encoding = (String) outputModel.get(ProcessorConstants.KEY_ENCODING);
+            String mimetype = (String) outputModel.get(ProcessorConstants.KEY_MIMETYPE);
+            String filename = (String) outputModel.get(ProcessorConstants.KEY_FILENAME);
+
+            if (mimetype != null) {
+                String extension = mimetypeService.getExtension(mimetype);
+                if (filename != null && extension != null && !filename.endsWith(extension)
+                        && !extension.equals(MimetypeMap.EXTENSION_BINARY)) {
+                    filename = filename + "." + extension;
+                }
+            }
+            processionResult = new ProcessionResult(inputStream, encoding, mimetype, filename);
+
+        }
+
         return processionResult;
     }
 
-    private DataBundle getInputBundle(NodeRef document, String templateType, Format format) {
-        Map<String, Object> model = new HashMap<String, Object>(2);
+    private DataBundle getInputBundle(
+            NodeRef document, String templateType, Format format, Map<String, Object> additionalArgs) {
+
+        Map<String, Object> model = new HashMap<String, Object>(3);
         Map<String, Object> argsMap = new HashMap<>();
-        argsMap.put("nodeRef", document);
+        argsMap.put("nodeRef", document.toString());
         argsMap.put("templateType", templateType);
         argsMap.put("format", format.getValue());
-        model.put(KEY_ARGS, null);
+        if(additionalArgs != null && !additionalArgs.isEmpty()) {
+            argsMap.putAll(additionalArgs);
+        }
+        model.put(KEY_ARGS, argsMap);
         model.put(ProcessorConstants.KEY_ENCODING, "UTF-8");
-        model.put(ProcessorConstants.KEY_MIMETYPE, null);
+        model.put(ProcessorConstants.KEY_MIMETYPE, mimetypeService.getMimetype(format.getValue()));
         return new DataBundle(model);
     }
 
@@ -100,59 +101,59 @@ public class DataBundleProcessorService {
         this.mimetypeService = mimetypeService;
     }
 
-    public  class ProcessionResult {
-       private final InputStream inputStream;
-       private final String encoding;
-       private final String mimeType;
-       private final String fileName;
+    public class ProcessionResult {
+        private final InputStream inputStream;
+        private final String encoding;
+        private final String mimeType;
+        private final String fileName;
 
-       ProcessionResult(InputStream inputStream, String encoding, String mimeType, String fileName) {
-           this.inputStream = inputStream;
-           this.encoding = encoding;
-           this.mimeType = mimeType;
-           this.fileName = fileName;
-       }
+        ProcessionResult(InputStream inputStream, String encoding, String mimeType, String fileName) {
+            this.inputStream = inputStream;
+            this.encoding = encoding;
+            this.mimeType = mimeType;
+            this.fileName = fileName;
+        }
 
-       public InputStream getInputStream() {
-           return inputStream;
-       }
+        public InputStream getInputStream() {
+            return inputStream;
+        }
 
-       public String getEncoding() {
-           return encoding;
-       }
+        public String getEncoding() {
+            return encoding;
+        }
 
-       public String getMimeType() {
-           return mimeType;
-       }
+        public String getMimeType() {
+            return mimeType;
+        }
 
-       public String getFileName() {
-           return fileName;
-       }
+        public String getFileName() {
+            return fileName;
+        }
 
-       @Override
-       public boolean equals(Object o) {
-           if (this == o) return true;
-           if (!(o instanceof ProcessionResult)) return false;
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof ProcessionResult)) return false;
 
-           ProcessionResult that = (ProcessionResult) o;
+            ProcessionResult that = (ProcessionResult) o;
 
-           if (!inputStream.equals(that.inputStream)) return false;
-           if (encoding != null ? !encoding.equals(that.encoding) : that.encoding != null) return false;
-           if (mimeType != null ? !mimeType.equals(that.mimeType) : that.mimeType != null) return false;
-           return fileName.equals(that.fileName);
-       }
+            if (!inputStream.equals(that.inputStream)) return false;
+            if (encoding != null ? !encoding.equals(that.encoding) : that.encoding != null) return false;
+            if (mimeType != null ? !mimeType.equals(that.mimeType) : that.mimeType != null) return false;
+            return fileName.equals(that.fileName);
+        }
 
-       @Override
-       public int hashCode() {
-           int result = inputStream.hashCode();
-           result = 31 * result + (encoding != null ? encoding.hashCode() : 0);
-           result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
-           result = 31 * result + fileName.hashCode();
-           return result;
-       }
-   }
+        @Override
+        public int hashCode() {
+            int result = inputStream.hashCode();
+            result = 31 * result + (encoding != null ? encoding.hashCode() : 0);
+            result = 31 * result + (mimeType != null ? mimeType.hashCode() : 0);
+            result = 31 * result + fileName.hashCode();
+            return result;
+        }
+    }
 
-    enum Format {
+    public enum Format {
         DOCX("docx"),
         PDF("pdf"),
         DOC("doc"),
