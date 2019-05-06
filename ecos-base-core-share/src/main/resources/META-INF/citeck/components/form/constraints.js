@@ -441,7 +441,7 @@ require([
         return this._loaderPanel;
     };
 
-    Citeck.forms.createRecord = function (recordRef, type, destination, fallback) {
+    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod) {
 
         var showForm = function(recordRef) {
 
@@ -456,7 +456,9 @@ require([
                             if (record.id && record.id.indexOf('workspace://SpacesStore/') === 0
                                           && form.options.formMode === 'CREATE') {
 
-                                window.location = Alfresco.util.siteURL("card-details?nodeRef=" + record.id);
+                                if (!redirectionMethod || redirectionMethod === 'card') {
+                                    window.location = Alfresco.util.siteURL("card-details?nodeRef=" + record.id);
+                                }
                             }
                         }
                     },
@@ -608,6 +610,10 @@ require([
 
                 var displayName = recordData.displayName || '';
                 var formMode = recordData.formMode || 'EDIT';
+
+                if (formMode === 'CREATE') {
+                    Citeck.Records.get(record).reset();
+                }
 
                 var options = formParams.options || {};
                 options.formMode = formMode;
