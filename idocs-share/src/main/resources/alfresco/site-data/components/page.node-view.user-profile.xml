@@ -9,5 +9,6 @@
         <mode>view</mode>
         <hideTwister>true</hideTwister>
         <hideHeading>true</hideHeading>
+        <runtimeKey>profile-view</runtimeKey>
     </properties>
 </component>
