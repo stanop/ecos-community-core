@@ -15,8 +15,9 @@ export const EditUserForm = () => {
         className = 'user-profile__edit-form_mode-view';
 
         if (canWrite) {
+            let username = Alfresco.constants.USERNAME;
             editLink = (
-                <a className="user-profile__edit-link" href={'/share/page/user/admin/profile?mode=edit'}>
+                <a className="user-profile__edit-link" href={'/share/page/user/' + username + '/profile?mode=edit'}>
                     {Alfresco.util.message('user-profile.edit-link.label')}
                 </a>
             );
