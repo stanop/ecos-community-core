@@ -558,6 +558,7 @@
 			</associations>
 		</aspect>
 
+		<!-- Deprecated -->
 		<aspect name="contracts:hasAttachmentRkkCreatedFrom">
 			<associations>
 				<association name="contracts:attachmentRkkCreatedFrom">
