@@ -2012,12 +2012,12 @@ define([
                 if (!title) {
                     title = (oRecord.getData("attributes['cwf:taskTitle']") || [])[0];
                 }
-                if (!title) {
-                    title = sData;
-                }
                 if (title && title.hasOwnProperty("str")) {
                     elCell.innerHTML = title.str;
                 } else {
+                    if (sData && sData.hasOwnProperty("str")) {
+                        sData = sData.str;
+                    }
                     typeName.call(this, elCell, oRecord, oColumn, sData);
                 }
             };
