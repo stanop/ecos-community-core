@@ -628,3 +628,48 @@ div[id*="-results-panel"].yui-panel>.bd {
 .yui-panel .collapse:not(.panel-collapse) {
     display: block;
 }
+
+/* site-members page style fixes */
+.alf-invite-direct-add .people-finder .search-bar {
+  padding: 0 0 0 32px;
+}
+.alf-invite-direct-add .people-finder .search-bar .search-text {
+  padding-top: 4px;
+}
+.alf-invite-direct-add .people-finder .search-bar .search-button {
+  padding-top: 5px;
+}
+.alf-invite-direct-add .people-finder.compact .alf-results-wrapper {
+  width: 100%;
+}
+.alf-invite-direct-add .invitationlist .invitelist-bar {
+  padding: 0 6px;
+}
+.alf-invite-panel-header > div {
+  padding-top: 5px;
+}
+.alf-invite-direct-add .alf-label {
+  padding-top: 2px;
+}
+.invitationlist .inviteelist {
+  width: 100%;
+}
+.added-users-list .added-users-list-bar {
+  padding: 0 6px;
+}
+.site-members .search-controls,
+.site-groups .search-controls,
+.sent-invites .search-controls {
+  padding: 0;
+}
+.site-groups .add-groups {
+  padding-top: 54px;
+}
+.site-members .yui-dt,
+.site-groups .yui-dt,
+.sent-invites .yui-dt {
+  width: 100%;
+}
+.group-finder .search-bar {
+  padding: 1px;
+}
