@@ -75,7 +75,7 @@
                 "mask": false,
                 "inputType": "text",
                 "inputMask": "",
-                "id": "e3mj5hf"
+                "id": "exwm27o"
             },
             {
                 "label": "Key",
@@ -165,7 +165,7 @@
                 "mask": false,
                 "inputType": "text",
                 "inputMask": "",
-                "id": "ermr43t"
+                "id": "eczdsas"
             },
             {
                 "label": "Description",
@@ -239,7 +239,7 @@
                 "rows": 3,
                 "wysiwyg": false,
                 "editor": "",
-                "id": "ej3bkv"
+                "id": "ehmxy4t"
             },
             {
                 "label": "Columns",
@@ -312,7 +312,7 @@
                                 "rightIcon": "",
                                 "disableOnInvalid": false,
                                 "theme": "default",
-                                "id": "e88ffo"
+                                "id": "eb7wh8e"
                             }
                         ],
                         "offset": 0,
@@ -358,7 +358,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "ejefyc8"
+                        "id": "es18m6"
                     },
                     {
                         "components": [
@@ -367,22 +367,63 @@
                                 "action": "custom",
                                 "state": "",
                                 "showValidations": false,
+                                "custom": "form.ecos.custom.showFormEditor()",
                                 "shortcut": "",
                                 "block": true,
                                 "mask": false,
+                                "disabled": true,
                                 "tableView": true,
                                 "alwaysEnabled": false,
-                                "custom": "",
                                 "type": "button",
                                 "input": true,
                                 "key": "editform",
+                                "defaultValue": false,
+                                "validate": {
+                                    "customMessage": "",
+                                    "json": "",
+                                    "required": false,
+                                    "custom": "",
+                                    "customPrivate": false
+                                },
+                                "conditional": {
+                                    "show": "",
+                                    "when": "",
+                                    "json": "",
+                                    "eq": ""
+                                },
+                                "encrypted": false,
+                                "properties": {},
+                                "customConditional": "",
+                                "logic": [
+                                    {
+                                        "name": "Enable",
+                                        "trigger": {
+                                            "type": "javascript",
+                                            "javascript": "result = !!_.get(instance, 'root.ecos.custom.showFormEditor');"
+                                        },
+                                        "actions": [
+                                            {
+                                                "name": "Enable",
+                                                "type": "property",
+                                                "property": {
+                                                    "label": "Disabled",
+                                                    "value": "disabled",
+                                                    "type": "boolean"
+                                                },
+                                                "state": "false"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "event": "",
+                                "url": "",
+                                "reorder": false,
                                 "placeholder": "",
                                 "prefix": "",
                                 "customClass": "",
                                 "suffix": "",
                                 "multiple": false,
-                                "defaultValue": null,
-                                "protected": true,
+                                "protected": false,
                                 "unique": false,
                                 "persistent": false,
                                 "hidden": false,
@@ -396,7 +437,6 @@
                                 "tooltip": "",
                                 "hideLabel": false,
                                 "tabindex": "",
-                                "disabled": true,
                                 "autofocus": false,
                                 "dbIndex": false,
                                 "customDefaultValue": "",
@@ -406,22 +446,12 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "validate": {
-                                    "required": false,
-                                    "custom": "",
-                                    "customPrivate": false
-                                },
-                                "conditional": {
-                                    "show": null,
-                                    "when": null,
-                                    "eq": ""
-                                },
                                 "size": "md",
                                 "leftIcon": "",
                                 "rightIcon": "",
                                 "disableOnInvalid": false,
                                 "theme": "default",
-                                "id": "e9df1t"
+                                "id": "eizmfuc"
                             }
                         ],
                         "width": 4,
@@ -474,7 +504,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "emoks1u"
+                        "id": "e2vfm7k"
                     },
                     {
                         "components": [
@@ -535,7 +565,7 @@
                                 "leftIcon": "",
                                 "rightIcon": "",
                                 "action": "submit",
-                                "id": "e8vt5ik"
+                                "id": "e5ur5q5"
                             }
                         ],
                         "width": 4,
@@ -588,7 +618,7 @@
                             "when": null,
                             "eq": ""
                         },
-                        "id": "efegrdr"
+                        "id": "eqeb8ms"
                     }
                 ],
                 "autoAdjust": true,
@@ -639,7 +669,7 @@
                     "eq": ""
                 },
                 "hideOnChildrenHidden": false,
-                "id": "enpxwtfr"
+                "id": "eq0g2p"
             }
         ]
     }
