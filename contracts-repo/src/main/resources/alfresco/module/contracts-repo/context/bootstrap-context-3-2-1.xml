@@ -39,6 +39,11 @@
         <property name="executeOnceOnly" value="false" />
         <property name="name" value="add-contracts-case-statuses" />
         <property name="description" value="Create or update case statuses" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-case-status" />
+            </list>
+        </property>
         <property name="bootstrapScript" value="alfresco/module/contracts-repo/bootstrap/scripts/case-statuses.js"/>
     </bean>
 
