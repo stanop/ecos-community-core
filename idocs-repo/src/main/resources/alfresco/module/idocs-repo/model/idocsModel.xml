@@ -741,6 +741,10 @@
                     <title>INILA</title>
                     <type>d:text</type>
                 </property>
+                <property name="idocs:registrationAddress">
+                    <title>Registration address</title>
+                    <type>d:text</type>
+                </property>
             </properties>
         </aspect>
         
@@ -1095,11 +1099,6 @@
             <properties>
                 <property name="idocs:juridicalAddress">
                     <title>Juridical address</title>
-                    <type>d:text</type>
-                    <mandatory>true</mandatory>
-                </property>
-                <property name="idocs:registrationAddress">
-                    <title>Registration address</title>
                     <type>d:text</type>
                     <mandatory>true</mandatory>
                 </property>
