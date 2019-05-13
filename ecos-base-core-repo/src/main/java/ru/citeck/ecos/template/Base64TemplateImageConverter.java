@@ -9,6 +9,7 @@ import org.alfresco.model.ContentModel;
 import org.alfresco.repo.template.BaseTemplateProcessorExtension;
 import org.alfresco.repo.template.TemplateNode;
 import org.alfresco.service.cmr.repository.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,7 +35,7 @@ public class Base64TemplateImageConverter extends BaseTemplateProcessorExtension
 
     private static final String IMAGE_SRC_FORMAT = "data:image/%s;base64,%s";
 
-    private static final List<String> SUPPORT_IMAGES_EXTENSIONS = Arrays.asList("bmp", "gif", "jpeg", "jpg");
+    private static final List<String> SUPPORT_IMAGES_EXTENSIONS = Arrays.asList("bmp", "gif", "jpeg", "jpg", "png");
 
     private static final String QR_CODE_FORMAT = "png";
     private static final String QR_CODE_CONTENT_ENCODING = "UTF-8";
