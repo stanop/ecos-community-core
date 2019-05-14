@@ -35,25 +35,21 @@ table, tr, td
 <#assign records = recordsService.getRecordsForClass(query, clazz).records![] />
 
 <#list records as record>
+    <#assign role = ""/>
     <#assign type = record.taskType!"" />
     <#assign date = record.date!"" />
     <#assign comment = record.taskComment!"" />
     <#assign outcome = record.taskOutcomeTitle!"" />
     <#if record.taskPooledActors?? && record.taskPooledActors[0]??>
-        <#assign role=record.taskPooledActors[0].authorityName!""
-                 user=record.taskPooledActors[0].userName!"" />
+        <#assign role=record.taskPooledActors[0].authorityName!""/>
     </#if>
-<#-- User in taskPooledActors authority container is not available for now.
-    Trying to get it from taskRole -->
-    <#if !user?has_content && record.initiator?has_content>
-        <#assign user = record.initiator!"" />
-    </#if>
+
     <#assign allDecisions = allDecisions + [ {
         "date": date,
         "comment": comment,
         "outcome": outcome,
         "role": role!"",
-        "user": user!""
+        "user": record.initiator!""
     } ] />
 </#list>
 
