@@ -138,7 +138,9 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
                 if (propDef != null) {
 
-                    if (DataTypeDefinition.CONTENT.equals(propDef.getDataType().getName())) {
+                    QName typeName = propDef.getDataType().getName();
+
+                    if (DataTypeDefinition.CONTENT.equals(typeName)) {
                         contentProps.put(fieldName, fields.path(name));
                     } else {
 
@@ -146,7 +148,16 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
                         if (!value.isMissingNode()) {
 
-                            props.put(fieldName, convertValue(value));
+                            Serializable converted = convertValue(value);
+
+                            if (!DataTypeDefinition.TEXT.equals(typeName)
+                                    && converted instanceof String
+                                    && ((String) converted).isEmpty()) {
+
+                                props.put(fieldName, null);
+                            } else {
+                                props.put(fieldName, converted);
+                            }
                         }
                     }
                 } else {
