@@ -53,10 +53,17 @@ table, tr, td
     } ] />
 </#list>
 
-<#-- leave the latest decision for each role -->
+<#-- leave the latest decision for each role and user -->
 <#assign decisionMap = {} />
 <#list allDecisions?sort_by("date") as decision>
-    <#assign decisionMap = decisionMap + { decision.role!decision.user : decision } />
+    <#assign key = ""/>
+    <#if decision.role?has_content>
+        <#assign key = decision.role/>
+    <#elseif decision.user?has_content>
+        <#assign key = decision.user.id/>
+    </#if>
+
+    <#assign decisionMap = decisionMap + { key : decision } />
 </#list>
 
 <table width="${tableWidth}">
