@@ -109,6 +109,11 @@ public class EcosFormServiceImpl implements EcosFormService {
                 }
             }
         } else {
+
+            if (model.getDefinition() == null) {
+                model.setDefinition(getDefault().getDefinition().deepCopy());
+            }
+
             model.setId(GUID.generate());
         }
 
