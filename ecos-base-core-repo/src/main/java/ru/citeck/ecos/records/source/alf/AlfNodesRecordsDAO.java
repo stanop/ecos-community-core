@@ -166,12 +166,25 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
                     if (assocDef != null) {
 
-                        Set<NodeRef> nodeRefs = Arrays.stream(fields.path(name).asText().split(","))
-                                                      .filter(NodeRef::isNodeRef)
-                                                      .map(NodeRef::new)
-                                                      .collect(Collectors.toSet());
+                        JsonNode value = fields.path(name);
 
-                        if (nodeRefs.size() > 0) {
+                        Set<NodeRef> nodeRefs = null;
+                        if (value.isTextual()) {
+                            nodeRefs = Arrays.stream(value.asText().split(","))
+                                             .filter(NodeRef::isNodeRef)
+                                             .map(NodeRef::new)
+                                             .collect(Collectors.toSet());
+                        } else if (value.isArray()) {
+                            nodeRefs = new HashSet<>();
+                            for (JsonNode node : value) {
+                                String textValue = node.asText();
+                                if (NodeRef.isNodeRef(textValue)) {
+                                    nodeRefs.add(new NodeRef(textValue));
+                                }
+                            }
+                        }
+
+                        if (nodeRefs != null && nodeRefs.size() > 0) {
                             assocs.put(fieldName, nodeRefs);
                         }
                     }
