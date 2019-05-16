@@ -301,7 +301,7 @@ ko.components.register("number-generate", {
 // ---------------
 // NUMBER
 // ---------------
-    
+
 ko.bindingHandlers.numericKeyInput = {
     init: function (element) {
         $(element).on('keydown', function (event) {
@@ -973,6 +973,91 @@ ko.bindingHandlers.dateControl = {
         }
     }
 };
+
+ko.components.register('dadata-loader', {
+    viewModel: function (params) {
+        var that = this;
+        var attributes = params.attributes || {};
+        var impl = params.runtime.node().impl();
+
+        that.tooltip = Alfresco.util.message('dadata.loader.tooltip');
+        that.text = Alfresco.util.message('dadata.loader.text');
+
+        that.onClick = function(){
+            var inn = impl.getAttribute('idocs:inn').value();
+
+            if (inn) {
+                fetch('/micro/integrations/records/query',{
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {'Content-type': 'application/json;charset=UTF-8'},
+                    body: JSON.stringify({
+                        "query": {
+                            "sourceId": "dadata-party",
+                            "query":{"tin": inn},
+                            "attributes": {"subjectName": "subjectName"},
+                            "main": true
+                        }})
+                }).then(function(response) { return response.json();}).then(function (response){
+                    var needAsk = false;
+
+                    response = (response.suggestions || [])[0];
+
+                    if (response) {
+                        for (var attribute in attributes) {
+                            var formAttributeValue = impl.getAttribute(attribute).value();
+
+                            if (formAttributeValue && formAttributeValue !== attributes[attribute](response)) {
+                                needAsk = true;
+                                break;
+                            }
+                        }
+
+                        var rewrite = function() {
+                            var newValue;
+
+                            for (var attribute in attributes) {
+                                newValue = attributes[attribute](response);
+                                if (newValue) {
+                                    impl.getAttribute(attribute).value(newValue);
+                                }
+                            }
+                        };
+
+                        needAsk
+                            ?
+                        Alfresco.util.PopupManager.displayPrompt({
+                            title: Alfresco.util.message('dadata.loader.text'),
+                            text: Alfresco.util.message('dadata.loader.confirm'),
+                            noEscape: true,
+                            buttons: [
+                                {
+                                    text: Alfresco.util.message('actions.button.ok'),
+                                    handler: function() {
+                                        this.hide();
+                                        rewrite();
+                                        this.destroy();
+                                    }
+                                },
+                                {
+                                    text: Alfresco.util.message('actions.button.cancel'),
+                                    handler: function() {
+                                        this.destroy();
+                                    },
+                                    isDefault: true
+                                }
+                            ]
+                        })
+                            :
+                        rewrite();
+                    }
+                });
+            }
+        }
+    },
+    template: '<button class="dadata-loader_btn"  data-bind="click: onClick.bind(this), attr: { title:tooltip }, text: text"></button>'
+});
+
 
 // -------------
 // DOCUMENT-SELECT
