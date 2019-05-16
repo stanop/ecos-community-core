@@ -50,7 +50,11 @@ var defaultFormatters = {
     "boolean": formatters.bool(msg('label.yes'), msg('label.no')),
     "filesize": formatters.fileSize("attributes['cm:content']"),
     "mimetype": formatters.icon(16, "attributes['cm:name']"),
-    "typeName": formatters.typeName()
+    "typeName": formatters.typeName(),
+    "int": formatters.parseInt(),
+    "long": formatters.parseInt(),
+    "double": formatters.parseFloat(),
+    "float": formatters.parseFloat()
 };
 
 // class declarations:
