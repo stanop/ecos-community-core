@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>File upload</shortname>
+    <description>upload</description>
+    <url>/eform/file-upload</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>
