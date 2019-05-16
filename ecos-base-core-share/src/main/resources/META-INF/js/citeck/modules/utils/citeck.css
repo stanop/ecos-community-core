@@ -673,3 +673,8 @@ div[id*="-results-panel"].yui-panel>.bd {
 .group-finder .search-bar {
   padding: 1px;
 }
+
+/* hide img alt */
+.dashlet-comments .icon img {
+    font-size: 0;
+}
