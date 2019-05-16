@@ -85,7 +85,6 @@ define([
                 var result = parseInt(number);
                 if (isNaN(result)) {
                     return;
-
                 }
                 var textNode = document.createTextNode(result);
                 elCell.appendChild(textNode);
