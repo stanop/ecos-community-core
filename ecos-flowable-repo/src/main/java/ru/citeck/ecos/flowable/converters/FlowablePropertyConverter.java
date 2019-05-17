@@ -19,8 +19,7 @@ import org.alfresco.util.collections.EntryTransformer;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.flowable.engine.TaskService;
-import org.flowable.engine.history.HistoricActivityInstance;
-import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.history.*;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.identitylink.service.IdentityLinkType;
@@ -316,7 +315,11 @@ public class FlowablePropertyConverter {
         if (currentTask != null) {
             return getTaskProperties(currentTask);
         } else {
-            return Collections.EMPTY_MAP;
+            Map<QName, Serializable> properties = new HashMap<>();
+
+            properties.put(WorkflowModel.PROP_COMPLETION_DATE, task.getEndTime());
+
+            return properties;
         }
     }
 
