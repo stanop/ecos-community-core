@@ -6,4 +6,8 @@
           parent="webscript">
     </bean>
 
+    <bean id="webscript.ru.citeck.eform.file-eform.delete" class="ru.citeck.ecos.eform.webscripts.FileEformDelete"
+          parent="webscript">
+    </bean>
+
 </beans>

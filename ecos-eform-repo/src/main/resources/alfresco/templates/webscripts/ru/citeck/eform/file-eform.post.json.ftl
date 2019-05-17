@@ -1,3 +1,3 @@
 <#escape x as jsonUtils.encodeJSONString(x)>
-    { "result": "<#if result??>${result}<#else>null</#if>" }
+    { "nodeRef": "<#if nodeRef??>${nodeRef}<#else>null</#if>" }
 </#escape>

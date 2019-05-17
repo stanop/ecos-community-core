@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="ecos.eform.import-spaces.3-12-0" abstract="true" parent="ecos.eform.import-spaces">
+        <property name="sinceVersion" value="3.12.0"/>
+        <property name="appliesFromVersion" value="3.12.0"/>
+    </bean>
+
+    <bean id="ecos.eform.files-temp-root" parent="ecos.eform.import-spaces.3-12-0">
+        <property name="name" value="files-temp-root"/>
+        <property name="description" value="Container for temp files, uploaded by eform"/>
+        <property name="executeOnceOnly" value="false"/>
+        <property name="bootstrapView">
+            <props>
+                <prop key="uuidBinding">UPDATE_EXISTING</prop>
+                <prop key="path">/</prop>
+                <prop key="location">alfresco/module/ecos-eform-repo/bootstrap/explicit/eform-files-temp-root.xml</prop>
+                <prop key="encoding">UTF-8</prop>
+            </props>
+        </property>
+    </bean>
+
+</beans>

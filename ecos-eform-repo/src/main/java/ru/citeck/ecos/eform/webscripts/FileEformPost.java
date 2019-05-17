@@ -2,6 +2,7 @@ package ru.citeck.ecos.eform.webscripts;
 
 import lombok.extern.log4j.Log4j;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.ContentWriter;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -17,50 +18,66 @@ import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.servlet.FormData;
-import ru.citeck.ecos.model.EcosContentModel;
+import ru.citeck.ecos.eform.model.EcosEformFileModel;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Allow to process post request from file control on eform. This request save file on temp <br>
+ * container {@link FileEformPost#ROOT_NODE_REF}.
+ *
+ * @author Roman Makarskiy
+ */
 @Log4j
 public class FileEformPost extends DeclarativeWebScript {
 
-    private static final String PARAM_NAME = "name";
+    private static final String PARAM_NAME_ID = "name";
     private static final String PARAM_FILE = "file";
+    private static final String MODEL_NODE_REF = "nodeRef";
 
-    private static final NodeRef ROOT_NODE_REF = new NodeRef("workspace://SpacesStore/attachments-root");
+    private static final NodeRef ROOT_NODE_REF = new NodeRef("workspace://SpacesStore/eform-files-temp-root");
 
     private NodeService nodeService;
     private ContentService contentService;
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
-        //TODO: run as system
-
-        String name = req.getParameter(PARAM_NAME);
-        if (StringUtils.isBlank(name)) {
-            status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_NAME + "' should be set");
+        String fileNameId = req.getParameter(PARAM_NAME_ID);
+        if (StringUtils.isBlank(fileNameId)) {
+            status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_NAME_ID + "' should be set");
+            return null;
         }
 
         File file = new File(req);
         if (file.isInvalid()) {
             status.setCode(Status.STATUS_BAD_REQUEST, "Parameter '" + PARAM_FILE + "' should be set");
+            return null;
         }
 
-        log.error("Name: " + name);
-        log.error("File: " + file);
+        NodeRef createdTempFile = AuthenticationUtil.runAsSystem(() -> saveFile(fileNameId, file));
 
+        if (log.isDebugEnabled()) {
+            log.debug("Save temp file: " + file + " ----> " + createdTempFile);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put(MODEL_NODE_REF, createdTempFile.toString());
+        return result;
+    }
+
+    private NodeRef saveFile(String name, File file) {
         Map<QName, Serializable> props = new HashMap<>(2);
-        props.put(EcosContentModel.PROP_ID, name);
+        props.put(EcosEformFileModel.PROP_TEMP_FILE_ID, name);
         props.put(ContentModel.PROP_NAME, file.fileName);
 
         NodeRef createdTempFile = nodeService.createNode(
                 ROOT_NODE_REF,
                 ContentModel.ASSOC_CHILDREN,
                 QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate()),
-                ContentModel.TYPE_CONTENT,
+                EcosEformFileModel.TYPE_TEMP_FILE,
                 props).getChildRef();
 
         ContentWriter writer = contentService.getWriter(createdTempFile, ContentModel.PROP_CONTENT, true);
@@ -68,15 +85,13 @@ public class FileEformPost extends DeclarativeWebScript {
                 StandardCharsets.UTF_8.name();
         writer.setEncoding(encoding);
 
-        String mimetype = StringUtils.isNoneBlank(file.content.getMimetype()) ? file.content.getMimetype() :
+        String mimeType = StringUtils.isNoneBlank(file.content.getMimetype()) ? file.content.getMimetype() :
                 file.mimetype;
-        writer.setMimetype(mimetype);
+        writer.setMimetype(mimeType);
 
         writer.putContent(file.content.getInputStream());
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("result", createdTempFile.toString());
-        return result;
+        return createdTempFile;
     }
 
     private class File {
