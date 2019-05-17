@@ -2,6 +2,7 @@ package ru.citeck.ecos.records.source.alf;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.ServiceRegistry;
@@ -257,6 +258,8 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                     if (content.isTextual()) {
                         writer.putContent(content.asText());
                     }
+                } else if (value.isArray() && value.size() > 0) {
+                    saveFileToContentPropFromEform(value, name, writer);
                 }
             });
 
@@ -264,6 +267,27 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
         }
 
         return result;
+    }
+
+    private void saveFileToContentPropFromEform(JsonNode node, QName propName, ContentWriter writer) {
+        if (node.size() > 1) {
+            logger.warn(String.format("Only one file can be written to the content property <%s>. " +
+                    "Current files count: <%s>. The first file will be written.", propName, node.size()));
+        }
+
+        JsonNode jsonNode = node.get(0);
+        String refStr = jsonNode.get("data").get("nodeRef").asText();
+        if (StringUtils.isBlank(refStr) || !NodeRef.isNodeRef(refStr)) {
+            throw new AlfrescoRuntimeException("NodeRef of content file incorrect");
+        }
+
+        NodeRef tempFile = new NodeRef(refStr);
+        ContentReader reader = contentService.getReader(tempFile, propName);
+        writer.setEncoding(reader.getEncoding());
+        writer.setMimetype(reader.getMimetype());
+        writer.putContent(reader);
+
+        nodeService.deleteNode(tempFile);
     }
 
     @Override

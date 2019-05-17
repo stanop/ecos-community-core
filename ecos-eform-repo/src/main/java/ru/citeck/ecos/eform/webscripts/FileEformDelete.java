@@ -43,9 +43,10 @@ public class FileEformDelete extends DeclarativeWebScript {
         }
 
         NodeRef nodeToDelete = AuthenticationUtil.runAsSystem(() -> deleteFile(fileId));
+        String resultModel = nodeToDelete != null ? nodeToDelete.toString() : "";
 
         Map<String, Object> result = new HashMap<>();
-        result.put(MODEL_RESULT, nodeToDelete.toString());
+        result.put(MODEL_RESULT, resultModel);
         return result;
     }
 
