@@ -162,31 +162,33 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                         }
                     }
                 } else {
-
                     AssociationDefinition assocDef = dictionaryService.getAssociation(fieldName);
-
                     if (assocDef != null) {
+                        if (assocDef instanceof ChildAssociationDefinition) {
+                            //TODO: fill files...
+                            logger.error("CHILD ASSOC!!!!: " + assocDef.getName());
+                        } else {
+                            JsonNode value = fields.path(name);
 
-                        JsonNode value = fields.path(name);
-
-                        Set<NodeRef> nodeRefs = null;
-                        if (value.isTextual()) {
-                            nodeRefs = Arrays.stream(value.asText().split(","))
-                                             .filter(NodeRef::isNodeRef)
-                                             .map(NodeRef::new)
-                                             .collect(Collectors.toSet());
-                        } else if (value.isArray()) {
-                            nodeRefs = new HashSet<>();
-                            for (JsonNode node : value) {
-                                String textValue = node.asText();
-                                if (NodeRef.isNodeRef(textValue)) {
-                                    nodeRefs.add(new NodeRef(textValue));
+                            Set<NodeRef> nodeRefs = null;
+                            if (value.isTextual()) {
+                                nodeRefs = Arrays.stream(value.asText().split(","))
+                                        .filter(NodeRef::isNodeRef)
+                                        .map(NodeRef::new)
+                                        .collect(Collectors.toSet());
+                            } else if (value.isArray()) {
+                                nodeRefs = new HashSet<>();
+                                for (JsonNode node : value) {
+                                    String textValue = node.asText();
+                                    if (NodeRef.isNodeRef(textValue)) {
+                                        nodeRefs.add(new NodeRef(textValue));
+                                    }
                                 }
                             }
-                        }
 
-                        if (nodeRefs != null && nodeRefs.size() > 0) {
-                            assocs.put(fieldName, nodeRefs);
+                            if (nodeRefs != null && nodeRefs.size() > 0) {
+                                assocs.put(fieldName, nodeRefs);
+                            }
                         }
                     }
                 }
