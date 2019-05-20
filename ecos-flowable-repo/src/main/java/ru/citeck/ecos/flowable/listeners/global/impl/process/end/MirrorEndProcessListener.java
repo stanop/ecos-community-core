@@ -49,7 +49,7 @@ public class MirrorEndProcessListener implements GlobalEndExecutionListener {
                 String workflowId = FlowableConstants.ENGINE_PREFIX + entity.getProcessInstanceId();
                 List<NodeRef> mirrors = workflowMirrorService.getTaskMirrorsByWorkflowId(workflowId);
                 for (NodeRef mirror : mirrors) {
-                    workflowMirrorService.mirrorTask((String) nodeService.getProperty(mirror, ContentModel.PROP_NAME));
+                    workflowMirrorService.mirrorTask((String) nodeService.getProperty(mirror, ContentModel.PROP_NAME), false);
                 }
             }
         }

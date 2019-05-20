@@ -50,7 +50,11 @@ var defaultFormatters = {
     "boolean": formatters.bool(msg('label.yes'), msg('label.no')),
     "filesize": formatters.fileSize("attributes['cm:content']"),
     "mimetype": formatters.icon(16, "attributes['cm:name']"),
-    "typeName": formatters.typeName()
+    "typeName": formatters.typeName(),
+    "int": formatters.parseInt(),
+    "long": formatters.parseInt(),
+    "double": formatters.parseFloat(),
+    "float": formatters.parseFloat()
 };
 
 // class declarations:
@@ -741,6 +745,7 @@ Attribute
     .shortcut('nodetype', '_info.nodetype')
     .shortcut('journalType', '_info.journalType')
     .shortcut('labels', '_info.labels', {})
+    .shortcut('customDisplayName', '_info.customDisplayName')
 
     .method('valueCriterionEvaluator', filterFeatureEvaluator('value', o, null, notNull))
     .method('defaultCriterionEvaluator', filterFeatureEvaluator('default', o, null, notNull))
@@ -1172,10 +1177,12 @@ JournalsWidget
     .shortcut('actionGroupId', 'journal.type.options.actionGroupId', defaultActionGroupId)
     .shortcut('actionFormatter', 'journal.type.options.actionFormatter', defaultActionFormatter)
     .computed('columns', function() {
-        var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []), journalType = this.resolve('journal.type'),
-                recordUrl = this.recordUrl(), linkSupplied = recordUrl == null,
-                recordLinkAttribute = this.recordLinkAttribute() || "cm:name",
-                recordPriorityAttribute = this.recordPriorityAttribute() || "cm:name";
+        var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []),
+            journalType = this.resolve('journal.type'),
+            recordUrl = this.recordUrl(),
+            linkSupplied = recordUrl == null,
+            recordLinkAttribute = this.recordLinkAttribute() || "cm:name",
+            recordPriorityAttribute = this.recordPriorityAttribute() || "cm:name";
 
         if (!linkSupplied) {
             linkSupplied = !!(_.find(visibleAttributes, function(attr) {
@@ -1593,9 +1600,22 @@ JournalsWidget
                         query.reportTitle = journal.title();
 
                         var reportColumns = [];
+                        var customReportAttributes = this.customReportAttributes();
                         var visibleAttributes = this.resolve('currentSettings.visibleAttributes', []);
 
-                        if (visibleAttributes) {
+                        if (customReportAttributes && customReportAttributes.length > 0) {
+                            reportColumns.push({
+                                attribute: "rowNum",
+                                title: "№"
+                            });
+
+                            for (var i = 0; i < customReportAttributes.length; i++) {
+                                reportColumns.push({
+                                    attribute: customReportAttributes[i].name._value(),
+                                    title: customReportAttributes[i].customDisplayName()
+                                });
+                            }
+                        } else if (visibleAttributes) {
                             reportColumns.push({
                                 attribute: "rowNum",
                                 title: "№"
@@ -1619,6 +1639,30 @@ JournalsWidget
         }
 
         return "{}";
+    })
+    .computed('customReportAttributes', function() {
+        var allAttributes = this.resolve('journal.type.attributes');
+        if (!allAttributes) {
+            return [];
+        }
+
+        var rawCustomReportAttributes = this.resolve('journal.options.customReportAttributes', "");
+        if (!rawCustomReportAttributes) {
+            return [];
+        }
+        var customReportAttributes = rawCustomReportAttributes.split(",").map(function(attr) { return attr.trim() });
+
+        var resultAttributes = [];
+        for (var i in customReportAttributes) {
+            var attributeName = customReportAttributes[i];
+            var attribute = _.find(allAttributes, function(attribute) {
+                return attribute.name() === attributeName;
+            });
+            if (attribute) {
+                resultAttributes.push(attribute);
+            }
+        }
+        return resultAttributes;
     })
     .method('createReport', function(reportType, isDownload) {
         this.createReportType(reportType);

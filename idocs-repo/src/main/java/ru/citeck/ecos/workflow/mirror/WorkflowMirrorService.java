@@ -30,6 +30,13 @@ public interface WorkflowMirrorService {
 	 * @param taskId
 	 */
 	public void mirrorTask(String taskId);
+
+	/**
+	 * Creates, updates or deletes task mirror.
+	 * @param taskId
+	 * @param fullPersist is mirror node need full persist from task
+	 */
+	public void mirrorTask(String taskId, boolean fullPersist);
 	
 	/**
 	 * Creates, updates or deletes task mirror asynchronously.
