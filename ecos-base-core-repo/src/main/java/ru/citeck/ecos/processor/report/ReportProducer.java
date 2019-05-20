@@ -221,7 +221,15 @@ public class ReportProducer extends AbstractDataBundleLine {
                     result = appendValue(result, properties, personMiddleName, "cm:middleName");
                 }
             } else if (node.getTypeShort().equals("cm:authorityContainer")) {
-                result = node.getProperties().get("cm:authorityDisplayName").toString();
+                Map<String, Serializable> properties = node.getProperties();
+                Serializable displayProperty = properties.get("cm:authorityDisplayName");
+                if (displayProperty == null) {
+                    displayProperty = properties.get("cm:authorityName");
+                }
+                if (displayProperty == null) {
+                    displayProperty = properties.get("cm:name");
+                }
+                result = displayProperty.toString();
             } else if (node.getProperties().get("cm:title") != null) {
                 result = node.getProperties().get("cm:title").toString();
             } else if (node.getName() != null) {

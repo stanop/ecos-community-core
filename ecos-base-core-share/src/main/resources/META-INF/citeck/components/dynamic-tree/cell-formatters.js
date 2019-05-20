@@ -74,6 +74,40 @@ define([
 
     YAHOO.lang.augmentObject(Citeck.format, {
 
+        parseInt: function() {
+            return function(elCell, oRecord, oColumn, value) {
+                var number;
+                if (_.isObject(value)) {
+                    number = value.str;
+                } else {
+                    number = value;
+                }
+                var result = parseInt(number);
+                if (isNaN(result)) {
+                    return;
+                }
+                var textNode = document.createTextNode(result);
+                elCell.appendChild(textNode);
+            }
+        },
+
+        parseFloat: function() {
+            return function(elCell, oRecord, oColumn, value) {
+                var number;
+                if (_.isObject(value)) {
+                    number = value.str;
+                } else {
+                    number = value;
+                }
+                var result = parseFloat(number);
+                if (isNaN(result)) {
+                    return;
+                }
+                var textNode = document.createTextNode(result);
+                elCell.appendChild(textNode);
+            }
+        },
+
         empty: function() {
             return function(elCell, oRecord, oColumn, sData) {
                 elCell.innerHTML = "";
