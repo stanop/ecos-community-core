@@ -2,9 +2,7 @@ package ru.citeck.ecos.records.source.alf;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.*;
@@ -63,11 +61,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     private NodeUtils nodeUtils;
     private NodeService nodeService;
     private SearchService searchService;
-    private ContentService contentService;
-    private MimetypeService mimetypeService;
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
     private GroupActionService groupActionService;
+    private AlfNodeContentFileHelper contentFileHelper;
     private EcosPermissionService ecosPermissionService;
 
     private Map<QName, NodeRef> defaultParentByType = new ConcurrentHashMap<>();
@@ -114,6 +111,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             Map<QName, Serializable> props = new HashMap<>();
             Map<QName, JsonNode> contentProps = new HashMap<>();
             Map<QName, Set<NodeRef>> assocs = new HashMap<>();
+            Map<QName, JsonNode> childAssocEformFiles = new HashMap<>();
 
             NodeRef nodeRef = null;
             if (record.getId().getId().startsWith("workspace://SpacesStore/")) {
@@ -165,8 +163,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                     AssociationDefinition assocDef = dictionaryService.getAssociation(fieldName);
                     if (assocDef != null) {
                         if (assocDef instanceof ChildAssociationDefinition) {
-                            //TODO: fill files...
-                            logger.error("CHILD ASSOC!!!!: " + assocDef.getName());
+                            JsonNode node = fields.path(name);
+                            if (contentFileHelper.isFileFromEformFormat(node)) {
+                                childAssocEformFiles.put(fieldName, node);
+                            }
                         } else {
                             JsonNode value = fields.path(name);
 
@@ -230,66 +230,13 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             final NodeRef finalNodeRef = nodeRef;
 
-            contentProps.forEach((name, value) -> {
-
-                ContentWriter writer = contentService.getWriter(finalNodeRef, name, true);
-
-                if (value.isTextual()) {
-
-                    writer.putContent(value.asText());
-
-                } else if (value.isObject()) {
-
-                    JsonNode mimetypeProp = value.path("mimetype");
-                    String mimetype = mimetypeProp.isTextual() ? mimetypeProp.asText() : MimetypeMap.MIMETYPE_BINARY;
-                    if (MimetypeMap.MIMETYPE_BINARY.equals(mimetype)) {
-                        JsonNode filename = value.path("filename");
-                        if (filename.isTextual()) {
-                            mimetype = mimetypeService.guessMimetype(filename.asText());
-                        }
-                    }
-                    writer.setMimetype(mimetype);
-
-                    JsonNode encoding = value.path("encoding");
-                    if (encoding.isTextual()) {
-                        writer.setEncoding(encoding.asText());
-                    } else {
-                        writer.setEncoding("UTF-8");
-                    }
-                    JsonNode content = value.path("content");
-                    if (content.isTextual()) {
-                        writer.putContent(content.asText());
-                    }
-                } else if (value.isArray() && value.size() > 0) {
-                    saveFileToContentPropFromEform(value, name, writer);
-                }
-            });
-
+            contentProps.forEach((name, value) -> contentFileHelper.processPropFileContent(finalNodeRef, name, value));
             assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name));
+            childAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processChildAssocFilesContent(
+                    qName, jsonNodes, finalNodeRef));
         }
 
         return result;
-    }
-
-    private void saveFileToContentPropFromEform(JsonNode node, QName propName, ContentWriter writer) {
-        if (node.size() > 1) {
-            logger.warn(String.format("Only one file can be written to the content property <%s>. " +
-                    "Current files count: <%s>. The first file will be written.", propName, node.size()));
-        }
-
-        JsonNode jsonNode = node.get(0);
-        String refStr = jsonNode.get("data").get("nodeRef").asText();
-        if (StringUtils.isBlank(refStr) || !NodeRef.isNodeRef(refStr)) {
-            throw new AlfrescoRuntimeException("NodeRef of content file incorrect");
-        }
-
-        NodeRef tempFile = new NodeRef(refStr);
-        ContentReader reader = contentService.getReader(tempFile, propName);
-        writer.setEncoding(reader.getEncoding());
-        writer.setMimetype(reader.getMimetype());
-        writer.putContent(reader);
-
-        nodeService.deleteNode(tempFile);
     }
 
     @Override
@@ -486,8 +433,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.namespaceService = serviceRegistry.getNamespaceService();
-        this.mimetypeService = serviceRegistry.getMimetypeService();
-        this.contentService = serviceRegistry.getContentService();
         this.searchService = serviceRegistry.getSearchService();
         this.nodeService = serviceRegistry.getNodeService();
     }
@@ -508,5 +453,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
     public void registerDefaultParentByType(Map<QName, NodeRef> defaultParentByType) {
         this.defaultParentByType.putAll(defaultParentByType);
+    }
+
+    @Autowired
+    public void setContentFileHelper(AlfNodeContentFileHelper contentFileHelper) {
+        this.contentFileHelper = contentFileHelper;
     }
 }
