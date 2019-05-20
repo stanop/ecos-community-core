@@ -207,9 +207,9 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             // override cm:name to allow search of task-mirror by name
             nodeInfo.setProperty(ContentModel.PROP_NAME, task.getId());
 
-           if (fullPersist) {
-               fillProperties(task, nodeInfo);
-           }
+            if (fullPersist) {
+                fillProperties(task, nodeInfo);
+            }
 
             if (nodeUtils.isValidNode(taskMirror)) {
                 nodeInfoFactory.persist(taskMirror, nodeInfo, fullPersist);
@@ -261,7 +261,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     }
 
     // add convenient attributes, specific to task-mirrors only
-    private void fillProperties (WorkflowTask task, NodeInfo nodeInfo) {
+    private void fillProperties(WorkflowTask task, NodeInfo nodeInfo) {
 
         nodeInfo.setProperty(ContentModel.PROP_TITLE, workflowUtils.getTaskMLTitle(task));
         nodeInfo.setProperty(WorkflowMirrorModel.PROP_TASK_TYPE, nodeInfo.getType());
@@ -415,7 +415,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             if (classDefinition != null) {
                 QName currentName = classDefinition.getName();
                 if (mapping.containsKey(currentName)) {
-                    QName assocType= mapping.get(currentName);
+                    QName assocType = mapping.get(currentName);
                     return RepoUtils.getFirstTargetAssoc(document, assocType, nodeService);
                 }
             }
@@ -448,6 +448,26 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
         public void setFullPersist(boolean fullPersist) {
             this.fullPersist = fullPersist;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            RawTaskInfo that = (RawTaskInfo) o;
+            return fullPersist == that.fullPersist &&
+                    Objects.equals(taskId, that.taskId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(taskId, fullPersist);
         }
     }
 
