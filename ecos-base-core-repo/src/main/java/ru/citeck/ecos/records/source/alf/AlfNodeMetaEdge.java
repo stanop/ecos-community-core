@@ -116,7 +116,7 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
     @Override
     public String getTitle() {
         ClassAttributeDefinition definition = getDefinition();
-        return definition.getTitle(messageService);
+        return definition != null ? definition.getTitle(messageService) : getName();
     }
 
     @Override
