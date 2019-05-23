@@ -14,9 +14,14 @@ import org.alfresco.util.GUID;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Roman Makarskiy
@@ -82,11 +87,16 @@ public class AlfNodeContentFileHelper {
                 writer.putContent(content.asText());
             }
         } else if (isFileFromEformFormat(jsonNode)) {
-            if (jsonNode.size() > 1) {
-                log.warn(String.format("Only one file can be written to the content property <%s>. " +
-                        "Current files count: <%s>. The first file will be written.", prop, jsonNode.size()));
+            if (jsonNode.size() == 0) {
+                nodeService.removeProperty(nodeRef, prop);
+            } else {
+                if (jsonNode.size() > 1) {
+                    log.warn(String.format("Only one file can be written to the content property <%s>. " +
+                            "Current files count: <%s>. The first file will be written.", prop, jsonNode.size()));
+                }
+
+                saveFileToContentPropFromEform(jsonNode.get(0), prop, nodeRef);
             }
-            saveFileToContentPropFromEform(jsonNode.get(0), prop, nodeRef);
         }
     }
 
@@ -95,20 +105,34 @@ public class AlfNodeContentFileHelper {
         QName assocName = assocDef.getName();
         QName targetName = assocDef.getTargetClass().getName();
 
-        jsonNodes.forEach(jsonNode -> {
-            NodeRef createdNode = nodeService.createNode(nodeRef,
+        List<NodeRef> currentChilds = RepoUtils.getChildrenByAssoc(nodeRef, assocName, nodeService);
+        Set<NodeRef> inboundMutatedRefs = new HashSet<>();
+
+        for (JsonNode jsonNode : jsonNodes) {
+            String tempRefStr = jsonNode.get(MODEL_DATA).get(MODEL_NODE_REF).asText();
+            NodeRef fileRef = new NodeRef(tempRefStr);
+            inboundMutatedRefs.add(fileRef);
+
+            if (currentChilds.contains(fileRef)) {
+                processTypeKind(jsonNode, fileRef);
+                continue;
+            }
+
+            NodeRef createdChild = nodeService.createNode(nodeRef,
                     assocName,
                     QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, GUID.generate()),
                     targetName).getChildRef();
 
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Create child node. Parent <%s>, type <%s>, assocType <%s>, nodeRef <%s>",
-                        nodeRef.toString(), targetName, assocName, createdNode.toString()));
+                        nodeRef.toString(), targetName, assocName, createdChild.toString()));
             }
 
-            saveFileToContentPropFromEform(jsonNode, ContentModel.PROP_CONTENT, createdNode);
-            processTypeKind(jsonNode, createdNode);
-        });
+            saveFileToContentPropFromEform(jsonNode, ContentModel.PROP_CONTENT, createdChild);
+            processTypeKind(jsonNode, createdChild);
+        }
+
+        processDeletion(currentChilds, inboundMutatedRefs);
     }
 
     private void processTypeKind(JsonNode jsonNode, NodeRef nodeRef) {
@@ -119,24 +143,34 @@ public class AlfNodeContentFileHelper {
 
         String fileType = fileTypeNode.asText();
         if (StringUtils.isBlank(fileType)) {
+            nodeService.removeProperty(nodeRef, PROP_DOCUMENT_TYPE);
+            nodeService.removeProperty(nodeRef, PROP_DOCUMENT_KIND);
             return;
         }
 
         String rawType = StringUtils.substringBefore(fileType, FILE_TYPE_DELIMITER);
         String rawKind = StringUtils.substringAfter(fileType, FILE_TYPE_DELIMITER);
 
-        if (StringUtils.isBlank(rawType)) {
+        saveClassificationIfRequired(nodeRef, PROP_DOCUMENT_TYPE, rawType);
+        saveClassificationIfRequired(nodeRef, PROP_DOCUMENT_KIND, rawKind);
+    }
+
+    private void saveClassificationIfRequired(NodeRef nodeRef, QName prop, String rawValue) {
+        if (StringUtils.isBlank(rawValue)) {
+            nodeService.removeProperty(nodeRef, prop);
             return;
         }
-        NodeRef type = new NodeRef(WORKSPACE_PREFIX + rawType);
-        nodeService.setProperty(nodeRef, PROP_DOCUMENT_TYPE, type);
-
-        if (StringUtils.isBlank(rawKind)) {
-            return;
+        NodeRef type = new NodeRef(WORKSPACE_PREFIX + rawValue);
+        Serializable currentType = nodeService.getProperty(nodeRef, prop);
+        if (!Objects.equals(currentType, type)) {
+            nodeService.setProperty(nodeRef, prop, type);
         }
+    }
 
-        NodeRef kind = new NodeRef(WORKSPACE_PREFIX + rawKind);
-        nodeService.setProperty(nodeRef, PROP_DOCUMENT_KIND, kind);
+    private void processDeletion(List<NodeRef> currentChilds, Set<NodeRef> inboundMutatedRefs) {
+        currentChilds.stream()
+                .filter(ref -> !inboundMutatedRefs.contains(ref))
+                .forEach(nodeService::deleteNode);
     }
 
     private void saveFileToContentPropFromEform(JsonNode tempJsonNode, QName propName, NodeRef node) {
@@ -164,7 +198,7 @@ public class AlfNodeContentFileHelper {
     }
 
     boolean isFileFromEformFormat(JsonNode jsonNode) {
-        if (!jsonNode.isArray() || jsonNode.size() == 0) {
+        if (!jsonNode.isArray()) {
             return false;
         }
 

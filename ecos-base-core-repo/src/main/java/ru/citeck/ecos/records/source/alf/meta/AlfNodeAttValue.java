@@ -1,12 +1,14 @@
 package ru.citeck.ecos.records.source.alf.meta;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.repository.ContentData;
-import org.alfresco.service.cmr.repository.ContentReader;
-import org.alfresco.service.cmr.repository.ContentService;
-import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.QName;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.node.AlfNodeInfo;
 import ru.citeck.ecos.node.DisplayNameService;
@@ -100,6 +102,37 @@ public class AlfNodeAttValue implements MetaValue {
             return null;
         }
         if (alfNode != null) {
+            //TODO: how can we more accurately find out what is the file control?
+            if (Attribute.Type.CHILD_ASSOC.equals(att.type())) {
+                Map<QName, Serializable> properties = alfNode.getProperties();
+
+                ContentService contentService = context.getService("contentService");
+                NodeRef nodeRef = new NodeRef(alfNode.nodeRef());
+                ContentReader reader = contentService.getReader(nodeRef, ContentModel.PROP_CONTENT);
+
+                JSONObject obj = new JSONObject();
+                try {
+                    //TODO: fix url
+                    obj.put("url", "/share/page/card-details?nodeRef=" + alfNode.nodeRef());
+                    obj.put("name", properties.get(ContentModel.PROP_NAME));
+
+                    obj.put("size", reader.getSize());
+                    //TODO: fill type,kind
+                    obj.put("fileType", "category-document-type/cat-document-other");
+
+                    JSONObject data = new JSONObject();
+                    data.put("nodeRef", alfNode.nodeRef());
+
+                    obj.put("data", data);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                return obj.toString();
+            }
+
+
             return alfNode.nodeRef();
         }
         if (qName != null) {
@@ -109,14 +142,26 @@ public class AlfNodeAttValue implements MetaValue {
             return ISO8601Utils.format((Date) rawValue);
         }
         if (rawValue instanceof ContentData) {
+            ContentData data = (ContentData) rawValue;
 
-            String contentUrl = ((ContentData) rawValue).getContentUrl();
-            ContentService contentService = context.getServiceRegistry().getContentService();
+            NodeService nd = this.context.getNodeService();
+            NodeRef nodeRef = att.getScopeNodeRef();
 
-            return AuthenticationUtil.runAsSystem(() -> {
-                ContentReader reader = contentService.getRawReader(contentUrl);
-                return reader.exists() ? reader.getContentString() : null;
-            });
+            String name = (String) nd.getProperty(nodeRef, ContentModel.PROP_NAME);
+
+            JSONArray array = new JSONArray();
+            JSONObject obj = new JSONObject();
+            try {
+                //TODO: fix url
+                obj.put("url", "/share/page/card-details?nodeRef=" + nodeRef.toString());
+                obj.put("name", name);
+                obj.put("size", data.getSize());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            array.put(obj);
+            return array.toString();
         }
         return rawValue.toString();
     }
@@ -126,13 +171,13 @@ public class AlfNodeAttValue implements MetaValue {
         if (alfNode != null) {
             Attribute attribute = alfNode.attribute(name);
             return attribute.getValues()
-                            .stream()
-                            .map(v -> {
-                                AlfNodeAttValue value = new AlfNodeAttValue(v);
-                                value.init(context, field);
-                                return value;
-                            })
-                            .collect(Collectors.toList());
+                    .stream()
+                    .map(v -> {
+                        AlfNodeAttValue value = new AlfNodeAttValue(v);
+                        value.init(context, field);
+                        return value;
+                    })
+                    .collect(Collectors.toList());
         } else if (qName != null) {
             return MetaUtils.getReflectionValue(qName, name);
         }
@@ -163,4 +208,3 @@ public class AlfNodeAttValue implements MetaValue {
         }
     }
 }
-
