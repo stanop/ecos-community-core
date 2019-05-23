@@ -1,4 +1,4 @@
-package ru.citeck.ecos.records.source.alf;
+package ru.citeck.ecos.records.source.alf.file;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.log4j.Log4j;
@@ -14,6 +14,7 @@ import org.alfresco.util.GUID;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static ru.citeck.ecos.records.source.alf.file.FileRepresentation.*;
+
 /**
  * @author Roman Makarskiy
  */
@@ -30,21 +33,7 @@ import java.util.Set;
 @Component
 public class AlfNodeContentFileHelper {
 
-    private static final String MODEL_MIME_TYPE = "mimetype";
-    private static final String MODEL_FILE_NAME = "filename";
-    private static final String MODEL_ENCODING = "encoding";
-    private static final String MODEL_CONTENT = "content";
-    private static final String MODEL_DATA = "data";
-    private static final String MODEL_NODE_REF = "nodeRef";
-
-    private static final String MODEL_FILE_TYPE = "fileType";
-    private static final String FILE_TYPE_DELIMITER = "/";
     private static final String WORKSPACE_PREFIX = "workspace://SpacesStore/";
-
-    //TODO: refactor?
-    private static final String TYPE_KIND_NAMESPACE = "http://www.citeck.ru/model/content/classification/tk/1.0";
-    private static final QName PROP_DOCUMENT_TYPE = QName.createQName(TYPE_KIND_NAMESPACE, "type");
-    private static final QName PROP_DOCUMENT_KIND = QName.createQName(TYPE_KIND_NAMESPACE, "kind");
 
     private final NodeService nodeService;
     private final ContentService contentService;
@@ -60,7 +49,7 @@ public class AlfNodeContentFileHelper {
         this.dictionaryService = dictionaryService;
     }
 
-    void processPropFileContent(NodeRef nodeRef, QName prop, JsonNode jsonNode) {
+    public void processPropFileContent(NodeRef nodeRef, QName prop, JsonNode jsonNode) {
         ContentWriter writer = contentService.getWriter(nodeRef, prop, true);
 
         if (jsonNode.isTextual()) {
@@ -100,7 +89,32 @@ public class AlfNodeContentFileHelper {
         }
     }
 
-    void processChildAssocFilesContent(QName assoc, JsonNode jsonNodes, NodeRef nodeRef) {
+    public boolean isFileFromEformFormat(JsonNode jsonNode) {
+        if (!jsonNode.isArray()) {
+            return false;
+        }
+
+        for (JsonNode node : jsonNode) {
+            JsonNode data = node.get(MODEL_DATA);
+            if (data == null) {
+                return false;
+            }
+
+            JsonNode nodeRefObj = data.get(MODEL_NODE_REF);
+            if (nodeRefObj == null) {
+                return false;
+            }
+
+            String nodeRef = nodeRefObj.asText();
+            if (!NodeRef.isNodeRef(nodeRef)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public void processChildAssocFilesContent(QName assoc, JsonNode jsonNodes, NodeRef nodeRef) {
         ChildAssociationDefinition assocDef = (ChildAssociationDefinition) dictionaryService.getAssociation(assoc);
         QName assocName = assocDef.getName();
         QName targetName = assocDef.getTargetClass().getName();
@@ -135,44 +149,6 @@ public class AlfNodeContentFileHelper {
         processDeletion(currentChilds, inboundMutatedRefs);
     }
 
-    private void processTypeKind(JsonNode jsonNode, NodeRef nodeRef) {
-        JsonNode fileTypeNode = jsonNode.get(MODEL_FILE_TYPE);
-        if (fileTypeNode == null) {
-            return;
-        }
-
-        String fileType = fileTypeNode.asText();
-        if (StringUtils.isBlank(fileType)) {
-            nodeService.removeProperty(nodeRef, PROP_DOCUMENT_TYPE);
-            nodeService.removeProperty(nodeRef, PROP_DOCUMENT_KIND);
-            return;
-        }
-
-        String rawType = StringUtils.substringBefore(fileType, FILE_TYPE_DELIMITER);
-        String rawKind = StringUtils.substringAfter(fileType, FILE_TYPE_DELIMITER);
-
-        saveClassificationIfRequired(nodeRef, PROP_DOCUMENT_TYPE, rawType);
-        saveClassificationIfRequired(nodeRef, PROP_DOCUMENT_KIND, rawKind);
-    }
-
-    private void saveClassificationIfRequired(NodeRef nodeRef, QName prop, String rawValue) {
-        if (StringUtils.isBlank(rawValue)) {
-            nodeService.removeProperty(nodeRef, prop);
-            return;
-        }
-        NodeRef type = new NodeRef(WORKSPACE_PREFIX + rawValue);
-        Serializable currentType = nodeService.getProperty(nodeRef, prop);
-        if (!Objects.equals(currentType, type)) {
-            nodeService.setProperty(nodeRef, prop, type);
-        }
-    }
-
-    private void processDeletion(List<NodeRef> currentChilds, Set<NodeRef> inboundMutatedRefs) {
-        currentChilds.stream()
-                .filter(ref -> !inboundMutatedRefs.contains(ref))
-                .forEach(nodeService::deleteNode);
-    }
-
     private void saveFileToContentPropFromEform(JsonNode tempJsonNode, QName propName, NodeRef node) {
         String tempRefStr = tempJsonNode.get(MODEL_DATA).get(MODEL_NODE_REF).asText();
         if (StringUtils.isBlank(tempRefStr) || !NodeRef.isNodeRef(tempRefStr)) {
@@ -197,29 +173,42 @@ public class AlfNodeContentFileHelper {
         nodeService.deleteNode(tempFile);
     }
 
-    boolean isFileFromEformFormat(JsonNode jsonNode) {
-        if (!jsonNode.isArray()) {
-            return false;
+    private void processTypeKind(JsonNode jsonNode, NodeRef nodeRef) {
+        JsonNode fileTypeNode = jsonNode.get(MODEL_FILE_TYPE);
+        if (fileTypeNode == null) {
+            return;
         }
 
-        for (JsonNode node : jsonNode) {
-            JsonNode data = node.get(MODEL_DATA);
-            if (data == null) {
-                return false;
-            }
-
-            JsonNode nodeRefObj = data.get(MODEL_NODE_REF);
-            if (nodeRefObj == null) {
-                return false;
-            }
-
-            String nodeRef = nodeRefObj.asText();
-            if (!NodeRef.isNodeRef(nodeRef)) {
-                return false;
-            }
+        String fileType = fileTypeNode.asText();
+        if (StringUtils.isBlank(fileType)) {
+            nodeService.removeProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE);
+            nodeService.removeProperty(nodeRef, ClassificationModel.PROP_DOCUMENT_KIND);
+            return;
         }
 
-        return true;
+        String rawType = StringUtils.substringBefore(fileType, FILE_TYPE_DELIMITER);
+        String rawKind = StringUtils.substringAfter(fileType, FILE_TYPE_DELIMITER);
+
+        updateClassificationIfRequired(nodeRef, ClassificationModel.PROP_DOCUMENT_TYPE, rawType);
+        updateClassificationIfRequired(nodeRef, ClassificationModel.PROP_DOCUMENT_KIND, rawKind);
+    }
+
+    private void updateClassificationIfRequired(NodeRef nodeRef, QName classificationProperty, String rawValue) {
+        if (StringUtils.isBlank(rawValue)) {
+            nodeService.removeProperty(nodeRef, classificationProperty);
+            return;
+        }
+        NodeRef classification = new NodeRef(WORKSPACE_PREFIX + rawValue);
+        Serializable currentClassification = nodeService.getProperty(nodeRef, classificationProperty);
+        if (!Objects.equals(currentClassification, classification)) {
+            nodeService.setProperty(nodeRef, classificationProperty, classification);
+        }
+    }
+
+    private void processDeletion(List<NodeRef> currentChilds, Set<NodeRef> inboundMutatedRefs) {
+        currentChilds.stream()
+                .filter(ref -> !inboundMutatedRefs.contains(ref))
+                .forEach(nodeService::deleteNode);
     }
 
 }

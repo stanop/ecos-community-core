@@ -1,28 +1,27 @@
 package ru.citeck.ecos.records.source.alf.meta;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
-import org.alfresco.model.ContentModel;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.repository.ContentData;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import ru.citeck.ecos.graphql.AlfGqlContext;
-import ru.citeck.ecos.node.AlfNodeInfo;
-import ru.citeck.ecos.node.DisplayNameService;
-import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.node.AlfNodeInfo;
+import ru.citeck.ecos.node.DisplayNameService;
+import ru.citeck.ecos.records.meta.MetaUtils;
+import ru.citeck.ecos.records.source.alf.file.FileRepresentation;
 import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.utils.DictUtils;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AlfNodeAttValue implements MetaValue {
@@ -104,34 +103,9 @@ public class AlfNodeAttValue implements MetaValue {
         if (alfNode != null) {
             //TODO: how can we more accurately find out what is the file control?
             if (Attribute.Type.CHILD_ASSOC.equals(att.type())) {
-                Map<QName, Serializable> properties = alfNode.getProperties();
-
-                ContentService contentService = context.getService("contentService");
-                NodeRef nodeRef = new NodeRef(alfNode.nodeRef());
-                ContentReader reader = contentService.getReader(nodeRef, ContentModel.PROP_CONTENT);
-
-                JSONObject obj = new JSONObject();
-                try {
-                    //TODO: fix url
-                    obj.put("url", "/share/page/card-details?nodeRef=" + alfNode.nodeRef());
-                    obj.put("name", properties.get(ContentModel.PROP_NAME));
-
-                    obj.put("size", reader.getSize());
-                    //TODO: fill type,kind
-                    obj.put("fileType", "category-document-type/cat-document-other");
-
-                    JSONObject data = new JSONObject();
-                    data.put("nodeRef", alfNode.nodeRef());
-
-                    obj.put("data", data);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-                return obj.toString();
+                JSONObject file = FileRepresentation.fromAlfNode(alfNode, context);
+                return file.toString();
             }
-
 
             return alfNode.nodeRef();
         }
@@ -142,26 +116,8 @@ public class AlfNodeAttValue implements MetaValue {
             return ISO8601Utils.format((Date) rawValue);
         }
         if (rawValue instanceof ContentData) {
-            ContentData data = (ContentData) rawValue;
-
-            NodeService nd = this.context.getNodeService();
-            NodeRef nodeRef = att.getScopeNodeRef();
-
-            String name = (String) nd.getProperty(nodeRef, ContentModel.PROP_NAME);
-
-            JSONArray array = new JSONArray();
-            JSONObject obj = new JSONObject();
-            try {
-                //TODO: fix url
-                obj.put("url", "/share/page/card-details?nodeRef=" + nodeRef.toString());
-                obj.put("name", name);
-                obj.put("size", data.getSize());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            array.put(obj);
-            return array.toString();
+            JSONArray file = FileRepresentation.formContentData((ContentData) rawValue, this.context, att);
+            return file.toString();
         }
         return rawValue.toString();
     }
