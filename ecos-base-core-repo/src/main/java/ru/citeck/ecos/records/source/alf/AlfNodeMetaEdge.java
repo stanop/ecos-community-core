@@ -90,6 +90,11 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
     }
 
     @Override
+    public boolean isAssociation() {
+        return getDefinition() instanceof AssociationDefinition;
+    }
+
+    @Override
     public boolean isProtected() {
 
         NodeRef nodeRef = getNodeRef();

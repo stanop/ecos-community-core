@@ -66,6 +66,7 @@
                 <field prop="idocs:postAddress"/>
                 <field prop="idocs:okpo"/>
             </view>
+
             <view>
                 <field prop="idocs:inn">
                     <invariant on="mandatory" language="explicit">true</invariant>
@@ -82,6 +83,21 @@
                 <field prop="idocs:kpp"/>
                 <field prop="idocs:inila"/>
                 <field prop="idocs:ogrn"/>
+
+                <view template="dadata-loader" >
+                    <param name="attributes">
+                        {
+                        'idocs:fullOrganizationName': function(response){return response.value},
+                        'idocs:shortOrganizationName': function(response){return response.unrestricted_value},
+                        'idocs:juridicalAddress': function(response){return response.data.address.unrestricted_value},
+                        'idocs:kpp': function(response){return response.data.kpp},
+                        'idocs:ogrn': function(response){return response.data.ogrn},
+                        'idocs:okpo': function(response){return response.data.okpo},
+                        'idocs:CEOname': function(response){return response.data.management.post + ', ' + response.data.management.name},
+                        'idocs:postAddress': function(response){return response.data.address.unrestricted_value}
+                        }
+                    </param>
+                </view>
             </view>
             <view>
                 <field prop="idocs:psrnsp"/>
