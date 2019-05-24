@@ -1,7 +1,11 @@
 package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import org.alfresco.error.AlfrescoRuntimeException;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.ContentData;
+import org.alfresco.service.cmr.repository.ContentReader;
+import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import org.json.JSONArray;
@@ -25,6 +29,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AlfNodeAttValue implements MetaValue {
+
+    private static final String AS_CONTENT_DATA_KEY = "content-data";
 
     private Attribute att;
 
@@ -101,12 +107,6 @@ public class AlfNodeAttValue implements MetaValue {
             return null;
         }
         if (alfNode != null) {
-            //TODO: how can we more accurately find out what is the file control?
-            if (Attribute.Type.CHILD_ASSOC.equals(att.type())) {
-                JSONObject file = FileRepresentation.fromAlfNode(alfNode, context);
-                return file.toString();
-            }
-
             return alfNode.nodeRef();
         }
         if (qName != null) {
@@ -116,8 +116,13 @@ public class AlfNodeAttValue implements MetaValue {
             return ISO8601Utils.format((Date) rawValue);
         }
         if (rawValue instanceof ContentData) {
-            JSONArray file = FileRepresentation.formContentData((ContentData) rawValue, this.context, att);
-            return file.toString();
+            String contentUrl = ((ContentData) rawValue).getContentUrl();
+            ContentService contentService = context.getServiceRegistry().getContentService();
+
+            return AuthenticationUtil.runAsSystem(() -> {
+                ContentReader reader = contentService.getRawReader(contentUrl);
+                return reader.exists() ? reader.getContentString() : null;
+            });
         }
         return rawValue.toString();
     }
@@ -137,6 +142,25 @@ public class AlfNodeAttValue implements MetaValue {
         } else if (qName != null) {
             return MetaUtils.getReflectionValue(qName, name);
         }
+        return null;
+    }
+
+    @Override
+    public Object getAs(String type) {
+        if (AS_CONTENT_DATA_KEY.equalsIgnoreCase(type)) {
+            if (alfNode != null) {
+                JSONObject file = FileRepresentation.fromAlfNode(alfNode, context);
+                return file.toString();
+            }
+
+            if (rawValue instanceof ContentData) {
+                JSONArray file = FileRepresentation.formContentData((ContentData) rawValue, this.context, att);
+                return file.toString();
+            }
+
+            throw new AlfrescoRuntimeException("Unsupported state for as key: " + AS_CONTENT_DATA_KEY);
+        }
+
         return null;
     }
 
