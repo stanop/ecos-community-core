@@ -38,30 +38,12 @@
                       {
                         "components": [
                           {
-                            "label": "Тип контрагента",
+                            "label": "idocs:contractorType",
                             "multiple": true,
                             "reorder": false,
                             "mask": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "ecosSelect",
-                            "input": true,
-                            "key": "idocs_contractorType",
-                            "defaultValue": [],
-                            "validate": {
-                              "customMessage": "",
-                              "json": "",
-                              "select": false,
-                              "required": false,
-                              "custom": "",
-                              "customPrivate": false
-                            },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
                             "data": {
                               "url": "/citeck/ecos/records/query",
                               "headers": [
@@ -75,20 +57,36 @@
                               "resource": "",
                               "custom": ""
                             },
-                            "properties": {
-                              "attribute": "idocs:contractorType",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "selectThreshold": 0.3,
-                            "encrypted": false,
-                            "customConditional": "",
-                            "logic": [],
                             "lazyLoad": false,
                             "selectValues": "",
                             "disableLimit": false,
                             "sort": "",
-                            "reference": false,
+                            "selectThreshold": 0.3,
+                            "defaultValue": [],
+                            "encrypted": false,
+                            "validate": {
+                              "customMessage": "",
+                              "json": "",
+                              "required": false,
+                              "custom": "",
+                              "customPrivate": false
+                            },
+                            "key": "idocs_contractorType",
+                            "properties": {
+                              "attribute": "idocs:contractorType",
+                              "dummy": "dummy"
+                            },
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
+                            "customConditional": "",
+                            "logic": [],
+                            "type": "ecosSelect",
+                            "input": true,
+                            "tags": [],
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -131,7 +129,7 @@
                             "searchThreshold": 0.3,
                             "fuseOptions": {},
                             "customOptions": {},
-                            "id": "ew338fp"
+                            "id": "ekg3p9u"
                           }
                         ],
                         "width": 6,
@@ -184,33 +182,15 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "ezg2bo"
+                        "id": "evd0iw9"
                       },
                       {
                         "components": [
                           {
-                            "label": "Вид контрагента",
+                            "label": "idocs:contractorKind",
                             "mask": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "ecosSelect",
-                            "input": true,
-                            "key": "idocs_contractorKind",
-                            "defaultValue": "",
-                            "validate": {
-                              "customMessage": "",
-                              "json": "",
-                              "required": true,
-                              "select": false,
-                              "custom": "",
-                              "customPrivate": false
-                            },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
                             "data": {
                               "url": "/citeck/ecos/records/query",
                               "headers": [
@@ -224,21 +204,36 @@
                               "resource": "",
                               "custom": ""
                             },
-                            "properties": {
-                              "attribute": "idocs:contractorKind",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "selectThreshold": 0.3,
-                            "encrypted": false,
-                            "customConditional": "",
-                            "logic": [],
                             "lazyLoad": false,
                             "selectValues": "",
                             "disableLimit": false,
                             "sort": "",
-                            "reorder": false,
-                            "reference": false,
+                            "selectThreshold": 0.3,
+                            "defaultValue": "",
+                            "encrypted": false,
+                            "validate": {
+                              "required": true,
+                              "customMessage": "",
+                              "json": "",
+                              "custom": "",
+                              "customPrivate": false
+                            },
+                            "key": "idocs_contractorKind",
+                            "properties": {
+                              "attribute": "idocs:contractorKind",
+                              "dummy": "dummy"
+                            },
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
+                            "customConditional": "",
+                            "logic": [],
+                            "type": "ecosSelect",
+                            "input": true,
+                            "tags": [],
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -282,7 +277,7 @@
                             "searchThreshold": 0.3,
                             "fuseOptions": {},
                             "customOptions": {},
-                            "id": "evc7w1m"
+                            "id": "egaafqg"
                           }
                         ],
                         "width": 6,
@@ -335,7 +330,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e5al419"
+                        "id": "egvz5lv"
                       }
                     ],
                     "mask": false,
@@ -391,7 +386,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "e6886yb"
+                    "id": "evp3ef"
                   },
                   {
                     "label": "Panel",
@@ -400,15 +395,18 @@
                     "mask": false,
                     "tableView": false,
                     "alwaysEnabled": false,
-                    "type": "panel",
-                    "input": false,
                     "key": "panel",
+                    "properties": {},
+                    "customConditional": "",
                     "conditional": {
+                      "json": "",
                       "show": "",
                       "when": "",
-                      "json": "",
                       "eq": ""
                     },
+                    "logic": [],
+                    "type": "panel",
+                    "input": false,
                     "components": [
                       {
                         "label": "Columns",
@@ -416,20 +414,24 @@
                           {
                             "components": [
                               {
-                                "label": "Полное наименование",
+                                "label": "idocs:fullOrganizationName",
                                 "allowMultipleMasks": false,
                                 "showWordCount": false,
                                 "showCharCount": false,
                                 "tableView": true,
                                 "alwaysEnabled": false,
-                                "type": "textfield",
-                                "input": true,
-                                "key": "idocs_fullOrganizationName",
                                 "defaultValue": "",
+                                "inputFormat": "plain",
+                                "refreshOn": "idocs_contractorKind",
+                                "clearOnRefresh": true,
+                                "customDefaultValue": "\r\n",
+                                "calculateValue": "if (data.idocs_contractorKind === 'individual') {\r\nif (data.idocs_lastName) {\r\n  value = data.idocs_lastName;\r\n}\r\nif (data.idocs_firstName) {\r\n  value = value + \" \" + data.idocs_firstName;\r\n}\r\nif (data.idocs_patronymicName) {\r\n  value = value + \" \" + data.idocs_patronymicName;\r\n}\r\n}",
+                                "allowCalculateOverride": true,
+                                "encrypted": false,
                                 "validate": {
+                                  "required": true,
                                   "customMessage": "",
                                   "json": "",
-                                  "required": true,
                                   "custom": "",
                                   "customPrivate": false,
                                   "minLength": "",
@@ -438,28 +440,48 @@
                                   "maxWords": "",
                                   "pattern": ""
                                 },
+                                "key": "idocs_fullOrganizationName",
+                                "properties": {
+                                  "attribute": "idocs:fullOrganizationName",
+                                  "dummy": "dummy"
+                                },
                                 "conditional": {
                                   "show": "",
                                   "when": "",
                                   "json": "",
                                   "eq": ""
                                 },
-                                "inputFormat": "plain",
-                                "encrypted": false,
-                                "properties": {
-                                  "attribute": "idocs:fullOrganizationName",
-                                  "dummy": "dummy"
-                                },
+                                "customConditional": "",
+                                "logic": [
+                                  {
+                                    "name": "individual-on",
+                                    "trigger": {
+                                      "type": "javascript",
+                                      "javascript": "result  = data.idocs_contractorKind === 'individual';"
+                                    },
+                                    "actions": [
+                                      {
+                                        "name": "disable-on",
+                                        "type": "property",
+                                        "property": {
+                                          "label": "Disabled",
+                                          "value": "disabled",
+                                          "type": "boolean"
+                                        },
+                                        "state": "true"
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "type": "textfield",
+                                "input": true,
                                 "tags": [],
-                                "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = !isIndividual;",
-                                "logic": [],
                                 "widget": {
                                   "type": "",
                                   "format": "yyyy-MM-dd hh:mm a",
                                   "dateFormat": "yyyy-MM-dd hh:mm a",
                                   "saveAs": "text"
                                 },
-                                "reorder": false,
                                 "placeholder": "",
                                 "prefix": "",
                                 "customClass": "",
@@ -482,16 +504,11 @@
                                 "disabled": false,
                                 "autofocus": false,
                                 "dbIndex": false,
-                                "customDefaultValue": "",
-                                "calculateValue": "",
-                                "allowCalculateOverride": false,
-                                "refreshOn": "",
-                                "clearOnRefresh": false,
                                 "validateOn": "change",
                                 "mask": false,
                                 "inputType": "text",
                                 "inputMask": "",
-                                "id": "e40foom"
+                                "id": "epf9mdq"
                               }
                             ],
                             "width": 4,
@@ -504,6 +521,12 @@
                             "key": "",
                             "tableView": true,
                             "label": "",
+                            "xs": 0,
+                            "sm": 12,
+                            "lg": 0,
+                            "xl": 0,
+                            "classes": "",
+                            "md": 6,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -544,21 +567,20 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "e3qeu2g"
+                            "id": "ecs46b9"
                           },
                           {
                             "components": [
                               {
-                                "label": "Альтернативное наименование",
+                                "label": "idocs:shortOrganizationName",
                                 "allowMultipleMasks": false,
                                 "showWordCount": false,
                                 "showCharCount": false,
                                 "tableView": true,
                                 "alwaysEnabled": false,
-                                "type": "textfield",
-                                "input": true,
-                                "key": "idocs_shortOrganizationName",
                                 "defaultValue": "",
+                                "inputFormat": "plain",
+                                "encrypted": false,
                                 "validate": {
                                   "customMessage": "",
                                   "json": "",
@@ -571,28 +593,28 @@
                                   "maxWords": "",
                                   "pattern": ""
                                 },
+                                "key": "idocs_shortOrganizationName",
+                                "properties": {
+                                  "attribute": "idocs:shortOrganizationName",
+                                  "dummy": "dummy"
+                                },
                                 "conditional": {
                                   "show": "",
                                   "when": "",
                                   "json": "",
                                   "eq": ""
                                 },
-                                "properties": {
-                                  "attribute": "idocs:shortOrganizationName",
-                                  "dummy": "dummy"
-                                },
-                                "tags": [],
-                                "inputFormat": "plain",
-                                "encrypted": false,
                                 "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = !isIndividual;",
                                 "logic": [],
+                                "type": "textfield",
+                                "input": true,
+                                "tags": [],
                                 "widget": {
                                   "type": "",
                                   "format": "yyyy-MM-dd hh:mm a",
                                   "dateFormat": "yyyy-MM-dd hh:mm a",
                                   "saveAs": "text"
                                 },
-                                "reorder": false,
                                 "placeholder": "",
                                 "prefix": "",
                                 "customClass": "",
@@ -624,7 +646,7 @@
                                 "mask": false,
                                 "inputType": "text",
                                 "inputMask": "",
-                                "id": "elz27cd"
+                                "id": "e0n0q4r"
                               }
                             ],
                             "width": 4,
@@ -637,6 +659,12 @@
                             "key": "",
                             "tableView": true,
                             "label": "",
+                            "xs": 0,
+                            "sm": 12,
+                            "md": 6,
+                            "lg": 0,
+                            "xl": 0,
+                            "classes": "",
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -677,7 +705,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "epcqfv"
+                            "id": "ezbt8c"
                           },
                           {
                             "width": 4,
@@ -692,13 +720,24 @@
                             "label": "",
                             "components": [
                               {
-                                "label": "Организационно-правовая форма",
+                                "label": "idocs:legalForm",
                                 "mask": false,
                                 "tableView": true,
                                 "alwaysEnabled": false,
-                                "type": "selectJournal",
-                                "input": true,
-                                "key": "idocs_legalForm",
+                                "journalId": "legal-form",
+                                "hideCreateButton": false,
+                                "displayColumns": [],
+                                "encrypted": false,
+                                "displayColumnsAsyncData": [
+                                  {
+                                    "label": "Legal Form name",
+                                    "value": "idocs:legalFormName"
+                                  },
+                                  {
+                                    "label": "Legal Form description",
+                                    "value": "idocs:legalFormDescription"
+                                  }
+                                ],
                                 "validate": {
                                   "customMessage": "",
                                   "json": "",
@@ -706,29 +745,29 @@
                                   "custom": "",
                                   "customPrivate": false
                                 },
+                                "key": "idocs_legalForm",
+                                "properties": {
+                                  "attribute": "idocs:legalForm",
+                                  "dummy": "dummy"
+                                },
                                 "conditional": {
                                   "show": "",
                                   "when": "",
                                   "json": "",
                                   "eq": ""
                                 },
-                                "journalId": "legal-form",
-                                "encrypted": false,
-                                "defaultValue": "workspace://SpacesStore/lf-llc",
-                                "properties": {
-                                  "attribute": "idocs:legalForm",
-                                  "dummy": "dummy"
-                                },
                                 "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'legal-entity' ;\n\nshow = isIndividual;",
                                 "logic": [],
+                                "type": "selectJournal",
+                                "input": true,
                                 "tags": [],
                                 "tab": 0,
-                                "reorder": false,
                                 "placeholder": "",
                                 "prefix": "",
                                 "customClass": "",
                                 "suffix": "",
                                 "multiple": false,
+                                "defaultValue": null,
                                 "protected": false,
                                 "unique": false,
                                 "persistent": true,
@@ -753,9 +792,15 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "eq3taj"
+                                "id": "eufqdq"
                               }
                             ],
+                            "xs": 0,
+                            "sm": 12,
+                            "md": 6,
+                            "lg": 0,
+                            "xl": 0,
+                            "classes": "",
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -796,25 +841,25 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "e6dwn0g"
+                            "id": "ecq7xc"
                           }
                         ],
                         "mask": false,
                         "tableView": false,
                         "alwaysEnabled": false,
-                        "type": "columns",
-                        "input": false,
                         "key": "columns7",
+                        "properties": {},
                         "conditional": {
                           "show": "",
                           "when": "",
                           "json": "",
                           "eq": ""
                         },
-                        "properties": {},
                         "customConditional": "",
                         "logic": [],
-                        "reorder": false,
+                        "type": "columns",
+                        "input": false,
+                        "tags": [],
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -852,15 +897,11 @@
                         },
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "e2ga6908"
+                        "id": "ejtnj0h"
                       }
                     ],
                     "tab": 0,
-                    "properties": {},
-                    "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = !isIndividual;",
-                    "logic": [],
-                    "collapsed": false,
-                    "reorder": false,
+                    "tags": [],
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -899,7 +940,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "egrvzmn"
+                    "id": "ewrwgbr"
                   }
                 ],
                 "tab": 0,
@@ -946,7 +987,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "ewbw6v2"
+                "id": "ec73ob"
               },
               {
                 "label": "Panel",
@@ -971,19 +1012,18 @@
                       {
                         "components": [
                           {
-                            "label": "Фамилия",
+                            "label": "idocs:lastName",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_lastName",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
+                              "required": true,
                               "customMessage": "",
                               "json": "",
-                              "required": true,
                               "custom": "",
                               "customPrivate": false,
                               "minLength": "",
@@ -992,17 +1032,16 @@
                               "maxWords": "",
                               "pattern": ""
                             },
+                            "key": "idocs_lastName",
+                            "properties": {
+                              "attribute": "idocs:lastName",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
-                            },
-                            "inputFormat": "plain",
-                            "encrypted": false,
-                            "properties": {
-                              "attribute": "idocs:lastName",
-                              "dummy": "dummy"
                             },
                             "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
                             "logic": [
@@ -1030,20 +1069,21 @@
                                 ]
                               }
                             ],
+                            "type": "textfield",
+                            "input": true,
                             "tags": [],
-                            "defaultValue": "",
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
                             "suffix": "",
                             "multiple": false,
+                            "defaultValue": null,
                             "protected": false,
                             "unique": false,
                             "persistent": true,
@@ -1070,7 +1110,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "e6p8f1a"
+                            "id": "eyi6oqn"
                           }
                         ],
                         "width": 3,
@@ -1123,24 +1163,23 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "ez6iyzq"
+                        "id": "eyhlp5t"
                       },
                       {
                         "components": [
                           {
-                            "label": "Имя",
+                            "label": "idocs:firstName",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_firstName",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
+                              "required": true,
                               "customMessage": "",
                               "json": "",
-                              "required": true,
                               "custom": "",
                               "customPrivate": false,
                               "minLength": "",
@@ -1149,20 +1188,21 @@
                               "maxWords": "",
                               "pattern": ""
                             },
+                            "key": "idocs_firstName",
+                            "properties": {
+                              "attribute": "idocs:firstName",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
-                            "inputFormat": "plain",
-                            "encrypted": false,
-                            "properties": {
-                              "attribute": "idocs:firstName",
-                              "dummy": "dummy"
-                            },
                             "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
                             "tags": [],
                             "widget": {
                               "type": "",
@@ -1170,13 +1210,12 @@
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "defaultValue": "",
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
                             "suffix": "",
                             "multiple": false,
+                            "defaultValue": null,
                             "protected": false,
                             "unique": false,
                             "persistent": true,
@@ -1203,7 +1242,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "ejgpxin"
+                            "id": "ef73sra"
                           }
                         ],
                         "width": 3,
@@ -1256,7 +1295,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e6fmncv"
+                        "id": "ewdy8ha"
                       },
                       {
                         "width": 3,
@@ -1271,15 +1310,14 @@
                         "label": "",
                         "components": [
                           {
-                            "label": "Отчество",
+                            "label": "idocs:patronymicName",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_patronymicName",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
                               "customMessage": "",
                               "json": "",
@@ -1292,34 +1330,34 @@
                               "maxWords": "",
                               "pattern": ""
                             },
+                            "key": "idocs_patronymicName",
+                            "properties": {
+                              "attribute": "idocs:patronymicName",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
-                            "inputFormat": "plain",
-                            "encrypted": false,
-                            "properties": {
-                              "attribute": "idocs:patronymicName",
-                              "dummy": "dummy"
-                            },
                             "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
                             "tags": [],
-                            "defaultValue": "",
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
                             "suffix": "",
                             "multiple": false,
+                            "defaultValue": null,
                             "protected": false,
                             "unique": false,
                             "persistent": true,
@@ -1346,7 +1384,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "e1k1mch"
+                            "id": "eq6i4rk"
                           }
                         ],
                         "placeholder": "",
@@ -1389,7 +1427,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "egcivzd"
+                        "id": "ebf1xjp"
                       },
                       {
                         "width": 3,
@@ -1404,14 +1442,46 @@
                         "label": "",
                         "components": [
                           {
-                            "label": "Дата рождения",
+                            "label": "ecos:birthDate",
                             "format": "yyyy-MM-dd",
                             "mask": false,
                             "tableView": true,
                             "alwaysEnabled": false,
+                            "datePicker": {
+                              "minDate": "",
+                              "maxDate": "moment()",
+                              "showWeeks": true,
+                              "startingDay": 0,
+                              "initDate": "",
+                              "minMode": "day",
+                              "maxMode": "year",
+                              "yearRows": 4,
+                              "yearColumns": 5
+                            },
+                            "enableTime": false,
+                            "encrypted": false,
+                            "validate": {
+                              "required": true,
+                              "customMessage": "",
+                              "json": "",
+                              "custom": "",
+                              "customPrivate": false
+                            },
+                            "key": "ecos_birthDate",
+                            "properties": {
+                              "attribute": "ecos:birthDate",
+                              "dummy": "dummy"
+                            },
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
+                            "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
+                            "logic": [],
                             "type": "datetime",
                             "input": true,
-                            "key": "ecos_birthDate",
                             "suffix": true,
                             "widget": {
                               "type": "calendar",
@@ -1430,45 +1500,12 @@
                               "minDate": "",
                               "maxDate": "moment()"
                             },
-                            "validate": {
-                              "customMessage": "",
-                              "json": "",
-                              "required": true,
-                              "custom": "",
-                              "customPrivate": false
-                            },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
-                            "datePicker": {
-                              "minDate": "",
-                              "maxDate": "moment()",
-                              "showWeeks": true,
-                              "startingDay": 0,
-                              "initDate": "",
-                              "minMode": "day",
-                              "maxMode": "year",
-                              "yearRows": 4,
-                              "yearColumns": 5
-                            },
-                            "encrypted": false,
-                            "properties": {
-                              "attribute": "ecos:birthDate",
-                              "dummy": "dummy"
-                            },
-                            "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
-                            "logic": [],
                             "tags": [],
-                            "enableTime": false,
-                            "defaultValue": "",
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
                             "multiple": false,
+                            "defaultValue": null,
                             "protected": false,
                             "unique": false,
                             "persistent": true,
@@ -1507,7 +1544,7 @@
                               "mousewheel": true,
                               "arrowkeys": true
                             },
-                            "id": "e247vep"
+                            "id": "e7abira"
                           }
                         ],
                         "placeholder": "",
@@ -1550,7 +1587,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "eyyrfaf"
+                        "id": "eeg2ay4"
                       }
                     ],
                     "mask": false,
@@ -1606,7 +1643,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "ejb47"
+                    "id": "eyjj3nn"
                   }
                 ],
                 "tab": 0,
@@ -1653,7 +1690,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "ec2rnvr"
+                "id": "eaax29t"
               },
               {
                 "label": "Panel",
@@ -1678,19 +1715,18 @@
                       {
                         "components": [
                           {
-                            "label": "Номер",
+                            "label": "idocs:numberPass",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_numberPass",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
+                              "required": true,
                               "customMessage": "",
                               "json": "",
-                              "required": true,
                               "custom": "",
                               "customPrivate": false,
                               "minLength": "",
@@ -1699,34 +1735,34 @@
                               "maxWords": "",
                               "pattern": ""
                             },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
-                            "inputFormat": "plain",
-                            "encrypted": false,
+                            "key": "idocs_numberPass",
                             "properties": {
                               "attribute": "idocs:numberPass",
                               "dummy": "dummy"
                             },
-                            "tags": [],
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
                             "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
                             "logic": [],
-                            "defaultValue": "",
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
                             "suffix": "",
                             "multiple": false,
+                            "defaultValue": null,
                             "protected": false,
                             "unique": false,
                             "persistent": true,
@@ -1753,7 +1789,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "em7w8bw"
+                            "id": "eni33mg"
                           }
                         ],
                         "width": 4,
@@ -1766,6 +1802,12 @@
                         "key": "",
                         "tableView": true,
                         "label": "",
+                        "xs": 0,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -1806,24 +1848,23 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e88aebl"
+                        "id": "er937lm"
                       },
                       {
                         "components": [
                           {
-                            "label": "Кем выдан",
+                            "label": "idocs:whoIssuedPass",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_whoIssuedPass",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
+                              "required": true,
                               "customMessage": "",
                               "json": "",
-                              "required": true,
                               "custom": "",
                               "customPrivate": false,
                               "minLength": "",
@@ -1832,34 +1873,34 @@
                               "maxWords": "",
                               "pattern": ""
                             },
+                            "key": "idocs_whoIssuedPass",
+                            "properties": {
+                              "attribute": "idocs:whoIssuedPass",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
-                            "inputFormat": "plain",
-                            "encrypted": false,
-                            "properties": {
-                              "attribute": "idocs:whoIssuedPass",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
                             "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "defaultValue": "",
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
                             "suffix": "",
                             "multiple": false,
+                            "defaultValue": null,
                             "protected": false,
                             "unique": false,
                             "persistent": true,
@@ -1886,7 +1927,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "eezjmyu"
+                            "id": "er5oe4t"
                           }
                         ],
                         "width": 4,
@@ -1899,6 +1940,12 @@
                         "key": "",
                         "tableView": true,
                         "label": "",
+                        "xs": 0,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -1939,7 +1986,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "ereyata"
+                        "id": "eep7ljv"
                       },
                       {
                         "width": 4,
@@ -1954,14 +2001,46 @@
                         "label": "",
                         "components": [
                           {
-                            "label": "Дата выдачи",
+                            "label": "idocs:passIssueDate",
                             "format": "yyyy-MM-dd",
                             "mask": false,
                             "tableView": true,
                             "alwaysEnabled": false,
+                            "datePicker": {
+                              "minDate": "",
+                              "maxDate": "moment()",
+                              "showWeeks": true,
+                              "startingDay": 0,
+                              "initDate": "",
+                              "minMode": "day",
+                              "maxMode": "year",
+                              "yearRows": 4,
+                              "yearColumns": 5
+                            },
+                            "enableTime": false,
+                            "encrypted": false,
+                            "validate": {
+                              "required": true,
+                              "customMessage": "",
+                              "json": "",
+                              "custom": "",
+                              "customPrivate": false
+                            },
+                            "key": "idocs_passIssueDate",
+                            "properties": {
+                              "attribute": "idocs:passIssueDate",
+                              "dummy": "dummy"
+                            },
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
+                            "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
+                            "logic": [],
                             "type": "datetime",
                             "input": true,
-                            "key": "idocs_passIssueDate",
                             "suffix": true,
                             "widget": {
                               "type": "calendar",
@@ -1980,45 +2059,12 @@
                               "minDate": "",
                               "maxDate": "moment()"
                             },
-                            "validate": {
-                              "customMessage": "",
-                              "json": "",
-                              "required": true,
-                              "custom": "",
-                              "customPrivate": false
-                            },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
-                            "datePicker": {
-                              "minDate": "",
-                              "maxDate": "moment()",
-                              "showWeeks": true,
-                              "startingDay": 0,
-                              "initDate": "",
-                              "minMode": "day",
-                              "maxMode": "year",
-                              "yearRows": 4,
-                              "yearColumns": 5
-                            },
-                            "encrypted": false,
-                            "properties": {
-                              "attribute": "idocs:passIssueDate",
-                              "dummy": "dummy"
-                            },
                             "tags": [],
-                            "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
-                            "logic": [],
-                            "defaultValue": "",
-                            "enableTime": false,
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
                             "multiple": false,
+                            "defaultValue": null,
                             "protected": false,
                             "unique": false,
                             "persistent": true,
@@ -2057,9 +2103,15 @@
                               "mousewheel": true,
                               "arrowkeys": true
                             },
-                            "id": "erdifu"
+                            "id": "euz0bef"
                           }
                         ],
+                        "xs": 0,
+                        "sm": 12,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
+                        "md": 6,
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -2100,25 +2152,25 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "eoi8ny5b"
+                        "id": "ebdv9bk"
                       }
                     ],
                     "mask": false,
                     "tableView": false,
                     "alwaysEnabled": false,
-                    "type": "columns",
-                    "input": false,
                     "key": "columns5",
+                    "properties": {},
                     "conditional": {
                       "show": "",
                       "when": "",
                       "json": "",
                       "eq": ""
                     },
-                    "reorder": false,
-                    "properties": {},
                     "customConditional": "",
                     "logic": [],
+                    "type": "columns",
+                    "input": false,
+                    "tags": [],
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -2156,7 +2208,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "eve2l2"
+                    "id": "eblg0l"
                   }
                 ],
                 "tab": 0,
@@ -2203,7 +2255,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "ebajhe8"
+                "id": "em10ks5"
               },
               {
                 "label": "Panel",
@@ -2228,20 +2280,19 @@
                       {
                         "components": [
                           {
-                            "label": "Юридический адрес",
+                            "label": "idocs:juridicalAddress",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_juridicalAddress",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
+                              "required": true,
                               "customMessage": "",
                               "json": "",
-                              "required": true,
                               "custom": "",
                               "customPrivate": false,
                               "minLength": "",
@@ -2250,28 +2301,28 @@
                               "maxWords": "",
                               "pattern": ""
                             },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
+                            "key": "idocs_juridicalAddress",
                             "properties": {
                               "attribute": "idocs:juridicalAddress",
                               "dummy": "dummy"
                             },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
                             "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = !isIndividual;",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -2303,22 +2354,21 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "ewwdxui"
+                            "id": "e0hrgnl"
                           },
                           {
-                            "label": "Адрес регистрации",
+                            "label": "idocs:registrationAddress",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_registrationAddress",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
+                              "required": true,
                               "customMessage": "",
                               "json": "",
-                              "required": true,
                               "custom": "",
                               "customPrivate": false,
                               "minLength": "",
@@ -2327,20 +2377,21 @@
                               "maxWords": "",
                               "pattern": ""
                             },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
+                            "key": "idocs_registrationAddress",
                             "properties": {
                               "attribute": "idocs:registrationAddress",
                               "dummy": "dummy"
                             },
-                            "inputFormat": "plain",
-                            "encrypted": false,
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
                             "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
                             "tags": [],
                             "widget": {
                               "type": "",
@@ -2348,13 +2399,12 @@
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "defaultValue": "",
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
                             "suffix": "",
                             "multiple": false,
+                            "defaultValue": null,
                             "protected": false,
                             "unique": false,
                             "persistent": true,
@@ -2381,7 +2431,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "etd0loh"
+                            "id": "emv0i27"
                           }
                         ],
                         "width": 6,
@@ -2434,25 +2484,24 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "epp6kg"
+                        "id": "ez4taz"
                       },
                       {
                         "components": [
                           {
-                            "label": "Фактический адрес",
+                            "label": "idocs:postAddress",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_postAddress",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
+                              "required": true,
                               "customMessage": "",
                               "json": "",
-                              "required": true,
                               "custom": "",
                               "customPrivate": false,
                               "minLength": "",
@@ -2461,28 +2510,28 @@
                               "maxWords": "",
                               "pattern": ""
                             },
+                            "key": "idocs_postAddress",
+                            "properties": {
+                              "attribute": "idocs:postAddress",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
-                            "properties": {
-                              "attribute": "idocs:postAddress",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
                             "customConditional": "",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -2514,7 +2563,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "epy22v"
+                            "id": "eke32uf"
                           }
                         ],
                         "width": 6,
@@ -2567,7 +2616,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "ez1xhzf"
+                        "id": "elpskic"
                       }
                     ],
                     "mask": false,
@@ -2623,7 +2672,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "e1ttcu"
+                    "id": "eobrklh"
                   }
                 ],
                 "tab": 0,
@@ -2670,7 +2719,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "eci0tlm"
+                "id": "e7nfp1a"
               },
               {
                 "label": "Panel",
@@ -2690,363 +2739,9 @@
                 },
                 "components": [
                   {
-                    "label": "Columns Inn Kpp",
+                    "label": "Columns",
                     "columns": [
                       {
-                        "components": [
-                          {
-                            "label": "ИНН",
-                            "allowMultipleMasks": false,
-                            "showWordCount": false,
-                            "showCharCount": false,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_inn",
-                            "defaultValue": "",
-                            "validate": {
-                              "customMessage": "Некорректный ИНН/ЕГРПОУ",
-                              "json": "",
-                              "required": true,
-                              "pattern": "^\\d{8}$|^\\d{10}$|^\\d{12}$",
-                              "custom": "",
-                              "customPrivate": false,
-                              "minLength": "",
-                              "maxLength": "",
-                              "minWords": "",
-                              "maxWords": ""
-                            },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
-                            "properties": {
-                              "attribute": "idocs:inn",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
-                            "customConditional": "",
-                            "logic": [],
-                            "widget": {
-                              "type": "",
-                              "format": "yyyy-MM-dd hh:mm a",
-                              "dateFormat": "yyyy-MM-dd hh:mm a",
-                              "saveAs": "text"
-                            },
-                            "reorder": false,
-                            "placeholder": "",
-                            "prefix": "",
-                            "customClass": "",
-                            "suffix": "",
-                            "multiple": false,
-                            "protected": false,
-                            "unique": false,
-                            "persistent": true,
-                            "hidden": false,
-                            "clearOnHide": true,
-                            "dataGridLabel": false,
-                            "labelPosition": "top",
-                            "labelWidth": 30,
-                            "labelMargin": 3,
-                            "description": "",
-                            "errorLabel": "",
-                            "tooltip": "",
-                            "hideLabel": false,
-                            "tabindex": "",
-                            "disabled": false,
-                            "autofocus": false,
-                            "dbIndex": false,
-                            "customDefaultValue": "",
-                            "calculateValue": "",
-                            "allowCalculateOverride": false,
-                            "refreshOn": "",
-                            "clearOnRefresh": false,
-                            "validateOn": "change",
-                            "mask": false,
-                            "inputType": "text",
-                            "inputMask": "",
-                            "id": "exbq4y"
-                          }
-                        ],
-                        "width": 6,
-                        "offset": 0,
-                        "push": 0,
-                        "pull": 0,
-                        "type": "column",
-                        "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
-                        "tableView": true,
-                        "label": "",
-                        "placeholder": "",
-                        "prefix": "",
-                        "customClass": "",
-                        "suffix": "",
-                        "multiple": false,
-                        "defaultValue": null,
-                        "protected": false,
-                        "unique": false,
-                        "persistent": true,
-                        "hidden": false,
-                        "clearOnHide": true,
-                        "dataGridLabel": false,
-                        "labelPosition": "top",
-                        "labelWidth": 30,
-                        "labelMargin": 3,
-                        "description": "",
-                        "errorLabel": "",
-                        "tooltip": "",
-                        "hideLabel": false,
-                        "tabindex": "",
-                        "disabled": false,
-                        "autofocus": false,
-                        "dbIndex": false,
-                        "customDefaultValue": "",
-                        "calculateValue": "",
-                        "allowCalculateOverride": false,
-                        "widget": null,
-                        "refreshOn": "",
-                        "clearOnRefresh": false,
-                        "validateOn": "change",
-                        "validate": {
-                          "required": false,
-                          "custom": "",
-                          "customPrivate": false
-                        },
-                        "conditional": {
-                          "show": null,
-                          "when": null,
-                          "eq": ""
-                        },
-                        "id": "er6fd68"
-                      },
-                      {
-                        "components": [
-                          {
-                            "label": "КПП",
-                            "allowMultipleMasks": false,
-                            "showWordCount": false,
-                            "showCharCount": false,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_kpp",
-                            "defaultValue": "",
-                            "validate": {
-                              "customMessage": "",
-                              "json": "",
-                              "required": false,
-                              "custom": "",
-                              "customPrivate": false,
-                              "minLength": "",
-                              "maxLength": "",
-                              "minWords": "",
-                              "maxWords": "",
-                              "pattern": ""
-                            },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
-                            "properties": {
-                              "attribute": "idocs:kpp",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
-                            "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = !isIndividual;",
-                            "logic": [],
-                            "widget": {
-                              "type": "",
-                              "format": "yyyy-MM-dd hh:mm a",
-                              "dateFormat": "yyyy-MM-dd hh:mm a",
-                              "saveAs": "text"
-                            },
-                            "reorder": false,
-                            "placeholder": "",
-                            "prefix": "",
-                            "customClass": "",
-                            "suffix": "",
-                            "multiple": false,
-                            "protected": false,
-                            "unique": false,
-                            "persistent": true,
-                            "hidden": false,
-                            "clearOnHide": true,
-                            "dataGridLabel": false,
-                            "labelPosition": "top",
-                            "labelWidth": 30,
-                            "labelMargin": 3,
-                            "description": "",
-                            "errorLabel": "",
-                            "tooltip": "",
-                            "hideLabel": false,
-                            "tabindex": "",
-                            "disabled": false,
-                            "autofocus": false,
-                            "dbIndex": false,
-                            "customDefaultValue": "",
-                            "calculateValue": "",
-                            "allowCalculateOverride": false,
-                            "refreshOn": "",
-                            "clearOnRefresh": false,
-                            "validateOn": "change",
-                            "mask": false,
-                            "inputType": "text",
-                            "inputMask": "",
-                            "id": "epdbsg5"
-                          },
-                          {
-                            "label": "СНИЛС",
-                            "allowMultipleMasks": false,
-                            "showWordCount": false,
-                            "showCharCount": false,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_inila",
-                            "validate": {
-                              "customMessage": "",
-                              "json": "",
-                              "required": false,
-                              "custom": "",
-                              "customPrivate": false,
-                              "minLength": "",
-                              "maxLength": "",
-                              "minWords": "",
-                              "maxWords": "",
-                              "pattern": ""
-                            },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
-                            "inputFormat": "plain",
-                            "encrypted": false,
-                            "properties": {
-                              "attribute": "idocs:inila",
-                              "dummy": "dummy"
-                            },
-                            "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
-                            "logic": [],
-                            "tags": [],
-                            "defaultValue": "",
-                            "widget": {
-                              "type": "",
-                              "format": "yyyy-MM-dd hh:mm a",
-                              "dateFormat": "yyyy-MM-dd hh:mm a",
-                              "saveAs": "text"
-                            },
-                            "reorder": false,
-                            "placeholder": "",
-                            "prefix": "",
-                            "customClass": "",
-                            "suffix": "",
-                            "multiple": false,
-                            "protected": false,
-                            "unique": false,
-                            "persistent": true,
-                            "hidden": false,
-                            "clearOnHide": true,
-                            "dataGridLabel": false,
-                            "labelPosition": "top",
-                            "labelWidth": 30,
-                            "labelMargin": 3,
-                            "description": "",
-                            "errorLabel": "",
-                            "tooltip": "",
-                            "hideLabel": false,
-                            "tabindex": "",
-                            "disabled": false,
-                            "autofocus": false,
-                            "dbIndex": false,
-                            "customDefaultValue": "",
-                            "calculateValue": "",
-                            "allowCalculateOverride": false,
-                            "refreshOn": "",
-                            "clearOnRefresh": false,
-                            "validateOn": "change",
-                            "mask": false,
-                            "inputType": "text",
-                            "inputMask": "",
-                            "id": "eknz9pd"
-                          }
-                        ],
-                        "width": 3,
-                        "offset": 0,
-                        "push": 0,
-                        "pull": 0,
-                        "type": "column",
-                        "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
-                        "tableView": true,
-                        "label": "",
-                        "placeholder": "",
-                        "prefix": "",
-                        "customClass": "",
-                        "suffix": "",
-                        "multiple": false,
-                        "defaultValue": null,
-                        "protected": false,
-                        "unique": false,
-                        "persistent": true,
-                        "hidden": false,
-                        "clearOnHide": true,
-                        "dataGridLabel": false,
-                        "labelPosition": "top",
-                        "labelWidth": 30,
-                        "labelMargin": 3,
-                        "description": "",
-                        "errorLabel": "",
-                        "tooltip": "",
-                        "hideLabel": false,
-                        "tabindex": "",
-                        "disabled": false,
-                        "autofocus": false,
-                        "dbIndex": false,
-                        "customDefaultValue": "",
-                        "calculateValue": "",
-                        "allowCalculateOverride": false,
-                        "widget": null,
-                        "refreshOn": "",
-                        "clearOnRefresh": false,
-                        "validateOn": "change",
-                        "validate": {
-                          "required": false,
-                          "custom": "",
-                          "customPrivate": false
-                        },
-                        "conditional": {
-                          "show": null,
-                          "when": null,
-                          "eq": ""
-                        },
-                        "id": "ezh915a"
-                      },
-                      {
-                        "width": 3,
-                        "offset": 0,
-                        "push": 0,
-                        "pull": 0,
-                        "type": "column",
-                        "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
-                        "tableView": true,
-                        "label": "",
                         "components": [
                           {
                             "label": "Автозаполнение",
@@ -3118,9 +2813,25 @@
                             "rightIcon": "",
                             "block": false,
                             "disableOnInvalid": false,
-                            "id": "eva9wdm"
+                            "id": "emyrthn"
                           }
                         ],
+                        "width": 6,
+                        "offset": 0,
+                        "push": 0,
+                        "pull": 0,
+                        "type": "column",
+                        "hideOnChildrenHidden": false,
+                        "input": true,
+                        "key": "",
+                        "tableView": true,
+                        "label": "",
+                        "xs": 0,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -3161,26 +2872,85 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "eeg5h4"
+                        "id": "e9b78w"
+                      },
+                      {
+                        "components": [],
+                        "width": 6,
+                        "offset": 0,
+                        "push": 0,
+                        "pull": 0,
+                        "type": "column",
+                        "hideOnChildrenHidden": false,
+                        "input": true,
+                        "key": "",
+                        "tableView": true,
+                        "label": "",
+                        "xs": 0,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
+                        "placeholder": "",
+                        "prefix": "",
+                        "customClass": "",
+                        "suffix": "",
+                        "multiple": false,
+                        "defaultValue": null,
+                        "protected": false,
+                        "unique": false,
+                        "persistent": true,
+                        "hidden": false,
+                        "clearOnHide": true,
+                        "dataGridLabel": false,
+                        "labelPosition": "top",
+                        "labelWidth": 30,
+                        "labelMargin": 3,
+                        "description": "",
+                        "errorLabel": "",
+                        "tooltip": "",
+                        "hideLabel": false,
+                        "tabindex": "",
+                        "disabled": false,
+                        "autofocus": false,
+                        "dbIndex": false,
+                        "customDefaultValue": "",
+                        "calculateValue": "",
+                        "allowCalculateOverride": false,
+                        "widget": null,
+                        "refreshOn": "",
+                        "clearOnRefresh": false,
+                        "validateOn": "change",
+                        "validate": {
+                          "required": false,
+                          "custom": "",
+                          "customPrivate": false
+                        },
+                        "conditional": {
+                          "show": null,
+                          "when": null,
+                          "eq": ""
+                        },
+                        "id": "egv1x2"
                       }
                     ],
                     "mask": false,
                     "tableView": false,
                     "alwaysEnabled": false,
-                    "type": "columns",
-                    "input": false,
-                    "key": "columns-inn-kpp",
+                    "key": "columns8",
+                    "properties": {},
                     "conditional": {
+                      "json": "",
                       "show": "",
                       "when": "",
-                      "json": "",
                       "eq": ""
                     },
-                    "properties": {},
                     "customConditional": "",
                     "logic": [],
+                    "type": "columns",
+                    "input": false,
                     "tags": [],
-                    "reorder": false,
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -3218,7 +2988,419 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "eao2ld9"
+                    "id": "e9049hd"
+                  },
+                  {
+                    "label": "Columns",
+                    "columns": [
+                      {
+                        "components": [
+                          {
+                            "label": "idocs:inn",
+                            "allowMultipleMasks": false,
+                            "showWordCount": false,
+                            "showCharCount": false,
+                            "tableView": true,
+                            "alwaysEnabled": false,
+                            "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
+                            "validate": {
+                              "required": true,
+                              "pattern": "^\\d{8}$|^\\d{10}$|^\\d{12}$",
+                              "customMessage": "Некорректный ИНН/ЕГРПОУ",
+                              "json": "",
+                              "custom": "",
+                              "customPrivate": false,
+                              "minLength": "",
+                              "maxLength": "",
+                              "minWords": "",
+                              "maxWords": ""
+                            },
+                            "key": "idocs_inn",
+                            "properties": {
+                              "attribute": "idocs:inn",
+                              "dummy": "dummy"
+                            },
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
+                            "customConditional": "",
+                            "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
+                            "widget": {
+                              "type": "",
+                              "format": "yyyy-MM-dd hh:mm a",
+                              "dateFormat": "yyyy-MM-dd hh:mm a",
+                              "saveAs": "text"
+                            },
+                            "placeholder": "",
+                            "prefix": "",
+                            "customClass": "",
+                            "suffix": "",
+                            "multiple": false,
+                            "protected": false,
+                            "unique": false,
+                            "persistent": true,
+                            "hidden": false,
+                            "clearOnHide": true,
+                            "dataGridLabel": false,
+                            "labelPosition": "top",
+                            "labelWidth": 30,
+                            "labelMargin": 3,
+                            "description": "",
+                            "errorLabel": "",
+                            "tooltip": "",
+                            "hideLabel": false,
+                            "tabindex": "",
+                            "disabled": false,
+                            "autofocus": false,
+                            "dbIndex": false,
+                            "customDefaultValue": "",
+                            "calculateValue": "",
+                            "allowCalculateOverride": false,
+                            "refreshOn": "",
+                            "clearOnRefresh": false,
+                            "validateOn": "change",
+                            "mask": false,
+                            "inputType": "text",
+                            "inputMask": "",
+                            "id": "ey1qnhc"
+                          }
+                        ],
+                        "width": 6,
+                        "offset": 0,
+                        "push": 0,
+                        "pull": 0,
+                        "type": "column",
+                        "hideOnChildrenHidden": false,
+                        "input": true,
+                        "key": "",
+                        "tableView": true,
+                        "label": "",
+                        "xs": 0,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
+                        "placeholder": "",
+                        "prefix": "",
+                        "customClass": "",
+                        "suffix": "",
+                        "multiple": false,
+                        "defaultValue": null,
+                        "protected": false,
+                        "unique": false,
+                        "persistent": true,
+                        "hidden": false,
+                        "clearOnHide": true,
+                        "dataGridLabel": false,
+                        "labelPosition": "top",
+                        "labelWidth": 30,
+                        "labelMargin": 3,
+                        "description": "",
+                        "errorLabel": "",
+                        "tooltip": "",
+                        "hideLabel": false,
+                        "tabindex": "",
+                        "disabled": false,
+                        "autofocus": false,
+                        "dbIndex": false,
+                        "customDefaultValue": "",
+                        "calculateValue": "",
+                        "allowCalculateOverride": false,
+                        "widget": null,
+                        "refreshOn": "",
+                        "clearOnRefresh": false,
+                        "validateOn": "change",
+                        "validate": {
+                          "required": false,
+                          "custom": "",
+                          "customPrivate": false
+                        },
+                        "conditional": {
+                          "show": null,
+                          "when": null,
+                          "eq": ""
+                        },
+                        "id": "efwdyk6"
+                      },
+                      {
+                        "components": [
+                          {
+                            "label": "idocs:kpp",
+                            "allowMultipleMasks": false,
+                            "showWordCount": false,
+                            "showCharCount": false,
+                            "tableView": true,
+                            "alwaysEnabled": false,
+                            "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
+                            "validate": {
+                              "customMessage": "",
+                              "json": "",
+                              "required": false,
+                              "custom": "",
+                              "customPrivate": false,
+                              "minLength": "",
+                              "maxLength": "",
+                              "minWords": "",
+                              "maxWords": "",
+                              "pattern": ""
+                            },
+                            "key": "idocs_kpp",
+                            "properties": {
+                              "attribute": "idocs:kpp",
+                              "dummy": "dummy"
+                            },
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
+                            "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = !isIndividual;",
+                            "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
+                            "widget": {
+                              "type": "",
+                              "format": "yyyy-MM-dd hh:mm a",
+                              "dateFormat": "yyyy-MM-dd hh:mm a",
+                              "saveAs": "text"
+                            },
+                            "placeholder": "",
+                            "prefix": "",
+                            "customClass": "",
+                            "suffix": "",
+                            "multiple": false,
+                            "protected": false,
+                            "unique": false,
+                            "persistent": true,
+                            "hidden": false,
+                            "clearOnHide": true,
+                            "dataGridLabel": false,
+                            "labelPosition": "top",
+                            "labelWidth": 30,
+                            "labelMargin": 3,
+                            "description": "",
+                            "errorLabel": "",
+                            "tooltip": "",
+                            "hideLabel": false,
+                            "tabindex": "",
+                            "disabled": false,
+                            "autofocus": false,
+                            "dbIndex": false,
+                            "customDefaultValue": "",
+                            "calculateValue": "",
+                            "allowCalculateOverride": false,
+                            "refreshOn": "",
+                            "clearOnRefresh": false,
+                            "validateOn": "change",
+                            "mask": false,
+                            "inputType": "text",
+                            "inputMask": "",
+                            "id": "erp8th"
+                          },
+                          {
+                            "label": "idocs:inila",
+                            "allowMultipleMasks": false,
+                            "showWordCount": false,
+                            "showCharCount": false,
+                            "tableView": true,
+                            "alwaysEnabled": false,
+                            "inputFormat": "plain",
+                            "encrypted": false,
+                            "validate": {
+                              "customMessage": "",
+                              "json": "",
+                              "required": false,
+                              "custom": "",
+                              "customPrivate": false,
+                              "minLength": "",
+                              "maxLength": "",
+                              "minWords": "",
+                              "maxWords": "",
+                              "pattern": ""
+                            },
+                            "key": "idocs_inila",
+                            "properties": {
+                              "attribute": "idocs:inila",
+                              "dummy": "dummy"
+                            },
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
+                            "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = isIndividual;",
+                            "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
+                            "widget": {
+                              "type": "",
+                              "format": "yyyy-MM-dd hh:mm a",
+                              "dateFormat": "yyyy-MM-dd hh:mm a",
+                              "saveAs": "text"
+                            },
+                            "placeholder": "",
+                            "prefix": "",
+                            "customClass": "",
+                            "suffix": "",
+                            "multiple": false,
+                            "defaultValue": null,
+                            "protected": false,
+                            "unique": false,
+                            "persistent": true,
+                            "hidden": false,
+                            "clearOnHide": true,
+                            "dataGridLabel": false,
+                            "labelPosition": "top",
+                            "labelWidth": 30,
+                            "labelMargin": 3,
+                            "description": "",
+                            "errorLabel": "",
+                            "tooltip": "",
+                            "hideLabel": false,
+                            "tabindex": "",
+                            "disabled": false,
+                            "autofocus": false,
+                            "dbIndex": false,
+                            "customDefaultValue": "",
+                            "calculateValue": "",
+                            "allowCalculateOverride": false,
+                            "refreshOn": "",
+                            "clearOnRefresh": false,
+                            "validateOn": "change",
+                            "mask": false,
+                            "inputType": "text",
+                            "inputMask": "",
+                            "id": "eor6dvb"
+                          }
+                        ],
+                        "width": 6,
+                        "offset": 0,
+                        "push": 0,
+                        "pull": 0,
+                        "type": "column",
+                        "hideOnChildrenHidden": false,
+                        "input": true,
+                        "key": "",
+                        "tableView": true,
+                        "label": "",
+                        "xs": 0,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
+                        "placeholder": "",
+                        "prefix": "",
+                        "customClass": "",
+                        "suffix": "",
+                        "multiple": false,
+                        "defaultValue": null,
+                        "protected": false,
+                        "unique": false,
+                        "persistent": true,
+                        "hidden": false,
+                        "clearOnHide": true,
+                        "dataGridLabel": false,
+                        "labelPosition": "top",
+                        "labelWidth": 30,
+                        "labelMargin": 3,
+                        "description": "",
+                        "errorLabel": "",
+                        "tooltip": "",
+                        "hideLabel": false,
+                        "tabindex": "",
+                        "disabled": false,
+                        "autofocus": false,
+                        "dbIndex": false,
+                        "customDefaultValue": "",
+                        "calculateValue": "",
+                        "allowCalculateOverride": false,
+                        "widget": null,
+                        "refreshOn": "",
+                        "clearOnRefresh": false,
+                        "validateOn": "change",
+                        "validate": {
+                          "required": false,
+                          "custom": "",
+                          "customPrivate": false
+                        },
+                        "conditional": {
+                          "show": null,
+                          "when": null,
+                          "eq": ""
+                        },
+                        "id": "efj5kfa"
+                      }
+                    ],
+                    "mask": false,
+                    "tableView": false,
+                    "alwaysEnabled": false,
+                    "key": "columns9",
+                    "properties": {},
+                    "conditional": {
+                      "json": "",
+                      "show": "",
+                      "when": "",
+                      "eq": ""
+                    },
+                    "customConditional": "",
+                    "logic": [],
+                    "type": "columns",
+                    "input": false,
+                    "tags": [],
+                    "placeholder": "",
+                    "prefix": "",
+                    "customClass": "",
+                    "suffix": "",
+                    "multiple": false,
+                    "defaultValue": null,
+                    "protected": false,
+                    "unique": false,
+                    "persistent": false,
+                    "hidden": false,
+                    "clearOnHide": false,
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "labelWidth": 30,
+                    "labelMargin": 3,
+                    "description": "",
+                    "errorLabel": "",
+                    "tooltip": "",
+                    "hideLabel": false,
+                    "tabindex": "",
+                    "disabled": false,
+                    "autofocus": false,
+                    "dbIndex": false,
+                    "customDefaultValue": "",
+                    "calculateValue": "",
+                    "allowCalculateOverride": false,
+                    "widget": null,
+                    "refreshOn": "",
+                    "clearOnRefresh": false,
+                    "validateOn": "change",
+                    "validate": {
+                      "required": false,
+                      "custom": "",
+                      "customPrivate": false
+                    },
+                    "autoAdjust": false,
+                    "hideOnChildrenHidden": false,
+                    "id": "end64c"
                   },
                   {
                     "label": "Columns okpo ogrn",
@@ -3226,15 +3408,15 @@
                       {
                         "components": [
                           {
-                            "label": "ОКПО",
+                            "label": "idocs:okpo",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_okpo",
+                            "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
                               "customMessage": "",
                               "json": "",
@@ -3247,29 +3429,28 @@
                               "maxWords": "",
                               "pattern": ""
                             },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
+                            "key": "idocs_okpo",
                             "properties": {
                               "attribute": "idocs:okpo",
                               "dummy": "dummy"
                             },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
                             "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = !isIndividual;",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "defaultValue": "",
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -3301,7 +3482,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "en2tcak"
+                            "id": "e9e7k7p"
                           }
                         ],
                         "width": 6,
@@ -3354,21 +3535,20 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e5lv8p"
+                        "id": "ejtkoy"
                       },
                       {
                         "components": [
                           {
-                            "label": "ОГРН",
+                            "label": "idocs:ogrn",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_ogrn",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
                               "customMessage": "",
                               "json": "",
@@ -3381,28 +3561,28 @@
                               "maxWords": "",
                               "pattern": ""
                             },
+                            "key": "idocs_ogrn",
+                            "properties": {
+                              "attribute": "idocs:ogrn",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
-                            "properties": {
-                              "attribute": "idocs:ogrn",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
                             "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual' || kind === 'individual-entrepreneur';\n\nshow = !isIndividual;",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -3434,7 +3614,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "e55d4g"
+                            "id": "eb9qf9"
                           }
                         ],
                         "width": 6,
@@ -3487,7 +3667,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "eqouu3l"
+                        "id": "elj7nxr"
                       }
                     ],
                     "mask": false,
@@ -3544,7 +3724,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "ezq8zh8"
+                    "id": "e2wqcm"
                   },
                   {
                     "label": "Columns IP data",
@@ -3552,21 +3732,20 @@
                       {
                         "components": [
                           {
-                            "label": "ОГРНИП",
+                            "label": "idocs:psrnsp",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_psrnsp",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
                               "required": true,
+                              "pattern": "^\\d{15}$",
                               "customMessage": "Некорректный ОГРНИП",
                               "json": "",
-                              "pattern": "^\\d{15}$",
                               "custom": "",
                               "customPrivate": false,
                               "minLength": "",
@@ -3574,28 +3753,28 @@
                               "minWords": "",
                               "maxWords": ""
                             },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
+                            "key": "idocs_psrnsp",
                             "properties": {
                               "attribute": "idocs:psrnsp",
                               "dummy": "dummy"
                             },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
                             "customConditional": "",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -3627,7 +3806,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "e1i928a"
+                            "id": "egwfog5"
                           }
                         ],
                         "width": 4,
@@ -3640,6 +3819,12 @@
                         "key": "",
                         "tableView": true,
                         "label": "",
+                        "xs": 0,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -3680,26 +3865,25 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e14m44w"
+                        "id": "eicluy"
                       },
                       {
                         "components": [
                           {
-                            "label": "Серия",
+                            "label": "idocs:series",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_series",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
                               "required": true,
+                              "pattern": "^\\d*$",
                               "customMessage": "Серия должна содержать только цифры",
                               "json": "",
-                              "pattern": "^\\d*$",
                               "custom": "",
                               "customPrivate": false,
                               "minLength": "",
@@ -3707,28 +3891,28 @@
                               "minWords": "",
                               "maxWords": ""
                             },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
+                            "key": "idocs_series",
                             "properties": {
                               "attribute": "idocs:series",
                               "dummy": "dummy"
                             },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
                             "customConditional": "",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -3760,7 +3944,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "eypb2oa"
+                            "id": "efrzq9o"
                           }
                         ],
                         "width": 4,
@@ -3773,6 +3957,12 @@
                         "key": "",
                         "tableView": true,
                         "label": "",
+                        "xs": 0,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -3813,7 +4003,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e17ke4"
+                        "id": "extqhvf"
                       },
                       {
                         "width": 4,
@@ -3828,21 +4018,20 @@
                         "label": "",
                         "components": [
                           {
-                            "label": "Номер",
+                            "label": "idocs:number",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_number",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
                               "required": true,
+                              "pattern": "^\\d*$",
                               "customMessage": "Номер должен содержать только цифры",
                               "json": "",
-                              "pattern": "^\\d*$",
                               "custom": "",
                               "customPrivate": false,
                               "minLength": "",
@@ -3850,28 +4039,28 @@
                               "minWords": "",
                               "maxWords": ""
                             },
+                            "key": "idocs_number",
+                            "properties": {
+                              "attribute": "idocs:number",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
-                            "properties": {
-                              "attribute": "idocs:number",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
                             "customConditional": "",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -3903,9 +4092,15 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "e0iygu"
+                            "id": "e7k0tkv"
                           }
                         ],
+                        "xs": 0,
+                        "sm": 12,
+                        "md": 6,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -3946,26 +4141,25 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "eloh66"
+                        "id": "ey844h"
                       }
                     ],
                     "mask": false,
                     "tableView": false,
                     "alwaysEnabled": false,
-                    "type": "columns",
-                    "input": false,
                     "key": "columns-ip-data",
+                    "properties": {},
                     "conditional": {
                       "show": "",
                       "when": "",
                       "json": "",
                       "eq": ""
                     },
-                    "properties": {},
                     "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividualEnt = kind === 'individual-entrepreneur';\n\nshow = isIndividualEnt;",
                     "logic": [],
+                    "type": "columns",
+                    "input": false,
                     "tags": [],
-                    "reorder": false,
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -4003,7 +4197,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "e0idce"
+                    "id": "e80u2rh"
                   }
                 ],
                 "tab": 0,
@@ -4050,7 +4244,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "ebnicqq"
+                "id": "e7tmjht"
               },
               {
                 "label": "Panel",
@@ -4075,16 +4269,15 @@
                       {
                         "components": [
                           {
-                            "label": "Телефон",
+                            "label": "idocs:phone",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_phone",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
                               "customMessage": "",
                               "json": "",
@@ -4097,28 +4290,28 @@
                               "maxWords": "",
                               "pattern": ""
                             },
+                            "key": "idocs_phone",
+                            "properties": {
+                              "attribute": "idocs:phone",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
+                            "customConditional": "",
+                            "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "properties": {
-                              "attribute": "idocs:phone",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "reorder": false,
-                            "inputFormat": "plain",
-                            "encrypted": false,
-                            "customConditional": "",
-                            "logic": [],
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -4150,19 +4343,18 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "ent7pu3"
+                            "id": "etkvyid"
                           },
                           {
-                            "label": "Генеральный директор",
+                            "label": "idocs:CEOname",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_CEOname",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
                               "customMessage": "",
                               "json": "",
@@ -4175,19 +4367,17 @@
                               "maxWords": "",
                               "pattern": ""
                             },
+                            "key": "idocs_CEOname",
+                            "properties": {
+                              "attribute": "idocs:CEOname",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
-                            "properties": {
-                              "attribute": "idocs:CEOname",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
                             "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = !isIndividual;",
                             "logic": [
                               {
@@ -4210,13 +4400,15 @@
                                 ]
                               }
                             ],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -4248,7 +4440,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "e81cf8f"
+                            "id": "e74wsma"
                           }
                         ],
                         "width": 4,
@@ -4261,6 +4453,12 @@
                         "key": "",
                         "tableView": true,
                         "label": "",
+                        "xs": 0,
+                        "sm": 12,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
+                        "md": 6,
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -4301,21 +4499,20 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "eiq3yy"
+                        "id": "epofwq"
                       },
                       {
                         "components": [
                           {
-                            "label": "Мобильный телефон",
+                            "label": "idocs:fax",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_fax",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
                               "customMessage": "",
                               "json": "",
@@ -4328,28 +4525,28 @@
                               "maxWords": "",
                               "pattern": ""
                             },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
+                            "key": "idocs_fax",
                             "properties": {
                               "attribute": "idocs:fax",
                               "dummy": "dummy"
                             },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
                             "customConditional": "",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -4381,19 +4578,18 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "efnlzab"
+                            "id": "e3g5ilj"
                           },
                           {
-                            "label": "ФИО в родительном падеже",
+                            "label": "idocs:nameInGenitiveCase",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_nameInGenitiveCase",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
                               "customMessage": "",
                               "json": "",
@@ -4406,28 +4602,28 @@
                               "maxWords": "",
                               "pattern": ""
                             },
+                            "key": "idocs_nameInGenitiveCase",
+                            "properties": {
+                              "attribute": "idocs:nameInGenitiveCase",
+                              "dummny": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
-                            "properties": {
-                              "attribute": "idocs:nameInGenitiveCase",
-                              "dummny": "dummy"
-                            },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
                             "customConditional": "\nvar kind = data ? data['idocs_contractorKind'] : null;\n\nvar isIndividual = kind === 'individual';\n\nshow = !isIndividual;",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -4459,7 +4655,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "eszkl6"
+                            "id": "ekwdelk"
                           }
                         ],
                         "width": 4,
@@ -4472,6 +4668,12 @@
                         "key": "",
                         "tableView": true,
                         "label": "",
+                        "xs": 0,
+                        "sm": 12,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
+                        "md": 6,
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -4512,7 +4714,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e7qbmgd"
+                        "id": "ett8g3c"
                       },
                       {
                         "width": 4,
@@ -4527,20 +4729,19 @@
                         "label": "",
                         "components": [
                           {
-                            "label": "Адрес электронной почты",
+                            "label": "idocs:email",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_email",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
+                              "pattern": "^(|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]+)$",
                               "customMessage": "Некорректный формат",
                               "json": "",
-                              "pattern": "^(|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]+)$",
                               "required": false,
                               "custom": "",
                               "customPrivate": false,
@@ -4549,28 +4750,28 @@
                               "minWords": "",
                               "maxWords": ""
                             },
+                            "key": "idocs_email",
+                            "properties": {
+                              "attribute": "idocs:email",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
-                            "properties": {
-                              "attribute": "idocs:email",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "inputFormat": "plain",
-                            "encrypted": false,
                             "customConditional": "",
                             "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -4602,9 +4803,15 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "e0x949"
+                            "id": "ev6cjcn"
                           }
                         ],
+                        "xs": 0,
+                        "sm": 12,
+                        "lg": 0,
+                        "xl": 0,
+                        "classes": "",
+                        "md": 6,
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -4645,25 +4852,25 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e00bhix"
+                        "id": "e581ts"
                       }
                     ],
                     "mask": false,
                     "tableView": false,
                     "alwaysEnabled": false,
-                    "type": "columns",
-                    "input": false,
                     "key": "columns",
+                    "properties": {},
                     "conditional": {
                       "show": "",
                       "when": "",
                       "json": "",
                       "eq": ""
                     },
-                    "reorder": false,
-                    "properties": {},
                     "customConditional": "",
                     "logic": [],
+                    "type": "columns",
+                    "input": false,
+                    "tags": [],
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -4701,7 +4908,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "e467csh"
+                    "id": "emg732g"
                   }
                 ],
                 "tab": 0,
@@ -4748,7 +4955,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "eijq9kg"
+                "id": "e5zti9v"
               },
               {
                 "label": "Panel",
@@ -4773,13 +4980,15 @@
                       {
                         "components": [
                           {
-                            "label": "Инициатор",
+                            "label": "idocs:initiator",
                             "mask": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "selectOrgstruct",
-                            "input": true,
-                            "key": "idocs_initiator",
+                            "allowedAuthorityType": "USER, GROUP",
+                            "allowedGroupType": "ROLE, BRANCH",
+                            "allUsersGroup": "all",
+                            "currentUserByDefault": true,
+                            "encrypted": false,
                             "validate": {
                               "customMessage": "",
                               "json": "",
@@ -4787,25 +4996,22 @@
                               "custom": "",
                               "customPrivate": false
                             },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
-                            "allowedAuthorityType": "USER, GROUP",
-                            "allowedGroupType": "ROLE, BRANCH",
-                            "allUsersGroup": "all",
-                            "currentUserByDefault": true,
-                            "encrypted": false,
+                            "key": "idocs_initiator",
                             "properties": {
                               "attribute": "idocs:initiator",
                               "dummy": "dummy"
                             },
-                            "tags": [],
+                            "conditional": {
+                              "show": "",
+                              "when": "",
+                              "json": "",
+                              "eq": ""
+                            },
                             "customConditional": "",
                             "logic": [],
-                            "reorder": false,
+                            "type": "selectOrgstruct",
+                            "input": true,
+                            "tags": [],
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -4836,7 +5042,7 @@
                             "refreshOn": "",
                             "clearOnRefresh": false,
                             "validateOn": "change",
-                            "id": "exh84kh"
+                            "id": "ejssnsc"
                           }
                         ],
                         "width": 6,
@@ -4889,18 +5095,20 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "ewkcgnp"
+                        "id": "evzn3bi"
                       },
                       {
                         "components": [
                           {
-                            "label": "Ответственный",
+                            "label": "ecos:responsible",
                             "mask": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "selectOrgstruct",
-                            "input": true,
-                            "key": "ecos_responsible",
+                            "allowedAuthorityType": "USER, GROUP",
+                            "allowedGroupType": "ROLE, BRANCH",
+                            "allUsersGroup": "all",
+                            "currentUserByDefault": true,
+                            "encrypted": false,
                             "validate": {
                               "customMessage": "",
                               "json": "",
@@ -4908,25 +5116,22 @@
                               "custom": "",
                               "customPrivate": false
                             },
+                            "key": "ecos_responsible",
+                            "properties": {
+                              "attribute": "ecos:responsible",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
-                            "allowedAuthorityType": "USER, GROUP",
-                            "allowedGroupType": "ROLE, BRANCH",
-                            "allUsersGroup": "all",
-                            "currentUserByDefault": true,
-                            "encrypted": false,
-                            "properties": {
-                              "attribute": "ecos:responsible",
-                              "dummy": "dummy"
-                            },
                             "customConditional": "",
                             "logic": [],
+                            "type": "selectOrgstruct",
+                            "input": true,
                             "tags": [],
-                            "reorder": false,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -4957,7 +5162,7 @@
                             "refreshOn": "",
                             "clearOnRefresh": false,
                             "validateOn": "change",
-                            "id": "e4lvhct"
+                            "id": "ehzox8f"
                           }
                         ],
                         "width": 6,
@@ -5010,7 +5215,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "ezqb55r"
+                        "id": "ehfx8uj"
                       }
                     ],
                     "mask": false,
@@ -5066,7 +5271,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "euprb7"
+                    "id": "ef5vzn"
                   }
                 ],
                 "tab": 0,
@@ -5113,7 +5318,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "emgjjmw"
+                "id": "er50veo"
               },
               {
                 "label": "Panel",
@@ -5138,16 +5343,14 @@
                       {
                         "components": [
                           {
-                            "label": "Не отправлять договоры через EDI",
+                            "label": "idocs:doNotSendContractToEdiFlag",
                             "labelPosition": "bottom",
                             "shortcut": "",
                             "mask": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "checkbox",
-                            "input": true,
-                            "key": "idocs_doNotSendContractToEdiFlag",
                             "defaultValue": false,
+                            "encrypted": false,
                             "validate": {
                               "customMessage": "",
                               "json": "",
@@ -5155,21 +5358,22 @@
                               "custom": "",
                               "customPrivate": false
                             },
+                            "key": "idocs_doNotSendContractToEdiFlag",
+                            "properties": {
+                              "attribute": "idocs:doNotSendContractToEdiFlag?bool",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
-                            "properties": {
-                              "attribute": "idocs:doNotSendContractToEdiFlag?bool",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "encrypted": false,
                             "customConditional": "",
                             "logic": [],
-                            "reorder": false,
+                            "type": "checkbox",
+                            "input": true,
+                            "tags": [],
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -5201,7 +5405,7 @@
                             "inputType": "checkbox",
                             "value": "",
                             "name": "",
-                            "id": "e0i164h"
+                            "id": "egeu468"
                           }
                         ],
                         "width": 6,
@@ -5254,21 +5458,20 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "eb4ljbu"
+                        "id": "er1n59"
                       },
                       {
                         "components": [
                           {
-                            "label": "Diadoc Box Id",
+                            "label": "idocs:diadocBoxId",
                             "allowMultipleMasks": false,
                             "showWordCount": false,
                             "showCharCount": false,
                             "tableView": true,
                             "alwaysEnabled": false,
-                            "type": "textfield",
-                            "input": true,
-                            "key": "idocs_diadocBoxId",
                             "defaultValue": "",
+                            "inputFormat": "plain",
+                            "encrypted": false,
                             "validate": {
                               "customMessage": "",
                               "json": "",
@@ -5281,28 +5484,28 @@
                               "maxWords": "",
                               "pattern": ""
                             },
+                            "key": "idocs_diadocBoxId",
+                            "properties": {
+                              "attribute": "idocs:diadocBoxId",
+                              "dummy": "dummy"
+                            },
                             "conditional": {
                               "show": "",
                               "when": "",
                               "json": "",
                               "eq": ""
                             },
+                            "customConditional": "",
+                            "logic": [],
+                            "type": "textfield",
+                            "input": true,
+                            "tags": [],
                             "widget": {
                               "type": "",
                               "format": "yyyy-MM-dd hh:mm a",
                               "dateFormat": "yyyy-MM-dd hh:mm a",
                               "saveAs": "text"
                             },
-                            "properties": {
-                              "attribute": "idocs:diadocBoxId",
-                              "dummy": "dummy"
-                            },
-                            "tags": [],
-                            "reorder": false,
-                            "inputFormat": "plain",
-                            "encrypted": false,
-                            "customConditional": "",
-                            "logic": [],
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -5334,7 +5537,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "e9qdyp"
+                            "id": "ecsu7gr"
                           }
                         ],
                         "width": 6,
@@ -5387,7 +5590,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e7kbner"
+                        "id": "e664v6e"
                       },
                       {
                         "width": 4,
@@ -5441,7 +5644,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e1yr0do"
+                        "id": "ex06nri"
                       }
                     ],
                     "mask": false,
@@ -5497,7 +5700,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "ec6td7"
+                    "id": "ellrfa"
                   }
                 ],
                 "tab": 0,
@@ -5544,7 +5747,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "ezu4qm2"
+                "id": "eyqtte"
               }
             ]
           },
@@ -5558,16 +5761,15 @@
                   {
                     "components": [
                       {
-                        "label": "Название банка",
+                        "label": "idocs:bankTitle",
                         "allowMultipleMasks": false,
                         "showWordCount": false,
                         "showCharCount": false,
                         "tableView": true,
                         "alwaysEnabled": false,
-                        "type": "textfield",
-                        "input": true,
-                        "key": "idocs_bankTitle",
                         "defaultValue": "",
+                        "inputFormat": "plain",
+                        "encrypted": false,
                         "validate": {
                           "customMessage": "",
                           "json": "",
@@ -5580,19 +5782,17 @@
                           "maxWords": "",
                           "pattern": ""
                         },
-                        "conditional": {
-                          "show": "",
-                          "when": "",
-                          "json": "",
-                          "eq": ""
-                        },
+                        "key": "idocs_bankTitle",
                         "properties": {
                           "attribute": "idocs:bankTitle",
                           "dummy": "dummy"
                         },
-                        "tags": [],
-                        "inputFormat": "plain",
-                        "encrypted": false,
+                        "conditional": {
+                          "show": "",
+                          "when": "",
+                          "json": "",
+                          "eq": ""
+                        },
                         "customConditional": "",
                         "logic": [
                           {
@@ -5619,13 +5819,15 @@
                             ]
                           }
                         ],
+                        "type": "textfield",
+                        "input": true,
+                        "tags": [],
                         "widget": {
                           "type": "",
                           "format": "yyyy-MM-dd hh:mm a",
                           "dateFormat": "yyyy-MM-dd hh:mm a",
                           "saveAs": "text"
                         },
-                        "reorder": false,
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -5657,7 +5859,7 @@
                         "mask": false,
                         "inputType": "text",
                         "inputMask": "",
-                        "id": "e4e5cdr"
+                        "id": "e2w5kgn"
                       }
                     ],
                     "width": 4,
@@ -5710,21 +5912,20 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "eedsw8p"
+                    "id": "eulw3g"
                   },
                   {
                     "components": [
                       {
-                        "label": "Название банка на английском языке",
+                        "label": "idocs:bankTitleEng",
                         "allowMultipleMasks": false,
                         "showWordCount": false,
                         "showCharCount": false,
                         "tableView": true,
                         "alwaysEnabled": false,
-                        "type": "textfield",
-                        "input": true,
-                        "key": "idocs_bankTitleEng",
                         "defaultValue": "",
+                        "inputFormat": "plain",
+                        "encrypted": false,
                         "validate": {
                           "customMessage": "",
                           "json": "",
@@ -5737,28 +5938,28 @@
                           "maxWords": "",
                           "pattern": ""
                         },
-                        "conditional": {
-                          "show": "",
-                          "when": "",
-                          "json": "",
-                          "eq": ""
-                        },
+                        "key": "idocs_bankTitleEng",
                         "properties": {
                           "attribute": "idocs:bankTitleEng",
                           "dummy": "dummy"
                         },
-                        "tags": [],
-                        "inputFormat": "plain",
-                        "encrypted": false,
+                        "conditional": {
+                          "show": "",
+                          "when": "",
+                          "json": "",
+                          "eq": ""
+                        },
                         "customConditional": "",
                         "logic": [],
+                        "type": "textfield",
+                        "input": true,
+                        "tags": [],
                         "widget": {
                           "type": "",
                           "format": "yyyy-MM-dd hh:mm a",
                           "dateFormat": "yyyy-MM-dd hh:mm a",
                           "saveAs": "text"
                         },
-                        "reorder": false,
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -5790,7 +5991,7 @@
                         "mask": false,
                         "inputType": "text",
                         "inputMask": "",
-                        "id": "eu65ejms"
+                        "id": "ej0s8dn"
                       }
                     ],
                     "width": 4,
@@ -5843,7 +6044,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "e3i94i"
+                    "id": "e062v9w"
                   },
                   {
                     "width": 4,
@@ -5858,16 +6059,15 @@
                     "label": "",
                     "components": [
                       {
-                        "label": "БИК",
+                        "label": "idocs:bankId",
                         "allowMultipleMasks": false,
                         "showWordCount": false,
                         "showCharCount": false,
                         "tableView": true,
                         "alwaysEnabled": false,
-                        "type": "textfield",
-                        "input": true,
-                        "key": "idocs_bankId",
                         "defaultValue": "",
+                        "inputFormat": "plain",
+                        "encrypted": false,
                         "validate": {
                           "customMessage": "",
                           "json": "",
@@ -5880,19 +6080,17 @@
                           "maxWords": "",
                           "pattern": ""
                         },
+                        "key": "idocs_bankId",
+                        "properties": {
+                          "attribute": "idocs:bankId",
+                          "dummy": "dummy"
+                        },
                         "conditional": {
                           "show": "",
                           "when": "",
                           "json": "",
                           "eq": ""
                         },
-                        "properties": {
-                          "attribute": "idocs:bankId",
-                          "dummy": "dummy"
-                        },
-                        "tags": [],
-                        "inputFormat": "plain",
-                        "encrypted": false,
                         "customConditional": "",
                         "logic": [
                           {
@@ -5919,13 +6117,15 @@
                             ]
                           }
                         ],
+                        "type": "textfield",
+                        "input": true,
+                        "tags": [],
                         "widget": {
                           "type": "",
                           "format": "yyyy-MM-dd hh:mm a",
                           "dateFormat": "yyyy-MM-dd hh:mm a",
                           "saveAs": "text"
                         },
-                        "reorder": false,
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -5957,7 +6157,7 @@
                         "mask": false,
                         "inputType": "text",
                         "inputMask": "",
-                        "id": "e4n48ca"
+                        "id": "e6vkrl"
                       }
                     ],
                     "placeholder": "",
@@ -6000,7 +6200,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "ex2nnk"
+                    "id": "eun5jmd"
                   }
                 ],
                 "mask": false,
@@ -6057,7 +6257,7 @@
                 },
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "esj4vby"
+                "id": "efwj7p"
               },
               {
                 "label": "Columns2",
@@ -6065,16 +6265,15 @@
                   {
                     "components": [
                       {
-                        "label": "Счет",
+                        "label": "idocs:accountNumber",
                         "allowMultipleMasks": false,
                         "showWordCount": false,
                         "showCharCount": false,
                         "tableView": true,
                         "alwaysEnabled": false,
-                        "type": "textfield",
-                        "input": true,
-                        "key": "idocs_accountNumber",
                         "defaultValue": "",
+                        "inputFormat": "plain",
+                        "encrypted": false,
                         "validate": {
                           "customMessage": "",
                           "json": "",
@@ -6087,19 +6286,17 @@
                           "maxWords": "",
                           "pattern": ""
                         },
+                        "key": "idocs_accountNumber",
+                        "properties": {
+                          "attribute": "idocs:accountNumber",
+                          "dummy": "dummy"
+                        },
                         "conditional": {
                           "show": "",
                           "when": "",
                           "json": "",
                           "eq": ""
                         },
-                        "properties": {
-                          "attribute": "idocs:accountNumber",
-                          "dummy": "dummy"
-                        },
-                        "tags": [],
-                        "inputFormat": "plain",
-                        "encrypted": false,
                         "customConditional": "",
                         "logic": [
                           {
@@ -6126,13 +6323,15 @@
                             ]
                           }
                         ],
+                        "type": "textfield",
+                        "input": true,
+                        "tags": [],
                         "widget": {
                           "type": "",
                           "format": "yyyy-MM-dd hh:mm a",
                           "dateFormat": "yyyy-MM-dd hh:mm a",
                           "saveAs": "text"
                         },
-                        "reorder": false,
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -6164,7 +6363,7 @@
                         "mask": false,
                         "inputType": "text",
                         "inputMask": "",
-                        "id": "e4r7ot"
+                        "id": "e8ilg5"
                       }
                     ],
                     "width": 4,
@@ -6217,21 +6416,20 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "eyelfe"
+                    "id": "ex1v4c"
                   },
                   {
                     "components": [
                       {
-                        "label": "SWIFT",
+                        "label": "idocs:swift",
                         "allowMultipleMasks": false,
                         "showWordCount": false,
                         "showCharCount": false,
                         "tableView": true,
                         "alwaysEnabled": false,
-                        "type": "textfield",
-                        "input": true,
-                        "key": "idocs_swift",
                         "defaultValue": "",
+                        "inputFormat": "plain",
+                        "encrypted": false,
                         "validate": {
                           "customMessage": "",
                           "json": "",
@@ -6244,28 +6442,28 @@
                           "maxWords": "",
                           "pattern": ""
                         },
+                        "key": "idocs_swift",
+                        "properties": {
+                          "attribute": "idocs:swift",
+                          "dummy": "dummy"
+                        },
                         "conditional": {
                           "show": "",
                           "when": "",
                           "json": "",
                           "eq": ""
                         },
+                        "customConditional": "",
+                        "logic": [],
+                        "type": "textfield",
+                        "input": true,
+                        "tags": [],
                         "widget": {
                           "type": "",
                           "format": "yyyy-MM-dd hh:mm a",
                           "dateFormat": "yyyy-MM-dd hh:mm a",
                           "saveAs": "text"
                         },
-                        "properties": {
-                          "attribute": "idocs:swift",
-                          "dummy": "dummy"
-                        },
-                        "tags": [],
-                        "reorder": false,
-                        "inputFormat": "plain",
-                        "encrypted": false,
-                        "customConditional": "",
-                        "logic": [],
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -6297,7 +6495,7 @@
                         "mask": false,
                         "inputType": "text",
                         "inputMask": "",
-                        "id": "e75jtu9"
+                        "id": "ejp3y7b"
                       }
                     ],
                     "width": 4,
@@ -6350,7 +6548,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "eil4tb"
+                    "id": "epdq61"
                   },
                   {
                     "width": 4,
@@ -6365,17 +6563,14 @@
                     "label": "",
                     "components": [
                       {
-                        "label": "Использовать счет как валютный",
-                        "labelPosition": "left-left",
+                        "label": "idocs:currencyEnabled",
+                        "labelPosition": "bottom",
                         "shortcut": "",
                         "mask": false,
                         "tableView": true,
                         "alwaysEnabled": false,
-                        "labelMargin": 15,
-                        "type": "checkbox",
-                        "input": true,
-                        "key": "idocs_currencyEnabled",
                         "defaultValue": false,
+                        "encrypted": false,
                         "validate": {
                           "customMessage": "",
                           "json": "",
@@ -6383,21 +6578,23 @@
                           "custom": "",
                           "customPrivate": false
                         },
+                        "key": "idocs_currencyEnabled",
+                        "properties": {
+                          "attribute": "idocs:currencyEnabled?bool",
+                          "dummy": "dummy"
+                        },
                         "conditional": {
                           "show": "",
                           "when": "",
                           "json": "",
                           "eq": ""
                         },
-                        "properties": {
-                          "attribute": "idocs:currencyEnabled?bool",
-                          "dummy": "dummy"
-                        },
-                        "tags": [],
-                        "encrypted": false,
                         "customConditional": "",
                         "logic": [],
-                        "reorder": false,
+                        "labelMargin": 15,
+                        "type": "checkbox",
+                        "input": true,
+                        "tags": [],
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -6428,7 +6625,7 @@
                         "inputType": "checkbox",
                         "value": "",
                         "name": "",
-                        "id": "e9h39bb"
+                        "id": "e1k0uu"
                       }
                     ],
                     "placeholder": "",
@@ -6471,7 +6668,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "eyv0tdw"
+                    "id": "e2ul04m"
                   }
                 ],
                 "mask": false,
@@ -6528,7 +6725,7 @@
                 },
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "evvwvvj"
+                "id": "ejlr34t"
               },
               {
                 "label": "Columns3",
@@ -6536,16 +6733,15 @@
                   {
                     "components": [
                       {
-                        "label": "Название банка-корреспондента",
+                        "label": "idocs:corresponentBankTitle",
                         "allowMultipleMasks": false,
                         "showWordCount": false,
                         "showCharCount": false,
                         "tableView": true,
                         "alwaysEnabled": false,
-                        "type": "textfield",
-                        "input": true,
-                        "key": "idocs_corresponentBankTitle",
                         "defaultValue": "",
+                        "inputFormat": "plain",
+                        "encrypted": false,
                         "validate": {
                           "customMessage": "",
                           "json": "",
@@ -6558,28 +6754,28 @@
                           "maxWords": "",
                           "pattern": ""
                         },
-                        "conditional": {
-                          "show": "",
-                          "when": "",
-                          "json": "",
-                          "eq": ""
-                        },
-                        "widget": {
-                          "type": "",
-                          "format": "yyyy-MM-dd hh:mm a",
-                          "dateFormat": "yyyy-MM-dd hh:mm a",
-                          "saveAs": "text"
-                        },
+                        "key": "idocs_corresponentBankTitle",
                         "properties": {
                           "attribute": "idocs:corresponentBankTitle",
                           "dummy": "dummy"
                         },
-                        "tags": [],
-                        "reorder": false,
-                        "inputFormat": "plain",
-                        "encrypted": false,
+                        "conditional": {
+                          "show": "",
+                          "when": "",
+                          "json": "",
+                          "eq": ""
+                        },
                         "customConditional": "",
                         "logic": [],
+                        "type": "textfield",
+                        "input": true,
+                        "tags": [],
+                        "widget": {
+                          "type": "",
+                          "format": "yyyy-MM-dd hh:mm a",
+                          "dateFormat": "yyyy-MM-dd hh:mm a",
+                          "saveAs": "text"
+                        },
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -6611,7 +6807,7 @@
                         "mask": false,
                         "inputType": "text",
                         "inputMask": "",
-                        "id": "erzwphr"
+                        "id": "e6rcjle"
                       }
                     ],
                     "width": 4,
@@ -6664,21 +6860,20 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "ep9vy1h"
+                    "id": "e3qyuw"
                   },
                   {
                     "components": [
                       {
-                        "label": "БИК банка-корреспондента",
+                        "label": "idocs:correspondentBankId",
                         "allowMultipleMasks": false,
                         "showWordCount": false,
                         "showCharCount": false,
                         "tableView": true,
                         "alwaysEnabled": false,
-                        "type": "textfield",
-                        "input": true,
-                        "key": "idocs_correspondentBankId",
                         "defaultValue": "",
+                        "inputFormat": "plain",
+                        "encrypted": false,
                         "validate": {
                           "customMessage": "",
                           "json": "",
@@ -6691,28 +6886,28 @@
                           "maxWords": "",
                           "pattern": ""
                         },
-                        "conditional": {
-                          "show": "",
-                          "when": "",
-                          "json": "",
-                          "eq": ""
-                        },
-                        "widget": {
-                          "type": "",
-                          "format": "yyyy-MM-dd hh:mm a",
-                          "dateFormat": "yyyy-MM-dd hh:mm a",
-                          "saveAs": "text"
-                        },
+                        "key": "idocs_correspondentBankId",
                         "properties": {
                           "attribute": "idocs:correspondentBankId",
                           "dummy": "dummy"
                         },
-                        "tags": [],
-                        "reorder": false,
-                        "inputFormat": "plain",
-                        "encrypted": false,
+                        "conditional": {
+                          "show": "",
+                          "when": "",
+                          "json": "",
+                          "eq": ""
+                        },
                         "customConditional": "",
                         "logic": [],
+                        "type": "textfield",
+                        "input": true,
+                        "tags": [],
+                        "widget": {
+                          "type": "",
+                          "format": "yyyy-MM-dd hh:mm a",
+                          "dateFormat": "yyyy-MM-dd hh:mm a",
+                          "saveAs": "text"
+                        },
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -6744,7 +6939,7 @@
                         "mask": false,
                         "inputType": "text",
                         "inputMask": "",
-                        "id": "e7kcfty"
+                        "id": "ey35a36"
                       }
                     ],
                     "width": 4,
@@ -6797,7 +6992,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "eyvf1gan"
+                    "id": "e8h9pae"
                   },
                   {
                     "width": 4,
@@ -6812,16 +7007,15 @@
                     "label": "",
                     "components": [
                       {
-                        "label": "Счет в банке-корреспонденте",
+                        "label": "idocs:corresponentAccountNumber",
                         "allowMultipleMasks": false,
                         "showWordCount": false,
                         "showCharCount": false,
                         "tableView": true,
                         "alwaysEnabled": false,
-                        "type": "textfield",
-                        "input": true,
-                        "key": "idocs_corresponentAccountNumber",
                         "defaultValue": "",
+                        "inputFormat": "plain",
+                        "encrypted": false,
                         "validate": {
                           "customMessage": "",
                           "json": "",
@@ -6834,28 +7028,28 @@
                           "maxWords": "",
                           "pattern": ""
                         },
+                        "key": "idocs_corresponentAccountNumber",
+                        "properties": {
+                          "attribute": "idocs:corresponentAccountNumber",
+                          "dummy": "dummy"
+                        },
                         "conditional": {
                           "show": "",
                           "when": "",
                           "json": "",
                           "eq": ""
                         },
+                        "customConditional": "",
+                        "logic": [],
+                        "type": "textfield",
+                        "input": true,
+                        "tags": [],
                         "widget": {
                           "type": "",
                           "format": "yyyy-MM-dd hh:mm a",
                           "dateFormat": "yyyy-MM-dd hh:mm a",
                           "saveAs": "text"
                         },
-                        "properties": {
-                          "attribute": "idocs:corresponentAccountNumber",
-                          "dummy": "dummy"
-                        },
-                        "tags": [],
-                        "reorder": false,
-                        "inputFormat": "plain",
-                        "encrypted": false,
-                        "customConditional": "",
-                        "logic": [],
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -6887,7 +7081,7 @@
                         "mask": false,
                         "inputType": "text",
                         "inputMask": "",
-                        "id": "e4k542s"
+                        "id": "esdteud"
                       }
                     ],
                     "placeholder": "",
@@ -6930,7 +7124,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "e76heir"
+                    "id": "em1wryu"
                   }
                 ],
                 "mask": false,
@@ -6987,7 +7181,7 @@
                 },
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "eulh3xv"
+                "id": "ei6ri2c"
               }
             ]
           }
@@ -6996,19 +7190,19 @@
         "mask": false,
         "tableView": true,
         "alwaysEnabled": false,
-        "type": "tabs",
-        "input": false,
         "key": "tabs",
+        "properties": {},
         "conditional": {
           "show": "",
           "when": "",
           "json": "",
           "eq": ""
         },
-        "properties": {},
         "customConditional": "",
         "logic": [],
-        "reorder": false,
+        "type": "tabs",
+        "input": false,
+        "tags": [],
         "placeholder": "",
         "prefix": "",
         "customClass": "",
@@ -7043,7 +7237,7 @@
           "custom": "",
           "customPrivate": false
         },
-        "id": "ei4kz"
+        "id": "e0is1go"
       },
       {
         "label": "Columns",
@@ -7127,7 +7321,7 @@
                 },
                 "mask": false,
                 "inputType": "asyncData",
-                "id": "eg99kip"
+                "id": "eymen3t"
               }
             ],
             "width": 3,
@@ -7180,7 +7374,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "em7ugfp"
+            "id": "em5p81d"
           },
           {
             "components": [],
@@ -7234,7 +7428,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "enupiul"
+            "id": "eruf8i1"
           },
           {
             "width": 3,
@@ -7317,7 +7511,7 @@
                 "rightIcon": "",
                 "disableOnInvalid": false,
                 "theme": "default",
-                "id": "epv6zye"
+                "id": "e4jj9if"
               }
             ],
             "placeholder": "",
@@ -7360,7 +7554,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ezmjs1k"
+            "id": "e4bljpb"
           },
           {
             "width": 3,
@@ -7444,7 +7638,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "epl3x0m"
+                "id": "evt6rv"
               }
             ],
             "placeholder": "",
@@ -7487,7 +7681,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ek9cqvj"
+            "id": "eizoen8"
           }
         ],
         "autoAdjust": true,
@@ -7537,8 +7731,38 @@
           "eq": ""
         },
         "hideOnChildrenHidden": false,
-        "id": "ej64f7x"
+        "id": "efy3sn"
       }
     ]
+  },
+  "i18n": {
+    "ru": {
+      "Классификация": "Классификация",
+      "Название": "Название",
+      "Адреса": "Адреса",
+      "Реквизиты": "Реквизиты",
+      "Контактные данные": "Контактные данные",
+      "Ответственные со стороны компании": "Ответственные со стороны компании",
+      "Конфигурация": "Конфигурация",
+      "Основные реквизиты": "Основные реквизиты",
+      "Банковские реквизиты": "Банковские реквизиты",
+      "Автозаполнение": "Автозаполнение",
+      "Отмена": "Отмена",
+      "Сохранить": "Сохранить"
+    },
+    "en": {
+      "Классификация": "Classification",
+      "Название": "Title",
+      "Адреса": "Addresses",
+      "Реквизиты": "Requisites",
+      "Контактные данные": "Contact details",
+      "Ответственные со стороны компании": "Responsible by the company",
+      "Конфигурация": "Configuration",
+      "Основные реквизиты": "Basic Details",
+      "Банковские реквизиты": "Bank details",
+      "Автозаполнение": "Autocomplete",
+      "Отмена": "Cancel",
+      "Сохранить": "Save"
+    }
   }
 }
