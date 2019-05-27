@@ -6,6 +6,7 @@ import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.records.rest.RecordsQueryPost;
+import ru.citeck.ecos.records2.IterableRecords;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
@@ -102,7 +103,7 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
 
     public Iterable<RecordRef> getIterableRecords(Object recordsQuery) {
         RecordsQuery convertedQuery = jsUtils.toJava(recordsQuery, RecordsQuery.class);
-        return recordsService.getIterableRecords(convertedQuery);
+        return new IterableRecords(recordsService, convertedQuery);
     }
 
     private static <T> ActionResult<T>[] toArray(ActionResults<T> results) {

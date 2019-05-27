@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.*;
-import ru.citeck.ecos.records2.QueryLangConverter;
-import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.querylang.QueryLangConverter;
+import ru.citeck.ecos.querylang.QueryLangService;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
@@ -22,8 +22,6 @@ import ru.citeck.ecos.utils.DictUtils;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
@@ -37,7 +35,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
     @Autowired
     public PredicateToFtsAlfrescoConverter(DictUtils dictUtils,
                                            SearchService searchService,
-                                           RecordsService recordsService,
+                                           QueryLangService queryLangService,
                                            PredicateService predicateService,
                                            ServiceRegistry serviceRegistry,
                                            AssociationIndexPropertyRegistry associationIndexPropertyRegistry) {
@@ -48,8 +46,8 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.associationIndexPropertyRegistry = associationIndexPropertyRegistry;
 
-        recordsService.register(this,
-                RecordsService.LANGUAGE_PREDICATE,
+        queryLangService.register(this,
+                PredicateService.LANGUAGE_PREDICATE,
                 SearchService.LANGUAGE_FTS_ALFRESCO);
     }
 

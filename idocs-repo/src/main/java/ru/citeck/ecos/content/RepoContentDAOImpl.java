@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.content.dao.ContentDAO;
 import ru.citeck.ecos.content.dao.NodeDataReader;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
+import ru.citeck.ecos.records2.IterableRecords;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
@@ -150,7 +151,7 @@ public class RepoContentDAOImpl<T> implements RepoContentDAO<T> {
         query.setQuery("PARENT:\"" + rootRef.getNodeRef() + "\"");
         query.setSourceId(AlfNodesRecordsDAO.ID);
 
-        Iterable<RecordRef> records = recordsService.getIterableRecords(query);
+        Iterable<RecordRef> records = new IterableRecords(recordsService, query);
         for (RecordRef ref : records) {
             NodeRef nodeRef = new NodeRef(ref.getId());
             ContentData<T> data = getContentDataImpl(nodeRef);

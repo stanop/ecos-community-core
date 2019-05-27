@@ -30,6 +30,8 @@ import ru.citeck.ecos.journals.JournalGroupAction;
 import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
+import ru.citeck.ecos.predicate.PredicateService;
+import ru.citeck.ecos.querylang.QueryLangService;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
@@ -63,6 +65,7 @@ public class JournalConfigGet extends AbstractWebScript {
     private SearchService searchService;
     private MessageService messageService;
     private RecordsService recordsService;
+    private QueryLangService queryLangService;
     private JournalService journalService;
     private ServiceRegistry serviceRegistry;
     private TemplateService templateService;
@@ -230,9 +233,11 @@ public class JournalConfigGet extends AbstractWebScript {
 
             JsonNode criteriaJson = objectMapper.valueToTree(criteria);
             try {
-                meta.setPredicate(recordsService.convertQueryLanguage(criteriaJson,
-                                                                      CriteriaAlfNodesSearch.LANGUAGE,
-                                                                      RecordsService.LANGUAGE_PREDICATE));
+                JsonNode convertedQuery = queryLangService.convertLang(criteriaJson,
+                                                                       CriteriaAlfNodesSearch.LANGUAGE,
+                                                                       PredicateService.LANGUAGE_PREDICATE)
+                                                                            .orElseThrow(RuntimeException::new);
+                meta.setPredicate(convertedQuery);
             } catch (Exception e) {
                 logger.error("Language conversion error. criteria: " + criteriaJson, e);
             }
@@ -379,6 +384,11 @@ public class JournalConfigGet extends AbstractWebScript {
     @Autowired
     public void setRecordsService(RecordsService recordsService) {
         this.recordsService = recordsService;
+    }
+
+    @Autowired
+    public void setQueryLangService(QueryLangService queryLangService) {
+        this.queryLangService = queryLangService;
     }
 
     @Autowired
