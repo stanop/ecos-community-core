@@ -4,6 +4,12 @@
            xmlns:cm="http://www.alfresco.org/model/content/1.0"
            xmlns:sys="http://www.alfresco.org/model/system/1.0">
     <sys:container view:childName="cm:files-temp-root">
+        <view:acl view:inherit="false">
+            <view:ace view:access="ALLOWED">
+                <view:authority>GROUP_ALFRESCO_ADMINISTRATORS</view:authority>
+                <view:permission>Coordinator</view:permission>
+            </view:ace>
+        </view:acl>
         <view:properties>
             <sys:node-uuid>eform-files-temp-root</sys:node-uuid>
             <cm:description>

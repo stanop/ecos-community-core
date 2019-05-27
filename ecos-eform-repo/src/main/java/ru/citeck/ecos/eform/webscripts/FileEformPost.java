@@ -57,7 +57,7 @@ public class FileEformPost extends DeclarativeWebScript {
             return null;
         }
 
-        NodeRef createdTempFile = AuthenticationUtil.runAsSystem(() -> saveFile(fileNameId, file));
+        NodeRef createdTempFile = saveFile(fileNameId, file);
 
         if (log.isDebugEnabled()) {
             log.debug("Save temp file: " + file + " ----> " + createdTempFile);
