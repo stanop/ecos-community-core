@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
+           xmlns:app="http://www.alfresco.org/model/application/1.0"
+           xmlns:cm="http://www.alfresco.org/model/content/1.0"
+           xmlns:sys="http://www.alfresco.org/model/system/1.0">
+    <sys:container view:childName="cm:files-temp-root">
+        <view:acl view:inherit="false">
+            <view:ace view:access="ALLOWED">
+                <view:authority>GROUP_ALFRESCO_ADMINISTRATORS</view:authority>
+                <view:permission>Coordinator</view:permission>
+            </view:ace>
+        </view:acl>
+        <view:properties>
+            <sys:node-uuid>eform-files-temp-root</sys:node-uuid>
+            <cm:description>
+                Temp directory for eform files. This directory can be cleared on server maintenance if
+                over time it began to take up a lot of space (this can happen if for some reason the files have not
+                been deleted or moved).
+            </cm:description>
+        </view:properties>
+    </sys:container>
+</view:view>
