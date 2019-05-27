@@ -88,7 +88,11 @@ public class AlfNodeRecord implements MetaValue {
     @Override
     public List<? extends MetaValue> getAttribute(String name, MetaField field) {
 
-       List<? extends MetaValue> attribute = null;
+        if (node == null) {
+            return Collections.emptyList();
+        }
+
+        List<? extends MetaValue> attribute = null;
 
         switch (name) {
             case ATTR_ASPECTS:
