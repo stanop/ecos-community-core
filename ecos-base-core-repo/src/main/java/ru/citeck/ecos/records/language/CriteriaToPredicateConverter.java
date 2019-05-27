@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.*;
+import ru.citeck.ecos.querylang.QueryLangConverter;
+import ru.citeck.ecos.querylang.QueryLangService;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
-import ru.citeck.ecos.records2.QueryLangConverter;
-import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.search.FTSQueryBuilder;
 import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.search.SearchCriteriaParser;
@@ -27,7 +27,7 @@ public class CriteriaToPredicateConverter implements QueryLangConverter {
     private PredicateService predicateService;
 
     @Autowired
-    public CriteriaToPredicateConverter(RecordsService recordsService,
+    public CriteriaToPredicateConverter(QueryLangService queryLangService,
                                         FTSQueryBuilder ftsQueryBuilder,
                                         SearchCriteriaParser criteriaParser,
                                         PredicateService predicateService) {
@@ -36,9 +36,9 @@ public class CriteriaToPredicateConverter implements QueryLangConverter {
         this.ftsQueryBuilder = ftsQueryBuilder;
         this.predicateService = predicateService;
 
-        recordsService.register(this,
+        queryLangService.register(this,
                 CriteriaAlfNodesSearch.LANGUAGE,
-                RecordsService.LANGUAGE_PREDICATE);
+                PredicateService.LANGUAGE_PREDICATE);
     }
 
     private Predicate convertCriteriaTerm(FTSQueryBuilder.Term term) {

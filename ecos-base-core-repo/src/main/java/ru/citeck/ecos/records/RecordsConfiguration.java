@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.predicate.PredicateService;
+import ru.citeck.ecos.querylang.QueryLangService;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.RecordsServiceFactory;
 import ru.citeck.ecos.records2.graphql.RecordsMetaGql;
@@ -20,13 +21,21 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     @Bean
     public RecordsService createRecordsServiceBean(ServiceRegistry serviceRegistry,
                                                    RecordsMetaService recordsMetaService,
-                                                   PredicateService predicateService) {
+                                                   PredicateService predicateService,
+                                                   QueryLangService queryLangService) {
 
         this.serviceRegistry = serviceRegistry;
 
-        RecordsServiceImpl recordsService = new RecordsServiceImpl(recordsMetaService, predicateService);
+        RecordsServiceImpl recordsService = new RecordsServiceImpl(recordsMetaService,
+                                                                   predicateService,
+                                                                   queryLangService);
         recordsService.register(new RecordsGroupDAO());
         return recordsService;
+    }
+
+    @Bean
+    public QueryLangService createQueryLangService() {
+        return super.createQueryLangService();
     }
 
     @Bean
