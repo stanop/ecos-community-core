@@ -146,7 +146,7 @@ CreateVariant
 
         var self = this;
 
-        var options = this.resolve("journal.type.options");
+        var options = this.resolve("journal.type.options") || {};
         var redirectionMethod = options["createVariantRedirectionMethod"] || "card";
 
         Citeck.forms.createRecord(this.recordRef(), this.type(), this.destination(), function() {
