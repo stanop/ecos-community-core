@@ -181,7 +181,7 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
         return result;
     }
 
-    static class Query {
+    public static class Query {
         @Getter @Setter private String formKey;
         @Getter @Setter private RecordRef record;
         @Getter @Setter private Boolean isViewMode;

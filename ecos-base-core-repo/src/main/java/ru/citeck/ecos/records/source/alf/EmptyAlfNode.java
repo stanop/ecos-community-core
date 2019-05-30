@@ -30,7 +30,7 @@ public class EmptyAlfNode implements MetaValue {
     public Object getAttribute(String name, MetaField field) {
 
         if (RecordConstants.ATT_FORM_MODE.equals(name)) {
-            return "CREATE";
+            return RecordConstants.FORM_MODE_CREATE;
         }
 
         return null;

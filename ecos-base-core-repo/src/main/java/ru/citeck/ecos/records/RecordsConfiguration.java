@@ -17,6 +17,7 @@ import ru.citeck.ecos.records2.source.common.group.RecordsGroupDAO;
 public class RecordsConfiguration extends RecordsServiceFactory {
 
     private ServiceRegistry serviceRegistry;
+    private RecordsServiceImpl recordsService;
 
     @Bean
     public RecordsService createRecordsServiceBean(ServiceRegistry serviceRegistry,
@@ -26,9 +27,9 @@ public class RecordsConfiguration extends RecordsServiceFactory {
 
         this.serviceRegistry = serviceRegistry;
 
-        RecordsServiceImpl recordsService = new RecordsServiceImpl(recordsMetaService,
-                                                                   predicateService,
-                                                                   queryLangService);
+        recordsService = new RecordsServiceImpl(recordsMetaService,
+                                                predicateService,
+                                                queryLangService);
         recordsService.register(new RecordsGroupDAO());
         return recordsService;
     }
@@ -55,6 +56,6 @@ public class RecordsConfiguration extends RecordsServiceFactory {
 
     @Override
     public RecordsMetaGql createRecordsMetaGraphQL() {
-        return new RecordsMetaGql(this.getGqlTypes(), () -> new AlfGqlContext(serviceRegistry));
+        return new RecordsMetaGql(this.getGqlTypes(), () -> new AlfGqlContext(serviceRegistry, recordsService));
     }
 }

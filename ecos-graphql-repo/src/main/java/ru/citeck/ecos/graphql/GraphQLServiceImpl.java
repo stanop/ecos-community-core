@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.graphql.exceptions.CiteckGraphQLException;
+import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.remote.RestConnection;
 
 import javax.annotation.PostConstruct;
@@ -29,6 +30,8 @@ public class GraphQLServiceImpl implements GraphQLService {
 
     @Autowired
     private ServiceRegistry serviceRegistry;
+    @Autowired
+    private RecordsService recordsService;
 
     private List<GqlTypeDefinition> graphQLTypes;
 
@@ -130,11 +133,11 @@ public class GraphQLServiceImpl implements GraphQLService {
         if (AlfrescoTransactionSupport.TxnReadState.TXN_READ_ONLY.equals(readState)) {
             context = AlfrescoTransactionSupport.getResource(TXN_GQL_CONTEXT_KEY);
             if (context == null) {
-                context = new AlfGqlContext(serviceRegistry);
+                context = new AlfGqlContext(serviceRegistry, recordsService);
                 AlfrescoTransactionSupport.bindResource(TXN_GQL_CONTEXT_KEY, context);
             }
         } else {
-            context = new AlfGqlContext(serviceRegistry);
+            context = new AlfGqlContext(serviceRegistry, recordsService);
         }
         return context;
     }
