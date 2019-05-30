@@ -150,6 +150,30 @@
         </property>
     </bean>
 
+    <bean id="evaluator.doclib.letters.outcome" parent="evaluator.doclib.action.nodeType">
+        <property name="types">
+            <list>
+                <value>letters:outcome</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="evaluator.doclib.contracts.closingDocument" parent="evaluator.doclib.action.nodeType">
+        <property name="types">
+            <list>
+                <value>contracts:closingDocument</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="evaluator.doclib.contracts.payment" parent="evaluator.doclib.action.nodeType">
+        <property name="types">
+            <list>
+                <value>payments:payment</value>
+            </list>
+        </property>
+    </bean>
+
     <bean id="evaluator.doclib.ia.hasFromDate" class="org.alfresco.web.evaluator.ValueEvaluator">
         <property name="accessor">
             <value>node.properties.ia:fromDate</value>
