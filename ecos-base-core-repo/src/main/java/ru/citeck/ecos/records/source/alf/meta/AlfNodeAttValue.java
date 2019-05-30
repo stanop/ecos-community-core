@@ -28,8 +28,7 @@ import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.utils.DictUtils;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AlfNodeAttValue implements MetaValue {
