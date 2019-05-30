@@ -2,6 +2,7 @@ package ru.citeck.ecos.graphql.node;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import lombok.Getter;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 
@@ -84,9 +85,17 @@ public class Attribute {
         return scope != null ? scope.getType() : null;
     }
 
+    public NodeRef getScopeNodeRef() {
+        if (scope == null) {
+            return null;
+        }
+        String nodeRef = scope.nodeRef();
+        return nodeRef != null ? new NodeRef(nodeRef) : null;
+    }
+
     private List<?> evalValues() {
         List<?> result;
-        if (rawValue == null) {
+        if (rawValue == null && scope != null && type != null) {
             rawValue = scope.getAttributeValue(name, type);
         }
         if (rawValue instanceof List) {
