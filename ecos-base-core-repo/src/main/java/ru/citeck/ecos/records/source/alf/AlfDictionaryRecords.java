@@ -45,7 +45,7 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
 
         return records.stream().map(r -> {
             QName typeName = QName.resolveToQName(namespaceService, r.getId());
-            return new DictRecord(typeName, "alf_" + r.getId());
+            return new DictRecord(typeName, r.getId(), "alf_" + r.getId());
 
         }).collect(Collectors.toList());
     }
@@ -73,15 +73,22 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
 
     public static class DictRecord implements MetaValue {
 
-        private QName typeName;
+        private QName fullName;
         private String formKey;
+        private String shortName;
 
         private AlfGqlContext context;
         private DictUtils dictUtils;
 
-        DictRecord(QName typeName, String formKey) {
+        DictRecord(QName fullName, String shortName, String formKey) {
             this.formKey = formKey;
-            this.typeName = typeName;
+            this.fullName = fullName;
+            this.shortName = shortName;
+        }
+
+        @Override
+        public String getId() {
+            return shortName;
         }
 
         @Override
@@ -97,7 +104,7 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
                 case RecordConstants.ATT_FORM_KEY:
                     return formKey;
                 case RecordConstants.ATT_FORM_MODE:
-                    return "CREATE";
+                    return RecordConstants.FORM_MODE_CREATE;
                 default:
                     return null;
             }
@@ -105,12 +112,12 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
 
         @Override
         public String getDisplayName() {
-            return dictUtils.getTypeTitle(typeName);
+            return dictUtils.getTypeTitle(fullName);
         }
 
         @Override
         public MetaEdge getEdge(String name, MetaField field) {
-            return new AlfNodeMetaEdge(context, typeName, name, this);
+            return new AlfNodeMetaEdge(context, fullName, name, this);
         }
     }
 }
