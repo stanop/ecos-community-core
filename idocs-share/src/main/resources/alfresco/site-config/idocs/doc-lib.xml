@@ -122,8 +122,11 @@
                 <permissions>
                     <permission allow="true">Write</permission>
                 </permissions>
-                <evaluator>evaluator.doclib.ecos.document</evaluator>
+                <evaluator negate="true">evaluator.doclib.idocs.isCase</evaluator>
                 <evaluator negate="true">evaluator.doclib.ecos.case</evaluator>
+                <evaluator negate="true">evaluator.doclib.letters.outcome</evaluator>
+                <evaluator negate="true">evaluator.doclib.contracts.closingDocument</evaluator>
+                <evaluator negate="true">evaluator.doclib.contracts.payment</evaluator>
             </action>
 
             <!-- Start perform workflow -->

@@ -86,12 +86,16 @@ public class Attribute {
     }
 
     public NodeRef getScopeNodeRef() {
-        return scope != null ? new NodeRef(scope.nodeRef()) : null;
+        if (scope == null) {
+            return null;
+        }
+        String nodeRef = scope.nodeRef();
+        return nodeRef != null ? new NodeRef(nodeRef) : null;
     }
 
     private List<?> evalValues() {
         List<?> result;
-        if (rawValue == null) {
+        if (rawValue == null && scope != null && type != null) {
             rawValue = scope.getAttributeValue(name, type);
         }
         if (rawValue instanceof List) {

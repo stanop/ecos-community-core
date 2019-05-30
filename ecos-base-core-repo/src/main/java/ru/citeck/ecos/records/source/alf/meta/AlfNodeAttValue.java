@@ -2,11 +2,15 @@ package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.alfresco.error.AlfrescoRuntimeException;
+import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.repo.thumbnail.ThumbnailDefinition;
+import org.alfresco.repo.thumbnail.ThumbnailRegistry;
 import org.alfresco.service.cmr.repository.ContentData;
 import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.thumbnail.ThumbnailService;
 import org.alfresco.service.namespace.QName;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -141,6 +145,63 @@ public class AlfNodeAttValue implements MetaValue {
                     .collect(Collectors.toList());
         } else if (qName != null) {
             return MetaUtils.getReflectionValue(qName, name);
+        } else if (rawValue instanceof ContentData) {
+
+            if ("previewUrl".equals(name)) {
+
+                ContentData data = (ContentData) rawValue;
+                String mimetype = data.getMimetype();
+                if (mimetype == null || att == null) {
+                    return null;
+                }
+                NodeRef scopeRef = att.getScopeNodeRef();
+                if (scopeRef == null) {
+                    return null;
+                }
+
+                String url = "alfresco/api/node/workspace/SpacesStore/" + scopeRef.getId() + "/content";
+
+                switch (mimetype) {
+                    case MimetypeMap.MIMETYPE_PDF:
+                    case MimetypeMap.MIMETYPE_IMAGE_PNG:
+                    case MimetypeMap.MIMETYPE_IMAGE_JPEG:
+                    case MimetypeMap.MIMETYPE_IMAGE_GIF:
+                        break;
+                    default:
+                        String thumbnailType = getThumbnailType(data);
+                        if (thumbnailType != null) {
+                            url += "/thumbnails/" + thumbnailType;
+                        } else {
+                            url = null;
+                        }
+                }
+
+                return url != null ? url + "?c=force" : null;
+            }
+        }
+        return null;
+    }
+
+    private String getThumbnailType(ContentData data) {
+
+        ThumbnailService thumbnailService = context.getServiceRegistry().getThumbnailService();
+        if (thumbnailService == null) {
+            return null;
+        }
+        ThumbnailRegistry registry = thumbnailService.getThumbnailRegistry();
+        if (registry == null) {
+            return null;
+        }
+
+        List<ThumbnailDefinition> definitions = registry.getThumbnailDefinitions(data.getMimetype(), data.getSize());
+        if (definitions == null) {
+            definitions = Collections.emptyList();
+        }
+
+        for (ThumbnailDefinition definition : definitions) {
+            if ("pdf".equals(definition.getName())) {
+                return "pdf";
+            }
         }
         return null;
     }
