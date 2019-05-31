@@ -166,13 +166,15 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 } else {
                     AssociationDefinition assocDef = dictionaryService.getAssociation(fieldName);
                     if (assocDef != null) {
-                        if (assocDef instanceof ChildAssociationDefinition) {
-                            JsonNode node = fields.path(name);
-                            if (contentFileHelper.isFileFromEformFormat(node)) {
-                                childAssocEformFiles.put(fieldName, node);
-                            }
+
+                        JsonNode value = fields.path(name);
+
+                        if (assocDef instanceof ChildAssociationDefinition
+                                && contentFileHelper.isFileFromEformFormat(value)) {
+
+                            childAssocEformFiles.put(fieldName, value);
+
                         } else {
-                            JsonNode value = fields.path(name);
 
                             Set<NodeRef> nodeRefs = null;
                             if (value.isTextual()) {
