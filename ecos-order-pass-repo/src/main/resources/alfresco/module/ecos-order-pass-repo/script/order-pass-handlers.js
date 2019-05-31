@@ -1,4 +1,13 @@
 
+    function onProcessStart() {
+        if (document.properties['idocs:registrationNumber'] == null || document.properties['idocs:registrationNumber'] == ' ') {
+            var numberTemplate = search.findNode("workspace://SpacesStore/idocs-order-pass-number-template");
+            var registrationNumber = enumeration.getNumber(numberTemplate, document);
+            document.properties['idocs:registrationNumber'] = registrationNumber;
+        }
+        document.save();
+    }
+
     function isFromTelegram() {
         return document.properties["tel:isTelegramRequest"];
     }

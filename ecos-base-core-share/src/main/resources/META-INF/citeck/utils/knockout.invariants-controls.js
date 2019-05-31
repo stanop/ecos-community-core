@@ -259,33 +259,56 @@ ko.components.register("number-generate", {
             numbers: {}
         };
 
-        this.flag = ko.observable(false);
-        this.generatedNumber = ko.computed(function() {
-            if (!self.flag()) {
-                return -1;
-            }
-            var template = self.numTemplate();
-            if (!template) {
-                return -1;
-            }
-            if (!self._cache.numbers[template]) {
-                self._cache.numbers[template] = ko.computed(function() {
-                    return params.enumeration.getNumber(template,  params.node());
-                });
-            }
-            return self._cache.numbers[template]();
-        });
+        if (params.flagOn == 'true') {
+            this.flag = ko.observable(true);
+            Dom.setAttribute(self.id, "disabled");
+        } else {
+            this.flag = ko.observable(false);
+        }
 
-        this.generatedNumber.subscribe(function (num) {
-            var input = Dom.get(self.id);
+        if (params.generateOff == 'true') {
+            this.flag.subscribe(function (num) {
+                var input = Dom.get(self.id);
+                if (!num || (!isNaN(num) && num < 0)) {
+                    if (input) {
+                        input.removeAttribute("disabled");
+                        params.value('');
+                    }
+                } else {
+                    if (input && self.isCheckboxMode) {
+                        Dom.setAttribute(self.id, "disabled", "disabled");
+                        params.value(' ');
+                    }
+                }
+            });
+        } else {
+            this.generatedNumber = ko.computed(function() {
+                if (!self.flag()) {
+                    return -1;
+                }
+                var template = self.numTemplate();
+                if (!template) {
+                    return -1;
+                }
+                if (!self._cache.numbers[template]) {
+                    self._cache.numbers[template] = ko.computed(function() {
+                        return params.enumeration.getNumber(template,  params.node());
+                    });
+                }
+                return self._cache.numbers[template]();
+            });
 
-            if (!num || (!isNaN(num) && num < 0)) {
-                if (input) input.removeAttribute("disabled");
-            } else {
-                params.value(num);
-                if (input && self.isCheckboxMode) Dom.setAttribute(self.id, "disabled", "disabled");
-            }
-        });
+            this.generatedNumber.subscribe(function (num) {
+                var input = Dom.get(self.id);
+
+                if (!num || (!isNaN(num) && num < 0)) {
+                    if (input) input.removeAttribute("disabled");
+                } else {
+                    params.value(num);
+                    if (input && self.isCheckboxMode) Dom.setAttribute(self.id, "disabled", "disabled");
+                }
+            });
+        }
     },
     template:
        '<!-- ko if: isButtonMode -->\
@@ -293,40 +316,6 @@ ko.components.register("number-generate", {
         <!-- /ko -->\
         <!-- ko if: isCheckboxMode -->\
             <input style="position: relative; top: 2px;" type="checkbox" name="number-generate" data-bind="checked: flag" />\
-            <label style="margin-left: 10px;" data-bind="text: label"></label>\
-        <!-- /ko -->\
-        '
-});
-
-// ---------------
-// SIMPLE-CHECKBOX
-// ---------------
-
-ko.components.register("simple-checkbox", {
-    viewModel: function(params) {
-        var self = this;
-        this.id = params.id;
-        this.label = params.label || "Generate";
-        this.mode = params.mode;
-        this.isButtonMode = this.mode == "button";
-        this.isCheckboxMode = this.mode == "checkbox";
-        this.flag = ko.observable(true);
-        Dom.setAttribute(self.id, "disabled");
-        this.flag.subscribe(function (num) {
-            var input = Dom.get(self.id );
-            if (!num ) {
-                input.removeAttribute("disabled");
-            } else {
-                Dom.setAttribute(self.id, "disabled");
-            }
-        });
-    },
-    template:
-        '<!-- ko if: isButtonMode -->\
-             <button data-bind="text: label, disable: disable, click: flag"></button>\
-         <!-- /ko -->\
-         <!-- ko if: isCheckboxMode -->\
-             <input style="position: relative; top: 2px;" type="checkbox" name="simple-checkbox" data-bind="checked: flag " />\
              <label style="margin-left: 10px;" data-bind="text: label"></label>\
          <!-- /ko -->\
          '
