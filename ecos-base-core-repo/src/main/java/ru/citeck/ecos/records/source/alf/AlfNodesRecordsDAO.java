@@ -133,6 +133,9 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 }
 
                 QName fieldName = QName.resolveToQName(namespaceService, name);
+                if (fieldName == null) {
+                    continue;
+                }
 
                 PropertyDefinition propDef = dictionaryService.getProperty(fieldName);
 
