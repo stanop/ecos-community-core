@@ -133,6 +133,9 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 }
 
                 QName fieldName = QName.resolveToQName(namespaceService, name);
+                if (fieldName == null) {
+                    continue;
+                }
 
                 PropertyDefinition propDef = dictionaryService.getProperty(fieldName);
 
@@ -260,7 +263,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 }
             });
 
-            assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name));
+            assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name, true));
         }
 
         return result;
