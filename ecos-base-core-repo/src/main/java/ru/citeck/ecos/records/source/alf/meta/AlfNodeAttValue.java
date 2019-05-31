@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import lombok.Getter;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.thumbnail.ThumbnailDefinition;
@@ -36,6 +37,9 @@ public class AlfNodeAttValue implements MetaValue {
     private GqlQName qName;
 
     private AlfGqlContext context;
+
+    @Getter(lazy = true)
+    private final ContentInfo contentInfo = evalContentInfo();
 
     public AlfNodeAttValue(Attribute att, Object value) {
         this.att = att;
@@ -140,40 +144,53 @@ public class AlfNodeAttValue implements MetaValue {
         } else if (qName != null) {
             return MetaUtils.getReflectionValue(qName, name);
         } else if (rawValue instanceof ContentData) {
-
-            if ("previewUrl".equals(name)) {
-
-                ContentData data = (ContentData) rawValue;
-                String mimetype = data.getMimetype();
-                if (mimetype == null || att == null) {
-                    return null;
-                }
-                NodeRef scopeRef = att.getScopeNodeRef();
-                if (scopeRef == null) {
-                    return null;
-                }
-
-                String url = "alfresco/api/node/workspace/SpacesStore/" + scopeRef.getId() + "/content";
-
-                switch (mimetype) {
-                    case MimetypeMap.MIMETYPE_PDF:
-                    case MimetypeMap.MIMETYPE_IMAGE_PNG:
-                    case MimetypeMap.MIMETYPE_IMAGE_JPEG:
-                    case MimetypeMap.MIMETYPE_IMAGE_GIF:
-                        break;
-                    default:
-                        String thumbnailType = getThumbnailType(data);
-                        if (thumbnailType != null) {
-                            url += "/thumbnails/" + thumbnailType;
-                        } else {
-                            url = null;
-                        }
-                }
-
-                return url != null ? url + "?c=force" : null;
+            if ("contentInfo".equals(name)) {
+                return getContentInfo();
             }
         }
         return null;
+    }
+
+    private ContentInfo evalContentInfo() {
+
+        if (!(rawValue instanceof ContentData)) {
+            return null;
+        }
+
+        ContentData data = (ContentData) rawValue;
+        String mimetype = data.getMimetype();
+        if (mimetype == null || att == null) {
+            return null;
+        }
+        NodeRef scopeRef = att.getScopeNodeRef();
+        if (scopeRef == null) {
+            return null;
+        }
+
+        String url = "alfresco/api/node/workspace/SpacesStore/" + scopeRef.getId() + "/content";
+
+        switch (mimetype) {
+            case MimetypeMap.MIMETYPE_PDF:
+            case MimetypeMap.MIMETYPE_IMAGE_PNG:
+            case MimetypeMap.MIMETYPE_IMAGE_JPEG:
+            case MimetypeMap.MIMETYPE_IMAGE_GIF:
+                break;
+            default:
+                String thumbnailType = getThumbnailType(data);
+                if (thumbnailType != null) {
+                    url += "/thumbnails/" + thumbnailType;
+                } else {
+                    url = null;
+                }
+        }
+
+        String extension = context.getServiceRegistry().getMimetypeService().getExtension(mimetype);
+
+        if (url != null) {
+            url += "?c=force";
+        }
+
+        return new ContentInfo(url, extension, mimetype, data.getSize());
     }
 
     private String getThumbnailType(ContentData data) {
@@ -221,6 +238,21 @@ public class AlfNodeAttValue implements MetaValue {
         @Override
         public Map<QName, Serializable> getProperties() {
             return alfNode.getProperties();
+        }
+    }
+
+    public static class ContentInfo {
+
+        @Getter private final Long size;
+        @Getter private final String url;
+        @Getter private final String ext;
+        @Getter private final String mimetype;
+
+        ContentInfo(String url, String ext, String mimetype, Long size) {
+            this.url = url;
+            this.ext = ext;
+            this.size = size;
+            this.mimetype = mimetype;
         }
     }
 }
