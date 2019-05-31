@@ -263,7 +263,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 }
             });
 
-            assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name));
+            assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name, true));
         }
 
         return result;
