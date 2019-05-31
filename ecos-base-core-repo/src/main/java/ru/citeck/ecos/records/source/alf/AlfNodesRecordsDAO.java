@@ -235,7 +235,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             final NodeRef finalNodeRef = nodeRef;
 
             contentProps.forEach((name, value) -> contentFileHelper.processPropFileContent(finalNodeRef, name, value));
-            assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name));
+            assocs.forEach((name, value) -> nodeUtils.setAssocs(finalNodeRef, value, name, true));
             childAssocEformFiles.forEach((qName, jsonNodes) -> contentFileHelper.processChildAssocFilesContent(
                     qName, jsonNodes, finalNodeRef));
         }
