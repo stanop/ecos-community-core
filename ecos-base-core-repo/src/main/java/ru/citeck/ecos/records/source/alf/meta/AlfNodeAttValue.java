@@ -6,10 +6,7 @@ import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.thumbnail.ThumbnailDefinition;
 import org.alfresco.repo.thumbnail.ThumbnailRegistry;
-import org.alfresco.service.cmr.repository.ContentData;
-import org.alfresco.service.cmr.repository.ContentReader;
-import org.alfresco.service.cmr.repository.ContentService;
-import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.thumbnail.ThumbnailService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.AlfGqlContext;
@@ -144,7 +141,7 @@ public class AlfNodeAttValue implements MetaValue {
         } else if (qName != null) {
             return MetaUtils.getReflectionValue(qName, name);
         } else if (rawValue instanceof ContentData) {
-            if ("contentInfo".equals(name)) {
+            if ("previewInfo".equals(name)) {
                 return getContentInfo();
             }
         }
@@ -168,29 +165,35 @@ public class AlfNodeAttValue implements MetaValue {
         }
 
         String url = "alfresco/api/node/workspace/SpacesStore/" + scopeRef.getId() + "/content";
+        String previewMimetype = mimetype;
+        String previewExtension;
+
+        MimetypeService mimetypeService = context.getServiceRegistry().getMimetypeService();
 
         switch (mimetype) {
             case MimetypeMap.MIMETYPE_PDF:
             case MimetypeMap.MIMETYPE_IMAGE_PNG:
             case MimetypeMap.MIMETYPE_IMAGE_JPEG:
             case MimetypeMap.MIMETYPE_IMAGE_GIF:
+                previewExtension = context.getServiceRegistry().getMimetypeService().getExtension(mimetype);
                 break;
             default:
                 String thumbnailType = getThumbnailType(data);
                 if (thumbnailType != null) {
                     url += "/thumbnails/" + thumbnailType;
+                    previewExtension = thumbnailType;
+                    previewMimetype = mimetypeService.getMimetype(previewExtension);
                 } else {
                     url = null;
+                    previewExtension = mimetypeService.getExtension(previewMimetype);
                 }
         }
-
-        String extension = context.getServiceRegistry().getMimetypeService().getExtension(mimetype);
 
         if (url != null) {
             url += "?c=force";
         }
 
-        return new ContentInfo(url, extension, mimetype, data.getSize());
+        return new ContentInfo(url, previewExtension, previewMimetype);
     }
 
     private String getThumbnailType(ContentData data) {
@@ -243,15 +246,13 @@ public class AlfNodeAttValue implements MetaValue {
 
     public static class ContentInfo {
 
-        @Getter private final Long size;
         @Getter private final String url;
         @Getter private final String ext;
         @Getter private final String mimetype;
 
-        ContentInfo(String url, String ext, String mimetype, Long size) {
+        ContentInfo(String url, String ext, String mimetype) {
             this.url = url;
             this.ext = ext;
-            this.size = size;
             this.mimetype = mimetype;
         }
     }
