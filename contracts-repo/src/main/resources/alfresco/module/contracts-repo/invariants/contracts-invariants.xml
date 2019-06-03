@@ -71,6 +71,10 @@
         <property name="tk:kind">
             <invariant on="mandatory" language="explicit">true</invariant>
         </property>
+        <property name="contracts:agreementNumber">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="default" language="javascript">' '</invariant>
+        </property>
         <property name="contracts:agreementDate">
             <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
             <invariant on="value-title" language="javascript">value.toString("dd.MM.yyyy hh:mm")</invariant>
@@ -368,6 +372,10 @@
                 node.assocs["contracts:mainAgreement"][0].assocs["contracts:agreementLegalEntity"][0]
             </invariant>
         </association>
+        <property name="contracts:agreementNumber">
+            <invariant on="mandatory" language="explicit">true</invariant>
+            <invariant on="default" language="javascript">' '</invariant>
+        </property>
         <property name="contracts:agreementDate">
             <invariant on="default" language="javascript">new Date().setSeconds(0,0)</invariant>
             <invariant on="value-title" language="javascript">value.toString("dd.MM.yyyy hh:mm")</invariant>
