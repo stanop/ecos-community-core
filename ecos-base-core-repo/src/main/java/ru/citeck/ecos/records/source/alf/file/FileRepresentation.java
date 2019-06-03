@@ -33,7 +33,7 @@ public class FileRepresentation {
     static final String MODEL_SIZE = "size";
     static final String MODEL_FILE_TYPE = "fileType";
 
-    static final String URL_PATTERN = "/share/page/card-details?nodeRef=%s";
+    private static final String URL_PATTERN = "/share/page/card-details?nodeRef=%s";
 
     public static JSONObject fromAlfNode(GqlAlfNode alfNode, AlfGqlContext context) {
         Map<QName, Serializable> properties = alfNode.getProperties();

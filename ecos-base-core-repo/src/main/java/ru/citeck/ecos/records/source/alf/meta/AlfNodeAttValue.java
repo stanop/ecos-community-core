@@ -153,6 +153,25 @@ public class AlfNodeAttValue implements MetaValue {
         return null;
     }
 
+    @Override
+    public Object getAs(String type) {
+        if (AS_CONTENT_DATA_KEY.equalsIgnoreCase(type)) {
+            if (alfNode != null) {
+                JSONObject file = FileRepresentation.fromAlfNode(alfNode, context);
+                return file.toString();
+            }
+
+            if (rawValue instanceof ContentData) {
+                JSONArray file = FileRepresentation.formContentData((ContentData) rawValue, this.context, att);
+                return file.toString();
+            }
+
+            throw new AlfrescoRuntimeException("Unsupported state for as key: " + AS_CONTENT_DATA_KEY);
+        }
+
+        return null;
+    }
+
     private ContentInfo evalContentInfo() {
 
         if (!(rawValue instanceof ContentData)) {

@@ -2,7 +2,6 @@ package ru.citeck.ecos.eform.webscripts;
 
 import lombok.extern.log4j.Log4j;
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.ContentWriter;
 import org.alfresco.service.cmr.repository.NodeRef;

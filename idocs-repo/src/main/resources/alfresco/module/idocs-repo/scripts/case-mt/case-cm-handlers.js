@@ -4,7 +4,7 @@ function onCaseCreate() {
 }
 
 function onProcessStart() {
-    if (document.properties['ecos:documentNumber'] == null ) {
+    if (document.properties['ecos:documentNumber'] == null || document.properties['ecos:documentNumber'] == ' ') {
         if (document.type == "{http://www.citeck.ru/model/content/ecos/1.0}case") {
             var mapping = {
                 'workspace://SpacesStore/cat-doc-kind-application':         'ecos-case-application-num-template',

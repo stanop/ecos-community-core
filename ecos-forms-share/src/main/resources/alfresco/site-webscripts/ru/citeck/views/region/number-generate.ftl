@@ -5,6 +5,12 @@
 <#else>
    <#assign numberTemplate = "\"" + params.template + "\"" />
 </#if>
+<#if params.flagOn?? >
+   <#assign flagOn = params.flagOn>
+</#if>
+<#if params.generateOff?? >
+   <#assign generateOff = params.generateOff>
+</#if>
 
 <!-- ko component: { name: "number-generate", params: {
     id: "${fieldId}",
@@ -12,7 +18,13 @@
     template: ${numberTemplate},
     node: node,
     value: value,
-    label: "${msg('button.generate')}",       
+    label: "${msg('button.generate')}",
     disable: protected,
-    mode: "${mode}"
+    mode: "${mode}",
+    <#if params.flagOn??>
+    flagOn: "${flagOn}",
+    </#if>
+    <#if params.generateOff??>
+    generateOff: "${generateOff}",
+    </#if>
 }} --><!-- /ko -->

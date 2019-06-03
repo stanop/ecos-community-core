@@ -6,7 +6,7 @@ function onCaseCreate() {
 }
 
 function onProcessStart() {
-    if (document.properties['contracts:agreementNumber'] == null) {
+    if (document.properties['contracts:agreementNumber'] == null || document.properties['contracts:agreementNumber'] == ' ') {
         if (document.type == "{http://www.citeck.ru/model/contracts/1.0}agreement") {
             var numberTemplate = search.findNode("workspace://SpacesStore/agreement-number-template");
         } else {
