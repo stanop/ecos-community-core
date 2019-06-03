@@ -1,4 +1,5 @@
 import { generateSearchTerm } from './util';
+import MenuApi from 'ecosui!menu-api';
 
 function handleErrors(response) {
     if (!response.ok) {
@@ -20,6 +21,8 @@ const postOptions = {
     ...getOptions,
     method: 'post'
 };
+
+const menuApi = new MenuApi();
 
 export default class {
     constructor(alfrescoProxyUri) {
@@ -80,12 +83,10 @@ export default class {
     };
 
     getSlideMenuItems = () => {
-        const url = "citeck/menu/menu";
-        return this.getJSON(url).catch(() => []);
+        return menuApi.getSlideMenuItems();
     };
 
     getMenuItemIconUrl = (iconName) => {
-        const url = `citeck/menu/icon?iconName=${iconName}`;
-        return this.getJSON(url).catch(() => null);
+        return menuApi.getMenuItemIconUrl(iconName);
     };
 }
