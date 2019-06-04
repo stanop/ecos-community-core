@@ -70,13 +70,11 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                       .collect(Collectors.toList());
     }
 
-    //FIXME: fix this sloppy code
     private String getFixedUserName(RecordRef recordRef) {
         String userName;
         String source = recordRef.getSourceId();
         if (StringUtils.isNotBlank(source)) {
             userName = source + "@" + recordRef.getId();
-            logger.warn(String.format("Fix required. Record: %s, final userName: %s", recordRef.toString(), userName));
         } else {
             userName = recordRef.getId();
         }
