@@ -18,8 +18,9 @@
  */
 
 require([
-    'ecosui!ecos-records'
-], function() {
+    'ecosui!ecos-records',
+    'ecosui!react-dom'
+], function(Records, ReactDOM) {
 
     if(typeof Citeck == "undefined") Citeck = {};
     Citeck.forms = Citeck.forms || {};
@@ -441,69 +442,72 @@ require([
         return this._loaderPanel;
     };
 
-    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod) {
+    Citeck.forms.editRecord = function (config) {
+
+        var recordRef = config.recordRef,
+            fallback = config.fallback;
 
         var showForm = function(recordRef) {
 
             if (recordRef) {
                 Citeck.forms.eform(recordRef, {
                     params: {
-                        attributes: {
-                            _parent: destination
-                        },
-                        onSubmit: function(record, form) {
-
-                            if (record.id && record.id.indexOf('workspace://SpacesStore/') === 0
-                                          && form.options.formMode === 'CREATE') {
-
-                                if (!redirectionMethod || redirectionMethod === 'card') {
-                                    window.location = Alfresco.util.siteURL("card-details?nodeRef=" + record.id);
-                                }
-                            }
-                        }
+                        attributes: config.attributes || {},
+                        onSubmit: config.onSubmit
                     },
                     class: 'ecos-modal_width-lg',
-                    isBigHeader: true
+                    isBigHeader: true,
+                    formContainer: config.formContainer || null
                 });
             } else {
-
                 fallback();
             }
         };
 
-        if (recordRef) {
+        var isFormsEnabled = Citeck.Records.get('ecos-config@ecos-forms-enable').loadAttribute('.bool');
 
-            showForm(recordRef);
-
-        } else {
-
-            recordRef = 'dict@' + type;
-
-            Citeck.Records.get('ecos-config@ecos-forms-enable').loadAttribute('.bool').then(function(enabled) {
-                if (enabled) {
-                    Citeck.Records.query({
-                        query: {
-                            query: { record: recordRef },
-                            sourceId: 'eform'
-                        }
-                    }).then(function(result) {
-                        if ((result.records || []).length) {
-                            showForm(recordRef);
-                        } else {
-                            showForm(null);
-                        }
-                    }).catch(function(e) {
-                        console.error(e);
+        isFormsEnabled.then(function(enabled) {
+            if (enabled) {
+                Citeck.Records.queryOne({
+                    query: { record: recordRef },
+                    sourceId: 'eform'
+                }).then(function(result) {
+                    if (result) {
+                        showForm(recordRef);
+                    } else {
                         showForm(null);
-                    });
-                } else {
+                    }
+                }).catch(function(e) {
+                    console.error(e);
                     showForm(null);
-                }
-            }).catch(function (e) {
-                console.error(e);
+                });
+            } else {
                 showForm(null);
-            });
-        }
+            }
+        }).catch(function (e) {
+            console.error(e);
+            showForm(null);
+        });
+    };
+
+    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod) {
+
+        Citeck.forms.editRecord({
+            recordRef: recordRef || 'dict@' + type,
+            attributes: {
+                _parent: destination
+            },
+            onSubmit: function(record, form) {
+
+                if (record.id && record.id.indexOf('workspace://SpacesStore/') === 0
+                    && form.options.formMode === 'CREATE') {
+
+                    if (!redirectionMethod || redirectionMethod === 'card') {
+                        window.location = Alfresco.util.siteURL("card-details?nodeRef=" + record.id);
+                    }
+                }
+            }
+        });
     };
 
     var confirmIdx = 0;
@@ -573,7 +577,10 @@ require([
 
         require(['ecosui!react', 'ecosui!react-dom', 'ecosui!ecos-form', 'ecosui!ecos-modal'], function (React, ReactDOM, EcosForm, Modal) {
 
-            var modal = new Modal.default();
+            var modal = null;
+            if (!config.formContainer) {
+                modal = new Modal.default();
+            }
 
             var formParams = Object.assign({
                 record: record
@@ -584,13 +591,17 @@ require([
             formParams['options'] = configParams.options || {};
 
             formParams['onSubmit'] = function (record, form) {
-                modal.close();
+                if (modal) {
+                    modal.close();
+                }
                 if (configParams.onSubmit) {
                     configParams.onSubmit(record, form);
                 }
             };
             formParams['onFormCancel'] = function (record, form) {
-                modal.close();
+                if (modal) {
+                    modal.close();
+                }
                 if (configParams.onFormCancel) {
                     configParams.onFormCancel(record, form);
                 }
@@ -630,10 +641,17 @@ require([
                     config.header = prefix + " " + displayName;
                 }
 
-                modal.open(
-                    React.createElement(EcosForm.default, formParams),
-                    config
-                );
+                var formInstance = React.createElement(EcosForm.default, formParams);
+
+                if (config.formContainer) {
+                    var container = config.formContainer;
+                    if (typeof config.formContainer == "string") {
+                        container = document.getElementById(config.formContainer)
+                    }
+                    ReactDOM.render(formInstance, container);
+                } else {
+                    modal.open(formInstance, config);
+                }
             });
         });
     };

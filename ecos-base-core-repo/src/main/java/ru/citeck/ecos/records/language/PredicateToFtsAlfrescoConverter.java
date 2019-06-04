@@ -139,7 +139,13 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
                             if (attDef instanceof PropertyDefinition) {
 
-                                query.value(field, "*" + valueStr + "*");
+                                DataTypeDefinition dataType = ((PropertyDefinition) attDef).getDataType();
+                                if (dataType != null && (DataTypeDefinition.TEXT.equals(dataType.getName()) ||
+                                                         DataTypeDefinition.MLTEXT.equals(dataType.getName())) ) {
+                                    query.value(field, "*" + valueStr + "*");
+                                } else {
+                                    query.value(field, valueStr);
+                                }
 
                             } else if (attDef instanceof AssociationDefinition) {
 

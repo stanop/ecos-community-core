@@ -3,10 +3,13 @@ package ru.citeck.ecos.utils;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.*;
 import org.alfresco.service.namespace.QName;
+import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,7 @@ public class WorkflowUtils {
 
     private WorkflowService workflowService;
     private AuthorityUtils authorityUtils;
+    private NodeService nodeService;
 
     private WorkflowAdminService workflowAdminService;
 
@@ -43,7 +47,7 @@ public class WorkflowUtils {
         if (workflowName == null) {
             return null;
         }
-        String parts[] = workflowName.split(ID_SEPERATOR_REGEX);
+        String[] parts = workflowName.split(ID_SEPERATOR_REGEX);
         if (parts.length != 2) {
             return null;
         }
@@ -158,6 +162,41 @@ public class WorkflowUtils {
         return result;
     }
 
+    public NodeRef getTaskDocumentFromPackage(Object bpmPackage) {
+
+        if (bpmPackage == null) {
+            return null;
+        }
+
+        NodeRef documentRef = null;
+        NodeRef packageRef = null;
+
+        if (bpmPackage instanceof NodeRef) {
+            packageRef = (NodeRef) bpmPackage;
+        } else if (bpmPackage instanceof String) {
+            String packageStr = (String) bpmPackage;
+            if (NodeRef.isNodeRef(packageStr)) {
+                packageRef = new NodeRef(packageStr);
+            }
+        }
+
+        if (packageRef != null) {
+
+            List<ChildAssociationRef> packageContent;
+
+            packageContent = nodeService.getChildAssocs(packageRef,
+                    WorkflowModel.ASSOC_PACKAGE_CONTAINS,
+                    RegexQNamePattern.MATCH_ALL);
+
+            if (packageContent != null && packageContent.size() > 0) {
+
+                documentRef = packageContent.get(0).getChildRef();
+            }
+        }
+
+        return documentRef;
+    }
+
     /**
      * Set workflow service
      *
@@ -181,5 +220,10 @@ public class WorkflowUtils {
     @Autowired
     public void setAuthorityUtils(AuthorityUtils authorityUtils) {
         this.authorityUtils = authorityUtils;
+    }
+
+    @Autowired
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
     }
 }
