@@ -42,6 +42,7 @@ import ru.citeck.ecos.invariants.view.forms.TypeFormProvider;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixProvider;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixResolver;
 import ru.citeck.ecos.utils.ConvertUtils;
+import ru.citeck.ecos.utils.WorkflowUtils;
 
 import java.io.Serializable;
 import java.util.*;
@@ -87,6 +88,8 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     private NamespaceService namespaceService;
     @Autowired
     private NodeAttributeService nodeAttributeService;
+    @Autowired
+    private WorkflowUtils workflowUtils;
 
     private Map<String, FieldConverter<FormField>> fieldConverters = new HashMap<>();
 
@@ -324,34 +327,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     }
 
     private NodeRef getTaskDocument(Object bpmPackage) {
-
-        NodeRef documentRef = null;
-        NodeRef packageRef = null;
-
-        if (bpmPackage instanceof NodeRef) {
-            packageRef = (NodeRef) bpmPackage;
-        } else if (bpmPackage instanceof String) {
-            String packageStr = (String) bpmPackage;
-            if (NodeRef.isNodeRef(packageStr)) {
-                packageRef = new NodeRef(packageStr);
-            }
-        }
-
-        if (packageRef != null) {
-
-            List<ChildAssociationRef> packageContent;
-
-            packageContent = nodeService.getChildAssocs(packageRef,
-                    WorkflowModel.ASSOC_PACKAGE_CONTAINS,
-                    RegexQNamePattern.MATCH_ALL);
-
-            if (packageContent != null && packageContent.size() > 0) {
-
-                documentRef = packageContent.get(0).getChildRef();
-            }
-        }
-
-        return documentRef;
+        return workflowUtils.getTaskDocumentFromPackage(bpmPackage);
     }
 
     private NodeField getOutcomeField(SimpleFormModel formModel) {

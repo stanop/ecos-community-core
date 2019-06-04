@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -52,9 +49,32 @@ public class AuthorityUtils {
         return result;
     }
 
+    /**
+     * Get the authorities that contain the given authority,
+     *
+     * For example, this method can be used find out all the authorities that contain a
+     * group or user.
+     *
+     * @param authorityName -
+     *            the name of the authority for which the containing authorities
+     *            are required.
+     * @return Set<String>
+     */
+    public Set<String> getContainingAuthorities(String authorityName) {
+        return authorityService.getContainingAuthoritiesInZone(null, authorityName,
+                                                               AuthorityService.ZONE_APP_DEFAULT,
+                                                              null, 1000);
+    }
+
+    public Set<NodeRef> getContainingAuthoritiesRefs(String authorityName) {
+        return getNodeRefs(getContainingAuthorities(authorityName));
+    }
+
     public Set<NodeRef> getNodeRefs(Set<String> authorities) {
         return authorities.stream()
-                          .map(authorityService::getAuthorityNodeRef)
+                          .map(a -> Optional.ofNullable(getNodeRef(a)))
+                          .filter(Optional::isPresent)
+                          .map(Optional::get)
                           .collect(Collectors.toSet());
     }
 

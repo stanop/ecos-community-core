@@ -331,6 +331,7 @@
                 </association>
             </associations>
             <mandatory-aspects>
+                <aspect>idocs:hasContactInfo</aspect>
                 <aspect>idocs:organizationInfo</aspect>
                 <aspect>idocs:publicRegInfo</aspect>
                 <aspect>idocs:entityInfo</aspect>
@@ -345,24 +346,13 @@
         <type name="idocs:contact">
             <parent>dl:dataListItem</parent>
             <properties>
-                <property name="idocs:firstName">
-                    <type>d:text</type>
-                    <mandatory>true</mandatory>
-                </property>
-                <property name="idocs:lastName">
-                    <type>d:text</type>
-                    <mandatory>true</mandatory>
-                </property>
-                <property name="idocs:patronymicName">
-                    <type>d:text</type>
-                    <mandatory>true</mandatory>
-                </property>
                 <property name="idocs:position">
                     <type>d:text</type>
                     <mandatory>true</mandatory>
                 </property>
             </properties>
             <mandatory-aspects>
+                <aspect>idocs:hasContactInfo</aspect>
                 <aspect>idocs:communicationInfo</aspect>
                 <aspect>idocs:organizationInfo</aspect>
             </mandatory-aspects>
@@ -934,6 +924,23 @@
                 <property name="idocs:duration">
                     <title>Duration</title>
                     <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
+
+        <aspect name="idocs:hasContactInfo">
+            <properties>
+                <property name="idocs:firstName">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:lastName">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                </property>
+                <property name="idocs:patronymicName">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
                 </property>
             </properties>
         </aspect>

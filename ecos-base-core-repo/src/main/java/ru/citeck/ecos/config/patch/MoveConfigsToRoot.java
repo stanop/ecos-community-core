@@ -21,6 +21,7 @@ import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.model.ConfigModel;
 import ru.citeck.ecos.records.RecordsUtils;
+import ru.citeck.ecos.records2.IterableRecords;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.request.query.QueryConsistency;
@@ -41,7 +42,7 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
     private NodeService nodeService;
 
     @Override
-    protected void executeInternal() throws Exception {
+    protected void executeInternal() {
 
         RetryingTransactionHelper txnHelper = transactionService.getRetryingTransactionHelper();
 
@@ -59,7 +60,7 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
         query.setLanguage(SearchService.LANGUAGE_CMIS_STRICT);
         query.setConsistency(QueryConsistency.TRANSACTIONAL);
         query.setQuery("select * from config:ecosConfig");
-        Iterable<RecordRef> ecosConfigs = recordsService.getIterableRecords(query);
+        Iterable<RecordRef> ecosConfigs = new IterableRecords(recordsService, query);
 
         GroupActionConfig config = new GroupActionConfig();
         config.setBatchSize(10);

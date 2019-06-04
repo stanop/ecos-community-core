@@ -1,0 +1,15 @@
+<webscript>
+    <shortname>Delete file</shortname>
+    <description>Delete temp files</description>
+    <url>/eform/file</url>
+    <args>
+        <arg>
+            <shortname>name</shortname>
+            <description>Unique file name</description>
+        </arg>
+    </args>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction>required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>
