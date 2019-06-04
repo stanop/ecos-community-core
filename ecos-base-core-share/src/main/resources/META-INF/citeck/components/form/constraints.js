@@ -497,6 +497,7 @@ require([
             attributes: {
                 _parent: destination
             },
+            fallback: fallback,
             onSubmit: function(record, form) {
 
                 if (record.id && record.id.indexOf('workspace://SpacesStore/') === 0
