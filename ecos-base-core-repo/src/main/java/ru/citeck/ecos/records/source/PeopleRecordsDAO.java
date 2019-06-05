@@ -66,7 +66,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     @Override
     public List<UserValue> getMetaValues(List<RecordRef> records) {
         return records.stream()
-                      .map(r -> new UserValue(getFixedUserName(r)))
+                      .map(r -> new UserValue(r.toString()))
                       .collect(Collectors.toList());
     }
 
