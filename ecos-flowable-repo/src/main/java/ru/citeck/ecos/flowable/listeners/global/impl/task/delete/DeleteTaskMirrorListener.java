@@ -9,7 +9,7 @@ import static ru.citeck.ecos.flowable.constants.FlowableConstants.ENGINE_PREFIX;
 /**
  * Flowable delete task mirror listener
  */
-public class DeleteTaskMirrorListener implements GlobalDeleteTaskListener{
+public class DeleteTaskMirrorListener implements GlobalDeleteTaskListener {
 
     private WorkflowMirrorService workflowMirrorService;
 
