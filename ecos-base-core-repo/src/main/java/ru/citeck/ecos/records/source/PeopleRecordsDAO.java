@@ -66,21 +66,8 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     @Override
     public List<UserValue> getMetaValues(List<RecordRef> records) {
         return records.stream()
-                      .map(r -> new UserValue(getFixedUserName(r)))
+                      .map(r -> new UserValue(r.toString()))
                       .collect(Collectors.toList());
-    }
-
-    //FIXME: fix this sloppy code
-    private String getFixedUserName(RecordRef recordRef) {
-        String userName;
-        String source = recordRef.getSourceId();
-        if (StringUtils.isNotBlank(source)) {
-            userName = source + "@" + recordRef.getId();
-            logger.warn(String.format("Fix required. Record: %s, final userName: %s", recordRef.toString(), userName));
-        } else {
-            userName = recordRef.getId();
-        }
-        return userName;
     }
 
     @Override
