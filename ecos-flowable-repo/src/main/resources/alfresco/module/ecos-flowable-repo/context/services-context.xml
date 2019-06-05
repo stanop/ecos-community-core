@@ -281,6 +281,10 @@
         <property name="workflowMirrorService" ref="workflowMirrorService"/>
     </bean>
 
+    <bean id="flowableDeleteTaskMirrorListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.delete.DeleteTaskMirrorListener">
+        <property name="workflowMirrorService" ref="workflowMirrorService"/>
+    </bean>
+
     <bean id="flowableMirrorEndProcessListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.end.MirrorEndProcessListener">
         <property name="workflowMirrorService" ref="workflowMirrorService"/>
         <property name="nodeService" ref="nodeService"/>
