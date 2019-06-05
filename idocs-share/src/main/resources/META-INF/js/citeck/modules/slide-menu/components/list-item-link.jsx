@@ -1,11 +1,14 @@
-import React from 'ecosui!react';
+import React, { useEffect, useState } from 'ecosui!react';
 import { connect } from "ecosui!react-redux";
 import { setSelectedId, toggleExpanded } from "../actions";
 import { t } from "../../common/util";
 import ListItemIcon from "./list-item-icon";
+import lodash from "ecosui!lodash";
+import MenuApi from 'ecosui!menu-api';
 
 const SELECTED_MENU_ITEM_ID_KEY = 'selectedMenuItemId';
 const PAGE_PREFIX = '/share/page';
+const menuApi = new MenuApi();
 
 const mapStateToProps = (state, ownProps) => ({
     selectedId: state.leftMenu.selectedId
@@ -21,6 +24,18 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
 });
 
 const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, isNestedListExpanded, withNestedList}) => {
+
+    const journalId = lodash.get(item, 'params.journalId', '');
+    const [journalTotalCount, setJournalTotalCount] = useState(0);
+
+    useEffect(() => {
+        if (journalId) {
+            menuApi.getJournalTotalCount(journalId).then(count => {
+                setJournalTotalCount(count);
+            });
+        }
+    }, [journalId]);
+
     let itemId = item.id;
     let label = t(item.label);
 
@@ -84,8 +99,8 @@ const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, 
 
     let counter = null;
     let smallCounter = null;
-    if (item.params && item.params.count && item.params.count !== '0') {
-        counter = <span className='slide-menu-list__link-badge'>{item.params.count}</span>;
+    if (journalTotalCount > 0) {
+        counter = <span className='slide-menu-list__link-badge'>{journalTotalCount}</span>;
         smallCounter = <div className='slide-menu-list__link-badge-indicator' />;
     }
 
