@@ -7772,7 +7772,7 @@
       "Серия должна содержать только цифры": " The series must contain only numbers",
       "Номер должен содержать только цифры": "The number must contain only numbers",
       "Некорректный формат": "Invalid format",
-      "Некорректный ОГРНИП": "Invalid OGRNIP"
+      "Некорректный ОГРНИП": "Invalid PSRNSP"
     }
   }
 }
