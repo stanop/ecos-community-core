@@ -2,18 +2,14 @@ package ru.citeck.ecos.eform;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.content.ContentData;
 import ru.citeck.ecos.eform.model.EcosFormModel;
 import ru.citeck.ecos.eform.provider.RepoFormProvider;
-import ru.citeck.ecos.node.DisplayNameService;
-import ru.citeck.ecos.records.source.alf.AlfDictionaryRecords;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.records2.RecordMeta;
@@ -123,7 +119,6 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
 
                     EcosFormModel form = new EcosFormModel();
                     form.setId("");
-                    form.setTitle(I18NUtil.getMessage("ecosForms_model.type.ecosForms_form.title"));
                     models.add(form);
 
                 } else {
@@ -186,7 +181,7 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
         return result;
     }
 
-    static class Query {
+    public static class Query {
         @Getter @Setter private String formKey;
         @Getter @Setter private RecordRef record;
         @Getter @Setter private Boolean isViewMode;

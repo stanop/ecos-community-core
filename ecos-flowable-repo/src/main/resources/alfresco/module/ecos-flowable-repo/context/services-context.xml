@@ -277,6 +277,14 @@
         <property name="workflowMirrorService" ref="workflowMirrorService"/>
     </bean>
 
+    <bean id="flowableCompleteTaskMirrorListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.complete.CompleteTaskMirrorListener">
+        <property name="workflowMirrorService" ref="workflowMirrorService"/>
+    </bean>
+
+    <bean id="flowableDeleteTaskMirrorListener" class="ru.citeck.ecos.flowable.listeners.global.impl.task.delete.DeleteTaskMirrorListener">
+        <property name="workflowMirrorService" ref="workflowMirrorService"/>
+    </bean>
+
     <bean id="flowableMirrorEndProcessListener" class="ru.citeck.ecos.flowable.listeners.global.impl.process.end.MirrorEndProcessListener">
         <property name="workflowMirrorService" ref="workflowMirrorService"/>
         <property name="nodeService" ref="nodeService"/>
@@ -339,6 +347,13 @@
 
     <bean id="flowableScriptNodeListType" class="ru.citeck.ecos.flowable.variable.FlowableScriptNodeListVariableType">
         <property name="serviceRegistry" ref="ServiceRegistry"/>
+    </bean>
+
+    <bean id="rollbackFlowableTasksService" class="ru.citeck.ecos.flowable.services.RollbackFlowableTasksService">
+        <property name="runtimeService" ref="flowableRuntimeService"/>
+        <property name="flowableTaskService" ref="flowableCustomTaskService"/>
+        <property name="workflowService" ref="WorkflowService"/>
+        <property name="workflowMirrorService" ref="workflowMirrorService"/>
     </bean>
 
 </beans>

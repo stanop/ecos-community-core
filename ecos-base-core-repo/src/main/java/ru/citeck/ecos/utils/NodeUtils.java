@@ -131,6 +131,10 @@ public class NodeUtils {
     }
 
     public boolean setAssocs(NodeRef nodeRef, Collection<NodeRef> targets, QName assocName) {
+        return setAssocs(nodeRef, targets, assocName, false);
+    }
+
+    public boolean setAssocs(NodeRef nodeRef, Collection<NodeRef> targets, QName assocName, boolean primaryChildren) {
 
         if (!isValidNode(nodeRef) || assocName == null) {
             return false;
@@ -157,12 +161,36 @@ public class NodeUtils {
 
             if (toAdd.size() > 0 || toRemove.size() > 0) {
 
-                for (NodeRef removeRef : toRemove) {
-                    nodeService.removeAssociation(nodeRef, removeRef, assocName);
+                if (assocDef instanceof ChildAssociationDefinition) {
+
+                    List<ChildAssociationRef> currentAssocs = getChildAssocs(nodeRef, assocDef, true);
+                    Map<NodeRef, ChildAssociationRef> currentAssocByChild = new HashMap<>();
+                    currentAssocs.forEach(a -> currentAssocByChild.put(a.getChildRef(), a));
+
+                    for (NodeRef removeRef : toRemove) {
+                        if (primaryChildren) {
+                            nodeService.removeChildAssociation(currentAssocByChild.get(removeRef));
+                        } else {
+                            nodeService.removeSecondaryChildAssociation(currentAssocByChild.get(removeRef));
+                        }
+                    }
+                    for (NodeRef addRef : toAdd) {
+                        ChildAssociationRef primaryParent = nodeService.getPrimaryParent(addRef);
+                        if (primaryChildren) {
+                            nodeService.moveNode(addRef, nodeRef, assocName, primaryParent.getQName());
+                        } else {
+                            nodeService.addChild(nodeRef, addRef, assocName, primaryParent.getQName());
+                        }
+                    }
+                } else {
+                    for (NodeRef removeRef : toRemove) {
+                        nodeService.removeAssociation(nodeRef, removeRef, assocName);
+                    }
+                    for (NodeRef addRef : toAdd) {
+                        nodeService.createAssociation(nodeRef, addRef, assocName);
+                    }
                 }
-                for (NodeRef addRef : toAdd) {
-                    nodeService.createAssociation(nodeRef, addRef, assocName);
-                }
+
                 return true;
             }
         }
@@ -248,19 +276,26 @@ public class NodeUtils {
         return Collections.emptyList();
     }
 
+    private List<ChildAssociationRef> getChildAssocs(NodeRef nodeRef,
+                                                     AssociationDefinition assocDef,
+                                                     boolean nodeIsSource) {
+
+        List<ChildAssociationRef> assocsRefs;
+
+        if (nodeIsSource) {
+            assocsRefs = nodeService.getChildAssocs(nodeRef, assocDef.getName(), RegexQNamePattern.MATCH_ALL);
+        } else {
+            assocsRefs = nodeService.getParentAssocs(nodeRef, assocDef.getName(), RegexQNamePattern.MATCH_ALL);
+        }
+
+        return assocsRefs;
+    }
+
     private List<NodeRef> getAssocsImpl(NodeRef nodeRef, AssociationDefinition assocDef, boolean nodeIsSource) {
 
         if (assocDef.isChild()) {
 
-            List<ChildAssociationRef> assocsRefs;
-
-            if (nodeIsSource) {
-                assocsRefs = nodeService.getChildAssocs(nodeRef, assocDef.getName(), RegexQNamePattern.MATCH_ALL);
-            } else {
-                assocsRefs = nodeService.getParentAssocs(nodeRef, assocDef.getName(), RegexQNamePattern.MATCH_ALL);
-            }
-
-            return assocsRefs.stream()
+            return getChildAssocs(nodeRef, assocDef, nodeIsSource).stream()
                              .map(r -> nodeIsSource ? r.getChildRef() : r.getParentRef())
                              .collect(Collectors.toList());
         } else {

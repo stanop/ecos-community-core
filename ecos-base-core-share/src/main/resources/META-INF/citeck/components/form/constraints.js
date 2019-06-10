@@ -18,7 +18,7 @@
  */
 
 require([
-    'static/ecos/records/js/records'
+    'ecosui!ecos-records'
 ], function() {
 
     if(typeof Citeck == "undefined") Citeck = {};
@@ -441,7 +441,7 @@ require([
         return this._loaderPanel;
     };
 
-    Citeck.forms.createRecord = function (recordRef, type, destination, fallback) {
+    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod) {
 
         var showForm = function(recordRef) {
 
@@ -450,6 +450,16 @@ require([
                     params: {
                         attributes: {
                             _parent: destination
+                        },
+                        onSubmit: function(record, form) {
+
+                            if (record.id && record.id.indexOf('workspace://SpacesStore/') === 0
+                                          && form.options.formMode === 'CREATE') {
+
+                                if (!redirectionMethod || redirectionMethod === 'card') {
+                                    window.location = Alfresco.util.siteURL("card-details?nodeRef=" + record.id);
+                                }
+                            }
                         }
                     },
                     class: 'ecos-modal_width-lg',
@@ -496,6 +506,59 @@ require([
         }
     };
 
+    var confirmIdx = 0;
+    Citeck.forms.confirm = function (text, okCallback, cancelCallback) {
+        var confirmId = 'ecos-confirm-' + confirmIdx++;
+        var contentId = confirmId + '-content';
+        var submitBtnId = contentId + '-submit';
+        var cancelBtnId = contentId + '-cancel';
+
+        require(['ecosui!ecos-modal', 'ecosui!ecos-form'], function (Modal) {
+            var modal = new Modal.default();
+
+            modal.open(
+                '<h3 class="ecos-caption ecos-caption_middle">' + text + '</h3>' +
+                '<div class="text-center" style="margin-top: 15px">' +
+                '<button id="'+cancelBtnId+'" disabled class="ecos-btn ecos-btn_x-step_15" type="button">' + Alfresco.util.message('actions.button.cancel') + '</button>' +
+                '<button id="'+submitBtnId+'" disabled class="ecos-btn ecos-btn_blue" type="button">' + Alfresco.util.message('actions.button.ok') + '</button>' +
+                '</div>',
+                {
+                    rawHtml: true,
+                    reactstrapProps: {
+                        onExit: function() {typeof cancelCallback === 'function' && cancelCallback();}
+                    }
+                },
+                function() {
+                    var submitBtn = document.getElementById(submitBtnId);
+
+                    var onSubmit = function() {
+                        typeof okCallback === 'function' && okCallback();
+                        if (typeof cancelCallback === 'function') {
+                            cancelCallback = function() {};
+                        }
+                        modal.close(function() {
+                            submitBtn.removeEventListener('click', onSubmit);
+                        });
+                    };
+
+                    var cancelBtn = document.getElementById(cancelBtnId);
+
+                    var onCancel = function() {
+                        modal.close(function() {
+                            cancelBtn.removeEventListener('click', onCancel);
+                        });
+                    };
+
+                    submitBtn.disabled = false;
+                    submitBtn.addEventListener('click', onSubmit);
+
+                    cancelBtn.disabled = false;
+                    cancelBtn.addEventListener('click', onCancel);
+                }
+            );
+        });
+    };
+
     Citeck.forms.eform = function (record, config) {
 
         if (!config) {
@@ -508,7 +571,7 @@ require([
             config.reactstrapProps.backdrop = 'static';
         }
 
-        require(['react', 'react-dom', 'js/citeck/modules/eform/ecos-form', 'static/ecos/modal/js/modal'], function (React, ReactDOM, EcosForm, Modal) {
+        require(['ecosui!react', 'ecosui!react-dom', 'ecosui!ecos-form', 'ecosui!ecos-modal'], function (React, ReactDOM, EcosForm, Modal) {
 
             var modal = new Modal.default();
 
@@ -520,36 +583,52 @@ require([
 
             formParams['options'] = configParams.options || {};
 
-            formParams['onSubmit'] = function () {
+            formParams['onSubmit'] = function (record, form) {
                 modal.close();
                 if (configParams.onSubmit) {
-                    configParams.onSubmit.apply(arguments);
+                    configParams.onSubmit(record, form);
                 }
             };
-            formParams['onFormCancel'] = function () {
+            formParams['onFormCancel'] = function (record, form) {
                 modal.close();
                 if (configParams.onFormCancel) {
-                    configParams.onFormCancel.apply(arguments);
+                    configParams.onFormCancel(record, form);
                 }
             };
             formParams['onReady'] = function () {
-                setTimeout(function(){
+                setTimeout(function (record, form) {
                     if (configParams.onReady) {
-                        configParams.onReady.apply(arguments);
+                        configParams.onReady(record, form);
                     }
                 }, 100);
             };
 
-            Citeck.Records.get(record).loadAttribute('.disp').then(function(displayName) {
+            Citeck.Records.get(record).load({
+                'displayName': '.disp',
+                'formMode': '_formMode'
+            }).then(function(recordData) {
+
+                var displayName = recordData.displayName || '';
+                var formMode = recordData.formMode || 'EDIT';
+
+                if (formMode === 'CREATE') {
+                    Citeck.Records.get(record).reset();
+                }
+
+                var options = formParams.options || {};
+                options.formMode = formMode;
+                formParams.options = options;
 
                 var prefixId;
 
-                if (!record || record[record.length - 1] === '@' || record.indexOf("dict@") == 0) {
-                    prefixId = 'eform.header.create.title';
+                prefixId = 'eform.header.' + formMode + ".title";
+                var prefix = Alfresco.util.message(prefixId);
+
+                if (!prefix || prefix === prefixId) {
+                    config.header = displayName;
                 } else {
-                    prefixId = 'eform.header.edit.title';
+                    config.header = prefix + " " + displayName;
                 }
-                config.header = Alfresco.util.message(prefixId) + " " + displayName;
 
                 modal.open(
                     React.createElement(EcosForm.default, formParams),

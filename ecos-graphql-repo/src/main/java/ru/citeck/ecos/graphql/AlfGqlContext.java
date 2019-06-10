@@ -12,8 +12,12 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.graphql.GqlContext;
 
 import java.util.Collection;
@@ -24,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class AlfGqlContext extends GqlContext {
+
+    private static final Log logger = LogFactory.getLog(AlfGqlContext.class);
 
     private LoadingCache<NodeRef, GqlAlfNode> nodes;
     private LoadingCache<Object, Optional<GqlQName>> qnames;
@@ -41,7 +47,13 @@ public class AlfGqlContext extends GqlContext {
 
     private final Map<String, Object> servicesCache = new ConcurrentHashMap<>();
 
+    @Deprecated
     public AlfGqlContext(ServiceRegistry serviceRegistry) {
+        this(serviceRegistry, getRecordsServiceFromRegistry(serviceRegistry));
+    }
+
+    public AlfGqlContext(ServiceRegistry serviceRegistry, RecordsService recordsService) {
+        super(recordsService);
         this.serviceRegistry = serviceRegistry;
         this.dictionaryService = serviceRegistry.getDictionaryService();
         this.namespaceService = serviceRegistry.getNamespaceService();
@@ -54,6 +66,23 @@ public class AlfGqlContext extends GqlContext {
         qnames = CacheBuilder.newBuilder()
                              .maximumSize(1000)
                              .build(CacheLoader.from(this::createQName));
+    }
+
+    @Deprecated
+    private static RecordsService getRecordsServiceFromRegistry(ServiceRegistry serviceRegistry) {
+
+        logger.warn("Constructor without RecordsService was used. " +
+                    "This is not error yet but in the future, this constructor will be removed");
+
+        QName beanName = QName.createQName("", "createRecordsServiceBean");
+
+        RecordsService recordsService = null;
+        try {
+            recordsService = (RecordsService) serviceRegistry.getService(beanName);
+        } catch (NoSuchBeanDefinitionException | ClassCastException e) {
+            logger.error("RecordsService cant't be received", e);
+        }
+        return recordsService;
     }
 
     public List<GqlAlfNode> getNodes(Collection<?> keys) {

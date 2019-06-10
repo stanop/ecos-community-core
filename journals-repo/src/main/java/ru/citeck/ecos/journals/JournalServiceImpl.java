@@ -18,6 +18,8 @@
  */
 package ru.citeck.ecos.journals;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
@@ -28,6 +30,9 @@ import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.graphql.journal.JGqlPageInfoInput;
 import ru.citeck.ecos.invariants.Feature;
 import ru.citeck.ecos.invariants.InvariantDefinition;
@@ -37,21 +42,23 @@ import ru.citeck.ecos.journals.xml.Journal;
 import ru.citeck.ecos.journals.xml.Journals;
 import ru.citeck.ecos.journals.xml.Journals.Imports.Import;
 import ru.citeck.ecos.model.JournalsModel;
+import ru.citeck.ecos.processor.TemplateExpressionEvaluator;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.LazyNodeRef;
 import ru.citeck.ecos.utils.NamespacePrefixResolverMapImpl;
+import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.XMLUtils;
 
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 class JournalServiceImpl implements JournalService {
-
-    private static final String JOURNAL_OPTION_TYPE = "type";
 
     protected static final String JOURNALS_SCHEMA_LOCATION = "alfresco/module/journals-repo/schema/journals.xsd";
     protected static final String INVARIANTS_SCHEMA_LOCATION = "alfresco/module/ecos-forms-repo/schema/invariants.xsd";
@@ -65,7 +72,12 @@ class JournalServiceImpl implements JournalService {
     private LazyNodeRef journalsRoot;
     private Map<String, JournalType> journalTypes = new ConcurrentHashMap<>();
 
+    @Autowired
+    private TemplateExpressionEvaluator expressionEvaluator;
+
     private List<CriterionInvariantsProvider> criterionInvariantsProviders;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public JournalServiceImpl() {
         criterionInvariantsProviders = Collections.synchronizedList(new ArrayList<>());
@@ -93,6 +105,68 @@ class JournalServiceImpl implements JournalService {
                 searchCriteriaSettingsRegistry.registerJournalStaticQuery(journal.getId(), staticQuery);
             }
         }
+    }
+
+    @Override
+    public Long getRecordsCount(String journal) {
+
+        NodeRef journalRef;
+        String journalId;
+
+        if (NodeRef.isNodeRef(journal)) {
+            journalRef = new NodeRef(journal);
+            if (!nodeService.exists(journalRef)) {
+                return 0L;
+            }
+            journalId = (String) nodeService.getProperty(journalRef, JournalsModel.PROP_JOURNAL_TYPE);
+        } else {
+            journalId = journal;
+            journalRef = getJournalRef(journal);
+            if (journalRef == null) {
+                return 0L;
+            }
+        }
+
+        JGqlPageInfoInput page = new JGqlPageInfoInput(null, 1, Collections.emptyList(), 0);
+
+        String query = buildJournalQuery(journalRef);
+        RecordsQueryResult<RecordRef> result = getRecords(journalId, query, null, page);
+        return result.getTotalCount();
+    }
+
+    private String buildJournalQuery(NodeRef journalRef) {
+        List<NodeRef> criteriaRefs = RepoUtils.getChildrenByAssoc(
+                journalRef, JournalsModel.ASSOC_SEARCH_CRITERIA, nodeService);
+        if (CollectionUtils.isEmpty(criteriaRefs)) {
+            return "{}";
+        }
+        SearchCriteria searchCriteria = new SearchCriteria(namespaceService);
+        criteriaRefs.forEach(nodeRef -> {
+            Map<QName, Serializable> props = nodeService.getProperties(nodeRef);
+            QName fieldQName = (QName) props.get(JournalsModel.PROP_FIELD_QNAME);
+            String predicate = (String) props.get(JournalsModel.PROP_PREDICATE);
+            String criterionValue = (String) props.get(JournalsModel.PROP_CRITERION_VALUE);
+            if (fieldQName == null || predicate == null || criterionValue == null) {
+                return;
+            }
+            String field = fieldQName.toPrefixString(namespaceService);
+            String criterion = "";
+            if (StringUtils.isNotEmpty(criterionValue)) {
+                Map<String, Object> model = new HashMap<>();
+                /* this replacement is used to fix template strings like this one:
+                 * <#list (people.getContainerGroups(person)![]) as group>#{group.nodeRef},</#list>#{person.nodeRef} */
+                criterionValue = criterionValue.replace("#{", "${");
+                criterion = (String) expressionEvaluator.evaluate(criterionValue, model);
+            }
+            searchCriteria.addCriteriaTriplet(field, predicate, criterion);
+        });
+        String criteria;
+        try {
+            criteria = objectMapper.writeValueAsString(searchCriteria);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Json processing error.", e);
+        }
+        return criteria;
     }
 
     @Override

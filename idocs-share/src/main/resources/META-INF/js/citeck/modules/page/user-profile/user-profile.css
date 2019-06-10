@@ -1,0 +1,39 @@
+.user-profile-wrapper {
+    padding: 20px 0 0 !important;
+}
+
+.user-profile__edit-form_mode-view {
+    padding: 20px 27px;
+}
+
+.user-profile__edit-form_mode-edit {
+    padding: 20px 42px;
+}
+
+.user-profile-documents-tab {
+    background-color: #fff;
+    padding: 0 27px 10px;
+}
+
+.user-profile-documents-tab__case-levels {
+    margin-top: 20px;
+    display: none;
+}
+
+.user-profile-documents-tab__advanced-associations {
+    margin-top: 20px;
+}
+
+.user-profile-documents-tab__case-documents {}
+
+.user-profile-documents-tab__case-documents-buttons {
+    display: flex;
+    justify-content: flex-end;
+
+    position: relative;
+    top: 15px;
+}
+
+.user-profile-documents-tab__case-documents-button {
+    margin-left: 10px;
+}

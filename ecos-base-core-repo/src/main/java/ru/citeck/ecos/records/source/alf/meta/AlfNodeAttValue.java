@@ -1,12 +1,17 @@
 package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import lombok.Getter;
+import org.alfresco.error.AlfrescoRuntimeException;
+import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.repository.ContentData;
-import org.alfresco.service.cmr.repository.ContentReader;
-import org.alfresco.service.cmr.repository.ContentService;
-import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.repo.thumbnail.ThumbnailDefinition;
+import org.alfresco.repo.thumbnail.ThumbnailRegistry;
+import org.alfresco.service.cmr.repository.*;
+import org.alfresco.service.cmr.thumbnail.ThumbnailService;
 import org.alfresco.service.namespace.QName;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.node.AlfNodeInfo;
 import ru.citeck.ecos.node.DisplayNameService;
@@ -14,6 +19,7 @@ import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.records.source.alf.file.FileRepresentation;
 import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -25,6 +31,8 @@ import java.util.stream.Collectors;
 
 public class AlfNodeAttValue implements MetaValue {
 
+    private static final String AS_CONTENT_DATA_KEY = "content-data";
+
     private Attribute att;
 
     private Object rawValue;
@@ -32,6 +40,9 @@ public class AlfNodeAttValue implements MetaValue {
     private GqlQName qName;
 
     private AlfGqlContext context;
+
+    @Getter(lazy = true)
+    private final ContentInfo contentInfo = evalContentInfo();
 
     public AlfNodeAttValue(Attribute att, Object value) {
         this.att = att;
@@ -135,6 +146,101 @@ public class AlfNodeAttValue implements MetaValue {
                             .collect(Collectors.toList());
         } else if (qName != null) {
             return MetaUtils.getReflectionValue(qName, name);
+        } else if (rawValue instanceof ContentData) {
+            if ("previewInfo".equals(name)) {
+                return getContentInfo();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object getAs(String type) {
+        if (AS_CONTENT_DATA_KEY.equalsIgnoreCase(type)) {
+            if (alfNode != null) {
+                JSONObject file = FileRepresentation.fromAlfNode(alfNode, context);
+                return file.toString();
+            }
+
+            if (rawValue instanceof ContentData) {
+                JSONArray file = FileRepresentation.formContentData((ContentData) rawValue, this.context, att);
+                return file.toString();
+            }
+
+            throw new AlfrescoRuntimeException("Unsupported state for as key: " + AS_CONTENT_DATA_KEY);
+        }
+
+        return null;
+    }
+
+    private ContentInfo evalContentInfo() {
+
+        if (!(rawValue instanceof ContentData)) {
+            return null;
+        }
+
+        ContentData data = (ContentData) rawValue;
+        String mimetype = data.getMimetype();
+        if (mimetype == null || att == null) {
+            return null;
+        }
+        NodeRef scopeRef = att.getScopeNodeRef();
+        if (scopeRef == null) {
+            return null;
+        }
+
+        String url = "alfresco/api/node/workspace/SpacesStore/" + scopeRef.getId() + "/content";
+        String previewMimetype = mimetype;
+        String previewExtension;
+
+        MimetypeService mimetypeService = context.getServiceRegistry().getMimetypeService();
+
+        switch (mimetype) {
+            case MimetypeMap.MIMETYPE_PDF:
+            case MimetypeMap.MIMETYPE_IMAGE_PNG:
+            case MimetypeMap.MIMETYPE_IMAGE_JPEG:
+            case MimetypeMap.MIMETYPE_IMAGE_GIF:
+                previewExtension = context.getServiceRegistry().getMimetypeService().getExtension(mimetype);
+                break;
+            default:
+                String thumbnailType = getThumbnailType(data);
+                if (thumbnailType != null) {
+                    url += "/thumbnails/" + thumbnailType;
+                    previewExtension = thumbnailType;
+                    previewMimetype = mimetypeService.getMimetype(previewExtension);
+                } else {
+                    url = null;
+                    previewExtension = mimetypeService.getExtension(previewMimetype);
+                }
+        }
+
+        if (url != null) {
+            url += "?c=force";
+        }
+
+        return new ContentInfo(url, previewExtension, previewMimetype);
+    }
+
+    private String getThumbnailType(ContentData data) {
+
+        ThumbnailService thumbnailService = context.getServiceRegistry().getThumbnailService();
+        if (thumbnailService == null) {
+            return null;
+        }
+        ThumbnailRegistry registry = thumbnailService.getThumbnailRegistry();
+        if (registry == null) {
+            return null;
+        }
+
+        List<ThumbnailDefinition> definitions = registry.getThumbnailDefinitions(data.getMimetype(), data.getSize());
+        if (definitions == null) {
+            definitions = Collections.emptyList();
+        }
+
+        for (ThumbnailDefinition definition : definitions) {
+            if ("pdf".equals(definition.getName())) {
+                return "pdf";
+            }
         }
         return null;
     }
@@ -160,6 +266,19 @@ public class AlfNodeAttValue implements MetaValue {
         @Override
         public Map<QName, Serializable> getProperties() {
             return alfNode.getProperties();
+        }
+    }
+
+    public static class ContentInfo {
+
+        @Getter private final String url;
+        @Getter private final String ext;
+        @Getter private final String mimetype;
+
+        ContentInfo(String url, String ext, String mimetype) {
+            this.url = url;
+            this.ext = ext;
+            this.mimetype = mimetype;
         }
     }
 }

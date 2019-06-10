@@ -1,8 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { createStore, applyMiddleware, compose } from 'redux';
-import { Provider } from 'react-redux';
-import thunk from 'js/citeck/lib/redux-thunk';
+import React from 'ecosui!react';
+import ReactDOM from 'ecosui!react-dom';
+import { createStore, applyMiddleware, compose } from 'ecosui!redux';
+import { Provider } from 'ecosui!react-redux';
+import thunk from 'ecosui!redux-thunk';
 
 import ShareHeader from './share-header';
 import API from '../common/api';
@@ -20,12 +20,12 @@ import {
 
 const api = new API(window.Alfresco.constants.PROXY_URI);
 
-let composeEnhancers = compose;
-if (typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) {
-    composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
-}
+// let composeEnhancers = compose;
+// if (typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) {
+//     composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+// }
 
-const store = createStore(rootReducer, {}, composeEnhancers(
+const store = createStore(rootReducer, {}, compose(
         applyMiddleware(thunk.withExtraArgument(api)),
     )
 );

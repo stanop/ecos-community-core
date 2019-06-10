@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Journal records count</shortname>
+    <description>Get journal records count</description>
+    <url>/api/journals/records/count?journal={journal}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction readonly="true">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

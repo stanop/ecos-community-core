@@ -24,6 +24,9 @@ public interface OrgStructModel {
 
     public static final String NAMESPACE = "http://www.citeck.ru/model/orgstruct/1.0";
 
+    public static final QName TYPE_SIMPLE_BRANCH = QName.createQName(NAMESPACE, "simpleBranchType");
+    public static final QName TYPE_SIMPLE_ROLE = QName.createQName(NAMESPACE, "simpleRoleType");
+
     public static final QName ASPECT_BRANCH_TYPE = QName.createQName(NAMESPACE, "branchType");
 
     public static final QName ASPECT_ROLE_TYPE = QName.createQName(NAMESPACE, "roleType");
@@ -52,4 +55,5 @@ public interface OrgStructModel {
 
     public static final QName ASSOC_LEGAL_ENTITY = QName.createQName(NAMESPACE, "legalEntity");
     public static final QName ASSOC_WORKING_CALENDAR = QName.createQName(NAMESPACE, "workingCalendar");
+    public static final QName ASSOC_PERSONAL_DOCUMENTS = QName.createQName(NAMESPACE, "personalDocuments");
 }

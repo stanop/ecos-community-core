@@ -8,6 +8,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.graphql.meta.value.CreateVariant;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records2.graphql.meta.value.SimpleMetaEdge;
 import ru.citeck.ecos.security.EcosPermissionService;
@@ -15,8 +17,10 @@ import ru.citeck.ecos.utils.DictUtils;
 import ru.citeck.ecos.utils.NodeUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AlfNodeMetaEdge extends SimpleMetaEdge {
 
@@ -90,6 +94,38 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
     }
 
     @Override
+    public boolean isAssociation() {
+        return getDefinition() instanceof AssociationDefinition;
+    }
+
+    @Override
+    public List<CreateVariant> getCreateVariants() {
+
+        ClassAttributeDefinition definition = getDefinition();
+
+        if (definition instanceof ChildAssociationDefinition) {
+
+            ChildAssociationDefinition assocDef = (ChildAssociationDefinition) definition;
+            QName targetName = assocDef.getTargetClass().getName();
+            Collection<QName> subTypes = dictionaryService.getSubTypes(targetName, true);
+
+            return subTypes.stream().map(typeName -> {
+
+                TypeDefinition typeDef = dictionaryService.getType(typeName);
+
+                CreateVariant createVariant = new CreateVariant();
+                String prefixStr = typeName.toPrefixString(namespaceService);
+                createVariant.setRecordRef(RecordRef.create("dict", prefixStr));
+                createVariant.setLabel(typeDef.getTitle(messageService));
+
+                return createVariant;
+            }).collect(Collectors.toList());
+        }
+
+        return null;
+    }
+
+    @Override
     public boolean isProtected() {
 
         NodeRef nodeRef = getNodeRef();
@@ -116,7 +152,7 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
     @Override
     public String getTitle() {
         ClassAttributeDefinition definition = getDefinition();
-        return definition.getTitle(messageService);
+        return definition != null ? definition.getTitle(messageService) : getName();
     }
 
     @Override

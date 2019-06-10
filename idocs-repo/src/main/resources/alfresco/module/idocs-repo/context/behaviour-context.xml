@@ -941,6 +941,15 @@
         </property>
     </bean>
 
+    <bean id="idocs.personal.documents.SetDefaultTypeKindAndMoveBehaviour"
+          class="ru.citeck.ecos.behavior.personal.SetDefaultTypeKindAndMoveBehaviour"
+          depends-on="idocs.module-component.document-categories">
+        <property name="authenticationService" ref="AuthenticationService"/>
+        <property name="personalDocumentsService" ref="PersonalDocumentsService"/>
+        <property name="defaultType" value="workspace://SpacesStore/cat-personal-documents"/>
+        <property name="defaultKind" value="workspace://SpacesStore/kind-d-miscellaneous"/>
+    </bean>
+
     <bean id="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour"
           class="ru.citeck.ecos.behavior.history.UseNewHistoryFlagBehaviour" />
 

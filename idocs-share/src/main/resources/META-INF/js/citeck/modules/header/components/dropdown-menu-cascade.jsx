@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'ecosui!react';
 import DropDownMenuItem from './dropdown-menu-item';
 import { t } from '../../common/util';
 

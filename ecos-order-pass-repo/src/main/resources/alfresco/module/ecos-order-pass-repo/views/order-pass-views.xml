@@ -47,6 +47,8 @@
             <region name="select" template="number-generate">
                 <param name="template">idocs-order-pass-number-template</param>
                 <param name="mode">checkbox</param>
+                <param name="flagOn">true</param>
+                <param name="generateOff">true</param>
             </region>
         </field>
         <field property="op:visitingDate"/>

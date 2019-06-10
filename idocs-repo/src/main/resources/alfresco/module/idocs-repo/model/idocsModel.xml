@@ -733,6 +733,20 @@
                 </property>
             </properties>
         </aspect>
+
+        <aspect name="idocs:hasIndividualInfo">
+            <title>Регистрационная информация физического лица</title>
+            <properties>
+                <property name="idocs:inila">
+                    <title>INILA</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:registrationAddress">
+                    <title>Registration address</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+        </aspect>
         
         <aspect name="idocs:publicRegInfo">
             <title>Регистрационная информация юридического лица</title>

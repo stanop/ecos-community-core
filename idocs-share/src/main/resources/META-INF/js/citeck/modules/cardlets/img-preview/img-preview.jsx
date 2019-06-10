@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'ecosui!react';
 import NodeCardlet from '../node-cardlet';
 
 export default class ImgPreview extends NodeCardlet {

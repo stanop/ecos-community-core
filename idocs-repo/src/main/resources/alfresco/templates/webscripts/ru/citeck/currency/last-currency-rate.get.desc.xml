@@ -14,6 +14,12 @@
             </ul>
         <br/>
 
+        Optional parameters:
+            <ul>
+            <li>manualConversion - set true to get last currency rate with manual conversion (if required).
+            </ul>
+        <br/>
+
         Json returned:
             <pre>{
                 data: <currency rate as double value>

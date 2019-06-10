@@ -629,6 +629,15 @@ div[id*="-results-panel"].yui-panel>.bd {
     display: block;
 }
 
+.samwf_processingStatus-In.progress {
+  display: table-row;
+  height: auto;
+  overflow: initial;
+  font-size: 13px;
+  background-color: initial;
+  border-radius: 0;
+}
+
 /* site-members page style fixes */
 .alf-invite-direct-add .people-finder .search-bar {
   padding: 0 0 0 32px;
@@ -672,4 +681,9 @@ div[id*="-results-panel"].yui-panel>.bd {
 }
 .group-finder .search-bar {
   padding: 1px;
+}
+
+/* hide img alt */
+.dashlet-comments .icon img {
+    font-size: 0;
 }

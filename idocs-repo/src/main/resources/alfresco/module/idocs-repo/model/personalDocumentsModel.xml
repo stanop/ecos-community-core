@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="pd:pdModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Personal documents</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl" />
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk" />
+        <import uri="http://www.citeck.ru/model/icase/1.0" prefix="icase"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/personal/documents/1.0" prefix="pd" />
+    </namespaces>
+
+    <types>
+        <type name="pd:personalDocuments">
+            <title>Каталог личного дела пользователя</title>
+            <parent>cm:folder</parent>
+            <associations>
+                <association name="pd:documentLink">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>cm:content</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
+            <mandatory-aspects>
+                <aspect>pd:personalDocumentsType</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+        <aspect name="pd:personalDocumentsType">
+            <parent>tk:documentTypeKind</parent>
+            <overrides>
+                <property name="tk:type">
+                    <default>workspace://SpacesStore/cat-personal-documents</default>
+                </property>
+            </overrides>
+        </aspect>
+    </aspects>
+
+</model>

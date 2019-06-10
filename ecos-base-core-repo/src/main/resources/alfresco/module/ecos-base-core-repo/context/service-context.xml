@@ -433,4 +433,9 @@
         </property>
     </bean>
 
+    <bean id="base64TemplateImageConverterTemplate" class="ru.citeck.ecos.template.Base64TemplateImageConverter"
+          parent="baseTemplateImplementation">
+        <property name="extensionName" value="base64Image"/>
+    </bean>
+
 </beans>

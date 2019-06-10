@@ -18,18 +18,17 @@ import java.util.Optional;
 
 /**
  * @author alexander.nemerov
- *         date 03.11.2016.
+ * date 03.11.2016.
  */
 public class CurrencyServiceImpl implements CurrencyService {
-
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private static final String CURRENCY_RATE_QUERY_TEMPLATE = "TYPE:\"idocs:currencyRateRecord\"" +
             " AND @idocs\\:crrBaseCurrency_added:\"%s\"" +
             " AND @idocs\\:crrTargetCurrency_added:\"%s\"" +
             " AND @idocs\\:crrDate:[MIN TO \"%s\"]";
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
+    private static final int MANUAL_CONVERSION_SCALE = 4;
 
     private CurrencyDAO currencyDAO;
 
@@ -81,17 +80,34 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public BigDecimal getLastCurrencyRate(NodeRef baseCurrency, NodeRef targetCurrency, Date date) {
-        String dateStr = sdf.format(date);
-        String query = String.format(CURRENCY_RATE_QUERY_TEMPLATE, baseCurrency, targetCurrency, dateStr);
-        Optional<NodeRef> result = search(query);
-
-        return result
-                .map(nodeRef -> getRateFromCurrencyRateRecord(nodeRef, baseCurrency, targetCurrency))
-                .orElseGet(() -> getRateFromCurrency(baseCurrency, targetCurrency));
+        Optional<BigDecimal> result = getCurrencyRateFromRecord(baseCurrency, targetCurrency, date);
+        return result.orElseGet(() -> getRateFromCurrency(baseCurrency, targetCurrency));
     }
 
-    public void setCurrencyDAO(CurrencyDAO currencyDAO) {
-        this.currencyDAO = currencyDAO;
+    @Override
+    public BigDecimal getLastCurrencyRateWithManualConversion(NodeRef baseCurrency, NodeRef targetCurrency, Date date) {
+        Optional<BigDecimal> baseValue = getCurrencyRateFromRecord(baseCurrency, targetCurrency, date);
+        return baseValue.orElseGet(() -> calcReversedRateRecord(baseCurrency, targetCurrency, date)
+                .orElseGet(() -> getRateFromCurrency(baseCurrency, targetCurrency)));
+    }
+
+    private Optional<BigDecimal> getCurrencyRateFromRecord(NodeRef baseCurrency, NodeRef targetCurrency, Date date) {
+        String dateStr = SDF.format(date);
+        String query = String.format(CURRENCY_RATE_QUERY_TEMPLATE, baseCurrency, targetCurrency, dateStr);
+        return search(query).map(this::getRateValueFromCurrencyRecord);
+    }
+
+    private BigDecimal getRateFromCurrency(NodeRef base, NodeRef target) {
+        Currency baseCurrency = getCurrencyByNodeRef(base);
+        Currency targetCurrency = getCurrencyByNodeRef(target);
+        BigDecimal result = transferFromOneCurrencyToOther(baseCurrency, targetCurrency, BigDecimal.ONE);
+        return BigDecimal.ONE.divide(result, MathContext.DECIMAL64);
+    }
+
+    private Optional<BigDecimal> calcReversedRateRecord(NodeRef baseCurrency, NodeRef targetCurrency, Date date) {
+        Optional<BigDecimal> value = getCurrencyRateFromRecord(targetCurrency, baseCurrency, date);
+        return value.map(bigDecimal -> BigDecimal.ONE.divide(bigDecimal, MANUAL_CONVERSION_SCALE,
+                BigDecimal.ROUND_HALF_UP));
     }
 
     private Optional<NodeRef> search(String query) {
@@ -114,18 +130,13 @@ public class CurrencyServiceImpl implements CurrencyService {
         }
     }
 
-    private BigDecimal getRateFromCurrencyRateRecord(NodeRef nodeRef, NodeRef baseCurrency, NodeRef targetCurrency) {
+    private BigDecimal getRateValueFromCurrencyRecord(NodeRef nodeRef) {
         Serializable value = currencyDAO.getNodeService().getProperty(nodeRef, IdocsModel.PROP_CRR_VALUE);
-        return (value != null)
-                ? BigDecimal.valueOf((double) value)
-                : getRateFromCurrency(baseCurrency, targetCurrency);
+        return value != null ? BigDecimal.valueOf((double) value) : null;
     }
 
-    private BigDecimal getRateFromCurrency(NodeRef base, NodeRef target) {
-        Currency baseCurrency = getCurrencyByNodeRef(base);
-        Currency targetCurrency = getCurrencyByNodeRef(target);
-        BigDecimal result = transferFromOneCurrencyToOther(baseCurrency, targetCurrency, new BigDecimal(1));
-        return new BigDecimal(1).divide(result, MathContext.DECIMAL64);
+    public void setCurrencyDAO(CurrencyDAO currencyDAO) {
+        this.currencyDAO = currencyDAO;
     }
 
 }

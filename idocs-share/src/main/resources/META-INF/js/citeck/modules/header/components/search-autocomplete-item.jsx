@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
-import { connect } from 'react-redux';
+import React, { Fragment } from 'ecosui!react';
+import { connect } from 'ecosui!react-redux';
 import { formatFileSize, getRelativeTime } from '../misc/util';
 
 export const SEARCH_AUTOCOMPLETE_TYPE_DOCUMENTS = 0;

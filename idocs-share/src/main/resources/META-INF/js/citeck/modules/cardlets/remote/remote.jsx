@@ -1,5 +1,5 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React from 'ecosui!react';
+import { connect } from 'ecosui!react-redux';
 import NodeCardlet from '../node-cardlet';
 import {utils as CiteckUtils} from 'js/citeck/modules/utils/citeck';
 

@@ -8,11 +8,13 @@
         <import uri="http://www.citeck.ru/model/content/classification/tk/1.0" prefix="tk"/>
         <import uri="http://www.citeck.ru/model/content/dms/1.0" prefix="dms"/>
         <import uri="http://www.citeck.ru/model/budget/1.0" prefix="budget"/>
+        <import uri="http://www.citeck.ru/model/content/ecos/1.0" prefix="ecos" />
     </imports>
 
     <view class="idocs:organizationInfo">
         <field prop="idocs:fullOrganizationName"/>
         <field prop="idocs:shortOrganizationName"/>
+        <field assoc="idocs:legalForm"/>
         <view>
             <field prop="idocs:contractorType">
                 <region name="input" template="checkbox"/>
@@ -45,13 +47,26 @@
 
         <view id="contractor-mainTab">
             <param name="title">tab.main</param>
+            <view>
+                <field prop="idocs:lastName"/>
+                <field prop="idocs:firstName"/>
+                <field prop="idocs:patronymicName"/>
+                <field prop="ecos:birthDate"/>
+            </view>
+            <view>
+                <field prop="idocs:numberPass"/>
+                <field prop="idocs:whoIssuedPass"/>
+                <field prop="idocs:passIssueDate"/>
+            </view>
 
             <view class="idocs:organizationInfo"/>
             <view>
                 <field prop="idocs:juridicalAddress"/>
+                <field prop="idocs:registrationAddress"/>
                 <field prop="idocs:postAddress"/>
                 <field prop="idocs:okpo"/>
             </view>
+
             <view>
                 <field prop="idocs:inn">
                     <invariant on="mandatory" language="explicit">true</invariant>
@@ -66,7 +81,23 @@
                     </invariant>
                 </field>
                 <field prop="idocs:kpp"/>
+                <field prop="idocs:inila"/>
                 <field prop="idocs:ogrn"/>
+
+                <view template="dadata-loader" >
+                    <param name="attributes">
+                        {
+                        'idocs:fullOrganizationName': function(response){return response.value},
+                        'idocs:shortOrganizationName': function(response){return response.unrestricted_value},
+                        'idocs:juridicalAddress': function(response){return response.data.address.unrestricted_value},
+                        'idocs:kpp': function(response){return response.data.kpp},
+                        'idocs:ogrn': function(response){return response.data.ogrn},
+                        'idocs:okpo': function(response){return response.data.okpo},
+                        'idocs:CEOname': function(response){return response.data.management.post + ', ' + response.data.management.name},
+                        'idocs:postAddress': function(response){return response.data.address.unrestricted_value}
+                        }
+                    </param>
+                </view>
             </view>
             <view>
                 <field prop="idocs:psrnsp"/>
@@ -85,6 +116,12 @@
             </view>
             <view>
                 <field prop="idocs:doNotSendContractToEdiFlag"/>
+            </view>
+            <view>
+                <field assoc="idocs:initiator"/>
+            </view>
+            <view>
+                <field assoc="ecos:responsible"/>
             </view>
         </view>
 

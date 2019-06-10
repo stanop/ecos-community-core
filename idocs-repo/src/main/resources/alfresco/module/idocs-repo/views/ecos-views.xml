@@ -129,6 +129,8 @@
                             return mapping[kind] || 'ecos-case-number-template';
                         }]]></param>
                         <param name="mode">checkbox</param>
+                        <param name="flagOn">true</param>
+                        <param name="generateOff">true</param>
                     </region>
                 </field>
                 <field prop="ecos:documentDate">

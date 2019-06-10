@@ -1,4 +1,4 @@
-import React from "react";
+import React from "ecosui!react";
 import SurfRegion from "../surf/surf-region";
 
 const ShareFooter = function ({theme}) {

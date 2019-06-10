@@ -11,7 +11,7 @@ import static ru.citeck.ecos.flowable.constants.FlowableConstants.ENGINE_PREFIX;
 /**
  * Flowable mirror listener
  */
-public class MirrorListener implements GlobalCreateTaskListener, GlobalAssignmentTaskListener, GlobalCompleteTaskListener {
+public class MirrorListener implements GlobalCreateTaskListener, GlobalAssignmentTaskListener {
 
     private WorkflowMirrorService workflowMirrorService;
 

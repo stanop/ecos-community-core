@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'ecosui!react';
 import { t } from "../../common/util";
 import ListItemIcon from "./list-item-icon";
 

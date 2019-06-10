@@ -35,32 +35,35 @@ table, tr, td
 <#assign records = recordsService.getRecordsForClass(query, clazz).records![] />
 
 <#list records as record>
+    <#assign role = ""/>
     <#assign type = record.taskType!"" />
     <#assign date = record.date!"" />
     <#assign comment = record.taskComment!"" />
     <#assign outcome = record.taskOutcomeTitle!"" />
     <#if record.taskPooledActors?? && record.taskPooledActors[0]??>
-        <#assign role=record.taskPooledActors[0].authorityName!""
-                 user=record.taskPooledActors[0].userName!"" />
+        <#assign role=record.taskPooledActors[0].authorityName!""/>
     </#if>
-<#-- User in taskPooledActors authority container is not available for now.
-    Trying to get it from taskRole -->
-    <#if !user?has_content && record.taskRole?has_content>
-        <#assign user = record.taskRole!"" />
-    </#if>
+
     <#assign allDecisions = allDecisions + [ {
         "date": date,
         "comment": comment,
         "outcome": outcome,
         "role": role!"",
-        "user": user!""
+        "user": record.initiator!""
     } ] />
 </#list>
 
-<#-- leave the latest decision for each role -->
+<#-- leave the latest decision for each role and user -->
 <#assign decisionMap = {} />
 <#list allDecisions?sort_by("date") as decision>
-    <#assign decisionMap = decisionMap + { decision.role!decision.user : decision } />
+    <#assign key = ""/>
+    <#if decision.role?has_content>
+        <#assign key = decision.role/>
+    <#elseif decision.user?has_content>
+        <#assign key = decision.user.id/>
+    </#if>
+
+    <#assign decisionMap = decisionMap + { key : decision } />
 </#list>
 
 <table width="${tableWidth}">
@@ -77,7 +80,7 @@ table, tr, td
     <tr>
         <td>${decision.date?string[dateFormat]}</td>
         <td><#if decision.role?has_content && people.getGroup(decision.role)??>${people.getGroup(decision.role).properties.authorityDisplayName!""}</#if></td>
-        <td><#if decision.user?has_content && people.getPerson(decision.user)??>${people.getPerson(decision.user).properties.firstName!""} ${people.getPerson(decision.user).properties.lastName!""}</#if></td>
+        <td><#if decision.user.displayName??>#{decision.user.displayName}<#else>${decision.user.lastName!""} ${decision.user.firstName!""} ${decision.user.middleName!""}</#if></td>
         <td>${decision.outcome}</td>
         <td>${decision.comment}</td>
         <td> &nbsp;</td>

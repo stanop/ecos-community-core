@@ -91,12 +91,12 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     @Override
     public void mirrorTask(String taskId) {
-        mirrorTaskBeforeCommit(taskId);
+        mirrorTaskBeforeCommit(new RawTaskInfo(taskId, true));
     }
 
     @Override
     public void mirrorTask(WorkflowTask task) {
-        mirrorTaskBeforeCommit(task.getId());
+        mirrorTaskBeforeCommit(new RawTaskInfo(task.getId(), true));
     }
 
     @Override
@@ -104,7 +104,11 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         if (!nodeService.exists(taskMirror)) {
             return;
         }
-        mirrorTaskBeforeCommit((String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME));
+        mirrorTaskBeforeCommit(new RawTaskInfo((String) nodeService.getProperty(taskMirror, ContentModel.PROP_NAME), true));
+    }
+
+    public void mirrorTask(String taskId, boolean fullPersist) {
+        mirrorTaskBeforeCommit(new RawTaskInfo(taskId, fullPersist));
     }
 
     @Override
@@ -172,13 +176,13 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
         return workflowService.getTaskById(taskId);
     }
 
-    private void mirrorTaskBeforeCommit(String taskId) {
-        TransactionUtils.processAfterBehaviours(KEY_TASKS_TO_MIRROR, taskId, id ->
-                mirrorTaskImpl(getTask(id), getTaskMirror(id))
+    private void mirrorTaskBeforeCommit(RawTaskInfo rawTaskInfo) {
+        TransactionUtils.processAfterBehaviours(KEY_TASKS_TO_MIRROR, rawTaskInfo, info ->
+                mirrorTaskImpl(getTask(info.getTaskId()), getTaskMirror(info.getTaskId()), info.isFullPersist())
         );
     }
 
-    private void mirrorTaskImpl(WorkflowTask task, NodeRef taskMirror) {
+    private void mirrorTaskImpl(WorkflowTask task, NodeRef taskMirror, boolean fullPersist) {
 
         NodeInfo nodeInfo = null;
         if (task != null) {
@@ -203,35 +207,12 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             // override cm:name to allow search of task-mirror by name
             nodeInfo.setProperty(ContentModel.PROP_NAME, task.getId());
 
-            // add convenient attributes, specific to task-mirrors only
-            nodeInfo.setProperty(ContentModel.PROP_TITLE, workflowUtils.getTaskMLTitle(task));
-            nodeInfo.setProperty(WorkflowMirrorModel.PROP_TASK_TYPE, nodeInfo.getType());
-            nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_ID, task.getPath().getInstance().getId());
-            nodeInfo.setProperty(WorkflowMirrorModel.PROP_ACTORS, getActors(task));
-            nodeInfo.setProperty(WorkflowMirrorModel.PROP_ASSIGNEE, getAssignee(task));
-            nodeInfo.setProperty(WorkflowMirrorModel.PROP_ASSIGNEE_MANAGER, getAssigneeManager(task));
-            nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_NAME, getWorkflowName(task, nodeInfo));
-            nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_INITIATOR, getWorkflowInitiator(task, nodeInfo));
-
-            NodeRef document = getDocument(task, nodeInfo);
-            if (document != null) {
-                nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT, document);
-                nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE, nodeService.getType(document));
-                nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE_TITLE, getMlDocumentTypeTitle(document));
-                nodeInfo.setProperty(WorkflowMirrorModel.PROP_COUNTERPARTY, getCounterparty(document));
-
-                NodeRef documentKind = getDocumentKind(document);
-                if (documentKind != null && nodeService.exists(documentKind)) {
-                    nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND, documentKind);
-                    nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND_TITLE,
-                            mlAwareNodeService.getProperty(documentKind, ContentModel.PROP_TITLE));
-                }
-
-                nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
+            if (fullPersist) {
+                fillProperties(task, nodeInfo);
             }
 
             if (nodeUtils.isValidNode(taskMirror)) {
-                nodeInfoFactory.persist(taskMirror, nodeInfo, true);
+                nodeInfoFactory.persist(taskMirror, nodeInfo, fullPersist);
             }
 
         } else if (task == null && taskMirror != null) {
@@ -277,6 +258,35 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             results.add(assignee);
         }
         return results;
+    }
+
+    // add convenient attributes, specific to task-mirrors only
+    private void fillProperties(WorkflowTask task, NodeInfo nodeInfo) {
+
+        nodeInfo.setProperty(ContentModel.PROP_TITLE, workflowUtils.getTaskMLTitle(task));
+        nodeInfo.setProperty(WorkflowMirrorModel.PROP_TASK_TYPE, nodeInfo.getType());
+        nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_ID, task.getPath().getInstance().getId());
+        nodeInfo.setProperty(WorkflowMirrorModel.PROP_ACTORS, getActors(task));
+        nodeInfo.setProperty(WorkflowMirrorModel.PROP_ASSIGNEE, getAssignee(task));
+        nodeInfo.setProperty(WorkflowMirrorModel.PROP_ASSIGNEE_MANAGER, getAssigneeManager(task));
+        nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_NAME, getWorkflowName(task, nodeInfo));
+        nodeInfo.setProperty(WorkflowMirrorModel.PROP_WORKFLOW_INITIATOR, getWorkflowInitiator(task, nodeInfo));
+
+        NodeRef document = getDocument(task, nodeInfo);
+        if (document != null) {
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT, document);
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE, nodeService.getType(document));
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE_TITLE, getMlDocumentTypeTitle(document));
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_COUNTERPARTY, getCounterparty(document));
+
+            NodeRef documentKind = getDocumentKind(document);
+            if (documentKind != null && nodeService.exists(documentKind)) {
+                nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND, documentKind);
+                nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND_TITLE,
+                        mlAwareNodeService.getProperty(documentKind, ContentModel.PROP_TITLE));
+            }
+            nodeInfo.createSourceAssociation(document, WorkflowMirrorModel.ASSOC_MIRROR_TASK);
+        }
     }
 
     @SuppressWarnings({"unchecked", "deprecation"})
@@ -405,13 +415,60 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             if (classDefinition != null) {
                 QName currentName = classDefinition.getName();
                 if (mapping.containsKey(currentName)) {
-                    QName assocType= mapping.get(currentName);
+                    QName assocType = mapping.get(currentName);
                     return RepoUtils.getFirstTargetAssoc(document, assocType, nodeService);
                 }
             }
         }
 
         return null;
+    }
+
+    class RawTaskInfo {
+
+        private String taskId;
+        private boolean fullPersist;
+
+        public RawTaskInfo(String taskId, boolean fullPersist) {
+            this.taskId = taskId;
+            this.fullPersist = fullPersist;
+        }
+
+        public String getTaskId() {
+            return taskId;
+        }
+
+        public void setTaskId(String taskId) {
+            this.taskId = taskId;
+        }
+
+        public boolean isFullPersist() {
+            return fullPersist;
+        }
+
+        public void setFullPersist(boolean fullPersist) {
+            this.fullPersist = fullPersist;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            RawTaskInfo that = (RawTaskInfo) o;
+            return fullPersist == that.fullPersist &&
+                    Objects.equals(taskId, that.taskId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(taskId, fullPersist);
+        }
     }
 
     public void setSearchService(SearchService searchService) {

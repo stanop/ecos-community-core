@@ -5,7 +5,7 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.AlfGqlContext;
-import ru.citeck.ecos.records.RecordConstants;
+import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.GqlContext;
@@ -45,7 +45,7 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
 
         return records.stream().map(r -> {
             QName typeName = QName.resolveToQName(namespaceService, r.getId());
-            return new DictRecord(typeName, "alf_" + r.getId());
+            return new DictRecord(typeName, r.getId(), "alf_" + r.getId());
 
         }).collect(Collectors.toList());
     }
@@ -73,15 +73,22 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
 
     public static class DictRecord implements MetaValue {
 
-        private QName typeName;
+        private QName fullName;
         private String formKey;
+        private String shortName;
 
         private AlfGqlContext context;
         private DictUtils dictUtils;
 
-        DictRecord(QName typeName, String formKey) {
+        DictRecord(QName fullName, String shortName, String formKey) {
             this.formKey = formKey;
-            this.typeName = typeName;
+            this.fullName = fullName;
+            this.shortName = shortName;
+        }
+
+        @Override
+        public String getId() {
+            return shortName;
         }
 
         @Override
@@ -93,21 +100,24 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
         @Override
         public Object getAttribute(String name, MetaField field) {
 
-            if (RecordConstants.ATT_FORM_KEY.equals(name)){
-                return formKey;
+            switch (name) {
+                case RecordConstants.ATT_FORM_KEY:
+                    return formKey;
+                case RecordConstants.ATT_FORM_MODE:
+                    return RecordConstants.FORM_MODE_CREATE;
+                default:
+                    return null;
             }
-
-            return null;
         }
 
         @Override
         public String getDisplayName() {
-            return dictUtils.getTypeTitle(typeName);
+            return dictUtils.getTypeTitle(fullName);
         }
 
         @Override
         public MetaEdge getEdge(String name, MetaField field) {
-            return new AlfNodeMetaEdge(context, typeName, name, this);
+            return new AlfNodeMetaEdge(context, fullName, name, this);
         }
     }
 }

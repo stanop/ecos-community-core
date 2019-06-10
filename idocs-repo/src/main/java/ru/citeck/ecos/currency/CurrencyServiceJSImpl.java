@@ -9,7 +9,7 @@ import java.util.Date;
 
 /**
  * @author alexander.nemerov
- *         date 04.11.2016.
+ * date 04.11.2016.
  */
 public class CurrencyServiceJSImpl extends AlfrescoScopableProcessorExtension
         implements CurrencyService {
@@ -72,5 +72,10 @@ public class CurrencyServiceJSImpl extends AlfrescoScopableProcessorExtension
     @Override
     public BigDecimal getLastCurrencyRate(NodeRef baseCurrency, NodeRef targetCurrency, Date date) {
         return currencyService.getLastCurrencyRate(baseCurrency, targetCurrency, date);
+    }
+
+    @Override
+    public BigDecimal getLastCurrencyRateWithManualConversion(NodeRef baseCurrency, NodeRef targetCurrency, Date date) {
+        return currencyService.getLastCurrencyRateWithManualConversion(baseCurrency, targetCurrency, date);
     }
 }

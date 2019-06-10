@@ -1,5 +1,5 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React from 'ecosui!react';
+import { connect } from 'ecosui!react-redux';
 import CreateCaseWidget from './components/create-case-widget';
 import UserMenu from './components/user-menu';
 import SitesMenu from './components/sites-menu';

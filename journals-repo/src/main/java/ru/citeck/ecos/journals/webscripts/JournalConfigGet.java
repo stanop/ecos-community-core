@@ -25,6 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
+import ru.citeck.ecos.journals.JournalBatchEdit;
+import ru.citeck.ecos.journals.JournalGroupAction;
 import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
@@ -196,6 +198,7 @@ public class JournalConfigGet extends AbstractWebScript {
         NodeRef journalRef = journalData.getNodeRef();
         meta.setNodeRef(String.valueOf(journalRef));
         meta.setTitle(nodeUtils.getDisplayName(journalRef));
+        meta.setGroupActions(getGroupActions(journal));
 
         List<Criterion> criteriaList = new ArrayList<>();
         SearchCriteria criteria = new SearchCriteria(namespaceService);
@@ -247,6 +250,46 @@ public class JournalConfigGet extends AbstractWebScript {
         meta.setCriteria(criteriaList);
 
         return meta;
+    }
+
+    private List<GroupAction> getGroupActions(JournalType type) {
+
+        List<GroupAction> resultActions = new ArrayList<>();
+
+        for (JournalGroupAction groupAction : type.getGroupActions()) {
+
+            GroupAction action = new GroupAction();
+            action.setId(groupAction.getId());
+            action.setTitle(groupAction.getTitle());
+            action.setParams(groupAction.getOptions());
+            action.setType(groupAction.getType());
+            if (groupAction.getViewClass() != null) {
+                action.setFormKey("alf_" + groupAction.getViewClass());
+            }
+
+            resultActions.add(action);
+        }
+
+        for (String attribute : type.getAttributes()) {
+
+            List<JournalBatchEdit> batchEdits = type.getBatchEdit(attribute);
+
+            for (JournalBatchEdit batchEdit : batchEdits) {
+
+                GroupAction action = new GroupAction();
+                action.setTitle(batchEdit.getTitle());
+
+                Map<String, String> params = new HashMap<>(batchEdit.getOptions());
+                params.put("attribute", attribute);
+                action.setParams(params);
+                action.setId("batch-edit");
+                action.setType("selected");
+
+                resultActions.add(action);
+            }
+        }
+
+        return resultActions;
     }
 
     private String getCriterionValue(String value) {
@@ -369,6 +412,15 @@ public class JournalConfigGet extends AbstractWebScript {
         @Getter @Setter JsonNode predicate;
         @Getter @Setter JsonNode groupBy;
         @Getter @Setter List<CreateVariantsGet.ResponseVariant> createVariants;
+        @Getter @Setter List<GroupAction> groupActions;
+    }
+
+    static class GroupAction {
+        @Getter @Setter String id;
+        @Getter @Setter String title;
+        @Getter @Setter Map<String, String> params;
+        @Getter @Setter String type;
+        @Getter @Setter String formKey;
     }
 
     static class Criterion {

@@ -33,6 +33,17 @@ public abstract class AmountInWordConverter {
     }
 
     /**
+     * Convert an double amount to words using language from current locale
+     *
+     * @param amount       - amount to convert
+     * @return amount in words
+     */
+    public String convert(double amount) {
+        resources.initializationResources(locale);
+        return processConvert(amount);
+    }
+
+    /**
      * Convert an amount to words using language from current locale
      *
      * @param amount       - amount to convert

@@ -55,6 +55,8 @@ public interface JournalService {
 
     NodeRef getJournalRef(String id);
 
+    Long getRecordsCount(String journal);
+
     default RecordsQueryResult<RecordRef> getRecords(String journalId,
                                                      String query,
                                                      String language,

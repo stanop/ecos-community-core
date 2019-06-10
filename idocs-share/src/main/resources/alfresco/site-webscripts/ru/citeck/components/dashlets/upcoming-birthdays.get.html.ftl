@@ -15,7 +15,7 @@
 
     <script type="text/javascript">
         require(['citeck/components/upcoming-birthdays/upcoming-birthdays',
-                    'react-dom', 'react'],
+                    'ecosui!react-dom', 'ecosui!react'],
                 function(component, ReactDOM, React) {
                     ReactDOM.render(
                             React.createElement(component.UpcomingBirthdays),

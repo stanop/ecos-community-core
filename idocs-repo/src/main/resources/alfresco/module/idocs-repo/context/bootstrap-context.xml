@@ -16,7 +16,6 @@
                 <value>alfresco/module/idocs-repo/model/constraintsModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/numericModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/dlModel.xml</value>
-                <value>alfresco/module/idocs-repo/model/classificationModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/dmsModel.xml</value>
                 <value>alfresco/module/idocs-repo/workflow/related-workflows/related-workflows-task-model.xml</value>
                 <value>alfresco/module/idocs-repo/model/lifecycleModel.xml</value>
@@ -35,6 +34,7 @@
                 <value>alfresco/module/idocs-repo/model/menuConfigModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/idocsModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/workingCalendarModel.xml</value>
+                <value>alfresco/module/idocs-repo/model/personalDocumentsModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/orgstructModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/workflowMirrorModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/associationModel.xml</value>

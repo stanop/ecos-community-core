@@ -10,6 +10,7 @@
         <property name="models">
             <list>
                 <value>alfresco/module/ecos-eform-repo/model/ecos-form-model.xml</value>
+                <value>alfresco/module/ecos-eform-repo/model/ecos-eform-file-model.xml</value>
             </list>
         </property>
         <property name="labels">

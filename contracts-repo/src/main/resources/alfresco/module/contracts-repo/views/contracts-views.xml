@@ -101,6 +101,8 @@
                 <region name="select" template="number-generate">
                     <param name="template">agreement-number-template</param>
                     <param name="mode">checkbox</param>
+                    <param name="flagOn">true</param>
+                    <param name="generateOff">true</param>
                 </region>
                 <region name="label" template="label">
                     <param name="key">agreement.form.contracts_agreementNumber.title</param>
@@ -183,7 +185,6 @@
         </view>
         <view>
             <field prop="contracts:digiSign" />
-            <field assoc="contracts:attachmentRkkCreatedFrom" template="none"/>
         </view>
         <view id="note" kind="1-column">
             <field prop="idocs:note">
@@ -279,6 +280,7 @@
             <field assoc="payments:basis">
                 <region name="select" template="select-journal">
                     <param name="journalType">contract-agreements</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -482,6 +484,7 @@
             <field assoc="contracts:closingDocumentAgreement" >
                 <region name="select" template="select-journal" >
                     <param name="journalType">contract-agreements</param>
+                    <param name="searchCriteria">[{ attribute: 'cm:title', predicate: 'string-contains' }]</param>
                 </region>
                 <region name="input" template="view" />
                 <region name="label" template="label">
@@ -631,6 +634,8 @@
                 <region name="select" template="number-generate">
                     <param name="template">supAgreement-number-template</param>
                     <param name="mode">checkbox</param>
+                    <param name="flagOn">true</param>
+                    <param name="generateOff">true</param>
                 </region>
                 <region name="label" template="label">
                     <param name="key">sup-agreement.form.contracts_agreementNumber.title</param>

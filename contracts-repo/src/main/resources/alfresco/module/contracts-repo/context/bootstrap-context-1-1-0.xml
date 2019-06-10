@@ -12,11 +12,11 @@
         <property name="description" value="contract-application-cardlets-document-agreement" />
         <property name="bootstrapViews">
             <list>
-                <props>
-                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreement/comments</prop>
-                </props>
+                <!--<props>-->
+                    <!--<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>-->
+                    <!--<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>-->
+                    <!--<prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreement/comments</prop>-->
+                <!--</props>-->
                 <props>
                     <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
                     <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
@@ -39,13 +39,38 @@
                 </props>
                 <props>
                     <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
                     <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/payments-list</prop>
                 </props>
                 <props>
                     <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
                     <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/payments-list-draft</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/document-versions</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/document-versions-comparison</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/document-supervisors</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/comments</prop>
+                </props>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet-with-mode.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/agreementCommon/history</prop>
                 </props>
             </list>
         </property>
@@ -355,11 +380,11 @@
         <property name="description" value="contract-application-cardlets-supplementary-agreement" />
         <property name="bootstrapViews">
             <list>
-                <props>
-                    <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
-                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
-                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/supplementaryAgreement/comments</prop>
-                </props>
+                <!--<props>-->
+                    <!--<prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>-->
+                    <!--<prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>-->
+                    <!--<prop key="messages">alfresco/module/contracts-repo/bootstrap/cardlets/supplementaryAgreement/comments</prop>-->
+                <!--</props>-->
                 <props>
                     <prop key="path">/app:company_home/app:dictionary/cm:cardlets</prop>
                     <prop key="location">alfresco/templates/bootstrap/ru/citeck/cardlets/cardlet.xml</prop>
@@ -514,9 +539,10 @@
         </property>
     </bean>
 
-	<bean id="idocs.module-component.default-contract-content-template" parent="contracts.import-spaces.1-1-0">
+	<bean id="idocs.module-component.contract-content-template" parent="contracts.import-spaces.1-1-0">
 		<property name="name" value="default-contract-content-template" />
 		<property name="description" value="default-contract-content-template" />
+        <property name="executeOnceOnly" value="false" />
 		<property name="dependsOn">
 			<list>
 				<ref bean="contracts.module-component.doctype-categories1" />

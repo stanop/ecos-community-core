@@ -17,6 +17,7 @@ public class LastCurrencyRateGet extends DeclarativeWebScript {
     private static final String BASE_CURRENCY_PARAM_NAME = "baseCurrency";
     private static final String TARGET_CURRENCY_PARAM_NAME = "targetCurrency";
     private static final String DATE_PARAM_NAME = "date";
+    private static final String MANUAL_CONVERSION_PARAM_NAME = "manualConversion";
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
@@ -26,19 +27,26 @@ public class LastCurrencyRateGet extends DeclarativeWebScript {
 
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
+        String baseCurrencyParam = getParameter(req, BASE_CURRENCY_PARAM_NAME);
+        String targetCurrencyParam = getParameter(req, TARGET_CURRENCY_PARAM_NAME);
+        String dateParam = getParameter(req, DATE_PARAM_NAME);
 
-        String baseCurrency = getParameter(req, BASE_CURRENCY_PARAM_NAME);
-        String targetCurrency = getParameter(req, TARGET_CURRENCY_PARAM_NAME);
-        String dateStr = getParameter(req, DATE_PARAM_NAME);
+        String forceConversionParam = req.getParameter(MANUAL_CONVERSION_PARAM_NAME);
+        boolean forceConversion = Boolean.parseBoolean(forceConversionParam);
 
         Date date;
         try {
-            date = sdf.parse(dateStr);
+            date = sdf.parse(dateParam);
         } catch (ParseException e) {
             throw new WebScriptException("Parameter date must be in " + DATE_FORMAT + " format");
         }
 
-        BigDecimal result = currencyService.getLastCurrencyRate(new NodeRef(baseCurrency), new NodeRef(targetCurrency), date);
+        NodeRef baseCurrency = new NodeRef(baseCurrencyParam);
+        NodeRef targetCurrency = new NodeRef(targetCurrencyParam);
+
+        BigDecimal result = forceConversion
+                ? currencyService.getLastCurrencyRateWithManualConversion(baseCurrency, targetCurrency, date)
+                : currencyService.getLastCurrencyRate(baseCurrency, targetCurrency, date);
 
         return createModel(result);
     }
