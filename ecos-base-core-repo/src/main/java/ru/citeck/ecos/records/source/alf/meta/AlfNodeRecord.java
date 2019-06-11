@@ -95,6 +95,12 @@ public class AlfNodeRecord implements MetaValue {
         List<? extends MetaValue> attribute = null;
 
         switch (name) {
+
+            case RecordConstants.ATT_TYPE:
+
+                attribute = MetaUtils.toMetaValues(node.type(), context, field);
+                break;
+
             case ATTR_ASPECTS:
 
                 attribute = node.aspects()
