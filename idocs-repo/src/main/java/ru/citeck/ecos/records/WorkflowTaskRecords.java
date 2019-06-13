@@ -1,12 +1,19 @@
 package ru.citeck.ecos.records;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.*;
 import ru.citeck.ecos.records2.RecordMeta;
@@ -30,6 +37,8 @@ import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,6 +47,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                                  implements RecordsMetaLocalDAO<MetaValue>,
                                             MutableRecordsDAO,
                                             RecordsQueryLocalDAO {
+
+    private static final Log logger = LogFactory.getLog(WorkflowTaskRecords.class);
 
     private static final String DOCUMENT_FIELD_PREFIX = "_ECM_";
 
@@ -48,6 +59,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private static final String ATT_DOC_STATUS = "docStatus";
     private static final String ATT_DOC_DISP_NAME = "docDisplayName";
     private static final String ATT_DOC_STATUS_TITLE = "docStatusTitle";
+    private static final String ATT_DOC_TYPE = "docType";
 
     private static final String ATT_SENDER = "sender";
     private static final String ATT_STARTED = "started";
@@ -60,13 +72,18 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
     private AuthorityUtils authorityUtils;
     private EcosTaskService ecosTaskService;
+    private NamespaceService namespaceService;
+
+    private Map<String, String> sumAttributeByType = new ConcurrentHashMap<>();
 
     @Autowired
     public WorkflowTaskRecords(AuthorityUtils authorityUtils,
-                               EcosTaskService ecosTaskService) {
+                               EcosTaskService ecosTaskService,
+                               NamespaceService namespaceService) {
         setId(ID);
         this.authorityUtils = authorityUtils;
         this.ecosTaskService = ecosTaskService;
+        this.namespaceService = namespaceService;
     }
 
     @Override
@@ -194,19 +211,93 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             }
         }
 
+        String docType = tasksQuery.docType;
+        if (StringUtils.isNotBlank(docType)) {
+
+            Predicate typePredicate = null;
+
+            if (docType.contains(":") || docType.contains("{")) {
+                QName docTypeQName = QName.resolveToQName(namespaceService, docType);
+                String docTypeAtt = WorkflowMirrorModel.PROP_DOCUMENT_TYPE.toPrefixString(namespaceService);
+                if (docTypeQName != null) {
+                    typePredicate = ValuePredicate.equal(docTypeAtt, docTypeQName.toString());
+                } else {
+                    logger.warn("Document type qname " + docType + " is not found");
+                    typePredicate = ValuePredicate.equal(docTypeAtt, docType);
+                }
+            }
+
+            if (typePredicate == null) {
+                return new RecordsQueryResult<>();
+            }
+
+            predicate.addPredicate(typePredicate);
+        }
+
         if (predicate.getPredicates().isEmpty()) {
             return new RecordsQueryResult<>();
         }
 
+        String docStatus = tasksQuery.docStatus;
+
         RecordsQuery taskRecordsQuery = new RecordsQuery();
         taskRecordsQuery.setLanguage(PredicateService.LANGUAGE_PREDICATE);
         taskRecordsQuery.setQuery(predicate);
-        taskRecordsQuery.setMaxItems(query.getMaxItems());
+        if (query.getMaxItems() > -1 && docStatus != null) {
+            taskRecordsQuery.setMaxItems(query.getMaxItems() * 5); //filter by status after query
+        } else {
+            taskRecordsQuery.setMaxItems(query.getMaxItems());
+        }
+
         taskRecordsQuery.setSkipCount(query.getSkipCount());
         taskRecordsQuery.setDebug(query.isDebug());
 
         RecordsQueryResult<TaskIdQuery> taskQueryResult;
         taskQueryResult = recordsService.queryRecords(taskRecordsQuery, TaskIdQuery.class);
+
+        if (docStatus != null) {
+
+            String statusAttribute;
+            if (docStatus.startsWith("workspace://SpacesStore/")) {
+                statusAttribute = "icase:caseStatusAssoc?id";
+            } else {
+                statusAttribute = "icase:caseStatusAssoc.cm:name?str";
+            }
+
+            int maxItems = query.getMaxItems();
+            AtomicInteger recordsCount = new AtomicInteger(0);
+            AtomicInteger filtered = new AtomicInteger(0);
+
+            List<TaskIdQuery> taskRecords = taskQueryResult.getRecords().stream().filter(taskIdQuery -> {
+
+                if (maxItems > -1 && maxItems <= recordsCount.getAndIncrement()) {
+                    return false;
+                }
+
+                Optional<TaskInfo> taskInfo = ecosTaskService.getTaskInfo(taskIdQuery.taskId);
+                if (!taskInfo.isPresent()) {
+                    filtered.incrementAndGet();
+                    return false;
+                }
+                RecordRef document = taskInfo.get().getDocument();
+                if (document == null) {
+                    filtered.incrementAndGet();
+                    return false;
+                }
+
+                JsonNode status = recordsService.getAttribute(document, statusAttribute);
+                if (status.isTextual() && status.toString().contains(docStatus)) {
+                    return true;
+                } else {
+                    filtered.incrementAndGet();
+                    return false;
+                }
+
+            }).collect(Collectors.toList());
+
+            taskQueryResult.setRecords(taskRecords);
+            taskQueryResult.setTotalCount(taskQueryResult.getTotalCount() - filtered.get());
+        }
 
         return new RecordsQueryResult<>(taskQueryResult, task -> RecordRef.valueOf(task.getTaskId()));
     }
@@ -217,6 +308,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             Optional<TaskInfo> info = ecosTaskService.getTaskInfo(r.getId());
             return info.isPresent() ? new Task(info.get()) : new EmptyTask(r.getId());
         }).collect(Collectors.toList());
+    }
+
+    public void setSumAttributeByType(String type, String attribute) {
+        sumAttributeByType.put(type, attribute);
     }
 
     public static class TaskIdQuery {
@@ -231,6 +326,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         @Getter @Setter public List<String> actors;
         @Getter @Setter public Boolean active;
         @Getter @Setter public String docStatus;
+        @Getter @Setter public String docType;
 
         public void setAssignee(String assignee) {
             if (assignees == null) {
@@ -270,10 +366,16 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         @Override
         public <T extends GqlContext> void init(T context, MetaField field) {
             Map<String, String> documentAttributes = new HashMap<>();
+            RecordRef documentRef = getDocumentRef();
             for (String att : field.getInnerAttributes()) {
                 switch (att) {
                     case ATT_DOC_SUM:
-                        documentAttributes.put(ATT_DOC_SUM, "contracts:agreementAmount");
+                        if (documentRef != null) {
+                            String type = recordsService.getAttribute(documentRef, "_type").asText();
+                            if (sumAttributeByType.containsKey(type)) {
+                                documentAttributes.put(ATT_DOC_SUM, sumAttributeByType.get(type));
+                            }
+                        }
                         break;
                     case ATT_DOC_DISP_NAME:
                         documentAttributes.put(ATT_DOC_DISP_NAME, ".disp");
@@ -284,13 +386,16 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     case ATT_DOC_STATUS:
                         documentAttributes.put(ATT_DOC_STATUS, "icase:caseStatusAssoc.cm:name");
                         break;
+                    case "docType":
+                        documentAttributes.put("docType", "_type");
+                        break;
                     default:
                         if (att.startsWith(DOCUMENT_FIELD_PREFIX)) {
                             documentAttributes.put(att, getEcmFieldName(att));
                         }
                 }
             }
-            if (documentAttributes.isEmpty()) {
+            if (documentAttributes.isEmpty() || documentRef == null) {
                 documentInfo = new RecordMeta();
             } else {
                 documentInfo = recordsService.getAttributes(getDocumentRef(), documentAttributes);

@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.MutableAuthenticationService;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,8 +66,19 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
     @Override
     public List<UserValue> getMetaValues(List<RecordRef> records) {
         return records.stream()
-                      .map(r -> new UserValue(r.getId()))
+                      .map(r -> new UserValue(r.toString()))
                       .collect(Collectors.toList());
+    }
+
+    private String getFixedUserName(RecordRef recordRef) {
+        String userName;
+        String source = recordRef.getSourceId();
+        if (StringUtils.isNotBlank(source)) {
+            userName = source + "@" + recordRef.getId();
+        } else {
+            userName = recordRef.getId();
+        }
+        return userName;
     }
 
     @Override
