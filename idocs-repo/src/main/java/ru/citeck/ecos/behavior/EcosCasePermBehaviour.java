@@ -8,6 +8,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
 import ru.citeck.ecos.config.EcosConfigService;
@@ -95,6 +96,7 @@ public class EcosCasePermBehaviour extends AbstractBehaviour implements NodeServ
     }
 
     @Autowired
+    @Qualifier("ecosConfigService")
     public void setEcosConfigService(EcosConfigService ecosConfigService) {
         this.ecosConfigService = ecosConfigService;
     }

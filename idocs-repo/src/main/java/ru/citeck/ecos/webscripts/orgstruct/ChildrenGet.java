@@ -19,6 +19,7 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.model.DeputyModel;
@@ -71,7 +72,7 @@ public class ChildrenGet extends AbstractWebScript {
 
     @Autowired
     public ChildrenGet(ServiceRegistry serviceRegistry,
-                       EcosConfigService ecosConfigService,
+                       @Qualifier("ecosConfigService") EcosConfigService ecosConfigService,
                        OrgStructService orgStructService,
                        OrgMetaService orgMetaService) {
 

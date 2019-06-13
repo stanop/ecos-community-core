@@ -22,6 +22,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.action.ActionConditionUtils;
 import ru.citeck.ecos.behavior.ChainingJavaBehaviour;
 import ru.citeck.ecos.icase.activity.CaseActivityPolicies;
@@ -67,6 +68,7 @@ public class CaseTaskBehavior implements CaseActivityPolicies.BeforeCaseActivity
      * Ecos configuration service (system journals - configuration)
      */
     @Autowired
+    @Qualifier("ecosConfigService")
     private EcosConfigService ecosConfigService;
 
     public void init() {

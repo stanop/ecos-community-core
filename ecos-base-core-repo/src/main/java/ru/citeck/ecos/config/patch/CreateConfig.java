@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.model.ConfigModel;
@@ -83,6 +84,7 @@ public class CreateConfig extends AbstractModuleComponent {
     }
 
     @Autowired
+    @Qualifier("ecosConfigService")
     public void setEcosConfigService(EcosConfigService ecosConfigService) {
         this.ecosConfigService = ecosConfigService;
     }
