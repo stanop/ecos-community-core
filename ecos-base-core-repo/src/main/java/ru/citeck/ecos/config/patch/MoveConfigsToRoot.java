@@ -16,6 +16,7 @@ import org.alfresco.util.transaction.TransactionListenerAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
 import ru.citeck.ecos.config.EcosConfigService;
@@ -28,7 +29,9 @@ import ru.citeck.ecos.records2.request.query.QueryConsistency;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MoveConfigsToRoot extends AbstractModuleComponent {
@@ -54,7 +57,7 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
         });
     }
 
-    public boolean updateConfigs() {
+    private boolean updateConfigs() {
 
         RecordsQuery query = new RecordsQuery();
         query.setLanguage(SearchService.LANGUAGE_CMIS_STRICT);
@@ -74,7 +77,7 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
         AtomicInteger skipped = new AtomicInteger(0);
         AtomicInteger total = new AtomicInteger(0);
 
-        NodeRef configsRoot = ecosConfigService.getConfigsRoot();
+        NodeRef configsRoot = ecosConfigService.getConfigRoot();
 
         groupActionService.execute(ecosConfigs, recordRef -> {
 
@@ -103,14 +106,14 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
                     String name = baseName;
 
                     NodeRef configWithSameName = nodeService.getChildByName(configsRoot,
-                                                                            ContentModel.ASSOC_CONTAINS,
-                                                                            name);
+                            ContentModel.ASSOC_CONTAINS,
+                            name);
                     int idx = 1;
                     while (configWithSameName != null) {
                         name = baseName + " (" + idx + ")";
                         configWithSameName = nodeService.getChildByName(configsRoot,
-                                                                        ContentModel.ASSOC_CONTAINS,
-                                                                        name);
+                                ContentModel.ASSOC_CONTAINS,
+                                name);
                         idx++;
                     }
 
@@ -119,11 +122,11 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
                     }
 
                     QName assocQName = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
-                                                         QName.createValidLocalName(key));
+                            QName.createValidLocalName(key));
                     nodeService.moveNode(configRef,
-                                         configsRoot,
-                                         ContentModel.ASSOC_CONTAINS,
-                                         assocQName);
+                            configsRoot,
+                            ContentModel.ASSOC_CONTAINS,
+                            assocQName);
                 }
                 fixed.incrementAndGet();
             } else {
@@ -132,9 +135,9 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
         }, config);
 
         logger.info("Stop " + getClass() +
-                    ". Fixed: " + fixed.get() +
-                    " Skipped: " + skipped.get() +
-                    " Total: " + total);
+                ". Fixed: " + fixed.get() +
+                " Skipped: " + skipped.get() +
+                " Total: " + total);
 
         return true;
     }
@@ -150,7 +153,7 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
 
         if (!Objects.equals(toValue, fromValue)) {
             logger.info("Change config value of " + to +
-                        " from " + toValue + " to " + fromValue);
+                    " from " + fromValue + " to " + toValue);
 
             nodeService.setProperty(to, ConfigModel.PROP_VALUE, fromValue);
         }
@@ -158,7 +161,7 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
         Serializable key = nodeService.getProperty(from, ConfigModel.PROP_KEY);
 
         logger.info("Delete unnecessary config node: " + from +
-                    " with key " + key + " and value " + fromValue);
+                " with key " + key + " and value " + fromValue);
         nodeService.deleteNode(from);
     }
 
@@ -169,6 +172,7 @@ public class MoveConfigsToRoot extends AbstractModuleComponent {
     }
 
     @Autowired
+    @Qualifier("ecosConfigService")
     public void setEcosConfigService(EcosConfigService ecosConfigService) {
         this.ecosConfigService = ecosConfigService;
     }

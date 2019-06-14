@@ -224,7 +224,6 @@
                     <prop key="messages">alfresco/module/idocs-repo/bootstrap/journals/system/ecosConfig</prop>
                     <prop key="encoding">UTF-8</prop>
                 </props>
-
                 <props>
                     <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
                     <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>

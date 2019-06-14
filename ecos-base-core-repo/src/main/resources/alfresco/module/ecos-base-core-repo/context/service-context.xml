@@ -323,14 +323,18 @@
         </property>
     </bean>
 
-    <bean id="ecosConfigService" class="ru.citeck.ecos.config.EcosConfigService">
-        <property name="nodeService" ref="nodeService" />
-        <property name="searchService" ref="searchService" />
+    <bean id="ecosConfigService" class="ru.citeck.ecos.config.CachingEcosConfigService" primary="true">
+        <property name="configRoot" value="workspace://SpacesStore/ecos-config-root"/>
+        <property name="configNamespace" value="http://www.citeck.ru/model/config/1.0"/>
+        <property name="configTypeQName" value="config:ecosConfig"/>
+        <property name="configKeyQName" value="config:key"/>
+        <property name="configValueQName" value="config:value"/>
     </bean>
 
     <bean id="ecosConfigServiceJS" class="ru.citeck.ecos.config.EcosConfigServiceJs" parent="baseJavaScriptExtension">
         <property name="extensionName" value="ecosConfigService"/>
-        <property name="serviceRegistry" ref="ServiceRegistry" />
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="ecosConfigService" ref="ecosConfigService"/>
     </bean>
 
     <bean id="applicationContextProvider" class="ru.citeck.ecos.providers.ApplicationContextProvider"/>
