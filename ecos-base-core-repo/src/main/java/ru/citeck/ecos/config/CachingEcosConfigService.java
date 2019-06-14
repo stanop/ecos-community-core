@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -68,6 +69,7 @@ public class CachingEcosConfigService implements EcosConfigService {
     }
 
     @Override
+    @Deprecated
     public Object getParamValue(final String key, String rootPath) {
         return getParamValue(key);
     }
@@ -87,8 +89,13 @@ public class CachingEcosConfigService implements EcosConfigService {
     }
 
     @Override
-    public NodeRef createConfig(Map<QName, Serializable> properties) {
+    @Deprecated
+    public void setValue(final String key, final String value, String rootPath) {
+        setValue(key, value);
+    }
 
+    @Override
+    public NodeRef createConfig(Map<QName, Serializable> properties) {
         String configKey = (String) properties.get(configKeyQName);
         ParameterCheck.mandatory(configKeyQName.getLocalName(), configKey);
 
@@ -110,11 +117,19 @@ public class CachingEcosConfigService implements EcosConfigService {
     }
 
     @Override
-    public void setValue(final String key, final String value, String rootPath) {
-        setValue(key, value);
+    public void removeConfig(String key) {
+        ParameterCheck.mandatory("key", key);
+
+        Optional<NodeRef> configRef = getConfigRef(key);
+        if (!configRef.isPresent()) {
+            return;
+        }
+
+        RepoUtils.deleteNode(configRef.get(), nodeService);
     }
 
-    private Optional<NodeRef> getConfigRef(String key) {
+    @Override
+    public Optional<NodeRef> getConfigRef(String key) {
         Optional<NodeRef> configRef = configRefByKey.getUnchecked(key);
         if (!configRef.isPresent() || !nodeService.exists(configRef.get())) {
             configRefByKey.invalidate(key);
@@ -142,7 +157,7 @@ public class CachingEcosConfigService implements EcosConfigService {
         });
     }
 
-    @Autowired
+    @Override
     public NodeRef getConfigRoot() {
         return configRoot;
     }

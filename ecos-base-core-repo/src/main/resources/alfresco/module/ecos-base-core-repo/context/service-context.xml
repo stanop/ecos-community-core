@@ -329,8 +329,6 @@
         <property name="configTypeQName" value="config:ecosConfig"/>
         <property name="configKeyQName" value="config:key"/>
         <property name="configValueQName" value="config:value"/>
-        <property name="nodeService" ref="nodeService"/>
-        <property name="searchService" ref="searchService"/>
     </bean>
 
     <bean id="ecosConfigServiceJS" class="ru.citeck.ecos.config.EcosConfigServiceJs" parent="baseJavaScriptExtension">

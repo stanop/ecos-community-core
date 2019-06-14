@@ -5,6 +5,7 @@ import org.alfresco.service.namespace.QName;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 
 public interface EcosConfigService {
 
@@ -22,8 +23,6 @@ public interface EcosConfigService {
      * <p>
      * You can use this method, while {@code SearchService} is not available,
      * for example - while repository is bootstrapping.
-     * <p>
-     * If {@code rootPath} is null, is used default root path - {@code DEFAULT_ROOT_PATH_TO_CONFIGS}.
      *
      * @param key      ecos config key
      * @param rootPath root path
@@ -47,8 +46,6 @@ public interface EcosConfigService {
      * <p>
      * You can use this method, while {@code SearchService} is not available,
      * for example - while repository is bootstrapping.
-     * <p>
-     * If {@code rootPath} is null, is used default root path - {@code DEFAULT_ROOT_PATH_TO_CONFIGS}.
      *
      * @param key      ecos config key
      * @param value    new value
@@ -59,6 +56,10 @@ public interface EcosConfigService {
     void setValue(final String key, final String value, String rootPath);
 
     NodeRef createConfig(Map<QName, Serializable> properties);
+
+    void removeConfig(final String key);
+
+    Optional<NodeRef> getConfigRef(String key);
 
     NodeRef getConfigRoot();
 
