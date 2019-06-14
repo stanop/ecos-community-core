@@ -33,7 +33,7 @@ import java.util.Map;
 @Component
 public class EcosActivitiTaskService implements EngineTaskService {
 
-    private static final String ACTIVITI_TASK_PREFIX = "activiti$";
+    private static final String ENGINE_PREFIX = "activiti$";
     private static final String VAR_PACKAGE = "bpm_package";
     private static final String DEFAULT_OUTCOME_FIELD = "bpm_outcome";
     private static final String OUTCOME_FIELD = "outcome";
@@ -89,7 +89,7 @@ public class EcosActivitiTaskService implements EngineTaskService {
     }
 
     private NodeRef getPackageFromMirrorTask(String taskId) {
-        NodeRef taskMirror = workflowMirrorService.getTaskMirror(ACTIVITI_TASK_PREFIX + taskId);
+        NodeRef taskMirror = workflowMirrorService.getTaskMirror(ENGINE_PREFIX + taskId);
         return RepoUtils.getFirstTargetAssoc(taskMirror, WorkflowModel.ASSOC_PACKAGE, nodeService);
     }
 
@@ -210,7 +210,7 @@ public class EcosActivitiTaskService implements EngineTaskService {
 
         @Override
         public String getTitle() {
-            WorkflowTask task = workflowService.getTaskById(ACTIVITI_TASK_PREFIX + getId());
+            WorkflowTask task = workflowService.getTaskById(ENGINE_PREFIX + getId());
             return workflowUtils.getTaskTitle(task);
         }
 

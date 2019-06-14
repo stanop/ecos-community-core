@@ -1,10 +1,11 @@
 package ru.citeck.ecos.flowable.services.impl;
 
+import lombok.extern.log4j.Log4j;
+import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.flowable.engine.TaskService;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.identitylink.api.IdentityLinkType;
@@ -12,9 +13,12 @@ import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
+import ru.citeck.ecos.flowable.services.FlowableHistoryService;
 import ru.citeck.ecos.flowable.services.FlowableTaskService;
 import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.WorkflowUtils;
+import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
 import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 import ru.citeck.ecos.workflow.tasks.EngineTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
@@ -27,10 +31,10 @@ import java.util.Map;
 /**
  * Flowable task service
  */
+@Log4j
 public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskService {
 
-    private static final Log logger = LogFactory.getLog(FlowableTaskService.class);
-
+    private static final String VAR_PACKAGE = "bpm_package";
     private static final String OUTCOME_FIELD = "outcome";
 
     private TaskService taskService;
@@ -42,6 +46,12 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     @Autowired
     @Qualifier("WorkflowService")
     private WorkflowService workflowService;
+    @Autowired
+    private FlowableHistoryService flowableHistoryService;
+    @Autowired
+    private WorkflowMirrorService workflowMirrorService;
+    @Autowired
+    private NodeService nodeService;
 
     @PostConstruct
     public void init() {
@@ -50,6 +60,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     /**
      * Set task service
+     *
      * @param taskService Task service
      */
     public void setTaskService(TaskService taskService) {
@@ -58,6 +69,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     /**
      * Get task by task id
+     *
      * @param taskId Task id
      * @return Task
      */
@@ -68,6 +80,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     /**
      * Get tasks by process instance id
+     *
      * @param processInstanceId Process instance id
      * @return List of tasks
      */
@@ -78,6 +91,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     /**
      * Get tasks by process definition id
+     *
      * @param processDefinitionId Process definition id
      * @return List of tasks
      */
@@ -87,32 +101,66 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     }
 
     public Map<String, Object> getVariables(String taskId) {
-        return taskService.getVariables(taskId);
+        if (taskExists(taskId)) {
+            return taskService.getVariables(taskId);
+        } else {
+            return flowableHistoryService.getHistoricTaskVariables(taskId);
+        }
     }
 
     public Map<String, Object> getVariablesLocal(String taskId) {
-        return taskService.getVariablesLocal(taskId);
+        if (taskExists(taskId)) {
+            return taskService.getVariablesLocal(taskId);
+        } else {
+            return flowableHistoryService.getHistoricTaskVariables(taskId);
+        }
     }
 
 
     public Object getVariable(String taskId, String variableName) {
-        return taskService.getVariable(taskId, variableName);
+        if (taskExists(taskId)) {
+            return taskService.getVariable(taskId, variableName);
+        } else {
+            if (VAR_PACKAGE.equals(variableName)) {
+                return getPackageFromMirrorTask(taskId);
+            }
+            return flowableHistoryService.getHistoricTaskVariables(taskId).get(variableName);
+        }
+    }
+
+    private NodeRef getPackageFromMirrorTask(String taskId) {
+        NodeRef taskMirror = workflowMirrorService.getTaskMirror(FlowableConstants.ENGINE_PREFIX + taskId);
+        return RepoUtils.getFirstTargetAssoc(taskMirror, WorkflowModel.ASSOC_PACKAGE, nodeService);
     }
 
     public String getFormKey(String taskId) {
+        String key = getRawFormKey(taskId);
+        return key != null ? "alf_" + key : null;
+    }
 
-        Task task = getTaskById(taskId);
+    private String getRawFormKey(String taskId) {
+        String key = null;
 
-        if (task != null) {
-            return task.getFormKey();
+        if (taskExists(taskId)) {
+            key = taskService.createTaskQuery().taskId(taskId).singleResult().getFormKey();
         } else {
-            logger.warn("Task with id " + taskId + " not found!");
+            Object keyObj = flowableHistoryService.getHistoricTaskVariables(taskId).get("taskFormKey");
+            if (keyObj != null) {
+                key = (String) keyObj;
+            }
         }
 
-        return null;
+        if (key == null) {
+            log.warn(String.format("Could not get formKey for task <%s>, because task does not exists", taskId));
+        }
+
+        return key;
     }
 
     public String getAssignee(String taskId) {
+        if (!taskExists(taskId)) {
+            return null;
+        }
 
         List<IdentityLink> links = taskService.getIdentityLinksForTask(taskId);
 
@@ -139,10 +187,15 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     public RecordRef getDocument(String taskId) {
 
-        Object bpmPackage = getVariable(taskId, "bpm_package");
+        Object bpmPackage = getVariable(taskId, VAR_PACKAGE);
         NodeRef documentRef = workflowUtils.getTaskDocumentFromPackage(bpmPackage);
 
         return documentRef != null ? RecordRef.valueOf(documentRef.toString()) : RecordRef.EMPTY;
+    }
+
+    private boolean taskExists(String taskId) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        return task != null;
     }
 
     @Override
@@ -160,7 +213,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
         @Override
         public String getTitle() {
-            WorkflowTask task = workflowService.getTaskById("flowable$" + getId());
+            WorkflowTask task = workflowService.getTaskById(FlowableConstants.ENGINE_PREFIX + getId());
             return workflowUtils.getTaskTitle(task);
         }
 

@@ -13,6 +13,7 @@ import org.flowable.engine.HistoryService;
 import org.flowable.engine.history.*;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.api.history.HistoricTaskInstanceQuery;
+import org.flowable.variable.api.history.HistoricVariableInstance;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.FlowableHistoryService;
 
@@ -310,8 +311,38 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
         return getHistoricVariables(query);
     }
 
+    @Override
+    public Map<String, Object> getHistoricTaskVariables(String taskId) {
+        List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery().taskId(taskId).list();
+        return convertHistoricDetailsFromInstance(list);
+    }
+
+    private Map<String, Object> convertHistoricDetailsFromInstance(List<HistoricVariableInstance> details) {
+        HashMap<String, HistoricVariableInstance> updateMap = new HashMap<>();
+        HistoricVariableInstance previous;
+        HistoricVariableInstance current;
+        boolean isMoreRecent;
+        for (HistoricVariableInstance detail : details) {
+            current = detail;
+            previous = updateMap.get(current.getVariableName());
+            if (previous == null) {
+                isMoreRecent = true;
+            } else {
+                isMoreRecent = current.getTime().after(previous.getTime());
+            }
+            if (isMoreRecent) {
+                updateMap.put(current.getVariableName(), current);
+            }
+        }
+        HashMap<String, Object> variables = new HashMap<>();
+        for (Map.Entry<String, HistoricVariableInstance> entry : updateMap.entrySet()) {
+            variables.put(entry.getKey(), entry.getValue().getValue());
+        }
+        return variables;
+    }
+
     /**
-     * Het history variables
+     * Get history variables
      *
      * @param query History detail query
      * @return Map of parameters
