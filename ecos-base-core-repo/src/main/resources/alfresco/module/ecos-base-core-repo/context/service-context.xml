@@ -323,7 +323,7 @@
         </property>
     </bean>
 
-    <bean id="ecosConfigService" class="ru.citeck.ecos.config.CachingEcosConfigService">
+    <bean id="ecosConfigService" class="ru.citeck.ecos.config.CachingEcosConfigService" primary="true">
         <property name="configRoot" value="workspace://SpacesStore/ecos-config-root"/>
         <property name="configNamespace" value="http://www.citeck.ru/model/config/1.0"/>
         <property name="configTypeQName" value="config:ecosConfig"/>
