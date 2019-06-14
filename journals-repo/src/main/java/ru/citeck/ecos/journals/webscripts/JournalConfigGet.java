@@ -32,6 +32,8 @@ import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.querylang.QueryLangService;
+import ru.citeck.ecos.predicate.model.Predicate;
+import ru.citeck.ecos.predicate.model.ValuePredicate;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
@@ -72,6 +74,7 @@ public class JournalConfigGet extends AbstractWebScript {
     private NamespaceService namespaceService;
     private DictionaryService dictionaryService;
     private CreateVariantsGet createVariantsGet;
+    private PredicateService predicateService;
 
     public JournalConfigGet() {
         journalRefById = CacheBuilder.newBuilder()
@@ -194,14 +197,53 @@ public class JournalConfigGet extends AbstractWebScript {
         JournalRepoData journalData = journalRefById.getUnchecked(journal.getId());
 
         JournalMeta meta = new JournalMeta();
+
+        meta.setGroupActions(getGroupActions(journal));
+
+        try {
+            if (StringUtils.isNotBlank(journal.getGroupBy())) {
+                meta.setGroupBy(objectMapper.readTree(journal.getGroupBy()));
+            }
+        } catch (IOException e) {
+            logger.error("GroupBy is invalid: " + journal.getGroupBy(), e);
+        }
+
+        if (StringUtils.isNotBlank(journal.getPredicate())) {
+            try {
+                meta.setPredicate(objectMapper.readTree(journal.getPredicate()));
+            } catch (IOException e) {
+                logger.error("Predicate is invalid: " + journal.getPredicate(), e);
+            }
+        }
+
+        meta.setCreateVariants(createVariantsGet.getVariantsByJournalId(journal.getId(), true));
+
+        fillMetaFromRepo(meta, journalData);
+
+        if (meta.getPredicate() == null) {
+
+            Map<String, String> options = journal.getOptions();
+            if (options != null) {
+                String type = options.get("type");
+                if (StringUtils.isNotBlank(type)) {
+                    Predicate predicate = ValuePredicate.equal("TYPE", type);
+                    meta.setPredicate(predicateService.writeJson(predicate));
+                }
+            }
+        }
+
+        return meta;
+    }
+
+    private void fillMetaFromRepo(JournalMeta meta, JournalRepoData journalData) {
+
         if (journalData.getNodeRef() == null) {
-            return meta;
+            return;
         }
 
         NodeRef journalRef = journalData.getNodeRef();
         meta.setNodeRef(String.valueOf(journalRef));
         meta.setTitle(nodeUtils.getDisplayName(journalRef));
-        meta.setGroupActions(getGroupActions(journal));
 
         List<Criterion> criteriaList = new ArrayList<>();
         SearchCriteria criteria = new SearchCriteria(namespaceService);
@@ -220,14 +262,7 @@ public class JournalConfigGet extends AbstractWebScript {
             criteriaList.add(criterion);
         }
 
-        if (StringUtils.isNotBlank(journal.getPredicate())) {
-
-            try {
-                meta.setPredicate(objectMapper.readTree(journal.getPredicate()));
-            } catch (IOException e) {
-                logger.error("Predicate is invalid: " + journal.getPredicate(), e);
-            }
-        }
+        meta.setCriteria(criteriaList);
 
         if (meta.getPredicate() == null) {
 
@@ -242,19 +277,6 @@ public class JournalConfigGet extends AbstractWebScript {
                 logger.error("Language conversion error. criteria: " + criteriaJson, e);
             }
         }
-
-        try {
-            if (StringUtils.isNotBlank(journal.getGroupBy())) {
-                meta.setGroupBy(objectMapper.readTree(journal.getGroupBy()));
-            }
-        } catch (IOException e) {
-            logger.error("GroupBy is invalid: " + journal.getGroupBy(), e);
-        }
-
-        meta.setCreateVariants(createVariantsGet.getVariantsByJournalId(journal.getId(), true));
-        meta.setCriteria(criteriaList);
-
-        return meta;
     }
 
     private List<GroupAction> getGroupActions(JournalType type) {
@@ -392,6 +414,10 @@ public class JournalConfigGet extends AbstractWebScript {
     }
 
     @Autowired
+    public void setPredicateService(PredicateService predicateService) {
+        this.predicateService = predicateService;
+    }
+
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.nodeService = serviceRegistry.getNodeService();
