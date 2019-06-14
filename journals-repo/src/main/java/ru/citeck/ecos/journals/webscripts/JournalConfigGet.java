@@ -409,6 +409,7 @@ public class JournalConfigGet extends AbstractWebScript {
         this.predicateService = predicateService;
     }
 
+    @Autowired
     public void setServiceRegistry(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
         this.nodeService = serviceRegistry.getNodeService();
