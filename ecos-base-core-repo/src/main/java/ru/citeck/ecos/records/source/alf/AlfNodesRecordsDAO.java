@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
 import ru.citeck.ecos.action.group.GroupActionService;
+import ru.citeck.ecos.model.InvariantsModel;
 import ru.citeck.ecos.records.source.alf.file.AlfNodeContentFileHelper;
 import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
@@ -121,9 +122,16 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
 
             ObjectNode fields = record.getAttributes();
             Iterator<String> names = fields.fieldNames();
+
             while (names.hasNext()) {
 
                 String name = names.next();
+
+                if ("_state".equals(name)) {
+                    String strValue = fields.path(name).asText();
+                    props.put(InvariantsModel.PROP_IS_DRAFT, "draft".equals(strValue));
+                    continue;
+                }
 
                 if (ecosPermissionService.isAttributeProtected(nodeRef, name)) {
                     logger.warn("You can't change '" + name +
@@ -201,6 +209,10 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
             }
 
             if (record.getId() == RecordRef.EMPTY) {
+
+                if (!props.containsKey(InvariantsModel.PROP_IS_DRAFT)) {
+                    props.put(InvariantsModel.PROP_IS_DRAFT, false);
+                }
 
                 QName type = getNodeType(record);
                 NodeRef parent = getParent(record, type);
