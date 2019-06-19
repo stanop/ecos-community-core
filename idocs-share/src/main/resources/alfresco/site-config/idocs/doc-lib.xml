@@ -15,8 +15,8 @@
                 <evaluator negate="true">evaluator.doclib.action.noContent</evaluator>
                 <evaluator negate="true">evaluator.doclib.idocs.isDocument</evaluator>
             </action>
-            <action id="document-edit-metadata" type="pagelink">
-                <param name="page">node-edit?nodeRef={node.nodeRef}</param>
+            <action id="document-edit-metadata" type="javascript">
+                <param name="function">onEditNodeMetadata</param>
                 <evaluator>evaluator.doclib.dms.isAdmin</evaluator>
             </action>
             <action id="role-edit-properties" type="javascript" label="actions.role.edit-properties">
