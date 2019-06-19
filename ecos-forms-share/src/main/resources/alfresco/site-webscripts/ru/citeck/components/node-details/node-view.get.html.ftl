@@ -1,4 +1,6 @@
 <#assign el = args.htmlid?html />
+<#assign nodeViewNodeRef = viewNodeRef!args.nodeRef />
+<#assign nodeViewEditBtnId = "edit-" + nodeViewNodeRef />
 
 <#if view??>
 
@@ -9,8 +11,8 @@
                 ${msg(args.header!"header.view")}
                 <span class="alfresco-twister-actions <#if args.hideEditAction?? && args.hideEditAction == "true">hidden</#if>">
                     <#if writePermission?? && writePermission>
-                        <a class="edit"
-                           href="${url.context}/page/node-edit?nodeRef=${viewNodeRef!args.nodeRef}<#if args.viewId??>&viewId=${args.viewId}</#if>"></a>
+                        <a id="${nodeViewEditBtnId}" class="edit"
+                           href="${url.context}/page/node-edit?nodeRef=${nodeViewNodeRef}<#if args.viewId??>&viewId=${args.viewId}</#if>"></a>
                     </#if>
                  </span>
             </h2>
@@ -55,6 +57,29 @@
                 Alfresco.util.createTwister("${el}-heading", "node-view");
             </#if>
 
+            require(['citeck/components/form/constraints'], function () {
+
+                var editBtn = document.getElementById("${nodeViewEditBtnId}");
+                if (editBtn) {
+                    editBtn.onclick = function(e) {
+                        e.preventDefault();
+                        try {
+                            Citeck.forms.editRecord({
+                                recordRef: "${nodeViewNodeRef}",
+                                fallback: function() {
+                                    window.location = editBtn.href;
+                                },
+                                onSubmit: function() {
+                                    YAHOO.Bubbling.fire("metadataRefresh");
+                                }
+                            });
+                        } catch (e) {
+                            console.error(e);
+                            window.location = editBtn.href;
+                        }
+                    }
+                }
+            });
         //]]></script>
 
         <#if args.style??>
