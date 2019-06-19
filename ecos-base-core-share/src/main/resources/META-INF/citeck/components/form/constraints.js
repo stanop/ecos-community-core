@@ -441,69 +441,73 @@ require([
         return this._loaderPanel;
     };
 
-    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod) {
+    Citeck.forms.editRecord = function (config) {
+
+        var recordRef = config.recordRef,
+            fallback = config.fallback;
 
         var showForm = function(recordRef) {
 
             if (recordRef) {
                 Citeck.forms.eform(recordRef, {
                     params: {
-                        attributes: {
-                            _parent: destination
-                        },
-                        onSubmit: function(record, form) {
-
-                            if (record.id && record.id.indexOf('workspace://SpacesStore/') === 0
-                                          && form.options.formMode === 'CREATE') {
-
-                                if (!redirectionMethod || redirectionMethod === 'card') {
-                                    window.location = Alfresco.util.siteURL("card-details?nodeRef=" + record.id);
-                                }
-                            }
-                        }
+                        attributes: config.attributes || {},
+                        onSubmit: config.onSubmit
                     },
                     class: 'ecos-modal_width-lg',
-                    isBigHeader: true
+                    isBigHeader: true,
+                    formContainer: config.formContainer || null
                 });
             } else {
-
                 fallback();
             }
         };
 
-        if (recordRef) {
+        var isFormsEnabled = Citeck.Records.get('ecos-config@ecos-forms-enable').loadAttribute('.bool');
 
-            showForm(recordRef);
-
-        } else {
-
-            recordRef = 'dict@' + type;
-
-            Citeck.Records.get('ecos-config@ecos-forms-enable').loadAttribute('.bool').then(function(enabled) {
-                if (enabled) {
-                    Citeck.Records.query({
-                        query: {
-                            query: { record: recordRef },
-                            sourceId: 'eform'
-                        }
-                    }).then(function(result) {
-                        if ((result.records || []).length) {
-                            showForm(recordRef);
-                        } else {
-                            showForm(null);
-                        }
-                    }).catch(function(e) {
-                        console.error(e);
+        isFormsEnabled.then(function(enabled) {
+            if (enabled) {
+                Citeck.Records.queryOne({
+                    query: { record: recordRef },
+                    sourceId: 'eform'
+                }).then(function(result) {
+                    if (result) {
+                        showForm(recordRef);
+                    } else {
                         showForm(null);
-                    });
-                } else {
+                    }
+                }).catch(function(e) {
+                    console.error(e);
                     showForm(null);
-                }
-            }).catch(function (e) {
-                console.error(e);
+                });
+            } else {
                 showForm(null);
-            });
-        }
+            }
+        }).catch(function (e) {
+            console.error(e);
+            showForm(null);
+        });
+    };
+
+    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod) {
+
+        Citeck.forms.editRecord({
+            recordRef: recordRef || 'dict@' + type,
+            attributes: {
+                _parent: destination
+            },
+            fallback: fallback,
+            onSubmit: function(record, form) {
+
+                if (record.id && record.id.indexOf('workspace://SpacesStore/') === 0
+                    && form.options.formMode === 'CREATE') {
+
+                    if (!redirectionMethod || redirectionMethod === 'card') {
+                        window.location = Alfresco.util.siteURL("card-details?nodeRef=" + record.id);
+                    }
+                }
+            }
+        });
     };
 
     var confirmIdx = 0;
