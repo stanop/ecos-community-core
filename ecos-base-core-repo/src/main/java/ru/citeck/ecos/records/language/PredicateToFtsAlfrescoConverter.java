@@ -22,6 +22,7 @@ import ru.citeck.ecos.utils.DictUtils;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Consumer;
 
 @Component
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
@@ -87,6 +88,11 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
             String valueStr = value.toString();
 
             switch (attribute) {
+                case "PATH":
+
+                    query.path(valueStr);
+
+                    break;
                 case "PARENT":
                 case "_parent":
 
@@ -96,33 +102,37 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                 case "TYPE":
                 case "_type":
 
-                    query.type(QName.resolveToQName(namespaceService, valueStr));
+                    consumeQName(valueStr, query::type);
 
                     break;
                 case "ASPECT":
 
-                    query.aspect(QName.resolveToQName(namespaceService, valueStr));
+                    consumeQName(valueStr, query::aspect);
 
                     break;
                 case "ISNULL":
 
-                    query.isNull(QName.resolveToQName(namespaceService, valueStr));
+                    consumeQName(valueStr, query::isNull);
 
                     break;
                 case "ISNOTNULL":
 
-                    query.isNotNull(getQueryField(dictUtils.getAttDefinition(valueStr)));
+                    consumeQueryField(valueStr, query::isNotNull);
 
                     break;
                 case "ISUNSET":
 
-                    query.isUnset(getQueryField(dictUtils.getAttDefinition(valueStr)));
+                    consumeQueryField(valueStr, query::isUnset);
 
                     break;
                 default:
 
                     ClassAttributeDefinition attDef = dictUtils.getAttDefinition(attribute);
                     QName field = getQueryField(attDef);
+
+                    if (field == null) {
+                        break;
+                    }
 
                     switch (valuePred.getType()) {
                         case EQ:
@@ -245,14 +255,31 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         } else if (predicate instanceof EmptyPredicate) {
 
             String attribute = ((EmptyPredicate) predicate).getAttribute();
-            query.empty(getQueryField(dictUtils.getAttDefinition(attribute)));
+            consumeQueryField(attribute, query::empty);
 
         } else {
             throw new RuntimeException("Unknown predicate type: " + predicate);
         }
     }
 
+    private void consumeQueryField(String field, Consumer<QName> consumer) {
+        QName attQName = getQueryField(dictUtils.getAttDefinition(field));
+        if (attQName != null) {
+            consumer.accept(attQName);
+        }
+    }
+
+    private void consumeQName(String qname, Consumer<QName> consumer) {
+        QName qName = QName.resolveToQName(namespaceService, qname);
+        if (qName != null) {
+            consumer.accept(qName);
+        }
+    }
+
     private QName getQueryField(ClassAttributeDefinition def) {
+        if (def == null) {
+            return null;
+        }
         if (def instanceof AssociationDefinition) {
             return associationIndexPropertyRegistry.getAssociationIndexProperty(def.getName());
         }
