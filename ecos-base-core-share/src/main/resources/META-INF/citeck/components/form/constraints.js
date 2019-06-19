@@ -490,6 +490,22 @@ require([
         });
     };
 
+    Citeck.forms.handleHeaderCreateVariant = function (variant) {
+
+        Citeck.forms.createRecord(variant.recordRef, variant.type, variant.destination, function() {
+
+            var createArguments = "type=" + variant.type +
+                "&viewId=" + variant.formId +
+                "&destination=" + variant.destination;
+
+            if (variant.createArguments) {
+                createArguments += "&" + variant.createArguments;
+            }
+
+            window.location = "/share/page/node-create?" + createArguments;
+        });
+    };
+
     Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod) {
 
         Citeck.forms.editRecord({
