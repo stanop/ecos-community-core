@@ -833,6 +833,29 @@ YAHOO.Bubbling.fire("registerAction", {
 		}
 	});
 
+    YAHOO.Bubbling.fire("registerAction", {
+        actionName: "onEditNodeMetadata",
+        fn: function (asset, element) {
+
+            var nodeRef = asset.node.nodeRef;
+            var oldFormUrl = "/share/page/node-edit?nodeRef=" + nodeRef;
+
+            try {
+                Citeck.forms.editRecord({
+                    recordRef: nodeRef,
+                    fallback: function() {
+                        window.location = oldFormUrl;
+                    },
+                    onSubmit: function() {
+                        YAHOO.Bubbling.fire("metadataRefresh");
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+                window.location = oldFormUrl;
+            }
+        }
+    });
 
 	/**
 	 * for Node Actions Service
