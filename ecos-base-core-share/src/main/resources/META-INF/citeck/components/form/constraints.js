@@ -858,36 +858,47 @@ require([
             return;
         }
 
-        var checkUrl = YAHOO.lang.substitute(Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?{paramName}={itemId}&viewId={formId}&mode={mode}", {
-            paramName: paramName,
-            itemId: itemId,
-            mode: mode,
-            formId: formId
-        });
+        var showOldForms = function () {
 
-        Alfresco.util.Ajax.jsonGet({
-            url: checkUrl,
-            successCallback: { fn: function(response) {
-                var resp = response.json;
+            var checkUrl = YAHOO.lang.substitute(Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?{paramName}={itemId}&viewId={formId}&mode={mode}", {
+                paramName: paramName,
+                itemId: itemId,
+                mode: mode,
+                formId: formId
+            });
 
-                if (resp.eformExists) {
-                    Citeck.forms.eform(itemId, {
-                        class: 'ecos-modal_width-lg',
-                        isBigHeader: true
-                    });
-                } else if (resp.exists) {
-                    newDialog();
-                } else if(response.json.defaultExists) {
-                    formId = "";
-                    newDialog();
-                } else {
-                    oldDialog();
+            Alfresco.util.Ajax.jsonGet({
+                url: checkUrl,
+                successCallback: {
+                    fn: function(response) {
+                        if (response.json.exists) {
+                            newDialog();
+                        } else if (response.json.defaultExists) {
+                            formId = "";
+                            newDialog();
+                        } else {
+                            oldDialog();
+                        }
+                    }},
+                failureCallback: {
+                    fn: function(response) {
+                        oldDialog();
+                    }
                 }
-            }},
-            failureCallback: { fn: function(response) {
-                oldDialog();
-            }}
-        });
+            });
+        };
+
+        try {
+            Citeck.forms.editRecord({
+                recordRef: itemId,
+                fallback: function() {
+                    showOldForms();
+                }
+            });
+        } catch (e) {
+            console.error(e);
+            showOldForms();
+        }
     };
 
     Citeck.forms.showViewInplaced = function(itemId, formId, callback, params) {
