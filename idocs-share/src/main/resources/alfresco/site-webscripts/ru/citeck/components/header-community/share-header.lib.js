@@ -33,24 +33,28 @@ function getWidget(id) {
   return widgetUtils.findObject(model.jsonModel, "id", id);
 }
 
-function buildItems(items, groupName) {
+function buildItems(items, groupName, useCiteckWidget) {
   var result = [];
 
   for (var i = 0; i < items.length; i++) {
-    var id = "HEADER_" + (groupName + "_" + items[i].id.replace(/-/, "_")).toUpperCase(),
+
+    var item = items[i],
+        id = "HEADER_" + (groupName + "_" + item.id.replace(/-/, "_")).toUpperCase(),
         configuration = {
           id: id,
-          label: items[i].label || "header." + items[i].id + ".label",
-          targetUrl: items[i].url,
-          targetUrlType: items[i].urlType || "SHARE_PAGE_RELATIVE"
+          label: item.label || "header." + item.id + ".label",
+          targetUrl: item.url,
+          targetUrlType: item.urlType || "SHARE_PAGE_RELATIVE"
         };
 
-    if (items[i].iconImage) configuration["iconImage"] = items[i].iconImage;
-    if (items[i].movable) configuration["movable"] = items[i].movable;
+    if (item.iconImage) configuration["iconImage"] = item.iconImage;
+    if (item.movable) configuration["movable"] = item.movable;
+    if (item.clickEvent) configuration["clickEvent"] = item.clickEvent;
+    if (item.payload) configuration["payload"] = item.payload;
 
     result.push({
       id: configuration.id,
-      name: "alfresco/menus/AlfMenuItem",
+      name: useCiteckWidget ? "js/citeck/header/citeckMenuItem" : "alfresco/menus/AlfMenuItem",
       config: configuration
     });
   }

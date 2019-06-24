@@ -910,7 +910,7 @@ function buildCreateVariants(sites) {
                 config: {
                     id: siteId,
                     label: sites[sd].title,
-                    widgets: buildItems(buildCreateVariantsForSite(sites[sd].shortName, true), sites[sd].shortName)
+                    widgets: buildItems(buildCreateVariantsForSite(sites[sd].shortName, true), sites[sd].shortName, true)
                 }
             });
         }
@@ -928,22 +928,20 @@ function buildCreateVariantsForSite(sitename, forSlideMenu) {
 
         if (createVariants && createVariants.length > 0) {
             for (var cv = 0; cv < createVariants.length; cv++) {
-                var url = "node-create?type=" + createVariants[cv].type;
-                url += "&viewId=" + createVariants[cv].formId;
-                url += "&destination=" + createVariants[cv].destination;
-                if (createVariants[cv].createArguments) {
-                    url += "&" + createVariants[cv].createArguments;
-                }
+
+                var variant = createVariants[cv];
+
                 createVariantsPresets.push({
-                    label: createVariants[cv].title,
-                    id: "HEADER_" + ((sitename + "_" + createVariants[cv].type).replace(/\-/g, "_")).toUpperCase(),
-                    url: url
+                    label: variant.title,
+                    id: "HEADER_" + ((sitename + "_" + variant.type).replace(/\-/g, "_")).toUpperCase(),
+                    payload: createVariants[cv],
+                    clickEvent: 'function(){Citeck.forms.handleHeaderCreateVariant(arguments[2].payload);}'
                 });
             }
         }
     }
 
-    return forSlideMenu ? createVariantsPresets : buildItems(createVariantsPresets, "CREATE_VARIANT");
+    return forSlideMenu ? createVariantsPresets : buildItems(createVariantsPresets, "CREATE_VARIANT", true);
 }
 
 function buildJournalsListForSite(sitename, journalUrl, request) {

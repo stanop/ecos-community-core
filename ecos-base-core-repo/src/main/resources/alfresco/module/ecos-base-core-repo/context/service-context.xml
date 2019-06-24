@@ -326,9 +326,9 @@
     <bean id="ecosConfigService" class="ru.citeck.ecos.config.CachingEcosConfigService" primary="true">
         <property name="configRoot" value="workspace://SpacesStore/ecos-config-root"/>
         <property name="configNamespace" value="http://www.citeck.ru/model/config/1.0"/>
-        <property name="configTypeQName" value="config:ecosConfig"/>
-        <property name="configKeyQName" value="config:key"/>
-        <property name="configValueQName" value="config:value"/>
+        <property name="configTypeQName" value="{http://www.citeck.ru/model/config/1.0}ecosConfig"/>
+        <property name="configKeyQName" value="{http://www.citeck.ru/model/config/1.0}key"/>
+        <property name="configValueQName" value="{http://www.citeck.ru/model/config/1.0}value"/>
     </bean>
 
     <bean id="ecosConfigServiceJS" class="ru.citeck.ecos.config.EcosConfigServiceJs" parent="baseJavaScriptExtension">
