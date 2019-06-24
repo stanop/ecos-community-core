@@ -926,7 +926,7 @@ define([
             YAHOO.util.Dom.setStyle(previewContainerId, 'display', 'block');
         });
 
-        this.panel.setHeader("Document preview");
+        this.panel.setHeader(Alfresco.util.message("widget.document.title.preview"));
         this.panel.setBody("<div id='" + previewContainerId + "'></div>");
 
         if (params.renderImmediately)

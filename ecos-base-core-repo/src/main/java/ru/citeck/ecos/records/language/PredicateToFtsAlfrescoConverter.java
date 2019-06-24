@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.*;
-import ru.citeck.ecos.records2.QueryLangConverter;
-import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.querylang.QueryLangConverter;
+import ru.citeck.ecos.querylang.QueryLangService;
 import ru.citeck.ecos.search.AssociationIndexPropertyRegistry;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
@@ -22,8 +22,7 @@ import ru.citeck.ecos.utils.DictUtils;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.function.Consumer;
 
 @Component
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
@@ -37,7 +36,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
     @Autowired
     public PredicateToFtsAlfrescoConverter(DictUtils dictUtils,
                                            SearchService searchService,
-                                           RecordsService recordsService,
+                                           QueryLangService queryLangService,
                                            PredicateService predicateService,
                                            ServiceRegistry serviceRegistry,
                                            AssociationIndexPropertyRegistry associationIndexPropertyRegistry) {
@@ -48,8 +47,8 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.associationIndexPropertyRegistry = associationIndexPropertyRegistry;
 
-        recordsService.register(this,
-                RecordsService.LANGUAGE_PREDICATE,
+        queryLangService.register(this,
+                PredicateService.LANGUAGE_PREDICATE,
                 SearchService.LANGUAGE_FTS_ALFRESCO);
     }
 
@@ -89,6 +88,11 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
             String valueStr = value.toString();
 
             switch (attribute) {
+                case "PATH":
+
+                    query.path(valueStr);
+
+                    break;
                 case "PARENT":
                 case "_parent":
 
@@ -98,33 +102,37 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                 case "TYPE":
                 case "_type":
 
-                    query.type(QName.resolveToQName(namespaceService, valueStr));
+                    consumeQName(valueStr, query::type);
 
                     break;
                 case "ASPECT":
 
-                    query.aspect(QName.resolveToQName(namespaceService, valueStr));
+                    consumeQName(valueStr, query::aspect);
 
                     break;
                 case "ISNULL":
 
-                    query.isNull(QName.resolveToQName(namespaceService, valueStr));
+                    consumeQName(valueStr, query::isNull);
 
                     break;
                 case "ISNOTNULL":
 
-                    query.isNotNull(getQueryField(dictUtils.getAttDefinition(valueStr)));
+                    consumeQueryField(valueStr, query::isNotNull);
 
                     break;
                 case "ISUNSET":
 
-                    query.isUnset(getQueryField(dictUtils.getAttDefinition(valueStr)));
+                    consumeQueryField(valueStr, query::isUnset);
 
                     break;
                 default:
 
                     ClassAttributeDefinition attDef = dictUtils.getAttDefinition(attribute);
                     QName field = getQueryField(attDef);
+
+                    if (field == null) {
+                        break;
+                    }
 
                     switch (valuePred.getType()) {
                         case EQ:
@@ -141,7 +149,13 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
                             if (attDef instanceof PropertyDefinition) {
 
-                                query.value(field, "*" + valueStr + "*");
+                                DataTypeDefinition dataType = ((PropertyDefinition) attDef).getDataType();
+                                if (dataType != null && (DataTypeDefinition.TEXT.equals(dataType.getName()) ||
+                                                         DataTypeDefinition.MLTEXT.equals(dataType.getName())) ) {
+                                    query.value(field, "*" + valueStr + "*");
+                                } else {
+                                    query.value(field, valueStr);
+                                }
 
                             } else if (attDef instanceof AssociationDefinition) {
 
@@ -241,14 +255,31 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         } else if (predicate instanceof EmptyPredicate) {
 
             String attribute = ((EmptyPredicate) predicate).getAttribute();
-            query.empty(getQueryField(dictUtils.getAttDefinition(attribute)));
+            consumeQueryField(attribute, query::empty);
 
         } else {
             throw new RuntimeException("Unknown predicate type: " + predicate);
         }
     }
 
+    private void consumeQueryField(String field, Consumer<QName> consumer) {
+        QName attQName = getQueryField(dictUtils.getAttDefinition(field));
+        if (attQName != null) {
+            consumer.accept(attQName);
+        }
+    }
+
+    private void consumeQName(String qname, Consumer<QName> consumer) {
+        QName qName = QName.resolveToQName(namespaceService, qname);
+        if (qName != null) {
+            consumer.accept(qName);
+        }
+    }
+
     private QName getQueryField(ClassAttributeDefinition def) {
+        if (def == null) {
+            return null;
+        }
         if (def instanceof AssociationDefinition) {
             return associationIndexPropertyRegistry.getAssociationIndexProperty(def.getName());
         }

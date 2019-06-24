@@ -13,12 +13,12 @@ import org.alfresco.service.namespace.QName;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import ru.citeck.ecos.graphql.AlfGqlContext;
-import ru.citeck.ecos.node.AlfNodeInfo;
-import ru.citeck.ecos.node.DisplayNameService;
-import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.node.AlfNodeInfo;
+import ru.citeck.ecos.node.DisplayNameService;
+import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.records.source.alf.file.FileRepresentation;
 import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
@@ -120,7 +120,6 @@ public class AlfNodeAttValue implements MetaValue {
             return ISO8601Utils.format((Date) rawValue);
         }
         if (rawValue instanceof ContentData) {
-
             String contentUrl = ((ContentData) rawValue).getContentUrl();
             ContentService contentService = context.getServiceRegistry().getContentService();
 
@@ -137,13 +136,13 @@ public class AlfNodeAttValue implements MetaValue {
         if (alfNode != null) {
             Attribute attribute = alfNode.attribute(name);
             return attribute.getValues()
-                            .stream()
-                            .map(v -> {
-                                AlfNodeAttValue value = new AlfNodeAttValue(v);
-                                value.init(context, field);
-                                return value;
-                            })
-                            .collect(Collectors.toList());
+                    .stream()
+                    .map(v -> {
+                        AlfNodeAttValue value = new AlfNodeAttValue(v);
+                        value.init(context, field);
+                        return value;
+                    })
+                    .collect(Collectors.toList());
         } else if (qName != null) {
             return MetaUtils.getReflectionValue(qName, name);
         } else if (rawValue instanceof ContentData) {
@@ -282,4 +281,3 @@ public class AlfNodeAttValue implements MetaValue {
         }
     }
 }
-

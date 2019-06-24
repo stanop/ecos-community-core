@@ -94,11 +94,6 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
     }
 
     @Override
-    public boolean isAssociation() {
-        return getDefinition() instanceof AssociationDefinition;
-    }
-
-    @Override
     public List<CreateVariant> getCreateVariants() {
 
         ClassAttributeDefinition definition = getDefinition();
@@ -123,6 +118,11 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isAssociation() {
+        return getDefinition() instanceof AssociationDefinition;
     }
 
     @Override

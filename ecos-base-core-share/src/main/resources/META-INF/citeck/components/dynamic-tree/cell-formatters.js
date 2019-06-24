@@ -22,7 +22,8 @@
 define([
     'js/citeck/modules/utils/citeck',
     'components/form/date',
-    'xstyle!./cell-formatters.css'
+    'xstyle!./cell-formatters.css',
+    'citeck/components/form/constraints'
 ], function() {
 
     Citeck = typeof Citeck != "undefined" ? Citeck : {};
@@ -1062,58 +1063,69 @@ define([
                 };
                 this.subscribe('renderEvent', move, this, true);
 
-                Alfresco.util.Ajax.jsonGet({
-                    url: Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?taskId=" + taskId,
-                    successCallback: {
-                        scope: this,
-                        fn: function(response) {
-                            if(response.serverResponse.status == 200 && response.json.exists) { // form for flowable task
-                                Alfresco.util.Ajax.request({
-                                    method: "GET",
-                                    url: Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/node-view?formType=taskId&formKey=" + taskId + "&htmlid=" + htmlid,
-                                    execScripts: true,
-                                    successCallback: {
-                                        fn: function(response) {
-                                            elCell.innerHTML = response.serverResponse.responseText;
-                                        }
-                                    }
-                                });
-                            } else {
+                var showLegacyForm = function () {
 
-                                YAHOO.Bubbling.on("beforeFormRuntimeInit", function(layer, args) {
-                                    if (Alfresco.util.hasEventInterest(htmlid + "-form", args)) {
-                                        args[1].runtime.setAJAXSubmit(true, {
-                                            successCallback: {
-                                                scope: this,
-                                                fn: function(response) {
-                                                    //setTimeout(function () { checkMirror() }, 1000);
-                                                    YAHOO.Bubbling.fire("metadataRefresh");
-                                                }
-                                            },
-                                            failureCallback: {
-                                                scope: this,
-                                                fn: formatterScope.onFailure
+                    Alfresco.util.Ajax.jsonGet({
+                        url: Alfresco.constants.PROXY_URI + "citeck/invariants/view-check?taskId=" + taskId,
+                        successCallback: {
+                            scope: this,
+                            fn: function(response) {
+                                if(response.serverResponse.status == 200 && response.json.exists) { // form for flowable task
+                                    Alfresco.util.Ajax.request({
+                                        method: "GET",
+                                        url: Alfresco.constants.URL_SERVICECONTEXT + "citeck/components/node-view?formType=taskId&formKey=" + taskId + "&htmlid=" + htmlid,
+                                        execScripts: true,
+                                        successCallback: {
+                                            fn: function(response) {
+                                                elCell.innerHTML = response.serverResponse.responseText;
                                             }
-                                        });
-                                    }
-                                });
+                                        }
+                                    });
+                                } else {
 
-                                Citeck.utils.loadHtml(Alfresco.constants.URL_SERVICECONTEXT + "citeck/form/inline", {
-                                    itemKind: 'task',
-                                    itemId: taskId,
-                                    formId: 'inline',
-                                    submitType: 'json',
-                                    htmlid: htmlid,
-                                    showSubmitButton: false
-                                }, elCell, null, {
-                                    scope: this,
-                                    fn: formatterScope.onFailure
-                                });
+                                    YAHOO.Bubbling.on("beforeFormRuntimeInit", function(layer, args) {
+                                        if (Alfresco.util.hasEventInterest(htmlid + "-form", args)) {
+                                            args[1].runtime.setAJAXSubmit(true, {
+                                                successCallback: {
+                                                    scope: this,
+                                                    fn: function(response) {
+                                                        //setTimeout(function () { checkMirror() }, 1000);
+                                                        YAHOO.Bubbling.fire("metadataRefresh");
+                                                    }
+                                                },
+                                                failureCallback: {
+                                                    scope: this,
+                                                    fn: formatterScope.onFailure
+                                                }
+                                            });
+                                        }
+                                    });
+
+                                    Citeck.utils.loadHtml(Alfresco.constants.URL_SERVICECONTEXT + "citeck/form/inline", {
+                                        itemKind: 'task',
+                                        itemId: taskId,
+                                        formId: 'inline',
+                                        submitType: 'json',
+                                        htmlid: htmlid,
+                                        showSubmitButton: false
+                                    }, elCell, null, {
+                                        scope: this,
+                                        fn: formatterScope.onFailure
+                                    });
+                                }
                             }
                         }
+                    });
+                };
+
+                Citeck.forms.editRecord({
+                    recordRef: "wftask@" + taskId,
+                    fallback: showLegacyForm,
+                    formContainer: elCell,
+                    onSubmit: function(record) {
+                        window.location.reload();
                     }
                 });
-
             }
         },
         

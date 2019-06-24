@@ -88,9 +88,19 @@ public class AlfNodeRecord implements MetaValue {
     @Override
     public List<? extends MetaValue> getAttribute(String name, MetaField field) {
 
-       List<? extends MetaValue> attribute = null;
+        if (node == null) {
+            return Collections.emptyList();
+        }
+
+        List<? extends MetaValue> attribute = null;
 
         switch (name) {
+
+            case RecordConstants.ATT_TYPE:
+
+                attribute = MetaUtils.toMetaValues(node.type(), context, field);
+                break;
+
             case ATTR_ASPECTS:
 
                 attribute = node.aspects()
@@ -128,6 +138,29 @@ public class AlfNodeRecord implements MetaValue {
                 attribute = Collections.singletonList(new AlfNodeAttValue("alf_" + node.type() + "_view"));
                 break;
 
+            case RecordConstants.ATT_DASHBOARD_KEY:
+
+                List<String> keys = new ArrayList<>();
+
+                Attribute ecosType = node.attribute("tk:type");
+
+                String type = getNodeRefUuid(ecosType.value().orElse(""));
+                if (!type.isEmpty()) {
+
+                    Attribute ecosKind = node.attribute("tk:kind");
+                    String kind = getNodeRefUuid(ecosKind.value().orElse(""));
+
+                    if (!kind.isEmpty()) {
+                        keys.add(type + "/" + kind);
+                    }
+                    keys.add(type);
+                }
+
+                keys.add("alf_" + node.type());
+
+                attribute = MetaUtils.toMetaValues(keys, context, field);
+                break;
+
             case ATTR_PERMISSIONS:
 
                 return Collections.singletonList(getPermissions());
@@ -154,6 +187,13 @@ public class AlfNodeRecord implements MetaValue {
         }
 
         return attribute != null ? attribute : Collections.emptyList();
+    }
+
+    private String getNodeRefUuid(String nodeRef) {
+        if (nodeRef == null || nodeRef.isEmpty()) {
+            return "";
+        }
+        return nodeRef.replaceAll("workspace://SpacesStore/", "");
     }
 
     @Override

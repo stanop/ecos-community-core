@@ -191,7 +191,28 @@ define([
     JsonObject
         .key('nodeRef', s)
         .constructor([ String ], function (modelStr) {
-            this.setModel(JSON.parse(modelStr));
+            var json = JSON.parse(modelStr);
+            if (json.id) {
+                var attributes = [];
+                var jsonAttributes = json.attributes || {};
+                for (var att in jsonAttributes) {
+                    if (jsonAttributes.hasOwnProperty(att)) {
+                        var value = jsonAttributes[att];
+                        if (!Array.isArray(value)) {
+                            value = [ value ]
+                        }
+                        attributes.push({
+                            name: att,
+                            value: value
+                        });
+                    }
+                }
+                json = {
+                    nodeRef: json.id,
+                    attributes: attributes
+                };
+            }
+            this.setModel(json);
         }, true)
         .constructor([ Object ], function (model) {
             var attributes = [];
