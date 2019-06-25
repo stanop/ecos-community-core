@@ -13,7 +13,7 @@
 
         <script type="text/javascript">
             require(['ecosui!journals-dashlet'], function(JournalsDashlet) {
-                JournalsDashlet.render('${componentId}', {id: 'dashletId-1-0-0'});
+                JournalsDashlet.render('${componentId}', {id: 'dashletId-1-0-0', stateId: '${componentId}'});
             });
         </script>
     </@>
