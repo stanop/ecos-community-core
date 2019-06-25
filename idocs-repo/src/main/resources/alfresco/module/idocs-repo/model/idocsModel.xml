@@ -340,6 +340,7 @@
                 <aspect>idocs:contractorType</aspect>
                 <aspect>idocs:hasBankAccount</aspect>
                 <aspect>idocs:doNotSendContractsToEdiAspect</aspect>
+                <aspect>icase:case</aspect>
             </mandatory-aspects>
         </type>
 

@@ -57,6 +57,7 @@
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-3-8-0.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-3-9-0.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-3-10-0.xml" />
+    <import resource="classpath:alfresco/module/idocs-repo/context/bootstrap-context-3-13-0.xml" />
     <import resource="classpath:alfresco/module/idocs-repo/context/form-actions-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/aop-context.xml"/>
     <import resource="classpath:alfresco/module/idocs-repo/context/records-service-context.xml"/>
