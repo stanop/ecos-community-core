@@ -9,13 +9,10 @@
     var key = new RegistryKey(null, ["ecos", "cardlets", args.key]);
     var registry = services.get('registryService');
 
-    var value = registry.getProperty(key);
-
-    if (!value) {
-        status.code = 404;
-        model.result = null;
-        return;
-    }
+    var value = null;
+    Packages.org.alfresco.repo.security.authentication.AuthenticationUtil.runAsSystem(function () {
+        value = registry.getProperty(key);
+    });
 
     model.result = value;
 
