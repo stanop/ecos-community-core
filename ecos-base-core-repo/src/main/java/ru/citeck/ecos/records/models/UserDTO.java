@@ -1,4 +1,4 @@
-package ru.citeck.ecos.comment.model;
+package ru.citeck.ecos.records.models;
 
 import lombok.Data;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -8,7 +8,7 @@ import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
  * @author Roman Makarskiy
  */
 @Data
-public class CommentUserDTO {
+public class UserDTO {
 
     private NodeRef id;
 
