@@ -48,17 +48,17 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
     private final EcosTaskService ecosTaskService;
     private final AuthorityService authorityService;
-    private final WorkflowTaskRecordsUtils workflowTaskRecordsHelper;
+    private final WorkflowTaskRecordsUtils workflowTaskRecordsUtils;
 
     private Map<String, String> sumAttributeByType = new ConcurrentHashMap<>();
 
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
-                               WorkflowTaskRecordsUtils workflowTaskRecordsHelper,
+                               WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
                                AuthorityService authorityService) {
         setId(ID);
         this.ecosTaskService = ecosTaskService;
-        this.workflowTaskRecordsHelper = workflowTaskRecordsHelper;
+        this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
         this.authorityService = authorityService;
     }
 
@@ -146,12 +146,12 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
     @Override
     public RecordsQueryResult<RecordRef> getLocalRecords(RecordsQuery query) {
-        ComposedPredicate predicate = workflowTaskRecordsHelper.buildPredicateQuery(query);
+        ComposedPredicate predicate = workflowTaskRecordsUtils.buildPredicateQuery(query);
         if (predicate == null || predicate.getPredicates().isEmpty()) {
             return new RecordsQueryResult<>();
         }
 
-        RecordsQueryResult<TaskIdQuery> taskQueryResult = workflowTaskRecordsHelper.queryTasks(predicate, query);
+        RecordsQueryResult<TaskIdQuery> taskQueryResult = workflowTaskRecordsUtils.queryTasks(predicate, query);
 
         return new RecordsQueryResult<>(taskQueryResult, task -> RecordRef.valueOf(task.getTaskId()));
     }

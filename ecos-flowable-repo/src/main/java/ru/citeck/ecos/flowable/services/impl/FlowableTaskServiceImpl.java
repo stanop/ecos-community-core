@@ -6,6 +6,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
+import org.alfresco.service.namespace.NamespaceService;
 import org.flowable.engine.TaskService;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.identitylink.api.IdentityLinkType;
@@ -25,6 +26,7 @@ import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +54,8 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     private WorkflowMirrorService workflowMirrorService;
     @Autowired
     private NodeService nodeService;
+    @Autowired
+    private NamespaceService namespaceService;
 
     @PostConstruct
     public void init() {
@@ -101,11 +105,26 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     }
 
     public Map<String, Object> getVariables(String taskId) {
+        WorkflowTask task = workflowService.getTaskById(FlowableConstants.ENGINE_PREFIX + taskId);
+
+        Map<String, Object> propsFromWorkflowService = new HashMap<>();
+
+        task.getProperties().forEach((qName, serializable) -> {
+            String newKey = qName.toPrefixString(namespaceService).replaceAll(":", "_");
+            propsFromWorkflowService.put(newKey, serializable);
+        });
+
+        Map<String, Object> propsFromFlowable;
+
         if (taskExists(taskId)) {
-            return taskService.getVariables(taskId);
+            propsFromFlowable = taskService.getVariables(taskId);
         } else {
-            return flowableHistoryService.getHistoricTaskVariables(taskId);
+            propsFromFlowable = flowableHistoryService.getHistoricTaskVariables(taskId);
         }
+
+        propsFromFlowable.putAll(propsFromWorkflowService);
+
+        return propsFromFlowable;
     }
 
     public Map<String, Object> getVariablesLocal(String taskId) {
@@ -118,14 +137,13 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
 
     public Object getVariable(String taskId, String variableName) {
-        if (taskExists(taskId)) {
-            return taskService.getVariable(taskId, variableName);
-        } else {
-            if (VAR_PACKAGE.equals(variableName)) {
-                return getPackageFromMirrorTask(taskId);
-            }
-            return flowableHistoryService.getHistoricTaskVariables(taskId).get(variableName);
+        Object result = getVariables(taskId).get(variableName);
+
+        if (result == null && VAR_PACKAGE.equals(variableName)) {
+            return getPackageFromMirrorTask(taskId);
         }
+
+        return result;
     }
 
     private NodeRef getPackageFromMirrorTask(String taskId) {
