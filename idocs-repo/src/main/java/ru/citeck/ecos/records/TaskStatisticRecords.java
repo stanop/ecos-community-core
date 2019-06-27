@@ -62,7 +62,6 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
     private static final String EXPECTED_PERFORM_TIME = "history:expectedPerformTime";
     private static final String STARTED_DATE = "event:date";
     private static final String SHOW_UNASSIGNED_IN_STATISTIC_CONFIG_KEY = "show-unassigned-in-statistic-config";
-    private static final String FLOWABLE_PREFIX = "flowable$";
 
     private static final String PRED_STR_EQUALS = SearchPredicate.STRING_EQUALS.getValue();
 
@@ -70,7 +69,6 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
 
     private PersonService personService;
     private SearchService searchService;
-    private MessageService messageService;
     private NamespaceService namespaceService;
     private NodeService nodeService;
     private SearchCriteriaParser criteriaParser;
@@ -93,7 +91,6 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
         setId(ID);
         this.personService = serviceRegistry.getPersonService();
         this.searchService = serviceRegistry.getSearchService();
-        this.messageService = serviceRegistry.getMessageService();
         this.namespaceService = serviceRegistry.getNamespaceService();
         this.nodeService = serviceRegistry.getNodeService();
         this.graphQLService = graphQLService;
@@ -334,15 +331,9 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
         recordAttributes.put(documentAttrName, docAttributeGql);
 
         Map<QName, Serializable> startedProps = startEvent.getProperties();
-        boolean isFlowableTask = isFlowableTask(startedProps);
         startedProps.forEach((k, v) -> {
             String key = k.toPrefixString(namespaceService);
-            if (k.equals(HistoryModel.PROP_TASK_TYPE) && isFlowableTask) {
-                String taskTitle = StringUtils.defaultString(
-                        (String) startedProps.get(HistoryModel.PROP_TASK_TITLE), "");
-                String localizedTaskTitle = messageService.getMessage(taskTitle);
-                recordAttributes.put(key, localizedTaskTitle != null ? localizedTaskTitle : taskTitle);
-            } else if (v instanceof QName) {
+            if (v instanceof QName) {
                 recordAttributes.put(key, context.getQName(v));
             } else {
                 recordAttributes.put(key, v);
@@ -399,11 +390,6 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
                                                         .orElse(null));
         value.init(context, null);
         return value;
-    }
-
-    private boolean isFlowableTask(Map<QName, Serializable> props) {
-        String taskId = StringUtils.defaultString((String) props.get(HistoryModel.PROP_TASK_INSTANCE_ID), "");
-        return StringUtils.isNotBlank(taskId) && taskId.startsWith(FLOWABLE_PREFIX);
     }
 
     private String getPoolActorsNamesString(List<NodeRef> pooledActors) {
