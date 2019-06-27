@@ -1,7 +1,6 @@
 package ru.citeck.ecos.records.models;
 
 import lombok.Data;
-import org.alfresco.service.cmr.repository.NodeRef;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 
 /**
@@ -10,7 +9,7 @@ import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 @Data
 public class UserDTO {
 
-    private NodeRef id;
+    private String id;
 
     @MetaAtt("cm:userName")
     private String userName;
@@ -23,5 +22,8 @@ public class UserDTO {
 
     @MetaAtt("cm:middleName")
     private String middleName;
+
+    @MetaAtt(".disp")
+    private String displayName;
 
 }
