@@ -663,6 +663,9 @@ define([
                 if (sData.displayName) {
                     elCell.innerHTML = sData.displayName;
                     return;
+                } else if (sData.str) {
+                    elCell.innerHTML = sData.str;
+                    return;
                 }
                 var typeQName = null;
                 var sDataValues = _.values(sData);
