@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.comment.model.CommentDTO;
 import ru.citeck.ecos.comment.model.CommentPermissions;
-import ru.citeck.ecos.records.models.UserDTO;
+import ru.citeck.ecos.records.models.AuthorityDTO;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 
@@ -85,10 +85,10 @@ public class CommentFactory {
         return diff >= EDITED_DIFF_RANGE;
     }
 
-    private UserDTO toUserDTO(String userName) {
+    private AuthorityDTO toUserDTO(String userName) {
         NodeRef userRef = authorityService.getAuthorityNodeRef(userName);
         RecordRef userRecord = RecordRef.create("", userRef.toString());
-        return recordsService.getMeta(userRecord, UserDTO.class);
+        return recordsService.getMeta(userRecord, AuthorityDTO.class);
     }
 
     private String getCommentText(NodeRef commentRef) {

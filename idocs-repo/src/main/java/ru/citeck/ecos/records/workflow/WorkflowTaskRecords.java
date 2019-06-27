@@ -5,11 +5,12 @@ import lombok.Setter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records.RecordConstants;
-import ru.citeck.ecos.records.models.UserDTO;
+import ru.citeck.ecos.records.models.AuthorityDTO;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.GqlContext;
@@ -288,9 +289,25 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     String userName = (String) attributes.get("cwf_sender");
                     NodeRef userRef = authorityService.getAuthorityNodeRef(userName);
                     RecordRef userRecord = RecordRef.create("", userRef.toString());
-                    return recordsService.getMeta(userRecord, UserDTO.class);
+                    return recordsService.getMeta(userRecord, AuthorityDTO.class);
                 case ATT_ASSIGNEE:
-                    return taskInfo.getAssignee();
+                    String assignee = taskInfo.getAssignee();
+                    if (StringUtils.isBlank(assignee)) {
+                        return null;
+                    }
+
+                    NodeRef assigneeRef = authorityService.getAuthorityNodeRef(assignee);
+                    RecordRef assigneeRecordRef = RecordRef.create("", assigneeRef.toString());
+                    return recordsService.getMeta(assigneeRecordRef, AuthorityDTO.class);
+                case ATT_CANDIDATE:
+                    String candidate = taskInfo.getCandidate();
+                    if (StringUtils.isBlank(candidate)) {
+                        return null;
+                    }
+
+                    NodeRef candidateRef = authorityService.getAuthorityNodeRef(candidate);
+                    RecordRef candidateRecordRef = RecordRef.create("", candidateRef.toString());
+                    return recordsService.getMeta(candidateRecordRef, AuthorityDTO.class);
                 case ATT_DUE_DATE:
                     return attributes.get("bpm_dueDate");
                 case ATT_STARTED:

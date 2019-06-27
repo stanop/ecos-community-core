@@ -7,9 +7,12 @@ import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
  * @author Roman Makarskiy
  */
 @Data
-public class UserDTO {
+public class AuthorityDTO {
 
     private String id;
+
+    @MetaAtt("cm:authorityName")
+    private String authorityName;
 
     @MetaAtt("cm:userName")
     private String userName;

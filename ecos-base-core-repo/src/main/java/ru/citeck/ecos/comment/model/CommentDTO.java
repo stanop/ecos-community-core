@@ -3,7 +3,7 @@ package ru.citeck.ecos.comment.model;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import lombok.Data;
-import ru.citeck.ecos.records.models.UserDTO;
+import ru.citeck.ecos.records.models.AuthorityDTO;
 
 import java.util.Date;
 
@@ -21,8 +21,8 @@ public class CommentDTO {
     private Date createdAt;
     private Date modifiedAt;
 
-    private UserDTO author;
-    private UserDTO editor;
+    private AuthorityDTO author;
+    private AuthorityDTO editor;
 
     private boolean edited;
 

@@ -12,6 +12,8 @@ public interface TaskInfo {
 
     String getAssignee();
 
+    String getCandidate();
+
     String getFormKey();
 
     Map<String, Object> getAttributes();

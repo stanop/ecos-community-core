@@ -30,6 +30,11 @@ public class EngineTaskInfo implements TaskInfo {
     }
 
     @Override
+    public String getCandidate() {
+        return info.getCandidate();
+    }
+
+    @Override
     public String getFormKey() {
         return info.getFormKey();
     }

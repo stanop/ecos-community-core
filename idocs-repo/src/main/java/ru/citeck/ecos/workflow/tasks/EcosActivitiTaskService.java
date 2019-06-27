@@ -122,7 +122,15 @@ public class EcosActivitiTaskService implements EngineTaskService {
         taskService.complete(taskId, variables, true);
     }
 
+    private String getCandidate(String taskId) {
+        return getIdentityLinkAuthority(IdentityLinkType.CANDIDATE, taskId);
+    }
+
     private String getAssignee(String taskId) {
+        return getIdentityLinkAuthority(IdentityLinkType.ASSIGNEE, taskId);
+    }
+
+    private String getIdentityLinkAuthority(String type, String taskId) {
         if (!taskExists(taskId)) {
             return null;
         }
@@ -130,8 +138,8 @@ public class EcosActivitiTaskService implements EngineTaskService {
         List<IdentityLink> links = taskService.getIdentityLinksForTask(taskId);
 
         for (IdentityLink link : links) {
-            if (IdentityLinkType.ASSIGNEE.equals(link.getType())) {
-                return link.getUserId();
+            if (type.equals(link.getType())) {
+                return link.getUserId() != null ? link.getUserId() : link.getGroupId();
             }
         }
 
@@ -208,6 +216,11 @@ public class EcosActivitiTaskService implements EngineTaskService {
         @Override
         public String getAssignee() {
             return EcosActivitiTaskService.this.getAssignee(getId());
+        }
+
+        @Override
+        public String getCandidate() {
+            return EcosActivitiTaskService.this.getCandidate(getId());
         }
 
         @Override
