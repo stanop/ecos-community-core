@@ -26,6 +26,7 @@ import ru.citeck.ecos.utils.WorkflowUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 @Component
@@ -221,6 +222,14 @@ public class EcosActivitiTaskService implements EngineTaskService {
         @Override
         public String getCandidate() {
             return EcosActivitiTaskService.this.getCandidate(getId());
+        }
+
+        @Override
+        public List<String> getActors() {
+            return workflowUtils.getTaskActors(ENGINE_PREFIX + getId())
+                    .stream()
+                    .map(NodeRef::toString)
+                    .collect(Collectors.toList());
         }
 
         @Override

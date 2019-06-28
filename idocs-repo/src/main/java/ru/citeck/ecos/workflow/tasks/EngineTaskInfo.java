@@ -2,6 +2,7 @@ package ru.citeck.ecos.workflow.tasks;
 
 import ru.citeck.ecos.records2.RecordRef;
 
+import java.util.List;
 import java.util.Map;
 
 public class EngineTaskInfo implements TaskInfo {
@@ -32,6 +33,11 @@ public class EngineTaskInfo implements TaskInfo {
     @Override
     public String getCandidate() {
         return info.getCandidate();
+    }
+
+    @Override
+    public List<String> getActors() {
+        return info.getActors();
     }
 
     @Override

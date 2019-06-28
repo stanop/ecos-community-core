@@ -2,6 +2,7 @@ package ru.citeck.ecos.workflow.tasks;
 
 import ru.citeck.ecos.records2.RecordRef;
 
+import java.util.List;
 import java.util.Map;
 
 public interface TaskInfo {
@@ -13,6 +14,8 @@ public interface TaskInfo {
     String getAssignee();
 
     String getCandidate();
+
+    List<String> getActors();
 
     String getFormKey();
 

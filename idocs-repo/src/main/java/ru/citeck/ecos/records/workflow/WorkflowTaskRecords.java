@@ -308,6 +308,14 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     NodeRef candidateRef = authorityService.getAuthorityNodeRef(candidate);
                     RecordRef candidateRecordRef = RecordRef.create("", candidateRef.toString());
                     return recordsService.getMeta(candidateRecordRef, AuthorityDTO.class);
+                case ATT_ACTORS:
+                    return taskInfo.getActors()
+                            .stream()
+                            .map(actor -> {
+                                RecordRef rr = RecordRef.create("", actor);
+                                return recordsService.getMeta(rr, AuthorityDTO.class);
+                            })
+                            .collect(Collectors.toList());
                 case ATT_DUE_DATE:
                     return attributes.get("bpm_dueDate");
                 case ATT_STARTED:

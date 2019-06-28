@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Flowable task service
@@ -256,6 +257,14 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         @Override
         public String getCandidate() {
             return FlowableTaskServiceImpl.this.getCandidate(getId());
+        }
+
+        @Override
+        public List<String> getActors() {
+            return workflowUtils.getTaskActors(FlowableConstants.ENGINE_PREFIX + getId())
+                    .stream()
+                    .map(NodeRef::toString)
+                    .collect(Collectors.toList());
         }
 
         @Override
