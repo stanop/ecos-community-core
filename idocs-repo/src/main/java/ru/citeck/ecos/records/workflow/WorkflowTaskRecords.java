@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records.workflow;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -27,6 +28,8 @@ import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryLocalDAO;
+import ru.citeck.ecos.workflow.owner.OwnerAction;
+import ru.citeck.ecos.workflow.owner.OwnerService;
 import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
@@ -50,17 +53,19 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final EcosTaskService ecosTaskService;
     private final AuthorityService authorityService;
     private final WorkflowTaskRecordsUtils workflowTaskRecordsUtils;
+    private final OwnerService ownerService;
 
     private Map<String, String> sumAttributeByType = new ConcurrentHashMap<>();
 
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
-                               AuthorityService authorityService) {
+                               AuthorityService authorityService, OwnerService ownerService) {
         setId(ID);
         this.ecosTaskService = ecosTaskService;
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
         this.authorityService = authorityService;
+        this.ownerService = ownerService;
     }
 
     @Override
@@ -85,6 +90,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
         if (!taskInfoOpt.isPresent()) {
             throw new IllegalArgumentException("Task not found! id: " + taskId);
+        }
+
+        if (isChangeOwnerAction(meta)) {
+            processChangeOwnerAction(meta, taskId);
+            return new RecordMeta(taskId);
         }
 
         TaskInfo taskInfo = taskInfoOpt.get();
@@ -134,6 +144,23 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
         ecosTaskService.endTask(taskId, outcome[0], taskProps);
         return new RecordMeta(taskId);
+    }
+
+    private boolean isChangeOwnerAction(RecordMeta meta) {
+        return meta.getAttribute(ATT_CHANGE_OWNER) != null;
+    }
+
+    private void processChangeOwnerAction(RecordMeta meta, String taskId) {
+        JsonNode changeOwner = meta.getAttribute(ATT_CHANGE_OWNER);
+        String paramAction = changeOwner.get(ATT_ACTION).asText();
+
+        OwnerAction action = OwnerAction.valueOf(paramAction.toUpperCase());
+        String owner = null;
+        if (changeOwner.has(ATT_OWNER)) {
+            owner = changeOwner.get(ATT_OWNER).asText();
+        }
+
+        ownerService.changeOwner(taskId, action, owner);
     }
 
     private String getEcmFieldName(String name) {
@@ -320,42 +347,23 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     return attributes.get("bpm_dueDate");
                 case ATT_STARTED:
                     return attributes.get("bpm_startDate");
-                case ATT_LASTCOMMENT:
+                case ATT_LAST_COMMENT:
                     return attributes.get("cwf_lastcomment");
                 case ATT_TITLE:
                     return taskInfo.getTitle();
                 case ATT_REASSIGNABLE:
-                    return isReassignable(attributes, hasOwner, hasClaimOwner);
+                    return workflowTaskRecordsUtils.isReassignable(attributes, hasOwner, hasClaimOwner);
                 case ATT_CLAIMABLE:
-                    return isClaimable(attributes, hasOwner, hasClaimOwner, hasPooledActors);
+                    return workflowTaskRecordsUtils.isClaimable(attributes, hasOwner, hasClaimOwner, hasPooledActors);
                 case ATT_RELEASABLE:
-                    return isReleasable(attributes, hasOwner, hasClaimOwner, hasPooledActors);
+                    return workflowTaskRecordsUtils.isReleasable(attributes, hasOwner, hasClaimOwner, hasPooledActors);
+                case ATT_ASSIGNABLE:
+                    return workflowTaskRecordsUtils.isAssignable(attributes, hasOwner, hasClaimOwner, hasPooledActors);
                 case ATT_ACTIVE:
                     return attributes.get("bpm_completionDate") == null;
             }
 
             return attributes.get(name);
-        }
-
-        private boolean isReassignable(Map<String, Object> attributes, boolean hasOwner, boolean hasClaimOwner) {
-            boolean bpmIsReassignable = Boolean.TRUE.equals(attributes.get("bpm_reassignable"));
-            boolean isReassignableAllowed = bpmIsReassignable && (hasOwner || hasClaimOwner);
-            boolean isReassignableDisabled = Boolean.FALSE.equals(attributes.get("cwf_isTaskReassignable"));
-            return isReassignableAllowed && !isReassignableDisabled;
-        }
-
-        private boolean isClaimable(Map<String, Object> attributes, boolean hasOwner, boolean hasClaimOwner,
-                                    boolean hasPooledActors) {
-            boolean isClaimableAllowed = hasPooledActors && (!hasOwner && !hasClaimOwner);
-            boolean isClaimableDisabled = Boolean.FALSE.equals(attributes.get("cwf_isTaskClaimable"));
-            return isClaimableAllowed && !isClaimableDisabled;
-        }
-
-        private boolean isReleasable(Map<String, Object> attributes, boolean hasOwner, boolean hasClaimOwner,
-                                     boolean hasPooledActors) {
-            boolean isReleasableAllowed = hasPooledActors && (hasOwner || hasClaimOwner);
-            boolean isReleasableDisabled = Boolean.FALSE.equals(attributes.get("cwf_isTaskReleasable"));
-            return isReleasableAllowed && !isReleasableDisabled;
         }
 
         private RecordRef getDocumentRef() {

@@ -23,6 +23,7 @@ import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,7 +50,7 @@ public class WorkflowTaskRecordsUtils {
         this.ecosTaskService = ecosTaskService;
     }
 
-    public ComposedPredicate buildPredicateQuery(RecordsQuery query) {
+    ComposedPredicate buildPredicateQuery(RecordsQuery query) {
         WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
 
         AndPredicate predicate = new AndPredicate();
@@ -206,6 +207,32 @@ public class WorkflowTaskRecordsUtils {
         taskQueryResult.setTotalCount(taskQueryResult.getTotalCount() - filtered.get());
 
         return taskQueryResult;
+    }
+
+    boolean isReassignable(Map<String, Object> attributes, boolean hasOwner, boolean hasClaimOwner) {
+        boolean bpmIsReassignable = Boolean.TRUE.equals(attributes.get("bpm_reassignable"));
+        boolean isReassignableAllowed = bpmIsReassignable && (hasOwner || hasClaimOwner);
+        boolean isReassignableDisabled = Boolean.FALSE.equals(attributes.get("cwf_isTaskReassignable"));
+        return isReassignableAllowed && !isReassignableDisabled;
+    }
+
+    boolean isClaimable(Map<String, Object> attributes, boolean hasOwner, boolean hasClaimOwner,
+                        boolean hasPooledActors) {
+        boolean isClaimableAllowed = hasPooledActors && (!hasOwner && !hasClaimOwner);
+        boolean isClaimableDisabled = Boolean.FALSE.equals(attributes.get("cwf_isTaskClaimable"));
+        return isClaimableAllowed && !isClaimableDisabled;
+    }
+
+    boolean isAssignable(Map<String, Object> attributes, boolean hasOwner, boolean hasClaimOwner,
+                         boolean hasPooledActors) {
+        return isClaimable(attributes, hasOwner, hasClaimOwner, hasPooledActors);
+    }
+
+    boolean isReleasable(Map<String, Object> attributes, boolean hasOwner, boolean hasClaimOwner,
+                         boolean hasPooledActors) {
+        boolean isReleasableAllowed = hasPooledActors && (hasOwner || hasClaimOwner);
+        boolean isReleasableDisabled = Boolean.FALSE.equals(attributes.get("cwf_isTaskReleasable"));
+        return isReleasableAllowed && !isReleasableDisabled;
     }
 
 }
