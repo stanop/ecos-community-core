@@ -84,4 +84,6 @@ public interface JournalService {
                                                  String language,
                                                  JGqlPageInfoInput pageInfo,
                                                  boolean debug);
+
+    String getJournalGqlSchema(String journalId);
 }
