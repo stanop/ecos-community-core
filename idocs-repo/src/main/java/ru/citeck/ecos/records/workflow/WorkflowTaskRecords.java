@@ -3,6 +3,7 @@ package ru.citeck.ecos.records.workflow;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.apache.commons.collections.CollectionUtils;
@@ -157,7 +158,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         OwnerAction action = OwnerAction.valueOf(paramAction.toUpperCase());
         String owner = null;
         if (changeOwner.has(ATT_OWNER)) {
-            owner = changeOwner.get(ATT_OWNER).asText();
+            String ownerParam = changeOwner.get(ATT_OWNER).asText();
+            owner = CURRENT_USER.equals(ownerParam) ? AuthenticationUtil.getRunAsUser() : ownerParam;
         }
 
         ownerService.changeOwner(taskId, action, owner);
