@@ -12,7 +12,6 @@ import org.alfresco.repo.workflow.activiti.properties.ActivitiPropertyConverter;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
@@ -22,12 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.WorkflowUtils;
-import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 @Component
@@ -50,11 +49,7 @@ public class EcosActivitiTaskService implements EngineTaskService {
     @Qualifier("WorkflowService")
     private WorkflowService workflowService;
     @Autowired
-    private WorkflowMirrorService workflowMirrorService;
-    @Autowired
     private ActivitiPropertyConverter propertyConverter;
-    @Autowired
-    private NodeService nodeService;
 
     @Autowired
     public EcosActivitiTaskService(EcosTaskService ecosTaskService) {
@@ -62,11 +57,15 @@ public class EcosActivitiTaskService implements EngineTaskService {
     }
 
     private Map<String, Object> getVariables(String taskId) {
-        if (taskExists(taskId)) {
-            return taskService.getVariables(taskId);
-        } else {
-            return propertyConverter.getHistoricTaskVariables(taskId);
-        }
+        Map<String, Object> result = new HashMap<>();
+
+        WorkflowTask taskById = workflowService.getTaskById(ENGINE_PREFIX + taskId);
+        taskById.getProperties().forEach((qName, serializable) -> {
+            String newKey = qName.toPrefixString(namespaceService).replaceAll(":", "_");
+            result.put(newKey, serializable);
+        });
+
+        return result;
     }
 
     private Map<String, Object> getVariablesLocal(String taskId) {
@@ -78,19 +77,7 @@ public class EcosActivitiTaskService implements EngineTaskService {
     }
 
     private Object getVariable(String taskId, String variableName) {
-        if (taskExists(taskId)) {
-            return taskService.getVariable(taskId, variableName);
-        } else {
-            if (VAR_PACKAGE.equals(variableName)) {
-                return getPackageFromMirrorTask(taskId);
-            }
-            return propertyConverter.getHistoricTaskVariables(taskId).get(variableName);
-        }
-    }
-
-    private NodeRef getPackageFromMirrorTask(String taskId) {
-        NodeRef taskMirror = workflowMirrorService.getTaskMirror(ENGINE_PREFIX + taskId);
-        return RepoUtils.getFirstTargetAssoc(taskMirror, WorkflowModel.ASSOC_PACKAGE, nodeService);
+        return getVariables(taskId).get(variableName);
     }
 
     private String getFormKey(String taskId) {
@@ -136,7 +123,15 @@ public class EcosActivitiTaskService implements EngineTaskService {
         taskService.complete(taskId, variables, true);
     }
 
+    private String getCandidate(String taskId) {
+        return getIdentityLinkAuthority(IdentityLinkType.CANDIDATE, taskId);
+    }
+
     private String getAssignee(String taskId) {
+        return getIdentityLinkAuthority(IdentityLinkType.ASSIGNEE, taskId);
+    }
+
+    private String getIdentityLinkAuthority(String type, String taskId) {
         if (!taskExists(taskId)) {
             return null;
         }
@@ -144,8 +139,8 @@ public class EcosActivitiTaskService implements EngineTaskService {
         List<IdentityLink> links = taskService.getIdentityLinksForTask(taskId);
 
         for (IdentityLink link : links) {
-            if (IdentityLinkType.ASSIGNEE.equals(link.getType())) {
-                return link.getUserId();
+            if (type.equals(link.getType())) {
+                return link.getUserId() != null ? link.getUserId() : link.getGroupId();
             }
         }
 
@@ -222,6 +217,19 @@ public class EcosActivitiTaskService implements EngineTaskService {
         @Override
         public String getAssignee() {
             return EcosActivitiTaskService.this.getAssignee(getId());
+        }
+
+        @Override
+        public String getCandidate() {
+            return EcosActivitiTaskService.this.getCandidate(getId());
+        }
+
+        @Override
+        public List<String> getActors() {
+            return workflowUtils.getTaskActors(ENGINE_PREFIX + getId())
+                    .stream()
+                    .map(NodeRef::toString)
+                    .collect(Collectors.toList());
         }
 
         @Override

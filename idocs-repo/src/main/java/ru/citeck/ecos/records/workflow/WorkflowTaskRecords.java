@@ -1,21 +1,17 @@
-package ru.citeck.ecos.records;
+package ru.citeck.ecos.records.workflow;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.NamespaceService;
-import org.alfresco.service.namespace.QName;
+import org.alfresco.service.cmr.security.AuthorityService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.model.WorkflowMirrorModel;
-import ru.citeck.ecos.predicate.PredicateService;
-import ru.citeck.ecos.predicate.model.*;
+import ru.citeck.ecos.predicate.model.ComposedPredicate;
+import ru.citeck.ecos.records.RecordConstants;
+import ru.citeck.ecos.records.models.AuthorityDTO;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.GqlContext;
@@ -32,58 +28,44 @@ import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryLocalDAO;
-import ru.citeck.ecos.utils.AuthorityUtils;
+import ru.citeck.ecos.workflow.owner.OwnerAction;
+import ru.citeck.ecos.workflow.owner.OwnerService;
 import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static ru.citeck.ecos.records.workflow.WorkflowTaskRecordsConstants.*;
 
 @Component
 public class WorkflowTaskRecords extends LocalRecordsDAO
-                                 implements RecordsMetaLocalDAO<MetaValue>,
-                                            MutableRecordsDAO,
-                                            RecordsQueryLocalDAO {
-
-    private static final Log logger = LogFactory.getLog(WorkflowTaskRecords.class);
+        implements RecordsMetaLocalDAO<MetaValue>,
+        MutableRecordsDAO,
+        RecordsQueryLocalDAO {
 
     private static final String DOCUMENT_FIELD_PREFIX = "_ECM_";
-
-    private static final String CURRENT_USER = "$CURRENT";
     private static final String OUTCOME_PREFIX = "outcome_";
-
-    private static final String ATT_DOC_SUM = "docSum";
-    private static final String ATT_DOC_STATUS = "docStatus";
-    private static final String ATT_DOC_DISP_NAME = "docDisplayName";
-    private static final String ATT_DOC_STATUS_TITLE = "docStatusTitle";
-    private static final String ATT_DOC_TYPE = "docType";
-
-    private static final String ATT_SENDER = "sender";
-    private static final String ATT_STARTED = "started";
-    private static final String ATT_DUE_DATE = "dueDate";
-    private static final String ATT_ASSIGNEE = "assignee";
-    private static final String ATT_LASTCOMMENT = "lastcomment";
-    private static final String ATT_TITLE = "title";
 
     private static final String ID = "wftask";
 
-    private AuthorityUtils authorityUtils;
-    private EcosTaskService ecosTaskService;
-    private NamespaceService namespaceService;
+    private final EcosTaskService ecosTaskService;
+    private final AuthorityService authorityService;
+    private final WorkflowTaskRecordsUtils workflowTaskRecordsUtils;
+    private final OwnerService ownerService;
 
     private Map<String, String> sumAttributeByType = new ConcurrentHashMap<>();
 
     @Autowired
-    public WorkflowTaskRecords(AuthorityUtils authorityUtils,
-                               EcosTaskService ecosTaskService,
-                               NamespaceService namespaceService) {
+    public WorkflowTaskRecords(EcosTaskService ecosTaskService,
+                               WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
+                               AuthorityService authorityService, OwnerService ownerService) {
         setId(ID);
-        this.authorityUtils = authorityUtils;
         this.ecosTaskService = ecosTaskService;
-        this.namespaceService = namespaceService;
+        this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
+        this.authorityService = authorityService;
+        this.ownerService = ownerService;
     }
 
     @Override
@@ -92,18 +74,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         RecordsMutResult result = new RecordsMutResult();
 
         result.setRecords(mutation.getRecords()
-                            .stream()
-                            .map(meta -> new RecordMeta(meta, RecordRef.valueOf(meta.getId().getId())))
-                            .map(this::mutate)
-                            .map(meta -> new RecordMeta(meta, RecordRef.create(getId(), meta.getId())))
-                            .collect(Collectors.toList()));
+                .stream()
+                .map(meta -> new RecordMeta(meta, RecordRef.valueOf(meta.getId().getId())))
+                .map(this::mutate)
+                .map(meta -> new RecordMeta(meta, RecordRef.create(getId(), meta.getId())))
+                .collect(Collectors.toList()));
 
         return result;
-    }
-
-    @Override
-    public RecordsDelResult delete(RecordsDeletion deletion) {
-        throw new UnsupportedOperationException();
     }
 
     private RecordMeta mutate(RecordMeta meta) {
@@ -113,6 +90,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
         if (!taskInfoOpt.isPresent()) {
             throw new IllegalArgumentException("Task not found! id: " + taskId);
+        }
+
+        if (isChangeOwnerAction(meta)) {
+            processChangeOwnerAction(meta, taskId);
+            return new RecordMeta(taskId);
         }
 
         TaskInfo taskInfo = taskInfoOpt.get();
@@ -125,7 +107,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         meta.forEach((n, v) -> {
             if (n.startsWith(DOCUMENT_FIELD_PREFIX)) {
                 documentProps.set(getEcmFieldName(n), v);
-            } if (n.startsWith(OUTCOME_PREFIX)) {
+            }
+            if (n.startsWith(OUTCOME_PREFIX)) {
                 outcome[0] = n.substring(OUTCOME_PREFIX.length());
             } else {
 
@@ -163,141 +146,40 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         return new RecordMeta(taskId);
     }
 
+    private boolean isChangeOwnerAction(RecordMeta meta) {
+        return meta.getAttribute(ATT_CHANGE_OWNER) != null;
+    }
+
+    private void processChangeOwnerAction(RecordMeta meta, String taskId) {
+        JsonNode changeOwner = meta.getAttribute(ATT_CHANGE_OWNER);
+        String paramAction = changeOwner.get(ATT_ACTION).asText();
+
+        OwnerAction action = OwnerAction.valueOf(paramAction.toUpperCase());
+        String owner = null;
+        if (changeOwner.has(ATT_OWNER)) {
+            owner = changeOwner.get(ATT_OWNER).asText();
+        }
+
+        ownerService.changeOwner(taskId, action, owner);
+    }
+
     private String getEcmFieldName(String name) {
         return name.substring(DOCUMENT_FIELD_PREFIX.length()).replaceAll("_", ":");
     }
 
     @Override
+    public RecordsDelResult delete(RecordsDeletion deletion) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public RecordsQueryResult<RecordRef> getLocalRecords(RecordsQuery query) {
-
-        TasksQuery tasksQuery = query.getQuery(TasksQuery.class);
-        List<String> actors = tasksQuery.getActors();
-
-        AndPredicate predicate = new AndPredicate();
-
-        predicate.addPredicate(ValuePredicate.equal("TYPE", WorkflowModel.TYPE_TASK.toString()));
-
-        if (actors != null) {
-
-            Set<String> actorRefs = actors.stream().flatMap(actor -> {
-
-                if (CURRENT_USER.equals(actor)) {
-                    actor = AuthenticationUtil.getRunAsUser();
-                } else if (actor.startsWith("workspace://")) {
-                    actor = authorityUtils.getAuthorityName(new NodeRef(actor));
-                }
-                return Stream.concat(authorityUtils.getContainingAuthoritiesRefs(actor).stream(),
-                                     Stream.of(authorityUtils.getNodeRef(actor)))
-                             .map(NodeRef::toString);
-            }).collect(Collectors.toSet());
-
-            OrPredicate orPred = new OrPredicate();
-            actorRefs.forEach(a -> {
-                ValuePredicate valuePredicate = new ValuePredicate();
-                valuePredicate.setType(ValuePredicate.Type.CONTAINS);
-                valuePredicate.setAttribute("wfm:actors");
-                valuePredicate.setValue(a);
-                orPred.addPredicate(valuePredicate);
-            });
-            predicate.addPredicate(orPred);
-        }
-
-        if (tasksQuery.active != null) {
-            Predicate completionEmpty = new EmptyPredicate("bpm:completionDate");
-            if (tasksQuery.active) {
-                predicate.addPredicate(completionEmpty);
-            } else {
-                predicate.addPredicate(new NotPredicate(completionEmpty));
-            }
-        }
-
-        String docType = tasksQuery.docType;
-        if (StringUtils.isNotBlank(docType)) {
-
-            Predicate typePredicate = null;
-
-            if (docType.contains(":") || docType.contains("{")) {
-                QName docTypeQName = QName.resolveToQName(namespaceService, docType);
-                String docTypeAtt = WorkflowMirrorModel.PROP_DOCUMENT_TYPE.toPrefixString(namespaceService);
-                if (docTypeQName != null) {
-                    typePredicate = ValuePredicate.equal(docTypeAtt, docTypeQName.toString());
-                } else {
-                    logger.warn("Document type qname " + docType + " is not found");
-                    typePredicate = ValuePredicate.equal(docTypeAtt, docType);
-                }
-            }
-
-            if (typePredicate == null) {
-                return new RecordsQueryResult<>();
-            }
-
-            predicate.addPredicate(typePredicate);
-        }
-
-        if (predicate.getPredicates().isEmpty()) {
+        ComposedPredicate predicate = workflowTaskRecordsUtils.buildPredicateQuery(query);
+        if (predicate == null || predicate.getPredicates().isEmpty()) {
             return new RecordsQueryResult<>();
         }
 
-        String docStatus = tasksQuery.docStatus;
-
-        RecordsQuery taskRecordsQuery = new RecordsQuery();
-        taskRecordsQuery.setLanguage(PredicateService.LANGUAGE_PREDICATE);
-        taskRecordsQuery.setQuery(predicate);
-        if (query.getMaxItems() > -1 && docStatus != null) {
-            taskRecordsQuery.setMaxItems(query.getMaxItems() * 5); //filter by status after query
-        } else {
-            taskRecordsQuery.setMaxItems(query.getMaxItems());
-        }
-
-        taskRecordsQuery.setSkipCount(query.getSkipCount());
-        taskRecordsQuery.setDebug(query.isDebug());
-
-        RecordsQueryResult<TaskIdQuery> taskQueryResult;
-        taskQueryResult = recordsService.queryRecords(taskRecordsQuery, TaskIdQuery.class);
-
-        if (docStatus != null) {
-
-            String statusAttribute;
-            if (docStatus.startsWith("workspace://SpacesStore/")) {
-                statusAttribute = "icase:caseStatusAssoc?id";
-            } else {
-                statusAttribute = "icase:caseStatusAssoc.cm:name?str";
-            }
-
-            int maxItems = query.getMaxItems();
-            AtomicInteger recordsCount = new AtomicInteger(0);
-            AtomicInteger filtered = new AtomicInteger(0);
-
-            List<TaskIdQuery> taskRecords = taskQueryResult.getRecords().stream().filter(taskIdQuery -> {
-
-                if (maxItems > -1 && maxItems <= recordsCount.getAndIncrement()) {
-                    return false;
-                }
-
-                Optional<TaskInfo> taskInfo = ecosTaskService.getTaskInfo(taskIdQuery.taskId);
-                if (!taskInfo.isPresent()) {
-                    filtered.incrementAndGet();
-                    return false;
-                }
-                RecordRef document = taskInfo.get().getDocument();
-                if (document == null) {
-                    filtered.incrementAndGet();
-                    return false;
-                }
-
-                JsonNode status = recordsService.getAttribute(document, statusAttribute);
-                if (status.isTextual() && status.toString().contains(docStatus)) {
-                    return true;
-                } else {
-                    filtered.incrementAndGet();
-                    return false;
-                }
-
-            }).collect(Collectors.toList());
-
-            taskQueryResult.setRecords(taskRecords);
-            taskQueryResult.setTotalCount(taskQueryResult.getTotalCount() - filtered.get());
-        }
+        RecordsQueryResult<TaskIdQuery> taskQueryResult = workflowTaskRecordsUtils.queryTasks(predicate, query);
 
         return new RecordsQueryResult<>(taskQueryResult, task -> RecordRef.valueOf(task.getTaskId()));
     }
@@ -327,6 +209,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         @Getter @Setter public Boolean active;
         @Getter @Setter public String docStatus;
         @Getter @Setter public String docType;
+        @Getter @Setter public String document;
 
         public void setAssignee(String assignee) {
             if (assignees == null) {
@@ -386,8 +269,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     case ATT_DOC_STATUS:
                         documentAttributes.put(ATT_DOC_STATUS, "icase:caseStatusAssoc.cm:name");
                         break;
-                    case "docType":
-                        documentAttributes.put("docType", "_type");
+                    case ATT_DOC_TYPE:
+                        documentAttributes.put(ATT_DOC_TYPE, "_type");
                         break;
                     default:
                         if (att.startsWith(DOCUMENT_FIELD_PREFIX)) {
@@ -424,19 +307,60 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
             Map<String, Object> attributes = taskInfo.getAttributes();
 
+            boolean hasPooledActors = CollectionUtils.isNotEmpty((List<?>) attributes.get("bpm_pooledActors"));
+            boolean hasOwner = attributes.get("cm_owner") != null;
+            boolean hasClaimOwner = attributes.get("claimOwner") != null;
+
             switch (name) {
                 case ATT_SENDER:
-                    return attributes.get("cwf_sender");
+                    String userName = (String) attributes.get("cwf_sender");
+                    NodeRef userRef = authorityService.getAuthorityNodeRef(userName);
+                    RecordRef userRecord = RecordRef.create("", userRef.toString());
+                    return recordsService.getMeta(userRecord, AuthorityDTO.class);
                 case ATT_ASSIGNEE:
-                    return taskInfo.getAssignee();
+                    String assignee = taskInfo.getAssignee();
+                    if (StringUtils.isBlank(assignee)) {
+                        return null;
+                    }
+
+                    NodeRef assigneeRef = authorityService.getAuthorityNodeRef(assignee);
+                    RecordRef assigneeRecordRef = RecordRef.create("", assigneeRef.toString());
+                    return recordsService.getMeta(assigneeRecordRef, AuthorityDTO.class);
+                case ATT_CANDIDATE:
+                    String candidate = taskInfo.getCandidate();
+                    if (StringUtils.isBlank(candidate)) {
+                        return null;
+                    }
+
+                    NodeRef candidateRef = authorityService.getAuthorityNodeRef(candidate);
+                    RecordRef candidateRecordRef = RecordRef.create("", candidateRef.toString());
+                    return recordsService.getMeta(candidateRecordRef, AuthorityDTO.class);
+                case ATT_ACTORS:
+                    return taskInfo.getActors()
+                            .stream()
+                            .map(actor -> {
+                                RecordRef rr = RecordRef.create("", actor);
+                                return recordsService.getMeta(rr, AuthorityDTO.class);
+                            })
+                            .collect(Collectors.toList());
                 case ATT_DUE_DATE:
                     return attributes.get("bpm_dueDate");
                 case ATT_STARTED:
                     return attributes.get("bpm_startDate");
-                case ATT_LASTCOMMENT:
+                case ATT_LAST_COMMENT:
                     return attributes.get("cwf_lastcomment");
                 case ATT_TITLE:
                     return taskInfo.getTitle();
+                case ATT_REASSIGNABLE:
+                    return workflowTaskRecordsUtils.isReassignable(attributes, hasOwner, hasClaimOwner);
+                case ATT_CLAIMABLE:
+                    return workflowTaskRecordsUtils.isClaimable(attributes, hasOwner, hasClaimOwner, hasPooledActors);
+                case ATT_RELEASABLE:
+                    return workflowTaskRecordsUtils.isReleasable(attributes, hasOwner, hasClaimOwner, hasPooledActors);
+                case ATT_ASSIGNABLE:
+                    return workflowTaskRecordsUtils.isAssignable(attributes, hasOwner, hasClaimOwner, hasPooledActors);
+                case ATT_ACTIVE:
+                    return attributes.get("bpm_completionDate") == null;
             }
 
             return attributes.get(name);
