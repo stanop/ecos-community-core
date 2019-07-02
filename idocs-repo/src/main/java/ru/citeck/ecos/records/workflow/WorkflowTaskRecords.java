@@ -148,7 +148,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     }
 
     private boolean isChangeOwnerAction(RecordMeta meta) {
-        return meta.getAttribute(ATT_CHANGE_OWNER) != null;
+        JsonNode changeOwner = meta.getAttribute(ATT_CHANGE_OWNER);
+        return changeOwner != null && !changeOwner.isMissingNode() && !changeOwner.isNull();
     }
 
     private void processChangeOwnerAction(RecordMeta meta, String taskId) {
