@@ -468,18 +468,14 @@ require([
 
         isFormsEnabled.then(function(enabled) {
             if (enabled) {
-                Citeck.Records.queryOne({
-                    query: { record: recordRef },
-                    sourceId: 'eform'
-                }).then(function(result) {
-                    if (result) {
-                        showForm(recordRef);
-                    } else {
-                        showForm(null);
-                    }
-                }).catch(function(e) {
-                    console.error(e);
-                    showForm(null);
+                require(['ecosui!ecos-form-utils'], function(utils) {
+                    utils.default.hasForm(recordRef).then(function (result) {
+                        if (result) {
+                            showForm(recordRef);
+                        } else {
+                            showForm(null);
+                        }
+                    });
                 });
             } else {
                 showForm(null);
