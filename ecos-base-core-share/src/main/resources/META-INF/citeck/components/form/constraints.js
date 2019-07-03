@@ -594,6 +594,9 @@ require([
         if (!config.reactstrapProps.backdrop) {
             config.reactstrapProps.backdrop = 'static';
         }
+        if (!config.reactstrapProps.keyboard) {
+            config.reactstrapProps.keyboard = false;
+        }
 
         require(['ecosui!react', 'ecosui!react-dom', 'ecosui!ecos-form', 'ecosui!ecos-modal'], function (React, ReactDOM, EcosForm, Modal) {
 

@@ -9,7 +9,9 @@
     var key = new RegistryKey(null, ["ecos", "cardlets", args.key]);
     var registry = services.get('registryService');
 
-    registry.addProperty(key, requestbody.getContent());
+    Packages.org.alfresco.repo.security.authentication.AuthenticationUtil.runAsSystem(function () {
+        registry.addProperty(key, requestbody.getContent());
+    });
 
     model.result = {
         success: true
