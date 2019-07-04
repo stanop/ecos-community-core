@@ -33,7 +33,7 @@
         <property name="description" value="idocs.module-component.config.ecos-forms-enable.create" />
     </bean>
 
-    <bean id="idocs.site.personal-documents-site-import" parent="idocs.import-spaces.3-9-0">
+    <bean id="idocs.site.personal-documents-site-import" parent="idocs.import-spaces.3-10-0">
         <property name="name" value="personal-documents-site" />
         <property name="description" value="Personal documents site" />
         <property name="dependsOn">
@@ -53,7 +53,7 @@
         </property>
     </bean>
 
-    <bean id="idocs.personal-documents-folder" parent="idocs.import-spaces.3-9-0">
+    <bean id="idocs.personal-documents-folder" parent="idocs.import-spaces.3-10-0">
         <property name="name" value="personal-documents-folder" />
         <property name="description" value="Personal documents folder" />
         <property name="dependsOn">
@@ -73,14 +73,14 @@
         </property>
     </bean>
 
-    <bean id="idocs.script.personal-documents-site-add-users" parent="idocs.import-scripts.3-9-0">
+    <bean id="idocs.script.personal-documents-site-add-users" parent="idocs.import-scripts.3-10-0">
         <property name="executeOnceOnly" value="true" />
         <property name="name" value="personal-documents-site-add-users" />
         <property name="description" value="Add all users to the personal-documents site" />
         <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/personal-documents-site-add-users.js"/>
     </bean>
 
-    <bean id="idocs.groups.personal-documents-managers" parent="idocs.import-spaces.3-9-0">
+    <bean id="idocs.groups.personal-documents-managers" parent="idocs.import-spaces.3-10-0">
         <property name="name" value="personal-documents-managers-group" />
         <property name="description" value="Personal documents managers group" />
         <property name="bootstrapViews">
