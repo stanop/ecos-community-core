@@ -445,7 +445,8 @@ require([
     Citeck.forms.editRecord = function (config) {
 
         var recordRef = config.recordRef,
-            fallback = config.fallback;
+            fallback = config.fallback,
+            forceNewForm = config.forceNewForm;
 
         var showForm = function(recordRef) {
 
@@ -464,22 +465,23 @@ require([
             }
         };
 
-        var isFormsEnabled = Citeck.Records.get('ecos-config@ecos-forms-enable').loadAttribute('.bool');
+        var isFormsEnabled;
+        if (!forceNewForm) {
+            isFormsEnabled = Citeck.Records.get('ecos-config@ecos-forms-enable').load('.bool');
+        } else {
+            isFormsEnabled = Promise.resolve(true);
+        }
 
         isFormsEnabled.then(function(enabled) {
             if (enabled) {
-                Citeck.Records.queryOne({
-                    query: { record: recordRef },
-                    sourceId: 'eform'
-                }).then(function(result) {
-                    if (result) {
-                        showForm(recordRef);
-                    } else {
-                        showForm(null);
-                    }
-                }).catch(function(e) {
-                    console.error(e);
-                    showForm(null);
+                require(['ecosui!ecos-form-utils'], function(utils) {
+                    utils.default.hasForm(recordRef).then(function (result) {
+                        if (result) {
+                            showForm(recordRef);
+                        } else {
+                            showForm(null);
+                        }
+                    });
                 });
             } else {
                 showForm(null);
@@ -513,6 +515,7 @@ require([
             attributes: {
                 _parent: destination
             },
+            forceNewForm: !type,
             fallback: fallback,
             onSubmit: function(record, form) {
 
@@ -590,6 +593,9 @@ require([
         }
         if (!config.reactstrapProps.backdrop) {
             config.reactstrapProps.backdrop = 'static';
+        }
+        if (!config.reactstrapProps.keyboard) {
+            config.reactstrapProps.keyboard = false;
         }
 
         require(['ecosui!react', 'ecosui!react-dom', 'ecosui!ecos-form', 'ecosui!ecos-modal'], function (React, ReactDOM, EcosForm, Modal) {

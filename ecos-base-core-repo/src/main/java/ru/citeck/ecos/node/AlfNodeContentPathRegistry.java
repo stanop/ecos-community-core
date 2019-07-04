@@ -9,22 +9,22 @@ import org.springframework.stereotype.Service;
 import java.util.function.Function;
 
 @Service
-public class DisplayNameService {
+public class AlfNodeContentPathRegistry {
 
-    public static final QName QNAME = QName.createQName("", "displayNameService");
+    public static final QName QNAME = QName.createQName("", "alfNodeContentPathRegistry");
 
     private EvaluatorsByAlfNode<String> evaluators;
 
     @Autowired
-    public DisplayNameService(ServiceRegistry serviceRegistry) {
-        evaluators = new EvaluatorsByAlfNode<>(serviceRegistry, node -> String.valueOf(node.getNodeRef()));
+    public AlfNodeContentPathRegistry(ServiceRegistry serviceRegistry) {
+        evaluators = new EvaluatorsByAlfNode<>(serviceRegistry, node -> "cm:content");
     }
 
-    public String getDisplayName(NodeRef nodeRef) {
+    public String getContentPath(NodeRef nodeRef) {
         return evaluators.eval(nodeRef);
     }
 
-    public String getDisplayName(AlfNodeInfo nodeInfo) {
+    public String getContentPath(AlfNodeInfo nodeInfo) {
         return evaluators.eval(nodeInfo);
     }
 

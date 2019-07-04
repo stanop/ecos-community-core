@@ -62,9 +62,9 @@ public class HistoryUtils {
     public static Object getKeyValue(QName qName, Object constraint, DictionaryService dictionaryService, NodeService nodeService) {
         if (DataTypeDefinition.BOOLEAN.equals(dictionaryService.getProperty(qName).getDataType().getName())) {
             if (constraint == null || constraint.equals(false)) {
-                return "Нет";
+                return I18NUtil.getMessage("label.no");
             } else {
-                return  "Да";
+                return I18NUtil.getMessage("label.yes");
             }
         }
         if (constraint == null) {

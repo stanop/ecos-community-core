@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Flowable task service
@@ -175,7 +176,15 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         return key;
     }
 
+    public String getCandidate(String taskId) {
+        return getIdentityLinkAuthority(IdentityLinkType.CANDIDATE, taskId);
+    }
+
     public String getAssignee(String taskId) {
+        return getIdentityLinkAuthority(IdentityLinkType.ASSIGNEE, taskId);
+    }
+
+    private String getIdentityLinkAuthority(String type, String taskId) {
         if (!taskExists(taskId)) {
             return null;
         }
@@ -183,8 +192,8 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         List<IdentityLink> links = taskService.getIdentityLinksForTask(taskId);
 
         for (IdentityLink link : links) {
-            if (IdentityLinkType.ASSIGNEE.equals(link.getType())) {
-                return link.getUserId();
+            if (type.equals(link.getType())) {
+                return link.getUserId() != null ? link.getUserId() : link.getGroupId();
             }
         }
 
@@ -243,6 +252,19 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         @Override
         public String getAssignee() {
             return FlowableTaskServiceImpl.this.getAssignee(getId());
+        }
+
+        @Override
+        public String getCandidate() {
+            return FlowableTaskServiceImpl.this.getCandidate(getId());
+        }
+
+        @Override
+        public List<String> getActors() {
+            return workflowUtils.getTaskActors(FlowableConstants.ENGINE_PREFIX + getId())
+                    .stream()
+                    .map(NodeRef::toString)
+                    .collect(Collectors.toList());
         }
 
         @Override

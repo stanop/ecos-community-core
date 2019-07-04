@@ -14,4 +14,8 @@
           class="ru.citeck.ecos.journals.webscripts.JournalConfigGet">
     </bean>
 
+    <bean id="webscript.ru.citeck.journals2.config.journal-gql-schema.get" parent="webscript"
+          class="ru.citeck.ecos.journals.webscripts.JournalGqlSchemaGet">
+    </bean>
+
 </beans>
