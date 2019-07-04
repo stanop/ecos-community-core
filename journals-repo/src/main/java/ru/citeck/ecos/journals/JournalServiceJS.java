@@ -21,18 +21,25 @@ package ru.citeck.ecos.journals;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.service.ServiceRegistry;
 
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.invariants.InvariantDefinition;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
 public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
-    
+
+    private static final Log logger = LogFactory.getLog(JournalServiceJS.class);
+
     private JournalService impl;
     private ServiceRegistry serviceRegistry;
     private NamespaceService namespaceService;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public JournalTypeJS getJournalType(String id) {
         JournalType type = impl.getJournalType(id);
@@ -62,6 +69,19 @@ public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
 
     public Long getJournalRecordsCount(String journal) {
         return impl.getRecordsCount(journal);
+    }
+
+    public String getCreateVariantsJson(String journal) {
+        JournalType type = impl.getJournalType(journal);
+        if (type == null) {
+            return "[]";
+        }
+        try {
+            return objectMapper.writeValueAsString(type.getCreateVariants());
+        } catch (JsonProcessingException e) {
+            logger.error("Error", e);
+            return "[]";
+        }
     }
 
     public void setJournalService(JournalService impl) {

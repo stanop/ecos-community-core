@@ -2,8 +2,10 @@ package ru.citeck.ecos.graphql.node;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import lombok.Getter;
+import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 
 import java.util.*;
@@ -47,20 +49,27 @@ public class Attribute {
     public Optional<String> value() {
         List<?> values = getValues();
         Object value = values.size() > 0 ? values.get(0) : null;
-        if (value != null) {
-            if (value instanceof Date) {
-                return Optional.of(ISO8601Utils.format((Date) value));
-            }
-            return Optional.of(value.toString());
-        }
-
-        return Optional.empty();
+        return Optional.ofNullable(getAsString(value));
     }
 
     public List<String> values() {
         return getValues().stream()
-                          .map(v -> v != null ? v.toString() : null)
+                          .map(v -> Optional.ofNullable(getAsString(v)))
+                          .filter(Optional::isPresent)
+                          .map(Optional::get)
                           .collect(Collectors.toList());
+    }
+
+    private String getAsString(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Date) {
+            return ISO8601Utils.format((Date) value);
+        } else if (value instanceof MLText) {
+            return ((MLText) value).getClosestValue(I18NUtil.getLocale());
+        }
+        return value.toString();
     }
 
     public List<GqlQName> qnames() {

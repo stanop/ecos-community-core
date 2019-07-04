@@ -215,7 +215,6 @@ public class JournalConfigGet extends AbstractWebScript {
                 logger.error("Predicate is invalid: " + journal.getPredicate(), e);
             }
         }
-
         meta.setCreateVariants(createVariantsGet.getVariantsByJournalId(journal.getId(), true));
 
         fillMetaFromRepo(meta, journalData);

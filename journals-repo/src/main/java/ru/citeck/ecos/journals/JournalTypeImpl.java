@@ -18,14 +18,7 @@
  */
 package ru.citeck.ecos.journals;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
@@ -33,6 +26,7 @@ import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.journals.xml.*;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
+import ru.citeck.ecos.utils.EcosU18NUtils;
 
 class JournalTypeImpl implements JournalType {
 
@@ -56,6 +50,8 @@ class JournalTypeImpl implements JournalType {
     private final Map<String, List<JournalBatchEdit>> batchEdit;
     private final Map<String, JournalCriterion> criterion;
 
+    private final List<CreateVariant> createVariants;
+
     public JournalTypeImpl(Journal journal, NamespacePrefixResolver prefixResolver, ServiceRegistry serviceRegistry,
                            SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry) {
 
@@ -64,6 +60,7 @@ class JournalTypeImpl implements JournalType {
         this.groupActions = Collections.unmodifiableList(getGroupActions(journal, serviceRegistry));
         this.predicate = journal.getPredicate() != null ? journal.getPredicate().getValue() : null;
         this.groupBy = journal.getGroupBy() != null ? journal.getGroupBy().getValue() : null;
+        this.createVariants = convertCreateVariants(journal.getCreate());
 
         List<Header> headers = journal.getHeaders().getHeader();
         List<String> allAttributes = new ArrayList<>(headers.size());
@@ -122,6 +119,37 @@ class JournalTypeImpl implements JournalType {
         }
 
         this.attributes = Collections.unmodifiableList(allAttributes);
+    }
+
+    private List<CreateVariant> convertCreateVariants(CreateVariants variants) {
+
+        if (variants == null) {
+            return Collections.emptyList();
+        }
+
+        List<ru.citeck.ecos.journals.xml.CreateVariant> variantsList = variants.getVariant();
+        List<CreateVariant> resultVariants = new ArrayList<>();
+
+        if (variantsList != null) {
+
+            variantsList.forEach(v -> {
+
+                CreateVariant resultVariant = new CreateVariant();
+                resultVariant.setTitle(EcosU18NUtils.getMLText(v.getTitle()));
+                resultVariant.setFormKey(v.getFormKey());
+                resultVariant.setRecordRef(v.getRecordRef());
+
+                Map<String, String> attributes = new HashMap<>();
+                for (Option opt : v.getAttribute()) {
+                    attributes.put(opt.getName(), opt.getValue());
+                }
+                resultVariant.setAttributes(attributes);
+
+                resultVariants.add(resultVariant);
+            });
+        }
+
+        return resultVariants;
     }
 
     @Override
@@ -233,7 +261,7 @@ class JournalTypeImpl implements JournalType {
 
     private boolean checkFeature(String attributeKey, BitSet featuredAttributes) {
         int index = attributes.indexOf(attributeKey);
-        return index >= 0 ? featuredAttributes.get(index) : false;
+        return index >= 0 && featuredAttributes.get(index);
     }
 
     private static Map<String, String> getOptions(List<Option> options) {
@@ -267,5 +295,10 @@ class JournalTypeImpl implements JournalType {
     @Override
     public String getDataSource() {
         return datasource;
+    }
+
+    @Override
+    public List<CreateVariant> getCreateVariants() {
+        return createVariants;
     }
 }

@@ -1,24 +1,26 @@
 <#import "/ru/citeck/invariants/invariants.lib.ftl" as invariants />
 
-<#macro renderJournal journal full=true>
-<#escape x as jsonUtils.encodeJSONString(x)>
+<#macro renderJournal journal full=true customCreateVariantsJson="[]">
 {
     "nodeRef": "${journal.nodeRef}"
     , "title": "${journal.properties["cm:title"]!}"
     , "type": "${journal.properties["journal:journalType"]}"
     <#if full>
     , "criteria": <@renderCriteria journal.childAssocs["journal:searchCriteria"]![] />
-    , "createVariants": 
-    [
-        <#if journal.childAssocs["journal:createVariants"]??>            
-            <#list journal.childAssocs["journal:createVariants"] as createVariant>
-                <@renderCreateVariant createVariant /><#if createVariant_has_next>,</#if>
-            </#list>            
+    , "createVariants":
+        <#if customCreateVariantsJson != "[]">
+            ${customCreateVariantsJson}
+        <#else>
+        [
+            <#if journal.childAssocs["journal:createVariants"]??>
+                <#list journal.childAssocs["journal:createVariants"] as createVariant>
+                    <@renderCreateVariant createVariant /><#if createVariant_has_next>,</#if>
+                </#list>
+            </#if>
+        ]
         </#if>
-    ]
     </#if>
 }
-</#escape>
 </#macro>
 
 <#macro renderJournals journals full=false>
@@ -128,7 +130,8 @@
         "canCreate": ${createVariant.assocs["journal:destination"][0].hasPermission("CreateChildren")?string("true","false")},
         "isDefault": ${(createVariant.properties["journal:isDefault"]!false)?string},
         "createArguments": "${(createVariant.properties["journal:createArguments"]!"")}",
-        "recordRef": "${(createVariant.properties["journal:recordRef"]!"")}"
+        "recordRef": "${(createVariant.properties["journal:recordRef"]!"")}",
+        "formKey": "${(createVariant.properties["journal:formKey"]!"")}"
     }
     </#escape>
 </#macro>

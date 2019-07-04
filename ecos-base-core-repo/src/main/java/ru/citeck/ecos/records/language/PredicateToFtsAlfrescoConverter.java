@@ -106,6 +106,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
                     break;
                 case "ASPECT":
+                case "aspect":
 
                     consumeQName(valueStr, query::aspect);
 

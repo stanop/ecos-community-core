@@ -2,10 +2,13 @@ package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
+import org.alfresco.repo.node.MLPropertyInterceptor;
+import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.namespace.QName;
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
@@ -15,6 +18,7 @@ import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.records.source.common.MLTextValue;
 import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
@@ -223,6 +227,8 @@ public class AlfNodeRecord implements MetaValue {
         MetaValue metaValue;
         if (value instanceof NodeRef) {
             metaValue = new AlfNodeRecord(RecordRef.valueOf(value.toString()));
+        } else if (value instanceof MLText) {
+            metaValue = new MLTextValue((MLText) value);
         } else {
             if (att != null) {
                 metaValue = new AlfNodeAttValue(att, value);
@@ -266,7 +272,24 @@ public class AlfNodeRecord implements MetaValue {
 
         @Override
         public Map<QName, Serializable> getProperties() {
-            return node.getProperties();
+
+            Map<QName, Serializable> props = node.getProperties();
+
+            if (MLPropertyInterceptor.isMLAware()) {
+                return props;
+            }
+            Map<QName, Serializable> result = new HashMap<>();
+
+            for (Map.Entry<QName, Serializable> entry : props.entrySet()) {
+                Serializable value = entry.getValue();
+                if (value instanceof MLText) {
+                    result.put(entry.getKey(), ((MLText) value).getClosestValue(I18NUtil.getLocale()));
+                } else {
+                    result.put(entry.getKey(), value);
+                }
+            }
+
+            return result;
         }
     }
 }

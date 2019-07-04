@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="datasource" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="predicate" type="{http://www.citeck.ru/ecos/journals/1.0}predicate" minOccurs="0"/>
+ *         &lt;element name="create" type="{http://www.citeck.ru/ecos/journals/1.0}createVariants" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="group-by" type="{http://www.citeck.ru/ecos/journals/1.0}groupBy" minOccurs="0"/>
  *         &lt;element name="option" type="{http://www.citeck.ru/ecos/journals/1.0}option" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="group-actions" minOccurs="0">
@@ -66,6 +67,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "journal", propOrder = {
     "datasource",
     "predicate",
+    "create",
     "groupBy",
     "option",
     "groupActions",
@@ -75,6 +77,7 @@ public class Journal {
 
     protected String datasource;
     protected Predicate predicate;
+    protected CreateVariants create;
     @XmlElement(name = "group-by")
     protected GroupBy groupBy;
     protected List<Option> option;
@@ -131,6 +134,32 @@ public class Journal {
      */
     public void setPredicate(Predicate value) {
         this.predicate = value;
+    }
+
+    /**
+     * Gets the value of the create property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the create property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getCreate().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CreateVariants }
+     * 
+     * 
+     */
+    public CreateVariants getCreate() {
+        return this.create;
     }
 
     /**

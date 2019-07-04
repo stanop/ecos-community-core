@@ -446,16 +446,23 @@ require([
 
         var recordRef = config.recordRef,
             fallback = config.fallback,
-            forceNewForm = config.forceNewForm;
+            forceNewForm = config.forceNewForm,
+            formKey = config.formKey;
 
         var showForm = function(recordRef) {
 
             if (recordRef) {
+
+                var params = {
+                    attributes: config.attributes || {},
+                    onSubmit: config.onSubmit
+                };
+                if (formKey) {
+                    params.formKey = config.formKey
+                }
+
                 Citeck.forms.eform(recordRef, {
-                    params: {
-                        attributes: config.attributes || {},
-                        onSubmit: config.onSubmit
-                    },
+                    params: params,
                     class: 'ecos-modal_width-lg',
                     isBigHeader: true,
                     formContainer: config.formContainer || null
@@ -508,14 +515,18 @@ require([
         });
     };
 
-    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod) {
+    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod, formKey, attributes) {
+
+        var createAttributes = attributes || {};
+        if (destination) {
+            createAttributes["_parent"] = destination;
+        }
 
         Citeck.forms.editRecord({
             recordRef: recordRef || 'dict@' + type,
-            attributes: {
-                _parent: destination
-            },
-            forceNewForm: !type,
+            attributes: createAttributes,
+            formKey: formKey,
+            forceNewForm: formKey || !type,
             fallback: fallback,
             onSubmit: function(record, form) {
 

@@ -37,6 +37,21 @@
         </xs:simpleContent>
     </xs:complexType>
 
+    <xs:complexType name="createVariants">
+        <xs:sequence>
+            <xs:element name="variant" type="j:createVariant" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="createVariant">
+        <xs:sequence>
+            <xs:element name="recordRef" type="xs:string" />
+            <xs:element name="formKey" type="xs:string" minOccurs="0" />
+            <xs:element name="attribute" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="title" type="xs:string" use="required" />
+    </xs:complexType>
+
     <xs:complexType name="groupBy">
         <xs:simpleContent>
             <xs:extension base="xs:string" />
@@ -64,6 +79,7 @@
         <xs:sequence>
             <xs:element name="datasource" type="xs:string" minOccurs="0" />
             <xs:element name="predicate" type="j:predicate" minOccurs="0" />
+            <xs:element name="create" type="j:createVariants" minOccurs="0" />
             <xs:element name="group-by" type="j:groupBy" minOccurs="0" />
             <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="group-actions" minOccurs="0">
