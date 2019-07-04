@@ -10,12 +10,12 @@
     "components": [
       {
         "label": "Panel",
-        "title": "Основные",
+        "title": "Basic",
         "collapsible": false,
         "mask": false,
         "tableView": false,
         "alwaysEnabled": false,
-        "key": "main_panel",
+        "key": "Basic",
         "properties": {},
         "customConditional": "",
         "conditional": {
@@ -151,7 +151,7 @@
                     "widget": null,
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "e35no4"
+                    "id": "e6aran8"
                   }
                 ],
                 "width": 6,
@@ -210,7 +210,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "euiij6"
+                "id": "eqp27do"
               },
               {
                 "components": [
@@ -331,7 +331,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "exilk3e"
+                    "id": "edq12eg"
                   }
                 ],
                 "width": 6,
@@ -390,7 +390,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ebbi6rm"
+                "id": "egbgmz9"
               }
             ],
             "mask": false,
@@ -445,7 +445,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "en5fbfx"
+            "id": "egv83ej"
           },
           {
             "input": true,
@@ -496,7 +496,7 @@
             "mask": false,
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
-            "id": "e5q25xq"
+            "id": "en4a8ov"
           }
         ],
         "tags": [],
@@ -538,7 +538,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "e48azhq"
+        "id": "e2onok4"
       },
       {
         "input": false,
@@ -641,7 +641,7 @@
                 "fuseOptions": {},
                 "customOptions": {},
                 "refreshEventName": "",
-                "id": "e53hyso"
+                "id": "eq8qobo"
               }
             ],
             "width": 6,
@@ -694,7 +694,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ex9d1jh"
+            "id": "ewwuw4h"
           },
           {
             "components": [],
@@ -748,7 +748,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e4ux77q"
+            "id": "eoqefwk"
           }
         ],
         "placeholder": "",
@@ -793,7 +793,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ebp8b6b"
+        "id": "eaqtknm"
       },
       {
         "input": true,
@@ -844,7 +844,7 @@
         "mask": false,
         "inputType": "horizontalLine",
         "useNegativeIndents": true,
-        "id": "eykkvv"
+        "id": "enjl2xc"
       },
       {
         "label": "Columns",
@@ -934,7 +934,7 @@
                 "searchThreshold": 0.3,
                 "fuseOptions": {},
                 "customOptions": {},
-                "id": "ewroz3h"
+                "id": "evas6sh"
               }
             ],
             "width": 6,
@@ -993,7 +993,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e0r18o7"
+            "id": "eez94ge"
           },
           {
             "components": [
@@ -1086,7 +1086,7 @@
                 "widget": null,
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "id": "egxxm5q"
+                "id": "eg31uda"
               }
             ],
             "width": 6,
@@ -1145,7 +1145,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ewfgyc"
+            "id": "e24rnah"
           }
         ],
         "mask": false,
@@ -1200,7 +1200,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "eboo2u"
+        "id": "ezqbyrk"
       },
       {
         "input": true,
@@ -1251,7 +1251,7 @@
         "mask": false,
         "inputType": "horizontalLine",
         "useNegativeIndents": true,
-        "id": "e1m1yb"
+        "id": "e63iu0b"
       },
       {
         "label": "Columns",
@@ -1359,7 +1359,7 @@
                 "mask": false,
                 "inputType": "text",
                 "inputMask": "",
-                "id": "evpd09s"
+                "id": "e3bu4gw"
               }
             ],
             "width": 6,
@@ -1418,15 +1418,16 @@
               "when": null,
               "eq": ""
             },
-            "id": "ehi76ej"
+            "id": "emylj9a"
           },
           {
             "components": [
               {
-                "label": "Сгенерировать",
+                "label": "Generate",
                 "action": "event",
                 "state": "",
                 "showValidations": false,
+                "event": "GenerationEvent",
                 "shortcut": "",
                 "block": true,
                 "mask": false,
@@ -1440,7 +1441,7 @@
                   "custom": "",
                   "customPrivate": false
                 },
-                "key": "generation_button",
+                "key": "Generate",
                 "properties": {},
                 "conditional": {
                   "show": "",
@@ -1453,7 +1454,6 @@
                 "type": "button",
                 "input": true,
                 "tags": [],
-                "event": "GenerationEvent",
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -1489,7 +1489,7 @@
                 "rightIcon": "",
                 "disableOnInvalid": false,
                 "theme": "default",
-                "id": "ebczmoq"
+                "id": "e5uxouy"
               }
             ],
             "width": 6,
@@ -1548,7 +1548,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ecp3ic"
+            "id": "ev7t8mi"
           },
           {
             "xs": 0,
@@ -1666,7 +1666,7 @@
                   "mousewheel": true,
                   "arrowkeys": true
                 },
-                "id": "eqjyz6"
+                "id": "erefn2w"
               }
             ],
             "placeholder": "",
@@ -1709,7 +1709,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ee0kfpg"
+            "id": "e629rbj"
           },
           {
             "xs": 0,
@@ -1827,7 +1827,7 @@
                   "mousewheel": true,
                   "arrowkeys": true
                 },
-                "id": "e6ud20v"
+                "id": "e489679"
               }
             ],
             "placeholder": "",
@@ -1870,7 +1870,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eiroogso"
+            "id": "e5k4klq"
           }
         ],
         "mask": false,
@@ -1924,16 +1924,16 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ezosgdb"
+        "id": "e3t9qqz"
       },
       {
         "label": "Panel",
-        "title": "Финансы",
+        "title": "Finance",
         "collapsible": false,
         "mask": false,
         "tableView": false,
         "alwaysEnabled": false,
-        "key": "panel3",
+        "key": "Finance",
         "properties": {},
         "customConditional": "",
         "conditional": {
@@ -2034,7 +2034,7 @@
                     "searchThreshold": 0.3,
                     "fuseOptions": {},
                     "customOptions": {},
-                    "id": "eb9fza"
+                    "id": "eeyuicp"
                   }
                 ],
                 "width": 6,
@@ -2093,7 +2093,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ewkrtbg"
+                "id": "elvglzl"
               },
               {
                 "components": [
@@ -2161,7 +2161,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "ezh6e4"
+                    "id": "ekfqmp"
                   }
                 ],
                 "width": 6,
@@ -2220,7 +2220,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eh1ejdo"
+                "id": "egmrfl9"
               },
               {
                 "xs": 0,
@@ -2300,7 +2300,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "ektxz2f"
+                    "id": "eqqxke"
                   }
                 ],
                 "placeholder": "",
@@ -2343,7 +2343,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ee9xj9"
+                "id": "ee0eukm"
               }
             ],
             "mask": false,
@@ -2399,7 +2399,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "eypcq4y"
+            "id": "e76cr8b"
           },
           {
             "label": "payments:payments",
@@ -2493,16 +2493,16 @@
             "clearOnRefresh": false,
             "validateOn": "change",
             "eventName": "",
-            "id": "es62z98"
+            "id": "ebdfjx"
           },
           {
             "label": "Panel",
-            "title": "Содержание",
+            "title": "Content",
             "collapsible": false,
             "mask": false,
             "tableView": false,
             "alwaysEnabled": false,
-            "key": "panel4",
+            "key": "Content",
             "properties": {},
             "customConditional": "",
             "conditional": {
@@ -2596,7 +2596,7 @@
                         "inputMask": "",
                         "wysiwyg": false,
                         "editor": "",
-                        "id": "e44hw3t"
+                        "id": "edxnn3"
                       }
                     ],
                     "width": 6,
@@ -2655,7 +2655,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "ek1o0a"
+                    "id": "e3pfmt"
                   },
                   {
                     "components": [],
@@ -2715,7 +2715,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "edv8o8e"
+                    "id": "elvyrgy"
                   }
                 ],
                 "mask": false,
@@ -2771,7 +2771,7 @@
                 },
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "en9tj3l"
+                "id": "espfexh"
               },
               {
                 "label": "Columns",
@@ -2834,7 +2834,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "edgqeao"
+                    "id": "edy100bp"
                   },
                   {
                     "components": [
@@ -2900,7 +2900,7 @@
                         "inputType": "checkbox",
                         "value": "",
                         "name": "",
-                        "id": "e6bxp8j"
+                        "id": "excouvj"
                       }
                     ],
                     "width": 6,
@@ -2959,7 +2959,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "egoq92f"
+                    "id": "e255cil"
                   }
                 ],
                 "mask": false,
@@ -3015,7 +3015,7 @@
                 },
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "eqluqbeh"
+                "id": "e98ckw9"
               },
               {
                 "label": "cm:content",
@@ -3093,7 +3093,7 @@
                 "fileMinSize": "0KB",
                 "fileMaxSize": "1GB",
                 "uploadOnly": false,
-                "id": "efv8nz"
+                "id": "etb9j8t"
               },
               {
                 "label": "idocs:note",
@@ -3171,7 +3171,7 @@
                 "inputMask": "",
                 "wysiwyg": false,
                 "editor": "",
-                "id": "ep3074b"
+                "id": "e8ijy84"
               },
               {
                 "label": "icase:documents",
@@ -3250,7 +3250,7 @@
                 "fileMinSize": "0KB",
                 "fileMaxSize": "1GB",
                 "uploadOnly": false,
-                "id": "eyt71if"
+                "id": "ep6rt25"
               }
             ],
             "tags": [],
@@ -3292,16 +3292,16 @@
             "theme": "default",
             "breadcrumb": "default",
             "lazyLoad": false,
-            "id": "e0o5fe4"
+            "id": "es4j4k"
           },
           {
             "label": "Panel",
-            "title": "Дополнительно",
+            "title": "Additionally",
             "collapsible": false,
             "mask": false,
             "tableView": false,
             "alwaysEnabled": false,
-            "key": "panel",
+            "key": "Additionally",
             "properties": {},
             "customConditional": "",
             "conditional": {
@@ -3381,7 +3381,7 @@
                         "refreshOn": "",
                         "clearOnRefresh": false,
                         "validateOn": "change",
-                        "id": "e7fxih"
+                        "id": "ewm7q58"
                       },
                       {
                         "label": "contracts:digiSign",
@@ -3445,7 +3445,7 @@
                         "inputType": "checkbox",
                         "value": "",
                         "name": "",
-                        "id": "epzwp5"
+                        "id": "ejqu69"
                       }
                     ],
                     "width": 6,
@@ -3504,7 +3504,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "enx75yv"
+                    "id": "e98f8d"
                   },
                   {
                     "components": [
@@ -3570,7 +3570,7 @@
                         "refreshOn": "",
                         "clearOnRefresh": false,
                         "validateOn": "change",
-                        "id": "e5zx4cj"
+                        "id": "evc2hej"
                       }
                     ],
                     "width": 6,
@@ -3629,7 +3629,7 @@
                       "when": null,
                       "eq": ""
                     },
-                    "id": "ea81t2"
+                    "id": "epj8whr"
                   }
                 ],
                 "mask": false,
@@ -3685,7 +3685,7 @@
                 },
                 "autoAdjust": false,
                 "hideOnChildrenHidden": false,
-                "id": "e915xfp"
+                "id": "e5n9if"
               },
               {
                 "label": "idocs:supervisor",
@@ -3749,7 +3749,7 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "id": "e9ux1zp"
+                "id": "emr8fsr"
               }
             ],
             "tags": [],
@@ -3791,7 +3791,7 @@
             "theme": "default",
             "breadcrumb": "default",
             "lazyLoad": false,
-            "id": "ezn7kza"
+            "id": "encwuxr"
           },
           {
             "label": "currencyList",
@@ -3879,7 +3879,7 @@
             "mask": false,
             "inputType": "asyncData",
             "executionCondition": "",
-            "id": "e1c4i"
+            "id": "e15js4"
           },
           {
             "label": "docTypeList",
@@ -3967,7 +3967,7 @@
             "mask": false,
             "inputType": "asyncData",
             "executionCondition": "",
-            "id": "ens86zq"
+            "id": "el5yk3"
           }
         ],
         "tags": [],
@@ -4009,7 +4009,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "ejn5rj"
+        "id": "eptk1kj"
       },
       {
         "label": "Container",
@@ -4044,7 +4044,7 @@
               {
                 "components": [
                   {
-                    "label": "Отмена",
+                    "label": "Cancel",
                     "action": "event",
                     "state": "",
                     "showValidations": false,
@@ -4062,7 +4062,7 @@
                       "custom": "",
                       "customPrivate": false
                     },
-                    "key": "submit3",
+                    "key": "Cancel",
                     "properties": {},
                     "conditional": {
                       "show": "",
@@ -4110,7 +4110,7 @@
                     "rightIcon": "",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "etk8la9"
+                    "id": "e832tjd"
                   }
                 ],
                 "width": 6,
@@ -4169,7 +4169,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e1lmq6"
+                "id": "ehomo2t"
               },
               {
                 "components": [],
@@ -4229,7 +4229,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eyx4jgn"
+                "id": "es9l4ani"
               },
               {
                 "xs": 0,
@@ -4246,7 +4246,8 @@
                 "label": "",
                 "components": [
                   {
-                    "label": "Сохранить",
+                    "label": "Save",
+                    "state": "draft",
                     "shortcut": "",
                     "block": true,
                     "mask": false,
@@ -4260,7 +4261,7 @@
                       "custom": "",
                       "customPrivate": false
                     },
-                    "key": "submit5",
+                    "key": "Save",
                     "properties": {},
                     "conditional": {
                       "show": "",
@@ -4273,7 +4274,6 @@
                     "type": "button",
                     "input": true,
                     "tags": [],
-                    "state": "draft",
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -4310,7 +4310,7 @@
                     "action": "submit",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "e3gkrvf"
+                    "id": "ee49w6"
                   }
                 ],
                 "placeholder": "",
@@ -4353,7 +4353,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "erfba3r"
+                "id": "ep5d86q"
               },
               {
                 "xs": 0,
@@ -4370,7 +4370,7 @@
                 "label": "",
                 "components": [
                   {
-                    "label": "Создать",
+                    "label": "Create",
                     "state": "",
                     "theme": "primary",
                     "shortcut": "",
@@ -4386,7 +4386,7 @@
                       "custom": "",
                       "customPrivate": false
                     },
-                    "key": "submit4",
+                    "key": "Create",
                     "properties": {},
                     "conditional": {
                       "show": "",
@@ -4434,7 +4434,7 @@
                     "rightIcon": "",
                     "action": "submit",
                     "disableOnInvalid": false,
-                    "id": "eaurebn"
+                    "id": "eb8lvxi"
                   }
                 ],
                 "placeholder": "",
@@ -4477,7 +4477,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e5c18wq"
+                "id": "ealpg39"
               }
             ],
             "mask": false,
@@ -4533,7 +4533,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "eej7bld"
+            "id": "e6xazcl"
           }
         ],
         "tags": [],
@@ -4567,30 +4567,30 @@
         "clearOnRefresh": false,
         "validateOn": "change",
         "tree": true,
-        "id": "ex9fd4j"
+        "id": "e452sem"
       }
     ]
   },
   "i18n": {
     "ru": {
-      "Основные": "Основные",
-      "Сгенерировать": "Сгенерировать",
-      "Финансы": "Финансы",
-      "Содержание": "Содержание",
-      "Дополнительно": "Дополнительно",
-      "Отмена": "Отмена",
-      "Сохранить": "Сохранить",
-      "Создать": "Создать"
+      "Basic": "Основные",
+      "Generate": "Сгенерировать",
+      "Finance": "Финансы",
+      "Content": "Содержание",
+      "Additionally": "Дополнительно",
+      "Cancel": "Отмена",
+      "Save": "Сохранить",
+      "Create": "Создать"
     },
     "en": {
-      "Основные": "Basic",
-      "Сгенерировать": "Generate",
-      "Финансы": "Finance",
-      "Содержание": "Content",
-      "Дополнительно": "Additionally",
-      "Отмена": "Cancel",
-      "Сохранить": "Save",
-      "Создать": "Create"
+      "Basic": "Basic",
+      "Generate": "Generate",
+      "Finance": "Finance",
+      "Content": "Content",
+      "Additionally": "Additionally",
+      "Cancel": "Cancel",
+      "Save": "Save",
+      "Create": "Create"
     }
   }
 }
