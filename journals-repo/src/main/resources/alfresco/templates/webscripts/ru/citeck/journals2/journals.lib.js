@@ -6,6 +6,7 @@ var journalsLib = {
     renderJournalType: function (journalType) {
         return {
             id: journalType.getId(),
+            datasource: journalType.getDataSource(),
             settings: this.renderOptions(journalType.getOptions()),
             groupActions: this.renderGroupActions(journalType.getGroupActions(), journalType.getId()),
             attributes: this.renderAttributes(journalType)

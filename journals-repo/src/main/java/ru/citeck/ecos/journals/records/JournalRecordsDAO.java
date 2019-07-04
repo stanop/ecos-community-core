@@ -32,6 +32,10 @@ public class JournalRecordsDAO {
         return recordsService.queryRecords(recordsQuery, gqlQuery);
     }
 
+    public String getJournalGqlSchema(JournalType type) {
+        return gqlQueryGenerator.generate(type);
+    }
+
     public RecordsQueryResult<RecordRef> getRecords(JournalType journalType,
                                                     String query,
                                                     String language,

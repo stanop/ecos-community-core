@@ -45,12 +45,10 @@ import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.processor.TemplateExpressionEvaluator;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
+import ru.citeck.ecos.records2.utils.MandatoryParam;
 import ru.citeck.ecos.search.SearchCriteria;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
-import ru.citeck.ecos.utils.LazyNodeRef;
-import ru.citeck.ecos.utils.NamespacePrefixResolverMapImpl;
-import ru.citeck.ecos.utils.RepoUtils;
-import ru.citeck.ecos.utils.XMLUtils;
+import ru.citeck.ecos.utils.*;
 
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
@@ -68,6 +66,7 @@ class JournalServiceImpl implements JournalService {
     private SearchCriteriaSettingsRegistry searchCriteriaSettingsRegistry;
     private JournalRecordsDAO recordsDAO;
     private NamespaceService namespaceService;
+    private NodeUtils nodeUtils;
 
     private LazyNodeRef journalsRoot;
     private Map<String, JournalType> journalTypes = new ConcurrentHashMap<>();
@@ -295,10 +294,22 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public JournalType needJournalType(String journalId) {
+    public String getJournalGqlSchema(String journalId) {
+        return recordsDAO.getJournalGqlSchema(needJournalType(journalId));
+    }
+
+    @Override
+    public JournalType needJournalType(String journalIdOrNodeRef) {
+        MandatoryParam.check("journalId", journalIdOrNodeRef);
+        String journalId;
+        if (NodeRef.isNodeRef(journalIdOrNodeRef)) {
+            journalId = nodeUtils.getProperty(new NodeRef(journalIdOrNodeRef), JournalsModel.PROP_JOURNAL_TYPE);
+        } else {
+            journalId = journalIdOrNodeRef;
+        }
         JournalType journalType = getJournalType(journalId);
         if (journalType == null) {
-            throw new IllegalArgumentException("Journal with id " + journalId + " not found");
+            throw new IllegalArgumentException("Journal with id " + journalIdOrNodeRef + " is not found");
         }
         return journalType;
     }
@@ -330,5 +341,10 @@ class JournalServiceImpl implements JournalService {
 
     public SearchCriteriaSettingsRegistry getSearchCriteriaSettingsRegistry() {
         return searchCriteriaSettingsRegistry;
+    }
+
+    @Autowired
+    public void setNodeUtils(NodeUtils nodeUtils) {
+        this.nodeUtils = nodeUtils;
     }
 }
