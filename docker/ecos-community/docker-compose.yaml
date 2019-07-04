@@ -4,7 +4,7 @@ services:
     container_name: ecos-ui-develop-extdev
     ports:
       - 80:80/tcp
-    image: nexus.citeck.ru/ecos-ui:release-1.3.0-extdev
+    image: nexus.citeck.ru/ecos-ui:develop-extdev
     environment:
       - PROXY_TARGET=$ALFRESCO_HOST
     depends_on:
