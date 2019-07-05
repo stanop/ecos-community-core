@@ -9,6 +9,8 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.predicate.PredicateService;
@@ -21,11 +23,19 @@ import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.DictUtils;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
+
+    private static final Log logger = LogFactory.getLog(PredicateToFtsAlfrescoConverter.class);
 
     private DictUtils dictUtils;
     private SearchService searchService;
@@ -225,9 +235,15 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                         case LE:
                         case LT:
 
-                            String predValue;
+                            String predValue = null;
                             if (value instanceof String) {
-                                predValue = "\"" + valueStr + "\"";
+                                if (attDef instanceof PropertyDefinition) {
+                                    DataTypeDefinition type = ((PropertyDefinition) attDef).getDataType();
+                                    if (DataTypeDefinition.DATETIME.equals(type.getName())) {
+                                        predValue = convertTime(valueStr);
+                                    }
+                                }
+                                predValue = "\"" + (predValue != null ? predValue : valueStr) + "\"";
                             } else {
                                 predValue = valueStr;
                             }
@@ -260,6 +276,26 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
         } else {
             throw new RuntimeException("Unknown predicate type: " + predicate);
+        }
+    }
+
+    private String convertTime(String time) {
+
+        if (time == null || time.charAt(time.length() - 1) != 'Z') {
+            return time;
+        }
+
+        ZoneOffset offset = OffsetDateTime.now().getOffset();
+        if (offset.getTotalSeconds() == 0) {
+            return time;
+        }
+
+        try {
+            Instant timeInstant = Instant.parse(time);
+            return DateTimeFormatter.ISO_ZONED_DATE_TIME.format(timeInstant.atZone(offset));
+        } catch (Exception e) {
+            logger.error(e);
+            return time;
         }
     }
 
