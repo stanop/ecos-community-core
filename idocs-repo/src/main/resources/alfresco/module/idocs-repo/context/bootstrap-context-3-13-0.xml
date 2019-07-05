@@ -29,4 +29,22 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.config.exclude-disabled-users-enable.create" parent="module.baseComponent"
+          class="ru.citeck.ecos.config.patch.CreateConfig">
+        <property name="dependsOn">
+            <list>
+                <ref bean="ecos-base-core.module-component.ecos-config-root" />
+            </list>
+        </property>
+        <property name="configKey" value="exclude-disabled-users-enable" />
+        <property name="configValue" value="${config.exclude-disabled-users.enabled}" />
+        <property name="configTitle" value="ecos-config.exclude-disabled-users-enable.title" />
+        <property name="configDescription" value="ecos-config.exclude-disabled-users-enable.description" />
+        <property name="moduleId" value="idocs-repo" />
+        <property name="sinceVersion" value="3.13.0" />
+        <property name="appliesFromVersion" value="3.13.0" />
+        <property name="name" value="idocs.module-component.config.exclude-disabled-users-enable.create" />
+        <property name="description" value="idocs.module-component.config.exclude-disabled-users-enable.create" />
+    </bean>
+
 </beans>
