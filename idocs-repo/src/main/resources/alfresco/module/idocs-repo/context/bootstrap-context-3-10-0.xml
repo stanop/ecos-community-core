@@ -74,6 +74,12 @@
     </bean>
 
     <bean id="idocs.script.personal-documents-site-add-users" parent="idocs.import-scripts.3-10-0">
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.site.personal-documents-site-import" />
+                <ref bean="idocs.all-group" />
+            </list>
+        </property>
         <property name="executeOnceOnly" value="true" />
         <property name="name" value="personal-documents-site-add-users" />
         <property name="description" value="Add all users to the personal-documents site" />
@@ -113,6 +119,12 @@
         <property name="dependsOn">
             <list>
                 <ref bean="idocs.module-component.document-categories" />
+                <ref bean="ecos-community.module-component.case-completeness-levels-journal" />
+                <ref bean="idocs.module-component.update-case-documents-config" />
+                <ref bean="idocs.module-component.associations-case-element-config" />
+                <ref bean="idocs.module-component.journal-case-element-documents" />
+                <ref bean="idocs.module-component.tasks-case-element-configs" />
+                <ref bean="idocs.module-component.roles-case-element-configs" />
             </list>
         </property>
         <property name="executeOnceOnly" value="false" />
