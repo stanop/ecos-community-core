@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.AuthorityType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
+import ru.citeck.ecos.records.models.UserDTO;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.GqlContext;
@@ -343,7 +345,18 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                             .stream()
                             .map(actor -> {
                                 RecordRef rr = RecordRef.create("", actor);
-                                return recordsService.getMeta(rr, AuthorityDTO.class);
+                                AuthorityDTO dto = recordsService.getMeta(rr, AuthorityDTO.class);
+                                if (StringUtils.isNotBlank(dto.getAuthorityName())) {
+                                    Set<String> containedUsers = authorityService.getContainedAuthorities(
+                                            AuthorityType.USER, dto.getAuthorityName(), false);
+                                    List<UserDTO> users = containedUsers.stream()
+                                            .map(s -> recordsService.getMeta(RecordRef.create("",
+                                                    authorityService.getAuthorityNodeRef(s).toString()),
+                                                    UserDTO.class))
+                                            .collect(Collectors.toList());
+                                    dto.setContainedUsers(users);
+                                }
+                                return dto;
                             })
                             .collect(Collectors.toList());
                 case ATT_DUE_DATE:
