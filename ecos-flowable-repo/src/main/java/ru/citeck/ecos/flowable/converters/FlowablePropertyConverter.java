@@ -26,7 +26,6 @@ import org.flowable.identitylink.service.IdentityLinkType;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.service.delegate.DelegateTask;
-import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
@@ -151,7 +150,8 @@ public class FlowablePropertyConverter {
         Map<QName, PropertyDefinition> taskProperties = taskDef.getProperties();
         Map<QName, AssociationDefinition> taskAssociations = taskDef.getAssociations();
 
-        Map<QName, Serializable> properties = mapArbitraryProperties(variables, localVariables, taskProperties, taskAssociations);
+        Map<QName, Serializable> properties = mapArbitraryProperties(variables, localVariables, taskProperties,
+                taskAssociations);
 
         /** Set task instance properties */
         properties.put(WorkflowModel.PROP_TASK_ID, task.getId());
@@ -311,6 +311,15 @@ public class FlowablePropertyConverter {
      * @return Map of properties
      */
     public Map<QName, Serializable> getTaskProperties(HistoricTaskInstance task) {
+        Task currentTask = flowableTaskService.getTaskById(task.getId());
+        if (currentTask != null) {
+            return getTaskProperties(currentTask);
+        } else {
+            return getHistoricTaskProperties(task);
+        }
+    }
+
+    private Map<QName, Serializable> getHistoricTaskProperties(HistoricTaskInstance task) {
         Map<String, Object> historicTaskVariables = flowableHistoryService.getHistoricTaskVariables(task.getId());
 
         String formKey = (String) historicTaskVariables.get(FlowableConstants.PROP_TASK_FORM_KEY);
