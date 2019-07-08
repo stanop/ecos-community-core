@@ -53,6 +53,7 @@ public class ChildrenGet extends AbstractWebScript {
     private static final String PARAM_EXCLUDE_AUTHORITIES = "excludeAuthorities";
 
     private static final String CONFIG_KEY_SHOW_INACTIVE = "orgstruct-show-inactive-user-only-for-admin";
+    private static final String CONFIG_KEY_HIDE_INACTIVE_FOR_ALL = "hide-disabled-users-for-everyone";
     private static final String CONFIG_KEY_HIDE_IN_ORGSTRUCT = "hide-in-orgstruct";
 
     private static final String GROUP_PREFIX = "GROUP_";
@@ -420,13 +421,18 @@ public class ChildrenGet extends AbstractWebScript {
         options.userIsAdmin = StringUtils.isNotBlank(currentAuthority) &&
                               authorityService.isAdminAuthority(currentAuthority);
 
-        Boolean showInactiveOnlyForAdmin =
-                strToBool((String) ecosConfigService.getParamValue(CONFIG_KEY_SHOW_INACTIVE), null);
+        options.showDisabled = false;
+        Boolean hideInactiveForAll = strToBool((String) ecosConfigService.getParamValue(CONFIG_KEY_HIDE_INACTIVE_FOR_ALL), null);
 
-        if (showInactiveOnlyForAdmin == null || !showInactiveOnlyForAdmin) {
-            options.showDisabled = strToBool(req.getParameter(PARAM_SHOW_DISABLED), defaultEnabled);
-        } else {
-            options.showDisabled = options.userIsAdmin;
+        if(hideInactiveForAll == null || !hideInactiveForAll) {
+            Boolean showInactiveOnlyForAdmin =
+                    strToBool((String) ecosConfigService.getParamValue(CONFIG_KEY_SHOW_INACTIVE), null);
+
+            if (showInactiveOnlyForAdmin == null || !showInactiveOnlyForAdmin) {
+                options.showDisabled = strToBool(req.getParameter(PARAM_SHOW_DISABLED), defaultEnabled);
+            } else {
+                options.showDisabled = options.userIsAdmin;
+            }
         }
 
         Set<String> excludeAuthorities = new HashSet<>();
