@@ -422,7 +422,8 @@ public class ChildrenGet extends AbstractWebScript {
                               authorityService.isAdminAuthority(currentAuthority);
 
         options.showDisabled = false;
-        Boolean hideInactiveForAll = strToBool((String) ecosConfigService.getParamValue(CONFIG_KEY_HIDE_INACTIVE_FOR_ALL), null);
+        Boolean hideInactiveForAll =
+                strToBool((String) ecosConfigService.getParamValue(CONFIG_KEY_HIDE_INACTIVE_FOR_ALL), null);
 
         if(hideInactiveForAll == null || !hideInactiveForAll) {
             Boolean showInactiveOnlyForAdmin =
