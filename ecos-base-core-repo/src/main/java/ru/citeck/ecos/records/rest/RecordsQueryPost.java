@@ -3,7 +3,7 @@ package ru.citeck.ecos.records.rest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.records2.request.rest.QueryBody;
-import ru.citeck.ecos.records2.request.rest.RestQueryHandler;
+import ru.citeck.ecos.records2.request.rest.RestHandler;
 
 import java.io.IOException;
 
@@ -13,18 +13,18 @@ import java.io.IOException;
 public class RecordsQueryPost extends AbstractWebScript {
 
     private RecordsRestUtils utils;
-    private RestQueryHandler restQueryHandler;
+    private RestHandler restHandler;
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
         QueryBody request = utils.readBody(req, QueryBody.class);
-        utils.writeResp(res, restQueryHandler.queryRecords(request));
+        utils.writeResp(res, restHandler.queryRecords(request));
     }
 
     @Autowired
-    public void setRestQueryHandler(RestQueryHandler restQueryHandler) {
-        this.restQueryHandler = restQueryHandler;
+    public void setRestQueryHandler(RestHandler restHandler) {
+        this.restHandler = restHandler;
     }
 
     @Autowired
