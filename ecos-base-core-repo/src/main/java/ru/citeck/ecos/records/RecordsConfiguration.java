@@ -19,6 +19,9 @@ public class RecordsConfiguration extends RecordsServiceFactory {
 
     private ServiceRegistry serviceRegistry;
     private RecordsServiceImpl recordsService;
+    private QueryLangService queryLangService;
+    private PredicateService predicateService;
+    private RecordsMetaService recordsMetaService;
 
     @Bean
     public RecordsService createRecordsServiceBean(ServiceRegistry serviceRegistry,
@@ -39,17 +42,26 @@ public class RecordsConfiguration extends RecordsServiceFactory {
 
     @Bean
     public QueryLangService createQueryLangService() {
-        return super.createQueryLangService();
+        if (queryLangService == null) {
+            queryLangService = super.createQueryLangService();
+        }
+        return queryLangService;
     }
 
     @Bean
     public PredicateService createPredicateService() {
-        return super.createPredicateService();
+        if (predicateService == null) {
+            predicateService = super.createPredicateService();
+        }
+        return predicateService;
     }
 
     @Bean
     public RecordsMetaService createRecordsMetaService() {
-        return super.createRecordsMetaService();
+        if (recordsMetaService == null) {
+            recordsMetaService = super.createRecordsMetaService();
+        }
+        return recordsMetaService;
     }
 
     @Bean
