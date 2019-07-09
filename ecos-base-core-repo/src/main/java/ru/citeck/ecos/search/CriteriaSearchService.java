@@ -29,6 +29,7 @@ import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.config.EcosConfigService;
@@ -154,9 +155,11 @@ public class CriteriaSearchService {
         );
 
         if (hideInactiveForAll) {
-            NodeRef singleNode = results.get(0);
-            if (Objects.equals(nodeService.getType(singleNode), ContentModel.TYPE_PERSON)) {
-                PersonUtils.excludeDisabledUsers(results, nodeService);
+            if (!CollectionUtils.isEmpty(results)) {
+                NodeRef singleNode = results.get(0);
+                if (Objects.equals(nodeService.getType(singleNode), ContentModel.TYPE_PERSON)) {
+                    PersonUtils.excludeDisabledUsers(results, nodeService);
+                }
             }
         }
 
