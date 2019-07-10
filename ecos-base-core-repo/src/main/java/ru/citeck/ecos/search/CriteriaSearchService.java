@@ -18,10 +18,8 @@
  */
 package ru.citeck.ecos.search;
 
-import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.QueryConsistency;
 import org.alfresco.service.cmr.search.ResultSet;
@@ -29,16 +27,9 @@ import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import ru.citeck.ecos.config.EcosConfigService;
-import ru.citeck.ecos.utils.ConfigUtils;
-import ru.citeck.ecos.utils.PersonUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Service for search by criteria.
@@ -46,14 +37,6 @@ import java.util.Objects;
  * @author Anton Fateev <anton.fateev@citeck.ru>
  */
 public class CriteriaSearchService {
-
-    private static final String CONFIG_KEY_HIDE_INACTIVE_FOR_ALL = "hide-disabled-users-for-everyone";
-
-    @Autowired
-    private NodeService nodeService;
-    @Autowired
-    @Qualifier("ecosConfigService")
-    private EcosConfigService ecosConfigService;
 
     private SearchService searchService;
 
@@ -81,7 +64,7 @@ public class CriteriaSearchService {
             throw new IllegalArgumentException("Language can't be null or empty");
         }
         SearchQueryBuilder queryBuilder = getMatchingQueryBuilder(language);
-        if (queryBuilder == null) {
+        if(queryBuilder == null) {
             throw new IllegalArgumentException("Unsupported query language");
         }
         String query = queryBuilder.buildQuery(criteria);
@@ -96,15 +79,15 @@ public class CriteriaSearchService {
         }
         Map<String, Boolean> sortCriteria = criteria.getSort();
         for (String field : sortCriteria.keySet()) {
-            if (sortFieldChanger != null) {
+            if(sortFieldChanger != null) {
                 field = sortFieldChanger.getSortField(field);
             }
             QName fieldQName = QName.resolveToQName(namespaceService, field);
-            if (dictionaryService.getProperty(fieldQName) != null) {
+            if(dictionaryService.getProperty(fieldQName) != null) {
                 parameters.addSort("@" + field, sortCriteria.get(field));
                 continue;
             }
-            if (dictionaryService.getAssociation(fieldQName) != null) {
+            if(dictionaryService.getAssociation(fieldQName) != null) {
                 QName indexField = associationIndexPropertyRegistry.getAssociationIndexProperty(fieldQName);
                 parameters.addSort("@" + indexField, sortCriteria.get(field));
                 continue;
@@ -133,10 +116,10 @@ public class CriteriaSearchService {
                 totalCount = countResultSet.getNumberFound();
             }
         } finally {
-            if (resultSet != null) {
+            if(resultSet != null) {
                 resultSet.close();
             }
-            if (countResultSet != null) {
+            if(countResultSet != null) {
                 countResultSet.close();
             }
         }
@@ -144,22 +127,8 @@ public class CriteriaSearchService {
         boolean hasMore = false;
         if (criteria.isLimitSet()) {
             hasMore = results.size() > criteria.getLimit();
-            if (hasMore) {
+            if(hasMore) {
                 results = results.subList(0, criteria.getLimit());
-            }
-        }
-
-        Boolean hideInactiveForAll = ConfigUtils.strToBool(
-                (String) ecosConfigService.getParamValue(CONFIG_KEY_HIDE_INACTIVE_FOR_ALL),
-                false
-        );
-
-        if (hideInactiveForAll) {
-            if (!CollectionUtils.isEmpty(results)) {
-                NodeRef singleNode = results.get(0);
-                if (Objects.equals(nodeService.getType(singleNode), ContentModel.TYPE_PERSON)) {
-                    PersonUtils.excludeDisabledUsers(results, nodeService);
-                }
             }
         }
 
