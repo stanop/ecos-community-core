@@ -315,11 +315,16 @@ public class FlowablePropertyConverter {
         if (currentTask != null) {
             return getTaskProperties(currentTask);
         } else {
-            return getHistoricTaskProperties(task);
+            Map<QName, Serializable> properties = new HashMap<>();
+
+            properties.put(WorkflowModel.PROP_COMPLETION_DATE, task.getEndTime());
+
+            return properties;
         }
     }
 
-    private Map<QName, Serializable> getHistoricTaskProperties(HistoricTaskInstance task) {
+    //TODO: fix priority
+    /*private Map<QName, Serializable> getHistoricTaskProperties(HistoricTaskInstance task) {
         Map<String, Object> historicTaskVariables = flowableHistoryService.getHistoricTaskVariables(task.getId());
 
         String formKey = (String) historicTaskVariables.get(FlowableConstants.PROP_TASK_FORM_KEY);
@@ -361,7 +366,7 @@ public class FlowablePropertyConverter {
         properties.put(WorkflowModel.ASSOC_POOLED_ACTORS, (Serializable) pooledActors);
 
         return filterTaskProperties(properties);
-    }
+    }*/
 
     /**
      * Map pooled actors
