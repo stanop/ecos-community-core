@@ -120,7 +120,7 @@
                             "searchThreshold": 0.3,
                             "fuseOptions": {},
                             "customOptions": {},
-                            "id": "etfosbip"
+                            "id": "eefdtvx"
                           }
                         ],
                         "width": 6,
@@ -129,8 +129,8 @@
                         "pull": 0,
                         "type": "column",
                         "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
+                        "input": false,
+                        "key": "column1",
                         "tableView": true,
                         "label": "",
                         "xs": 0,
@@ -179,7 +179,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "elxh09di"
+                        "id": "e2y6xsr"
                       },
                       {
                         "components": [
@@ -241,7 +241,81 @@
                               "minuteIncrement": 1,
                               "time_24hr": false,
                               "minDate": "",
-                              "maxDate": ""
+                              "maxDate": "",
+                              "icons": "",
+                              "i18n": {
+                                "lng": "en",
+                                "resources": {
+                                  "en": {
+                                    "translation": {
+                                      "complete": "Submission Complete",
+                                      "error": "Please fix the following errors before submitting.",
+                                      "required": "{{field}} is required",
+                                      "pattern": "{{field}} does not match the pattern {{pattern}}",
+                                      "minLength": "{{field}} must be longer than {{length}} characters.",
+                                      "maxLength": "{{field}} must be shorter than {{length}} characters.",
+                                      "minWords": "{{field}} must have more than {{length}} words.",
+                                      "maxWords": "{{field}} must have less than {{length}} words.",
+                                      "min": "{{field}} cannot be less than {{min}}.",
+                                      "max": "{{field}} cannot be greater than {{max}}.",
+                                      "minSelectedCount": "You must select at least {{minCount}} items to continue.",
+                                      "maxSelectedCount": "You can only select up to {{maxCount}} items to continue.",
+                                      "maxDate": "{{field}} should not contain date after {{- maxDate}}",
+                                      "minDate": "{{field}} should not contain date before {{- minDate}}",
+                                      "invalid_email": "{{field}} must be a valid email.",
+                                      "invalid_url": "{{field}} must be a valid url.",
+                                      "invalid_regex": "{{field}} does not match the pattern {{regex}}.",
+                                      "invalid_date": "{{field}} is not a valid date.",
+                                      "invalid_day": "{{field}} is not a valid day.",
+                                      "mask": "{{field}} does not match the mask.",
+                                      "stripe": "{{stripe}}",
+                                      "month": "Month",
+                                      "day": "Day",
+                                      "year": "Year",
+                                      "january": "January",
+                                      "february": "February",
+                                      "march": "March",
+                                      "april": "April",
+                                      "may": "May",
+                                      "june": "June",
+                                      "july": "July",
+                                      "august": "August",
+                                      "september": "September",
+                                      "october": "October",
+                                      "november": "November",
+                                      "december": "December",
+                                      "next": "Next",
+                                      "previous": "Previous",
+                                      "cancel": "Cancel",
+                                      "submit": "Submit Form"
+                                    }
+                                  },
+                                  "ru": {
+                                    "translation": {
+                                      "invalid_email": "{{field}} некорректный email.",
+                                      "next": "Далее",
+                                      "complete": "Сохранение прошло успешно",
+                                      "previous": "Назад",
+                                      "min": "{{field}} не может быть меньше чем {{min}}.",
+                                      "pattern": "{{field}} не совпадает с паттерном {{pattern}}",
+                                      "or": "или",
+                                      "minLength": "{{field}} должен быть длиннее чем {{length}} символов.",
+                                      "error": "Пожалуйста, исправьте следующие ошибки перед отправкой:",
+                                      "invalid_date": "{{field}} некорректная дата.",
+                                      "browse": "выбрать",
+                                      "maxLength": "{{field}} должен быть короче чем {{length}} символов.",
+                                      "max": "{{field}} не может быть больше чем {{max}}.",
+                                      "mask": "{{field}} не совпадает с маской.",
+                                      "invalid_regex": "{{field}} не соответствует паттерну {{regex}}.",
+                                      "File Name": "Имя файла",
+                                      "Type": "Тип",
+                                      "required": "Поле {{field}} не может быть пустым",
+                                      "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
+                                      "Size": "Размер"
+                                    }
+                                  }
+                                }
+                              }
                             },
                             "tags": [],
                             "placeholder": "",
@@ -285,7 +359,7 @@
                               "mousewheel": true,
                               "arrowkeys": true
                             },
-                            "id": "evtyza3"
+                            "id": "epip9gk"
                           }
                         ],
                         "width": 6,
@@ -294,8 +368,8 @@
                         "pull": 0,
                         "type": "column",
                         "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
+                        "input": false,
+                        "key": "column2",
                         "tableView": true,
                         "label": "",
                         "xs": 0,
@@ -344,7 +418,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "eu7dxl"
+                        "id": "eg00tkh"
                       }
                     ],
                     "mask": false,
@@ -400,7 +474,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "e2x0li9"
+                    "id": "ef3p199"
                   },
                   {
                     "label": "Columns",
@@ -442,26 +516,12 @@
                             "customConditional": "",
                             "logic": [
                               {
-                                "name": "generation_value",
-                                "trigger": {
-                                  "type": "event",
-                                  "event": "GenerationEvent"
-                                },
-                                "actions": [
-                                  {
-                                    "name": "set_value",
-                                    "type": "value",
-                                    "value": "value = ' ';"
-                                  }
-                                ]
-                              },
-                              {
-                                "name": "disabled_event",
+                                "name": "generate_event",
                                 "trigger": {
                                   "type": "simple",
                                   "simple": {
                                     "show": true,
-                                    "when": "1",
+                                    "when": "Generate",
                                     "eq": "true"
                                   }
                                 },
@@ -475,10 +535,34 @@
                                       "type": "boolean"
                                     },
                                     "state": "true"
+                                  },
+                                  {
+                                    "name": "set_value",
+                                    "type": "value",
+                                    "value": "if (instance.options.formMode === 'CREATE') {\n  value = ' ';\n}"
+                                  }
+                                ]
+                              },
+                              {
+                                "name": "not_generate_event",
+                                "trigger": {
+                                  "type": "simple",
+                                  "simple": {
+                                    "show": true,
+                                    "when": "Generate",
+                                    "eq": "false"
+                                  }
+                                },
+                                "actions": [
+                                  {
+                                    "name": "set_value",
+                                    "type": "value",
+                                    "value": "if(instance.options.formMode === 'CREATE') {\n  value = '';\n}"
                                   }
                                 ]
                               }
                             ],
+                            "attributes": {},
                             "type": "textfield",
                             "input": true,
                             "tags": [],
@@ -519,7 +603,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "e5jg9lba"
+                            "id": "eyixube"
                           }
                         ],
                         "width": 6,
@@ -528,8 +612,8 @@
                         "pull": 0,
                         "type": "column",
                         "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
+                        "input": false,
+                        "key": "column1",
                         "tableView": true,
                         "label": "",
                         "xs": 0,
@@ -578,19 +662,18 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "eb0nu9h"
+                        "id": "ez61w1j"
                       },
                       {
                         "components": [
                           {
                             "label": "Generate",
-                            "action": "event",
-                            "state": "",
-                            "showValidations": false,
+                            "labelPosition": "left-left",
                             "shortcut": "",
                             "mask": false,
                             "tableView": true,
                             "alwaysEnabled": false,
+                            "defaultValue": true,
                             "encrypted": false,
                             "validate": {
                               "customMessage": "",
@@ -609,23 +692,21 @@
                             },
                             "customConditional": "",
                             "logic": [],
-                            "type": "button",
+                            "attributes": {},
+                            "type": "checkbox",
                             "input": true,
                             "tags": [],
-                            "event": "GenerationEvent",
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
                             "suffix": "",
                             "multiple": false,
-                            "defaultValue": null,
                             "protected": false,
                             "unique": false,
-                            "persistent": false,
+                            "persistent": true,
                             "hidden": false,
                             "clearOnHide": true,
                             "dataGridLabel": true,
-                            "labelPosition": "top",
                             "labelWidth": 30,
                             "labelMargin": 3,
                             "description": "",
@@ -643,13 +724,10 @@
                             "refreshOn": "",
                             "clearOnRefresh": false,
                             "validateOn": "change",
-                            "size": "md",
-                            "leftIcon": "",
-                            "rightIcon": "",
-                            "block": false,
-                            "disableOnInvalid": false,
-                            "theme": "default",
-                            "id": "eqyp3"
+                            "inputType": "checkbox",
+                            "value": "",
+                            "name": "",
+                            "id": "eohy23"
                           }
                         ],
                         "width": 6,
@@ -658,8 +736,8 @@
                         "pull": 0,
                         "type": "column",
                         "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
+                        "input": false,
+                        "key": "column2",
                         "tableView": true,
                         "label": "",
                         "xs": 0,
@@ -667,7 +745,7 @@
                         "md": 6,
                         "lg": 0,
                         "xl": 0,
-                        "classes": "d-flex justify-content-center align-items-end",
+                        "classes": "d-flex justify-content-start align-items-center",
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -708,7 +786,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "ehzg93e"
+                        "id": "ew1zpph"
                       }
                     ],
                     "mask": false,
@@ -724,6 +802,7 @@
                     },
                     "customConditional": "",
                     "logic": [],
+                    "attributes": {},
                     "type": "columns",
                     "input": false,
                     "tags": [],
@@ -764,7 +843,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "ez7eayq"
+                    "id": "eqn0vgo"
                   },
                   {
                     "useNegativeIndents": false,
@@ -815,7 +894,7 @@
                     },
                     "mask": false,
                     "inputType": "horizontalLine",
-                    "id": "eroczv"
+                    "id": "ez03fnj"
                   },
                   {
                     "label": "Name",
@@ -890,7 +969,7 @@
                     "mask": false,
                     "inputType": "text",
                     "inputMask": "",
-                    "id": "eq9f2gz"
+                    "id": "eet205b"
                   },
                   {
                     "useNegativeIndents": false,
@@ -941,7 +1020,7 @@
                     },
                     "mask": false,
                     "inputType": "horizontalLine",
-                    "id": "ekwel3"
+                    "id": "e5jrd8"
                   },
                   {
                     "label": "Note",
@@ -1019,7 +1098,7 @@
                     "inputMask": "",
                     "wysiwyg": false,
                     "editor": "",
-                    "id": "eyjalno"
+                    "id": "et1qm8d"
                   },
                   {
                     "useNegativeIndents": false,
@@ -1070,7 +1149,7 @@
                     },
                     "mask": false,
                     "inputType": "horizontalLine",
-                    "id": "eve2en4"
+                    "id": "esdpfd"
                   },
                   {
                     "label": "Columns",
@@ -1139,7 +1218,7 @@
                             "refreshOn": "",
                             "clearOnRefresh": false,
                             "validateOn": "change",
-                            "id": "easou67"
+                            "id": "edzjhjd"
                           }
                         ],
                         "width": 6,
@@ -1148,8 +1227,8 @@
                         "pull": 0,
                         "type": "column",
                         "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
+                        "input": false,
+                        "key": "column3",
                         "tableView": true,
                         "label": "",
                         "xs": 0,
@@ -1198,7 +1277,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "ehcr53s"
+                        "id": "es6w0ym"
                       },
                       {
                         "components": [
@@ -1264,7 +1343,7 @@
                             "refreshOn": "",
                             "clearOnRefresh": false,
                             "validateOn": "change",
-                            "id": "e1ejf4n"
+                            "id": "e947vuf"
                           }
                         ],
                         "width": 6,
@@ -1273,8 +1352,8 @@
                         "pull": 0,
                         "type": "column",
                         "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
+                        "input": false,
+                        "key": "column4",
                         "tableView": true,
                         "label": "",
                         "xs": 0,
@@ -1323,7 +1402,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e3qclzq"
+                        "id": "expe23a"
                       }
                     ],
                     "mask": false,
@@ -1379,7 +1458,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "ekgk269"
+                    "id": "eovz39g"
                   }
                 ],
                 "tags": [],
@@ -1421,7 +1500,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "eyqim0x"
+                "id": "e2zk4oel"
               }
             ],
             "width": 6,
@@ -1430,8 +1509,8 @@
             "pull": 0,
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column1",
             "tableView": true,
             "label": "",
             "xs": 0,
@@ -1480,7 +1559,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ex5xaha"
+            "id": "e9hvevd"
           },
           {
             "components": [
@@ -1566,7 +1645,81 @@
                               "minuteIncrement": 1,
                               "time_24hr": false,
                               "minDate": "",
-                              "maxDate": ""
+                              "maxDate": "",
+                              "icons": "",
+                              "i18n": {
+                                "lng": "en",
+                                "resources": {
+                                  "en": {
+                                    "translation": {
+                                      "complete": "Submission Complete",
+                                      "error": "Please fix the following errors before submitting.",
+                                      "required": "{{field}} is required",
+                                      "pattern": "{{field}} does not match the pattern {{pattern}}",
+                                      "minLength": "{{field}} must be longer than {{length}} characters.",
+                                      "maxLength": "{{field}} must be shorter than {{length}} characters.",
+                                      "minWords": "{{field}} must have more than {{length}} words.",
+                                      "maxWords": "{{field}} must have less than {{length}} words.",
+                                      "min": "{{field}} cannot be less than {{min}}.",
+                                      "max": "{{field}} cannot be greater than {{max}}.",
+                                      "minSelectedCount": "You must select at least {{minCount}} items to continue.",
+                                      "maxSelectedCount": "You can only select up to {{maxCount}} items to continue.",
+                                      "maxDate": "{{field}} should not contain date after {{- maxDate}}",
+                                      "minDate": "{{field}} should not contain date before {{- minDate}}",
+                                      "invalid_email": "{{field}} must be a valid email.",
+                                      "invalid_url": "{{field}} must be a valid url.",
+                                      "invalid_regex": "{{field}} does not match the pattern {{regex}}.",
+                                      "invalid_date": "{{field}} is not a valid date.",
+                                      "invalid_day": "{{field}} is not a valid day.",
+                                      "mask": "{{field}} does not match the mask.",
+                                      "stripe": "{{stripe}}",
+                                      "month": "Month",
+                                      "day": "Day",
+                                      "year": "Year",
+                                      "january": "January",
+                                      "february": "February",
+                                      "march": "March",
+                                      "april": "April",
+                                      "may": "May",
+                                      "june": "June",
+                                      "july": "July",
+                                      "august": "August",
+                                      "september": "September",
+                                      "october": "October",
+                                      "november": "November",
+                                      "december": "December",
+                                      "next": "Next",
+                                      "previous": "Previous",
+                                      "cancel": "Cancel",
+                                      "submit": "Submit Form"
+                                    }
+                                  },
+                                  "ru": {
+                                    "translation": {
+                                      "invalid_email": "{{field}} некорректный email.",
+                                      "next": "Далее",
+                                      "complete": "Сохранение прошло успешно",
+                                      "previous": "Назад",
+                                      "min": "{{field}} не может быть меньше чем {{min}}.",
+                                      "pattern": "{{field}} не совпадает с паттерном {{pattern}}",
+                                      "or": "или",
+                                      "minLength": "{{field}} должен быть длиннее чем {{length}} символов.",
+                                      "error": "Пожалуйста, исправьте следующие ошибки перед отправкой:",
+                                      "invalid_date": "{{field}} некорректная дата.",
+                                      "browse": "выбрать",
+                                      "maxLength": "{{field}} должен быть короче чем {{length}} символов.",
+                                      "max": "{{field}} не может быть больше чем {{max}}.",
+                                      "mask": "{{field}} не совпадает с маской.",
+                                      "invalid_regex": "{{field}} не соответствует паттерну {{regex}}.",
+                                      "File Name": "Имя файла",
+                                      "Type": "Тип",
+                                      "required": "Поле {{field}} не может быть пустым",
+                                      "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
+                                      "Size": "Размер"
+                                    }
+                                  }
+                                }
+                              }
                             },
                             "tags": [],
                             "placeholder": "",
@@ -1611,7 +1764,7 @@
                               "mousewheel": true,
                               "arrowkeys": true
                             },
-                            "id": "euc58sb"
+                            "id": "el18kt"
                           }
                         ],
                         "width": 6,
@@ -1620,8 +1773,8 @@
                         "pull": 0,
                         "type": "column",
                         "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
+                        "input": false,
+                        "key": "column3",
                         "tableView": true,
                         "label": "",
                         "xs": 0,
@@ -1670,7 +1823,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "es972j9"
+                        "id": "em5gqv"
                       },
                       {
                         "components": [
@@ -1731,7 +1884,81 @@
                               "minuteIncrement": 1,
                               "time_24hr": false,
                               "minDate": "",
-                              "maxDate": ""
+                              "maxDate": "",
+                              "icons": "",
+                              "i18n": {
+                                "lng": "en",
+                                "resources": {
+                                  "en": {
+                                    "translation": {
+                                      "complete": "Submission Complete",
+                                      "error": "Please fix the following errors before submitting.",
+                                      "required": "{{field}} is required",
+                                      "pattern": "{{field}} does not match the pattern {{pattern}}",
+                                      "minLength": "{{field}} must be longer than {{length}} characters.",
+                                      "maxLength": "{{field}} must be shorter than {{length}} characters.",
+                                      "minWords": "{{field}} must have more than {{length}} words.",
+                                      "maxWords": "{{field}} must have less than {{length}} words.",
+                                      "min": "{{field}} cannot be less than {{min}}.",
+                                      "max": "{{field}} cannot be greater than {{max}}.",
+                                      "minSelectedCount": "You must select at least {{minCount}} items to continue.",
+                                      "maxSelectedCount": "You can only select up to {{maxCount}} items to continue.",
+                                      "maxDate": "{{field}} should not contain date after {{- maxDate}}",
+                                      "minDate": "{{field}} should not contain date before {{- minDate}}",
+                                      "invalid_email": "{{field}} must be a valid email.",
+                                      "invalid_url": "{{field}} must be a valid url.",
+                                      "invalid_regex": "{{field}} does not match the pattern {{regex}}.",
+                                      "invalid_date": "{{field}} is not a valid date.",
+                                      "invalid_day": "{{field}} is not a valid day.",
+                                      "mask": "{{field}} does not match the mask.",
+                                      "stripe": "{{stripe}}",
+                                      "month": "Month",
+                                      "day": "Day",
+                                      "year": "Year",
+                                      "january": "January",
+                                      "february": "February",
+                                      "march": "March",
+                                      "april": "April",
+                                      "may": "May",
+                                      "june": "June",
+                                      "july": "July",
+                                      "august": "August",
+                                      "september": "September",
+                                      "october": "October",
+                                      "november": "November",
+                                      "december": "December",
+                                      "next": "Next",
+                                      "previous": "Previous",
+                                      "cancel": "Cancel",
+                                      "submit": "Submit Form"
+                                    }
+                                  },
+                                  "ru": {
+                                    "translation": {
+                                      "invalid_email": "{{field}} некорректный email.",
+                                      "next": "Далее",
+                                      "complete": "Сохранение прошло успешно",
+                                      "previous": "Назад",
+                                      "min": "{{field}} не может быть меньше чем {{min}}.",
+                                      "pattern": "{{field}} не совпадает с паттерном {{pattern}}",
+                                      "or": "или",
+                                      "minLength": "{{field}} должен быть длиннее чем {{length}} символов.",
+                                      "error": "Пожалуйста, исправьте следующие ошибки перед отправкой:",
+                                      "invalid_date": "{{field}} некорректная дата.",
+                                      "browse": "выбрать",
+                                      "maxLength": "{{field}} должен быть короче чем {{length}} символов.",
+                                      "max": "{{field}} не может быть больше чем {{max}}.",
+                                      "mask": "{{field}} не совпадает с маской.",
+                                      "invalid_regex": "{{field}} не соответствует паттерну {{regex}}.",
+                                      "File Name": "Имя файла",
+                                      "Type": "Тип",
+                                      "required": "Поле {{field}} не может быть пустым",
+                                      "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
+                                      "Size": "Размер"
+                                    }
+                                  }
+                                }
+                              }
                             },
                             "tags": [],
                             "placeholder": "",
@@ -1776,7 +2003,7 @@
                               "mousewheel": true,
                               "arrowkeys": true
                             },
-                            "id": "eq32q9"
+                            "id": "eq4tizr"
                           }
                         ],
                         "width": 6,
@@ -1785,8 +2012,8 @@
                         "pull": 0,
                         "type": "column",
                         "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
+                        "input": false,
+                        "key": "column4",
                         "tableView": true,
                         "label": "",
                         "xs": 0,
@@ -1835,7 +2062,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "egk9s2t"
+                        "id": "e7mslk4"
                       }
                     ],
                     "mask": false,
@@ -1891,7 +2118,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "e0qi9ve"
+                    "id": "eiee4x8"
                   },
                   {
                     "label": "idocs:legalEntity",
@@ -2008,7 +2235,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "e0kkf66"
+                    "id": "e4co2ref"
                   },
                   {
                     "useNegativeIndents": false,
@@ -2059,7 +2286,7 @@
                     },
                     "mask": false,
                     "inputType": "horizontalLine",
-                    "id": "e4n06pw"
+                    "id": "e53gw6d"
                   },
                   {
                     "label": "Columns",
@@ -2148,7 +2375,7 @@
                             "searchThreshold": 0.3,
                             "fuseOptions": {},
                             "customOptions": {},
-                            "id": "em85y5i"
+                            "id": "ehyci75"
                           }
                         ],
                         "width": 6,
@@ -2157,8 +2384,8 @@
                         "pull": 0,
                         "type": "column",
                         "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
+                        "input": false,
+                        "key": "column5",
                         "tableView": true,
                         "label": "",
                         "xs": 0,
@@ -2207,7 +2434,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "el5ohdl"
+                        "id": "en1j1g"
                       },
                       {
                         "components": [
@@ -2275,7 +2502,7 @@
                             "refreshOn": "",
                             "clearOnRefresh": false,
                             "validateOn": "change",
-                            "id": "er3tnx7"
+                            "id": "em2l297"
                           }
                         ],
                         "width": 6,
@@ -2284,8 +2511,8 @@
                         "pull": 0,
                         "type": "column",
                         "hideOnChildrenHidden": false,
-                        "input": true,
-                        "key": "",
+                        "input": false,
+                        "key": "column6",
                         "tableView": true,
                         "label": "",
                         "xs": 0,
@@ -2334,7 +2561,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e8vhd97"
+                        "id": "ef8tduk"
                       }
                     ],
                     "mask": false,
@@ -2390,7 +2617,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "etugtys"
+                    "id": "ek1eni9"
                   },
                   {
                     "label": "idocs:contractor",
@@ -2507,7 +2734,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "ekpwyvd"
+                    "id": "eucelce"
                   }
                 ],
                 "tags": [],
@@ -2549,7 +2776,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "eyluixw"
+                "id": "exit4t"
               }
             ],
             "width": 6,
@@ -2558,8 +2785,8 @@
             "pull": 0,
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column2",
             "tableView": true,
             "label": "",
             "xs": 0,
@@ -2608,7 +2835,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eet0kdg"
+            "id": "elwy0n"
           }
         ],
         "mask": false,
@@ -2664,7 +2891,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e0zb8vw"
+        "id": "e1n4wcc"
       },
       {
         "label": "Columns",
@@ -2757,7 +2984,7 @@
                 "mask": false,
                 "inputType": "asyncData",
                 "executionCondition": "",
-                "id": "eh8nn8"
+                "id": "es46dd"
               }
             ],
             "width": 6,
@@ -2766,8 +2993,8 @@
             "pull": 0,
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column1",
             "tableView": true,
             "label": "",
             "xs": 0,
@@ -2816,7 +3043,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "erpujn7"
+            "id": "env3td"
           },
           {
             "components": [
@@ -2906,7 +3133,7 @@
                 "mask": false,
                 "inputType": "asyncData",
                 "executionCondition": "",
-                "id": "eirc37"
+                "id": "ehfnd7p"
               }
             ],
             "width": 6,
@@ -2915,8 +3142,8 @@
             "pull": 0,
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column2",
             "tableView": true,
             "label": "",
             "xs": 0,
@@ -2965,7 +3192,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e5w78nl"
+            "id": "ecytmpr"
           },
           {
             "xs": 0,
@@ -2976,89 +3203,11 @@
             "classes": "",
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column3",
             "tableView": true,
             "label": "",
-            "components": [
-              {
-                "label": "1",
-                "labelPosition": "top",
-                "shortcut": "",
-                "hidden": true,
-                "mask": false,
-                "tableView": true,
-                "alwaysEnabled": false,
-                "defaultValue": false,
-                "encrypted": false,
-                "validate": {
-                  "customMessage": "",
-                  "json": "",
-                  "required": false,
-                  "custom": "",
-                  "customPrivate": false
-                },
-                "key": "1",
-                "properties": {},
-                "conditional": {
-                  "show": "",
-                  "when": "",
-                  "json": "",
-                  "eq": ""
-                },
-                "customConditional": "",
-                "logic": [
-                  {
-                    "name": "d",
-                    "trigger": {
-                      "type": "event",
-                      "event": "GenerationEvent"
-                    },
-                    "actions": [
-                      {
-                        "name": "sd",
-                        "type": "value",
-                        "value": "value = true;"
-                      }
-                    ]
-                  }
-                ],
-                "type": "checkbox",
-                "input": true,
-                "tags": [],
-                "placeholder": "",
-                "prefix": "",
-                "customClass": "",
-                "suffix": "",
-                "multiple": false,
-                "protected": false,
-                "unique": false,
-                "persistent": true,
-                "clearOnHide": true,
-                "dataGridLabel": true,
-                "labelWidth": 30,
-                "labelMargin": 3,
-                "description": "",
-                "errorLabel": "",
-                "tooltip": "",
-                "hideLabel": false,
-                "tabindex": "",
-                "disabled": false,
-                "autofocus": false,
-                "dbIndex": false,
-                "customDefaultValue": "",
-                "calculateValue": "",
-                "allowCalculateOverride": false,
-                "widget": null,
-                "refreshOn": "",
-                "clearOnRefresh": false,
-                "validateOn": "change",
-                "inputType": "checkbox",
-                "value": "",
-                "name": "",
-                "id": "ezga0jh"
-              }
-            ],
+            "components": [],
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -3099,7 +3248,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e4hcciw"
+            "id": "e9kecs"
           },
           {
             "xs": 0,
@@ -3110,8 +3259,8 @@
             "classes": "",
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column4",
             "tableView": true,
             "label": "",
             "components": [
@@ -3189,7 +3338,7 @@
                 "mask": false,
                 "inputType": "text",
                 "inputMask": "",
-                "id": "e8m7f7i"
+                "id": "ev7ns8"
               }
             ],
             "placeholder": "",
@@ -3232,7 +3381,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e6fb8hm"
+            "id": "e72hz9"
           },
           {
             "xs": 0,
@@ -3243,8 +3392,8 @@
             "classes": "",
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column5",
             "tableView": true,
             "label": "",
             "components": [
@@ -3332,7 +3481,7 @@
                 "inputType": "asyncData",
                 "eventName": "",
                 "executionCondition": "",
-                "id": "e8uv1x"
+                "id": "eh4wk5"
               }
             ],
             "placeholder": "",
@@ -3375,7 +3524,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "er3qih"
+            "id": "ep134k8"
           },
           {
             "xs": 0,
@@ -3386,8 +3535,8 @@
             "classes": "",
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column6",
             "tableView": true,
             "label": "",
             "components": [],
@@ -3431,7 +3580,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "es4qrjt"
+            "id": "e7jjvth"
           }
         ],
         "hidden": true,
@@ -3487,7 +3636,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e7hyxsj"
+        "id": "ewlhq2i"
       },
       {
         "label": "Columns",
@@ -3501,8 +3650,8 @@
             "pull": 0,
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column7",
             "tableView": true,
             "label": "",
             "placeholder": "",
@@ -3545,15 +3694,15 @@
               "when": null,
               "eq": ""
             },
-            "id": "e50y14b"
+            "id": "ex3dp1n"
           },
           {
             "width": 3,
             "offset": 0,
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column8",
             "tableView": true,
             "label": "",
             "push": 0,
@@ -3618,7 +3767,7 @@
                 "rightIcon": "",
                 "disableOnInvalid": false,
                 "theme": "default",
-                "id": "eobfjx"
+                "id": "ey7xagu"
               }
             ],
             "placeholder": "",
@@ -3661,7 +3810,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e1fsq6b"
+            "id": "e8671i"
           },
           {
             "components": [
@@ -3730,7 +3879,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "e2pfw9"
+                "id": "ea1rgxv"
               }
             ],
             "width": 3,
@@ -3739,8 +3888,8 @@
             "pull": 0,
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column9",
             "tableView": true,
             "label": "",
             "placeholder": "",
@@ -3783,14 +3932,14 @@
               "when": null,
               "eq": ""
             },
-            "id": "erg76gk"
+            "id": "eui1ogtl"
           },
           {
             "width": 3,
             "type": "column",
             "hideOnChildrenHidden": false,
-            "input": true,
-            "key": "",
+            "input": false,
+            "key": "column10",
             "tableView": true,
             "label": "",
             "offset": 0,
@@ -3837,7 +3986,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eekufor"
+            "id": "e1ch0v"
           }
         ],
         "autoAdjust": true,
@@ -3887,7 +4036,7 @@
           "eq": ""
         },
         "hideOnChildrenHidden": false,
-        "id": "efce8ym"
+        "id": "eo3bmt9"
       }
     ]
   },
