@@ -70,30 +70,16 @@ class StatusRecordsUtils {
         this.namespaceService = namespaceService;
     }
 
-    RecordsQueryResult<StatusDTO> getAvailableStatuses(String type) {
-        RecordsQueryResult<StatusDTO> availableCaseStatuses = getAvailableCaseStatuses(type);
-        if (availableCaseStatuses == null || availableCaseStatuses.getTotalCount() == 0) {
-            return getAvailableDocumentStatuses(type);
+    RecordsQueryResult<StatusDTO> getAllExistingStatuses(String type) {
+        RecordsQueryResult<StatusDTO> existingCaseStatuses = getAllExistingCaseStatuses(type);
+        if (existingCaseStatuses != null && existingCaseStatuses.getTotalCount() > 0) {
+            return existingCaseStatuses;
         } else {
-            return availableCaseStatuses;
+            return getAllExistingDocumentStatuses(type);
         }
     }
 
-    RecordsQueryResult<StatusDTO> getAvailableStatuses(RecordRef recordRef) {
-        if (recordRef == null || StringUtils.isBlank(recordRef.getId())) {
-            throw new IllegalArgumentException("You mus specify a record to find comments");
-        }
-
-        String id = recordRef.getId();
-        if (!NodeRef.isNodeRef(id)) {
-            throw new IllegalArgumentException("Record id should be NodeRef format");
-        }
-
-        QName type = nodeService.getType(new NodeRef(id));
-        return getAvailableStatuses(type.toPrefixString(namespaceService));
-    }
-
-    private RecordsQueryResult<StatusDTO> getAvailableCaseStatuses(String type) {
+    private RecordsQueryResult<StatusDTO> getAllExistingCaseStatuses(String type) {
         RecordsQueryResult<StatusDTO> result = new RecordsQueryResult<>();
 
         RecordsQuery findAllAvailableQuery = new RecordsQuery();
@@ -125,7 +111,7 @@ class StatusRecordsUtils {
         return result;
     }
 
-    private RecordsQueryResult<StatusDTO> getAvailableDocumentStatuses(String type) {
+    private RecordsQueryResult<StatusDTO> getAllExistingDocumentStatuses(String type) {
         RecordsQueryResult<StatusDTO> result = new RecordsQueryResult<>();
 
         String constraintKey = typeToConstraintMapping.getMapping().get(type);
@@ -148,6 +134,20 @@ class StatusRecordsUtils {
         result.setRecords(statuses);
 
         return result;
+    }
+
+    RecordsQueryResult<StatusDTO> getAllAvailableToChangeStatuses(RecordRef recordRef) {
+        if (recordRef == null || StringUtils.isBlank(recordRef.getId())) {
+            throw new IllegalArgumentException("You mus specify a record to find comments");
+        }
+
+        String id = recordRef.getId();
+        if (!NodeRef.isNodeRef(id)) {
+            throw new IllegalArgumentException("Record id should be NodeRef format");
+        }
+
+        //TODO: implement
+        return new RecordsQueryResult<>();
     }
 
     RecordsQueryResult<StatusDTO> getStatusByRecord(RecordRef recordRef) {

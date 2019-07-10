@@ -71,12 +71,12 @@ public class StatusRecords extends CrudRecordsDAO<StatusDTO> {
     public RecordsQueryResult<StatusDTO> getMetaValues(RecordsQuery recordsQuery) {
         StatusQuery query = recordsQuery.getQuery(StatusQuery.class);
 
-        if (StringUtils.isNotBlank(query.getAllAvailableByType())) {
-            return statusRecordsUtils.getAvailableStatuses(query.getAllAvailableByType());
+        if (StringUtils.isNotBlank(query.getAllExisting())) {
+            return statusRecordsUtils.getAllExistingStatuses(query.getAllExisting());
         }
 
-        if (query.getAllAvailableByRecord() != null) {
-            return statusRecordsUtils.getAvailableStatuses(query.getAllAvailableByRecord());
+        if (query.getAllAvailableToChange() != null) {
+            return statusRecordsUtils.getAllAvailableToChangeStatuses(query.getAllAvailableToChange());
         }
 
         return statusRecordsUtils.getStatusByRecord(query.getRecord());

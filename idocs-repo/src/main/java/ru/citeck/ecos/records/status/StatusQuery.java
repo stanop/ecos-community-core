@@ -9,6 +9,6 @@ import ru.citeck.ecos.records2.RecordRef;
 @Data
 class StatusQuery {
     private RecordRef record;
-    private String allAvailableByType;
-    private RecordRef allAvailableByRecord;
+    private String allExisting;
+    private RecordRef allAvailableToChange;
 }
