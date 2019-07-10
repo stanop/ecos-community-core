@@ -13,6 +13,7 @@ import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class EcosFormServiceImpl implements EcosFormService {
 
@@ -51,10 +52,24 @@ public class EcosFormServiceImpl implements EcosFormService {
         }
 
         return formKeys.stream()
-                       .map(this::getFormByKey)
-                       .filter(Optional::isPresent)
-                       .map(Optional::get)
-                       .findFirst();
+                .map(this::getFormByKey)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+    }
+
+    @Override
+    public List<EcosFormModel> getFormsByKeys(List<String> formKeys) {
+        if (formKeys == null || formKeys.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return formKeys.stream()
+                .distinct()
+                .map(this::getFormByKey)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -13,6 +13,8 @@ public interface EcosFormService {
 
     Optional<EcosFormModel> getFormByKey(List<String> formKeys);
 
+    List<EcosFormModel> getFormsByKeys(List<String> formKeys);
+
     Optional<EcosFormModel> getFormByRecord(RecordRef record, Boolean isViewMode);
 
     Optional<EcosFormModel> getFormById(String id);
