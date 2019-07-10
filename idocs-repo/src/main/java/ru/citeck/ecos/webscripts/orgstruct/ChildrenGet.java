@@ -28,6 +28,7 @@ import ru.citeck.ecos.model.OrgStructModel;
 import ru.citeck.ecos.orgstruct.OrgMetaService;
 import ru.citeck.ecos.orgstruct.OrgStructService;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.utils.ConfigUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -86,11 +87,11 @@ public class ChildrenGet extends AbstractWebScript {
         this.authenticationService = serviceRegistry.getAuthenticationService();
 
         authoritiesCache = CacheBuilder.newBuilder()
-                                       .expireAfterWrite(5, TimeUnit.MINUTES)
-                                       .maximumSize(200)
-                                       .build(CacheLoader.from(options ->
-                                           AuthenticationUtil.runAsSystem(() -> getAuthorities(options))
-                                       ));
+                .expireAfterWrite(5, TimeUnit.MINUTES)
+                .maximumSize(200)
+                .build(CacheLoader.from(options ->
+                        AuthenticationUtil.runAsSystem(() -> getAuthorities(options))
+                ));
     }
 
     @Override
@@ -205,16 +206,16 @@ public class ChildrenGet extends AbstractWebScript {
         Map<String, Boolean> inRootGroupCache = new HashMap<>();
 
         return authorities.filter(auth -> filterAuthority(auth, filterOptions, inRootGroupCache))
-                          .limit(filterOptions.limit)
-                          .collect(Collectors.toList());
+                .limit(filterOptions.limit)
+                .collect(Collectors.toList());
     }
 
     private Stream<Pair<NodeRef, String>> findAuthorities(FilterOptions filterOptions) {
 
         FTSQuery query = FTSQuery.createRaw()
-                                 .eventual()
-                                 .permissionsMode(PermissionEvaluationMode.NONE)
-                                 .maxItems(100);
+                .eventual()
+                .permissionsMode(PermissionEvaluationMode.NONE)
+                .maxItems(100);
 
         boolean notEmpty = false;
 
@@ -222,33 +223,33 @@ public class ChildrenGet extends AbstractWebScript {
         if (filterOptions.group) {
             notEmpty = true;
             query.open()
-                     .value(ContentModel.PROP_AUTHORITY_DISPLAY_NAME, filter).or()
-                     .value(ContentModel.PROP_AUTHORITY_NAME, filter)
-                 .close();
+                    .value(ContentModel.PROP_AUTHORITY_DISPLAY_NAME, filter).or()
+                    .value(ContentModel.PROP_AUTHORITY_NAME, filter)
+                    .close();
         }
         if (filterOptions.user) {
             if (notEmpty) {
                 query.or();
             }
             query.open()
-                 .value(ContentModel.PROP_USERNAME, filterOptions.filter)
-                 .or();
+                    .value(ContentModel.PROP_USERNAME, filterOptions.filter)
+                    .or();
             if (filterOptions.filterTokens.size() == 2) {
                 List<String> tokens = new ArrayList<>(filterOptions.filterTokens);
                 query.value(ContentModel.PROP_FIRSTNAME, tokens.get(0)).and()
-                     .value(ContentModel.PROP_LASTNAME, tokens.get(1)).or()
-                     .value(ContentModel.PROP_FIRSTNAME, tokens.get(1)).and()
-                     .value(ContentModel.PROP_LASTNAME, tokens.get(0));
+                        .value(ContentModel.PROP_LASTNAME, tokens.get(1)).or()
+                        .value(ContentModel.PROP_FIRSTNAME, tokens.get(1)).and()
+                        .value(ContentModel.PROP_LASTNAME, tokens.get(0));
             } else {
                 query.value(ContentModel.PROP_FIRSTNAME, filter).or()
-                     .value(ContentModel.PROP_LASTNAME, filter);
+                        .value(ContentModel.PROP_LASTNAME, filter);
             }
             query.close();
         }
 
         return query.query(searchService)
-                    .stream()
-                    .map(this::getAuthorityNameRef);
+                .stream()
+                .map(this::getAuthorityNameRef);
     }
 
     private boolean filterAuthority(Pair<NodeRef, String> authority,
@@ -363,10 +364,6 @@ public class ChildrenGet extends AbstractWebScript {
         return Collections.emptySet();
     }
 
-    private Boolean strToBool(String value, Boolean def) {
-        return StringUtils.isNotBlank(value) ? !Boolean.FALSE.toString().equals(value) : def;
-    }
-
     private FilterOptions getFilterOptions(WebScriptRequest req) {
 
         Map<String, String> templateVars = req.getServiceMatch().getTemplateVars();
@@ -383,12 +380,12 @@ public class ChildrenGet extends AbstractWebScript {
         FilterOptions options = new FilterOptions();
 
         Boolean defaultEnabled = !Boolean.FALSE.toString().equals(req.getParameter(PARAM_DEFAULT));
-        
+
         options.rootGroup = rootGroupName;
-        options.role = strToBool(req.getParameter(PARAM_ROLE), defaultEnabled);
-        options.user = strToBool(req.getParameter(PARAM_USER), defaultEnabled);
-        options.group = strToBool(req.getParameter(PARAM_GROUP), defaultEnabled);
-        options.branch = strToBool(req.getParameter(PARAM_BRANCH), defaultEnabled);
+        options.role = ConfigUtils.strToBool(req.getParameter(PARAM_ROLE), defaultEnabled);
+        options.user = ConfigUtils.strToBool(req.getParameter(PARAM_USER), defaultEnabled);
+        options.group = ConfigUtils.strToBool(req.getParameter(PARAM_GROUP), defaultEnabled);
+        options.branch = ConfigUtils.strToBool(req.getParameter(PARAM_BRANCH), defaultEnabled);
         options.limit = DEFAULT_RESULTS_LIMIT;
         options.subTypes = strToSet(req.getParameter(PARAM_SUB_TYPES));
 
@@ -411,26 +408,26 @@ public class ChildrenGet extends AbstractWebScript {
         if (StringUtils.isNotBlank(filter)) {
             options.filterTokens =
                     Arrays.stream(options.filter.split("(?<!\\\\) "))
-                          .map(addStars)
-                          .collect(Collectors.toSet());
+                            .map(addStars)
+                            .collect(Collectors.toSet());
         } else {
             options.filterTokens = Collections.emptySet();
         }
 
         String currentAuthority = authenticationService.getCurrentUserName();
         options.userIsAdmin = StringUtils.isNotBlank(currentAuthority) &&
-                              authorityService.isAdminAuthority(currentAuthority);
+                authorityService.isAdminAuthority(currentAuthority);
 
         options.showDisabled = false;
         Boolean hideInactiveForAll =
-                strToBool((String) ecosConfigService.getParamValue(CONFIG_KEY_HIDE_INACTIVE_FOR_ALL), null);
+                ConfigUtils.strToBool((String) ecosConfigService.getParamValue(CONFIG_KEY_HIDE_INACTIVE_FOR_ALL), null);
 
-        if(hideInactiveForAll == null || !hideInactiveForAll) {
+        if (hideInactiveForAll == null || !hideInactiveForAll) {
             Boolean showInactiveOnlyForAdmin =
-                    strToBool((String) ecosConfigService.getParamValue(CONFIG_KEY_SHOW_INACTIVE), null);
+                    ConfigUtils.strToBool((String) ecosConfigService.getParamValue(CONFIG_KEY_SHOW_INACTIVE), null);
 
             if (showInactiveOnlyForAdmin == null || !showInactiveOnlyForAdmin) {
-                options.showDisabled = strToBool(req.getParameter(PARAM_SHOW_DISABLED), defaultEnabled);
+                options.showDisabled = ConfigUtils.strToBool(req.getParameter(PARAM_SHOW_DISABLED), defaultEnabled);
             } else {
                 options.showDisabled = options.userIsAdmin;
             }
@@ -467,8 +464,8 @@ public class ChildrenGet extends AbstractWebScript {
             }
             RequestParams that = (RequestParams) o;
             return recurse == that.recurse &&
-                   Objects.equals(groupRef, that.groupRef) &&
-                   filterOptions.equals(that.filterOptions);
+                    Objects.equals(groupRef, that.groupRef) &&
+                    filterOptions.equals(that.filterOptions);
         }
 
         @Override
@@ -508,16 +505,16 @@ public class ChildrenGet extends AbstractWebScript {
             FilterOptions that = (FilterOptions) o;
 
             return userIsAdmin == that.userIsAdmin &&
-                   branch == that.branch &&
-                   role == that.role &&
-                   group == that.group &&
-                   user == that.user &&
-                   showDisabled == that.showDisabled &&
-                   limit == that.limit &&
-                   Objects.equals(filter, that.filter) &&
-                   Objects.equals(rootGroup, that.rootGroup) &&
-                   subTypes.equals(that.subTypes) &&
-                   excludeAuthorities.equals(that.excludeAuthorities);
+                    branch == that.branch &&
+                    role == that.role &&
+                    group == that.group &&
+                    user == that.user &&
+                    showDisabled == that.showDisabled &&
+                    limit == that.limit &&
+                    Objects.equals(filter, that.filter) &&
+                    Objects.equals(rootGroup, that.rootGroup) &&
+                    subTypes.equals(that.subTypes) &&
+                    excludeAuthorities.equals(that.excludeAuthorities);
         }
 
         @Override
@@ -585,6 +582,7 @@ public class ChildrenGet extends AbstractWebScript {
             super(AuthorityType.GROUP.toString());
             groupType = type;
         }
+
         GroupAuthority() {
             this("group");
         }
