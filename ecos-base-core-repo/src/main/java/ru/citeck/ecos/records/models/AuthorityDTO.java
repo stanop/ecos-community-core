@@ -3,6 +3,9 @@ package ru.citeck.ecos.records.models;
 import lombok.Data;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Roman Makarskiy
  */
@@ -28,5 +31,7 @@ public class AuthorityDTO {
 
     @MetaAtt(".disp")
     private String displayName;
+
+    private List<UserDTO> containedUsers = new ArrayList<>();
 
 }

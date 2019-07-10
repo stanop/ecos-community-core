@@ -231,6 +231,9 @@ class JournalServiceImpl implements JournalService {
 
     @Override
     public JournalType getJournalType(String id) {
+        if (id == null) {
+            return null;
+        }
         return journalTypes.get(id);
     }
 

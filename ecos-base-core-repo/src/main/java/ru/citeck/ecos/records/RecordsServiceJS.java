@@ -5,13 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.action.group.ActionResult;
 import ru.citeck.ecos.action.group.ActionResults;
 import ru.citeck.ecos.action.group.GroupActionConfig;
-import ru.citeck.ecos.records.rest.RecordsQueryPost;
 import ru.citeck.ecos.records2.IterableRecords;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.rest.QueryBody;
-import ru.citeck.ecos.records2.request.rest.RestQueryHandler;
+import ru.citeck.ecos.records2.request.rest.RestHandler;
 import ru.citeck.ecos.records2.request.result.RecordsResult;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 import ru.citeck.ecos.utils.JsUtils;
@@ -25,7 +24,7 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
     @Autowired
     private RecordsServiceImpl recordsService;
     @Autowired
-    private RestQueryHandler restQueryHandler;
+    private RestHandler restHandler;
 
     private JsUtils jsUtils;
 
@@ -89,7 +88,7 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
 
     public Object getRecords(Object recordsQuery) {
         QueryBody request = jsUtils.toJava(recordsQuery, QueryBody.class);
-        return restQueryHandler.queryRecords(request);
+        return restHandler.queryRecords(request);
     }
 
     public <T> RecordsResult<T> getRecords(Object recordsQuery, Class<T> schemaClass) {
@@ -113,8 +112,8 @@ public class RecordsServiceJS extends AlfrescoScopableProcessorExtension {
     }
 
     @Autowired
-    public void setRestQueryHandler(RestQueryHandler restQueryHandler) {
-        this.restQueryHandler = restQueryHandler;
+    public void setRestQueryHandler(RestHandler restHandler) {
+        this.restHandler = restHandler;
     }
 
     @Autowired

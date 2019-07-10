@@ -140,7 +140,9 @@ CreateVariant
     .property('isDefault', b)
     .property('journal', Journal)
     .property('createArguments', s)
+    .property('formKey', s)
     .property('recordRef', s)
+    .property('attributes', o)
 
     .method('onClick', function () {
 
@@ -159,7 +161,7 @@ CreateVariant
             } else {
                 window.location = self.link();
             }
-        }, redirectionMethod);
+        }, redirectionMethod, this.formKey(), this.attributes());
     })
 
     .computed('link', function () {
@@ -632,7 +634,7 @@ Journal
 
     .computed('availableCreateVariants', function() {
         return _.filter(this.createVariants(), function(variant) {
-            return variant.canCreate();
+            return variant.canCreate() !== false;
         });
     })
 

@@ -10,7 +10,8 @@ import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.RecordsServiceFactory;
 import ru.citeck.ecos.records2.graphql.RecordsMetaGql;
 import ru.citeck.ecos.records2.meta.RecordsMetaService;
-import ru.citeck.ecos.records2.request.rest.RestQueryHandler;
+import ru.citeck.ecos.records2.request.rest.RestHandler;
+import ru.citeck.ecos.records2.resolver.RecordsResolver;
 import ru.citeck.ecos.records2.source.common.group.RecordsGroupDAO;
 
 @Configuration
@@ -18,40 +19,54 @@ public class RecordsConfiguration extends RecordsServiceFactory {
 
     private ServiceRegistry serviceRegistry;
     private RecordsServiceImpl recordsService;
+    private QueryLangService queryLangService;
+    private PredicateService predicateService;
+    private RecordsMetaService recordsMetaService;
 
     @Bean
     public RecordsService createRecordsServiceBean(ServiceRegistry serviceRegistry,
                                                    RecordsMetaService recordsMetaService,
-                                                   PredicateService predicateService,
-                                                   QueryLangService queryLangService) {
+                                                   RecordsResolver recordsResolver) {
 
         this.serviceRegistry = serviceRegistry;
 
-        recordsService = new RecordsServiceImpl(recordsMetaService,
-                                                predicateService,
-                                                queryLangService);
+        recordsService = new RecordsServiceImpl(recordsMetaService, recordsResolver);
         recordsService.register(new RecordsGroupDAO());
         return recordsService;
     }
 
     @Bean
+    public RecordsResolver createRecordsResolver() {
+        return super.createRecordsResolver();
+    }
+
+    @Bean
     public QueryLangService createQueryLangService() {
-        return super.createQueryLangService();
+        if (queryLangService == null) {
+            queryLangService = super.createQueryLangService();
+        }
+        return queryLangService;
     }
 
     @Bean
     public PredicateService createPredicateService() {
-        return super.createPredicateService();
+        if (predicateService == null) {
+            predicateService = super.createPredicateService();
+        }
+        return predicateService;
     }
 
     @Bean
     public RecordsMetaService createRecordsMetaService() {
-        return super.createRecordsMetaService();
+        if (recordsMetaService == null) {
+            recordsMetaService = super.createRecordsMetaService();
+        }
+        return recordsMetaService;
     }
 
     @Bean
-    public RestQueryHandler createRestQueryHandler(RecordsService recordsService) {
-        return new RestQueryHandler(recordsService);
+    public RestHandler createRestHandler(RecordsService recordsService) {
+        return new RestHandler(recordsService);
     }
 
     @Override

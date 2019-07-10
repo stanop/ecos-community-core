@@ -86,6 +86,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CreateVariants }
+     * 
+     */
+    public CreateVariants createCreateVariants() {
+        return new CreateVariants();
+    }
+
+    /**
      * Create an instance of {@link GroupAction }
      * 
      */
@@ -99,6 +107,14 @@ public class ObjectFactory {
      */
     public GroupBy createGroupBy() {
         return new GroupBy();
+    }
+
+    /**
+     * Create an instance of {@link CreateVariant }
+     * 
+     */
+    public CreateVariant createCreateVariant() {
+        return new CreateVariant();
     }
 
     /**

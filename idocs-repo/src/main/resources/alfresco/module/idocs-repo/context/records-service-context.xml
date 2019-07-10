@@ -3,14 +3,18 @@
 
 <beans>
 
-    <bean id="ru.citeck.ecos.records.tasksRecordsDAO" class="ru.citeck.ecos.records.source.common.ExactCriteriaRecordsDAO">
-        <property name="id" value="workflow-tasks" />
-        <property name="targetDAO" ref="alfNodesRecordsDAO" />
+    <bean id="ru.citeck.ecos.records.tasksRecordsDAO"
+          class="ru.citeck.ecos.records.source.common.ExactCriteriaRecordsDAO">
+        <property name="id" value="workflow-tasks"/>
+        <property name="targetDAO" ref="alfNodesRecordsDAO"/>
         <property name="filteredFields">
             <list>
                 <value>bpm:completionDate</value>
             </list>
         </property>
     </bean>
+
+    <bean id="records.document-status.type-to-constraint.mappingRegistry"
+          class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
 
 </beans>
