@@ -10,6 +10,7 @@ public class BpmModel {
     public static final QName PROPERTY_COMMENT = QName.createQName(BPM_NAMESPASE, "comment");
     public static final QName PROPERTY_DESCRIPTION = QName.createQName(BPM_NAMESPASE, "description");
     public static final QName PROPERTY_STATUS = QName.createQName(BPM_NAMESPASE, "status");
+    public static final QName PROPERTY_PRIORITY = QName.createQName(BPM_NAMESPASE, "priority");
 
     public static final QName TYPE_APPROVAL_TOKEN = QName.createQName(BPM_NAMESPASE, "approvalToken");
     public static final QName PROPERTY_TOKEN_VALUE = QName.createQName(BPM_NAMESPASE, "tokenValue");
