@@ -105,7 +105,7 @@ const StartMessage = connect(
 
 const PROCESS_MODEL_NODE_TYPE = 'ecosbpm:processModel';
 const EDITOR_PAGE_CONTEXT = '/share/page/bpmn-editor/';
-const DESIGNER_PAGE_CONTEXT = '/share/page/bpmn-designer';
+const DESIGNER_PAGE_CONTEXT = '/v2/bpmn-designer';
 
 class TopPanelComponent extends React.Component {
     render() {
