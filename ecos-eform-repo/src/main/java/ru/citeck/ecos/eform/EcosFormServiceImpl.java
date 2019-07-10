@@ -3,6 +3,7 @@ package ru.citeck.ecos.eform;
 import lombok.Getter;
 import lombok.Setter;
 import org.alfresco.util.GUID;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.eform.model.EcosFormModel;
 import ru.citeck.ecos.eform.provider.FormProvider;
@@ -46,8 +47,7 @@ public class EcosFormServiceImpl implements EcosFormService {
 
     @Override
     public Optional<EcosFormModel> getFormByKey(List<String> formKeys) {
-
-        if (formKeys == null || formKeys.isEmpty()) {
+        if (CollectionUtils.isEmpty(formKeys)) {
             return Optional.empty();
         }
 
@@ -60,7 +60,7 @@ public class EcosFormServiceImpl implements EcosFormService {
 
     @Override
     public List<EcosFormModel> getFormsByKeys(List<String> formKeys) {
-        if (formKeys == null || formKeys.isEmpty()) {
+        if (CollectionUtils.isEmpty(formKeys)) {
             return new ArrayList<>();
         }
 
