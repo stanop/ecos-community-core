@@ -71,15 +71,12 @@ class StatusRecordsUtils {
     }
 
     RecordsQueryResult<StatusDTO> getAvailableStatuses(String type) {
-        RecordsQueryResult<StatusDTO> availableStatuses;
-
-        try {
-            availableStatuses = getAvailableCaseStatuses(type);
-        } catch (ClassCastException ex) { //TODO: hack to avoid bug in recordsService. Fix NullNode in recordsService?
-            availableStatuses = getAvailableDocumentStatuses(type);
+        RecordsQueryResult<StatusDTO> availableCaseStatuses = getAvailableCaseStatuses(type);
+        if (availableCaseStatuses == null || availableCaseStatuses.getTotalCount() == 0) {
+            return getAvailableDocumentStatuses(type);
+        } else {
+            return availableCaseStatuses;
         }
-
-        return availableStatuses;
     }
 
     RecordsQueryResult<StatusDTO> getAvailableStatuses(RecordRef recordRef) {
