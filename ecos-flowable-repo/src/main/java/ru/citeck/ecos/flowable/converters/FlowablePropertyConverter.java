@@ -26,6 +26,7 @@ import org.flowable.identitylink.service.IdentityLinkType;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.flowable.FlowableWorkflowComponent;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
@@ -35,96 +36,34 @@ import ru.citeck.ecos.flowable.services.FlowableTaskService;
 import ru.citeck.ecos.flowable.services.FlowableTaskTypeManager;
 import ru.citeck.ecos.flowable.utils.FlowableWorkflowPropertyHandlerRegistry;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
+import ru.citeck.ecos.utils.WorkflowUtils;
 
 import java.io.Serializable;
 import java.util.*;
 
-/**
- * Flowable property converter
- */
 public class FlowablePropertyConverter {
 
-    /**
-     * Constants
-     */
     private static final String FLOWABLE_ENGINE_NAME = "flowable";
     private static final String FLOWABLE_INITIATOR = "$INITIATOR";
     private static final String TASK_TITLE_KEY_TEMPLATE = "flowable.task.%s.title";
+    private static final int DEFAULT_WORKFLOW_TASK_PRIORITY = 2;
 
-    /**
-     * Task service
-     */
     private TaskService taskService;
-
-    /**
-     * Workflow object factory
-     */
     private WorkflowObjectFactory factory;
-
-    /**
-     * Workflow authority manager
-     */
     private WorkflowAuthorityManager authorityManager;
-
-    /**
-     * Tenant service
-     */
     private TenantService tenantService;
-
-    /**
-     * Message service
-     */
     private MessageService messageService;
-
-    /**
-     * Dictionary service
-     */
     private DictionaryService dictionaryService;
-
-    /**
-     * Namespace prefix resolver
-     */
     private NamespacePrefixResolver namespaceService;
-
-    /**
-     * Node service
-     */
     private NodeService nodeService;
-
-    /**
-     * Flowable task service
-     */
     private FlowableTaskService flowableTaskService;
-
-    /**
-     * Flowable history service
-     */
     private FlowableHistoryService flowableHistoryService;
-
-    /**
-     * Flowable process definition service
-     */
     private FlowableProcessDefinitionService flowableProcessDefinitionService;
-
-    /**
-     * Flowable workflow component
-     */
     private FlowableWorkflowComponent flowableWorkflowComponent;
-
-    /**
-     * Type manager
-     */
     private FlowableTaskTypeManager typeManager;
-
-    /**
-     * Handler registry
-     */
     private FlowableWorkflowPropertyHandlerRegistry handlerRegistry;
-
-    /**
-     * Person service
-     */
     private PersonService personService;
+    private WorkflowUtils workflowUtils;
 
     /**
      * Init
@@ -157,7 +96,7 @@ public class FlowablePropertyConverter {
         properties.put(WorkflowModel.PROP_TASK_ID, task.getId());
         properties.put(WorkflowModel.PROP_START_DATE, task.getCreateTime());
         properties.put(WorkflowModel.PROP_COMPLETION_DATE, null);
-        properties.put(WorkflowModel.PROP_PRIORITY, task.getPriority());
+        properties.put(WorkflowModel.PROP_PRIORITY, workflowUtils.convertPriorityBpmnToWorkflowTask(task.getPriority()));
         properties.put(ContentModel.PROP_CREATED, task.getCreateTime());
         properties.put(ContentModel.PROP_OWNER, getOwner(task));
         if (task.getName() != null) {
@@ -228,7 +167,7 @@ public class FlowablePropertyConverter {
         properties.put(WorkflowModel.PROP_TASK_ID, task.getId());
         properties.put(WorkflowModel.PROP_START_DATE, task.getCreateTime());
         properties.put(WorkflowModel.PROP_COMPLETION_DATE, null);
-        properties.put(WorkflowModel.PROP_PRIORITY, task.getPriority());
+        properties.put(WorkflowModel.PROP_PRIORITY, workflowUtils.convertPriorityBpmnToWorkflowTask(task.getPriority()));
         properties.put(ContentModel.PROP_CREATED, task.getCreateTime());
         properties.put(ContentModel.PROP_OWNER, getOwner(task));
         if (!properties.containsKey(WorkflowModel.PROP_DUE_DATE)) {
@@ -315,16 +254,11 @@ public class FlowablePropertyConverter {
         if (currentTask != null) {
             return getTaskProperties(currentTask);
         } else {
-            Map<QName, Serializable> properties = new HashMap<>();
-
-            properties.put(WorkflowModel.PROP_COMPLETION_DATE, task.getEndTime());
-
-            return properties;
+            return getHistoricTaskProperties(task);
         }
     }
 
-    //TODO: fix priority
-    /*private Map<QName, Serializable> getHistoricTaskProperties(HistoricTaskInstance task) {
+    private Map<QName, Serializable> getHistoricTaskProperties(HistoricTaskInstance task) {
         Map<String, Object> historicTaskVariables = flowableHistoryService.getHistoricTaskVariables(task.getId());
 
         String formKey = (String) historicTaskVariables.get(FlowableConstants.PROP_TASK_FORM_KEY);
@@ -341,7 +275,7 @@ public class FlowablePropertyConverter {
         properties.put(WorkflowModel.PROP_START_DATE, task.getCreateTime());
         properties.put(WorkflowModel.PROP_DUE_DATE, task.getDueDate());
         properties.put(WorkflowModel.PROP_COMPLETION_DATE, task.getEndTime());
-        properties.put(WorkflowModel.PROP_PRIORITY, task.getPriority());
+        properties.put(WorkflowModel.PROP_PRIORITY, workflowUtils.convertPriorityBpmnToWorkflowTask(task.getPriority()));
         properties.put(ContentModel.PROP_CREATED, task.getCreateTime());
         properties.put(ContentModel.PROP_OWNER, task.getAssignee());
 
@@ -366,7 +300,7 @@ public class FlowablePropertyConverter {
         properties.put(WorkflowModel.ASSOC_POOLED_ACTORS, (Serializable) pooledActors);
 
         return filterTaskProperties(properties);
-    }*/
+    }
 
     /**
      * Map pooled actors
@@ -526,19 +460,12 @@ public class FlowablePropertyConverter {
             }
         }
 
-        PropertyDefinition priorDef = propertyDefs.get(WorkflowModel.PROP_PRIORITY);
         Serializable existingValue = existingValues.get(WorkflowModel.PROP_PRIORITY);
-        try {
-            if (priorDef != null) {
-                for (ConstraintDefinition constraintDef : priorDef.getConstraints()) {
-                    constraintDef.getConstraint().evaluate(existingValue);
-                }
-            }
-        } catch (ConstraintException ce) {
-            if (priorDef != null) {
-                Integer defaultVal = Integer.valueOf(priorDef.getDefaultValue());
-                defaultValues.put(WorkflowModel.PROP_PRIORITY, defaultVal);
-            }
+        if (existingValue != null) {
+            Integer priority = (Integer) existingValue;
+            defaultValues.put(WorkflowModel.PROP_PRIORITY, workflowUtils.convertPriorityBpmnToWorkflowTask(priority));
+        } else {
+            defaultValues.put(WorkflowModel.PROP_PRIORITY, DEFAULT_WORKFLOW_TASK_PRIORITY);
         }
 
         String description = (String) existingValues.get(WorkflowModel.PROP_DESCRIPTION);
@@ -836,5 +763,10 @@ public class FlowablePropertyConverter {
      */
     public WorkflowObjectFactory getFactory() {
         return factory;
+    }
+
+    @Autowired
+    public void setWorkflowUtils(WorkflowUtils workflowUtils) {
+        this.workflowUtils = workflowUtils;
     }
 }

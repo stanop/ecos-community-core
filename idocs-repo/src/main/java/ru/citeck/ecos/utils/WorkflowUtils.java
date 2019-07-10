@@ -21,6 +21,8 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -246,6 +248,17 @@ public class WorkflowUtils {
         }
 
         return documentRef;
+    }
+
+    public int convertPriorityBpmnToWorkflowTask(int bpmnPriority) {
+        if (bpmnPriority <= 3) {
+            return bpmnPriority;
+        }
+
+        int min = Math.min(bpmnPriority, 100);
+        BigDecimal multiples = new BigDecimal(3).multiply(new BigDecimal(min));
+        BigDecimal res = multiples.divide(new BigDecimal(100), RoundingMode.HALF_UP);
+        return res.intValue() == 0 ? 1 : res.intValue();
     }
 
 }
