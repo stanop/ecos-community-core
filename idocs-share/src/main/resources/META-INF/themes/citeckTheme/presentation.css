@@ -2062,6 +2062,7 @@ body.alfresco-guest
 #bd .toolbar.userprofile {
   padding-top: 10px;
   padding-bottom: 10px;
+  min-height: 3em;
 }
 
 .search .itemname a
