@@ -19,6 +19,7 @@ import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
+import ru.citeck.ecos.records2.graphql.meta.value.InnerMetaValue;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records2.request.delete.RecordsDelResult;
@@ -255,7 +256,9 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         public <T extends GqlContext> void init(T context, MetaField field) {
             Map<String, String> documentAttributes = new HashMap<>();
             RecordRef documentRef = getDocumentRef();
-            for (String att : field.getInnerAttributes()) {
+            Map<String, String> attributesMap = field.getInnerAttributesMap();
+
+            for (String att : attributesMap.keySet()) {
                 switch (att) {
                     case ATT_DOC_SUM:
                         if (documentRef != null) {
@@ -279,14 +282,17 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                         break;
                     default:
                         if (att.startsWith(DOCUMENT_FIELD_PREFIX)) {
-                            documentAttributes.put(att, getEcmFieldName(att));
+                            String ecmFieldName = getEcmFieldName(att);
+                            String fieldAtt = attributesMap.get(att).replace(att, ecmFieldName);
+
+                            documentAttributes.put(att, fieldAtt);
                         }
                 }
             }
             if (documentAttributes.isEmpty() || documentRef == null) {
                 documentInfo = new RecordMeta();
             } else {
-                documentInfo = recordsService.getAttributes(getDocumentRef(), documentAttributes);
+                documentInfo = recordsService.getRawAttributes(getDocumentRef(), documentAttributes);
             }
         }
 
@@ -303,7 +309,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         public Object getAttribute(String name, MetaField field) {
 
             if (documentInfo.has(name)) {
-                return documentInfo.get(name);
+                return new InnerMetaValue(documentInfo.get(name));
             }
 
             if (RecordConstants.ATT_FORM_KEY.equals(name)) {
