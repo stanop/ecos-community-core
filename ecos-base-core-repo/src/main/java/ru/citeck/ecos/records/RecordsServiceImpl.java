@@ -11,6 +11,7 @@ import ru.citeck.ecos.records2.IterableRecords;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.meta.RecordsMetaService;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
+import ru.citeck.ecos.records2.resolver.RecordsResolver;
 import ru.citeck.ecos.records2.source.dao.*;
 
 import java.util.*;
@@ -22,9 +23,8 @@ public class RecordsServiceImpl extends ru.citeck.ecos.records2.RecordsServiceIm
     private Map<String, RecordsActionExecutor> actionExecutors = new ConcurrentHashMap<>();
 
     public RecordsServiceImpl(RecordsMetaService recordsMetaService,
-                              PredicateService predicateService,
-                              QueryLangService queryLangService) {
-        super(recordsMetaService, predicateService, queryLangService);
+                              RecordsResolver recordsResolver) {
+        super(recordsMetaService, recordsResolver);
     }
 
     public ActionResults<RecordRef> executeAction(Collection<RecordRef> records,
@@ -34,7 +34,7 @@ public class RecordsServiceImpl extends ru.citeck.ecos.records2.RecordsServiceIm
 
         RecordsUtils.groupRefBySource(records).forEach((sourceId, refs) -> {
 
-            Optional<RecordsActionExecutor> source = getRecordsDAO(sourceId, actionExecutors);
+            Optional<RecordsActionExecutor> source = Optional.ofNullable(actionExecutors.get(sourceId));
 
             if (source.isPresent()) {
 
