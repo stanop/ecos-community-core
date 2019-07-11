@@ -67,8 +67,11 @@ public class SiteRecordsDAO extends LocalRecordsDAO
         @Override
         public Object getAttribute(String name, MetaField field) {
 
-            if (RecordConstants.ATT_DASHBOARD_KEY.equals(name)) {
-                return "site_" + id;
+            switch (name) {
+                case RecordConstants.ATT_DASHBOARD_KEY:
+                    return "site_" + id;
+                case RecordConstants.ATT_DASHBOARD_TYPE:
+                    return "site-dashboard";
             }
 
             return null;

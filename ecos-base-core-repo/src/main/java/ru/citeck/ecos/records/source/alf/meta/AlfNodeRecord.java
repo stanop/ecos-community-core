@@ -168,6 +168,11 @@ public class AlfNodeRecord implements MetaValue {
                 attribute = MetaUtils.toMetaValues(keys, context, field);
                 break;
 
+            case RecordConstants.ATT_DASHBOARD_TYPE:
+
+                attribute = Collections.singletonList(new AlfNodeAttValue("case-details"));
+                break;
+
             case ATTR_PERMISSIONS:
 
                 return Collections.singletonList(getPermissions());
