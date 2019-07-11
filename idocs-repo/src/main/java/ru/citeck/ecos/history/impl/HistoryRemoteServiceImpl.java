@@ -89,9 +89,9 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final String INSERT_RECORD_PATH = "/history_records/insert_record";
     private static final String INSERT_RECORDS_PATH = "/history_records/insert_records";
 
-    private static final String GET_BY_USERNAME = "/history_records/by_username/%s";
-    private static final String GET_BY_USERNAME_START_DATE = "/history_records/by_username/%s/start_date/%s";
-    private static final String GET_BY_USERNAME_START_END_DATE = "/history_records/by_username/%s/start_date/%s/end_date/%s";
+    private static final String GET_BY_USERNAME = "/history_records/by_username/%s/limit/%d";
+    private static final String GET_BY_USERNAME_START_DATE = "/history_records/by_username/%s/start_date/%s/limit/%d";
+    private static final String GET_BY_USERNAME_START_END_DATE = "/history_records/by_username/%s/start_date/%s/end_date/%s/limit/%d";
 
     /**
      * Logger
@@ -136,11 +136,11 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     /**
      * Get history records by username
      *
-     * @param username  Username
+     * @param username Username
      * @return List of maps
      */
-    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username) {
-        return getHistoryRecordsByUsernameWithDateLimit(username, null, null);
+    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, Integer limit) {
+        return getHistoryRecordsByUsernameWithDateLimit(username, null, null, limit);
     }
 
     /**
@@ -150,8 +150,8 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      * @param startDate Start date. May be null or empty string
      * @return List of maps
      */
-    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate) {
-        return getHistoryRecordsByUsernameWithDateLimit(username, startDate, null);
+    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, Integer limit) {
+        return getHistoryRecordsByUsernameWithDateLimit(username, startDate, null, limit);
     }
 
     /**
@@ -162,18 +162,18 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      * @param endDate   End date. May be null or empty string
      * @return List of maps
      */
-    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, String endDate) {
+    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, String endDate, Integer limit) {
         if (StringUtils.isBlank(username)) {
             return Collections.emptyList();
         }
 
-        String url = String.format(GET_BY_USERNAME, username);
+        String url = String.format(GET_BY_USERNAME, username, limit);
         if (!StringUtils.isBlank(startDate)) {
-            url = String.format(GET_BY_USERNAME_START_DATE, username, startDate);
+            url = String.format(GET_BY_USERNAME_START_DATE, username, startDate, limit);
         }
 
         if (!StringUtils.isBlank(startDate) && !StringUtils.isBlank(endDate)) {
-            url = String.format(GET_BY_USERNAME_START_END_DATE, username, startDate, endDate);
+            url = String.format(GET_BY_USERNAME_START_END_DATE, username, startDate, endDate, limit);
         }
 
         return restTemplate.getForObject(properties.getProperty(HISTORY_SERVICE_HOST) + url, List.class);

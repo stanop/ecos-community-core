@@ -24,7 +24,7 @@ public interface HistoryRemoteService {
      * @param username  Username
      * @return List of maps
      */
-    List<Map> getHistoryRecordsByUsernameWithDateLimit(String username);
+    List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, Integer limit);
 
     /**
      * Get history records by username. Supports filtering by start date
@@ -33,7 +33,7 @@ public interface HistoryRemoteService {
      * @param startDate Start date. May be null or empty string
      * @return List of maps
      */
-    List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate);
+    List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, Integer limit);
 
     /**
      * Get history records by username. Supports filtering by start and end date
@@ -43,7 +43,7 @@ public interface HistoryRemoteService {
      * @param endDate   End date. May be null or empty string
      * @return List of maps
      */
-    List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, String endDate);
+    List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, String endDate, Integer limit);
 
     /**
      * Send history event to remote service
