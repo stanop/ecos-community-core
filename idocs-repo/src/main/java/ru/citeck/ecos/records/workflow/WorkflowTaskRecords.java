@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records.workflow;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -258,6 +259,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             RecordRef documentRef = getDocumentRef();
             Map<String, String> attributesMap = field.getInnerAttributesMap();
 
+            Set<String> customAttributes = new HashSet<>();
+
             for (String att : attributesMap.keySet()) {
                 switch (att) {
                     case ATT_DOC_SUM:
@@ -265,20 +268,25 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                             String type = recordsService.getAttribute(documentRef, "_type").asText();
                             if (sumAttributeByType.containsKey(type)) {
                                 documentAttributes.put(ATT_DOC_SUM, sumAttributeByType.get(type));
+                                customAttributes.add(ATT_DOC_SUM);
                             }
                         }
                         break;
                     case ATT_DOC_DISP_NAME:
-                        documentAttributes.put(ATT_DOC_DISP_NAME, ".disp");
+                        documentAttributes.put(ATT_DOC_DISP_NAME, "cm:title");
+                        customAttributes.add(ATT_DOC_DISP_NAME);
                         break;
                     case ATT_DOC_STATUS_TITLE:
                         documentAttributes.put(ATT_DOC_STATUS_TITLE, "icase:caseStatusAssoc.cm:title");
+                        customAttributes.add(ATT_DOC_STATUS_TITLE);
                         break;
                     case ATT_DOC_STATUS:
                         documentAttributes.put(ATT_DOC_STATUS, "icase:caseStatusAssoc.cm:name");
+                        customAttributes.add(ATT_DOC_STATUS);
                         break;
                     case ATT_DOC_TYPE:
                         documentAttributes.put(ATT_DOC_TYPE, "_type");
+                        customAttributes.add(ATT_DOC_TYPE);
                         break;
                     default:
                         if (att.startsWith(DOCUMENT_FIELD_PREFIX)) {
@@ -293,6 +301,29 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 documentInfo = new RecordMeta();
             } else {
                 documentInfo = recordsService.getRawAttributes(getDocumentRef(), documentAttributes);
+                for (String customAtt : customAttributes) {
+                    documentInfo.set(customAtt, simplify(documentInfo.get(customAtt)));
+                }
+            }
+        }
+
+        private JsonNode simplify(JsonNode node) {
+            if (node == null) {
+                return null;
+            }
+            if (node instanceof ObjectNode) {
+                if (node.size() > 0) {
+                    String name = node.fieldNames().next();
+                    if (name.startsWith("att")) {
+                        return simplify(node.get(name));
+                    } else {
+                        return node;
+                    }
+                } else {
+                    return null;
+                }
+            } else {
+                return node;
             }
         }
 
