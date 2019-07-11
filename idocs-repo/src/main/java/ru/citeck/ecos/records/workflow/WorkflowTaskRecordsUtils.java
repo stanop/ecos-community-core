@@ -142,8 +142,8 @@ public class WorkflowTaskRecordsUtils {
         taskRecordsQuery.setQuery(predicate);
         taskRecordsQuery.setSortBy(query.getSortBy());
 
-        String docStatus = query.getQuery(WorkflowTaskRecords.TasksQuery.class).docStatus;
-        boolean filterByDocStatusRequired = StringUtils.isNotBlank(docStatus);
+        WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
+        boolean filterByDocStatusRequired = StringUtils.isNotBlank(tasksQuery.docStatus);
 
         if (query.getMaxItems() > -1 && filterByDocStatusRequired) {
             taskRecordsQuery.setMaxItems(query.getMaxItems() * 5); //filter by status after query
@@ -156,10 +156,37 @@ public class WorkflowTaskRecordsUtils {
 
         RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> result = recordsService.queryRecords(taskRecordsQuery,
                 WorkflowTaskRecords.TaskIdQuery.class);
+
+        if (Boolean.TRUE.equals(tasksQuery.active)) {
+            filterActiveTask(result);
+        }
+
         if (!filterByDocStatusRequired) {
             return result;
         }
-        return filteredByDocStatus(query, result, docStatus);
+
+        return filteredByDocStatus(query, result, tasksQuery.docStatus);
+    }
+
+    private void filterActiveTask(RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> taskQueryResult) {
+        List<WorkflowTaskRecords.TaskIdQuery> filtered = taskQueryResult.getRecords()
+                .stream()
+                .filter(taskIdQuery -> taskIsActive(taskIdQuery.getTaskId()))
+                .collect(Collectors.toList());
+
+        taskQueryResult.setRecords(filtered);
+        taskQueryResult.setTotalCount(filtered.size());
+    }
+
+    private boolean taskIsActive(String taskId) {
+        Optional<TaskInfo> taskInfo = ecosTaskService.getTaskInfo(taskId);
+        boolean active = taskInfo.filter(info -> info.getAttribute("bpm_completionDate") == null).isPresent();
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Task <%s>, is active: %s", taskId, active));
+        }
+
+        return active;
     }
 
     private RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> filteredByDocStatus(RecordsQuery query,

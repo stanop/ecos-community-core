@@ -114,8 +114,6 @@ public class WorkflowUtils {
     }
 
     public List<NodeRef> getTaskActors(String taskId) {
-        System.out.println("taskId: " + taskId);
-
         LinkedList<NodeRef> results = new LinkedList<>();
         WorkflowTask task = workflowService.getTaskById(taskId);
 
