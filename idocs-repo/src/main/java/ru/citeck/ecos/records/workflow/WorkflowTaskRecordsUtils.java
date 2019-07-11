@@ -140,6 +140,7 @@ public class WorkflowTaskRecordsUtils {
         RecordsQuery taskRecordsQuery = new RecordsQuery();
         taskRecordsQuery.setLanguage(PredicateService.LANGUAGE_PREDICATE);
         taskRecordsQuery.setQuery(predicate);
+        taskRecordsQuery.setSortBy(query.getSortBy());
 
         String docStatus = query.getQuery(WorkflowTaskRecords.TasksQuery.class).docStatus;
         boolean filterByDocStatusRequired = StringUtils.isNotBlank(docStatus);
