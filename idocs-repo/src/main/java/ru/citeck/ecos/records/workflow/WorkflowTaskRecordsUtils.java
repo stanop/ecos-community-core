@@ -158,7 +158,7 @@ public class WorkflowTaskRecordsUtils {
                 WorkflowTaskRecords.TaskIdQuery.class);
 
         if (Boolean.TRUE.equals(tasksQuery.active)) {
-            filterActiveTask(result);
+            filterActiveTask(result, query);
         }
 
         if (!filterByDocStatusRequired) {
@@ -168,14 +168,30 @@ public class WorkflowTaskRecordsUtils {
         return filteredByDocStatus(query, result, tasksQuery.docStatus);
     }
 
-    private void filterActiveTask(RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> taskQueryResult) {
-        List<WorkflowTaskRecords.TaskIdQuery> filtered = taskQueryResult.getRecords()
+    private void filterActiveTask(RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> taskQueryResult,
+                                  RecordsQuery query) {
+        int maxItems = query.getMaxItems();
+        AtomicInteger recordsCount = new AtomicInteger(0);
+        AtomicInteger filtered = new AtomicInteger(0);
+
+        List<WorkflowTaskRecords.TaskIdQuery> records = taskQueryResult.getRecords()
                 .stream()
-                .filter(taskIdQuery -> taskIsActive(taskIdQuery.getTaskId()))
+                .filter(taskIdQuery -> {
+                    if (maxItems > -1 && maxItems <= recordsCount.getAndIncrement()) {
+                        return false;
+                    }
+
+                    if (taskIsActive(taskIdQuery.getTaskId())) {
+                        return true;
+                    } else {
+                        filtered.incrementAndGet();
+                        return false;
+                    }
+                })
                 .collect(Collectors.toList());
 
-        taskQueryResult.setRecords(filtered);
-        taskQueryResult.setTotalCount(filtered.size());
+        taskQueryResult.setRecords(records);
+        taskQueryResult.setTotalCount(taskQueryResult.getTotalCount() - filtered.get());
     }
 
     private boolean taskIsActive(String taskId) {
