@@ -1,9 +1,13 @@
 package ru.citeck.ecos.config.patch;
 
+import lombok.Setter;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.module.AbstractModuleComponent;
 import org.alfresco.service.cmr.repository.MLText;
+import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +19,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 public class CreateConfig extends AbstractModuleComponent {
 
@@ -25,6 +30,12 @@ public class CreateConfig extends AbstractModuleComponent {
     private String configTitle;
     private String configDescription;
 
+    @Autowired
+    private NodeService nodeService;
+
+    @Setter
+    private Boolean isUpdateValueIfConfExists;
+
     @Override
     protected void executeInternal() {
 
@@ -33,6 +44,14 @@ public class CreateConfig extends AbstractModuleComponent {
         props.put(ConfigModel.PROP_VALUE, configValue);
         props.put(ContentModel.PROP_TITLE, getMLText(configTitle));
         props.put(ContentModel.PROP_DESCRIPTION, getMLText(configDescription));
+
+        if (BooleanUtils.isTrue(isUpdateValueIfConfExists)) {
+            Optional<NodeRef> configRef = ecosConfigService.getConfigRef(configKey);
+            if (configRef.isPresent() && nodeService.exists(configRef.get())) {
+                ecosConfigService.setValue(configKey, configValue);
+                return;
+            }
+        }
 
         ecosConfigService.createConfig(props);
     }

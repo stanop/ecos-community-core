@@ -48,7 +48,7 @@ public class CriteriaSearchService {
     private SortFieldChanger sortFieldChanger;
 
     private boolean evalExactTotalCount;
-    
+
     /**
      * Search using given SearchCriteria with specified query language.
      *
@@ -123,7 +123,7 @@ public class CriteriaSearchService {
                 countResultSet.close();
             }
         }
-        
+
         boolean hasMore = false;
         if (criteria.isLimitSet()) {
             hasMore = results.size() > criteria.getLimit();
@@ -131,7 +131,7 @@ public class CriteriaSearchService {
                 results = results.subList(0, criteria.getLimit());
             }
         }
-        
+
         return new CriteriaSearchResults.Builder()
                 .criteria(criteria)
                 .results(results)
@@ -140,7 +140,7 @@ public class CriteriaSearchService {
                 .query(query)
                 .build();
     }
-    
+
     private SearchParameters createSearchParameters(String language, String query) {
         SearchParameters parameters = new SearchParameters();
         parameters.setLanguage(language);
@@ -175,16 +175,16 @@ public class CriteriaSearchService {
     public void setDictionaryService(DictionaryService dictionaryService) {
         this.dictionaryService = dictionaryService;
     }
-    
+
     public void setNamespaceService(NamespaceService namespaceService) {
         this.namespaceService = namespaceService;
     }
-    
+
     public void setAssociationIndexPropertyRegistry(
             AssociationIndexPropertyRegistry associationIndexPropertyRegistry) {
         this.associationIndexPropertyRegistry = associationIndexPropertyRegistry;
     }
-    
+
     public void setSortFieldChanger(SortFieldChanger sortFieldChanger) {
         this.sortFieldChanger = sortFieldChanger;
     }
