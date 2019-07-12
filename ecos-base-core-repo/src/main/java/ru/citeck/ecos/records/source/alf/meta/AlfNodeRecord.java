@@ -28,6 +28,7 @@ import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.state.ItemsUpdateState;
 
 import java.io.Serializable;
 import java.util.*;
@@ -42,6 +43,7 @@ public class AlfNodeRecord implements MetaValue {
     public static final String ATTR_IS_CONTAINER = "attr:isContainer";
     public static final String ATTR_PARENT = "attr:parent";
     public static final String ATTR_PERMISSIONS = "permissions";
+    public static final String ATTR_PENDING_UPDATE = "pendingUpdate";
 
     private NodeRef nodeRef;
     private RecordRef recordRef;
@@ -187,6 +189,13 @@ public class AlfNodeRecord implements MetaValue {
                 }
                 JsonNode previewInfo = recordsService.getAttribute(recordRef, path + ".previewInfo?json");
                 return MetaUtils.toMetaValues(previewInfo, context, field);
+
+            case ATTR_PENDING_UPDATE:
+
+                ItemsUpdateState service = context.getService("ecos.itemsUpdateState");
+                boolean pendingUpdate = service.isPendingUpdate(new NodeRef(node.nodeRef()));
+                attribute = Collections.singletonList(toMetaValue(null, pendingUpdate, field));
+                break;
 
             default:
 

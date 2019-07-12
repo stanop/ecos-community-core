@@ -538,8 +538,6 @@
         <property name="searchService" ref="searchService"/>
     </bean>
 
-    <bean id="ecos.itemsUpdateState" class="ru.citeck.ecos.state.ItemsUpdateState" />
-
     <bean id="cacheManager" class="ru.citeck.ecos.cache.EhcacheConfigurationManager" init-method="init"
           destroy-method="destroy"/>
 
