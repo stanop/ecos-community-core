@@ -10,6 +10,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.transaction.TransactionService;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -88,6 +89,10 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private static final String INSERT_RECORD_PATH = "/history_records/insert_record";
     private static final String INSERT_RECORDS_PATH = "/history_records/insert_records";
 
+    private static final String GET_BY_USERNAME = "/history_records/by_username/%s/limit/%d";
+    private static final String GET_BY_USERNAME_START_DATE = "/history_records/by_username/%s/start_date/%s/limit/%d";
+    private static final String GET_BY_USERNAME_START_END_DATE = "/history_records/by_username/%s/start_date/%s/end_date/%s/limit/%d";
+
     /**
      * Logger
      */
@@ -126,6 +131,52 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     @Override
     public List<Map> getHistoryRecords(String documentUuid) {
         return restTemplate.getForObject(properties.getProperty(HISTORY_SERVICE_HOST) + GET_BY_DOCUMENT_ID_PATH + documentUuid, List.class);
+    }
+
+    /**
+     * Get history records by username
+     *
+     * @param username Username
+     * @return List of maps
+     */
+    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, Integer limit) {
+        return getHistoryRecordsByUsernameWithDateLimit(username, null, null, limit);
+    }
+
+    /**
+     * Get history records by username. Supports filtering by start date
+     *
+     * @param username  Username
+     * @param startDate Start date. May be null or empty string
+     * @return List of maps
+     */
+    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, Integer limit) {
+        return getHistoryRecordsByUsernameWithDateLimit(username, startDate, null, limit);
+    }
+
+    /**
+     * Get history records by username. Supports filtering by start and end date
+     *
+     * @param username  Username
+     * @param startDate Start date. May be null or empty string
+     * @param endDate   End date. May be null or empty string
+     * @return List of maps
+     */
+    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, String endDate, Integer limit) {
+        if (StringUtils.isBlank(username)) {
+            return Collections.emptyList();
+        }
+
+        String url = String.format(GET_BY_USERNAME, username, limit);
+        if (!StringUtils.isBlank(startDate)) {
+            url = String.format(GET_BY_USERNAME_START_DATE, username, startDate, limit);
+        }
+
+        if (!StringUtils.isBlank(startDate) && !StringUtils.isBlank(endDate)) {
+            url = String.format(GET_BY_USERNAME_START_END_DATE, username, startDate, endDate, limit);
+        }
+
+        return restTemplate.getForObject(properties.getProperty(HISTORY_SERVICE_HOST) + url, List.class);
     }
 
     /**
@@ -264,7 +315,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
         NodeRef taskNodeRef = (NodeRef) nodeService.getProperty(eventRef, HistoryModel.PROP_CASE_TASK);
         if (taskNodeRef != null) {
             Integer expectedPerformTime = (Integer) nodeService.getProperty(taskNodeRef,
-                                                                            ActivityModel.PROP_EXPECTED_PERFORM_TIME);
+                    ActivityModel.PROP_EXPECTED_PERFORM_TIME);
             entryMap.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
         }
         /* Username and user id */
