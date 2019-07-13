@@ -18,7 +18,7 @@ public class PersonUtils {
 
         List<NodeRef> excludedUsers = new LinkedList<>();
         for (NodeRef user : users) {
-            boolean isPersonDisabled = (boolean) nodeService.getProperty(user, EcosModel.PROP_IS_PERSON_DISABLED);
+            Boolean isPersonDisabled = (Boolean) nodeService.getProperty(user, EcosModel.PROP_IS_PERSON_DISABLED);
             if (BooleanUtils.isTrue(isPersonDisabled)) {
                 excludedUsers.add(user);
             }
