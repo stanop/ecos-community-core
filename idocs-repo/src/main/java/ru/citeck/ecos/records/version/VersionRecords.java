@@ -172,9 +172,7 @@ public class VersionRecords extends CrudRecordsDAO<VersionDTO> {
         props.put(Version.PROP_DESCRIPTION, comment);
         props.put(VersionModel.PROP_VERSION_TYPE, majorVersion ? VersionType.MAJOR : VersionType.MINOR);
 
-        checkOutCheckInService.checkin(workingCopy, props);
-
-        return workingCopy;
+        return checkOutCheckInService.checkin(workingCopy, props);
     }
 
     @Override
