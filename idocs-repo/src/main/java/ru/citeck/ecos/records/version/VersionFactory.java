@@ -24,7 +24,7 @@ import java.util.Map;
 @Component
 public class VersionFactory {
 
-    private static final String DOWNLOAD_URL_TEMPLATE = "/proxy/alfresco/citeck/print/content?nodeRef=%s";
+    private static final String DOWNLOAD_URL_TEMPLATE = "/share/proxy/alfresco/citeck/print/content?nodeRef=%s";
     private static final String FIRST_VERSION = "1.0";
 
     private final NodeService nodeService;
