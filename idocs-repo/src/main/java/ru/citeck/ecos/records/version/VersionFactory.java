@@ -3,6 +3,7 @@ package ru.citeck.ecos.records.version;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.version.Version;
 import org.alfresco.service.cmr.version.VersionService;
@@ -14,6 +15,7 @@ import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -23,6 +25,7 @@ import java.util.Map;
 public class VersionFactory {
 
     private static final String DOWNLOAD_URL_TEMPLATE = "/proxy/alfresco/citeck/print/content?nodeRef=%s";
+    private static final String FIRST_VERSION = "1.0";
 
     private final NodeService nodeService;
     private final VersionService versionService;
@@ -36,6 +39,13 @@ public class VersionFactory {
         this.versionService = versionService;
         this.authorityService = authorityService;
         this.recordsService = recordsService;
+    }
+
+    public VersionDTO fromRef(NodeRef ref) {
+        if (StoreRef.STORE_REF_WORKSPACE_SPACESSTORE.equals(ref.getStoreRef())) {
+            return baseVersion(ref);
+        }
+        return fromVersionRef(ref);
     }
 
     public VersionDTO fromVersionRef(NodeRef versionRef) {
@@ -52,9 +62,12 @@ public class VersionFactory {
     public VersionDTO fromVersion(Version version) {
         VersionDTO dto = new VersionDTO();
 
+        NodeRef frozenStateNodeRef = version.getFrozenStateNodeRef();
+
+        dto.setId(frozenStateNodeRef.toString());
+        dto.setName((String) nodeService.getProperty(frozenStateNodeRef, ContentModel.PROP_NAME));
         dto.setVersion(version.getVersionLabel());
         dto.setComment(version.getDescription());
-        dto.setId(version.getFrozenStateNodeRef().toString());
         dto.setDownloadUrl(generateDownloadUrl(version.getFrozenStateNodeRef().toString()));
         dto.setModified(version.getFrozenModifiedDate());
 
@@ -62,6 +75,25 @@ public class VersionFactory {
         UserDTO modifier = recordsService.getMeta(RecordRef.create("",
                 authorityService.getAuthorityNodeRef(frozenModifier).toString()), UserDTO.class);
         dto.setModifier(modifier);
+
+        return dto;
+    }
+
+    public VersionDTO baseVersion(NodeRef document) {
+        VersionDTO dto = new VersionDTO();
+
+        Map<QName, Serializable> properties = nodeService.getProperties(document);
+
+        String creator = (String) properties.get(ContentModel.PROP_CREATOR);
+        UserDTO creatorDto = recordsService.getMeta(RecordRef.create("",
+                authorityService.getAuthorityNodeRef(creator).toString()), UserDTO.class);
+
+        dto.setName((String) properties.get(ContentModel.PROP_NAME));
+        dto.setModified((Date) properties.get(ContentModel.PROP_CREATED));
+        dto.setModifier(creatorDto);
+        dto.setDownloadUrl(generateDownloadUrl(document.toString()));
+        dto.setId(document.toString());
+        dto.setVersion(FIRST_VERSION);
 
         return dto;
     }

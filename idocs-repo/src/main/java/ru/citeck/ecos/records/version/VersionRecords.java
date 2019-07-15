@@ -28,10 +28,7 @@ import ru.citeck.ecos.records2.request.query.RecordsQueryResult;
 import ru.citeck.ecos.records2.source.dao.local.CrudRecordsDAO;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.citeck.ecos.records.version.VersionRecordsConstants.*;
@@ -88,8 +85,8 @@ public class VersionRecords extends CrudRecordsDAO<VersionDTO> {
                 throw new IllegalArgumentException("Record id should be NodeRef format");
             }
 
-            VersionDTO found = versionFactory.fromVersionRef(new NodeRef(id));
-            result.add(found);
+            NodeRef nodeRef = new NodeRef(id);
+            result.add(versionFactory.fromRef(nodeRef));
         }
 
         return result;
@@ -198,6 +195,9 @@ public class VersionRecords extends CrudRecordsDAO<VersionDTO> {
 
         VersionHistory versionHistory = versionService.getVersionHistory(new NodeRef(id));
         if (versionHistory == null || CollectionUtils.isEmpty(versionHistory.getAllVersions())) {
+            VersionDTO baseVersion = versionFactory.baseVersion(new NodeRef(id));
+            result.setRecords(Collections.singletonList(baseVersion));
+            result.setTotalCount(1);
             return result;
         }
 

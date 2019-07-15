@@ -13,6 +13,7 @@ public class VersionDTO {
 
     private String id;
 
+    private String  name;
     private String version;
     private Date modified;
     private UserDTO modifier;
