@@ -7,7 +7,10 @@ import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
+import org.alfresco.service.cmr.version.Version;
+import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.AlfGqlContext;
@@ -37,6 +40,7 @@ import java.util.stream.Collectors;
 public class AlfNodeRecord implements MetaValue {
 
     private static final String VIRTUAL_SCRIPT_ATTS_ID = "virtualScriptAttributesProvider";
+    private static final String DEFAULT_VERSION_LABEL = "1.0";
 
     public static final String ATTR_ASPECTS = "attr:aspects";
     public static final String ATTR_IS_DOCUMENT = "attr:isDocument";
@@ -44,6 +48,7 @@ public class AlfNodeRecord implements MetaValue {
     public static final String ATTR_PARENT = "attr:parent";
     public static final String ATTR_PERMISSIONS = "permissions";
     public static final String ATTR_PENDING_UPDATE = "pendingUpdate";
+    public static final String ATTR_VERSION = "version";
 
     private NodeRef nodeRef;
     private RecordRef recordRef;
@@ -195,6 +200,15 @@ public class AlfNodeRecord implements MetaValue {
                 ItemsUpdateState service = context.getService("ecos.itemsUpdateState");
                 boolean pendingUpdate = service.isPendingUpdate(new NodeRef(node.nodeRef()));
                 attribute = Collections.singletonList(toMetaValue(null, pendingUpdate, field));
+                break;
+
+            case ATTR_VERSION:
+
+                VersionService versionService = context.getServiceRegistry().getVersionService();
+                Version currentVersion = versionService.getCurrentVersion(new NodeRef(node.nodeRef()));
+                String versionLabel = currentVersion != null && StringUtils.isNotBlank(currentVersion.getVersionLabel())
+                        ? currentVersion.getVersionLabel() : DEFAULT_VERSION_LABEL;
+                attribute = Collections.singletonList(toMetaValue(null, versionLabel, field));
                 break;
 
             default:
