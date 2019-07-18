@@ -24,7 +24,7 @@ public class SiteRecordsDAO extends LocalRecordsDAO
 
     public static final String ID = "site";
 
-    private SiteService siteService;
+    private final SiteService siteService;
 
     @Autowired
     public SiteRecordsDAO(SiteService siteService) {
@@ -75,6 +75,11 @@ public class SiteRecordsDAO extends LocalRecordsDAO
             }
 
             return null;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return siteService.getSite(id).getTitle();
         }
     }
 }
