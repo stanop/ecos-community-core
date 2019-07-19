@@ -50,6 +50,12 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>ru.citeck.ecos.eureka</groupId>
+            <artifactId>ecos-eureka-client</artifactId>
+            <version>1.9.12.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
