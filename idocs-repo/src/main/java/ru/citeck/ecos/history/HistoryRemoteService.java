@@ -2,6 +2,7 @@ package ru.citeck.ecos.history;
 
 import org.alfresco.service.cmr.repository.NodeRef;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public interface HistoryRemoteService {
      * @param startDate Start date. May be null or empty string
      * @return List of maps
      */
-    List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, Integer limit);
+    List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, Date startDate, Integer limit);
 
     /**
      * Get history records by username. Supports filtering by start and end date
@@ -43,7 +44,7 @@ public interface HistoryRemoteService {
      * @param endDate   End date. May be null or empty string
      * @return List of maps
      */
-    List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, String endDate, Integer limit);
+    List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, Date startDate, Date endDate, Integer limit);
 
     /**
      * Send history event to remote service
