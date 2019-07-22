@@ -34,386 +34,93 @@
                 "input": false,
                 "components": [
                   {
-                    "label": "Columns",
-                    "hideLabel": true,
-                    "columns": [
+                    "label": "contracts:agreementLegalEntity",
+                    "mask": false,
+                    "tableView": true,
+                    "alwaysEnabled": false,
+                    "journalId": "legal-entities",
+                    "hideCreateButton": false,
+                    "displayColumns": [],
+                    "customPredicateJs": "",
+                    "computed": {
+                      "valueDisplayName": ""
+                    },
+                    "searchField": "",
+                    "ecos": {
+                      "dataType": "assoc"
+                    },
+                    "refreshOn": "title",
+                    "encrypted": false,
+                    "displayColumnsAsyncData": [
                       {
-                        "components": [
-                          {
-                            "label": "contracts:agreementLegalEntity",
-                            "mask": false,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "journalId": "legal-entities",
-                            "hideCreateButton": false,
-                            "displayColumns": [],
-                            "customPredicateJs": "",
-                            "computed": {
-                              "valueDisplayName": ""
-                            },
-                            "searchField": "",
-                            "ecos": {
-                              "dataType": "assoc"
-                            },
-                            "refreshOn": "title",
-                            "encrypted": false,
-                            "displayColumnsAsyncData": [
-                              {
-                                "label": "Полное наименование",
-                                "value": "idocs:fullOrganizationName"
-                              },
-                              {
-                                "label": "Альтернативное наименование",
-                                "value": "idocs:shortOrganizationName"
-                              },
-                              {
-                                "label": "ИНН",
-                                "value": "idocs:inn"
-                              },
-                              {
-                                "label": "КПП",
-                                "value": "idocs:kpp"
-                              },
-                              {
-                                "label": "ОКПО",
-                                "value": "idocs:okpo"
-                              },
-                              {
-                                "label": "ОГРН",
-                                "value": "idocs:ogrn"
-                              },
-                              {
-                                "label": "Юридический адрес",
-                                "value": "idocs:juridicalAddress"
-                              },
-                              {
-                                "label": "Фактический адрес",
-                                "value": "idocs:postAddress"
-                              },
-                              {
-                                "label": "Генеральный директор",
-                                "value": "idocs:generalDirector"
-                              },
-                              {
-                                "label": "Главный бухгалтер",
-                                "value": "idocs:accountantGeneral"
-                              },
-                              {
-                                "label": "Номер телефона",
-                                "value": "idocs:phoneNumber"
-                              }
-                            ],
-                            "validate": {
-                              "required": true,
-                              "customMessage": "",
-                              "json": "",
-                              "custom": "",
-                              "customPrivate": false
-                            },
-                            "key": "contracts_agreementLegalEntity2",
-                            "properties": {
-                              "attribute": "contracts:agreementLegalEntity",
-                              "dummy": "dummy"
-                            },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
-                            "customConditional": "",
-                            "logic": [],
-                            "type": "selectJournal",
-                            "input": true,
-                            "tags": [],
-                            "row": "0-0",
-                            "placeholder": "",
-                            "prefix": "",
-                            "customClass": "",
-                            "suffix": "",
-                            "multiple": false,
-                            "defaultValue": null,
-                            "protected": false,
-                            "unique": false,
-                            "persistent": true,
-                            "hidden": false,
-                            "clearOnHide": true,
-                            "dataGridLabel": false,
-                            "labelPosition": "top",
-                            "labelWidth": 30,
-                            "labelMargin": 3,
-                            "description": "",
-                            "errorLabel": "",
-                            "tooltip": "",
-                            "hideLabel": false,
-                            "tabindex": "",
-                            "disabled": false,
-                            "autofocus": false,
-                            "dbIndex": false,
-                            "customDefaultValue": "",
-                            "calculateValue": "",
-                            "allowCalculateOverride": false,
-                            "widget": null,
-                            "clearOnRefresh": false,
-                            "validateOn": "change",
-                            "id": "exwmlm"
-                          }
-                        ],
-                        "width": 6,
-                        "offset": 0,
-                        "push": 0,
-                        "pull": 0,
-                        "type": "column",
-                        "hideOnChildrenHidden": false,
-                        "input": false,
-                        "key": "column1",
-                        "tableView": true,
-                        "label": "",
-                        "xs": 0,
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 0,
-                        "xl": 0,
-                        "classes": "",
-                        "placeholder": "",
-                        "prefix": "",
-                        "customClass": "",
-                        "suffix": "",
-                        "multiple": false,
-                        "defaultValue": null,
-                        "protected": false,
-                        "unique": false,
-                        "persistent": true,
-                        "hidden": false,
-                        "clearOnHide": true,
-                        "dataGridLabel": false,
-                        "labelPosition": "top",
-                        "labelWidth": 30,
-                        "labelMargin": 3,
-                        "description": "",
-                        "errorLabel": "",
-                        "tooltip": "",
-                        "hideLabel": false,
-                        "tabindex": "",
-                        "disabled": false,
-                        "autofocus": false,
-                        "dbIndex": false,
-                        "customDefaultValue": "",
-                        "calculateValue": "",
-                        "allowCalculateOverride": false,
-                        "widget": null,
-                        "refreshOn": "",
-                        "clearOnRefresh": false,
-                        "validateOn": "change",
-                        "validate": {
-                          "required": false,
-                          "custom": "",
-                          "customPrivate": false
-                        },
-                        "conditional": {
-                          "show": null,
-                          "when": null,
-                          "eq": ""
-                        },
-                        "id": "eri3mui"
+                        "label": "Полное наименование",
+                        "value": "idocs:fullOrganizationName"
                       },
                       {
-                        "components": [
-                          {
-                            "label": "contracts:contractor",
-                            "mask": false,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "journalId": "idocs-contractor",
-                            "hideCreateButton": false,
-                            "displayColumns": [],
-                            "computed": {
-                              "valueDisplayName": ""
-                            },
-                            "searchField": "",
-                            "ecos": {
-                              "dataType": "assoc"
-                            },
-                            "encrypted": false,
-                            "displayColumnsAsyncData": [
-                              {
-                                "label": "Полное наименование",
-                                "value": "idocs:fullOrganizationName"
-                              },
-                              {
-                                "label": "Альтернативное наименование",
-                                "value": "idocs:shortOrganizationName"
-                              },
-                              {
-                                "label": "Тип контрагента",
-                                "value": "idocs:contractorType"
-                              },
-                              {
-                                "label": "ИНН",
-                                "value": "idocs:inn"
-                              },
-                              {
-                                "label": "КПП",
-                                "value": "idocs:kpp"
-                              },
-                              {
-                                "label": "Юридический адрес",
-                                "value": "idocs:juridicalAddress"
-                              },
-                              {
-                                "label": "Фактический адрес",
-                                "value": "idocs:postAddress"
-                              },
-                              {
-                                "label": "Телефон",
-                                "value": "idocs:phone"
-                              },
-                              {
-                                "label": "Мобильный телефон",
-                                "value": "idocs:fax"
-                              },
-                              {
-                                "label": "Адрес электронной почты",
-                                "value": "idocs:email"
-                              },
-                              {
-                                "label": "Генеральный директор",
-                                "value": "idocs:CEOname"
-                              }
-                            ],
-                            "validate": {
-                              "required": true,
-                              "customMessage": "",
-                              "json": "",
-                              "custom": "",
-                              "customPrivate": false
-                            },
-                            "key": "contracts_contractor2",
-                            "properties": {
-                              "attribute": "contracts:contractor",
-                              "dummy": "dummy"
-                            },
-                            "conditional": {
-                              "json": "",
-                              "show": "",
-                              "when": "",
-                              "eq": ""
-                            },
-                            "customConditional": "",
-                            "logic": [],
-                            "type": "selectJournal",
-                            "input": true,
-                            "tags": [],
-                            "customPredicateJs": "",
-                            "row": "0-1",
-                            "placeholder": "",
-                            "prefix": "",
-                            "customClass": "",
-                            "suffix": "",
-                            "multiple": false,
-                            "defaultValue": null,
-                            "protected": false,
-                            "unique": false,
-                            "persistent": true,
-                            "hidden": false,
-                            "clearOnHide": true,
-                            "dataGridLabel": false,
-                            "labelPosition": "top",
-                            "labelWidth": 30,
-                            "labelMargin": 3,
-                            "description": "",
-                            "errorLabel": "",
-                            "tooltip": "",
-                            "hideLabel": false,
-                            "tabindex": "",
-                            "disabled": false,
-                            "autofocus": false,
-                            "dbIndex": false,
-                            "customDefaultValue": "",
-                            "calculateValue": "",
-                            "allowCalculateOverride": false,
-                            "widget": null,
-                            "refreshOn": "",
-                            "clearOnRefresh": false,
-                            "validateOn": "change",
-                            "id": "egx9tfa"
-                          }
-                        ],
-                        "width": 6,
-                        "offset": 0,
-                        "push": 0,
-                        "pull": 0,
-                        "type": "column",
-                        "hideOnChildrenHidden": false,
-                        "input": false,
-                        "key": "column2",
-                        "tableView": true,
-                        "label": "",
-                        "xs": 0,
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 0,
-                        "xl": 0,
-                        "classes": "",
-                        "placeholder": "",
-                        "prefix": "",
-                        "customClass": "",
-                        "suffix": "",
-                        "multiple": false,
-                        "defaultValue": null,
-                        "protected": false,
-                        "unique": false,
-                        "persistent": true,
-                        "hidden": false,
-                        "clearOnHide": true,
-                        "dataGridLabel": false,
-                        "labelPosition": "top",
-                        "labelWidth": 30,
-                        "labelMargin": 3,
-                        "description": "",
-                        "errorLabel": "",
-                        "tooltip": "",
-                        "hideLabel": false,
-                        "tabindex": "",
-                        "disabled": false,
-                        "autofocus": false,
-                        "dbIndex": false,
-                        "customDefaultValue": "",
-                        "calculateValue": "",
-                        "allowCalculateOverride": false,
-                        "widget": null,
-                        "refreshOn": "",
-                        "clearOnRefresh": false,
-                        "validateOn": "change",
-                        "validate": {
-                          "required": false,
-                          "custom": "",
-                          "customPrivate": false
-                        },
-                        "conditional": {
-                          "show": null,
-                          "when": null,
-                          "eq": ""
-                        },
-                        "id": "ehueygt"
+                        "label": "Альтернативное наименование",
+                        "value": "idocs:shortOrganizationName"
+                      },
+                      {
+                        "label": "ИНН",
+                        "value": "idocs:inn"
+                      },
+                      {
+                        "label": "КПП",
+                        "value": "idocs:kpp"
+                      },
+                      {
+                        "label": "ОКПО",
+                        "value": "idocs:okpo"
+                      },
+                      {
+                        "label": "ОГРН",
+                        "value": "idocs:ogrn"
+                      },
+                      {
+                        "label": "Юридический адрес",
+                        "value": "idocs:juridicalAddress"
+                      },
+                      {
+                        "label": "Фактический адрес",
+                        "value": "idocs:postAddress"
+                      },
+                      {
+                        "label": "Генеральный директор",
+                        "value": "idocs:generalDirector"
+                      },
+                      {
+                        "label": "Главный бухгалтер",
+                        "value": "idocs:accountantGeneral"
+                      },
+                      {
+                        "label": "Номер телефона",
+                        "value": "idocs:phoneNumber"
                       }
                     ],
-                    "mask": false,
-                    "tableView": false,
-                    "alwaysEnabled": false,
-                    "key": "columns2",
-                    "properties": {},
-                    "conditional": {
+                    "validate": {
+                      "required": true,
+                      "customMessage": "",
                       "json": "",
+                      "custom": "",
+                      "customPrivate": false
+                    },
+                    "key": "contracts_agreementLegalEntity2",
+                    "properties": {
+                      "attribute": "contracts:agreementLegalEntity",
+                      "dummy": "dummy"
+                    },
+                    "conditional": {
                       "show": "",
                       "when": "",
+                      "json": "",
                       "eq": ""
                     },
                     "customConditional": "",
                     "logic": [],
-                    "type": "columns",
-                    "input": false,
+                    "type": "selectJournal",
+                    "input": true,
                     "tags": [],
+                    "row": "0-0",
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -422,9 +129,9 @@
                     "defaultValue": null,
                     "protected": false,
                     "unique": false,
-                    "persistent": false,
+                    "persistent": true,
                     "hidden": false,
-                    "clearOnHide": false,
+                    "clearOnHide": true,
                     "dataGridLabel": false,
                     "labelPosition": "top",
                     "labelWidth": 30,
@@ -432,6 +139,125 @@
                     "description": "",
                     "errorLabel": "",
                     "tooltip": "",
+                    "hideLabel": false,
+                    "tabindex": "",
+                    "disabled": false,
+                    "autofocus": false,
+                    "dbIndex": false,
+                    "customDefaultValue": "",
+                    "calculateValue": "",
+                    "allowCalculateOverride": false,
+                    "widget": null,
+                    "clearOnRefresh": false,
+                    "validateOn": "change",
+                    "id": "ee7034j"
+                  },
+                  {
+                    "label": "contracts:contractor",
+                    "mask": false,
+                    "tableView": true,
+                    "alwaysEnabled": false,
+                    "journalId": "idocs-contractor",
+                    "hideCreateButton": false,
+                    "displayColumns": [],
+                    "computed": {
+                      "valueDisplayName": ""
+                    },
+                    "searchField": "",
+                    "ecos": {
+                      "dataType": "assoc"
+                    },
+                    "encrypted": false,
+                    "displayColumnsAsyncData": [
+                      {
+                        "label": "Полное наименование",
+                        "value": "idocs:fullOrganizationName"
+                      },
+                      {
+                        "label": "Альтернативное наименование",
+                        "value": "idocs:shortOrganizationName"
+                      },
+                      {
+                        "label": "Тип контрагента",
+                        "value": "idocs:contractorType"
+                      },
+                      {
+                        "label": "ИНН",
+                        "value": "idocs:inn"
+                      },
+                      {
+                        "label": "КПП",
+                        "value": "idocs:kpp"
+                      },
+                      {
+                        "label": "Юридический адрес",
+                        "value": "idocs:juridicalAddress"
+                      },
+                      {
+                        "label": "Фактический адрес",
+                        "value": "idocs:postAddress"
+                      },
+                      {
+                        "label": "Телефон",
+                        "value": "idocs:phone"
+                      },
+                      {
+                        "label": "Мобильный телефон",
+                        "value": "idocs:fax"
+                      },
+                      {
+                        "label": "Адрес электронной почты",
+                        "value": "idocs:email"
+                      },
+                      {
+                        "label": "Генеральный директор",
+                        "value": "idocs:CEOname"
+                      }
+                    ],
+                    "validate": {
+                      "required": true,
+                      "customMessage": "",
+                      "json": "",
+                      "custom": "",
+                      "customPrivate": false
+                    },
+                    "key": "contracts_contractor2",
+                    "properties": {
+                      "attribute": "contracts:contractor",
+                      "dummy": "dummy"
+                    },
+                    "conditional": {
+                      "json": "",
+                      "show": "",
+                      "when": "",
+                      "eq": ""
+                    },
+                    "customConditional": "",
+                    "logic": [],
+                    "type": "selectJournal",
+                    "input": true,
+                    "tags": [],
+                    "customPredicateJs": "",
+                    "row": "0-1",
+                    "placeholder": "",
+                    "prefix": "",
+                    "customClass": "",
+                    "suffix": "",
+                    "multiple": false,
+                    "defaultValue": null,
+                    "protected": false,
+                    "unique": false,
+                    "persistent": true,
+                    "hidden": false,
+                    "clearOnHide": true,
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "labelWidth": 30,
+                    "labelMargin": 3,
+                    "description": "",
+                    "errorLabel": "",
+                    "tooltip": "",
+                    "hideLabel": false,
                     "tabindex": "",
                     "disabled": false,
                     "autofocus": false,
@@ -443,14 +269,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "validate": {
-                      "required": false,
-                      "custom": "",
-                      "customPrivate": false
-                    },
-                    "autoAdjust": false,
-                    "hideOnChildrenHidden": false,
-                    "id": "ebvjzbw"
+                    "id": "en1r4t"
                   },
                   {
                     "label": "contracts:contractWith",
@@ -544,337 +363,59 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "efi089ct"
+                    "id": "eehtill"
                   },
                   {
-                    "label": "Columns",
-                    "columns": [
-                      {
-                        "components": [
-                          {
-                            "label": "tk:kind",
-                            "mask": false,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "dataSrc": "custom",
-                            "data": {
-                              "custom": "for (var i in data.docTypeList.records) {\n  values.push({label: data.docTypeList.records[i].key,value: data.docTypeList.records[i].id})\n}",
-                              "values": [],
-                              "json": "",
-                              "url": "",
-                              "resource": ""
-                            },
-                            "refreshOnEvent": true,
-                            "selectThreshold": 0.3,
-                            "defaultValue": "",
-                            "encrypted": false,
-                            "validate": {
-                              "required": true,
-                              "customMessage": "",
-                              "json": "",
-                              "custom": "",
-                              "customPrivate": false
-                            },
-                            "key": "tk_kind",
-                            "properties": {
-                              "attribute": "tk:kind"
-                            },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
-                            "customConditional": "",
-                            "logic": [],
-                            "type": "ecosSelect",
-                            "input": true,
-                            "tags": [],
-                            "refreshEventName": "docTypeEvent",
-                            "placeholder": "",
-                            "prefix": "",
-                            "customClass": "",
-                            "suffix": "",
-                            "multiple": false,
-                            "protected": false,
-                            "unique": false,
-                            "persistent": true,
-                            "hidden": false,
-                            "clearOnHide": true,
-                            "dataGridLabel": false,
-                            "labelPosition": "top",
-                            "labelWidth": 30,
-                            "labelMargin": 3,
-                            "description": "",
-                            "errorLabel": "",
-                            "tooltip": "",
-                            "hideLabel": false,
-                            "tabindex": "",
-                            "disabled": false,
-                            "autofocus": false,
-                            "dbIndex": false,
-                            "customDefaultValue": "",
-                            "calculateValue": "",
-                            "allowCalculateOverride": false,
-                            "widget": null,
-                            "refreshOn": "",
-                            "clearOnRefresh": false,
-                            "validateOn": "change",
-                            "limit": 100,
-                            "valueProperty": "value",
-                            "filter": "",
-                            "searchEnabled": true,
-                            "searchField": "",
-                            "minSearch": 0,
-                            "readOnlyValue": false,
-                            "authenticate": false,
-                            "template": "<span>{{ item.label }}</span>",
-                            "selectFields": "",
-                            "searchThreshold": 0.3,
-                            "fuseOptions": {},
-                            "customOptions": {},
-                            "id": "enx2atd"
-                          }
-                        ],
-                        "width": 6,
-                        "offset": 0,
-                        "push": 0,
-                        "pull": 0,
-                        "type": "column",
-                        "input": false,
-                        "hideOnChildrenHidden": false,
-                        "key": "column",
-                        "tableView": true,
-                        "label": "Column",
-                        "xs": 0,
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 0,
-                        "xl": 0,
-                        "classes": "",
-                        "placeholder": "",
-                        "prefix": "",
-                        "customClass": "",
-                        "suffix": "",
-                        "multiple": false,
-                        "defaultValue": null,
-                        "protected": false,
-                        "unique": false,
-                        "persistent": true,
-                        "hidden": false,
-                        "clearOnHide": true,
-                        "dataGridLabel": false,
-                        "labelPosition": "top",
-                        "labelWidth": 30,
-                        "labelMargin": 3,
-                        "description": "",
-                        "errorLabel": "",
-                        "tooltip": "",
-                        "hideLabel": false,
-                        "tabindex": "",
-                        "disabled": false,
-                        "autofocus": false,
-                        "dbIndex": false,
-                        "customDefaultValue": "",
-                        "calculateValue": "",
-                        "allowCalculateOverride": false,
-                        "widget": null,
-                        "refreshOn": "",
-                        "clearOnRefresh": false,
-                        "validateOn": "change",
-                        "validate": {
-                          "required": false,
-                          "custom": "",
-                          "customPrivate": false
-                        },
-                        "conditional": {
-                          "show": null,
-                          "when": null,
-                          "eq": ""
-                        },
-                        "id": "elae8rt"
-                      },
-                      {
-                        "components": [
-                          {
-                            "label": "contracts:agreementSubject",
-                            "mask": false,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "journalId": "contract-subjects",
-                            "hideCreateButton": false,
-                            "displayColumns": [],
-                            "customPredicateJs": "",
-                            "computed": {
-                              "valueDisplayName": ""
-                            },
-                            "searchField": "",
-                            "ecos": {
-                              "dataType": "assoc"
-                            },
-                            "refreshOn": "title",
-                            "encrypted": false,
-                            "displayColumnsAsyncData": [
-                              {
-                                "label": "Дата создания",
-                                "value": "cm:created"
-                              },
-                              {
-                                "label": "Код",
-                                "value": "contracts:subjectCode"
-                              },
-                              {
-                                "label": "Наименование",
-                                "value": "contracts:subjectName"
-                              },
-                              {
-                                "label": "Метки",
-                                "value": "cm:taggable"
-                              }
-                            ],
-                            "validate": {
-                              "customMessage": "",
-                              "json": "",
-                              "required": false,
-                              "custom": "",
-                              "customPrivate": false
-                            },
-                            "key": "contracts_agreementSubject",
-                            "properties": {
-                              "attribute": "contracts:agreementSubject",
-                              "dummy": "dummy"
-                            },
-                            "conditional": {
-                              "show": "",
-                              "when": "",
-                              "json": "",
-                              "eq": ""
-                            },
-                            "customConditional": "",
-                            "logic": [],
-                            "type": "selectJournal",
-                            "input": true,
-                            "tags": [],
-                            "row": "0-0",
-                            "placeholder": "",
-                            "prefix": "",
-                            "customClass": "",
-                            "suffix": "",
-                            "multiple": false,
-                            "defaultValue": null,
-                            "protected": false,
-                            "unique": false,
-                            "persistent": true,
-                            "hidden": false,
-                            "clearOnHide": true,
-                            "dataGridLabel": false,
-                            "labelPosition": "top",
-                            "labelWidth": 30,
-                            "labelMargin": 3,
-                            "description": "",
-                            "errorLabel": "",
-                            "tooltip": "",
-                            "hideLabel": false,
-                            "tabindex": "",
-                            "disabled": false,
-                            "autofocus": false,
-                            "dbIndex": false,
-                            "customDefaultValue": "",
-                            "calculateValue": "",
-                            "allowCalculateOverride": false,
-                            "widget": null,
-                            "clearOnRefresh": false,
-                            "validateOn": "change",
-                            "id": "esg8bc"
-                          }
-                        ],
-                        "width": 6,
-                        "offset": 0,
-                        "push": 0,
-                        "pull": 0,
-                        "type": "column",
-                        "input": false,
-                        "hideOnChildrenHidden": false,
-                        "key": "column",
-                        "tableView": true,
-                        "label": "Column",
-                        "xs": 0,
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 0,
-                        "xl": 0,
-                        "classes": "",
-                        "placeholder": "",
-                        "prefix": "",
-                        "customClass": "",
-                        "suffix": "",
-                        "multiple": false,
-                        "defaultValue": null,
-                        "protected": false,
-                        "unique": false,
-                        "persistent": true,
-                        "hidden": false,
-                        "clearOnHide": true,
-                        "dataGridLabel": false,
-                        "labelPosition": "top",
-                        "labelWidth": 30,
-                        "labelMargin": 3,
-                        "description": "",
-                        "errorLabel": "",
-                        "tooltip": "",
-                        "hideLabel": false,
-                        "tabindex": "",
-                        "disabled": false,
-                        "autofocus": false,
-                        "dbIndex": false,
-                        "customDefaultValue": "",
-                        "calculateValue": "",
-                        "allowCalculateOverride": false,
-                        "widget": null,
-                        "refreshOn": "",
-                        "clearOnRefresh": false,
-                        "validateOn": "change",
-                        "validate": {
-                          "required": false,
-                          "custom": "",
-                          "customPrivate": false
-                        },
-                        "conditional": {
-                          "show": null,
-                          "when": null,
-                          "eq": ""
-                        },
-                        "id": "e2sgztt"
-                      }
-                    ],
+                    "label": "Type of contract",
                     "mask": false,
-                    "tableView": false,
+                    "tableView": true,
                     "alwaysEnabled": false,
-                    "key": "columns",
-                    "properties": {},
-                    "conditional": {
+                    "dataSrc": "custom",
+                    "data": {
+                      "custom": "for (var i in data.docTypeList.records) {\n  values.push({label: data.docTypeList.records[i].key,value: data.docTypeList.records[i].id})\n}",
+                      "values": [],
                       "json": "",
+                      "url": "",
+                      "resource": ""
+                    },
+                    "refreshOnEvent": true,
+                    "refreshEventName": "docTypeEvent",
+                    "selectThreshold": 0.3,
+                    "defaultValue": "",
+                    "encrypted": false,
+                    "validate": {
+                      "required": true,
+                      "customMessage": "",
+                      "json": "",
+                      "custom": "",
+                      "customPrivate": false
+                    },
+                    "key": "tk_kind",
+                    "properties": {
+                      "attribute": "tk:kind"
+                    },
+                    "conditional": {
                       "show": "",
                       "when": "",
+                      "json": "",
                       "eq": ""
                     },
                     "customConditional": "",
                     "logic": [],
                     "attributes": {},
-                    "type": "columns",
-                    "input": false,
+                    "type": "ecosSelect",
+                    "input": true,
                     "tags": [],
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
                     "suffix": "",
                     "multiple": false,
-                    "defaultValue": null,
                     "protected": false,
                     "unique": false,
-                    "persistent": false,
+                    "persistent": true,
                     "hidden": false,
-                    "clearOnHide": false,
+                    "clearOnHide": true,
                     "dataGridLabel": false,
                     "labelPosition": "top",
                     "labelWidth": 30,
@@ -894,14 +435,111 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
+                    "limit": 100,
+                    "valueProperty": "value",
+                    "filter": "",
+                    "searchEnabled": true,
+                    "searchField": "",
+                    "minSearch": 0,
+                    "readOnlyValue": false,
+                    "authenticate": false,
+                    "template": "<span>{{ item.label }}</span>",
+                    "selectFields": "",
+                    "searchThreshold": 0.3,
+                    "fuseOptions": {},
+                    "customOptions": {},
+                    "id": "eroe4cl"
+                  },
+                  {
+                    "label": "contracts:agreementSubject",
+                    "mask": false,
+                    "tableView": true,
+                    "alwaysEnabled": false,
+                    "journalId": "contract-subjects",
+                    "hideCreateButton": false,
+                    "displayColumns": [],
+                    "customPredicateJs": "",
+                    "computed": {
+                      "valueDisplayName": ""
+                    },
+                    "searchField": "",
+                    "ecos": {
+                      "dataType": "assoc"
+                    },
+                    "refreshOn": "title",
+                    "encrypted": false,
+                    "displayColumnsAsyncData": [
+                      {
+                        "label": "Дата создания",
+                        "value": "cm:created"
+                      },
+                      {
+                        "label": "Код",
+                        "value": "contracts:subjectCode"
+                      },
+                      {
+                        "label": "Наименование",
+                        "value": "contracts:subjectName"
+                      },
+                      {
+                        "label": "Метки",
+                        "value": "cm:taggable"
+                      }
+                    ],
                     "validate": {
+                      "customMessage": "",
+                      "json": "",
                       "required": false,
                       "custom": "",
                       "customPrivate": false
                     },
-                    "autoAdjust": false,
-                    "hideOnChildrenHidden": false,
-                    "id": "eszryof"
+                    "key": "contracts_agreementSubject",
+                    "properties": {
+                      "attribute": "contracts:agreementSubject",
+                      "dummy": "dummy"
+                    },
+                    "conditional": {
+                      "show": "",
+                      "when": "",
+                      "json": "",
+                      "eq": ""
+                    },
+                    "customConditional": "",
+                    "logic": [],
+                    "type": "selectJournal",
+                    "input": true,
+                    "tags": [],
+                    "row": "0-0",
+                    "placeholder": "",
+                    "prefix": "",
+                    "customClass": "",
+                    "suffix": "",
+                    "multiple": false,
+                    "defaultValue": null,
+                    "protected": false,
+                    "unique": false,
+                    "persistent": true,
+                    "hidden": false,
+                    "clearOnHide": true,
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "labelWidth": 30,
+                    "labelMargin": 3,
+                    "description": "",
+                    "errorLabel": "",
+                    "tooltip": "",
+                    "hideLabel": false,
+                    "tabindex": "",
+                    "disabled": false,
+                    "autofocus": false,
+                    "dbIndex": false,
+                    "customDefaultValue": "",
+                    "calculateValue": "",
+                    "allowCalculateOverride": false,
+                    "widget": null,
+                    "clearOnRefresh": false,
+                    "validateOn": "change",
+                    "id": "efryk3"
                   },
                   {
                     "label": "Columns",
@@ -984,7 +622,7 @@
                                   {
                                     "name": "set_value",
                                     "type": "value",
-                                    "value": "if (instance.options.formMode === 'CREATE') {\n  value = '';\n}"
+                                    "value": "if (instance.options.formMode === 'CREATE') {\n  if (' ' == value) value = '';\n}"
                                   }
                                 ]
                               }
@@ -1030,7 +668,7 @@
                             "mask": false,
                             "inputType": "text",
                             "inputMask": "",
-                            "id": "evse18e"
+                            "id": "exvjml6"
                           }
                         ],
                         "width": 6,
@@ -1089,7 +727,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e9ve3de"
+                        "id": "e2cv2lp"
                       },
                       {
                         "components": [
@@ -1154,7 +792,7 @@
                             "inputType": "checkbox",
                             "value": "",
                             "name": "",
-                            "id": "e0p318e"
+                            "id": "e7e1phw"
                           }
                         ],
                         "width": 6,
@@ -1213,7 +851,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "elwn8vf"
+                        "id": "e23x93i"
                       }
                     ],
                     "mask": false,
@@ -1270,7 +908,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "eiljjv2"
+                    "id": "elpiyku"
                   },
                   {
                     "label": "Columns",
@@ -1453,7 +1091,7 @@
                               "mousewheel": true,
                               "arrowkeys": true
                             },
-                            "id": "es18lr"
+                            "id": "ensoyii"
                           }
                         ],
                         "width": 6,
@@ -1512,7 +1150,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "ewo9ycu"
+                        "id": "e2mnqd"
                       },
                       {
                         "components": [
@@ -1692,7 +1330,7 @@
                               "mousewheel": true,
                               "arrowkeys": true
                             },
-                            "id": "erjd7ff"
+                            "id": "e5mbzf"
                           }
                         ],
                         "width": 6,
@@ -1751,7 +1389,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "ehz5gtr"
+                        "id": "ed4ctmh"
                       }
                     ],
                     "mask": false,
@@ -1808,7 +1446,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "es340rg"
+                    "id": "e0hs1d8"
                   }
                 ],
                 "tags": [],
@@ -1850,7 +1488,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "elnluph"
+                "id": "ew6x76"
               },
               {
                 "label": "Panel",
@@ -1956,7 +1594,7 @@
                     "searchThreshold": 0.3,
                     "fuseOptions": {},
                     "customOptions": {},
-                    "id": "ehesbbs"
+                    "id": "e00122i"
                   },
                   {
                     "label": "Columns",
@@ -2027,7 +1665,7 @@
                             "refreshOn": "",
                             "clearOnRefresh": false,
                             "validateOn": "change",
-                            "id": "e2i9p77"
+                            "id": "eyuvaj"
                           }
                         ],
                         "width": 6,
@@ -2086,7 +1724,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "epty19h"
+                        "id": "e0ffel"
                       },
                       {
                         "components": [
@@ -2154,7 +1792,7 @@
                             "refreshOn": "",
                             "clearOnRefresh": false,
                             "validateOn": "change",
-                            "id": "e44vza8"
+                            "id": "eemim9f"
                           }
                         ],
                         "width": 6,
@@ -2213,7 +1851,7 @@
                           "when": null,
                           "eq": ""
                         },
-                        "id": "e1zuva"
+                        "id": "e2l5oad"
                       }
                     ],
                     "mask": false,
@@ -2270,7 +1908,7 @@
                     },
                     "autoAdjust": false,
                     "hideOnChildrenHidden": false,
-                    "id": "e6qh71"
+                    "id": "ek2tesl"
                   },
                   {
                     "label": "payments:payments",
@@ -2364,7 +2002,7 @@
                     "clearOnRefresh": false,
                     "validateOn": "change",
                     "eventName": "",
-                    "id": "e4hl6us"
+                    "id": "e8ljdco"
                   }
                 ],
                 "tags": [],
@@ -2406,7 +2044,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "edecb5"
+                "id": "ez5fcki"
               }
             ],
             "width": 6,
@@ -2465,7 +2103,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e4u03tp"
+            "id": "exk73ql"
           },
           {
             "components": [
@@ -2565,7 +2203,7 @@
                     "inputMask": "",
                     "wysiwyg": false,
                     "editor": "",
-                    "id": "ezfyw5"
+                    "id": "etmytuv"
                   },
                   {
                     "label": "dms:updateContent",
@@ -2630,7 +2268,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "eqv7068"
+                    "id": "eif6uny"
                   },
                   {
                     "label": "cm:content",
@@ -2710,7 +2348,7 @@
                     "uploadOnly": false,
                     "defaultOverlayWidth": 200,
                     "defaultOverlayHeight": 200,
-                    "id": "ey2z9r"
+                    "id": "el2zif"
                   },
                   {
                     "label": "idocs:note",
@@ -2788,7 +2426,7 @@
                     "inputMask": "",
                     "wysiwyg": false,
                     "editor": "",
-                    "id": "e6bnimo"
+                    "id": "ew859uc"
                   },
                   {
                     "label": "icase:documents",
@@ -2869,7 +2507,7 @@
                     "uploadOnly": false,
                     "defaultOverlayWidth": 200,
                     "defaultOverlayHeight": 200,
-                    "id": "ebmytq"
+                    "id": "e7dvxlj"
                   }
                 ],
                 "tags": [],
@@ -2911,7 +2549,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "epbgfim"
+                "id": "elgkuss"
               },
               {
                 "label": "Panel",
@@ -2934,407 +2572,35 @@
                 "input": false,
                 "components": [
                   {
-                    "label": "Columns",
-                    "columns": [
-                      {
-                        "components": [
-                          {
-                            "label": "idocs:signatory",
-                            "mask": false,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "allowedAuthorityType": "USER, GROUP",
-                            "allowedGroupType": "ROLE, BRANCH",
-                            "allUsersGroup": "all",
-                            "currentUserByDefault": false,
-                            "encrypted": false,
-                            "validate": {
-                              "required": true,
-                              "customMessage": "",
-                              "json": "",
-                              "custom": "",
-                              "customPrivate": false
-                            },
-                            "key": "idocs_signatory",
-                            "properties": {
-                              "attribute": "idocs:signatory"
-                            },
-                            "conditional": {
-                              "json": "",
-                              "show": "",
-                              "when": "",
-                              "eq": ""
-                            },
-                            "customConditional": "",
-                            "logic": [],
-                            "type": "selectOrgstruct",
-                            "input": true,
-                            "tags": [],
-                            "placeholder": "",
-                            "prefix": "",
-                            "customClass": "",
-                            "suffix": "",
-                            "multiple": false,
-                            "defaultValue": null,
-                            "protected": false,
-                            "unique": false,
-                            "persistent": true,
-                            "hidden": false,
-                            "clearOnHide": true,
-                            "dataGridLabel": false,
-                            "labelPosition": "top",
-                            "labelWidth": 30,
-                            "labelMargin": 3,
-                            "description": "",
-                            "errorLabel": "",
-                            "tooltip": "",
-                            "hideLabel": false,
-                            "tabindex": "",
-                            "disabled": false,
-                            "autofocus": false,
-                            "dbIndex": false,
-                            "customDefaultValue": "",
-                            "calculateValue": "",
-                            "allowCalculateOverride": false,
-                            "widget": null,
-                            "refreshOn": "",
-                            "clearOnRefresh": false,
-                            "validateOn": "change",
-                            "id": "edrfwyu"
-                          },
-                          {
-                            "label": "contracts:digiSign",
-                            "labelPosition": "",
-                            "shortcut": "",
-                            "mask": false,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "defaultValue": false,
-                            "encrypted": false,
-                            "validate": {
-                              "customMessage": "",
-                              "json": "",
-                              "required": false,
-                              "custom": "",
-                              "customPrivate": false
-                            },
-                            "key": "contracts_digiSign",
-                            "properties": {
-                              "attribute": "contracts:digiSign"
-                            },
-                            "conditional": {
-                              "json": "",
-                              "show": "",
-                              "when": "",
-                              "eq": ""
-                            },
-                            "customConditional": "",
-                            "logic": [],
-                            "type": "checkbox",
-                            "input": true,
-                            "tags": [],
-                            "placeholder": "",
-                            "prefix": "",
-                            "customClass": "",
-                            "suffix": "",
-                            "multiple": false,
-                            "protected": false,
-                            "unique": false,
-                            "persistent": true,
-                            "hidden": false,
-                            "clearOnHide": true,
-                            "dataGridLabel": true,
-                            "labelWidth": 30,
-                            "labelMargin": 3,
-                            "description": "",
-                            "errorLabel": "",
-                            "tooltip": "",
-                            "hideLabel": false,
-                            "tabindex": "",
-                            "disabled": false,
-                            "autofocus": false,
-                            "dbIndex": false,
-                            "customDefaultValue": "",
-                            "calculateValue": "",
-                            "allowCalculateOverride": false,
-                            "widget": null,
-                            "refreshOn": "",
-                            "clearOnRefresh": false,
-                            "validateOn": "change",
-                            "inputType": "checkbox",
-                            "value": "",
-                            "name": "",
-                            "id": "e30rya"
-                          }
-                        ],
-                        "width": 6,
-                        "offset": 0,
-                        "push": 0,
-                        "pull": 0,
-                        "type": "column",
-                        "hideOnChildrenHidden": false,
-                        "input": false,
-                        "key": "column16",
-                        "tableView": true,
-                        "label": "",
-                        "xs": 0,
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 0,
-                        "xl": 0,
-                        "classes": "",
-                        "placeholder": "",
-                        "prefix": "",
-                        "customClass": "",
-                        "suffix": "",
-                        "multiple": false,
-                        "defaultValue": null,
-                        "protected": false,
-                        "unique": false,
-                        "persistent": true,
-                        "hidden": false,
-                        "clearOnHide": true,
-                        "dataGridLabel": false,
-                        "labelPosition": "top",
-                        "labelWidth": 30,
-                        "labelMargin": 3,
-                        "description": "",
-                        "errorLabel": "",
-                        "tooltip": "",
-                        "hideLabel": false,
-                        "tabindex": "",
-                        "disabled": false,
-                        "autofocus": false,
-                        "dbIndex": false,
-                        "customDefaultValue": "",
-                        "calculateValue": "",
-                        "allowCalculateOverride": false,
-                        "widget": null,
-                        "refreshOn": "",
-                        "clearOnRefresh": false,
-                        "validateOn": "change",
-                        "validate": {
-                          "required": false,
-                          "custom": "",
-                          "customPrivate": false
-                        },
-                        "conditional": {
-                          "show": null,
-                          "when": null,
-                          "eq": ""
-                        },
-                        "id": "earice"
-                      },
-                      {
-                        "components": [
-                          {
-                            "label": "idocs:performer",
-                            "mask": false,
-                            "tableView": true,
-                            "alwaysEnabled": false,
-                            "allowedAuthorityType": "USER, GROUP",
-                            "allowedGroupType": "ROLE, BRANCH",
-                            "allUsersGroup": "all",
-                            "currentUserByDefault": false,
-                            "encrypted": false,
-                            "validate": {
-                              "customMessage": "",
-                              "json": "",
-                              "required": false,
-                              "custom": "",
-                              "customPrivate": false
-                            },
-                            "key": "idocs_performer",
-                            "properties": {
-                              "attribute": "idocs:performer"
-                            },
-                            "conditional": {
-                              "json": "",
-                              "show": "",
-                              "when": "",
-                              "eq": ""
-                            },
-                            "customConditional": "",
-                            "logic": [],
-                            "type": "selectOrgstruct",
-                            "input": true,
-                            "tags": [],
-                            "placeholder": "",
-                            "prefix": "",
-                            "customClass": "",
-                            "suffix": "",
-                            "multiple": false,
-                            "defaultValue": null,
-                            "protected": false,
-                            "unique": false,
-                            "persistent": true,
-                            "hidden": false,
-                            "clearOnHide": true,
-                            "dataGridLabel": false,
-                            "labelPosition": "top",
-                            "labelWidth": 30,
-                            "labelMargin": 3,
-                            "description": "",
-                            "errorLabel": "",
-                            "tooltip": "",
-                            "hideLabel": false,
-                            "tabindex": "",
-                            "disabled": false,
-                            "autofocus": false,
-                            "dbIndex": false,
-                            "customDefaultValue": "",
-                            "calculateValue": "",
-                            "allowCalculateOverride": false,
-                            "widget": null,
-                            "refreshOn": "",
-                            "clearOnRefresh": false,
-                            "validateOn": "change",
-                            "id": "erfvnd"
-                          }
-                        ],
-                        "width": 6,
-                        "offset": 0,
-                        "push": 0,
-                        "pull": 0,
-                        "type": "column",
-                        "hideOnChildrenHidden": false,
-                        "input": false,
-                        "key": "column17",
-                        "tableView": true,
-                        "label": "",
-                        "xs": 0,
-                        "sm": 12,
-                        "md": 6,
-                        "lg": 0,
-                        "xl": 0,
-                        "classes": "",
-                        "placeholder": "",
-                        "prefix": "",
-                        "customClass": "",
-                        "suffix": "",
-                        "multiple": false,
-                        "defaultValue": null,
-                        "protected": false,
-                        "unique": false,
-                        "persistent": true,
-                        "hidden": false,
-                        "clearOnHide": true,
-                        "dataGridLabel": false,
-                        "labelPosition": "top",
-                        "labelWidth": 30,
-                        "labelMargin": 3,
-                        "description": "",
-                        "errorLabel": "",
-                        "tooltip": "",
-                        "hideLabel": false,
-                        "tabindex": "",
-                        "disabled": false,
-                        "autofocus": false,
-                        "dbIndex": false,
-                        "customDefaultValue": "",
-                        "calculateValue": "",
-                        "allowCalculateOverride": false,
-                        "widget": null,
-                        "refreshOn": "",
-                        "clearOnRefresh": false,
-                        "validateOn": "change",
-                        "validate": {
-                          "required": false,
-                          "custom": "",
-                          "customPrivate": false
-                        },
-                        "conditional": {
-                          "show": null,
-                          "when": null,
-                          "eq": ""
-                        },
-                        "id": "erd4wk7"
-                      }
-                    ],
-                    "mask": false,
-                    "tableView": false,
-                    "alwaysEnabled": false,
-                    "key": "columns7",
-                    "properties": {},
-                    "conditional": {
-                      "json": "",
-                      "show": "",
-                      "when": "",
-                      "eq": ""
-                    },
-                    "customConditional": "",
-                    "logic": [],
-                    "type": "columns",
-                    "input": false,
-                    "tags": [],
-                    "placeholder": "",
-                    "prefix": "",
-                    "customClass": "",
-                    "suffix": "",
-                    "multiple": false,
-                    "defaultValue": null,
-                    "protected": false,
-                    "unique": false,
-                    "persistent": false,
-                    "hidden": false,
-                    "clearOnHide": false,
-                    "dataGridLabel": false,
-                    "labelPosition": "top",
-                    "labelWidth": 30,
-                    "labelMargin": 3,
-                    "description": "",
-                    "errorLabel": "",
-                    "tooltip": "",
-                    "hideLabel": false,
-                    "tabindex": "",
-                    "disabled": false,
-                    "autofocus": false,
-                    "dbIndex": false,
-                    "customDefaultValue": "",
-                    "calculateValue": "",
-                    "allowCalculateOverride": false,
-                    "widget": null,
-                    "refreshOn": "",
-                    "clearOnRefresh": false,
-                    "validateOn": "change",
-                    "validate": {
-                      "required": false,
-                      "custom": "",
-                      "customPrivate": false
-                    },
-                    "autoAdjust": false,
-                    "hideOnChildrenHidden": false,
-                    "id": "ejcjhic"
-                  },
-                  {
-                    "label": "idocs:supervisor",
+                    "label": "idocs:signatory",
                     "mask": false,
                     "tableView": true,
                     "alwaysEnabled": false,
-                    "allowedAuthorityType": "USER, GROUP",
+                    "allowedAuthorityType": "USER",
                     "allowedGroupType": "ROLE, BRANCH",
                     "allUsersGroup": "all",
                     "currentUserByDefault": false,
                     "encrypted": false,
                     "validate": {
+                      "required": true,
                       "customMessage": "",
                       "json": "",
-                      "required": false,
                       "custom": "",
                       "customPrivate": false
                     },
-                    "key": "idocs_supervisor",
+                    "key": "idocs_signatory",
                     "properties": {
-                      "attribute": "idocs:supervisor"
+                      "attribute": "idocs:signatory"
                     },
                     "conditional": {
-                      "json": "",
                       "show": "",
                       "when": "",
+                      "json": "",
                       "eq": ""
                     },
                     "customConditional": "",
                     "logic": [],
+                    "attributes": {},
                     "type": "selectOrgstruct",
                     "input": true,
                     "tags": [],
@@ -3368,7 +2634,201 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "ef0pjry"
+                    "id": "e4rkmlh"
+                  },
+                  {
+                    "label": "contracts:digiSign",
+                    "labelPosition": "",
+                    "shortcut": "",
+                    "mask": false,
+                    "tableView": true,
+                    "alwaysEnabled": false,
+                    "defaultValue": false,
+                    "encrypted": false,
+                    "validate": {
+                      "customMessage": "",
+                      "json": "",
+                      "required": false,
+                      "custom": "",
+                      "customPrivate": false
+                    },
+                    "key": "contracts_digiSign",
+                    "properties": {
+                      "attribute": "contracts:digiSign"
+                    },
+                    "conditional": {
+                      "json": "",
+                      "show": "",
+                      "when": "",
+                      "eq": ""
+                    },
+                    "customConditional": "",
+                    "logic": [],
+                    "type": "checkbox",
+                    "input": true,
+                    "tags": [],
+                    "placeholder": "",
+                    "prefix": "",
+                    "customClass": "",
+                    "suffix": "",
+                    "multiple": false,
+                    "protected": false,
+                    "unique": false,
+                    "persistent": true,
+                    "hidden": false,
+                    "clearOnHide": true,
+                    "dataGridLabel": true,
+                    "labelWidth": 30,
+                    "labelMargin": 3,
+                    "description": "",
+                    "errorLabel": "",
+                    "tooltip": "",
+                    "hideLabel": false,
+                    "tabindex": "",
+                    "disabled": false,
+                    "autofocus": false,
+                    "dbIndex": false,
+                    "customDefaultValue": "",
+                    "calculateValue": "",
+                    "allowCalculateOverride": false,
+                    "widget": null,
+                    "refreshOn": "",
+                    "clearOnRefresh": false,
+                    "validateOn": "change",
+                    "inputType": "checkbox",
+                    "value": "",
+                    "name": "",
+                    "id": "esacs8k"
+                  },
+                  {
+                    "label": "idocs:performer",
+                    "mask": false,
+                    "tableView": true,
+                    "alwaysEnabled": false,
+                    "allowedAuthorityType": "USER",
+                    "allowedGroupType": "ROLE, BRANCH",
+                    "allUsersGroup": "all",
+                    "currentUserByDefault": false,
+                    "encrypted": false,
+                    "validate": {
+                      "customMessage": "",
+                      "json": "",
+                      "required": false,
+                      "custom": "",
+                      "customPrivate": false
+                    },
+                    "key": "idocs_performer",
+                    "properties": {
+                      "attribute": "idocs:performer"
+                    },
+                    "conditional": {
+                      "show": "",
+                      "when": "",
+                      "json": "",
+                      "eq": ""
+                    },
+                    "customConditional": "",
+                    "logic": [],
+                    "attributes": {},
+                    "type": "selectOrgstruct",
+                    "input": true,
+                    "tags": [],
+                    "placeholder": "",
+                    "prefix": "",
+                    "customClass": "",
+                    "suffix": "",
+                    "multiple": false,
+                    "defaultValue": null,
+                    "protected": false,
+                    "unique": false,
+                    "persistent": true,
+                    "hidden": false,
+                    "clearOnHide": true,
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "labelWidth": 30,
+                    "labelMargin": 3,
+                    "description": "",
+                    "errorLabel": "",
+                    "tooltip": "",
+                    "hideLabel": false,
+                    "tabindex": "",
+                    "disabled": false,
+                    "autofocus": false,
+                    "dbIndex": false,
+                    "customDefaultValue": "",
+                    "calculateValue": "",
+                    "allowCalculateOverride": false,
+                    "widget": null,
+                    "refreshOn": "",
+                    "clearOnRefresh": false,
+                    "validateOn": "change",
+                    "id": "e0jf55c"
+                  },
+                  {
+                    "label": "idocs:supervisor",
+                    "mask": false,
+                    "tableView": true,
+                    "alwaysEnabled": false,
+                    "allowedAuthorityType": "USER",
+                    "allowedGroupType": "ROLE, BRANCH",
+                    "allUsersGroup": "all",
+                    "currentUserByDefault": false,
+                    "encrypted": false,
+                    "validate": {
+                      "customMessage": "",
+                      "json": "",
+                      "required": false,
+                      "custom": "",
+                      "customPrivate": false
+                    },
+                    "key": "idocs_supervisor",
+                    "properties": {
+                      "attribute": "idocs:supervisor"
+                    },
+                    "conditional": {
+                      "show": "",
+                      "when": "",
+                      "json": "",
+                      "eq": ""
+                    },
+                    "customConditional": "",
+                    "logic": [],
+                    "attributes": {},
+                    "type": "selectOrgstruct",
+                    "input": true,
+                    "tags": [],
+                    "placeholder": "",
+                    "prefix": "",
+                    "customClass": "",
+                    "suffix": "",
+                    "multiple": false,
+                    "defaultValue": null,
+                    "protected": false,
+                    "unique": false,
+                    "persistent": true,
+                    "hidden": false,
+                    "clearOnHide": true,
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "labelWidth": 30,
+                    "labelMargin": 3,
+                    "description": "",
+                    "errorLabel": "",
+                    "tooltip": "",
+                    "hideLabel": false,
+                    "tabindex": "",
+                    "disabled": false,
+                    "autofocus": false,
+                    "dbIndex": false,
+                    "customDefaultValue": "",
+                    "calculateValue": "",
+                    "allowCalculateOverride": false,
+                    "widget": null,
+                    "refreshOn": "",
+                    "clearOnRefresh": false,
+                    "validateOn": "change",
+                    "id": "eblyd88"
                   }
                 ],
                 "tags": [],
@@ -3410,7 +2870,7 @@
                 "theme": "default",
                 "breadcrumb": "default",
                 "lazyLoad": false,
-                "id": "ej99zl"
+                "id": "esz7fzi"
               },
               {
                 "label": "currencyList",
@@ -3498,7 +2958,7 @@
                 "mask": false,
                 "inputType": "asyncData",
                 "executionCondition": "",
-                "id": "e8ktmyg"
+                "id": "eqeqlqg"
               },
               {
                 "label": "docTypeList",
@@ -3586,7 +3046,95 @@
                 "mask": false,
                 "inputType": "asyncData",
                 "executionCondition": "",
-                "id": "e6j804j"
+                "id": "em398z"
+              },
+              {
+                "label": "caseStatus",
+                "source": {
+                  "type": "record",
+                  "record": {
+                    "id": "{{recordId}}",
+                    "attributes": {
+                      "status": "icase:caseStatusAssoc.cm:name"
+                    }
+                  },
+                  "ajax": {
+                    "method": "GET",
+                    "url": "",
+                    "data": "",
+                    "mapping": ""
+                  },
+                  "recordsArray": {
+                    "id": "",
+                    "attributes": {}
+                  },
+                  "recordsQuery": {
+                    "query": "",
+                    "attributes": {},
+                    "isSingle": false
+                  },
+                  "custom": {
+                    "syncData": {},
+                    "asyncData": {}
+                  }
+                },
+                "update": {
+                  "type": "any-change",
+                  "event": "",
+                  "rate": 100,
+                  "force": false
+                },
+                "refreshOn": [],
+                "triggerEventOnChange": false,
+                "key": "caseStatus",
+                "type": "asyncData",
+                "input": true,
+                "tableView": true,
+                "tags": [],
+                "placeholder": "",
+                "prefix": "",
+                "customClass": "",
+                "suffix": "",
+                "multiple": false,
+                "defaultValue": null,
+                "protected": false,
+                "unique": false,
+                "persistent": true,
+                "hidden": false,
+                "clearOnHide": true,
+                "dataGridLabel": false,
+                "labelPosition": "top",
+                "labelWidth": 30,
+                "labelMargin": 3,
+                "description": "",
+                "errorLabel": "",
+                "tooltip": "",
+                "hideLabel": false,
+                "tabindex": "",
+                "disabled": false,
+                "autofocus": false,
+                "dbIndex": false,
+                "customDefaultValue": "",
+                "calculateValue": "",
+                "allowCalculateOverride": false,
+                "widget": null,
+                "clearOnRefresh": false,
+                "validateOn": "change",
+                "validate": {
+                  "required": false,
+                  "custom": "",
+                  "customPrivate": false
+                },
+                "conditional": {
+                  "show": null,
+                  "when": null,
+                  "eq": ""
+                },
+                "mask": false,
+                "inputType": "asyncData",
+                "eventName": "",
+                "executionCondition": "",
+                "id": "e1plgu"
               }
             ],
             "width": 6,
@@ -3645,7 +3193,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ep5d7of"
+            "id": "enons2"
           }
         ],
         "mask": false,
@@ -3702,7 +3250,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "egvznsl"
+        "id": "e44ut9"
       },
       {
         "label": "Container",
@@ -3803,7 +3351,7 @@
                     "rightIcon": "",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "e77euv"
+                    "id": "er3udvn"
                   }
                 ],
                 "width": 6,
@@ -3862,7 +3410,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eedj5hb"
+                "id": "ebwt4x9"
               },
               {
                 "components": [],
@@ -3922,7 +3470,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ew8cmusa"
+                "id": "ez0bjvv"
               },
               {
                 "xs": 0,
@@ -4003,7 +3551,7 @@
                     "action": "submit",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "eqrvev8"
+                    "id": "ehkj5h"
                   }
                 ],
                 "placeholder": "",
@@ -4046,7 +3594,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "enorg"
+                "id": "eyhhth9"
               },
               {
                 "xs": 0,
@@ -4127,7 +3675,7 @@
                     "rightIcon": "",
                     "action": "submit",
                     "disableOnInvalid": false,
-                    "id": "e1x70rm"
+                    "id": "ez65mfp"
                   }
                 ],
                 "placeholder": "",
@@ -4170,7 +3718,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e08hcybt"
+                "id": "ezqc31p"
               }
             ],
             "mask": false,
@@ -4184,8 +3732,9 @@
               "json": "",
               "eq": ""
             },
-            "customConditional": "",
+            "customConditional": "var isDraftStatus = false;\r\nif (data.caseStatus) {\r\n  isDraftStatus = data.caseStatus.status === \"draft\";\r\n}\r\nvar isCreateMode = instance.options.formMode === 'CREATE';\r\nshow = isDraftStatus || isCreateMode;",
             "logic": [],
+            "attributes": {},
             "type": "columns",
             "input": false,
             "tags": [],
@@ -4226,7 +3775,438 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "esbeles"
+            "id": "eqpmn2z"
+          },
+          {
+            "label": "Columns",
+            "columns": [
+              {
+                "components": [],
+                "width": 6,
+                "offset": 0,
+                "push": 0,
+                "pull": 0,
+                "type": "column",
+                "input": false,
+                "hideOnChildrenHidden": false,
+                "key": "column",
+                "tableView": true,
+                "label": "Column",
+                "xs": 0,
+                "sm": 12,
+                "md": 3,
+                "lg": 0,
+                "xl": 0,
+                "classes": "",
+                "placeholder": "",
+                "prefix": "",
+                "customClass": "",
+                "suffix": "",
+                "multiple": false,
+                "defaultValue": null,
+                "protected": false,
+                "unique": false,
+                "persistent": true,
+                "hidden": false,
+                "clearOnHide": true,
+                "dataGridLabel": false,
+                "labelPosition": "top",
+                "labelWidth": 30,
+                "labelMargin": 3,
+                "description": "",
+                "errorLabel": "",
+                "tooltip": "",
+                "hideLabel": false,
+                "tabindex": "",
+                "disabled": false,
+                "autofocus": false,
+                "dbIndex": false,
+                "customDefaultValue": "",
+                "calculateValue": "",
+                "allowCalculateOverride": false,
+                "widget": null,
+                "refreshOn": "",
+                "clearOnRefresh": false,
+                "validateOn": "change",
+                "validate": {
+                  "required": false,
+                  "custom": "",
+                  "customPrivate": false
+                },
+                "conditional": {
+                  "show": null,
+                  "when": null,
+                  "eq": ""
+                },
+                "id": "epne9bs"
+              },
+              {
+                "components": [
+                  {
+                    "label": "Cancel",
+                    "action": "event",
+                    "state": "",
+                    "showValidations": false,
+                    "event": "cancel",
+                    "shortcut": "",
+                    "block": true,
+                    "mask": false,
+                    "tableView": true,
+                    "alwaysEnabled": false,
+                    "encrypted": false,
+                    "validate": {
+                      "customMessage": "",
+                      "json": "",
+                      "required": false,
+                      "custom": "",
+                      "customPrivate": false
+                    },
+                    "key": "Cancel2",
+                    "properties": {},
+                    "conditional": {
+                      "show": "",
+                      "when": "",
+                      "json": "",
+                      "eq": ""
+                    },
+                    "customConditional": "",
+                    "logic": [],
+                    "type": "button",
+                    "input": true,
+                    "tags": [],
+                    "placeholder": "",
+                    "prefix": "",
+                    "customClass": "",
+                    "suffix": "",
+                    "multiple": false,
+                    "defaultValue": null,
+                    "protected": false,
+                    "unique": false,
+                    "persistent": false,
+                    "hidden": false,
+                    "clearOnHide": true,
+                    "dataGridLabel": true,
+                    "labelPosition": "top",
+                    "labelWidth": 30,
+                    "labelMargin": 3,
+                    "description": "",
+                    "errorLabel": "",
+                    "tooltip": "",
+                    "hideLabel": false,
+                    "tabindex": "",
+                    "disabled": false,
+                    "autofocus": false,
+                    "dbIndex": false,
+                    "customDefaultValue": "",
+                    "calculateValue": "",
+                    "allowCalculateOverride": false,
+                    "widget": null,
+                    "refreshOn": "",
+                    "clearOnRefresh": false,
+                    "validateOn": "change",
+                    "size": "md",
+                    "leftIcon": "",
+                    "rightIcon": "",
+                    "disableOnInvalid": false,
+                    "theme": "default",
+                    "id": "e2f87n8"
+                  }
+                ],
+                "width": 6,
+                "offset": 0,
+                "push": 0,
+                "pull": 0,
+                "type": "column",
+                "input": false,
+                "hideOnChildrenHidden": false,
+                "key": "column",
+                "tableView": true,
+                "label": "Column",
+                "xs": 0,
+                "sm": 12,
+                "md": 3,
+                "lg": 0,
+                "xl": 0,
+                "classes": "",
+                "placeholder": "",
+                "prefix": "",
+                "customClass": "",
+                "suffix": "",
+                "multiple": false,
+                "defaultValue": null,
+                "protected": false,
+                "unique": false,
+                "persistent": true,
+                "hidden": false,
+                "clearOnHide": true,
+                "dataGridLabel": false,
+                "labelPosition": "top",
+                "labelWidth": 30,
+                "labelMargin": 3,
+                "description": "",
+                "errorLabel": "",
+                "tooltip": "",
+                "hideLabel": false,
+                "tabindex": "",
+                "disabled": false,
+                "autofocus": false,
+                "dbIndex": false,
+                "customDefaultValue": "",
+                "calculateValue": "",
+                "allowCalculateOverride": false,
+                "widget": null,
+                "refreshOn": "",
+                "clearOnRefresh": false,
+                "validateOn": "change",
+                "validate": {
+                  "required": false,
+                  "custom": "",
+                  "customPrivate": false
+                },
+                "conditional": {
+                  "show": null,
+                  "when": null,
+                  "eq": ""
+                },
+                "id": "e371kvf"
+              },
+              {
+                "xs": 0,
+                "sm": 12,
+                "md": 3,
+                "lg": 0,
+                "xl": 0,
+                "classes": "",
+                "type": "column",
+                "input": false,
+                "hideOnChildrenHidden": false,
+                "key": "column",
+                "tableView": true,
+                "label": "Column",
+                "components": [
+                  {
+                    "label": "Save",
+                    "state": "",
+                    "theme": "primary",
+                    "shortcut": "",
+                    "block": true,
+                    "mask": false,
+                    "tableView": true,
+                    "alwaysEnabled": false,
+                    "encrypted": false,
+                    "validate": {
+                      "customMessage": "",
+                      "json": "",
+                      "required": false,
+                      "custom": "",
+                      "customPrivate": false
+                    },
+                    "key": "Create2",
+                    "properties": {},
+                    "conditional": {
+                      "show": "",
+                      "when": "",
+                      "json": "",
+                      "eq": ""
+                    },
+                    "customConditional": "",
+                    "logic": [],
+                    "attributes": {},
+                    "type": "button",
+                    "input": true,
+                    "tags": [],
+                    "placeholder": "",
+                    "prefix": "",
+                    "customClass": "",
+                    "suffix": "",
+                    "multiple": false,
+                    "defaultValue": null,
+                    "protected": false,
+                    "unique": false,
+                    "persistent": false,
+                    "hidden": false,
+                    "clearOnHide": true,
+                    "dataGridLabel": true,
+                    "labelPosition": "top",
+                    "labelWidth": 30,
+                    "labelMargin": 3,
+                    "description": "",
+                    "errorLabel": "",
+                    "tooltip": "",
+                    "hideLabel": false,
+                    "tabindex": "",
+                    "disabled": false,
+                    "autofocus": false,
+                    "dbIndex": false,
+                    "customDefaultValue": "",
+                    "calculateValue": "",
+                    "allowCalculateOverride": false,
+                    "widget": null,
+                    "refreshOn": "",
+                    "clearOnRefresh": false,
+                    "validateOn": "change",
+                    "size": "md",
+                    "leftIcon": "",
+                    "rightIcon": "",
+                    "action": "submit",
+                    "disableOnInvalid": false,
+                    "id": "ebyoov6"
+                  }
+                ],
+                "placeholder": "",
+                "prefix": "",
+                "customClass": "",
+                "suffix": "",
+                "multiple": false,
+                "defaultValue": null,
+                "protected": false,
+                "unique": false,
+                "persistent": true,
+                "hidden": false,
+                "clearOnHide": true,
+                "dataGridLabel": false,
+                "labelPosition": "top",
+                "labelWidth": 30,
+                "labelMargin": 3,
+                "description": "",
+                "errorLabel": "",
+                "tooltip": "",
+                "hideLabel": false,
+                "tabindex": "",
+                "disabled": false,
+                "autofocus": false,
+                "dbIndex": false,
+                "customDefaultValue": "",
+                "calculateValue": "",
+                "allowCalculateOverride": false,
+                "widget": null,
+                "refreshOn": "",
+                "clearOnRefresh": false,
+                "validateOn": "change",
+                "validate": {
+                  "required": false,
+                  "custom": "",
+                  "customPrivate": false
+                },
+                "conditional": {
+                  "show": null,
+                  "when": null,
+                  "eq": ""
+                },
+                "id": "e1n9h3"
+              },
+              {
+                "xs": 0,
+                "sm": 12,
+                "md": 3,
+                "lg": 0,
+                "xl": 0,
+                "classes": "",
+                "type": "column",
+                "input": false,
+                "hideOnChildrenHidden": false,
+                "key": "column",
+                "tableView": true,
+                "label": "Column",
+                "components": [],
+                "placeholder": "",
+                "prefix": "",
+                "customClass": "",
+                "suffix": "",
+                "multiple": false,
+                "defaultValue": null,
+                "protected": false,
+                "unique": false,
+                "persistent": true,
+                "hidden": false,
+                "clearOnHide": true,
+                "dataGridLabel": false,
+                "labelPosition": "top",
+                "labelWidth": 30,
+                "labelMargin": 3,
+                "description": "",
+                "errorLabel": "",
+                "tooltip": "",
+                "hideLabel": false,
+                "tabindex": "",
+                "disabled": false,
+                "autofocus": false,
+                "dbIndex": false,
+                "customDefaultValue": "",
+                "calculateValue": "",
+                "allowCalculateOverride": false,
+                "widget": null,
+                "refreshOn": "",
+                "clearOnRefresh": false,
+                "validateOn": "change",
+                "validate": {
+                  "required": false,
+                  "custom": "",
+                  "customPrivate": false
+                },
+                "conditional": {
+                  "show": null,
+                  "when": null,
+                  "eq": ""
+                },
+                "id": "ek0o0ie"
+              }
+            ],
+            "mask": false,
+            "tableView": false,
+            "alwaysEnabled": false,
+            "key": "columns5",
+            "properties": {},
+            "conditional": {
+              "show": "",
+              "when": "",
+              "json": "",
+              "eq": ""
+            },
+            "customConditional": "var isDraftStatus = false;\r\nif (data.caseStatus) {\r\n  isDraftStatus = data.caseStatus.status === \"draft\";\r\n}\r\nvar isCreateMode = instance.options.formMode === 'CREATE';\r\nshow = !isDraftStatus && !isCreateMode;",
+            "logic": [],
+            "attributes": {},
+            "type": "columns",
+            "input": false,
+            "tags": [],
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": false,
+            "hidden": false,
+            "clearOnHide": false,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "labelWidth": 30,
+            "labelMargin": 3,
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "allowCalculateOverride": false,
+            "widget": null,
+            "refreshOn": "",
+            "clearOnRefresh": false,
+            "validateOn": "change",
+            "validate": {
+              "required": false,
+              "custom": "",
+              "customPrivate": false
+            },
+            "autoAdjust": false,
+            "hideOnChildrenHidden": false,
+            "id": "er88g9w"
           }
         ],
         "tags": [],
@@ -4260,7 +4240,7 @@
         "clearOnRefresh": false,
         "validateOn": "change",
         "tree": true,
-        "id": "edxe5ml"
+        "id": "ebjgbfx"
       }
     ]
   },
@@ -4273,7 +4253,9 @@
       "Additionally": "Дополнительно",
       "Cancel": "Отмена",
       "Save": "Сохранить",
-      "Create": "Создать"
+      "Create": "Создать",
+      "rest": "Остаток",
+      "Type of contract": "Вид договора"
     },
     "en": {
       "Basic": "Basic",
@@ -4283,7 +4265,9 @@
       "Additionally": "Additionally",
       "Cancel": "Cancel",
       "Save": "Save",
-      "Create": "Create"
+      "Create": "Create",
+      "rest": "Rest",
+      "Type of contract": "Type of contract"
     }
   }
 }
