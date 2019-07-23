@@ -150,7 +150,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      * @param startDate Start date. May be null or empty string
      * @return List of maps
      */
-    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, Integer limit) {
+    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, Date startDate, Integer limit) {
         return getHistoryRecordsByUsernameWithDateLimit(username, startDate, null, limit);
     }
 
@@ -162,18 +162,18 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
      * @param endDate   End date. May be null or empty string
      * @return List of maps
      */
-    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, String startDate, String endDate, Integer limit) {
+    public List<Map> getHistoryRecordsByUsernameWithDateLimit(String username, Date startDate, Date endDate, Integer limit) {
         if (StringUtils.isBlank(username)) {
             return Collections.emptyList();
         }
 
         String url = String.format(GET_BY_USERNAME, username, limit);
-        if (!StringUtils.isBlank(startDate)) {
-            url = String.format(GET_BY_USERNAME_START_DATE, username, startDate, limit);
+        if (startDate != null) {
+            url = String.format(GET_BY_USERNAME_START_DATE, username, startDate.getTime(), limit);
         }
 
-        if (!StringUtils.isBlank(startDate) && !StringUtils.isBlank(endDate)) {
-            url = String.format(GET_BY_USERNAME_START_END_DATE, username, startDate, endDate, limit);
+        if (startDate != null && endDate != null) {
+            url = String.format(GET_BY_USERNAME_START_END_DATE, username, startDate.getTime(), endDate.getTime(), limit);
         }
 
         return restTemplate.getForObject(properties.getProperty(HISTORY_SERVICE_HOST) + url, List.class);
