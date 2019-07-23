@@ -1,12 +1,14 @@
 version: '3'
 services:
   ui:
-    container_name: ecos-ui-develop-extdev
+    container_name: ecos-ui-develop
     ports:
       - 80:80/tcp
     image: nexus.citeck.ru/ecos-ui:develop-extdev
     environment:
-      - PROXY_TARGET=$ALFRESCO_HOST
+      - PROXY_TARGET=$ALFRESCO_TARGET
+      - GATEWAY_TARGET=$GATEWAY_TARGET
+      - CADVISOR_TARGET=<CADVISOR_TARGET
     depends_on:
       - gateway-app
   gateway-app:
@@ -62,6 +64,8 @@ services:
       - ./volumes/uiserv/:/default-menu-override
   gateway-psql:
     image: postgres:10.4
+    ports:
+      - 5430:5432
     environment:
       - POSTGRES_USER=gateway
       - POSTGRES_PASSWORD=
@@ -69,6 +73,8 @@ services:
       - psql_gateway:/var/lib/postgresql/data
   uiserv-psql:
     image: postgres:10.4
+    ports:
+      - 5431:5432
     environment:
       - POSTGRES_USER=uiserv
       - POSTGRES_PASSWORD=
