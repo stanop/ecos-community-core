@@ -354,6 +354,9 @@ public class CreateVariantsGet extends AbstractWebScript {
         public final boolean isDefault;
         public final boolean canCreate;
         public final String createArguments;
+        public final String recordRef;
+        public final String formKey;
+        public final Map<String, String> attributes = new HashMap<>();
 
         public ResponseVariant(CreateVariant source) {
             type = source.getType();
@@ -363,6 +366,11 @@ public class CreateVariantsGet extends AbstractWebScript {
             destination = source.getDestination();
             createArguments = source.getCreateArguments();
             canCreate = hasPermission(source.getDestinationRef(), PermissionService.CREATE_CHILDREN);
+            recordRef = source.getRecordRef();
+            formKey = source.getFormKey();
+            if (source.getAttributes() != null) {
+                attributes.putAll(source.getAttributes());
+            }
         }
     }
 }
