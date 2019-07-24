@@ -13,6 +13,3 @@ eureka:
     client:
         service-url:
             defaultZone: http://admin:${jhipster.registry.password}@jhipster-registry:8761/eureka/
-alfresco:
-    ribbon:
-        listOfServers: localhost:8080
