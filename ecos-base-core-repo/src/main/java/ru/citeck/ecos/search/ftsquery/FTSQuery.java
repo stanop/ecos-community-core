@@ -631,7 +631,16 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         public void toString(StringBuilder builder) {
             QueryConsistency consistency = searchParameters.getQueryConsistency();
             char prefix = exact || consistency.equals(QueryConsistency.TRANSACTIONAL) ? '=' : '@';
-            builder.append(prefix).append(field).append(":");
+
+            String local = field.getLocalName();
+
+            builder.append(prefix)
+                    .append(QName.NAMESPACE_BEGIN)
+                    .append(field.getNamespaceURI())
+                    .append(QName.NAMESPACE_END)
+                    .append(local.replace("-", "\\-"))
+                    .append(":");
+
             if (value instanceof Boolean || value instanceof Range) {
                 builder.append(value);
             } else {

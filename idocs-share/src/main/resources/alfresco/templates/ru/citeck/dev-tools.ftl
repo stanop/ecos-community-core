@@ -44,16 +44,39 @@
                 }
             });
         }
+
+        function updateForceNewFormsBtn() {
+            var isEnabled = localStorage.forceEnableNewForms == 'true';
+            var btn = $('#force-new-forms-btn');
+            if (isEnabled) {
+                btn.addClass('toogle_btn_enabled');
+                btn.removeClass('toogle_btn_disabled');
+            } else {
+                btn.addClass('toogle_btn_disabled');
+                btn.removeClass('toogle_btn_enabled');
+            }
+        }
+
+        function toggleForceNewForms() {
+            localStorage.forceEnableNewForms = localStorage.forceEnableNewForms != 'true';
+            updateForceNewFormsBtn();
+        }
     </script>
-<style>
-iframe {
-	border: none;
-	height: 200px;
-}
-iframe:hover {
-	outline: 1px solid lightgray;
-}
-</style>
+    <style>
+        iframe {
+             border: none;
+             height: 200px;
+        }
+        iframe:hover {
+            outline: 1px solid lightgray;
+        }
+        .toogle_btn_enabled {
+            background-color: #bfe874;
+        }
+        .toogle_btn_disabled {
+            background-color: #dddddd;
+        }
+    </style>
 </head>
 <body>
 
@@ -77,6 +100,9 @@ iframe:hover {
             </div>
             <input class="submit-button" type="button" value="Reload Selected" onclick="resetServicesCache()" />
         </form>
+        <div style="margin-left: 20px; display: inline-block">
+            <input id="force-new-forms-btn" type="button" value="Force New Forms" onclick="toggleForceNewForms()" />
+        </div>
     </div>
     <iframe name="repo-webscripts" width="500px"></iframe>
     <iframe name="repo-js-debugger" src="/share/proxy/alfresco/api/javascript/debugger"></iframe>
@@ -101,6 +127,10 @@ iframe:hover {
     <iframe name="share-caches"></iframe>
 
     <iframe name="share-surfbug" src="${url.context}/page/surfBugStatus"></iframe>
+
+    <script>
+        updateForceNewFormsBtn();
+    </script>
 
 </body>
 </html>
