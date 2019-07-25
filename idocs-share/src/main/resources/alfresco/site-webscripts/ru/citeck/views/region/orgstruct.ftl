@@ -44,6 +44,10 @@
                                                                         allowedGroupType: '${params.allowedGroupType}',
                                                                     </#if>
 
+                                                                    <#if params.allowedGroupSubType??>
+                                                                        allowedGroupSubType: '${params.allowedGroupSubType}',
+                                                                    </#if>
+
                                                                     <#if allExcludeAuthorities??>
                                                                         excludeAuthorities: '${allExcludeAuthorities?trim}',
                                                                     </#if>

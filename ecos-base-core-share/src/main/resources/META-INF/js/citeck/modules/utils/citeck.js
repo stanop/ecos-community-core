@@ -1332,6 +1332,7 @@ define([
                 fullName: p_oItem.fullName,
                 authorityType: p_oItem.authorityType,
                 groupType: p_oItem.groupType,
+                groupSubType: p_oItem.groupSubType,
                 editable: false
             }, p_oParent, p_expanded);
 
