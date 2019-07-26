@@ -542,7 +542,15 @@
                     <param name="key">closing-document.form.prop_tk_kind.title</param>
                 </region>
             </field>
-            <field prop="tk:type" template="none"/>
+            <field prop="tk:type" template="none">
+                <invariant on="value" language="javascript"><![CDATA[(function() {
+                    if (view.params.tk_type) {
+                        return view.params.tk_type;
+                    }
+                    var persisted = node.impl().attribute('tk:type').persistedValue();
+                    return persisted || null;
+                })()]]></invariant>
+            </field>
             <field prop="contracts:closingDocumentDate">
                 <region name="label" template="label">
                     <param name="key">contracts_contractsModel.property.contracts_closingDocumentDate.title</param>
@@ -627,7 +635,15 @@
                     <param name="key">sup-agreement.form.tk_kind.title</param>
                 </region>
             </field>
-            <field prop="tk:type" template="none"/>
+            <field prop="tk:type" template="none">
+                <invariant on="value" language="javascript"><![CDATA[(function() {
+                    if (view.params.tk_type) {
+                        return view.params.tk_type;
+                    }
+                    var persisted = node.impl().attribute('tk:type').persistedValue();
+                    return persisted || null;
+                })()]]></invariant>
+            </field>
         </view>
         <view>
             <field prop="contracts:agreementNumber">

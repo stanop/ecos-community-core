@@ -46,7 +46,7 @@ public class DisplayNameConfiguration {
             if (StringUtils.isNotBlank(userName)) {
                 result.append(userName);
             } else {
-                result.append(String.valueOf(info.getNodeRef()));
+                result.append(info.getNodeRef());
             }
         }
 

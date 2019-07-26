@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records.source.alf.meta;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AccessStatus;
@@ -7,6 +8,7 @@ import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
 import ru.citeck.ecos.node.AlfNodeInfo;
 import ru.citeck.ecos.node.DisplayNameService;
 import ru.citeck.ecos.records.meta.MetaUtils;
@@ -17,6 +19,7 @@ import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
 import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
@@ -105,7 +108,7 @@ public class AlfNodeRecord implements MetaValue {
 
                 attribute = node.aspects()
                                 .stream()
-                                .map(o -> toAlfNodeAtt(o, field))
+                                .map(o -> toMetaValue(null, o, field))
                                 .collect(Collectors.toList());
                 break;
 
@@ -165,6 +168,17 @@ public class AlfNodeRecord implements MetaValue {
 
                 return Collections.singletonList(getPermissions());
 
+            case "previewInfo":
+
+                AlfNodeContentPathRegistry contentPath = context.getService(AlfNodeContentPathRegistry.QNAME);
+                String path = contentPath.getContentPath(new NodeInfo());
+                RecordsService recordsService = context.getRecordsService();
+                if (recordsService == null) {
+                    return null;
+                }
+                JsonNode previewInfo = recordsService.getAttribute(recordRef, path + ".previewInfo?json");
+                return MetaUtils.toMetaValues(previewInfo, context, field);
+
             default:
 
                 Attribute nodeAtt = node.attribute(name);
@@ -180,9 +194,9 @@ public class AlfNodeRecord implements MetaValue {
                 }
                 if (attribute == null) {
                     attribute = nodeAtt.getValues()
-                                       .stream()
-                                       .map(v -> toAlfNodeAtt(nodeAtt, v, field))
-                                       .collect(Collectors.toList());
+                            .stream()
+                            .map(v -> toMetaValue(nodeAtt, v, field))
+                            .collect(Collectors.toList());
                 }
         }
 
@@ -205,16 +219,19 @@ public class AlfNodeRecord implements MetaValue {
         return new AlfNodeMetaEdge(context, type, name, this);
     }
 
-    private MetaValue toAlfNodeAtt(Attribute att, Object value, MetaField metaField) {
-        MetaValue result = new AlfNodeAttValue(att, value);
-        result.init(context, metaField);
-        return result;
-    }
-
-    private MetaValue toAlfNodeAtt(Object value, MetaField metaField) {
-        MetaValue result = new AlfNodeAttValue(value);
-        result.init(context, metaField);
-        return result;
+    private MetaValue toMetaValue(Attribute att, Object value, MetaField field) {
+        MetaValue metaValue;
+        if (value instanceof NodeRef) {
+            metaValue = new AlfNodeRecord(RecordRef.valueOf(value.toString()));
+        } else {
+            if (att != null) {
+                metaValue = new AlfNodeAttValue(att, value);
+            } else {
+                metaValue = new AlfNodeAttValue(value);
+            }
+        }
+        metaValue.init(context, field);
+        return metaValue;
     }
 
     public class Permissions implements MetaValue {
