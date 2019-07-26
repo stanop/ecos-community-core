@@ -12,6 +12,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.document.sum.DocSumResolveRegistry;
+import ru.citeck.ecos.document.sum.DocSumResolver;
 import ru.citeck.ecos.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
@@ -39,7 +41,6 @@ import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static ru.citeck.ecos.records.workflow.WorkflowTaskRecordsConstants.*;
@@ -59,18 +60,19 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final AuthorityService authorityService;
     private final WorkflowTaskRecordsUtils workflowTaskRecordsUtils;
     private final OwnerService ownerService;
-
-    private Map<String, String> sumAttributeByType = new ConcurrentHashMap<>();
+    private final DocSumResolveRegistry docSumResolveRegistry;
 
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
-                               AuthorityService authorityService, OwnerService ownerService) {
+                               AuthorityService authorityService, OwnerService ownerService,
+                               DocSumResolveRegistry docSumResolveRegistry) {
         setId(ID);
         this.ecosTaskService = ecosTaskService;
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
         this.authorityService = authorityService;
         this.ownerService = ownerService;
+        this.docSumResolveRegistry = docSumResolveRegistry;
     }
 
     @Override
@@ -199,10 +201,6 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         }).collect(Collectors.toList());
     }
 
-    public void setSumAttributeByType(String type, String attribute) {
-        sumAttributeByType.put(type, attribute);
-    }
-
     public static class TaskIdQuery {
         @MetaAtt("cm:name")
         @Getter @Setter public String taskId;
@@ -263,15 +261,6 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
             for (String att : attributesMap.keySet()) {
                 switch (att) {
-                    case ATT_DOC_SUM:
-                        if (documentRef != null) {
-                            String type = recordsService.getAttribute(documentRef, "_type").asText();
-                            if (sumAttributeByType.containsKey(type)) {
-                                documentAttributes.put(ATT_DOC_SUM, sumAttributeByType.get(type));
-                                customAttributes.add(ATT_DOC_SUM);
-                            }
-                        }
-                        break;
                     case ATT_DOC_DISP_NAME:
                         documentAttributes.put(ATT_DOC_DISP_NAME, "cm:title");
                         customAttributes.add(ATT_DOC_DISP_NAME);
@@ -414,6 +403,14 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     return workflowTaskRecordsUtils.isAssignable(attributes, hasOwner, hasClaimOwner, hasPooledActors);
                 case ATT_ACTIVE:
                     return attributes.get("bpm_completionDate") == null;
+                case ATT_DOC_SUM:
+                    String ref = getDocumentRef().getId();
+                    if (NodeRef.isNodeRef(ref)) {
+                        NodeRef document = new NodeRef(ref);
+                        DocSumResolver resolver = docSumResolveRegistry.get(document);
+                        return resolver.resolve(document);
+                    }
+                    return null;
             }
 
             return attributes.get(name);
