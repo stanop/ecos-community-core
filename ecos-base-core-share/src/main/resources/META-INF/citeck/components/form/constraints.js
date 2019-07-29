@@ -478,9 +478,10 @@ require([
         } else {
             isFormsEnabled = Promise.resolve(true);
         }
+        var isShouldDisplay = isShouldDisplayFormsForUser();
 
-        isFormsEnabled.then(function(enabled) {
-            if (enabled) {
+        Promise.all([isFormsEnabled, isShouldDisplay]).then(function (values) {
+            if(values[0] || values[1]) {
                 require(['ecosui!ecos-form-utils'], function(utils) {
                     utils.default.hasForm(recordRef).then(function (result) {
                         if (result) {
@@ -498,6 +499,51 @@ require([
             showForm(null);
         });
     };
+
+    function isShouldDisplayFormsForUser() {
+        return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str").then(function(result) {
+            if(result == "left") {
+                return isShouldDisplayForms();
+            }
+            return false;
+        });
+    }
+
+    function isShouldDisplayForms() {
+        return Citeck.Records.get("ecos-config@default-ui-left-menu-access-groups")
+            .load(".str").then(function(groupsInOneString) {
+
+                if (!groupsInOneString) {
+                    return false;
+                }
+
+                var groups = groupsInOneString.split(',');
+                var results = [];
+                for(var groupsCounter = 0; groupsCounter < groups.length; ++groupsCounter) {
+                    results.push(isCurrentUserInGroup(groups[groupsCounter]));
+                }
+                return Promise.all(results).then(function (values) {
+                    return values.indexOf(false) == -1;
+                });
+            });
+    }
+
+    function isCurrentUserInGroup(group) {
+        var currentPersonName = Alfresco.constants.USERNAME;
+        return Citeck.Records.queryOne({
+            "query": 'TYPE:"cm:authority" AND =cm:authorityName:"' + group + '"',
+            "language": "fts-alfresco"
+        }, {
+            users: 'cm:member[].cm:userName'
+        }).then(function (usersInGroup) {
+            var usernames = usersInGroup["users"];
+            if(!usernames || usernames.length == 0) {
+                return false;
+            }
+
+            return usernames.indexOf(currentPersonName) != -1;
+        });
+    }
 
     Citeck.forms.handleHeaderCreateVariant = function (variant) {
 
