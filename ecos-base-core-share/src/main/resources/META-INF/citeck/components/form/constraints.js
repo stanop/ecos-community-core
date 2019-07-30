@@ -534,7 +534,6 @@ require([
             "query": 'TYPE:"cm:authority" AND =cm:authorityName:"' + group + '"',
             "language": "fts-alfresco"
         }, 'cm:member[].cm:userName').then(function (usernames) {
-            debugger;
             return (usernames || []).indexOf(currentPersonName) != -1
         });
     }
