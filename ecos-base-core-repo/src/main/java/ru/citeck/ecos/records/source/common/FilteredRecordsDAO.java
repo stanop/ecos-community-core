@@ -39,6 +39,11 @@ public abstract class FilteredRecordsDAO extends AbstractRecordsDAO implements R
         return records;
     }
 
+    @Override
+    public List<String> getSupportedLanguages() {
+        return targetDAO.getSupportedLanguages();
+    }
+
     protected abstract Function<List<RecordRef>, List<RecordRef>> getFilter(RecordsQuery query);
 
     public void setTargetDAO(RecordsQueryDAO targetDAO) {
