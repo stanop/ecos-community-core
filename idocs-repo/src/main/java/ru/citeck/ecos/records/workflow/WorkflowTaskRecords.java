@@ -8,6 +8,7 @@ import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
+import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryLocalDAO;
+import ru.citeck.ecos.utils.WorkflowUtils;
 import ru.citeck.ecos.workflow.owner.OwnerAction;
 import ru.citeck.ecos.workflow.owner.OwnerService;
 import ru.citeck.ecos.workflow.tasks.EcosTaskService;
@@ -61,18 +63,21 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final WorkflowTaskRecordsUtils workflowTaskRecordsUtils;
     private final OwnerService ownerService;
     private final DocSumResolveRegistry docSumResolveRegistry;
+    private final WorkflowUtils workflowUtils;
 
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
                                AuthorityService authorityService, OwnerService ownerService,
-                               DocSumResolveRegistry docSumResolveRegistry) {
+                               DocSumResolveRegistry docSumResolveRegistry,
+                               WorkflowUtils workflowUtils) {
         setId(ID);
         this.ecosTaskService = ecosTaskService;
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
         this.authorityService = authorityService;
         this.ownerService = ownerService;
         this.docSumResolveRegistry = docSumResolveRegistry;
+        this.workflowUtils = workflowUtils;
     }
 
     @Override
@@ -183,7 +188,37 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
     @Override
     public RecordsQueryResult<RecordRef> getLocalRecords(RecordsQuery query) {
-        ComposedPredicate predicate = workflowTaskRecordsUtils.buildPredicateQuery(query);
+
+        WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
+
+        if (tasksQuery.actors != null
+                && tasksQuery.actors.size() == 1
+                && StringUtils.isNotBlank(tasksQuery.document)) {
+
+            String actor = tasksQuery.actors.get(0);
+            String document = tasksQuery.document;
+
+            if (CURRENT_USER.equals(actor) && NodeRef.isNodeRef(document)) {
+
+                List<WorkflowTask> tasks;
+
+                if (tasksQuery.active == null) {
+                    tasks = workflowUtils.getDocumentUserTasks(new NodeRef(document));
+                } else {
+                    tasks = workflowUtils.getDocumentUserTasks(new NodeRef(document), tasksQuery.active);
+                }
+
+                List<RecordRef> taskRefs = tasks.stream()
+                        .map(t -> RecordRef.valueOf(t.getId()))
+                        .collect(Collectors.toList());
+
+                RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
+                result.setRecords(taskRefs);
+                return result;
+            }
+        }
+
+        ComposedPredicate predicate = workflowTaskRecordsUtils.buildPredicateQuery(tasksQuery);
         if (predicate == null || predicate.getPredicates().isEmpty()) {
             return new RecordsQueryResult<>();
         }
