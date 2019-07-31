@@ -75,6 +75,12 @@ public class WorkflowUtils {
         }
     }
 
+    public List<WorkflowTask> getDocumentUserTasks(NodeRef nodeRef) {
+        List<WorkflowTask> tasks = new ArrayList<>(getDocumentUserTasks(nodeRef, true));
+        tasks.addAll(new ArrayList<>(getDocumentUserTasks(nodeRef, false)));
+        return tasks;
+    }
+
     public List<WorkflowTask> getDocumentUserTasks(NodeRef nodeRef, boolean active) {
         return getDocumentUserTasks(nodeRef, active, null);
     }

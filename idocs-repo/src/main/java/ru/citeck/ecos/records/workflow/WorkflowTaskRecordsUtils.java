@@ -51,8 +51,7 @@ public class WorkflowTaskRecordsUtils {
         this.ecosTaskService = ecosTaskService;
     }
 
-    ComposedPredicate buildPredicateQuery(RecordsQuery query) {
-        WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
+    ComposedPredicate buildPredicateQuery(WorkflowTaskRecords.TasksQuery tasksQuery) {
 
         AndPredicate predicate = new AndPredicate();
         predicate.addPredicate(ValuePredicate.equal("TYPE", WorkflowModel.TYPE_TASK.toString()));
