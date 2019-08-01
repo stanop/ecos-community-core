@@ -538,6 +538,12 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         @Override
         public void toString(StringBuilder builder) {
             term0.toString(builder);
+            if (term1 == null) {
+                return;
+            }
+            if (term1 instanceof Group && ((Group) term1).isEmpty()) {
+                return;
+            }
             builder.append(' ').append(operator).append(' ');
             term1.toString(builder);
         }
@@ -684,6 +690,16 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         private String query = null;
         private int hash = 0;
 
+        boolean isEmpty() {
+
+            boolean termIsEmpty = term == null || term instanceof Group && ((Group) term).isEmpty();
+
+            return termIsEmpty
+                    && unOperator == null
+                    && biOperator == null
+                    && group == null;
+        }
+
         void startGroup() {
             if (group != null) {
                 group.startGroup();
@@ -721,11 +737,14 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
                 group.setBiOperator(operator);
             } else {
                 if (term == null) {
-                    throw new IllegalStateException("Binary operator can't be used without left operand");
+                    if (biOperator != null) {
+                        biOperator.operator = operator.operator;
+                    }
+                } else {
+                    biOperator = operator;
+                    biOperator.term0 = term;
+                    term = null;
                 }
-                biOperator = operator;
-                biOperator.term0 = term;
-                term = null;
             }
             query = null;
         }
@@ -758,12 +777,8 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
                 return query;
             }
 
-            if (term == null) {
-                return "()";
-            }
-
             StringBuilder sb = new StringBuilder();
-            term.toString(sb);
+            toString(sb, true);
             query = sb.toString();
 
             return query;
@@ -781,12 +796,40 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
         @Override
         public void toString(StringBuilder builder) {
+            toString(builder, false);
+        }
+
+        private void toString(StringBuilder builder, boolean isRootGroup) {
+
+            Term term = this.term;
+
+            if (term == null && biOperator != null) {
+                term = biOperator.term0;
+            }
+
             if (term instanceof Operand) {
-                term.toString(builder);
+
+                if (term instanceof Group) {
+                    ((Group) term).toString(builder, isRootGroup);
+                } else {
+                    term.toString(builder);
+                }
+
             } else {
-                builder.append('(');
-                term.toString(builder);
-                builder.append(')');
+
+                boolean withBrackets = !isRootGroup && term instanceof BinOperatorTerm;
+
+                if (withBrackets) {
+                    builder.append('(');
+                }
+                if (term != null) {
+                    term.toString(builder);
+                } else if (isRootGroup) {
+                    builder.append("()");
+                }
+                if (withBrackets) {
+                    builder.append(')');
+                }
             }
         }
 
