@@ -75,5 +75,12 @@ public class FTSQueryTest {
                 "(" + fieldQuery + " OR " + fieldQuery + " OR " +
                     "(ISNULL:\"" + field + "\" OR ISUNSET:\"" + field + "\")" +
                 ") OR " + fieldQuery, query.getQuery()) ;
+
+        query = FTSQuery.createRaw()
+                        .open()
+                        .exact(field, value).and()
+                        .open().open().close().close()
+                        .close();
+        assertEquals(fieldQuery, query.getQuery());
     }
 }

@@ -538,10 +538,14 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         @Override
         public void toString(StringBuilder builder) {
             term0.toString(builder);
-            if (term1 != null) {
-                builder.append(' ').append(operator).append(' ');
-                term1.toString(builder);
+            if (term1 == null) {
+                return;
             }
+            if (term1 instanceof Group && ((Group) term1).isEmpty()) {
+                return;
+            }
+            builder.append(' ').append(operator).append(' ');
+            term1.toString(builder);
         }
 
         @Override
@@ -685,6 +689,16 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
 
         private String query = null;
         private int hash = 0;
+
+        boolean isEmpty() {
+
+            boolean termIsEmpty = term == null || term instanceof Group && ((Group) term).isEmpty();
+
+            return termIsEmpty
+                    && unOperator == null
+                    && biOperator == null
+                    && group == null;
+        }
 
         void startGroup() {
             if (group != null) {
