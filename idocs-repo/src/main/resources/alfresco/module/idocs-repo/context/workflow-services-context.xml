@@ -243,6 +243,7 @@
                 <ref bean="simpleGrantWorkflowPackage" />
                 <ref bean="taskHistoryListener" />
                 <ref bean="sendUnavailableOnAssignTaskListener" />
+               <!-- <ref bean="taskEventListener"/>-->
             </list>
         </property>
     </bean>
@@ -260,6 +261,7 @@
                 <ref bean="taskHistoryListener" />
                 <ref bean="assignTaskToSingleCandidate" />
                 <ref bean="sendTaskNotificationListener" />
+                <!--<ref bean="taskEventListener"/>-->
             </list>
         </property>
     </bean>
@@ -275,6 +277,7 @@
                 <ref bean="sendUnavailableOnCompleteTaskListener" />
                 <ref bean="workflowMirrorListener" />
                 <ref bean="taskHistoryListener" />
+               <!-- <ref bean="taskEventListener"/>-->
             </list>
         </property>
     </bean>
@@ -325,6 +328,10 @@
 
     <bean id="taskHistoryListener" class="ru.citeck.ecos.workflow.listeners.TaskHistoryListener" />
     <bean id="workflowHistoryListener" class="ru.citeck.ecos.workflow.listeners.WorkflowHistoryListener" />
+
+    <!--<bean id="taskEventListener" class="ru.citeck.ecos.workflow.listeners.TaskEventListener"/>-->
+
+    <bean id="panelOfAuthorized.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
 
     <!-- ====================== -->
     <!-- notification listeners -->
