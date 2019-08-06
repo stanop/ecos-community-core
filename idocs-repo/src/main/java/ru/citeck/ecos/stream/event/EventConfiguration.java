@@ -4,12 +4,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.citeck.ecos.events.EventConnection;
-import ru.citeck.ecos.spring.registry.MappingRegistry;
 
-/*@Configuration*/
+@Configuration
 public class EventConfiguration {
 
-    /*@Value("${event.server.host}")
+    @Value("${event.server.host}")
     private String HOST;
 
     @Value("${event.server.port}")
@@ -21,7 +20,7 @@ public class EventConfiguration {
     @Value("${event.server.password}")
     private String PASSWORD;
 
-    @Bean(name = "eventConnection")
+    @Bean
     public EventConnection eventConnection() {
         return new EventConnection.Builder()
                 .host(HOST)
@@ -31,7 +30,5 @@ public class EventConfiguration {
                 .tenantId("local-alfresco")
                 .build();
     }
-
-     */
 
 }

@@ -89,7 +89,9 @@ public class EventFactory {
         TaskEventDTO dto = new TaskEventDTO(eventName);
 
         NodeRef document = documentResolverRegistry.getResolver(task.getExecution()).getDocument(task.getExecution());
-        dto.setDocument(document.toString());
+        if (document != null) {
+            dto.setDocument(document.toString());
+        }
 
         QName taskType = QName.createQName((String) task.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY),
                 namespaceService);
@@ -149,7 +151,6 @@ public class EventFactory {
         dto.setWorkflowInstanceId(ACTIVITI_PREFIX + task.getProcessInstanceId());
         dto.setWorkflowDescription((String) task.getExecution().getVariable(VAR_DESCRIPTION));
         dto.setInitiator(assignee != null ? assignee : HistoryService.SYSTEM_USER);
-        dto.setDocument(document.toString());
 
         return Optional.of(dto);
     }
