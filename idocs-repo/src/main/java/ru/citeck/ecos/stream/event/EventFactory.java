@@ -32,6 +32,9 @@ import ru.citeck.ecos.workflow.listeners.WorkflowDocumentResolverRegistry;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author Roman Makarskiy
+ */
 @Log4j
 @Component
 public class EventFactory {

@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.citeck.ecos.events.EventConnection;
 
+/**
+ * @author Roman Makarskiy
+ */
 @Configuration
 public class EventConfiguration {
 
@@ -20,6 +23,10 @@ public class EventConfiguration {
     @Value("${event.server.password}")
     private String PASSWORD;
 
+    //TODO: move tenant id to ecos config?
+    @Value("event.server.tenant.id")
+    private String TENANT_ID;
+
     @Bean
     public EventConnection eventConnection() {
         return new EventConnection.Builder()
@@ -27,7 +34,7 @@ public class EventConfiguration {
                 .port(PORT)
                 .username(USERNAME)
                 .password(PASSWORD)
-                .tenantId("local-alfresco")
+                .tenantId(TENANT_ID)
                 .build();
     }
 
