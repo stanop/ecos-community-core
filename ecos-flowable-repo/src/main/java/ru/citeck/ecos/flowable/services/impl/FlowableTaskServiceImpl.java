@@ -136,7 +136,6 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         }
     }
 
-
     public Object getVariable(String taskId, String variableName) {
         Object result = getVariables(taskId).get(variableName);
 
@@ -153,8 +152,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     }
 
     public String getFormKey(String taskId) {
-        String key = getRawFormKey(taskId);
-        return key != null ? "alf_" + key : null;
+        return getRawFormKey(taskId);
     }
 
     private String getRawFormKey(String taskId) {
