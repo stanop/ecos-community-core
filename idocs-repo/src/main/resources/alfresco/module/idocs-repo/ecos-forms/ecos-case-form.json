@@ -252,6 +252,7 @@
                                 },
                                 "customConditional": "",
                                 "logic": [],
+                                "attributes": {},
                                 "type": "datetime",
                                 "input": true,
                                 "suffix": true,
@@ -691,7 +692,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "efstmj"
+                            "id": "edy6dlq"
                           },
                           {
                             "components": [
@@ -719,7 +720,7 @@
                                   "json": "",
                                   "eq": ""
                                 },
-                                "customConditional": "",
+                                "customConditional": "show = !(instance.options.readOnly && instance.options.viewAsHtml)",
                                 "logic": [],
                                 "attributes": {},
                                 "type": "checkbox",
@@ -756,7 +757,7 @@
                                 "inputType": "checkbox",
                                 "value": "",
                                 "name": "",
-                                "id": "exntney"
+                                "id": "esyr5af"
                               }
                             ],
                             "width": 6,
@@ -815,7 +816,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "eknqwkn"
+                            "id": "eyypz9"
                           }
                         ],
                         "mask": false,
@@ -872,7 +873,7 @@
                         },
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "e96fhg"
+                        "id": "ekztnhn"
                       },
                       {
                         "useNegativeIndents": false,
@@ -924,7 +925,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e2wu0wt"
+                        "id": "ezlkr19"
                       },
                       {
                         "label": "Name",
@@ -999,7 +1000,7 @@
                         "mask": false,
                         "inputType": "text",
                         "inputMask": "",
-                        "id": "epvjlio"
+                        "id": "ewgmzg5i"
                       },
                       {
                         "useNegativeIndents": false,
@@ -1051,7 +1052,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e8t4a4e"
+                        "id": "e8i3u8p"
                       },
                       {
                         "label": "Note",
@@ -1129,7 +1130,7 @@
                         "inputMask": "",
                         "wysiwyg": false,
                         "editor": "",
-                        "id": "ebis3q"
+                        "id": "e195ir"
                       },
                       {
                         "useNegativeIndents": false,
@@ -1181,7 +1182,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eq684hh"
+                        "id": "ergooa"
                       },
                       {
                         "label": "Columns",
@@ -1251,7 +1252,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "eey6rzj"
+                                "id": "e6pntaq"
                               }
                             ],
                             "width": 6,
@@ -1310,7 +1311,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "euchx7c7"
+                            "id": "euv3dil"
                           },
                           {
                             "components": [
@@ -1377,7 +1378,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "e7oxuif"
+                                "id": "ecbpuamm"
                               }
                             ],
                             "width": 6,
@@ -1436,7 +1437,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "ewjy4yb"
+                            "id": "e75kapf"
                           }
                         ],
                         "mask": false,
@@ -1492,7 +1493,7 @@
                         },
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "efkttjp"
+                        "id": "ex4vxa"
                       }
                     ],
                     "tags": [],
@@ -1534,7 +1535,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "eb58n4o"
+                    "id": "ehmqn7d"
                   }
                 ],
                 "width": 6,
@@ -1593,7 +1594,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "epvj8im"
+                "id": "epfa4l"
               },
               {
                 "components": [
@@ -1798,7 +1799,7 @@
                                   "mousewheel": true,
                                   "arrowkeys": true
                                 },
-                                "id": "ed3aii"
+                                "id": "e3s172r"
                               }
                             ],
                             "width": 6,
@@ -1857,7 +1858,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "eu2ajdd"
+                            "id": "es3c36w"
                           },
                           {
                             "components": [
@@ -2037,7 +2038,7 @@
                                   "mousewheel": true,
                                   "arrowkeys": true
                                 },
-                                "id": "evxwhga"
+                                "id": "e6raqd"
                               }
                             ],
                             "width": 6,
@@ -2096,7 +2097,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "epemcin"
+                            "id": "equisw"
                           }
                         ],
                         "mask": false,
@@ -2152,7 +2153,7 @@
                         },
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "etdvyhe"
+                        "id": "e9rak1s"
                       },
                       {
                         "label": "idocs:legalEntity",
@@ -2169,6 +2170,8 @@
                         "ecos": {
                           "dataType": "assoc"
                         },
+                        "refreshOn": "data",
+                        "clearOnRefresh": true,
                         "customDefaultValue": "value = data.defaultLegalEntity ? data.defaultLegalEntity.value : null;",
                         "calculateValue": "value = data.defaultLegalEntity ? data.defaultLegalEntity.value : null;",
                         "allowCalculateOverride": true,
@@ -2238,6 +2241,7 @@
                         },
                         "customConditional": "",
                         "logic": [],
+                        "attributes": {},
                         "type": "selectJournal",
                         "input": true,
                         "tags": [],
@@ -2265,13 +2269,11 @@
                         "autofocus": false,
                         "dbIndex": false,
                         "widget": null,
-                        "refreshOn": "",
-                        "clearOnRefresh": false,
                         "validateOn": "change",
                         "hideCreateButton": false,
                         "hideEditRowButton": false,
                         "hideDeleteRowButton": false,
-                        "id": "edj8qdm"
+                        "id": "ei4nsle"
                       },
                       {
                         "useNegativeIndents": false,
@@ -2323,7 +2325,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e18shyg"
+                        "id": "egho8kh"
                       },
                       {
                         "label": "Columns",
@@ -2412,7 +2414,7 @@
                                 "searchThreshold": 0.3,
                                 "fuseOptions": {},
                                 "customOptions": {},
-                                "id": "e2mwrl"
+                                "id": "ektunnn"
                               }
                             ],
                             "width": 6,
@@ -2471,7 +2473,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "ex3yx1j"
+                            "id": "e97fc8u"
                           },
                           {
                             "components": [
@@ -2539,7 +2541,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "e9k5ekj"
+                                "id": "evz3ueh"
                               }
                             ],
                             "width": 6,
@@ -2598,7 +2600,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "exway6"
+                            "id": "erpqlla"
                           }
                         ],
                         "mask": false,
@@ -2654,7 +2656,7 @@
                         },
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "e0j9ln"
+                        "id": "e0xfs4a"
                       },
                       {
                         "label": "idocs:contractor",
@@ -2773,7 +2775,7 @@
                         "hideCreateButton": false,
                         "hideEditRowButton": false,
                         "hideDeleteRowButton": false,
-                        "id": "ezbdnaam"
+                        "id": "e27utej"
                       }
                     ],
                     "tags": [],
@@ -2815,7 +2817,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "e1f48sw"
+                    "id": "emwo1q9"
                   }
                 ],
                 "width": 6,
@@ -2874,7 +2876,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eqja0be"
+                "id": "e2kida8"
               }
             ],
             "mask": false,
@@ -2930,7 +2932,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "eml6y4m"
+            "id": "e1zssr"
           }
         ],
         "tags": [],
@@ -2968,7 +2970,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "eqtmt1r"
+        "id": "e6h77fl"
       },
       {
         "label": "Columns",
@@ -3061,7 +3063,7 @@
                 "mask": false,
                 "inputType": "asyncData",
                 "executionCondition": "",
-                "id": "e0tpvqh"
+                "id": "embhsiwi"
               }
             ],
             "width": 6,
@@ -3120,7 +3122,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eqx3wuf"
+            "id": "eb19gog"
           },
           {
             "components": [
@@ -3210,7 +3212,7 @@
                 "mask": false,
                 "inputType": "asyncData",
                 "executionCondition": "",
-                "id": "e1cv06q"
+                "id": "eoxm378"
               }
             ],
             "width": 6,
@@ -3269,7 +3271,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ec7d81"
+            "id": "e71skhp"
           },
           {
             "xs": 0,
@@ -3325,7 +3327,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "edvr3l2"
+            "id": "e7334nx8"
           },
           {
             "xs": 0,
@@ -3415,7 +3417,7 @@
                 "mask": false,
                 "inputType": "text",
                 "inputMask": "",
-                "id": "eyqc1i8"
+                "id": "e6ozxmm"
               }
             ],
             "placeholder": "",
@@ -3458,7 +3460,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "epnzwuq"
+            "id": "e9crnct"
           },
           {
             "xs": 0,
@@ -3558,7 +3560,7 @@
                 "inputType": "asyncData",
                 "eventName": "",
                 "executionCondition": "",
-                "id": "efm0mhs"
+                "id": "emrq6z"
               }
             ],
             "placeholder": "",
@@ -3601,7 +3603,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ef1k6yp"
+            "id": "e1b0kxx"
           },
           {
             "xs": 0,
@@ -3657,7 +3659,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "er9goli"
+            "id": "eayhc5k"
           }
         ],
         "hidden": true,
@@ -3713,7 +3715,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "euvgt69"
+        "id": "esesu0f"
       },
       {
         "label": "Columns",
@@ -3776,12 +3778,13 @@
               "when": null,
               "eq": ""
             },
-            "id": "exf8im"
+            "id": "emyh9vg"
           },
           {
             "components": [
               {
                 "label": "Cancel",
+                "removeIndents": true,
                 "action": "event",
                 "state": "",
                 "showValidations": false,
@@ -3791,9 +3794,28 @@
                 "mask": false,
                 "tableView": true,
                 "alwaysEnabled": false,
+                "encrypted": false,
+                "validate": {
+                  "customMessage": "",
+                  "json": "",
+                  "required": false,
+                  "custom": "",
+                  "customPrivate": false
+                },
+                "key": "submit2",
+                "properties": {},
+                "conditional": {
+                  "json": "",
+                  "show": "",
+                  "when": "",
+                  "eq": ""
+                },
+                "customConditional": "",
+                "logic": [],
+                "attributes": {},
                 "type": "button",
                 "input": true,
-                "key": "submit2",
+                "tags": [],
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -3824,23 +3846,12 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "validate": {
-                  "required": false,
-                  "custom": "",
-                  "customPrivate": false
-                },
-                "conditional": {
-                  "show": null,
-                  "when": null,
-                  "eq": ""
-                },
                 "size": "md",
                 "leftIcon": "",
                 "rightIcon": "",
                 "disableOnInvalid": false,
                 "theme": "default",
-                "removeIndents": false,
-                "id": "ejoiwd"
+                "id": "eeiitsa"
               }
             ],
             "width": 6,
@@ -3899,7 +3910,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "exu53e9"
+            "id": "e4o5r8e"
           },
           {
             "xs": 0,
@@ -3917,6 +3928,7 @@
             "components": [
               {
                 "label": "Create",
+                "removeIndents": true,
                 "state": "",
                 "theme": "primary",
                 "shortcut": "",
@@ -3943,6 +3955,7 @@
                 },
                 "customConditional": "",
                 "logic": [],
+                "attributes": {},
                 "type": "button",
                 "input": true,
                 "tags": [],
@@ -3980,8 +3993,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "removeIndents": false,
-                "id": "erc7cun"
+                "id": "eve2vy"
               }
             ],
             "placeholder": "",
@@ -4024,7 +4036,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eh9b6h"
+            "id": "eipat4n"
           },
           {
             "xs": 0,
@@ -4080,7 +4092,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ea1wfsj"
+            "id": "ewood85"
           }
         ],
         "mask": false,
@@ -4137,7 +4149,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "eo6beud"
+        "id": "ejy4whb"
       },
       {
         "label": "Columns",
@@ -4200,12 +4212,13 @@
               "when": null,
               "eq": ""
             },
-            "id": "eoc5h6a"
+            "id": "eea2f0u"
           },
           {
             "components": [
               {
                 "label": "Cancel",
+                "removeIndents": true,
                 "action": "event",
                 "state": "",
                 "showValidations": false,
@@ -4215,9 +4228,28 @@
                 "mask": false,
                 "tableView": true,
                 "alwaysEnabled": false,
+                "encrypted": false,
+                "validate": {
+                  "customMessage": "",
+                  "json": "",
+                  "required": false,
+                  "custom": "",
+                  "customPrivate": false
+                },
+                "key": "submit3",
+                "properties": {},
+                "conditional": {
+                  "json": "",
+                  "show": "",
+                  "when": "",
+                  "eq": ""
+                },
+                "customConditional": "",
+                "logic": [],
+                "attributes": {},
                 "type": "button",
                 "input": true,
-                "key": "submit3",
+                "tags": [],
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4248,23 +4280,12 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "validate": {
-                  "required": false,
-                  "custom": "",
-                  "customPrivate": false
-                },
-                "conditional": {
-                  "show": null,
-                  "when": null,
-                  "eq": ""
-                },
                 "size": "md",
                 "leftIcon": "",
                 "rightIcon": "",
                 "disableOnInvalid": false,
                 "theme": "default",
-                "removeIndents": false,
-                "id": "enmpu7k"
+                "id": "evkdro"
               }
             ],
             "width": 6,
@@ -4323,7 +4344,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e6zond"
+            "id": "ew6sp7z"
           },
           {
             "xs": 0,
@@ -4341,6 +4362,7 @@
             "components": [
               {
                 "label": "Save",
+                "removeIndents": true,
                 "state": "",
                 "theme": "primary",
                 "shortcut": "",
@@ -4405,8 +4427,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "removeIndents": false,
-                "id": "ee4w5ii"
+                "id": "e33t04"
               }
             ],
             "placeholder": "",
