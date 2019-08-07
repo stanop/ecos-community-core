@@ -200,7 +200,7 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                                 }
                             }
 
-                            if (nodeRefs != null && nodeRefs.size() > 0) {
+                            if (nodeRefs != null) {
                                 assocs.put(fieldName, nodeRefs);
                             }
                         }
