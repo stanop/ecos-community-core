@@ -248,12 +248,24 @@ public class JavaPolicyBehaviour extends BaseBehaviour implements TransactionBeh
 
         private Object invokeImpl(Object[] args) throws Exception {
 
-            if (behaviour.checkNodeRefs) {
-                if (behaviour.checkNodeRefs(args)) {
+            try {
+                if (behaviour.checkNodeRefs) {
+                    if (behaviour.checkNodeRefs(args)) {
+                        delegateMethod.invoke(behaviour.getInstance(), args);
+                    }
+                } else {
                     delegateMethod.invoke(behaviour.getInstance(), args);
                 }
-            } else {
-                delegateMethod.invoke(behaviour.getInstance(), args);
+            } catch (InvocationTargetException e) {
+                Throwable cause = e.getCause();
+                if (cause == null) {
+                    throw e;
+                }
+                if (cause instanceof Exception) {
+                    throw (Exception) cause;
+                } else {
+                    throw new RuntimeException(cause);
+                }
             }
 
             return null;
@@ -263,7 +275,7 @@ public class JavaPolicyBehaviour extends BaseBehaviour implements TransactionBeh
         public boolean equals(Object obj) {
             if (obj == this) {
                 return true;
-            } else if (obj == null || !(obj instanceof JavaMethodInvocationHandler)) {
+            } else if (!(obj instanceof JavaMethodInvocationHandler)) {
                 return false;
             }
             JavaMethodInvocationHandler other = (JavaMethodInvocationHandler)obj;
