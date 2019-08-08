@@ -24,7 +24,7 @@ public class EventConfiguration {
     private String PASSWORD;
 
     //TODO: move tenant id to ecos config?
-    @Value("event.server.tenant.id")
+    @Value("${event.server.tenant.id}")
     private String TENANT_ID;
 
     @Bean

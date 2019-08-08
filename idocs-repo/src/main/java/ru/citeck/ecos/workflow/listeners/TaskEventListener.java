@@ -19,13 +19,13 @@ public class TaskEventListener extends AbstractTaskListener {
     @Value("${event.task.create.emit.enabled}")
     private boolean eventTaskCreateEnabled;
 
-    @Value("${event.task.assign.emit.enabled")
+    @Value("${event.task.assign.emit.enabled}")
     private boolean eventTaskAssignEnabled;
 
-    @Value("${event.task.complete.emit.enabled")
+    @Value("${event.task.complete.emit.enabled}")
     private boolean eventTaskCompleteEnabled;
 
-    @Value("${event.task.delete.emit.enabled")
+    @Value("${event.task.delete.emit.enabled}")
     private boolean eventTaskDeleteEnabled;
 
 

@@ -89,7 +89,9 @@ public class EventFactory {
             return Optional.empty();
         }
 
-        TaskEventDTO dto = new TaskEventDTO(eventName);
+        TaskEventDTO dto = new TaskEventDTO();
+        dto.setType(eventName);
+        dto.setId(UUID.randomUUID().toString());
 
         NodeRef document = documentResolverRegistry.getResolver(task.getExecution()).getDocument(task.getExecution());
         if (document != null) {
