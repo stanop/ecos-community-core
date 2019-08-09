@@ -1371,7 +1371,6 @@
                 <property name="idocs:bankTitle">
                     <title>Название банка</title>
                     <type>d:text</type>
-                    <mandatory>true</mandatory>
                 </property>
                 <property name="idocs:bankTitleEng">
                     <title>Название банка на английском языке</title>
@@ -1380,12 +1379,10 @@
                 <property name="idocs:bankId">
                     <title>БИК</title>
                     <type>d:text</type>
-                    <mandatory>true</mandatory>
                 </property>
                 <property name="idocs:accountNumber">
                     <title>Счет</title>
                     <type>d:text</type>
-                    <mandatory>true</mandatory>
                 </property>
                 <property name="idocs:corresponentBankTitle">
                     <title>Название банка-корреспондента</title>
