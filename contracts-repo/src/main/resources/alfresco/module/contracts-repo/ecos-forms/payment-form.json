@@ -178,7 +178,9 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "ehcyfy"
+                    "hideEditRowButton": false,
+                    "hideDeleteRowButton": false,
+                    "id": "emmdwv"
                   }
                 ],
                 "width": 6,
@@ -237,17 +239,17 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e06e2jk"
+                "id": "eepanv"
               },
               {
                 "components": [
                   {
                     "label": "Budget item",
+                    "hideCreateButton": true,
                     "mask": false,
                     "tableView": true,
                     "alwaysEnabled": false,
-                    "journalId": "te-budget-accounts",
-                    "hideCreateButton": true,
+                    "journalId": "budget-items",
                     "displayColumns": [],
                     "customPredicateJs": "",
                     "computed": {
@@ -260,16 +262,12 @@
                     "encrypted": false,
                     "displayColumnsAsyncData": [
                       {
-                        "label": "Code",
-                        "value": "tedm:bgacCode"
+                        "label": "Код статьи бюджета",
+                        "value": "budget:itemCode"
                       },
                       {
-                        "label": "Name",
-                        "value": "tedm:bgacName"
-                      },
-                      {
-                        "label": "Has used in TE",
-                        "value": "tedm:bgacUsedTE"
+                        "label": "Наименование статьи бюджета",
+                        "value": "budget:itemName"
                       }
                     ],
                     "validate": {
@@ -279,9 +277,9 @@
                       "custom": "",
                       "customPrivate": false
                     },
-                    "key": "seminv_teBudgetItem",
+                    "key": "payments_budgetItem",
                     "properties": {
-                      "attribute": "seminv:teBudgetItem"
+                      "attribute": "payments:budgetItem"
                     },
                     "conditional": {
                       "show": "",
@@ -289,7 +287,7 @@
                       "json": "",
                       "eq": ""
                     },
-                    "customConditional": "show = (instance.options.formMode == 'CREATE' && !data.seminv_isSeveralBudgets) ? true : false;",
+                    "customConditional": "",
                     "logic": [],
                     "attributes": {},
                     "type": "selectJournal",
@@ -325,7 +323,9 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "e46qxov"
+                    "hideEditRowButton": false,
+                    "hideDeleteRowButton": false,
+                    "id": "elo4b9k"
                   }
                 ],
                 "width": 6,
@@ -384,7 +384,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eyhqi2w"
+                "id": "ediop47"
               },
               {
                 "xs": 0,
@@ -483,7 +483,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "eyha41w"
+                    "id": "exuhv6f"
                   }
                 ],
                 "placeholder": "",
@@ -526,7 +526,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ez5v0uc"
+                "id": "e97fs4q"
               }
             ],
             "hideOnChildrenHidden": true,
@@ -583,7 +583,7 @@
               "customPrivate": false
             },
             "autoAdjust": false,
-            "id": "e37wt0b"
+            "id": "enjxj3j"
           },
           {
             "conditional": {
@@ -638,7 +638,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "e0jmjcq"
+            "id": "e8dj1ei"
           },
           {
             "label": "payments:paymentPurpose",
@@ -718,7 +718,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "emhbojf"
+            "id": "edh93bc"
           },
           {
             "conditional": {
@@ -773,7 +773,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "ejrxm0r"
+            "id": "ed6cwcd"
           },
           {
             "label": "Columns",
@@ -916,7 +916,9 @@
                     "widget": null,
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "eg7kbms"
+                    "hideEditRowButton": false,
+                    "hideDeleteRowButton": false,
+                    "id": "e61znrm"
                   }
                 ],
                 "width": 6,
@@ -975,7 +977,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eigcgx"
+                "id": "ewly7tl"
               },
               {
                 "components": [
@@ -1004,11 +1006,12 @@
                     "refreshOnEvent": false,
                     "selectThreshold": 0.3,
                     "defaultValue": "",
+                    "refreshOn": [],
                     "encrypted": false,
                     "validate": {
+                      "required": true,
                       "customMessage": "",
                       "json": "",
-                      "required": false,
                       "custom": "",
                       "customPrivate": false
                     },
@@ -1054,7 +1057,6 @@
                     "calculateValue": "",
                     "allowCalculateOverride": false,
                     "widget": null,
-                    "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
                     "limit": 100,
@@ -1072,7 +1074,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "e10zoe"
+                    "id": "ekkguk"
                   }
                 ],
                 "width": 6,
@@ -1131,7 +1133,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ekn0aqv"
+                "id": "ez3ms3n"
               },
               {
                 "xs": 0,
@@ -1269,7 +1271,7 @@
                     "mask": false,
                     "inputType": "text",
                     "inputMask": "",
-                    "id": "eiy5kl3q"
+                    "id": "e0mgkg9"
                   },
                   {
                     "label": "Generate",
@@ -1332,7 +1334,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "enfxmcc"
+                    "id": "ez41baq"
                   }
                 ],
                 "placeholder": "",
@@ -1375,7 +1377,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eayqmj"
+                "id": "el7svr9"
               }
             ],
             "mask": false,
@@ -1432,7 +1434,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "epgdii"
+            "id": "e5w80ib"
           },
           {
             "conditional": {
@@ -1487,7 +1489,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "erywslb"
+            "id": "e9zjnpf"
           },
           {
             "label": "Columns",
@@ -1630,7 +1632,9 @@
                     "widget": null,
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "ejg8j15"
+                    "hideEditRowButton": false,
+                    "hideDeleteRowButton": false,
+                    "id": "eb0sxc"
                   }
                 ],
                 "width": 6,
@@ -1689,7 +1693,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ekffpu"
+                "id": "e7meg2y"
               },
               {
                 "components": [
@@ -1786,7 +1790,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "efdksci"
+                    "id": "exvlc6c"
                   }
                 ],
                 "width": 6,
@@ -1845,7 +1849,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e59tfka"
+                "id": "eqyb2wf"
               },
               {
                 "xs": 0,
@@ -1901,7 +1905,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eo2x98d"
+                "id": "e95nv8h"
               }
             ],
             "mask": false,
@@ -1958,7 +1962,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "etxclna"
+            "id": "et51p3q"
           }
         ],
         "tags": [],
@@ -2000,7 +2004,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "elbce6e"
+        "id": "e676p9b"
       },
       {
         "label": "Panel",
@@ -2217,7 +2221,7 @@
                     "displayInTimezone": "viewer",
                     "timezone": "",
                     "datepickerMode": "day",
-                    "id": "e7x6c7p"
+                    "id": "e0lw5dp"
                   }
                 ],
                 "width": 6,
@@ -2276,7 +2280,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e6iwtgd"
+                "id": "eu2fmr4"
               },
               {
                 "components": [
@@ -2457,7 +2461,7 @@
                       "mousewheel": true,
                       "arrowkeys": true
                     },
-                    "id": "eimpnb"
+                    "id": "e06lf8m"
                   }
                 ],
                 "width": 6,
@@ -2516,7 +2520,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e5tf5o8"
+                "id": "ecz1t4n"
               },
               {
                 "xs": 0,
@@ -2615,7 +2619,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "ek83k09"
+                    "id": "eurneo"
                   }
                 ],
                 "placeholder": "",
@@ -2658,7 +2662,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ez9lihf"
+                "id": "ee0mby"
               }
             ],
             "mask": false,
@@ -2715,7 +2719,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "emnjxm"
+            "id": "e3ljd7o"
           }
         ],
         "tags": [],
@@ -2752,7 +2756,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "enybqwh"
+        "id": "erduzga"
       },
       {
         "label": "Panel",
@@ -2874,7 +2878,7 @@
                     "searchThreshold": 0.3,
                     "fuseOptions": {},
                     "customOptions": {},
-                    "id": "e4ntbt"
+                    "id": "en5gdz"
                   },
                   {
                     "label": "payments:overexpenditure",
@@ -2939,7 +2943,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "ezk675r"
+                    "id": "e31aywn"
                   }
                 ],
                 "width": 6,
@@ -2998,7 +3002,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eewakq5"
+                "id": "eot4b2k"
               },
               {
                 "components": [
@@ -3088,7 +3092,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "egzp369"
+                    "id": "e0dijdg"
                   }
                 ],
                 "width": 6,
@@ -3147,7 +3151,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eadoygw"
+                "id": "e6o5uum"
               },
               {
                 "xs": 0,
@@ -3228,7 +3232,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "ec1g4u1"
+                    "id": "ed42y7h"
                   }
                 ],
                 "placeholder": "",
@@ -3271,7 +3275,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e0zuhhe"
+                "id": "ez49wtq"
               },
               {
                 "xs": 0,
@@ -3327,7 +3331,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ekufc0b"
+                "id": "ef1omus"
               }
             ],
             "mask": false,
@@ -3384,7 +3388,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "ew3v11"
+            "id": "ec2vcv"
           }
         ],
         "tags": [],
@@ -3421,7 +3425,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "e6gpm2m"
+        "id": "ea0k7mh"
       },
       {
         "label": "Panel",
@@ -3512,7 +3516,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "e0ayqbo"
+                    "id": "eg1xt1l"
                   }
                 ],
                 "width": 6,
@@ -3571,7 +3575,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "exzc29g"
+                "id": "ehc254"
               },
               {
                 "components": [],
@@ -3631,7 +3635,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eee2k67"
+                "id": "e6bezp"
               }
             ],
             "mask": false,
@@ -3688,7 +3692,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e1uh0au"
+            "id": "e57wqmf"
           },
           {
             "label": "Columns",
@@ -3795,7 +3799,7 @@
                     "uploadOnly": false,
                     "defaultOverlayWidth": 200,
                     "defaultOverlayHeight": 200,
-                    "id": "e2tlwsq"
+                    "id": "e8h2opr"
                   },
                   {
                     "label": "pas:containsProductsAndServices",
@@ -3913,7 +3917,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "ep31hp"
+                    "id": "eeecana"
                   }
                 ],
                 "width": 6,
@@ -3972,7 +3976,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "espxkva"
+                "id": "elqi3nu"
               },
               {
                 "components": [],
@@ -4032,7 +4036,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e2nqbp"
+                "id": "emba1kl"
               }
             ],
             "mask": false,
@@ -4089,7 +4093,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e2i5szq"
+            "id": "epctt0f1"
           },
           {
             "label": "payments:paymentComment",
@@ -4169,7 +4173,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "epiug6m"
+            "id": "exk8ldb"
           }
         ],
         "tags": [],
@@ -4211,7 +4215,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "eae83z"
+        "id": "e6ivofn"
       },
       {
         "label": "paymentsBasis",
@@ -4307,7 +4311,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "est7bs"
+        "id": "ec3qh17"
       },
       {
         "label": "period",
@@ -4395,7 +4399,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "e0rvkl"
+        "id": "eucvnhi"
       },
       {
         "label": "containsProductsAndServices",
@@ -4485,7 +4489,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "euv56ef"
+        "id": "eva76og"
       },
       {
         "label": "payer",
@@ -4575,7 +4579,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "erydnjp"
+        "id": "e541dn"
       },
       {
         "label": "currencyList",
@@ -4663,7 +4667,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "e0l7px"
+        "id": "eqny1dm"
       },
       {
         "label": "legalEntities",
@@ -4752,7 +4756,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "ek19kvr"
+        "id": "eyb6hm4"
       },
       {
         "label": "Columns",
@@ -4827,7 +4831,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "eic95pb"
+                "id": "equhkb2"
               }
             ],
             "width": 6,
@@ -4886,7 +4890,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "em55vdp"
+            "id": "esb0plm"
           },
           {
             "components": [
@@ -4916,27 +4920,8 @@
                   "eq": ""
                 },
                 "customConditional": "",
-                "logic": [
-                  {
-                    "name": "DisableButtonOnMissingLE",
-                    "trigger": {
-                      "type": "javascript",
-                      "javascript": "var legalEntities = data.legalEntities;\nvar result = true;\nfor (var i in legalEntities.records) {\n   var legalEntity = legalEntities.records[i];\n   if (legalEntity.engName == \"Semrush RU\") {\n       result = false;\n   }\n}"
-                    },
-                    "actions": [
-                      {
-                        "name": "Disable",
-                        "type": "property",
-                        "property": {
-                          "label": "Disabled",
-                          "value": "disabled",
-                          "type": "boolean"
-                        },
-                        "state": "true"
-                      }
-                    ]
-                  }
-                ],
+                "logic": [],
+                "attributes": {},
                 "type": "button",
                 "input": true,
                 "tags": [],
@@ -4976,7 +4961,7 @@
                 "action": "submit",
                 "disableOnInvalid": false,
                 "removeIndents": false,
-                "id": "el8p4rk"
+                "id": "e4ej7ub"
               }
             ],
             "width": 6,
@@ -5035,7 +5020,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "epmsqgt"
+            "id": "en3uhgh"
           },
           {
             "xs": 0,
@@ -5078,36 +5063,17 @@
                   "eq": ""
                 },
                 "customConditional": "",
-                "logic": [
-                  {
-                    "name": "DiableOnMissingLE",
-                    "trigger": {
-                      "type": "javascript",
-                      "javascript": "var legalEntities = data.legalEntities;\nvar result = true;\nfor (var i in legalEntities.records) {\n   var legalEntity = legalEntities.records[i];\n   if (legalEntity.engName == \"Semrush RU\") {\n       result = false;\n   }\n}"
-                    },
-                    "actions": [
-                      {
-                        "name": "Disable",
-                        "type": "property",
-                        "property": {
-                          "label": "Disabled",
-                          "value": "disabled",
-                          "type": "boolean"
-                        },
-                        "state": "true"
-                      }
-                    ]
-                  }
-                ],
+                "logic": [],
+                "attributes": {},
                 "type": "button",
                 "input": true,
                 "tags": [],
-                "defaultValue": false,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
                 "suffix": "",
                 "multiple": false,
+                "defaultValue": null,
                 "protected": false,
                 "unique": false,
                 "persistent": false,
@@ -5137,7 +5103,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "eglws7q"
+                "id": "e5voo7c"
               }
             ],
             "placeholder": "",
@@ -5180,7 +5146,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e1ogt8r"
+            "id": "e82ofi2"
           }
         ],
         "mask": false,
@@ -5236,7 +5202,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ewbjtqm"
+        "id": "egt3anu"
       },
       {
         "label": "Columns",
@@ -5299,7 +5265,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e65lau8"
+            "id": "ee7w0h"
           },
           {
             "components": [
@@ -5371,7 +5337,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "emgq2nb"
+                "id": "ezqb4nt"
               }
             ],
             "width": 6,
@@ -5430,7 +5396,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eukp8j"
+            "id": "e8yuv3r"
           },
           {
             "xs": 0,
@@ -5512,7 +5478,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "eao0mcb"
+                "id": "ex1ry7r"
               }
             ],
             "placeholder": "",
@@ -5555,7 +5521,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ewcfos"
+            "id": "ebxky1i"
           },
           {
             "xs": 0,
@@ -5611,7 +5577,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ebz21f"
+            "id": "e6e1f3"
           }
         ],
         "mask": false,
@@ -5667,7 +5633,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ec1nzyn"
+        "id": "e8kzvce"
       }
     ]
   },
