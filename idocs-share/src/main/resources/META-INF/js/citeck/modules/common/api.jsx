@@ -42,6 +42,10 @@ export default class {
             .catch(() => 0);
     };
 
+    getNewJournalsPageEnable = () => {
+        return Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool');
+    };
+
     getSitesForUser = username => {
         const url = "api/people/" + encodeURIComponent(username) + "/sites";
         return this.getJSON(url).catch(() => []);
