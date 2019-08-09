@@ -1002,6 +1002,15 @@ ko.components.register('dadata-loader', {
         var that = this;
         var attributes = params.attributes || {};
         var impl = params.runtime.node().impl();
+        this.isEnterpriseInstalled = ko.observable(false);
+
+        fetch(Alfresco.constants.PROXY_URI + '/citeck/info/is-ent-installed',{
+            method: 'GET',
+            credentials: 'include',
+            headers: {'Content-type': 'application/json;charset=UTF-8'}
+        }).then(function(response) { return response.json();}).then(function (response){
+            that.isEnterpriseInstalled(response.isEntInstalled == 'true');
+        });
 
         that.tooltip = Alfresco.util.message('dadata.loader.tooltip');
         that.text = Alfresco.util.message('dadata.loader.text');
@@ -1078,7 +1087,7 @@ ko.components.register('dadata-loader', {
             }
         }
     },
-    template: '<button class="dadata-loader_btn"  data-bind="click: onClick.bind(this), attr: { title:tooltip }, text: text"></button>'
+    template: '<button class="dadata-loader_btn"  data-bind="click: onClick.bind(this), attr: { title:tooltip }, text: text, visible: isEnterpriseInstalled"></button>'
 });
 
 
