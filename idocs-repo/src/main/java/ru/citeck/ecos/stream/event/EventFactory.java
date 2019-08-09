@@ -10,6 +10,7 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
@@ -26,8 +27,11 @@ import ru.citeck.ecos.model.ActivityModel;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.model.ICaseTaskModel;
 import ru.citeck.ecos.spring.registry.MappingRegistry;
+import ru.citeck.ecos.utils.AuthorityUtils;
 import ru.citeck.ecos.workflow.listeners.ListenerUtils;
 import ru.citeck.ecos.workflow.listeners.WorkflowDocumentResolverRegistry;
+import ru.citeck.ecos.workflow.tasks.EcosActivitiTaskService;
+import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,6 +55,7 @@ public class EventFactory {
     }
 
     private final WorkflowDocumentResolverRegistry documentResolverRegistry;
+    private final AuthorityUtils authorityUtils;
     private final NamespaceService namespaceService;
     private final AuthorityService authorityService;
     private final NodeService nodeService;
@@ -63,12 +68,14 @@ public class EventFactory {
     @Autowired
     public EventFactory(@Qualifier("ecos.workflowDocumentResolverRegistry") WorkflowDocumentResolverRegistry
                                 documentResolverRegistry,
+                        AuthorityUtils authorityUtils,
                         @Qualifier("NamespaceService") NamespaceService namespaceService,
                         AuthorityService authorityService,
                         @Qualifier("panelOfAuthorized.mappingRegistry") MappingRegistry<String, String>
                                 panelOfAuthorized, @Qualifier("NodeService") NodeService nodeService,
                         TaskHistoryUtils taskHistoryUtils) {
         this.documentResolverRegistry = documentResolverRegistry;
+        this.authorityUtils = authorityUtils;
         this.namespaceService = namespaceService;
         this.qNameConverter = new WorkflowQNameConverter(this.namespaceService);
         this.authorityService = authorityService;
@@ -104,11 +111,7 @@ public class EventFactory {
 
         dto.setTaskOutcome(getTaskOutcome(task));
         dto.setTaskComment((String) task.getVariable(VAR_COMMENT));
-        dto.setTaskAttachments(toStringList(ListenerUtils.getTaskAttachments(task)));
-
-        //TODO: taskOriginalOwner?
-
-        dto.setTaskPooledActors(toStringList(ListenerUtils.getPooledActors(task, authorityService)));
+        dto.setTaskAttachments(toStringSet(ListenerUtils.getTaskAttachments(task)));
 
         //TODO: additional properties?
 
@@ -148,6 +151,18 @@ public class EventFactory {
             dto.setTaskRole(roleName);
         }
 
+        //TODO: taskOriginalOwner?
+        ArrayList<NodeRef> pooledActors = ListenerUtils.getPooledActors(task, authorityService);
+        dto.setTaskPooledActors(toStringSet(pooledActors));
+
+        Set<String> pooledUsers = new HashSet<>();
+        if (StringUtils.isNotBlank(assignee)) {
+            pooledUsers.add(assignee);
+        }
+        pooledActors.forEach(nodeRef -> pooledUsers.addAll(authorityUtils.getContainedUsers(nodeRef, false)));
+
+        dto.setTaskPooledUsers(pooledUsers);
+
         dto.setTaskInstanceId(ACTIVITI_PREFIX + task.getId());
         dto.setDueDate(task.getDueDate());
 
@@ -155,7 +170,7 @@ public class EventFactory {
         dto.setTaskTitle((String) task.getVariable(taskTitleProp));
         dto.setWorkflowInstanceId(ACTIVITI_PREFIX + task.getProcessInstanceId());
         dto.setWorkflowDescription((String) task.getExecution().getVariable(VAR_DESCRIPTION));
-        dto.setInitiator(assignee != null ? assignee : HistoryService.SYSTEM_USER);
+        dto.setInitiator(StringUtils.isNotBlank(assignee) ? assignee : HistoryService.SYSTEM_USER);
 
         return Optional.of(dto);
     }
@@ -166,14 +181,14 @@ public class EventFactory {
         return (String) task.getVariable(qNameConverter.mapQNameToName(outcomeProperty));
     }
 
-    private List<String> toStringList(List<?> list) {
-        if (CollectionUtils.isEmpty(list)) {
-            return Collections.emptyList();
+    private Set<String> toStringSet(List<?> set) {
+        if (CollectionUtils.isEmpty(set)) {
+            return Collections.emptySet();
         }
-        return list
+        return set
                 .stream()
                 .map(Object::toString)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
 }

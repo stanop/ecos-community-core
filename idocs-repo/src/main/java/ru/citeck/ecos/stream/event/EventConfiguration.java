@@ -23,10 +23,6 @@ public class EventConfiguration {
     @Value("${event.server.password}")
     private String PASSWORD;
 
-    //TODO: move tenant id to ecos config?
-    @Value("${event.server.tenant.id}")
-    private String TENANT_ID;
-
     @Bean
     public EventConnection eventConnection() {
         return new EventConnection.Builder()
@@ -34,7 +30,6 @@ public class EventConfiguration {
                 .port(PORT)
                 .username(USERNAME)
                 .password(PASSWORD)
-                .tenantId(TENANT_ID)
                 .build();
     }
 

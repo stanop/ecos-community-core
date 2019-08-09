@@ -28,6 +28,9 @@ public class TaskEventListener extends AbstractTaskListener {
     @Value("${event.task.delete.emit.enabled}")
     private boolean eventTaskDeleteEnabled;
 
+    @Value("${event.server.tenant.id}")
+    private String TENANT_ID;
+
 
     @Autowired
     public TaskEventListener(EventConnection eventConnection, EventFactory eventFactory) {
@@ -39,7 +42,8 @@ public class TaskEventListener extends AbstractTaskListener {
     protected void notifyImpl(DelegateTask task) {
         if (emitRequired(task)) {
             eventFactory.fromActivitiTask(task)
-                    .ifPresent(eventDTO -> TransactionUtils.doAfterCommit(() -> eventConnection.emit(eventDTO)));
+                    .ifPresent(eventDTO -> TransactionUtils.doAfterCommit(() -> eventConnection.emit(eventDTO,
+                            TENANT_ID)));
         }
     }
 
