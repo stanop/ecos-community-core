@@ -160,8 +160,7 @@ public class AlfNodeAttValue implements MetaValue {
     public Object getAs(String type) {
         if (AS_CONTENT_DATA_KEY.equalsIgnoreCase(type)) {
             if (alfNode != null) {
-                JSONObject file = FileRepresentation.fromAlfNode(alfNode, context);
-                return file.toString();
+                return FileRepresentation.fromAlfNode(alfNode, context);
             }
 
             if (rawValue instanceof ContentData) {
