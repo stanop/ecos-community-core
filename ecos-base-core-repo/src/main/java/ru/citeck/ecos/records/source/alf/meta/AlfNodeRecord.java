@@ -143,36 +143,9 @@ public class AlfNodeRecord implements MetaValue {
                 break;
 
             case RecordConstants.ATT_FORM_KEY:
-
-                attribute = Collections.singletonList(new AlfNodeAttValue("alf_" + node.type()));
-                break;
-
-            case RecordConstants.ATT_VIEW_FORM_KEY:
-
-                attribute = Collections.singletonList(new AlfNodeAttValue("alf_" + node.type() + "_view"));
-                break;
-
             case RecordConstants.ATT_DASHBOARD_KEY:
 
-                List<String> keys = new ArrayList<>();
-
-                Attribute ecosType = node.attribute("tk:type");
-
-                String type = getNodeRefUuid(ecosType.value().orElse(""));
-                if (!type.isEmpty()) {
-
-                    Attribute ecosKind = node.attribute("tk:kind");
-                    String kind = getNodeRefUuid(ecosKind.value().orElse(""));
-
-                    if (!kind.isEmpty()) {
-                        keys.add(type + "/" + kind);
-                    }
-                    keys.add(type);
-                }
-
-                keys.add("alf_" + node.type());
-
-                attribute = MetaUtils.toMetaValues(keys, context, field);
+                attribute = MetaUtils.toMetaValues(getFormAndDashboardKeys(), context, field);
                 break;
 
             case RecordConstants.ATT_DASHBOARD_TYPE:
@@ -233,6 +206,29 @@ public class AlfNodeRecord implements MetaValue {
         }
 
         return attribute != null ? attribute : Collections.emptyList();
+    }
+
+    private List<String> getFormAndDashboardKeys() {
+
+        List<String> keys = new ArrayList<>();
+
+        Attribute ecosType = node.attribute("tk:type");
+
+        String type = getNodeRefUuid(ecosType.value().orElse(""));
+        if (!type.isEmpty()) {
+
+            Attribute ecosKind = node.attribute("tk:kind");
+            String kind = getNodeRefUuid(ecosKind.value().orElse(""));
+
+            if (!kind.isEmpty()) {
+                keys.add(type + "/" + kind);
+            }
+            keys.add(type);
+        }
+
+        keys.add("alf_" + node.type());
+
+        return keys;
     }
 
     private String getNodeRefUuid(String nodeRef) {
