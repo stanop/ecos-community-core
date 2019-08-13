@@ -55,7 +55,6 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
     private static final String DOCUMENT_FIELD_PREFIX = "_ECM_";
     private static final String OUTCOME_PREFIX = "outcome_";
-    private static final String COMMENT_FIELD = "comment";
 
     private static final String ID = "wftask";
 
@@ -364,7 +363,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         @Override
         public Object getAttribute(String name, MetaField field) {
 
-            if (COMMENT_FIELD.equals(name)) {
+            if (EcosTaskService.FIELD_COMMENT.equals(name)) {
                 return null;
             }
 
