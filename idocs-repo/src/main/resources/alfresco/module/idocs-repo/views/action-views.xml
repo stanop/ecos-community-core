@@ -77,16 +77,6 @@
         <field assoc="icaseEvent:activityStartEvents" />
     </view>
 
-    <view class="action:send-workflow-signal">
-        <field prop="action:send-workflow-signal:signalName">
-            <invariant on="mandatory" language="explicit">true</invariant>
-        </field>
-        <field prop="activ:repeatable" />
-        <field prop="activ:autoEvents" />
-        <field prop="activ:manualStarted" />
-        <field assoc="icaseEvent:activityStartEvents" />
-    </view>
-
     <view class="action:fail">
         <field prop="action:fail:message">
             <region name="input" template="textarea" />

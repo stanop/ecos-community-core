@@ -77,15 +77,4 @@
         </property>
     </type>
 
-    <type name="action:send-workflow-signal">
-        <property name="cm:title">
-            <invariant on="value" language="javascript">
-                (function() {
-                    var signal = node.properties['action:send-workflow-signal:signalName'];
-                    return "Отправить сигнал в БП: '" + signal + "'";
-                })();
-            </invariant>
-        </property>
-    </type>
-
 </invariants>
