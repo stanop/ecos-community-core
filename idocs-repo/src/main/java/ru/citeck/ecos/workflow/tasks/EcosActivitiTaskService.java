@@ -105,22 +105,30 @@ public class EcosActivitiTaskService implements EngineTaskService {
     }
 
     @Override
-    public void endTask(String taskId, String transition, Map<String, Object> variables) {
+    public void endTask(String taskId,
+                        String transition,
+                        Map<String, Object> variables,
+                        Map<String, Object> transientVariables) {
 
-        String outcomeProp = getOutcomeProperty(taskId);
-        if (StringUtils.isBlank(outcomeProp)) {
-            outcomeProp = DEFAULT_OUTCOME_FIELD;
+        Map<String, Object> taskVariables = new HashMap<>(variables);
+
+        if (transition != null) {
+            String outcomeProp = getOutcomeProperty(taskId);
+            if (StringUtils.isBlank(outcomeProp)) {
+                outcomeProp = DEFAULT_OUTCOME_FIELD;
+            }
+            taskVariables.put(outcomeProp, transition);
+            taskVariables.put(OUTCOME_FIELD, transition);
         }
 
         Object comment = variables.get("comment");
         if (comment != null) {
-            variables.put("bpm_comment", comment);
+            taskVariables.put("bpm_comment", comment);
         }
 
-        variables.put(outcomeProp, transition);
-        variables.put(OUTCOME_FIELD, transition);
-
-        taskService.complete(taskId, variables, true);
+        //TODO: transient variables should be saved in execution
+        taskVariables.putAll(transientVariables);
+        taskService.complete(taskId, taskVariables, true);
     }
 
     private String getCandidate(String taskId) {
