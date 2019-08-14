@@ -1,5 +1,6 @@
 package ru.citeck.ecos.workflow.listeners;
 
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import ru.citeck.ecos.utils.TransactionUtils;
 /**
  * @author Roman Makarskiy
  */
+@Slf4j
 public class TaskEventListener extends AbstractTaskListener {
 
     private final EventConnection eventConnection;
@@ -41,6 +43,10 @@ public class TaskEventListener extends AbstractTaskListener {
     @Override
     protected void notifyImpl(DelegateTask task) {
         if (emitRequired(task)) {
+            if (eventConnection == null) {
+                throw new RuntimeException("Sending event if required, but connection to event server is not enabled. " +
+                        "Check you configs.");
+            }
             eventFactory.fromActivitiTask(task)
                     .ifPresent(eventDTO -> TransactionUtils.doAfterCommit(() -> eventConnection.emit(eventDTO,
                             TENANT_ID)));

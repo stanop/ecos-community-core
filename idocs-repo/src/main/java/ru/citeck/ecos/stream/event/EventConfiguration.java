@@ -23,14 +23,20 @@ public class EventConfiguration {
     @Value("${event.server.password}")
     private String PASSWORD;
 
+    @Value("${event.server.connection.enabled}")
+    private boolean enabled;
+
     @Bean
     public EventConnection eventConnection() {
-        return new EventConnection.Builder()
-                .host(HOST)
-                .port(PORT)
-                .username(USERNAME)
-                .password(PASSWORD)
-                .build();
+        if (enabled) {
+            return new EventConnection.Builder()
+                    .host(HOST)
+                    .port(PORT)
+                    .username(USERNAME)
+                    .password(PASSWORD)
+                    .build();
+        }
+        return null;
     }
 
 }
