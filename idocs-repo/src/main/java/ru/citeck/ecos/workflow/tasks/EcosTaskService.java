@@ -15,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class EcosTaskService {
 
+    public static final String FIELD_COMMENT = "comment";
+
     private Map<String, EngineTaskService> taskServices = new ConcurrentHashMap<>();
 
     @Autowired

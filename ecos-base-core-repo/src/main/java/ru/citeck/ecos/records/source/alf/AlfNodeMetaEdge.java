@@ -98,9 +98,9 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
 
         ClassAttributeDefinition definition = getDefinition();
 
-        if (definition instanceof ChildAssociationDefinition) {
+        if (definition instanceof AssociationDefinition) {
 
-            ChildAssociationDefinition assocDef = (ChildAssociationDefinition) definition;
+            AssociationDefinition assocDef = (AssociationDefinition) definition;
             QName targetName = assocDef.getTargetClass().getName();
             Collection<QName> subTypes = dictionaryService.getSubTypes(targetName, true);
 

@@ -363,12 +363,23 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         @Override
         public Object getAttribute(String name, MetaField field) {
 
+            if (EcosTaskService.FIELD_COMMENT.equals(name)) {
+                return null;
+            }
+
             if (documentInfo.has(name)) {
                 return new InnerMetaValue(documentInfo.get(name));
             }
 
             if (RecordConstants.ATT_FORM_KEY.equals(name)) {
-                return taskInfo.getFormKey();
+                String formKey = taskInfo.getFormKey();
+                if (StringUtils.isBlank(formKey)) {
+                    return null;
+                }
+                if (formKey.startsWith("alf_")) {
+                    return formKey;
+                }
+                return Arrays.asList(formKey, "alf_" + formKey);
             }
 
             Map<String, Object> attributes = taskInfo.getAttributes();

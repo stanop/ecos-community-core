@@ -5,17 +5,19 @@ import org.alfresco.repo.action.executer.SetPropertyValueActionExecuter;
 import org.alfresco.repo.workflow.StartWorkflowActionExecuter;
 import org.alfresco.service.namespace.QName;
 
-import ru.citeck.ecos.action.FailActionExecuter;
-import ru.citeck.ecos.action.ScriptParamActionExecuter;
-import ru.citeck.ecos.action.SetCaseStatusActionExecuter;
-import ru.citeck.ecos.action.SetLifecycleProcessVariableActionExecuter;
+import ru.citeck.ecos.action.*;
 
 public final class ActionModel {
 
-	public static final String NAMESPACE = "http://www.citeck.ru/model/action/1.0";
-	public static final String PROP_DELIM = ":";
+    public static final String NAMESPACE = "http://www.citeck.ru/model/action/1.0";
+    public static final String PROP_DELIM = ":";
 
-	public static final QName TYPE_ACTION = QName.createQName(NAMESPACE, "action");
+    public static final QName TYPE_ACTION = QName.createQName(NAMESPACE, "action");
+
+    public static class SendWorkflowSignal {
+        public static final QName TYPE = QName.createQName(NAMESPACE, SendWorkflowSignalActionExecutor.NAME);
+        public static final QName PROP_SIGNAL_NAME = QName.createQName(TYPE + PROP_DELIM + SendWorkflowSignalActionExecutor.PARAM_SIGNAL_NAME);
+    }
 
     public static class SetPropertyValue {
         public static final QName TYPE = QName.createQName(NAMESPACE, SetPropertyValueActionExecuter.NAME);
