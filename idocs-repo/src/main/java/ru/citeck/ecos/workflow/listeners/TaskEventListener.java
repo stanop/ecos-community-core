@@ -30,7 +30,7 @@ public class TaskEventListener extends AbstractTaskListener {
     @Value("${event.task.delete.emit.enabled}")
     private boolean eventTaskDeleteEnabled;
 
-    @Value("${event.server.tenant.id}")
+    @Value("${ecos.server.tenant.id}")
     private String TENANT_ID;
 
 
