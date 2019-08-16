@@ -27,7 +27,6 @@ import ru.citeck.ecos.workflow.tasks.EngineTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,18 +203,27 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     }
 
     @Override
-    public void endTask(String taskId, String transition, Map<String, Object> variables) {
+    public void endTask(String taskId,
+                        String transition,
+                        Map<String, Object> variables,
+                        Map<String, Object> transientVariables) {
 
         String formKey = getFormKey(taskId);
-        String formOutcomeField = "form_" + formKey + "_outcome";
 
-        variables.put(formOutcomeField, transition);
-        variables.put(OUTCOME_FIELD, transition);
+        Map<String, Object> taskVariables = new HashMap<>(variables);
+
+        if (transition != null) {
+            String formOutcomeField = "form_" + formKey + "_outcome";
+            taskVariables.put(formOutcomeField, transition);
+            taskVariables.put(OUTCOME_FIELD, transition);
+        }
+
+        Map<String, Object> executionVariables = new HashMap<>(transientVariables);
 
         String lastCommentProp = converter.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
         variables.put(lastCommentProp, variables.get(EcosTaskService.FIELD_COMMENT));
 
-        taskService.complete(taskId, variables, Collections.emptyMap());
+        taskService.complete(taskId, taskVariables, executionVariables);
     }
 
     public RecordRef getDocument(String taskId) {

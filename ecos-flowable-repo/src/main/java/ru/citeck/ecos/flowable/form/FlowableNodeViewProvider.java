@@ -2,17 +2,14 @@ package ru.citeck.ecos.flowable.form;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.AssociationRef;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,6 +40,7 @@ import ru.citeck.ecos.service.namespace.EcosNsPrefixProvider;
 import ru.citeck.ecos.service.namespace.EcosNsPrefixResolver;
 import ru.citeck.ecos.utils.ConvertUtils;
 import ru.citeck.ecos.utils.WorkflowUtils;
+import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 
 import java.io.Serializable;
 import java.util.*;
@@ -90,6 +88,8 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     private NodeAttributeService nodeAttributeService;
     @Autowired
     private WorkflowUtils workflowUtils;
+    @Autowired
+    private EcosTaskService ecosTaskService;
 
     private Map<String, FieldConverter<FormField>> fieldConverters = new HashMap<>();
 
@@ -190,6 +190,9 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
     public Map<String, Object> saveNodeView(String taskId, String formId, FormMode mode,
                                             Map<String, Object> params, Map<QName, Object> attributes) {
 
+        Map<String, Object> taskAttributes;
+
+
         if (taskId.startsWith(FlowableConstants.ENGINE_PREFIX)) {
             SimpleFormModel formModel = getFormKey(taskId).flatMap(restFormService::getFormByKey)
                     .orElseThrow(() ->
@@ -197,7 +200,7 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
 
             List<NodeField> fields = getFields(formModel, mode, Collections.emptyMap());
 
-            Map<String, Object> taskAttributes = new HashMap<>();
+            taskAttributes = new HashMap<>();
             for (NodeField field : fields) {
                 Object value = attributes.get(field.getAttributeName());
                 Serializable taskValue = null;
@@ -232,19 +235,14 @@ public class FlowableNodeViewProvider implements NodeViewProvider, EcosNsPrefixP
                     nodeAttributeService.setAttributes(documentRef, documentAttributes);
                 }
             }
-
-            //TODO: rework with formService
-            String id = taskId.substring(taskId.indexOf("$") + 1);
-            taskService.complete(id, taskAttributes, Collections.emptyMap());
-        } else if (taskId.startsWith(ACTIVITI_PREFIX)) {
-            Map<String, Object> taskAttributes = new HashMap<>();
+        } else {
+            taskAttributes = new HashMap<>();
             for (Map.Entry<QName, Object> entry : attributes.entrySet()) {
                 taskAttributes.put(entry.getKey().toString(), entry.getValue());
             }
-
-            String id = taskId.substring(taskId.indexOf("$") + 1);
-            activitiTaskService.complete(id, taskAttributes);
         }
+
+        ecosTaskService.endTask(taskId, taskAttributes);
 
         return Collections.emptyMap();
     }

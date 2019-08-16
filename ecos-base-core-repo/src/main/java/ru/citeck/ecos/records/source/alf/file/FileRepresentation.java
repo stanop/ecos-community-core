@@ -1,5 +1,7 @@
 package ru.citeck.ecos.records.source.alf.file;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.*;
@@ -20,6 +22,8 @@ import java.util.Map;
  */
 public class FileRepresentation {
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     static final String FILE_TYPE_DELIMITER = "/";
 
     static final String MODEL_MIME_TYPE = "mimetype";
@@ -35,40 +39,36 @@ public class FileRepresentation {
 
     private static final String URL_PATTERN = "/share/page/card-details?nodeRef=%s";
 
-    public static JSONObject fromAlfNode(GqlAlfNode alfNode, AlfGqlContext context) {
+    public static ObjectNode fromAlfNode(GqlAlfNode alfNode, AlfGqlContext context) {
         Map<QName, Serializable> properties = alfNode.getProperties();
 
         ContentService contentService = context.getService("contentService");
         NodeRef nodeRef = new NodeRef(alfNode.nodeRef());
         ContentReader reader = contentService.getReader(nodeRef, ContentModel.PROP_CONTENT);
 
-        JSONObject obj = new JSONObject();
-        try {
-            JSONObject data = new JSONObject();
-            data.put(MODEL_NODE_REF, alfNode.nodeRef());
+        ObjectNode obj = OBJECT_MAPPER.createObjectNode();
+        ObjectNode data = OBJECT_MAPPER.createObjectNode();
+        data.put(MODEL_NODE_REF, alfNode.nodeRef());
 
-            obj.put(MODEL_DATA, data);
-            obj.put(MODEL_URL, String.format(URL_PATTERN, alfNode.nodeRef()));
-            obj.put(MODEL_NAME, properties.get(ContentModel.PROP_NAME));
-            obj.put(MODEL_SIZE, reader.getSize());
+        obj.put(MODEL_DATA, data);
+        obj.put(MODEL_URL, String.format(URL_PATTERN, alfNode.nodeRef()));
+        obj.put(MODEL_NAME, (String) properties.get(ContentModel.PROP_NAME));
+        obj.put(MODEL_SIZE, reader.getSize());
 
-            String typeKind = "";
-            Serializable typeRaw = properties.get(ClassificationModel.PROP_DOCUMENT_TYPE);
-            if (typeRaw != null) {
-                NodeRef typeRef = (NodeRef) typeRaw;
-                typeKind = typeRef.getId();
-            }
-
-            Serializable kindRaw = properties.get(ClassificationModel.PROP_DOCUMENT_KIND);
-            if (kindRaw != null) {
-                NodeRef kindRef = (NodeRef) kindRaw;
-                typeKind += FILE_TYPE_DELIMITER + kindRef.getId();
-            }
-
-            obj.put(MODEL_FILE_TYPE, typeKind);
-        } catch (JSONException e) {
-            throw new AlfrescoRuntimeException("Error while generate file representation from alf node", e);
+        String typeKind = "";
+        Serializable typeRaw = properties.get(ClassificationModel.PROP_DOCUMENT_TYPE);
+        if (typeRaw != null) {
+            NodeRef typeRef = (NodeRef) typeRaw;
+            typeKind = typeRef.getId();
         }
+
+        Serializable kindRaw = properties.get(ClassificationModel.PROP_DOCUMENT_KIND);
+        if (kindRaw != null) {
+            NodeRef kindRef = (NodeRef) kindRaw;
+            typeKind += FILE_TYPE_DELIMITER + kindRef.getId();
+        }
+
+        obj.put(MODEL_FILE_TYPE, typeKind);
 
         return obj;
     }

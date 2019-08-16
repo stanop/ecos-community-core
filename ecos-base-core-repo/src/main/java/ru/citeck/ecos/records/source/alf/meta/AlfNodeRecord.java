@@ -21,6 +21,7 @@ import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.records.source.alf.file.FileRepresentation;
 import ru.citeck.ecos.records.source.common.MLTextValue;
 import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.RecordsUtils;
@@ -206,6 +207,14 @@ public class AlfNodeRecord implements MetaValue {
         }
 
         return attribute != null ? attribute : Collections.emptyList();
+    }
+
+    @Override
+    public Object getAs(String type) {
+        if (node != null) {
+            return FileRepresentation.fromAlfNode(node, context);
+        }
+        return null;
     }
 
     private List<String> getFormAndDashboardKeys() {
