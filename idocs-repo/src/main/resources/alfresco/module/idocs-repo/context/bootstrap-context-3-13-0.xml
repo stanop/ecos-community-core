@@ -47,4 +47,40 @@
         <property name="description" value="idocs.module-component.config.hide-disabled-users-for-everyone.create" />
     </bean>
 
+    <bean id="idocs.module-component.config.ecos-forms-card-enable.create" parent="module.baseComponent"
+          class="ru.citeck.ecos.config.patch.CreateConfig">
+        <property name="dependsOn">
+            <list>
+                <ref bean="ecos-base-core.module-component.ecos-config-root" />
+            </list>
+        </property>
+        <property name="configKey" value="ecos-forms-card-enable" />
+        <property name="configValue" value="true" />
+        <property name="configTitle" value="ecos-config.ecos-forms-card-enable.title" />
+        <property name="configDescription" value="ecos-config.ecos-forms-card-enable.description" />
+        <property name="moduleId" value="idocs-repo" />
+        <property name="sinceVersion" value="3.13.0" />
+        <property name="appliesFromVersion" value="3.13.0" />
+        <property name="name" value="idocs.module-component.config.ecos-forms-card-enable.create" />
+        <property name="description" value="idocs.module-component.config.ecos-forms-card-enable.create" />
+    </bean>
+
+    <bean id="idocs.module-component.config.new-journals-page-enable.create" parent="module.baseComponent"
+          class="ru.citeck.ecos.config.patch.CreateConfig">
+        <property name="dependsOn">
+            <list>
+                <ref bean="ecos-base-core.module-component.ecos-config-root" />
+            </list>
+        </property>
+        <property name="configKey" value="new-journals-page-enable" />
+        <property name="configValue" value="false" />
+        <property name="configTitle" value="ecos-config.new-journals-page-enable.title" />
+        <property name="configDescription" value="ecos-config.new-journals-page-enable.description" />
+        <property name="moduleId" value="idocs-repo" />
+        <property name="sinceVersion" value="3.13.0" />
+        <property name="appliesFromVersion" value="3.13.0" />
+        <property name="name" value="idocs.module-component.config.new-journals-page-enable.create" />
+        <property name="description" value="idocs.module-component.config.new-journals-page-enable.create" />
+    </bean>
+
 </beans>

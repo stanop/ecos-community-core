@@ -16,4 +16,5 @@
         <prop name="scope">page</prop>
         <prop name="theme">${theme}</prop>
     </control>
+    <condition>nodeViews.hasNodeView(document, null)</condition>
 </cardlet>

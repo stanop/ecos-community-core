@@ -11,7 +11,8 @@ const PAGE_PREFIX = '/share/page';
 const menuApi = new MenuApi();
 
 const mapStateToProps = (state, ownProps) => ({
-    selectedId: state.leftMenu.selectedId
+    selectedId: state.leftMenu.selectedId,
+    isNewJournalsPageEnable: state.leftMenu.isNewJournalsPageEnable
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
@@ -23,8 +24,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     setExpanded: id => dispatch(toggleExpanded(id))
 });
 
-const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, isNestedListExpanded, withNestedList}) => {
-
+const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, isNestedListExpanded, withNestedList, isNewJournalsPageEnable}) => {
     const journalId = lodash.get(item, 'params.journalId', '');
     const [journalTotalCount, setJournalTotalCount] = useState(0);
 
@@ -84,6 +84,11 @@ const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, 
 
                 if (params.maxItems) {
                     targetUrl += `&maxItems=${params.maxItems}`;
+                }
+
+                if (isNewJournalsPageEnable) {
+                    //targetUrl = `/v2/journals?journalId=${params.journalRef}&journalSettingId=&journalsListId=site-${params.siteName}-${params.listId}`;
+                    targetUrl = `/share/page/ui/journals?journalId=${params.journalRef}&journalSettingId=&journalsListId=site-${params.siteName}-${params.listId}`;
                 }
 
                 break;

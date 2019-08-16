@@ -368,7 +368,14 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             }
 
             if (RecordConstants.ATT_FORM_KEY.equals(name)) {
-                return taskInfo.getFormKey();
+                String formKey = taskInfo.getFormKey();
+                if (StringUtils.isBlank(formKey)) {
+                    return null;
+                }
+                if (formKey.startsWith("alf_")) {
+                    return formKey;
+                }
+                return Arrays.asList(formKey, "alf_" + formKey);
             }
 
             Map<String, Object> attributes = taskInfo.getAttributes();

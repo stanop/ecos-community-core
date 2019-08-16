@@ -1460,7 +1460,12 @@ JournalsWidget
         return filteredActions;
     })
 
+    .property('newJournalsPageEnable', b)
+
     .computed('fullscreenLink', function() {
+        var self = this;
+        var newJournalsPageEnable = this.newJournalsPageEnable();
+        
         var journalsList = this.journalsList(),
             journalId = this.journalId(),
             filterId = this.filterId(),
@@ -1483,12 +1488,26 @@ JournalsWidget
             }
             postfix = '/list/' + journalsList.listId();
         }
-        return YAHOO.lang.substitute('{context}{prefix}journals2{postfix}#{hash}', {
+
+        var link = YAHOO.lang.substitute('{context}{prefix}journals2{postfix}#{hash}', {
             context: Alfresco.constants.URL_PAGECONTEXT,
             prefix: prefix,
             postfix: postfix,
             hash: hash
         });
+
+        if (newJournalsPageEnable === null) {
+            self.newJournalsPageEnable(false);
+            
+            Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool').then(function(isEnable){
+                self.newJournalsPageEnable(isEnable);
+            }).catch(function(){});
+        } else if (newJournalsPageEnable === true) {
+            //link = '/v2/journals?journalId=' + journalId + '&journalSettingId=&journalsListId=' + journalsList.id();
+            link = '/share/page/ui/journals?journalId=' + journalId + '&journalSettingId=&journalsListId=' + journalsList.id();
+        }
+
+        return link;
     })
 
     .init(function() {

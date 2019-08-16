@@ -8,6 +8,14 @@ export const LEFT_MENU_TOGGLE_IS_OPEN = 'LEFT_MENU_TOGGLE_IS_OPEN';
 export const LEFT_MENU_SET_SELECTED_ID = 'LEFT_MENU_SET_SELECTED_ID';
 export const LEFT_MENU_SET_SCROLL_TOP = 'LEFT_MENU_SET_SCROLL_TOP';
 export const LEFT_MENU_SET_IS_READY = 'LEFT_MENU_SET_IS_READY';
+export const LEFT_MENU_SET_NEW_JOURNALS_PAGE_ENABLE = 'LEFT_MENU_SET_NEW_JOURNALS_PAGE_ENABLE';
+
+export function setNewJournalsPageEnable(payload) {
+    return {
+        type: LEFT_MENU_SET_NEW_JOURNALS_PAGE_ENABLE,
+        payload
+    }
+}
 
 export function setSelectedId(payload) {
     return {
