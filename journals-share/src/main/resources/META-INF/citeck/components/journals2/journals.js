@@ -19,14 +19,17 @@
 define([
     'lib/knockout',
     'citeck/utils/knockout.utils',
+    'ecosui!menu-api',
     'underscore',
     'citeck/components/invariants/invariants',
     'citeck/components/dynamic-tree/cell-formatters',
     'citeck/components/dynamic-tree/action-renderer'
-], function(ko, koutils, _) {
+], function(ko, koutils, MenuApi, _) {
 
     if (!Citeck) Citeck = {};
     if (!Citeck.constants) Citeck.constants = {};
+
+    var menuApi = new MenuApi();
 
 var logger = Alfresco.logger,
         noneActionGroupId = "none",
@@ -1503,8 +1506,11 @@ JournalsWidget
                 self.newJournalsPageEnable(isEnable);
             }).catch(function(){});
         } else if (newJournalsPageEnable === true) {
-            //link = '/v2/journals?journalId=' + journalId + '&journalSettingId=&journalsListId=' + journalsList.id();
-            link = '/share/page/ui/journals?journalId=' + journalId + '&journalSettingId=&journalsListId=' + journalsList.id();
+            link = menuApi.getNewJournalPageUrl({
+                listId: journalsList.id(),
+                siteName: null,
+                journalRef: journalId
+            });
         }
 
         return link;
