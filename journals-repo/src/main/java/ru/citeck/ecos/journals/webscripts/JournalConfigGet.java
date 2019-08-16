@@ -34,6 +34,7 @@ import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.Predicate;
 import ru.citeck.ecos.predicate.model.ValuePredicate;
 import ru.citeck.ecos.querylang.QueryLangService;
+import ru.citeck.ecos.records.source.alf.AlfDictionaryRecords;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
@@ -57,7 +58,8 @@ public class JournalConfigGet extends AbstractWebScript {
     private static final Log logger = LogFactory.getLog(JournalConfigGet.class);
 
     private static final String PARAM_JOURNAL = "journalId";
-    private static final String META_RECORD_TEMPLATE = "dict@%s";
+
+    private static final String META_RECORD_TEMPLATE = AlfDictionaryRecords.ID + "@%s";
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -116,7 +118,10 @@ public class JournalConfigGet extends AbstractWebScript {
             sourceId = "";
         }
 
-        Map<String, AttInfo> columnInfo = getAttributesInfo(sourceId, attributes);
+        Map<String, String> options = journalType.getOptions();
+        String type = MapUtils.getString(options, "type");
+
+        Map<String, AttInfo> columnInfo = getAttributesInfo(sourceId, type, attributes);
         for (String name : attributes) {
 
             Column column = new Column();
@@ -148,7 +153,7 @@ public class JournalConfigGet extends AbstractWebScript {
         Response response = new Response();
         response.setId(journalType.getId());
         response.setColumns(columns);
-        response.setMeta(getJournalMeta(journalType));
+        response.setMeta(getJournalMeta(journalType, type));
         response.setSourceId(sourceId);
         response.setParams(journalType.getOptions());
 
@@ -193,7 +198,7 @@ public class JournalConfigGet extends AbstractWebScript {
         return column.getAttribute();
     }
 
-    private JournalMeta getJournalMeta(JournalType journal) {
+    private JournalMeta getJournalMeta(JournalType journal, String type) {
 
         JournalRepoData journalData = journalRefById.getUnchecked(journal.getId());
 
@@ -219,9 +224,6 @@ public class JournalConfigGet extends AbstractWebScript {
         meta.setCreateVariants(createVariantsGet.getVariantsByJournalId(journal.getId(), true));
 
         fillMetaFromRepo(meta, journalData);
-
-        Map<String, String> options = journal.getOptions();
-        String type = MapUtils.getString(options, "type");
 
         if (meta.getPredicate() == null) {
             if (StringUtils.isNotBlank(type)) {
@@ -356,14 +358,15 @@ public class JournalConfigGet extends AbstractWebScript {
         return repoData;
     }
 
-    private Map<String, AttInfo> getAttributesInfo(String sourceId, List<String> attributes) {
+    private Map<String, AttInfo> getAttributesInfo(String sourceId, String type, List<String> attributes) {
 
         Map<String, String> attributesEdges = new HashMap<>();
         for (String attribute : attributes) {
             attributesEdges.put(attribute, ".edge(n:\"" + attribute + "\"){type,editorKey,javaClass}");
         }
 
-        RecordRef recordRef = RecordRef.create(sourceId, "");
+        RecordRef recordRef = StringUtils.isNotBlank(type) ?  RecordRef.create(AlfDictionaryRecords.ID, type)
+                : RecordRef.create(sourceId, "");
         RecordMeta attInfoMeta = recordsService.getAttributes(recordRef, attributesEdges);
 
         Map<String, AttInfo> result = new HashMap<>();
