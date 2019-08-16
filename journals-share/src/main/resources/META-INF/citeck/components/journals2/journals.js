@@ -1503,8 +1503,8 @@ JournalsWidget
                 self.newJournalsPageEnable(isEnable);
             }).catch(function(){});
         } else if (newJournalsPageEnable === true) {
-            //link = '/v2/journals?journalId=' + journalId + '&journalSettingId=&journalsListId=' + journalsList.id();
-            link = '/share/page/ui/journals?journalId=' + journalId + '&journalSettingId=&journalsListId=' + journalsList.id();
+            link = '/v2/journals?journalId=' + journalId + '&journalSettingId=&journalsListId=' + journalsList.id();
+            //link = '/share/page/ui/journals?journalId=' + journalId + '&journalSettingId=&journalsListId=' + journalsList.id();
         }
 
         return link;
