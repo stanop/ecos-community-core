@@ -87,8 +87,7 @@ const ListItemLink = ({item, onSelectItem, selectedId, nestedList, setExpanded, 
                 }
 
                 if (isNewJournalsPageEnable) {
-                    targetUrl = `/v2/journals?journalId=${params.journalRef}&journalSettingId=&journalsListId=site-${params.siteName}-${params.listId}`;
-                    //targetUrl = `/share/page/ui/journals?journalId=${params.journalRef}&journalSettingId=&journalsListId=site-${params.siteName}-${params.listId}`;
+                    targetUrl = menuApi.getNewJournalPageUrl(params);
                 }
 
                 break;
