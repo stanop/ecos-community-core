@@ -91,7 +91,7 @@
                 "inputMask": "",
                 "wysiwyg": false,
                 "editor": "",
-                "id": "edx1vrta"
+                "id": "eigcswb"
               }
             ],
             "width": 6,
@@ -150,7 +150,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ejexq5e"
+            "id": "eipvod"
           },
           {
             "components": [
@@ -232,7 +232,7 @@
                 "inputMask": "",
                 "wysiwyg": false,
                 "editor": "",
-                "id": "emarnaso"
+                "id": "eplbnzg"
               }
             ],
             "width": 6,
@@ -291,7 +291,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ef468j"
+            "id": "e8lg2cl"
           }
         ],
         "mask": false,
@@ -348,7 +348,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ex4z965"
+        "id": "ejywd3k"
       },
       {
         "conditional": {
@@ -403,7 +403,7 @@
         "inputType": "horizontalLine",
         "useNegativeIndents": true,
         "addVerticalIndents": false,
-        "id": "en0z6hc"
+        "id": "eo2wtd"
       },
       {
         "label": "Columns",
@@ -435,6 +435,7 @@
                 "refreshOnEvent": false,
                 "selectThreshold": 0.3,
                 "defaultValue": "product",
+                "refreshOn": [],
                 "encrypted": false,
                 "validate": {
                   "required": true,
@@ -485,7 +486,6 @@
                 "calculateValue": "",
                 "allowCalculateOverride": false,
                 "widget": null,
-                "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
                 "limit": 100,
@@ -503,7 +503,7 @@
                 "fuseOptions": {},
                 "customOptions": {},
                 "refreshEventName": "",
-                "id": "e016pvl"
+                "id": "ers4dgf"
               }
             ],
             "width": 6,
@@ -562,7 +562,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "evue9s6"
+            "id": "e5xw3k"
           },
           {
             "components": [
@@ -631,7 +631,7 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "id": "e7hj76e"
+                "id": "eeala2"
               }
             ],
             "width": 6,
@@ -690,7 +690,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "evkiw7b"
+            "id": "ee383n"
           },
           {
             "xs": 0,
@@ -771,7 +771,7 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "id": "ezw98f1"
+                "id": "et3d68"
               }
             ],
             "placeholder": "",
@@ -814,7 +814,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ew0s91"
+            "id": "ecd88xr"
           },
           {
             "xs": 0,
@@ -896,7 +896,7 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "id": "eks028t4k"
+                "id": "e76cnr8"
               }
             ],
             "placeholder": "",
@@ -939,7 +939,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ek1wzuv"
+            "id": "ek439ib"
           },
           {
             "xs": 0,
@@ -1038,7 +1038,7 @@
                 "fuseOptions": {},
                 "customOptions": {},
                 "refreshEventName": "",
-                "id": "esxg0xn"
+                "id": "ep101o"
               }
             ],
             "placeholder": "",
@@ -1081,7 +1081,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e4v31h9"
+            "id": "ehv8g0n"
           },
           {
             "xs": 0,
@@ -1100,6 +1100,7 @@
               {
                 "label": "pas:currency",
                 "mask": false,
+                "disabled": true,
                 "tableView": true,
                 "alwaysEnabled": false,
                 "dataSrc": "custom",
@@ -1111,8 +1112,10 @@
                   "resource": ""
                 },
                 "refreshOnEvent": true,
+                "refreshEventName": "currencyListEvent",
                 "selectThreshold": 0.3,
                 "defaultValue": "workspace://SpacesStore/currency-rur",
+                "refreshOn": [],
                 "customDefaultValue": "if (instance.options.parentForm && instance.options.parentForm.getValue()['data']['payments_currency'].length > 0) {\r\n    value = instance.options.parentForm.getValue()['data']['payments_currency'];\r\n} else {\r\n\tvalue = 'workspace://SpacesStore/currency-rur';\r\n}",
                 "allowCalculateOverride": true,
                 "encrypted": false,
@@ -1139,7 +1142,6 @@
                 "type": "ecosSelect",
                 "input": true,
                 "tags": [],
-                "refreshEventName": "currencyListEvent",
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -1159,12 +1161,10 @@
                 "tooltip": "",
                 "hideLabel": false,
                 "tabindex": "",
-                "disabled": false,
                 "autofocus": false,
                 "dbIndex": false,
                 "calculateValue": "",
                 "widget": null,
-                "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
                 "limit": 100,
@@ -1180,7 +1180,7 @@
                 "searchThreshold": 0.3,
                 "fuseOptions": {},
                 "customOptions": {},
-                "id": "e353k67d"
+                "id": "epgp7"
               }
             ],
             "placeholder": "",
@@ -1223,7 +1223,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "erqlqzs"
+            "id": "e4kou3q"
           }
         ],
         "mask": false,
@@ -1280,7 +1280,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "eqy5uy"
+        "id": "ec9nhw5"
       },
       {
         "label": "Columns",
@@ -1374,7 +1374,7 @@
                 "mask": false,
                 "inputType": "asyncData",
                 "executionCondition": "",
-                "id": "euhfgy9"
+                "id": "eo70wra"
               },
               {
                 "label": "unit",
@@ -1462,7 +1462,7 @@
                 "inputType": "asyncData",
                 "eventName": "",
                 "executionCondition": "",
-                "id": "ego2el"
+                "id": "e7x28p"
               }
             ],
             "width": 3,
@@ -1515,7 +1515,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ew2y7dr"
+            "id": "ewwo5nk"
           },
           {
             "width": 3,
@@ -1589,7 +1589,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "ea82w1"
+                "id": "eafgb5t"
               }
             ],
             "placeholder": "",
@@ -1632,7 +1632,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "edg6kwf"
+            "id": "eqys2y"
           },
           {
             "components": [
@@ -1703,7 +1703,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "e4hmk1"
+                "id": "efb9u4a"
               }
             ],
             "width": 3,
@@ -1756,7 +1756,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e7hvmyc"
+            "id": "e8umq5f"
           },
           {
             "width": 3,
@@ -1810,7 +1810,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eplceu"
+            "id": "e4rzelq"
           }
         ],
         "autoAdjust": true,
@@ -1860,18 +1860,22 @@
           "eq": ""
         },
         "hideOnChildrenHidden": false,
-        "id": "ed3afklv"
+        "id": "eip9awz"
       }
     ]
   },
   "i18n": {
     "ru": {
       "Save": "Сохранить",
-      "Cancel": "Отмена"
+      "Cancel": "Отмена",
+      "product": "Продукт",
+      "service": "Услуга"
     },
     "en": {
       "Save": "Save",
-      "Cancel": "Cancel"
+      "Cancel": "Cancel",
+      "product": "Product",
+      "service": "Service"
     }
   }
 }
