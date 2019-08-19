@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
+import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
@@ -128,7 +128,7 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
         }
 
         @Override
-        public <T extends GqlContext> void init(T context, MetaField metaField) {
+        public <T extends QueryContext> void init(T context, MetaField metaField) {
 
             alfNode.init(context, metaField);
 

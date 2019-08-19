@@ -19,9 +19,9 @@ import ru.citeck.ecos.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
 import ru.citeck.ecos.records.models.UserDTO;
+import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.records2.graphql.meta.value.InnerMetaValue;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
@@ -287,7 +287,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         private TaskInfo taskInfo;
 
         @Override
-        public <T extends GqlContext> void init(T context, MetaField field) {
+        public <T extends QueryContext> void init(T context, MetaField field) {
             Map<String, String> documentAttributes = new HashMap<>();
             RecordRef documentRef = getDocumentRef();
             Map<String, String> attributesMap = field.getInnerAttributesMap();
