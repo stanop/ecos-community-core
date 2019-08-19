@@ -233,7 +233,7 @@ public class JournalConfigGet extends AbstractWebScript {
             }
         }
 
-        if (StringUtils.isNotBlank(type)) {
+        if (StringUtils.isBlank(journal.getDataSource()) && StringUtils.isNotBlank(type)) {
             meta.setMetaRecord(String.format(META_RECORD_TEMPLATE, type));
         }
 
@@ -365,8 +365,13 @@ public class JournalConfigGet extends AbstractWebScript {
             attributesEdges.put(attribute, ".edge(n:\"" + attribute + "\"){type,editorKey,javaClass}");
         }
 
-        RecordRef recordRef = StringUtils.isNotBlank(type) ?  RecordRef.create(AlfDictionaryRecords.ID, type)
-                : RecordRef.create(sourceId, "");
+        RecordRef recordRef;
+        if (StringUtils.isBlank(sourceId)) {
+            recordRef = StringUtils.isNotBlank(type) ? RecordRef.create(AlfDictionaryRecords.ID, type)
+                    : RecordRef.create(sourceId, "");
+        } else {
+            recordRef = RecordRef.create(sourceId, "");
+        }
         RecordMeta attInfoMeta = recordsService.getAttributes(recordRef, attributesEdges);
 
         Map<String, AttInfo> result = new HashMap<>();
