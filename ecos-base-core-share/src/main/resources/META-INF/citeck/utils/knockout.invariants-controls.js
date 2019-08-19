@@ -1002,6 +1002,15 @@ ko.components.register('dadata-loader', {
         var that = this;
         var attributes = params.attributes || {};
         var impl = params.runtime.node().impl();
+        this.isEnterpriseInstalled = ko.observable(false);
+
+        fetch(Alfresco.constants.PROXY_URI + '/citeck/info/is-ent-installed',{
+            method: 'GET',
+            credentials: 'include',
+            headers: {'Content-type': 'application/json;charset=UTF-8'}
+        }).then(function(response) { return response.json();}).then(function (response){
+            that.isEnterpriseInstalled(response.isEntInstalled == 'true');
+        });
 
         that.tooltip = Alfresco.util.message('dadata.loader.tooltip');
         that.text = Alfresco.util.message('dadata.loader.text');
@@ -1078,7 +1087,7 @@ ko.components.register('dadata-loader', {
             }
         }
     },
-    template: '<button class="dadata-loader_btn"  data-bind="click: onClick.bind(this), attr: { title:tooltip }, text: text"></button>'
+    template: '<button class="dadata-loader_btn"  data-bind="click: onClick.bind(this), attr: { title:tooltip }, text: text, visible: isEnterpriseInstalled"></button>'
 });
 
 
@@ -3647,6 +3656,7 @@ ko.bindingHandlers.orgstructControl = {
         var options = {
             allowedAuthorityType: "USER",
             allowedGroupType: "",
+            allowedGroupSubType: "",
             rootGroup: ko.observable("_orgstruct_home_")
         };
 
@@ -3814,34 +3824,41 @@ ko.bindingHandlers.orgstructControl = {
                     },
 
                     buildTreeNode: function(p_oItem, p_oParent, p_expanded) {
+                        var authorityType = p_oItem.authorityType;
+                        var groupType = p_oItem.groupType;
                         var textNode = new YAHOO.widget.TextNode({
                                 label: $html(p_oItem[tree.fn.getNodeLabelKey(p_oItem)]) || p_oItem.displayName || p_oItem.shortName,
                                 nodeRef: p_oItem.nodeRef,
                                 shortName: p_oItem.shortName,
                                 displayName: p_oItem.displayName,
                                 fullName: p_oItem.fullName,
-                                authorityType: p_oItem.authorityType,
-                                groupType: p_oItem.groupType,
+                                authorityType: authorityType,
+                                groupType: groupType,
+                                groupSubType: p_oItem.groupSubType,
                                 available: p_oItem.available,
                                 editable : false
                         }, p_oParent, p_expanded);
 
-                        // add nessesary classes
-                        if (p_oItem.authorityType) {
-                            textNode.contentStyle += " authorityType-" + p_oItem.authorityType;
+                        // add nessessary classes
+                        if (authorityType) {
+                            textNode.contentStyle += " authorityType-" + authorityType;
                             textNode.contentStyle += " available-" + p_oItem.available;
                         }
-                        if (p_oItem.groupType) textNode.contentStyle += " groupType-" + p_oItem.groupType.toUpperCase();
+                        if (groupType) {
+                            textNode.contentStyle += " groupType-" + groupType.toUpperCase();
+                        }
 
                         // selectable elements
-                        if (options.allowedAuthorityType.indexOf(p_oItem.authorityType) != -1) {
-                            if (p_oItem.authorityType == "GROUP") {
-                                if (!options.allowedGroupType || options.allowedGroupType.indexOf(p_oItem.groupType.toUpperCase()) != -1) {
-                                    textNode.className = "selectable";
+                        if (options.allowedAuthorityType.indexOf(authorityType) !== -1) {
+                            if (authorityType === "GROUP") {
+                                if (!options.allowedGroupType || options.allowedGroupType.indexOf(groupType.toUpperCase()) !== -1) {
+                                    if (!options.allowedGroupSubType || options.allowedGroupSubType.indexOf(p_oItem.groupSubType.toUpperCase()) !== -1) {
+                                        textNode.className = "selectable";
+                                    }
                                 }
                             }
 
-                            if (p_oItem.authorityType == "USER") {
+                            if (authorityType === "USER") {
                                 textNode.className = "selectable";
                             }
                         }
@@ -3872,21 +3889,23 @@ ko.bindingHandlers.orgstructControl = {
                         });
 
                         // return if element exists
-                        if (existsSelectedItems.indexOf(textNode.data.nodeRef) != -1) return false;
+                        if (existsSelectedItems.indexOf(textNode.data.nodeRef) !== -1) return false;
 
-                        if (options.allowedAuthorityType.indexOf(object.authorityType) != -1) {
-                            if (object.authorityType == "GROUP") {
-                                if (options.allowedGroupType && options.allowedGroupType.indexOf(object.groupType.toUpperCase()) == -1) {
-                                    return false;
+                        if (options.allowedAuthorityType.indexOf(object.authorityType) !== -1) {
+                            if (object.authorityType === "GROUP") {
+                                if ((options.allowedGroupType && options.allowedGroupType.indexOf(object.groupType.toUpperCase()) === -1) ||
+                                (options.allowedGroupSubType && options.allowedGroupSubType.indexOf(object.groupSubType.toUpperCase()) === -1)) {
+                                        return false;
+                                    }
                                 }
-                            }
+
 
                             if (options.nodeSelectConstraintCallback) {
                                 if (!options.nodeSelectConstraintCallback(textNode, options.context)) { return false; }
                             }
 
 
-                            if (existsSelectedItems.length == 0 || (existsSelectedItems.length > 0 && multiple())) {
+                            if (existsSelectedItems.length === 0 || (existsSelectedItems.length > 0 && multiple())) {
                                 $(this.selectedItems).append(createSelectedObject({
                                     id: object.nodeRef,
                                     label: object[tree.fn.getNodeLabelKey(object)] || object.displayName,

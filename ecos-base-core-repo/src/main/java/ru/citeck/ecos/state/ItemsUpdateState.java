@@ -4,12 +4,14 @@ import org.alfresco.repo.transaction.AlfrescoTransactionSupport;
 import org.alfresco.repo.transaction.TransactionListenerAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 /**
  * @author Pavel Simonov
  */
+@Component("ecos.itemsUpdateState")
 public final class ItemsUpdateState {
 
     private static final Log LOG = LogFactory.getLog(ItemsUpdateState.class);

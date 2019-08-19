@@ -1,9 +1,9 @@
 package ru.citeck.ecos.eform;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,8 +31,8 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
 
     private static final String ECOS_FORM_KEY = "ECOS_FORM";
 
-    private static final RecordRef DEFAULT_FORM_ID = RecordRef.create(ID , "DEFAULT");
-    private static final RecordRef ECOS_FORM_ID = RecordRef.create(ID , "ECOS_FORM");
+    private static final RecordRef DEFAULT_FORM_ID = RecordRef.create(ID, "DEFAULT");
+    private static final RecordRef ECOS_FORM_ID = RecordRef.create(ID, "ECOS_FORM");
 
     private static final Set<RecordRef> SYSTEM_FORMS = new HashSet<>(Arrays.asList(DEFAULT_FORM_ID, ECOS_FORM_ID));
 
@@ -110,7 +110,7 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
             if (NodeRef.isNodeRef(recordRef.getId())) {
 
                 Optional<EcosFormModel> model = repoFormProvider.getContentData(
-                                new NodeRef(recordRef.getId())).flatMap(ContentData::getData);
+                        new NodeRef(recordRef.getId())).flatMap(ContentData::getData);
                 model.ifPresent(models::add);
 
             } else {
@@ -154,11 +154,16 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
         Query query = recordsQuery.getQuery(Query.class);
         Optional<EcosFormModel> form = Optional.empty();
 
-        if (StringUtils.isNotBlank(query.formKey)) {
+        if (CollectionUtils.isNotEmpty(query.formKeys)) {
+            List<EcosFormModel> formsByKeys = eformFormService.getFormsByKeys(query.formKeys);
+            result.setTotalCount(formsByKeys.size());
+            result.setRecords(formsByKeys);
+            return result;
+        } else if (StringUtils.isNotBlank(query.formKey)) {
 
             form = eformFormService.getFormByKey(Arrays.stream(query.formKey.split(","))
-                                                       .filter(StringUtils::isNotBlank)
-                                                       .collect(Collectors.toList()));
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.toList()));
 
         } else if (query.record != null) {
 
@@ -181,9 +186,12 @@ public class EcosFormRecords extends CrudRecordsDAO<EcosFormModel> {
         return result;
     }
 
+
+    @Data
     public static class Query {
-        @Getter @Setter private String formKey;
-        @Getter @Setter private RecordRef record;
-        @Getter @Setter private Boolean isViewMode;
+        private String formKey;
+        private List<String> formKeys;
+        private RecordRef record;
+        private Boolean isViewMode;
     }
 }

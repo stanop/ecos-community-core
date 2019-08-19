@@ -112,6 +112,7 @@ public class HistoryService {
      * Ecos configuration service (system journals - configuration)
      */
     @Autowired
+    @Qualifier("ecosConfigService")
     private EcosConfigService ecosConfigService;
 
     private NodeService nodeService;

@@ -22,7 +22,7 @@ require([
     'ecosui!react-dom'
 ], function(Records, ReactDOM) {
 
-    if(typeof Citeck == "undefined") Citeck = {};
+    if (typeof Citeck == "undefined") Citeck = {};
     Citeck.forms = Citeck.forms || {};
 
     var Event = YAHOO.util.Event;
@@ -38,7 +38,7 @@ require([
 
     Citeck.forms.onChange = function(fields, func, id) {
         for(var i in fields) {
-            if(!fields.hasOwnProperty(i)) continue;
+            if (!fields.hasOwnProperty(i)) continue;
             Event.on(fields[i], "change", function(e) {
                 func(id);
             });
@@ -53,7 +53,7 @@ require([
         }
         YAHOO.Bubbling.on("renderCurrentValue", function(layer, args) {
             var control = args[1].eventGroup;
-            if(control && fields.indexOf(control.id) != -1) {
+            if (control && fields.indexOf(control.id) != -1) {
                 YAHOO.lang.later(0, this, func, id);
             }
         });
@@ -98,10 +98,10 @@ require([
      */
     Citeck.forms.updateDisplay = function(id) {
         var condition = displayConditions[id];
-        if(!condition)
+        if (!condition)
             return;
         try {
-            if(Citeck.forms.evaluate(id, condition)) {
+            if (Citeck.forms.evaluate(id, condition)) {
                 Dom.removeClass(id, "hidden");
             } else {
                 Dom.addClass(id, "hidden");
@@ -121,7 +121,7 @@ require([
     Citeck.forms.updateValue = function(id) {
         var expression = valueExpressions[id],
             input = Dom.get(id);
-        if(!input || !expression)
+        if (!input || !expression)
             return;
         try {
             input.value = Citeck.forms.evaluate(id, expression);
@@ -146,7 +146,7 @@ require([
     Citeck.forms.evaluate = function(id, expression) {
         var result = null;
         var form = Citeck.forms.getForm(id);
-        if(form) {
+        if (form) {
             var formUI = Alfresco.util.ComponentManager.get(form.id);
             var formData = formUI.formsRuntime.getFormData();
             with(formData) {
@@ -317,7 +317,7 @@ require([
         var itemKind, mode, paramName;
         formId = formId || "";
 
-        if(Citeck.utils.isNodeRef(itemId)) {
+        if (Citeck.utils.isNodeRef(itemId)) {
             paramName = 'nodeRef';
             itemKind = 'node';
             mode = 'edit';
@@ -351,7 +351,7 @@ require([
 
             dataObj[paramName] = itemId;
             for(var name in params) {
-                if(params[name] != null)
+                if (params[name] != null)
                     dataObj['param_' + name] = params[name];
             }
 
@@ -364,7 +364,7 @@ require([
                     fn: function(response) {
                         YAHOO.Bubbling.on("node-view-submit", function(layer, args) {
                             var runtime = args[1].runtime;
-                            if(runtime.key() != viewId) return;
+                            if (runtime.key() != viewId) return;
 
                             var node = args[1].node;
                             node.thisclass.save(node, function(persistedNode) {
@@ -382,7 +382,7 @@ require([
 
                         YAHOO.Bubbling.on("node-view-cancel", function(layer, args) {
                             var runtime = args[1].runtime;
-                            if(runtime.key() != viewId) return;
+                            if (runtime.key() != viewId) return;
 
                             if (cancelCallback instanceof Function)
                                 cancelCallback();
@@ -407,9 +407,9 @@ require([
         Alfresco.util.Ajax.jsonGet({
             url: checkUrl,
             successCallback: { fn: function(response) {
-                if(response.json.exists) {
+                if (response.json.exists) {
                     newFormContent();
-                } else if(response.json.defaultExists) {
+                } else if (response.json.defaultExists) {
                     formId = "";
                     newFormContent();
                 }
@@ -445,16 +445,24 @@ require([
     Citeck.forms.editRecord = function (config) {
 
         var recordRef = config.recordRef,
-            fallback = config.fallback;
+            fallback = config.fallback,
+            forceNewForm = config.forceNewForm,
+            formKey = config.formKey;
 
         var showForm = function(recordRef) {
 
             if (recordRef) {
+
+                var params = {
+                    attributes: config.attributes || {},
+                    onSubmit: config.onSubmit
+                };
+                if (formKey) {
+                    params.formKey = config.formKey
+                }
+
                 Citeck.forms.eform(recordRef, {
-                    params: {
-                        attributes: config.attributes || {},
-                        onSubmit: config.onSubmit
-                    },
+                    params: params,
                     class: 'ecos-modal_width-lg',
                     isBigHeader: true,
                     formContainer: config.formContainer || null
@@ -464,22 +472,24 @@ require([
             }
         };
 
-        var isFormsEnabled = Citeck.Records.get('ecos-config@ecos-forms-enable').loadAttribute('.bool');
+        var isFormsEnabled;
+        if (!forceNewForm) {
+            isFormsEnabled = Citeck.Records.get('ecos-config@ecos-forms-enable').load('.bool');
+        } else {
+            isFormsEnabled = Promise.resolve(true);
+        }
+        var isShouldDisplay = isShouldDisplayFormsForUser();
 
-        isFormsEnabled.then(function(enabled) {
-            if (enabled) {
-                Citeck.Records.queryOne({
-                    query: { record: recordRef },
-                    sourceId: 'eform'
-                }).then(function(result) {
-                    if (result) {
-                        showForm(recordRef);
-                    } else {
-                        showForm(null);
-                    }
-                }).catch(function(e) {
-                    console.error(e);
-                    showForm(null);
+        Promise.all([isFormsEnabled, isShouldDisplay]).then(function (values) {
+            if (values[0] || values[1]) {
+                require(['ecosui!ecos-form-utils'], function(utils) {
+                    utils.default.hasForm(recordRef).then(function (result) {
+                        if (result) {
+                            showForm(recordRef);
+                        } else {
+                            showForm(null);
+                        }
+                    });
                 });
             } else {
                 showForm(null);
@@ -489,6 +499,44 @@ require([
             showForm(null);
         });
     };
+
+    function isShouldDisplayFormsForUser() {
+        return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str").then(function(result) {
+            if (result == "left") {
+                return isShouldDisplayForms();
+            }
+            return false;
+        });
+    }
+
+    function isShouldDisplayForms() {
+        return Citeck.Records.get("ecos-config@default-ui-left-menu-access-groups")
+            .load(".str").then(function(groupsInOneString) {
+
+                if (!groupsInOneString) {
+                    return false;
+                }
+
+                var groups = groupsInOneString.split(',');
+                var results = [];
+                for(var groupsCounter = 0; groupsCounter < groups.length; ++groupsCounter) {
+                    results.push(isCurrentUserInGroup(groups[groupsCounter]));
+                }
+                return Promise.all(results).then(function (values) {
+                    return values.indexOf(false) == -1;
+                });
+            });
+    }
+
+    function isCurrentUserInGroup(group) {
+        var currentPersonName = Alfresco.constants.USERNAME;
+        return Citeck.Records.queryOne({
+            "query": 'TYPE:"cm:authority" AND =cm:authorityName:"' + group + '"',
+            "language": "fts-alfresco"
+        }, 'cm:member[].cm:userName').then(function (usernames) {
+            return (usernames || []).indexOf(currentPersonName) != -1
+        });
+    }
 
     Citeck.forms.handleHeaderCreateVariant = function (variant) {
 
@@ -506,13 +554,18 @@ require([
         });
     };
 
-    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod) {
+    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod, formKey, attributes) {
+
+        var createAttributes = attributes || {};
+        if (destination) {
+            createAttributes["_parent"] = destination;
+        }
 
         Citeck.forms.editRecord({
             recordRef: recordRef || 'dict@' + type,
-            attributes: {
-                _parent: destination
-            },
+            attributes: createAttributes,
+            formKey: formKey,
+            forceNewForm: formKey || !type,
             fallback: fallback,
             onSubmit: function(record, form) {
 
@@ -721,7 +774,7 @@ require([
             dataObj[paramName] = itemId;
 
             for(var name in params) {
-                if(params[name] != null) dataObj['param_' + name] = params[name];
+                if (params[name] != null) dataObj['param_' + name] = params[name];
             }
 
             Alfresco.util.Ajax.request({
@@ -759,7 +812,7 @@ require([
 
                         var onSubmit = function(layer, args) {
                             var runtime = args[1].runtime;
-                            if(runtime.key() != viewId) return;
+                            if (runtime.key() != viewId) return;
 
                             var node = args[1].node;
 
@@ -774,7 +827,7 @@ require([
 
                         var onCancel = function(layer, args) {
                             var runtime = args[1].runtime;
-                            if(runtime.key() != viewId) return;
+                            if (runtime.key() != viewId) return;
                             clientHeight = panel.element.clientHeight;
                             panel.hide();
                             runtime.terminate();
@@ -958,7 +1011,7 @@ require([
             if (mode === 'create') dataObj["destination"] = destination;
 
             for(var name in params) {
-                if(params[name] != null) dataObj['param_' + name] = params[name];
+                if (params[name] != null) dataObj['param_' + name] = params[name];
             }
 
             Alfresco.util.Ajax.request({
@@ -1217,7 +1270,7 @@ require([
 
         var request = new XMLHttpRequest();
 
-        if(!sysuuid) {
+        if (!sysuuid) {
             var f = Dom.get(form.formId);
             var url = f.attributes.action.nodeValue;
             var re =  /^.*api[/]\w+[/](\w+)[/](\w+)[/](.+)[/]formprocessor.*$/;

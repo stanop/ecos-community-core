@@ -2,10 +2,16 @@ package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
+import org.alfresco.repo.node.MLPropertyInterceptor;
+import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.PermissionService;
+import org.alfresco.service.cmr.version.Version;
+import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
@@ -15,6 +21,8 @@ import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
+import ru.citeck.ecos.records.source.alf.file.FileRepresentation;
+import ru.citeck.ecos.records.source.common.MLTextValue;
 import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
@@ -24,6 +32,7 @@ import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
+import ru.citeck.ecos.state.ItemsUpdateState;
 
 import java.io.Serializable;
 import java.util.*;
@@ -32,12 +41,15 @@ import java.util.stream.Collectors;
 public class AlfNodeRecord implements MetaValue {
 
     private static final String VIRTUAL_SCRIPT_ATTS_ID = "virtualScriptAttributesProvider";
+    private static final String DEFAULT_VERSION_LABEL = "1.0";
 
     public static final String ATTR_ASPECTS = "attr:aspects";
     public static final String ATTR_IS_DOCUMENT = "attr:isDocument";
     public static final String ATTR_IS_CONTAINER = "attr:isContainer";
     public static final String ATTR_PARENT = "attr:parent";
     public static final String ATTR_PERMISSIONS = "permissions";
+    public static final String ATTR_PENDING_UPDATE = "pendingUpdate";
+    public static final String ATTR_VERSION = "version";
 
     private NodeRef nodeRef;
     private RecordRef recordRef;
@@ -164,6 +176,11 @@ public class AlfNodeRecord implements MetaValue {
                 attribute = MetaUtils.toMetaValues(keys, context, field);
                 break;
 
+            case RecordConstants.ATT_DASHBOARD_TYPE:
+
+                attribute = Collections.singletonList(new AlfNodeAttValue("case-details"));
+                break;
+
             case ATTR_PERMISSIONS:
 
                 return Collections.singletonList(getPermissions());
@@ -178,6 +195,22 @@ public class AlfNodeRecord implements MetaValue {
                 }
                 JsonNode previewInfo = recordsService.getAttribute(recordRef, path + ".previewInfo?json");
                 return MetaUtils.toMetaValues(previewInfo, context, field);
+
+            case ATTR_PENDING_UPDATE:
+
+                ItemsUpdateState service = context.getService("ecos.itemsUpdateState");
+                boolean pendingUpdate = service.isPendingUpdate(new NodeRef(node.nodeRef()));
+                attribute = Collections.singletonList(toMetaValue(null, pendingUpdate, field));
+                break;
+
+            case ATTR_VERSION:
+
+                VersionService versionService = context.getServiceRegistry().getVersionService();
+                Version currentVersion = versionService.getCurrentVersion(new NodeRef(node.nodeRef()));
+                String versionLabel = currentVersion != null && StringUtils.isNotBlank(currentVersion.getVersionLabel())
+                        ? currentVersion.getVersionLabel() : DEFAULT_VERSION_LABEL;
+                attribute = Collections.singletonList(toMetaValue(null, versionLabel, field));
+                break;
 
             default:
 
@@ -203,6 +236,14 @@ public class AlfNodeRecord implements MetaValue {
         return attribute != null ? attribute : Collections.emptyList();
     }
 
+    @Override
+    public Object getAs(String type) {
+        if (node != null) {
+            return FileRepresentation.fromAlfNode(node, context);
+        }
+        return null;
+    }
+
     private String getNodeRefUuid(String nodeRef) {
         if (nodeRef == null || nodeRef.isEmpty()) {
             return "";
@@ -223,6 +264,8 @@ public class AlfNodeRecord implements MetaValue {
         MetaValue metaValue;
         if (value instanceof NodeRef) {
             metaValue = new AlfNodeRecord(RecordRef.valueOf(value.toString()));
+        } else if (value instanceof MLText) {
+            metaValue = new MLTextValue((MLText) value);
         } else {
             if (att != null) {
                 metaValue = new AlfNodeAttValue(att, value);
@@ -266,7 +309,24 @@ public class AlfNodeRecord implements MetaValue {
 
         @Override
         public Map<QName, Serializable> getProperties() {
-            return node.getProperties();
+
+            Map<QName, Serializable> props = node.getProperties();
+
+            if (MLPropertyInterceptor.isMLAware()) {
+                return props;
+            }
+            Map<QName, Serializable> result = new HashMap<>();
+
+            for (Map.Entry<QName, Serializable> entry : props.entrySet()) {
+                Serializable value = entry.getValue();
+                if (value instanceof MLText) {
+                    result.put(entry.getKey(), ((MLText) value).getClosestValue(I18NUtil.getLocale()));
+                } else {
+                    result.put(entry.getKey(), value);
+                }
+            }
+
+            return result;
         }
     }
 }

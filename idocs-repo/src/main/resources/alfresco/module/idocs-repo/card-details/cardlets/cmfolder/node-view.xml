@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cardlet xmlns="http://www.citeck.ru/cardlets/1.0">
+    <id>node-view</id>
+    <regionId>node-view</regionId>
+    <allowed-type>{http://www.alfresco.org/model/content/1.0}folder</allowed-type>
+    <position>
+        <column>left</column>
+        <order>a5</order>
+        <mobile-order>-1</mobile-order>
+    </position>
+    <control url="ecosui!cardlet-node-view">
+        <prop name="nodeRef">${nodeRef}</prop>
+        <prop name="pageid">card-details</prop>
+        <prop name="remoteUrl">/share/service/citeck/surf/region</prop>
+        <prop name="regionId">node-view</prop>
+        <prop name="scope">page</prop>
+        <prop name="theme">${theme}</prop>
+    </control>
+    <condition>nodeViews.hasNodeView(document, null)</condition>
+</cardlet>

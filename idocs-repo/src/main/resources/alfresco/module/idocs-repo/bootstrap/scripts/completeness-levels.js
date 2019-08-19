@@ -325,5 +325,205 @@ createOrUpdateLevels([
                 consequent: {predicate: "kind", requiredType: "workspace://SpacesStore/cat-personal-documents", requiredKind: "workspace://SpacesStore/kind-d-miscellaneous"}
             }
         ]
+    },
+    {
+        uuid: "cl-passport-rus",
+        name: "passport-rus",
+        titles: [
+            {locale: "en", value: "Russian passport"},
+            {
+                locale: "ru",
+                value: "\u041f\u0430\u0441\u043f\u043e\u0440\u0442\u0020\u0433\u0440\u0430\u0436\u0434\u0430\u043d\u0438\u043d\u0430\u0020\u0420\u0424"
+            }
+        ],
+        req: [
+            {
+                name: "passport.rus",
+                titles: [
+                    {locale: "en", value: "Russian passport"},
+                    {
+                        locale: "ru",
+                        value: "\u041f\u0430\u0441\u043f\u043e\u0440\u0442\u0020\u0433\u0440\u0430\u0436\u0434\u0430\u043d\u0438\u043d\u0430\u0020\u0420\u0424"
+                    }
+                ],
+                scope: "associations",
+                consequent: {predicate: "kind", requiredType: "workspace://SpacesStore/idocs-cat-doctype-passport", requiredKind: "workspace://SpacesStore/idocs-cat-dockind-passport-rus"}
+            }
+        ]
+    },
+    {
+        uuid: "cl-foundDoc-charter",
+        name: "foundDoc-charter",
+        titles: [
+            {locale: "en", value: "Charter"},
+            {
+                locale: "ru",
+                value: "\u0423\u0441\u0442\u0430\u0432"
+            }
+        ],
+        req: [
+            {
+                name: "foundDoc-charter",
+                titles: [
+                    {locale: "en", value: "Charter"},
+                    {
+                        locale: "ru",
+                        value: "\u0423\u0441\u0442\u0430\u0432"
+                    }
+                ],
+                scope: "associations",
+                consequent: {predicate: "kind", requiredType: "workspace://SpacesStore/idocs-cat-doctype-foundDoc", requiredKind: "workspace://SpacesStore/idocs-cat-dockind-foundDoc-charter"}
+            }
+        ]
+    },
+    {
+        uuid: "cl-foundDoc-ceOrder",
+        name: "foundDoc-ceOrder",
+        titles: [
+            {locale: "en", value: "CEO appointment order"},
+            {
+                locale: "ru",
+                value: "\u041f\u0440\u0438\u043a\u0430\u0437\u002f\u0440\u0435\u0448\u0435\u043d\u0438\u0435\u0020\u043e\u0020\u043d\u0430\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u0438\u0020\u0433\u0435\u043d\u002e\u0434\u0438\u0440\u0435\u043a\u0442\u043e\u0440\u0430"
+            }
+        ],
+        req: [
+            {
+                name: "foundDoc-ceOrder",
+                titles: [
+                    {locale: "en", value: "CEO appointment order"},
+                    {
+                        locale: "ru",
+                        value: "\u041f\u0440\u0438\u043a\u0430\u0437\u002f\u0440\u0435\u0448\u0435\u043d\u0438\u0435\u0020\u043e\u0020\u043d\u0430\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u0438\u0020\u0433\u0435\u043d\u002e\u0434\u0438\u0440\u0435\u043a\u0442\u043e\u0440\u0430"
+                    }
+                ],
+                scope: "associations",
+                consequent: {predicate: "kind", requiredType: "workspace://SpacesStore/idocs-cat-doctype-foundDoc", requiredKind: "workspace://SpacesStore/idocs-cat-dockind-foundDoc-ceOrder"}
+            }
+        ]
+    },
+    {
+        uuid: "cl-foundDoc-attScan",
+        name: "foundDoc-attScan",
+        titles: [
+            {locale: "en", value: "Power of attorney scan"},
+            {
+                locale: "ru",
+                value: "\u0421\u043a\u0430\u043d\u002d\u043a\u043e\u043f\u0438\u044f\u0020\u0434\u043e\u0432\u0435\u0440\u0435\u043d\u043d\u043e\u0441\u0442\u0438"
+            }
+        ],
+        req: [
+            {
+                name: "foundDoc-attScan",
+                titles: [
+                    {locale: "en", value: "Power of attorney scan"},
+                    {
+                        locale: "ru",
+                        value: "\u0421\u043a\u0430\u043d\u002d\u043a\u043e\u043f\u0438\u044f\u0020\u0434\u043e\u0432\u0435\u0440\u0435\u043d\u043d\u043e\u0441\u0442\u0438"
+                    }
+                ],
+                scope: "associations",
+                consequent: {predicate: "kind", requiredType: "workspace://SpacesStore/idocs-cat-doctype-foundDoc", requiredKind: "workspace://SpacesStore/idocs-cat-dockind-foundDoc-attScan"}
+            }
+        ]
+    },
+    {
+        uuid: "cl-foundDoc-innScan",
+        name: "foundDoc-innScan",
+        titles: [
+            {locale: "en", value: "INN scan"},
+            {
+                locale: "ru",
+                value: "\u0421\u043a\u0430\u043d\u002d\u043a\u043e\u043f\u0438\u044f\u0020\u0418\u041d\u041d"
+            }
+        ],
+        req: [
+            {
+                name: "foundDoc-innScan",
+                titles: [
+                    {locale: "en", value: "INN scan"},
+                    {
+                        locale: "ru",
+                        value: "\u0421\u043a\u0430\u043d\u002d\u043a\u043e\u043f\u0438\u044f\u0020\u0418\u041d\u041d"
+                    }
+                ],
+                scope: "associations",
+                consequent: {predicate: "kind", requiredType: "workspace://SpacesStore/idocs-cat-doctype-foundDoc", requiredKind: "workspace://SpacesStore/idocs-cat-dockind-foundDoc-innScan"}
+            }
+        ]
+    },
+    {
+        uuid: "cl-foundDoc-ogrnScan",
+        name: "foundDoc-ogrnScan",
+        titles: [
+            {locale: "en", value: "OGRN scan"},
+            {
+                locale: "ru",
+                value: "\u0421\u043a\u0430\u043d\u002d\u043a\u043e\u043f\u0438\u044f\u0020\u041e\u0413\u0420\u041d"
+            }
+        ],
+        req: [
+            {
+                name: "foundDoc-ogrnScan",
+                titles: [
+                    {locale: "en", value: "OGRN scan"},
+                    {
+                        locale: "ru",
+                        value: "\u0421\u043a\u0430\u043d\u002d\u043a\u043e\u043f\u0438\u044f\u0020\u041e\u0413\u0420\u041d"
+                    }
+                ],
+                scope: "associations",
+                consequent: {predicate: "kind", requiredType: "workspace://SpacesStore/idocs-cat-doctype-foundDoc", requiredKind: "workspace://SpacesStore/idocs-cat-dockind-foundDoc-ogrnScan"}
+            }
+        ]
+    },
+    {
+        uuid: "cl-foundDoc-egrul",
+        name: "foundDoc-egrul",
+        titles: [
+            {locale: "en", value: "Certificate of Incorporation"},
+            {
+                locale: "ru",
+                value: "\u0412\u044b\u043f\u0438\u0441\u043a\u0430\u0020\u0438\u0437\u0020\u0415\u0413\u0420\u042e\u041b\u0020\u0437\u0430\u0020\u043f\u043e\u0441\u043b\u002e\u043c\u0435\u0441\u044f\u0446"
+            }
+        ],
+        req: [
+            {
+                name: "foundDoc-egrul",
+                titles: [
+                    {locale: "en", value: "Certificate of Incorporation"},
+                    {
+                        locale: "ru",
+                        value: "\u0412\u044b\u043f\u0438\u0441\u043a\u0430\u0020\u0438\u0437\u0020\u0415\u0413\u0420\u042e\u041b\u0020\u0437\u0430\u0020\u043f\u043e\u0441\u043b\u002e\u043c\u0435\u0441\u044f\u0446"
+                    }
+                ],
+                scope: "associations",
+                consequent: {predicate: "kind", requiredType: "workspace://SpacesStore/idocs-cat-doctype-foundDoc", requiredKind: "workspace://SpacesStore/idocs-cat-dockind-foundDoc-egrul"}
+            }
+        ]
+    },
+    {
+        uuid: "cl-foundDoc-orgCard",
+        name: "foundDoc-orgCard",
+        titles: [
+            {locale: "en", value: "Organization card"},
+            {
+                locale: "ru",
+                value: "\u041a\u0430\u0440\u0442\u043e\u0447\u043a\u0430\u0020\u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u0438"
+            }
+        ],
+        req: [
+            {
+                name: "foundDoc-orgCard",
+                titles: [
+                    {locale: "en", value: "Organization card"},
+                    {
+                        locale: "ru",
+                        value: "\u041a\u0430\u0440\u0442\u043e\u0447\u043a\u0430\u0020\u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u0438"
+                    }
+                ],
+                scope: "associations",
+                consequent: {predicate: "kind", requiredType: "workspace://SpacesStore/idocs-cat-doctype-foundDoc", requiredKind: "workspace://SpacesStore/idocs-cat-dockind-foundDoc-orgCard"}
+            }
+        ]
     }
 ]);

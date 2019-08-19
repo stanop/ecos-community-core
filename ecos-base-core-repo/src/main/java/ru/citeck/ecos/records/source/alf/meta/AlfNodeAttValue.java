@@ -20,6 +20,7 @@ import ru.citeck.ecos.node.AlfNodeInfo;
 import ru.citeck.ecos.node.DisplayNameService;
 import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.records.source.alf.file.FileRepresentation;
+import ru.citeck.ecos.records.source.common.MLTextValue;
 import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -145,6 +146,8 @@ public class AlfNodeAttValue implements MetaValue {
                     .collect(Collectors.toList());
         } else if (qName != null) {
             return MetaUtils.getReflectionValue(qName, name);
+        } else if (rawValue instanceof MLText) {
+            return new MLTextValue((MLText) rawValue);
         } else if (rawValue instanceof ContentData) {
             if ("previewInfo".equals(name)) {
                 return getContentInfo();
@@ -157,8 +160,7 @@ public class AlfNodeAttValue implements MetaValue {
     public Object getAs(String type) {
         if (AS_CONTENT_DATA_KEY.equalsIgnoreCase(type)) {
             if (alfNode != null) {
-                JSONObject file = FileRepresentation.fromAlfNode(alfNode, context);
-                return file.toString();
+                return FileRepresentation.fromAlfNode(alfNode, context);
             }
 
             if (rawValue instanceof ContentData) {
@@ -168,7 +170,6 @@ public class AlfNodeAttValue implements MetaValue {
 
             throw new AlfrescoRuntimeException("Unsupported state for as key: " + AS_CONTENT_DATA_KEY);
         }
-
         return null;
     }
 

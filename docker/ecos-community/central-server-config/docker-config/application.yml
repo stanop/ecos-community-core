@@ -15,4 +15,5 @@ eureka:
             defaultZone: http://admin:${jhipster.registry.password}@jhipster-registry:8761/eureka/
 alfresco:
     ribbon:
-        listOfServers: localhost:8080
+        NIWSServerListClassName: com.netflix.loadbalancer.ConfigurationBasedServerList
+        listOfServers: ${LOCAL_HOST}:8080

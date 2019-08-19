@@ -62,4 +62,6 @@ public interface JournalType {
     String getGroupBy();
 
     String getPredicate();
+
+    List<CreateVariant> getCreateVariants();
 }

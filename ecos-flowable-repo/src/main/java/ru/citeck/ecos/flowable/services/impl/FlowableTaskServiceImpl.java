@@ -1,10 +1,12 @@
 package ru.citeck.ecos.flowable.services.impl;
 
+import lombok.extern.log4j.Log4j;
+import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.alfresco.service.namespace.NamespaceService;
 import org.flowable.engine.TaskService;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.identitylink.api.IdentityLinkType;
@@ -12,25 +14,29 @@ import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
+import ru.citeck.ecos.flowable.services.FlowableHistoryService;
 import ru.citeck.ecos.flowable.services.FlowableTaskService;
 import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.WorkflowUtils;
+import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
 import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 import ru.citeck.ecos.workflow.tasks.EngineTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Flowable task service
  */
+@Log4j
 public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskService {
 
-    private static final Log logger = LogFactory.getLog(FlowableTaskService.class);
-
+    private static final String VAR_PACKAGE = "bpm_package";
     private static final String OUTCOME_FIELD = "outcome";
 
     private TaskService taskService;
@@ -42,6 +48,14 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     @Autowired
     @Qualifier("WorkflowService")
     private WorkflowService workflowService;
+    @Autowired
+    private FlowableHistoryService flowableHistoryService;
+    @Autowired
+    private WorkflowMirrorService workflowMirrorService;
+    @Autowired
+    private NodeService nodeService;
+    @Autowired
+    private NamespaceService namespaceService;
 
     @PostConstruct
     public void init() {
@@ -50,6 +64,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     /**
      * Set task service
+     *
      * @param taskService Task service
      */
     public void setTaskService(TaskService taskService) {
@@ -58,6 +73,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     /**
      * Get task by task id
+     *
      * @param taskId Task id
      * @return Task
      */
@@ -68,6 +84,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     /**
      * Get tasks by process instance id
+     *
      * @param processInstanceId Process instance id
      * @return List of tasks
      */
@@ -78,6 +95,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     /**
      * Get tasks by process definition id
+     *
      * @param processDefinitionId Process definition id
      * @return List of tasks
      */
@@ -87,38 +105,92 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     }
 
     public Map<String, Object> getVariables(String taskId) {
-        return taskService.getVariables(taskId);
+        WorkflowTask task = workflowService.getTaskById(FlowableConstants.ENGINE_PREFIX + taskId);
+
+        Map<String, Object> propsFromWorkflowService = new HashMap<>();
+
+        task.getProperties().forEach((qName, serializable) -> {
+            String newKey = qName.toPrefixString(namespaceService).replaceAll(":", "_");
+            propsFromWorkflowService.put(newKey, serializable);
+        });
+
+        Map<String, Object> propsFromFlowable;
+
+        if (taskExists(taskId)) {
+            propsFromFlowable = taskService.getVariables(taskId);
+        } else {
+            propsFromFlowable = flowableHistoryService.getHistoricTaskVariables(taskId);
+        }
+
+        propsFromFlowable.putAll(propsFromWorkflowService);
+
+        return propsFromFlowable;
     }
 
     public Map<String, Object> getVariablesLocal(String taskId) {
-        return taskService.getVariablesLocal(taskId);
+        if (taskExists(taskId)) {
+            return taskService.getVariablesLocal(taskId);
+        } else {
+            return flowableHistoryService.getHistoricTaskVariables(taskId);
+        }
     }
 
-
     public Object getVariable(String taskId, String variableName) {
-        return taskService.getVariable(taskId, variableName);
+        Object result = getVariables(taskId).get(variableName);
+
+        if (result == null && VAR_PACKAGE.equals(variableName)) {
+            return getPackageFromMirrorTask(taskId);
+        }
+
+        return result;
+    }
+
+    private NodeRef getPackageFromMirrorTask(String taskId) {
+        NodeRef taskMirror = workflowMirrorService.getTaskMirror(FlowableConstants.ENGINE_PREFIX + taskId);
+        return RepoUtils.getFirstTargetAssoc(taskMirror, WorkflowModel.ASSOC_PACKAGE, nodeService);
     }
 
     public String getFormKey(String taskId) {
+        return getRawFormKey(taskId);
+    }
 
-        Task task = getTaskById(taskId);
+    private String getRawFormKey(String taskId) {
+        String key = null;
 
-        if (task != null) {
-            return task.getFormKey();
+        if (taskExists(taskId)) {
+            key = taskService.createTaskQuery().taskId(taskId).singleResult().getFormKey();
         } else {
-            logger.warn("Task with id " + taskId + " not found!");
+            Object keyObj = flowableHistoryService.getHistoricTaskVariables(taskId).get("taskFormKey");
+            if (keyObj != null) {
+                key = (String) keyObj;
+            }
         }
 
-        return null;
+        if (key == null) {
+            log.warn(String.format("Could not get formKey for task <%s>, because task does not exists", taskId));
+        }
+
+        return key;
+    }
+
+    public String getCandidate(String taskId) {
+        return getIdentityLinkAuthority(IdentityLinkType.CANDIDATE, taskId);
     }
 
     public String getAssignee(String taskId) {
+        return getIdentityLinkAuthority(IdentityLinkType.ASSIGNEE, taskId);
+    }
+
+    private String getIdentityLinkAuthority(String type, String taskId) {
+        if (!taskExists(taskId)) {
+            return null;
+        }
 
         List<IdentityLink> links = taskService.getIdentityLinksForTask(taskId);
 
         for (IdentityLink link : links) {
-            if (IdentityLinkType.ASSIGNEE.equals(link.getType())) {
-                return link.getUserId();
+            if (type.equals(link.getType())) {
+                return link.getUserId() != null ? link.getUserId() : link.getGroupId();
             }
         }
 
@@ -126,23 +198,37 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     }
 
     @Override
-    public void endTask(String taskId, String transition, Map<String, Object> variables) {
+    public void endTask(String taskId,
+                        String transition,
+                        Map<String, Object> variables,
+                        Map<String, Object> transientVariables) {
 
         String formKey = getFormKey(taskId);
-        String formOutcomeField = "form_" + formKey + "_outcome";
 
-        variables.put(formOutcomeField, transition);
-        variables.put(OUTCOME_FIELD, transition);
+        Map<String, Object> taskVariables = new HashMap<>(variables);
 
-        taskService.complete(taskId, variables, Collections.emptyMap());
+        if (transition != null) {
+            String formOutcomeField = "form_" + formKey + "_outcome";
+            taskVariables.put(formOutcomeField, transition);
+            taskVariables.put(OUTCOME_FIELD, transition);
+        }
+
+        Map<String, Object> executionVariables = new HashMap<>(transientVariables);
+
+        taskService.complete(taskId, taskVariables, executionVariables);
     }
 
     public RecordRef getDocument(String taskId) {
 
-        Object bpmPackage = getVariable(taskId, "bpm_package");
+        Object bpmPackage = getVariable(taskId, VAR_PACKAGE);
         NodeRef documentRef = workflowUtils.getTaskDocumentFromPackage(bpmPackage);
 
         return documentRef != null ? RecordRef.valueOf(documentRef.toString()) : RecordRef.EMPTY;
+    }
+
+    private boolean taskExists(String taskId) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        return task != null;
     }
 
     @Override
@@ -160,7 +246,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
         @Override
         public String getTitle() {
-            WorkflowTask task = workflowService.getTaskById("flowable$" + getId());
+            WorkflowTask task = workflowService.getTaskById(FlowableConstants.ENGINE_PREFIX + getId());
             return workflowUtils.getTaskTitle(task);
         }
 
@@ -172,6 +258,19 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         @Override
         public String getAssignee() {
             return FlowableTaskServiceImpl.this.getAssignee(getId());
+        }
+
+        @Override
+        public String getCandidate() {
+            return FlowableTaskServiceImpl.this.getCandidate(getId());
+        }
+
+        @Override
+        public List<String> getActors() {
+            return workflowUtils.getTaskActors(FlowableConstants.ENGINE_PREFIX + getId())
+                    .stream()
+                    .map(NodeRef::toString)
+                    .collect(Collectors.toList());
         }
 
         @Override

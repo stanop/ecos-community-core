@@ -22,8 +22,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
+import ru.citeck.ecos.journals.CreateVariant;
+import ru.citeck.ecos.journals.JournalService;
+import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.NodeUtils;
@@ -61,6 +63,7 @@ public class CreateVariantsGet extends AbstractWebScript {
     private SearchService searchService;
     private NamespaceService namespaceService;
     private PermissionService permissionService;
+    private JournalService journalService;
 
     private long cacheAgeSeconds = 600;
 
@@ -175,7 +178,7 @@ public class CreateVariantsGet extends AbstractWebScript {
 
     private List<ResponseVariant> convertVariants(List<CreateVariant> variants, Boolean writable) {
         return variants.stream()
-                       .filter(v -> hasPermission(v.nodeRef, PermissionService.READ))
+                       .filter(v -> hasPermission(v.getNode(), PermissionService.READ))
                        .map(ResponseVariant::new)
                        .filter(v -> writable == null || writable.equals(v.canCreate))
                        .collect(Collectors.toList());
@@ -186,7 +189,7 @@ public class CreateVariantsGet extends AbstractWebScript {
             AccessStatus accessStatus = permissionService.hasPermission(nodeRef, permission);
             return AccessStatus.ALLOWED.equals(accessStatus);
         }
-        return false;
+        return true;
     }
 
     private List<CreateVariant> getVariantsBySiteId(String siteId) {
@@ -207,7 +210,8 @@ public class CreateVariantsGet extends AbstractWebScript {
     }
 
     private List<CreateVariant> getVariantsByJournalId(String journalId) {
-        return AuthenticationUtil.runAsSystem(() ->
+
+        List<CreateVariant> variants = new ArrayList<>(AuthenticationUtil.runAsSystem(() ->
                 FTSQuery.create()
                         .type(JournalsModel.TYPE_JOURNAL).and()
                         .value(JournalsModel.PROP_JOURNAL_TYPE, journalId)
@@ -219,7 +223,13 @@ public class CreateVariantsGet extends AbstractWebScript {
                                 RegexQNamePattern.MATCH_ALL).stream())
                         .map(variantRef -> createVariantsData.getUnchecked(variantRef.getChildRef()))
                         .collect(Collectors.toList())
-        );
+        ));
+
+        JournalType journalType = journalService.getJournalType(journalId);
+        if (journalType != null) {
+            variants.addAll(journalType.getCreateVariants());
+        }
+        return variants;
     }
 
     private List<CreateVariant> getVariantsByNodeType(String nodeType) {
@@ -239,23 +249,24 @@ public class CreateVariantsGet extends AbstractWebScript {
 
         Map<QName, Serializable> properties = nodeService.getProperties(variant);
 
-        CreateVariant result = new CreateVariant(variant);
+        CreateVariant result = new CreateVariant();
+        result.setNodeRef(variant);
         MLText title = (MLText) properties.get(ContentModel.PROP_TITLE);
         if (title == null) {
             title = new MLText();
             title.put(Locale.US, (String) properties.get(ContentModel.PROP_NAME));
         }
-        result.title = title;
+        result.setTitle(title);
 
         List<NodeRef> destinations = nodeUtils.getAssocTargets(variant, JournalsModel.ASSOC_DESTINATION);
-        result.destination = destinations.size() > 0 ? destinations.get(0) : null;
-        result.type = getShortQName(properties.get(JournalsModel.PROP_TYPE));
-        result.formId = (String) properties.get(JournalsModel.PROP_FORM_ID);
-        result.createArguments = (String) properties.get(JournalsModel.PROP_CREATE_ARGUMENTS);
-        result.recordRef = (String) properties.get(JournalsModel.PROP_RECORD_REF);
+        result.setDestination(destinations.size() > 0 ? destinations.get(0) : null);
+        result.setType(getShortQName(properties.get(JournalsModel.PROP_TYPE)));
+        result.setFormId((String) properties.get(JournalsModel.PROP_FORM_ID));
+        result.setCreateArguments((String) properties.get(JournalsModel.PROP_CREATE_ARGUMENTS));
+        result.setRecordRef((String) properties.get(JournalsModel.PROP_RECORD_REF));
 
         Boolean isDefault = (Boolean) properties.get(JournalsModel.PROP_IS_DEFAULT);
-        result.isDefault = Boolean.TRUE.equals(isDefault);
+        result.setDefault(Boolean.TRUE.equals(isDefault));
 
         return result;
     }
@@ -315,6 +326,11 @@ public class CreateVariantsGet extends AbstractWebScript {
     }
 
     @Autowired
+    public void setJournalService(JournalService journalService) {
+        this.journalService = journalService;
+    }
+
+    @Autowired
     public void setNodeUtils(NodeUtils nodeUtils) {
         this.nodeUtils = nodeUtils;
     }
@@ -338,32 +354,23 @@ public class CreateVariantsGet extends AbstractWebScript {
         public final boolean isDefault;
         public final boolean canCreate;
         public final String createArguments;
+        public final String recordRef;
+        public final String formKey;
+        public final Map<String, String> attributes = new HashMap<>();
 
         public ResponseVariant(CreateVariant source) {
-            title = source.title.getClosestValue(I18NUtil.getLocale());
-            destination = source.destination != null ? source.destination.toString() : null;
-            type = source.type;
-            formId = source.formId;
-            isDefault = source.isDefault;
-            canCreate = hasPermission(source.destination, PermissionService.CREATE_CHILDREN);
-            createArguments = source.createArguments;
-        }
-    }
-
-    public class CreateVariant {
-
-        public final NodeRef nodeRef;
-        public MLText title;
-
-        public NodeRef destination;
-        public String type;
-        public String formId;
-        public boolean isDefault;
-        public String createArguments;
-        public String recordRef;
-
-        public CreateVariant(NodeRef nodeRef) {
-            this.nodeRef = nodeRef;
+            type = source.getType();
+            title = source.getTitle();
+            formId = source.getFormId();
+            isDefault = source.isDefault();
+            destination = source.getDestination();
+            createArguments = source.getCreateArguments();
+            canCreate = hasPermission(source.getDestinationRef(), PermissionService.CREATE_CHILDREN);
+            recordRef = source.getRecordRef();
+            formKey = source.getFormKey();
+            if (source.getAttributes() != null) {
+                attributes.putAll(source.getAttributes());
+            }
         }
     }
 }

@@ -7,6 +7,8 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.*;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.model.CiteckWorkflowModel;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,14 +32,27 @@ import java.util.stream.Collectors;
 @Component
 public class WorkflowUtils {
 
-    private static final String ID_SEPERATOR_REGEX = "\\$";
+    private static final String ID_SEPARATOR_REGEX = "\\$";
     private static final Locale[] locales = {new Locale("ru"), new Locale("en")};
 
-    private WorkflowService workflowService;
-    private AuthorityUtils authorityUtils;
-    private NodeService nodeService;
+    private final WorkflowService workflowService;
+    private final AuthorityUtils authorityUtils;
+    private final NodeService nodeService;
+    private final AuthorityService authorityService;
+    private final PersonService personService;
+    private final WorkflowAdminService workflowAdminService;
 
-    private WorkflowAdminService workflowAdminService;
+    @Autowired
+    public WorkflowUtils(@Qualifier("WorkflowService") WorkflowService workflowService, AuthorityUtils authorityUtils,
+                         NodeService nodeService, AuthorityService authorityService, PersonService personService,
+                         WorkflowAdminService workflowAdminService) {
+        this.workflowService = workflowService;
+        this.authorityUtils = authorityUtils;
+        this.nodeService = nodeService;
+        this.authorityService = authorityService;
+        this.personService = personService;
+        this.workflowAdminService = workflowAdminService;
+    }
 
     /**
      * Get workflow definition by global name
@@ -47,7 +64,7 @@ public class WorkflowUtils {
         if (workflowName == null) {
             return null;
         }
-        String[] parts = workflowName.split(ID_SEPERATOR_REGEX);
+        String[] parts = workflowName.split(ID_SEPARATOR_REGEX);
         if (parts.length != 2) {
             return null;
         }
@@ -56,6 +73,12 @@ public class WorkflowUtils {
         } else {
             return workflowService.getDefinitionByName(workflowName);
         }
+    }
+
+    public List<WorkflowTask> getDocumentUserTasks(NodeRef nodeRef) {
+        List<WorkflowTask> tasks = new ArrayList<>(getDocumentUserTasks(nodeRef, true));
+        tasks.addAll(new ArrayList<>(getDocumentUserTasks(nodeRef, false)));
+        return tasks;
     }
 
     public List<WorkflowTask> getDocumentUserTasks(NodeRef nodeRef, boolean active) {
@@ -74,9 +97,9 @@ public class WorkflowUtils {
         if (StringUtils.isNotBlank(engine)) {
             String enginePrefix = engine + "$";
             workflows = workflows.stream()
-                                 .filter(workflow -> workflow.getId()
-                                 .startsWith(enginePrefix))
-                                 .collect(Collectors.toList());
+                    .filter(workflow -> workflow.getId()
+                            .startsWith(enginePrefix))
+                    .collect(Collectors.toList());
         }
 
         if (workflows.size() > 0) {
@@ -94,6 +117,40 @@ public class WorkflowUtils {
         }
 
         return tasks;
+    }
+
+    public List<NodeRef> getTaskActors(String taskId) {
+        LinkedList<NodeRef> results = new LinkedList<>();
+        WorkflowTask task = workflowService.getTaskById(taskId);
+
+        String assigneeName = (String) task.getProperties().get(ContentModel.PROP_OWNER);
+        if (StringUtils.isNotBlank(assigneeName)) {
+            NodeRef assignee = personService.getPerson(assigneeName);
+            results.add(assignee);
+            return results;
+        }
+
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        List<NodeRef> pooledActors = (List<NodeRef>) task.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
+        if (CollectionUtils.isEmpty(pooledActors)) {
+            return results;
+        }
+
+        String originalOwner = (String) task.getProperties().get(QName.createQName("",
+                "taskOriginalOwner"));
+        NodeRef originalOwnerNodeRef = StringUtils.isNotBlank(originalOwner)
+                ? authorityService.getAuthorityNodeRef(originalOwner) : null;
+
+        if (originalOwnerNodeRef != null) {
+            if (pooledActors.contains(originalOwnerNodeRef) && pooledActors.indexOf(originalOwnerNodeRef) != -1) {
+                pooledActors.remove(originalOwnerNodeRef);
+                pooledActors.add(0, originalOwnerNodeRef);
+            }
+        }
+
+        results.addAll(pooledActors);
+
+        return results;
     }
 
     private boolean isTaskActor(WorkflowTask task, String userName, Set<NodeRef> authorities) {
@@ -197,33 +254,15 @@ public class WorkflowUtils {
         return documentRef;
     }
 
-    /**
-     * Set workflow service
-     *
-     * @param workflowService Workflow service
-     */
-    @Autowired
-    @Qualifier("WorkflowService")
-    public void setWorkflowService(WorkflowService workflowService) {
-        this.workflowService = workflowService;
+    public int convertPriorityBpmnToWorkflowTask(int bpmnPriority) {
+        if (bpmnPriority <= 3) {
+            return bpmnPriority;
+        }
+
+        int min = Math.min(bpmnPriority, 100);
+        BigDecimal multiples = new BigDecimal(3).multiply(new BigDecimal(min));
+        BigDecimal res = multiples.divide(new BigDecimal(100), RoundingMode.HALF_UP);
+        return res.intValue() == 0 ? 1 : res.intValue();
     }
 
-    /**
-     * Set workflow admin service
-     *
-     * @param workflowAdminService Workflow admin service
-     */
-    public void setWorkflowAdminService(WorkflowAdminService workflowAdminService) {
-        this.workflowAdminService = workflowAdminService;
-    }
-
-    @Autowired
-    public void setAuthorityUtils(AuthorityUtils authorityUtils) {
-        this.authorityUtils = authorityUtils;
-    }
-
-    @Autowired
-    public void setNodeService(NodeService nodeService) {
-        this.nodeService = nodeService;
-    }
 }

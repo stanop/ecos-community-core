@@ -1,6 +1,7 @@
 package ru.citeck.ecos.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
@@ -32,6 +33,7 @@ public class EcosConfigRecords extends LocalRecordsDAO implements RecordsMetaLoc
     }
 
     @Autowired
+    @Qualifier("ecosConfigService")
     public void setEcosConfigService(EcosConfigService ecosConfigService) {
         this.ecosConfigService = ecosConfigService;
     }

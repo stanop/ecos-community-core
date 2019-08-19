@@ -1,6 +1,5 @@
 package ru.citeck.ecos.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
 
 /**
@@ -8,20 +7,20 @@ import ru.citeck.ecos.utils.AlfrescoScopableProcessorExtension;
  */
 public class EcosConfigServiceJs extends AlfrescoScopableProcessorExtension {
 
-    @Autowired
     private EcosConfigService ecosConfigService;
 
-    public Object getParamValue(final String key) {
-        return ecosConfigService.getParamValue(key);
-    }
 
-    public Object getParamValue(final String key, String rootPath) {
+    public Object getParamValue(final String key) {
         return ecosConfigService.getParamValue(key);
     }
 
     /**
      * @deprecated
      */
+    public Object getParamValue(final String key, String rootPath) {
+        return ecosConfigService.getParamValue(key);
+    }
+
     public void setValue(final String key, final String value) {
         ecosConfigService.setValue(key, value);
     }
@@ -32,4 +31,10 @@ public class EcosConfigServiceJs extends AlfrescoScopableProcessorExtension {
     public void setValue(final String key, final String value, String rootPath) {
         ecosConfigService.setValue(key, value);
     }
+
+
+    public void setEcosConfigService(EcosConfigService ecosConfigService) {
+        this.ecosConfigService = ecosConfigService;
+    }
+
 }

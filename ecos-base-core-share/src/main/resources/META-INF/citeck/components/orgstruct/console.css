@@ -2,6 +2,7 @@
    display: flex;
    margin: 0;
    padding: 0 25px;
+   width: 100%;
 }
 
 .orgstruct-console .title
@@ -11,7 +12,7 @@
    padding-bottom: 0.5em;
 }
 
-.orgstruct-console .orgstruct-config-selector 
+.orgstruct-console .orgstruct-config-selector
 {
 	margin-bottom: 20px;
 }
@@ -20,7 +21,7 @@
  * Toolbar
  */
 
-.orgstruct-console .toolbar 
+.orgstruct-console .toolbar
 {
 	float: left;
 	width: 100%;
@@ -68,7 +69,7 @@
 
 /*
  * Resizer
- */ 
+ */
 
 .orgstruct-tree-resizer
 {
@@ -91,7 +92,7 @@
 	overflow-y: hidden;
 }
 
-.orgstruct-console .selected-item-details 
+.orgstruct-console .selected-item-details
 {
 	min-height: 600px;
 	overflow: hidden;

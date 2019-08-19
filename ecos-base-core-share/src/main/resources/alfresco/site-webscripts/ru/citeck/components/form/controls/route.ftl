@@ -121,6 +121,10 @@
             allowedGroupType: "${field.control.params.allowedGroupType}",
         </#if>
 
+        <#if field.control.params.allowedGroupSubType??>
+            allowedGroupSubType: "${field.control.params.allowedGroupSubType}",
+        </#if>
+
             // The possibility of on/off functions to save and load templates
             // true or false. By default false 
             saveAndLoadTemplate: "${saveAndLoadTemplate}",

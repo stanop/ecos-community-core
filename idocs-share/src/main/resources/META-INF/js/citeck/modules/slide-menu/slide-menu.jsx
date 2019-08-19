@@ -12,7 +12,8 @@ import {
     setLeftMenuItems,
     setLeftMenuExpandableItems,
     setSelectedId,
-    setIsReady
+    setIsReady,
+    setNewJournalsPageEnable
 } from './actions';
 import {
     selectedMenuItemIdKey,
@@ -33,6 +34,12 @@ const store = createStore(rootReducer, {}, compose(
 );
 
 export const render = (elementId, props) => {
+    api.getNewJournalsPageEnable()
+        .then(function(isEnable){
+            store.dispatch(setNewJournalsPageEnable(isEnable));
+        })
+        .catch(() => {});
+
     api.getSlideMenuItems().then(apiData => {
         const slideMenuData = apiData.items;
         // console.log('slideMenuData', slideMenuData);

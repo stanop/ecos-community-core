@@ -6,7 +6,7 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.request.rest.QueryBody;
-import ru.citeck.ecos.records2.request.rest.RestQueryHandler;
+import ru.citeck.ecos.records2.request.rest.RestHandler;
 import ru.citeck.ecos.records2.utils.MandatoryParam;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ public class RecordsQueryGet extends AbstractWebScript {
     public static final String PARAM_ATTRIBUTE = "att";
     public static final String PARAM_RECORD = "rec";
 
-    private RestQueryHandler restQueryHandler;
+    private RestHandler restHandler;
     private RecordsRestUtils recordsRestUtils;
 
     @Override
@@ -32,12 +32,12 @@ public class RecordsQueryGet extends AbstractWebScript {
         body.setAttribute(attribute);
         body.setRecord(RecordRef.valueOf(record));
 
-        recordsRestUtils.writeResp(res, restQueryHandler.queryRecords(body));
+        recordsRestUtils.writeResp(res, restHandler.queryRecords(body));
     }
 
     @Autowired
-    public void setRestQueryHandler(RestQueryHandler restQueryHandler) {
-        this.restQueryHandler = restQueryHandler;
+    public void setRestHandler(RestHandler restHandler) {
+        this.restHandler = restHandler;
     }
 
     @Autowired

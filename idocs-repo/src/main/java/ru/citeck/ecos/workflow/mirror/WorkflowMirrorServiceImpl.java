@@ -46,6 +46,7 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.model.BpmModel;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.node.NodeInfo;
@@ -206,6 +207,12 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
             // override cm:name to allow search of task-mirror by name
             nodeInfo.setProperty(ContentModel.PROP_NAME, task.getId());
+
+            // override flowable priorty property to match activiti constrait
+            if (nodeInfo.getProperty(BpmModel.PROPERTY_PRIORITY) != null
+                    && (Integer) nodeInfo.getProperty(BpmModel.PROPERTY_PRIORITY) > 3) {
+                nodeInfo.setProperty(BpmModel.PROPERTY_PRIORITY, 2);
+            }
 
             if (fullPersist) {
                 fillProperties(task, nodeInfo);

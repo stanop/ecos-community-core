@@ -541,6 +541,9 @@ define([
                 optionsForSelectPicker.allowedGroupType = this.options.allowedGroupType;
             }
 
+            if (this.options.allowedGroupSubType) {
+                optionsForSelectPicker.allowedGroupSubType = this.options.allowedGroupSubType;
+            }
 
             stageObj.participants.push(new Citeck.widget.SelectPicker(newParticipant.attr("id")).setOptions(optionsForSelectPicker));
         },
@@ -937,6 +940,11 @@ define([
                     optionsForSelectPicker.allowedGroupType = this.options.allowedGroupType;
                 }
 
+
+                if (this.options.allowedGroupSubType) {
+                    optionsForSelectPicker.allowedGroupSubType = this.options.allowedGroupSubType;
+                }
+
                 participantsSelectPicker.push(new Citeck.widget.SelectPicker(participants[i].id).setOptions(optionsForSelectPicker));
 
                 if (!mandatory) {
@@ -985,7 +993,8 @@ define([
             disabled: false,
 
             allowedAuthorityType: "USER",
-            allowedGroupType: ""
+            allowedGroupType: "",
+            allowedGroupSubType: ""
         },
 
         restoreByDefaults: function () {

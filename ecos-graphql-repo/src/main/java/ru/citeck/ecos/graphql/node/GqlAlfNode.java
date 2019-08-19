@@ -2,6 +2,7 @@ package ru.citeck.ecos.graphql.node;
 
 import lombok.Getter;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.PropertyDefinition;
@@ -226,7 +227,12 @@ public class GqlAlfNode {
     }
 
     private Map<QName, Serializable> evalProperties() {
-        return context.getNodeService().getProperties(nodeRef);
+        boolean mlAwareBefore = MLPropertyInterceptor.setMLAware(true);
+        try {
+            return context.getNodeService().getProperties(nodeRef);
+        } finally {
+            MLPropertyInterceptor.setMLAware(mlAwareBefore);
+        }
     }
 
     private Map<QName, List<NodeRef>> evalTargetAssocs() {

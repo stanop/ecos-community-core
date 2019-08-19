@@ -8,7 +8,8 @@ import {
     LEFT_MENU_TOGGLE_IS_OPEN,
     LEFT_MENU_SET_SELECTED_ID,
     LEFT_MENU_SET_SCROLL_TOP,
-    LEFT_MENU_SET_IS_READY
+    LEFT_MENU_SET_IS_READY,
+    LEFT_MENU_SET_NEW_JOURNALS_PAGE_ENABLE
 } from './actions';
 
 /* leftMenuReducer */
@@ -20,13 +21,19 @@ const leftMenuInitialState = {
     expandableItems: [],
     isOpen: false,
     scrollTop: 0,
-    isReady: false
+    isReady: false,
+    isNewJournalsPageEnable: false
 };
 
 Object.freeze(leftMenuInitialState);
 
 function leftMenuReducer(state = leftMenuInitialState, action) {
     switch (action.type) {
+        case LEFT_MENU_SET_NEW_JOURNALS_PAGE_ENABLE:
+            return {
+                ...state,
+                isNewJournalsPageEnable: action.payload
+            };
         case LEFT_MENU_SET_SELECTED_ID:
             return {
                 ...state,

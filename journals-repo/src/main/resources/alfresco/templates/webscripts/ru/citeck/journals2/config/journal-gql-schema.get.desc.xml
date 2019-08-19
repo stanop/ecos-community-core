@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webscript>
+    <shortname>Get journal config</shortname>
+    <description>Get journal config</description>
+    <url>/api/journals/gql-schema?journalId={journalId}</url>
+    <format default="json"/>
+    <authentication>user</authentication>
+    <transaction allow="readonly">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

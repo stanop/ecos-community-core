@@ -5,6 +5,7 @@ import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.cache.sync.SyncKeysService;
 import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.content.ContentData;
@@ -126,6 +127,7 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Autowired
+    @Qualifier("ecosConfigService")
     public void setEcosConfigService(EcosConfigService ecosConfigService) {
         this.ecosConfigService = ecosConfigService;
     }

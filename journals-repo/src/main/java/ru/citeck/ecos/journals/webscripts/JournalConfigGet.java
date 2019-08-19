@@ -7,8 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.ClassAttributeDefinition;
@@ -19,6 +18,7 @@ import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,9 +31,10 @@ import ru.citeck.ecos.journals.JournalService;
 import ru.citeck.ecos.journals.JournalType;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.predicate.PredicateService;
-import ru.citeck.ecos.querylang.QueryLangService;
 import ru.citeck.ecos.predicate.model.Predicate;
 import ru.citeck.ecos.predicate.model.ValuePredicate;
+import ru.citeck.ecos.querylang.QueryLangService;
+import ru.citeck.ecos.records.source.alf.AlfDictionaryRecords;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
@@ -58,6 +59,8 @@ public class JournalConfigGet extends AbstractWebScript {
 
     private static final String PARAM_JOURNAL = "journalId";
 
+    private static final String META_RECORD_TEMPLATE = AlfDictionaryRecords.ID + "@%s";
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private LoadingCache<String, JournalRepoData> journalRefById;
@@ -78,9 +81,9 @@ public class JournalConfigGet extends AbstractWebScript {
 
     public JournalConfigGet() {
         journalRefById = CacheBuilder.newBuilder()
-                                     .expireAfterWrite(600, TimeUnit.SECONDS)
-                                     .maximumSize(200)
-                                     .build(CacheLoader.from(this::getJournalRepoData));
+                .expireAfterWrite(600, TimeUnit.SECONDS)
+                .maximumSize(200)
+                .build(CacheLoader.from(this::getJournalRepoData));
     }
 
     @Override
@@ -115,7 +118,10 @@ public class JournalConfigGet extends AbstractWebScript {
             sourceId = "";
         }
 
-        Map<String, AttInfo> columnInfo = getAttributesInfo(sourceId, attributes);
+        Map<String, String> options = journalType.getOptions();
+        String type = MapUtils.getString(options, "type");
+
+        Map<String, AttInfo> columnInfo = getAttributesInfo(sourceId, type, attributes);
         for (String name : attributes) {
 
             Column column = new Column();
@@ -147,7 +153,7 @@ public class JournalConfigGet extends AbstractWebScript {
         Response response = new Response();
         response.setId(journalType.getId());
         response.setColumns(columns);
-        response.setMeta(getJournalMeta(journalType));
+        response.setMeta(getJournalMeta(journalType, type));
         response.setSourceId(sourceId);
         response.setParams(journalType.getOptions());
 
@@ -192,7 +198,7 @@ public class JournalConfigGet extends AbstractWebScript {
         return column.getAttribute();
     }
 
-    private JournalMeta getJournalMeta(JournalType journal) {
+    private JournalMeta getJournalMeta(JournalType journal, String type) {
 
         JournalRepoData journalData = journalRefById.getUnchecked(journal.getId());
 
@@ -215,21 +221,20 @@ public class JournalConfigGet extends AbstractWebScript {
                 logger.error("Predicate is invalid: " + journal.getPredicate(), e);
             }
         }
-
         meta.setCreateVariants(createVariantsGet.getVariantsByJournalId(journal.getId(), true));
 
         fillMetaFromRepo(meta, journalData);
 
         if (meta.getPredicate() == null) {
-
-            Map<String, String> options = journal.getOptions();
-            if (options != null) {
-                String type = options.get("type");
-                if (StringUtils.isNotBlank(type)) {
-                    Predicate predicate = ValuePredicate.equal("TYPE", type);
-                    meta.setPredicate(predicateService.writeJson(predicate));
-                }
+            if (StringUtils.isNotBlank(type)) {
+                Predicate predicate = ValuePredicate.equal("TYPE", type);
+                meta.setPredicate(predicateService.writeJson(predicate));
+                meta.setMetaRecord(String.format(META_RECORD_TEMPLATE, type));
             }
+        }
+
+        if (StringUtils.isNotBlank(type)) {
+            meta.setMetaRecord(String.format(META_RECORD_TEMPLATE, type));
         }
 
         return meta;
@@ -269,9 +274,9 @@ public class JournalConfigGet extends AbstractWebScript {
             JsonNode criteriaJson = objectMapper.valueToTree(criteria);
             try {
                 JsonNode convertedQuery = queryLangService.convertLang(criteriaJson,
-                                                                       CriteriaAlfNodesSearch.LANGUAGE,
-                                                                       PredicateService.LANGUAGE_PREDICATE)
-                                                                            .orElseThrow(RuntimeException::new);
+                        CriteriaAlfNodesSearch.LANGUAGE,
+                        PredicateService.LANGUAGE_PREDICATE)
+                        .orElseThrow(RuntimeException::new);
                 meta.setPredicate(convertedQuery);
             } catch (Exception e) {
                 logger.error("Language conversion error. criteria: " + criteriaJson, e);
@@ -339,11 +344,11 @@ public class JournalConfigGet extends AbstractWebScript {
         JournalRepoData repoData = new JournalRepoData();
 
         NodeRef journalRef = FTSQuery.create()
-                                     .type(JournalsModel.TYPE_JOURNAL).and()
-                                     .exact(JournalsModel.PROP_JOURNAL_TYPE, journalId)
-                                     .transactional()
-                                     .queryOne(searchService)
-                                     .orElse(null);
+                .type(JournalsModel.TYPE_JOURNAL).and()
+                .exact(JournalsModel.PROP_JOURNAL_TYPE, journalId)
+                .transactional()
+                .queryOne(searchService)
+                .orElse(null);
 
         repoData.setNodeRef(journalRef);
         if (journalRef != null) {
@@ -353,14 +358,15 @@ public class JournalConfigGet extends AbstractWebScript {
         return repoData;
     }
 
-    private Map<String, AttInfo> getAttributesInfo(String sourceId, List<String> attributes) {
+    private Map<String, AttInfo> getAttributesInfo(String sourceId, String type, List<String> attributes) {
 
         Map<String, String> attributesEdges = new HashMap<>();
         for (String attribute : attributes) {
             attributesEdges.put(attribute, ".edge(n:\"" + attribute + "\"){type,editorKey,javaClass}");
         }
 
-        RecordRef recordRef = RecordRef.create(sourceId, "");
+        RecordRef recordRef = StringUtils.isNotBlank(type) ?  RecordRef.create(AlfDictionaryRecords.ID, type)
+                : RecordRef.create(sourceId, "");
         RecordMeta attInfoMeta = recordsService.getAttributes(recordRef, attributesEdges);
 
         Map<String, AttInfo> result = new HashMap<>();
@@ -429,67 +435,76 @@ public class JournalConfigGet extends AbstractWebScript {
         this.dictionaryService = serviceRegistry.getDictionaryService();
     }
 
+    @Data
     static class JournalRepoData {
-        @Getter @Setter NodeRef nodeRef;
-        @Getter @Setter List<NodeRef> criteria;
+        NodeRef nodeRef;
+        List<NodeRef> criteria;
     }
 
+    @Data
     static class Response {
-        @Getter @Setter String id;
-        @Getter @Setter String sourceId;
-        @Getter @Setter JournalMeta meta;
-        @Getter @Setter List<Column> columns;
-        @Getter @Setter Map<String, String> params;
+        String id;
+        String sourceId;
+        JournalMeta meta;
+        List<Column> columns;
+        Map<String, String> params;
     }
 
+    @Data
     static class JournalMeta {
-        @Getter @Setter String nodeRef;
-        @Getter @Setter List<Criterion> criteria;
-        @Getter @Setter String title;
-        @Getter @Setter JsonNode predicate;
-        @Getter @Setter JsonNode groupBy;
-        @Getter @Setter List<CreateVariantsGet.ResponseVariant> createVariants;
-        @Getter @Setter List<GroupAction> groupActions;
+        String nodeRef;
+        List<Criterion> criteria;
+        String title;
+        JsonNode predicate;
+        JsonNode groupBy;
+        String metaRecord;
+        List<CreateVariantsGet.ResponseVariant> createVariants;
+        List<GroupAction> groupActions;
     }
 
+    @Data
     static class GroupAction {
-        @Getter @Setter String id;
-        @Getter @Setter String title;
-        @Getter @Setter Map<String, String> params;
-        @Getter @Setter String type;
-        @Getter @Setter String formKey;
+        String id;
+        String title;
+        Map<String, String> params;
+        String type;
+        String formKey;
     }
 
+    @Data
     static class Criterion {
-        @Getter @Setter String field;
-        @Getter @Setter String predicate;
-        @Getter @Setter String value;
+        String field;
+        String predicate;
+        String value;
     }
 
+    @Data
     static class Column {
-        @Getter @Setter String text;
-        @Getter @Setter String type;
-        @Getter @Setter String editorKey;
-        @Getter @Setter String javaClass;
-        @Getter @Setter String attribute;
-        @Getter @Setter String schema;
-        @Getter @Setter Formatter formatter;
-        @Getter @Setter Map<String, String> params;
-        @Getter @Setter boolean isDefault;
-        @Getter @Setter boolean isSearchable;
-        @Getter @Setter boolean isSortable;
-        @Getter @Setter boolean isVisible;
-        @Getter @Setter boolean isGroupable;
+        String text;
+        String type;
+        String editorKey;
+        String javaClass;
+        String attribute;
+        String schema;
+        Formatter formatter;
+        Map<String, String> params;
+        boolean isDefault;
+        boolean isSearchable;
+        boolean isSortable;
+        boolean isVisible;
+        boolean isGroupable;
     }
 
+    @Data
     static class Formatter {
-        @Getter @Setter String name;
-        @Getter @Setter Map<String, String> params;
+        String name;
+        Map<String, String> params;
     }
 
+    @Data
     static class AttInfo {
-        @Getter @Setter String type;
-        @Getter @Setter String editorKey;
-        @Getter @Setter Class<?> javaClass;
+        String type;
+        String editorKey;
+        Class<?> javaClass;
     }
 }
