@@ -1,13 +1,11 @@
 package ru.citeck.ecos.records;
 
-import com.netflix.discovery.converters.Auto;
 import org.alfresco.service.ServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
-import ru.citeck.ecos.eureka.EurekaAlfClientConfig;
 import ru.citeck.ecos.eureka.EurekaContextConfig;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.predicate.PredicateService;
@@ -25,7 +23,6 @@ import ru.citeck.ecos.records2.source.dao.remote.RecordsRestConnection;
 @Configuration
 public class RecordsConfiguration extends RecordsServiceFactory {
 
-    private ServiceRegistry serviceRegistry;
     private RecordsServiceImpl recordsService;
     private QueryLangService queryLangService;
     private PredicateService predicateService;
@@ -40,9 +37,11 @@ public class RecordsConfiguration extends RecordsServiceFactory {
                                                    RecordsMetaService recordsMetaService,
                                                    RecordsResolver recordsResolver) {
 
-        this.serviceRegistry = serviceRegistry;
-
-        recordsService = new RecordsServiceImpl(recordsMetaService, recordsResolver);
+        recordsService = new RecordsServiceImpl(
+                recordsMetaService,
+                recordsResolver,
+                () -> new AlfGqlContext(serviceRegistry, recordsService)
+        );
         recordsService.register(new RecordsGroupDAO());
         return recordsService;
     }
@@ -94,6 +93,6 @@ public class RecordsConfiguration extends RecordsServiceFactory {
 
     @Override
     public RecordsMetaGql createRecordsMetaGraphQL() {
-        return new RecordsMetaGql(this.getGqlTypes(), () -> new AlfGqlContext(serviceRegistry, recordsService));
+        return new RecordsMetaGql(this.getGqlTypes());
     }
 }

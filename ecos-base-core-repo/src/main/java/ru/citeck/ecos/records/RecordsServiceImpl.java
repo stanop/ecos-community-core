@@ -8,6 +8,7 @@ import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.querylang.QueryLangService;
 import ru.citeck.ecos.records.source.dao.*;
 import ru.citeck.ecos.records2.IterableRecords;
+import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.meta.RecordsMetaService;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
@@ -16,6 +17,7 @@ import ru.citeck.ecos.records2.source.dao.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class RecordsServiceImpl extends ru.citeck.ecos.records2.RecordsServiceImpl {
@@ -23,8 +25,9 @@ public class RecordsServiceImpl extends ru.citeck.ecos.records2.RecordsServiceIm
     private Map<String, RecordsActionExecutor> actionExecutors = new ConcurrentHashMap<>();
 
     public RecordsServiceImpl(RecordsMetaService recordsMetaService,
-                              RecordsResolver recordsResolver) {
-        super(recordsMetaService, recordsResolver);
+                              RecordsResolver recordsResolver,
+                              Supplier<? extends QueryContext> contextSupplier) {
+        super(recordsMetaService, recordsResolver, contextSupplier);
     }
 
     public ActionResults<RecordRef> executeAction(Collection<RecordRef> records,

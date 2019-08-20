@@ -25,7 +25,6 @@ services:
     links:
       - jhipster-registry
       - gateway-psql
-      - uiserv-app
     depends_on:
       - gateway-psql
       - jhipster-registry

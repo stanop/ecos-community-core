@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class EcosTaskService {
 
+    public static final String FIELD_COMMENT = "comment";
+
     private static final String ASSIGNEE_NOT_MATCH_ERR_MSG_KEY = "ecos.task.complete.assignee.validation.error";
 
     private Map<String, EngineTaskService> taskServices = new ConcurrentHashMap<>();

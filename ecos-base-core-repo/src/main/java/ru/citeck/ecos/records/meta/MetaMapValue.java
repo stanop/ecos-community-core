@@ -1,6 +1,6 @@
 package ru.citeck.ecos.records.meta;
 
-import ru.citeck.ecos.records2.graphql.GqlContext;
+import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 
@@ -12,14 +12,14 @@ public class MetaMapValue implements MetaValue {
 
     private String id;
     private Map<String, Object> attributes = Collections.emptyMap();
-    private GqlContext context;
+    private QueryContext context;
 
     public MetaMapValue(String id) {
         this.id = id;
     }
 
     @Override
-    public <T extends GqlContext> void init(T context, MetaField field) {
+    public <T extends QueryContext> void init(T context, MetaField field) {
         this.context = context;
     }
 

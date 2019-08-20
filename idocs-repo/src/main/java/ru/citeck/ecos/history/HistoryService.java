@@ -160,7 +160,7 @@ public class HistoryService {
         this.historyRoot = historyRoot;
     }
 
-    public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
+    public NodeRef  persistEvent(final QName type, final Map<QName, Serializable> properties) {
         Date creationDate = new Date();
         TransactionUtils.doAfterCommit(() -> {
             if (isEnabledRemoteHistoryService()) {

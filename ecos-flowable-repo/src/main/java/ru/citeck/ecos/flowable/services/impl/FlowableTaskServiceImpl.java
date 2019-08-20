@@ -2,6 +2,7 @@ package ru.citeck.ecos.flowable.services.impl;
 
 import lombok.extern.log4j.Log4j;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import ru.citeck.ecos.flowable.constants.FlowableConstants;
 import ru.citeck.ecos.flowable.services.FlowableHistoryService;
 import ru.citeck.ecos.flowable.services.FlowableTaskService;
+import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.WorkflowUtils;
@@ -57,9 +59,12 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     @Autowired
     private NamespaceService namespaceService;
 
+    private WorkflowQNameConverter converter;
+
     @PostConstruct
     public void init() {
         ecosTaskService.register(FlowableConstants.ENGINE_ID, this);
+        converter = new WorkflowQNameConverter(namespaceService);
     }
 
     /**
@@ -214,6 +219,9 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         }
 
         Map<String, Object> executionVariables = new HashMap<>(transientVariables);
+
+        String lastCommentProp = converter.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
+        variables.put(lastCommentProp, variables.get(EcosTaskService.FIELD_COMMENT));
 
         taskService.complete(taskId, taskVariables, executionVariables);
     }

@@ -23,12 +23,12 @@ import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
 import ru.citeck.ecos.records.source.alf.file.FileRepresentation;
 import ru.citeck.ecos.records.source.common.MLTextValue;
+import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
-import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -64,7 +64,7 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public <T extends GqlContext> void init(T context, MetaField field) {
+    public <T extends QueryContext> void init(T context, MetaField field) {
         this.context = (AlfGqlContext) context;
         this.nodeRef = RecordsUtils.toNodeRef(recordRef);
         this.node = this.context.getNode(nodeRef).orElse(null);
@@ -144,36 +144,9 @@ public class AlfNodeRecord implements MetaValue {
                 break;
 
             case RecordConstants.ATT_FORM_KEY:
-
-                attribute = Collections.singletonList(new AlfNodeAttValue("alf_" + node.type()));
-                break;
-
-            case RecordConstants.ATT_VIEW_FORM_KEY:
-
-                attribute = Collections.singletonList(new AlfNodeAttValue("alf_" + node.type() + "_view"));
-                break;
-
             case RecordConstants.ATT_DASHBOARD_KEY:
 
-                List<String> keys = new ArrayList<>();
-
-                Attribute ecosType = node.attribute("tk:type");
-
-                String type = getNodeRefUuid(ecosType.value().orElse(""));
-                if (!type.isEmpty()) {
-
-                    Attribute ecosKind = node.attribute("tk:kind");
-                    String kind = getNodeRefUuid(ecosKind.value().orElse(""));
-
-                    if (!kind.isEmpty()) {
-                        keys.add(type + "/" + kind);
-                    }
-                    keys.add(type);
-                }
-
-                keys.add("alf_" + node.type());
-
-                attribute = MetaUtils.toMetaValues(keys, context, field);
+                attribute = MetaUtils.toMetaValues(getFormAndDashboardKeys(), context, field);
                 break;
 
             case RecordConstants.ATT_DASHBOARD_TYPE:
@@ -242,6 +215,29 @@ public class AlfNodeRecord implements MetaValue {
             return FileRepresentation.fromAlfNode(node, context);
         }
         return null;
+    }
+
+    private List<String> getFormAndDashboardKeys() {
+
+        List<String> keys = new ArrayList<>();
+
+        Attribute ecosType = node.attribute("tk:type");
+
+        String type = getNodeRefUuid(ecosType.value().orElse(""));
+        if (!type.isEmpty()) {
+
+            Attribute ecosKind = node.attribute("tk:kind");
+            String kind = getNodeRefUuid(ecosKind.value().orElse(""));
+
+            if (!kind.isEmpty()) {
+                keys.add(type + "/" + kind);
+            }
+            keys.add(type);
+        }
+
+        keys.add("alf_" + node.type());
+
+        return keys;
     }
 
     private String getNodeRefUuid(String nodeRef) {
