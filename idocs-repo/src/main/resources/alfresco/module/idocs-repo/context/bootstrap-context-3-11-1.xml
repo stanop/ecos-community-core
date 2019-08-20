@@ -33,16 +33,4 @@
         <property name="description" value="idocs.module-component.config.show-unassigned-in-statistic-config" />
     </bean>
 
-        <property name="dependsOn">
-            <list>
-                <ref bean="idocs.site.personal-documents-site-import" />
-                <ref bean="idocs.all-group" />
-            </list>
-        </property>
-                <ref bean="ecos-community.module-component.case-completeness-levels-journal" />
-                <ref bean="idocs.module-component.update-case-documents-config" />
-                <ref bean="idocs.module-component.associations-case-element-config" />
-                <ref bean="idocs.module-component.journal-case-element-documents" />
-                <ref bean="idocs.module-component.tasks-case-element-configs" />
-                <ref bean="idocs.module-component.roles-case-element-configs" />
 </beans>
