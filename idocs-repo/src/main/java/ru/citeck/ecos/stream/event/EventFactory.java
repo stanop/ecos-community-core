@@ -10,7 +10,6 @@ import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
-import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
@@ -30,8 +29,6 @@ import ru.citeck.ecos.spring.registry.MappingRegistry;
 import ru.citeck.ecos.utils.AuthorityUtils;
 import ru.citeck.ecos.workflow.listeners.ListenerUtils;
 import ru.citeck.ecos.workflow.listeners.WorkflowDocumentResolverRegistry;
-import ru.citeck.ecos.workflow.tasks.EcosActivitiTaskService;
-import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,6 +42,7 @@ public class EventFactory {
 
     private static final Map<String, String> activitiEventNames;
     private static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
+    private static final String ALFRESCO_SOURCE = "alfresco@";
 
     static {
         activitiEventNames = new HashMap<>(3);
@@ -103,6 +101,7 @@ public class EventFactory {
         NodeRef document = documentResolverRegistry.getResolver(task.getExecution()).getDocument(task.getExecution());
         if (document != null) {
             dto.setDocument(document.toString());
+            dto.setDocId(ALFRESCO_SOURCE + document.toString());
         }
 
         QName taskType = QName.createQName((String) task.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY),
