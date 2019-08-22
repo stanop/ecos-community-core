@@ -1,11 +1,14 @@
 package ru.citeck.ecos.records;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
+import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
 import org.alfresco.service.cmr.search.SearchParameters;
 import org.alfresco.service.cmr.search.SearchService;
+import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.NamespaceException;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -14,8 +17,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.config.EcosConfigService;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.graphql.GraphQLService;
+import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.history.HistoryEventType;
 import ru.citeck.ecos.model.HistoryModel;
@@ -32,6 +37,7 @@ import ru.citeck.ecos.records2.source.dao.RecordsQueryWithMetaDAO;
 import ru.citeck.ecos.search.*;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.AuthorityUtils;
+import ru.citeck.ecos.utils.RepoUtils;
 import ru.citeck.ecos.utils.search.SearchResult;
 import ru.citeck.ecos.utils.search.SearchUtils;
 
@@ -54,19 +60,23 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
     private static final String COMPLETION_DATE = "history:completionDate";
     private static final String EXPECTED_PERFORM_TIME = "history:expectedPerformTime";
     private static final String STARTED_DATE = "event:date";
+    private static final String SHOW_UNASSIGNED_IN_STATISTIC_CONFIG_KEY = "show-unassigned-in-statistic-config";
 
     private static final String PRED_STR_EQUALS = SearchPredicate.STRING_EQUALS.getValue();
 
     private static final Log logger = LogFactory.getLog(TaskStatisticRecords.class);
 
+    private PersonService personService;
     private SearchService searchService;
     private NamespaceService namespaceService;
+    private NodeService nodeService;
     private SearchCriteriaParser criteriaParser;
     private AuthorityUtils authorityUtils;
     private FTSQueryBuilder queryBuilder;
     private SearchUtils searchUtils;
     private GraphQLService graphQLService;
     private RecordsMetaService recordsMetaService;
+    private EcosConfigService ecosConfigService;
 
     @Autowired
     public TaskStatisticRecords(ServiceRegistry serviceRegistry,
@@ -75,16 +85,20 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
                                 FTSQueryBuilder queryBuilder,
                                 SearchUtils searchUtils,
                                 RecordsMetaService recordsMetaService,
+                                EcosConfigService ecosConfigService,
                                 GraphQLService graphQLService) {
         setId(ID);
+        this.personService = serviceRegistry.getPersonService();
         this.searchService = serviceRegistry.getSearchService();
         this.namespaceService = serviceRegistry.getNamespaceService();
+        this.nodeService = serviceRegistry.getNodeService();
         this.graphQLService = graphQLService;
         this.authorityUtils = authorityUtils;
         this.criteriaParser = criteriaParser;
         this.queryBuilder = queryBuilder;
         this.searchUtils = searchUtils;
         this.recordsMetaService = recordsMetaService;
+        this.ecosConfigService = ecosConfigService;
     }
 
     @Override
@@ -105,52 +119,27 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
 
         AlfGqlContext context = graphQLService.getGqlContext();
 
-        SearchResult<NodeRef> assignSearchResult = getAssignEvents(query);
-        List<GqlAlfNode> assignNodes = wrapNodes(assignSearchResult.getItems(), context);
-        assignNodes = mergeAssignEvents(assignNodes);
+        Boolean showUnassignedInStatisticConfig = strToBool((String) ecosConfigService.getParamValue(
+                SHOW_UNASSIGNED_IN_STATISTIC_CONFIG_KEY), false);
+
+        SearchResult<NodeRef> eventsSearchResult = getEvents(query, !showUnassignedInStatisticConfig);
+        List<GqlAlfNode> eventsNodes = wrapNodes(eventsSearchResult.getItems(), context);
+
+        if (!showUnassignedInStatisticConfig) {
+            eventsNodes = mergeAssignEvents(eventsNodes);
+        }
 
         List<MetaValue> records = new ArrayList<>();
 
-        assignNodes.forEach(assignNode -> {
+        eventsNodes.forEach(eventNode -> {
 
             if (records.size() == query.getMaxItems()) {
                 return;
             }
 
-            String taskId = (String) assignNode.getProperties().get(HistoryModel.PROP_TASK_INSTANCE_ID);
+            String taskId = (String) eventNode.getProperties().get(HistoryModel.PROP_TASK_INSTANCE_ID);
 
-            List<GqlAlfNode> taskStartStopEvents = FTSQuery.create()
-                    .value(HistoryModel.PROP_TASK_INSTANCE_ID, taskId).and()
-                    .open()
-                        .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_CREATE).or()
-                        .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_COMPLETE)
-                    .close()
-                    .query(searchService)
-                    .stream()
-                    .map(context::getNode)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .collect(Collectors.toList());
-
-            Optional<GqlAlfNode> startEvent = Optional.empty();
-            Optional<GqlAlfNode> completeEvent = Optional.empty();
-
-            for (GqlAlfNode node : taskStartStopEvents) {
-                String name = (String) node.getProperties().get(HistoryModel.PROP_NAME);
-                if (HistoryEventType.TASK_CREATE.equals(name)) {
-                    startEvent = Optional.of(node);
-                } else if (HistoryEventType.TASK_COMPLETE.equals(name)) {
-                    completeEvent = Optional.of(node);
-                }
-                if (startEvent.isPresent() && completeEvent.isPresent()) {
-                    break;
-                }
-            }
-
-            Map<String, Object> recordAttributes = getRecord(startEvent.orElse(null),
-                                                             completeEvent.orElse(null),
-                                                             assignNode,
-                                                             context);
+            Map<String, Object> recordAttributes = getRecordAttributes(taskId, eventNode, showUnassignedInStatisticConfig, context);
 
             if (recordAttributes != null) {
                 MetaMapValue record = new MetaMapValue(taskId);
@@ -160,11 +149,74 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
         });
 
         RecordsQueryResult<MetaValue> result = new RecordsQueryResult<>();
-        result.setHasMore(assignSearchResult.getHasMore());
-        result.setTotalCount(assignSearchResult.getTotalCount());
+        result.setHasMore(eventsSearchResult.getHasMore());
+        result.setTotalCount(records.size());
         result.setRecords(records);
 
         return result;
+    }
+
+    private Map<String, Object> getRecordAttributes(String taskId,
+                                                    GqlAlfNode eventNode,
+                                                    Boolean showUnassignedInStatisticConfig,
+                                                    AlfGqlContext context) {
+
+        List<GqlAlfNode> taskEvents = showUnassignedInStatisticConfig ? getCreateAssignCompleteEvents(taskId, context)
+                : getCreateCompleteEvents(taskId, context);
+
+        Optional<GqlAlfNode> startEvent = Optional.empty();
+        Optional<GqlAlfNode> completeEvent = Optional.empty();
+        Optional<GqlAlfNode> assignEvent = Optional.empty();
+
+        for (GqlAlfNode node : taskEvents) {
+            String name = (String) node.getProperties().get(HistoryModel.PROP_NAME);
+            if (HistoryEventType.TASK_CREATE.equals(name)) {
+                startEvent = Optional.of(node);
+            } else if (HistoryEventType.TASK_ASSIGN.equals(name)) {
+                assignEvent = Optional.of(node);
+            } else if (HistoryEventType.TASK_COMPLETE.equals(name)) {
+                completeEvent = Optional.of(node);
+            }
+            if (startEvent.isPresent() && assignEvent.isPresent() && completeEvent.isPresent()) {
+                break;
+            }
+        }
+
+        return getRecord(startEvent.orElse(null),
+                         completeEvent.orElse(null),
+                         !showUnassignedInStatisticConfig ? eventNode : assignEvent.orElse(null),
+                         context);
+    }
+
+    private List<GqlAlfNode> getCreateCompleteEvents(String taskId, AlfGqlContext context) {
+        return FTSQuery.create()
+                .value(HistoryModel.PROP_TASK_INSTANCE_ID, taskId).and()
+                .open()
+                .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_CREATE).or()
+                .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_COMPLETE)
+                .close()
+                .query(searchService)
+                .stream()
+                .map(context::getNode)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    private List<GqlAlfNode> getCreateAssignCompleteEvents(String taskId, AlfGqlContext context) {
+        return FTSQuery.create()
+                .value(HistoryModel.PROP_TASK_INSTANCE_ID, taskId).and()
+                .open()
+                .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_CREATE).or()
+                .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_ASSIGN).or()
+                .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_COMPLETE)
+                .close()
+                .query(searchService)
+                .stream()
+                .map(context::getNode)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     private List<GqlAlfNode> mergeAssignEvents(List<GqlAlfNode> events) {
@@ -205,14 +257,15 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
                        .collect(Collectors.toList());
     }
 
-    private SearchResult<NodeRef> getAssignEvents(RecordsQuery query) {
+    private SearchResult<NodeRef> getEvents(RecordsQuery query, Boolean isAssign) {
 
         SearchCriteria criteria = criteriaParser.parse(query.getQuery());
         SearchCriteria processedCriteria = new SearchCriteria(namespaceService);
 
         String eventTypeProp = HistoryModel.PROP_NAME.toPrefixString(namespaceService);
 
-        processedCriteria.addCriteriaTriplet(eventTypeProp, PRED_STR_EQUALS, HistoryEventType.TASK_ASSIGN);
+        String eventType = isAssign ? HistoryEventType.TASK_ASSIGN : HistoryEventType.TASK_CREATE;
+        processedCriteria.addCriteriaTriplet(eventTypeProp, PRED_STR_EQUALS, eventType);
 
         for (CriteriaTriplet triplet : criteria.getTriplets()) {
 
@@ -266,7 +319,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
                                           GqlAlfNode assignEvent,
                                           AlfGqlContext context) {
 
-        if (startEvent == null || assignEvent == null) {
+        if (startEvent == null) {
             return null;
         }
 
@@ -289,7 +342,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
         Date startDate = (Date) startedProps.get(HistoryModel.PROP_DATE);
         recordAttributes.put(STARTED_DATE, ISO8601Utils.format(startDate));
 
-        Date dueDate = (Date) startEvent.getProperties().get(HistoryModel.PROP_TASK_DUE_DATE);
+        Date dueDate = (Date) startedProps.get(HistoryModel.PROP_TASK_DUE_DATE);
 
         long expectedPerformTime = 0;
         if (dueDate != null) {
@@ -299,7 +352,19 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
         }
 
         String initiatorAttrName = HistoryModel.ASSOC_INITIATOR.toPrefixString(namespaceService);
-        recordAttributes.put(initiatorAttrName, getAssocAttribute(assignEvent, initiatorAttrName, context));
+
+        if (assignEvent != null) {
+            MetaValue initiator = getAssocAttribute(assignEvent, initiatorAttrName, context);
+            if (initiator != null && initiator.getId() != null) {
+                recordAttributes.put(initiatorAttrName, initiator);
+            } else {
+                recordAttributes.put(initiatorAttrName, getAssigneeFullName(assignEvent));
+            }
+
+        } else {
+            List<NodeRef> pooledActors = (ArrayList<NodeRef>) startedProps.get(HistoryModel.PROP_TASK_POOLED_ACTORS);
+            recordAttributes.put(initiatorAttrName, getPoolActorsNamesString(pooledActors));
+        }
 
         if (endEvent != null) {
             Date completionDate = (Date) endEvent.getProperties().get(HistoryModel.PROP_DATE);
@@ -325,4 +390,31 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
         value.init(context, null);
         return value;
     }
+
+    private String getPoolActorsNamesString(List<NodeRef> pooledActors) {
+        List<String> poolActorsNames = new ArrayList<>();
+        for (NodeRef pooledActor : pooledActors) {
+            QName pooledActorType = nodeService.getType(pooledActor);
+            String pooledActorName = "";
+            if (pooledActorType.equals(ContentModel.TYPE_PERSON)) {
+                pooledActorName = RepoUtils.getPersonFullName(pooledActor, nodeService);
+            } else if (pooledActorType.equals(ContentModel.TYPE_AUTHORITY_CONTAINER)) {
+                pooledActorName = StringUtils.defaultString((String) nodeService.getProperty(pooledActor,
+                        ContentModel.PROP_AUTHORITY_DISPLAY_NAME), "");
+            }
+            poolActorsNames.add(pooledActorName);
+        }
+        return StringUtils.join(poolActorsNames, ", ");
+    }
+
+    private String getAssigneeFullName(GqlAlfNode assignEvent) {
+        String creator = StringUtils.defaultString((String) assignEvent.getAttributeValue(
+                ContentModel.PROP_CREATOR, Attribute.Type.PROP), "");
+        return RepoUtils.getPersonFullName(creator, personService, nodeService);
+    }
+
+    private Boolean strToBool(String value, Boolean def) {
+        return StringUtils.isNotBlank(value) ? !Boolean.FALSE.toString().equals(value) : def;
+    }
+
 }
