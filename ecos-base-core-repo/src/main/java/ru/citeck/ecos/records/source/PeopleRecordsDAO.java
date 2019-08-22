@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.source.alf.AlfNodesRecordsDAO;
 import ru.citeck.ecos.records.source.alf.meta.AlfNodeRecord;
 import ru.citeck.ecos.records2.QueryContext;
@@ -181,6 +182,8 @@ public class PeopleRecordsDAO extends LocalRecordsDAO
                     return authorityService.isAdminAuthority(userName);
                 case PROP_AUTHORITIES:
                     return getUserAuthorities();
+                case RecordConstants.ATT_DASHBOARD_TYPE:
+                    return "profile-details";
             }
 
             return alfNode.getAttribute(name, field);
