@@ -156,11 +156,7 @@ public class EventFactory {
         dto.setTaskPooledActors(toStringSet(pooledActors));
 
         Set<String> pooledUsers = new HashSet<>();
-        if (StringUtils.isNotBlank(assignee)) {
-            pooledUsers.add(assignee);
-        }
         pooledActors.forEach(nodeRef -> pooledUsers.addAll(authorityUtils.getContainedUsers(nodeRef, false)));
-
         dto.setTaskPooledUsers(pooledUsers);
 
         dto.setTaskInstanceId(ACTIVITI_PREFIX + task.getId());
