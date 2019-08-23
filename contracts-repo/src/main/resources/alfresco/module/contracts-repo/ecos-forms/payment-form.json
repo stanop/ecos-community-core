@@ -36,11 +36,11 @@
                 "components": [
                   {
                     "label": "payments:basis",
+                    "hideCreateButton": true,
                     "mask": false,
                     "tableView": true,
                     "alwaysEnabled": false,
                     "journalId": "contract-agreements",
-                    "hideCreateButton": true,
                     "displayColumns": [],
                     "customPredicateJs": "",
                     "computed": {
@@ -50,6 +50,7 @@
                     "ecos": {
                       "dataType": "assoc"
                     },
+                    "defaultValue": "",
                     "encrypted": false,
                     "displayColumnsAsyncData": [
                       {
@@ -153,7 +154,6 @@
                     "customClass": "",
                     "suffix": "",
                     "multiple": false,
-                    "defaultValue": null,
                     "protected": false,
                     "unique": false,
                     "persistent": true,
@@ -180,7 +180,7 @@
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "ecpobsf"
+                    "id": "e2qeonl"
                   }
                 ],
                 "width": 6,
@@ -239,7 +239,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eeoqea1"
+                "id": "e237rdt"
               },
               {
                 "components": [
@@ -325,7 +325,7 @@
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "eyip8vz"
+                    "id": "efkm63v"
                   }
                 ],
                 "width": 6,
@@ -384,7 +384,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e27656"
+                "id": "ek2gs0u"
               },
               {
                 "xs": 0,
@@ -483,7 +483,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "elpj8q9"
+                    "id": "eppxsl"
                   }
                 ],
                 "placeholder": "",
@@ -526,7 +526,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e3do5rb"
+                "id": "e2jv0b"
               }
             ],
             "hideOnChildrenHidden": true,
@@ -583,7 +583,7 @@
               "customPrivate": false
             },
             "autoAdjust": false,
-            "id": "e0yxsc"
+            "id": "e9v0uh"
           },
           {
             "conditional": {
@@ -638,7 +638,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "es63cyb"
+            "id": "euuxvlm"
           },
           {
             "label": "payments:paymentPurpose",
@@ -718,7 +718,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "ed4imd"
+            "id": "eu14j8d"
           },
           {
             "conditional": {
@@ -773,7 +773,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "eqbw4qk"
+            "id": "en7fbdp"
           },
           {
             "label": "Columns",
@@ -918,7 +918,7 @@
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "ewnc35"
+                    "id": "elfxovf"
                   }
                 ],
                 "width": 6,
@@ -977,7 +977,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e28ywet"
+                "id": "e47w4rf"
               },
               {
                 "components": [
@@ -1074,7 +1074,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "e9ki61l"
+                    "id": "es1ksq8"
                   }
                 ],
                 "width": 6,
@@ -1133,7 +1133,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e3fojdr"
+                "id": "e20sls"
               },
               {
                 "xs": 0,
@@ -1275,7 +1275,7 @@
                     "mask": false,
                     "inputType": "text",
                     "inputMask": "",
-                    "id": "e093msm"
+                    "id": "e2onh1"
                   },
                   {
                     "label": "Generate",
@@ -1338,7 +1338,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "el5hqc"
+                    "id": "ev1f0o"
                   }
                 ],
                 "placeholder": "",
@@ -1381,7 +1381,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "erdt3qe"
+                "id": "ewz1gm"
               }
             ],
             "mask": false,
@@ -1438,7 +1438,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "eiesug5"
+            "id": "eswf9s"
           },
           {
             "conditional": {
@@ -1493,7 +1493,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "evidchg"
+            "id": "ekipmxo"
           },
           {
             "label": "Columns",
@@ -1638,7 +1638,7 @@
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "edescuj"
+                    "id": "eqrlckd"
                   }
                 ],
                 "width": 6,
@@ -1697,7 +1697,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eam4qt"
+                "id": "es80lr"
               },
               {
                 "components": [
@@ -1794,7 +1794,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "e0o6ca"
+                    "id": "ebvlmpy"
                   }
                 ],
                 "width": 6,
@@ -1853,7 +1853,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ektd0b"
+                "id": "eclf5zk"
               },
               {
                 "xs": 0,
@@ -1909,7 +1909,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "enfvni"
+                "id": "e1fyrj"
               }
             ],
             "mask": false,
@@ -1966,7 +1966,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e4iis3"
+            "id": "ewa4upt"
           }
         ],
         "tags": [],
@@ -2008,7 +2008,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "eojbi4h"
+        "id": "egufgk8"
       },
       {
         "label": "Panel",
@@ -2123,26 +2123,26 @@
                         "resources": {
                           "en": {
                             "translation": {
-                              "complete": "Сохранение прошло успешно",
-                              "error": "Пожалуйста, исправьте следующие ошибки перед отправкой:",
-                              "required": "Поле {{field}} не может быть пустым",
-                              "pattern": "{{field}} не совпадает с паттерном {{pattern}}",
-                              "minLength": "{{field}} должен быть длиннее чем {{length}} символов.",
-                              "maxLength": "{{field}} должен быть короче чем {{length}} символов.",
+                              "complete": "Submission Complete",
+                              "error": "Please fix the following errors before submitting.",
+                              "required": "{{field}} is required",
+                              "pattern": "{{field}} does not match the pattern {{pattern}}",
+                              "minLength": "{{field}} must be longer than {{length}} characters.",
+                              "maxLength": "{{field}} must be shorter than {{length}} characters.",
                               "minWords": "{{field}} must have more than {{length}} words.",
                               "maxWords": "{{field}} must have less than {{length}} words.",
-                              "min": "{{field}} не может быть меньше чем {{min}}.",
-                              "max": "{{field}} не может быть больше чем {{max}}.",
+                              "min": "{{field}} cannot be less than {{min}}.",
+                              "max": "{{field}} cannot be greater than {{max}}.",
                               "minSelectedCount": "You must select at least {{minCount}} items to continue.",
                               "maxSelectedCount": "You can only select up to {{maxCount}} items to continue.",
                               "maxDate": "{{field}} should not contain date after {{- maxDate}}",
                               "minDate": "{{field}} should not contain date before {{- minDate}}",
-                              "invalid_email": "{{field}} некорректный email.",
+                              "invalid_email": "{{field}} must be a valid email.",
                               "invalid_url": "{{field}} must be a valid url.",
-                              "invalid_regex": "{{field}} не соответствует паттерну {{regex}}.",
-                              "invalid_date": "{{field}} некорректная дата.",
+                              "invalid_regex": "{{field}} does not match the pattern {{regex}}.",
+                              "invalid_date": "{{field}} is not a valid date.",
                               "invalid_day": "{{field}} is not a valid day.",
-                              "mask": "{{field}} не совпадает с маской.",
+                              "mask": "{{field}} does not match the mask.",
                               "stripe": "{{stripe}}",
                               "month": "Month",
                               "day": "Day",
@@ -2159,39 +2159,10 @@
                               "october": "October",
                               "november": "November",
                               "december": "December",
-                              "next": "Далее",
-                              "previous": "Назад",
+                              "next": "Next",
+                              "previous": "Previous",
                               "cancel": "Cancel",
-                              "submit": "Submit Form",
-                              "or": "или",
-                              "browse": "выбрать",
-                              "File Name": "Имя файла",
-                              "Type": "Тип",
-                              "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
-                              "Size": "Размер",
-                              "ecos:documentNumber": "Number of document",
-                              "Generate": "Generate",
-                              "ecos:responsible": "Responsible",
-                              "idocs:initiator": "Initiator",
-                              "ecos:startDate": "Start date",
-                              "ecos:stopDate": "Date of completion",
-                              "idocs:legalEntity": "Legal entity",
-                              "idocs:currencyDocument": "Currency",
-                              "ecos:documentAmount": "Amount",
-                              "idocs:contractor": "Contractor",
-                              "typeGeneralCaseList": "typeGeneralCaseList",
-                              "currencyList": "currencyList",
-                              "tk:type": "Type",
-                              "defaultLegalEntity": "defaultLegalEntity",
-                              "Main": "Main",
-                              "Case kind": "Case kind",
-                              "Date of creation": "Date of creation",
-                              "Additional": "Additional",
-                              "Note": "Note",
-                              "Name": "Name",
-                              "Create": "Create",
-                              "Cancel": "Cancel",
-                              "Save": "Save"
+                              "submit": "Submit Form"
                             }
                           },
                           "ru": {
@@ -2254,7 +2225,7 @@
                     "displayInTimezone": "viewer",
                     "timezone": "",
                     "datepickerMode": "day",
-                    "id": "e1yap4s"
+                    "id": "eiilz8"
                   }
                 ],
                 "width": 6,
@@ -2313,7 +2284,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ettndx1i"
+                "id": "eburt3"
               },
               {
                 "components": [
@@ -2384,26 +2355,26 @@
                         "resources": {
                           "en": {
                             "translation": {
-                              "complete": "Сохранение прошло успешно",
-                              "error": "Пожалуйста, исправьте следующие ошибки перед отправкой:",
-                              "required": "Поле {{field}} не может быть пустым",
-                              "pattern": "{{field}} не совпадает с паттерном {{pattern}}",
-                              "minLength": "{{field}} должен быть длиннее чем {{length}} символов.",
-                              "maxLength": "{{field}} должен быть короче чем {{length}} символов.",
+                              "complete": "Submission Complete",
+                              "error": "Please fix the following errors before submitting.",
+                              "required": "{{field}} is required",
+                              "pattern": "{{field}} does not match the pattern {{pattern}}",
+                              "minLength": "{{field}} must be longer than {{length}} characters.",
+                              "maxLength": "{{field}} must be shorter than {{length}} characters.",
                               "minWords": "{{field}} must have more than {{length}} words.",
                               "maxWords": "{{field}} must have less than {{length}} words.",
-                              "min": "{{field}} не может быть меньше чем {{min}}.",
-                              "max": "{{field}} не может быть больше чем {{max}}.",
+                              "min": "{{field}} cannot be less than {{min}}.",
+                              "max": "{{field}} cannot be greater than {{max}}.",
                               "minSelectedCount": "You must select at least {{minCount}} items to continue.",
                               "maxSelectedCount": "You can only select up to {{maxCount}} items to continue.",
                               "maxDate": "{{field}} should not contain date after {{- maxDate}}",
                               "minDate": "{{field}} should not contain date before {{- minDate}}",
-                              "invalid_email": "{{field}} некорректный email.",
+                              "invalid_email": "{{field}} must be a valid email.",
                               "invalid_url": "{{field}} must be a valid url.",
-                              "invalid_regex": "{{field}} не соответствует паттерну {{regex}}.",
-                              "invalid_date": "{{field}} некорректная дата.",
+                              "invalid_regex": "{{field}} does not match the pattern {{regex}}.",
+                              "invalid_date": "{{field}} is not a valid date.",
                               "invalid_day": "{{field}} is not a valid day.",
-                              "mask": "{{field}} не совпадает с маской.",
+                              "mask": "{{field}} does not match the mask.",
                               "stripe": "{{stripe}}",
                               "month": "Month",
                               "day": "Day",
@@ -2420,39 +2391,10 @@
                               "october": "October",
                               "november": "November",
                               "december": "December",
-                              "next": "Далее",
-                              "previous": "Назад",
+                              "next": "Next",
+                              "previous": "Previous",
                               "cancel": "Cancel",
-                              "submit": "Submit Form",
-                              "or": "или",
-                              "browse": "выбрать",
-                              "File Name": "Имя файла",
-                              "Type": "Тип",
-                              "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
-                              "Size": "Размер",
-                              "ecos:documentNumber": "Number of document",
-                              "Generate": "Generate",
-                              "ecos:responsible": "Responsible",
-                              "idocs:initiator": "Initiator",
-                              "ecos:startDate": "Start date",
-                              "ecos:stopDate": "Date of completion",
-                              "idocs:legalEntity": "Legal entity",
-                              "idocs:currencyDocument": "Currency",
-                              "ecos:documentAmount": "Amount",
-                              "idocs:contractor": "Contractor",
-                              "typeGeneralCaseList": "typeGeneralCaseList",
-                              "currencyList": "currencyList",
-                              "tk:type": "Type",
-                              "defaultLegalEntity": "defaultLegalEntity",
-                              "Main": "Main",
-                              "Case kind": "Case kind",
-                              "Date of creation": "Date of creation",
-                              "Additional": "Additional",
-                              "Note": "Note",
-                              "Name": "Name",
-                              "Create": "Create",
-                              "Cancel": "Cancel",
-                              "Save": "Save"
+                              "submit": "Submit Form"
                             }
                           },
                           "ru": {
@@ -2523,7 +2465,7 @@
                       "mousewheel": true,
                       "arrowkeys": true
                     },
-                    "id": "emgcccf"
+                    "id": "ertrh9b"
                   }
                 ],
                 "width": 6,
@@ -2582,7 +2524,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ebnf83"
+                "id": "evjllf"
               },
               {
                 "xs": 0,
@@ -2681,7 +2623,7 @@
                     "searchThreshold": 0.3,
                     "fuseOptions": {},
                     "customOptions": {},
-                    "id": "e83di97"
+                    "id": "epnaw8r"
                   }
                 ],
                 "placeholder": "",
@@ -2724,7 +2666,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ecz25vi"
+                "id": "eaz6b9w"
               }
             ],
             "mask": false,
@@ -2781,7 +2723,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e23jsjd"
+            "id": "exs0at"
           }
         ],
         "tags": [],
@@ -2818,7 +2760,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "eah172e"
+        "id": "efhcsx6"
       },
       {
         "label": "Panel",
@@ -2962,7 +2904,7 @@
                     "searchThreshold": 0.3,
                     "fuseOptions": {},
                     "customOptions": {},
-                    "id": "e28twmr"
+                    "id": "ehlm9bj"
                   },
                   {
                     "label": "payments:overexpenditure",
@@ -3027,7 +2969,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "e32fv5f"
+                    "id": "etcli3"
                   }
                 ],
                 "width": 6,
@@ -3086,7 +3028,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eskeder"
+                "id": "ec5z5ei"
               },
               {
                 "components": [
@@ -3097,7 +3039,7 @@
                     "alwaysEnabled": false,
                     "delimiter": false,
                     "requireDecimal": false,
-                    "calculateValue": "if (data.containsProductsAndServices.length > 0) {\n    for (var i in data.containsProductsAndServices) {\n        value += parseFloat (data.containsProductsAndServices[i].total);\n    }\n} else if (data.containsProductsAndServices.length === 0) {\n  value = data.payments_paymentAmount;\n}",
+                    "calculateValue": "value = 0;\r\nif (instance.options.formMode === 'CREATE' && data.containsProductsAndServices.length > 0) {\r\n    for (var i in data.containsProductsAndServices) {\r\n        value += parseFloat (data.containsProductsAndServices[i].total);\r\n    }\r\n}",
                     "allowCalculateOverride": true,
                     "encrypted": false,
                     "validate": {
@@ -3148,12 +3090,12 @@
                     "type": "number",
                     "input": true,
                     "tags": [],
+                    "defaultValue": 0,
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
                     "suffix": "",
                     "multiple": false,
-                    "defaultValue": null,
                     "protected": false,
                     "unique": false,
                     "persistent": true,
@@ -3176,7 +3118,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "exxt7er"
+                    "id": "etwbpk"
                   }
                 ],
                 "width": 6,
@@ -3235,7 +3177,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eufs13i"
+                "id": "e8u6ikg"
               },
               {
                 "xs": 0,
@@ -3258,6 +3200,7 @@
                     "alwaysEnabled": false,
                     "delimiter": false,
                     "requireDecimal": false,
+                    "defaultValue": 0,
                     "encrypted": false,
                     "validate": {
                       "required": true,
@@ -3286,7 +3229,6 @@
                     "type": "number",
                     "input": true,
                     "tags": [],
-                    "defaultValue": 0,
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -3316,7 +3258,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "eoc1njc"
+                    "id": "euxwvi1"
                   }
                 ],
                 "placeholder": "",
@@ -3359,7 +3301,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e8m5zfi"
+                "id": "eg8aeg"
               },
               {
                 "xs": 0,
@@ -3415,7 +3357,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ej63ht3"
+                "id": "e3mfvyv"
               }
             ],
             "mask": false,
@@ -3472,7 +3414,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e3b6dl8"
+            "id": "exepg8"
           }
         ],
         "tags": [],
@@ -3509,7 +3451,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "ei1xi08"
+        "id": "ehrhxo"
       },
       {
         "label": "Panel",
@@ -3600,7 +3542,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "egj578s"
+                    "id": "evum1m"
                   }
                 ],
                 "width": 6,
@@ -3659,7 +3601,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eg49sx"
+                "id": "e8umejb"
               },
               {
                 "components": [],
@@ -3719,7 +3661,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "euxzj7"
+                "id": "emytr3"
               }
             ],
             "mask": false,
@@ -3776,7 +3718,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "ezqn1gm"
+            "id": "etnwkf"
           },
           {
             "label": "Columns",
@@ -3883,7 +3825,7 @@
                     "uploadOnly": false,
                     "defaultOverlayWidth": 200,
                     "defaultOverlayHeight": 200,
-                    "id": "ew2ps48"
+                    "id": "e28e0au"
                   },
                   {
                     "label": "pas:containsProductsAndServices",
@@ -3906,6 +3848,9 @@
                             "name": "cm:title"
                           },
                           {
+                            "name": "cm:description"
+                          },
+                          {
                             "name": "pas:pricePerUnit"
                           },
                           {
@@ -3913,6 +3858,9 @@
                           },
                           {
                             "name": "pas:entityUnit"
+                          },
+                          {
+                            "name": "pas:total"
                           },
                           {
                             "name": "pas:type"
@@ -3926,6 +3874,7 @@
                         "attribute": null
                       }
                     },
+                    "defaultValue": [],
                     "encrypted": false,
                     "displayColumnsAsyncData": [],
                     "validate": {
@@ -3945,7 +3894,7 @@
                       "json": "",
                       "eq": ""
                     },
-                    "customConditional": "show = (instance.options.formMode === 'CREATE' && data.dms_updateContent) ? true : false;",
+                    "customConditional": "show = ((instance.options.formMode !== 'CREATE' && data.pas_containsProductsAndServices.length > 0) || data.dms_updateContent) ? true : false;",
                     "logic": [
                       {
                         "name": "required_off",
@@ -3965,6 +3914,25 @@
                             "state": "false"
                           }
                         ]
+                      },
+                      {
+                        "name": "disabled_on",
+                        "trigger": {
+                          "type": "javascript",
+                          "javascript": "result = instance.options.formMode !== 'CREATE' ? true : false;"
+                        },
+                        "actions": [
+                          {
+                            "name": "disabled_on",
+                            "type": "property",
+                            "property": {
+                              "label": "Disabled",
+                              "value": "disabled",
+                              "type": "boolean"
+                            },
+                            "state": "true"
+                          }
+                        ]
                       }
                     ],
                     "attributes": {},
@@ -3972,7 +3940,6 @@
                     "input": true,
                     "tags": [],
                     "_journalId": "alf_term:teReqRoute",
-                    "defaultValue": [],
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -4001,7 +3968,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "e6syy5b"
+                    "id": "epq7dt"
                   }
                 ],
                 "width": 6,
@@ -4060,7 +4027,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ee0mwnn"
+                "id": "e8bxl6j"
               },
               {
                 "components": [],
@@ -4120,7 +4087,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eq82ce"
+                "id": "ebf3fig"
               }
             ],
             "mask": false,
@@ -4177,7 +4144,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "elwhb2k"
+            "id": "evpj8yi"
           },
           {
             "label": "payments:paymentComment",
@@ -4257,7 +4224,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "e0mmcxm"
+            "id": "eygg6yn"
           }
         ],
         "tags": [],
@@ -4299,7 +4266,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "ep1yp5p"
+        "id": "eqwwt4c"
       },
       {
         "label": "paymentsBasis",
@@ -4395,7 +4362,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "e4uniaq"
+        "id": "ex0bx0k"
       },
       {
         "label": "period",
@@ -4483,7 +4450,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "e3omm6b"
+        "id": "eqj94cf"
       },
       {
         "label": "containsProductsAndServices",
@@ -4498,7 +4465,8 @@
           },
           "recordsArray": {
             "attributes": {
-              "total": "pas:total"
+              "total": "pas:total",
+              "entityUnit": "pas:entityUnit"
             },
             "id": "{{data.pas_containsProductsAndServices}}"
           },
@@ -4573,7 +4541,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "e1dddeu"
+        "id": "ebg5ufd"
       },
       {
         "label": "payer",
@@ -4663,7 +4631,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "ey7t51"
+        "id": "e2nlfv"
       },
       {
         "label": "currencyList",
@@ -4751,7 +4719,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "erd5flv"
+        "id": "esncuuh"
       },
       {
         "label": "legalEntities",
@@ -4840,7 +4808,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "eu7seij"
+        "id": "e8r96ue"
       },
       {
         "label": "payment",
@@ -4928,7 +4896,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "egt2jsn"
+        "id": "etlikq"
       },
       {
         "label": "Columns",
@@ -5003,7 +4971,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "ehb0zoo"
+                "id": "ekndfs6"
               }
             ],
             "width": 6,
@@ -5062,7 +5030,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e1i1tc"
+            "id": "eot3ipc"
           },
           {
             "components": [
@@ -5133,7 +5101,7 @@
                 "action": "submit",
                 "disableOnInvalid": false,
                 "removeIndents": false,
-                "id": "ewvkpk4"
+                "id": "ejizkk"
               }
             ],
             "width": 6,
@@ -5192,7 +5160,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ehqp5s"
+            "id": "eybd1ae"
           },
           {
             "xs": 0,
@@ -5275,7 +5243,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "emu0qg"
+                "id": "eqwbuu1"
               }
             ],
             "placeholder": "",
@@ -5318,7 +5286,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eawdmfq"
+            "id": "ewhbgo5"
           }
         ],
         "mask": false,
@@ -5374,7 +5342,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "eorytrq"
+        "id": "efkfr2"
       },
       {
         "label": "Columns",
@@ -5437,7 +5405,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e9t0j64"
+            "id": "ehf03zg"
           },
           {
             "components": [
@@ -5509,7 +5477,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "e2zics"
+                "id": "ef56x4"
               }
             ],
             "width": 6,
@@ -5568,7 +5536,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e5femx"
+            "id": "e2h5zko"
           },
           {
             "xs": 0,
@@ -5650,7 +5618,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "ede0bh8"
+                "id": "e7i1sus"
               }
             ],
             "placeholder": "",
@@ -5693,7 +5661,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ek2fefk"
+            "id": "ebziequ"
           },
           {
             "xs": 0,
@@ -5749,7 +5717,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e3jr9x8"
+            "id": "eyb46c"
           }
         ],
         "mask": false,
@@ -5805,7 +5773,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e54l7wt"
+        "id": "ehhaivh"
       }
     ]
   },
