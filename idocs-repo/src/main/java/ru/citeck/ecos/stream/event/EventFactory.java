@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 public class EventFactory {
 
     private static final Map<String, String> activitiEventNames;
+    private static final String TASK_FORM_KEY = "formKey";
     private static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
     private static final String ALFRESCO_SOURCE = "alfresco@";
 
@@ -104,7 +105,7 @@ public class EventFactory {
             dto.setDocId(ALFRESCO_SOURCE + document.toString());
         }
 
-        QName taskType = QName.createQName((String) task.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY),
+        QName taskType = QName.createQName((String) getTaskFormKey(task),
                 namespaceService);
         dto.setTaskType(taskType.toString());
 
@@ -169,9 +170,29 @@ public class EventFactory {
         dto.setTaskTitle((String) task.getVariable(taskTitleProp));
         dto.setWorkflowInstanceId(ACTIVITI_PREFIX + task.getProcessInstanceId());
         dto.setWorkflowDescription((String) task.getExecution().getVariable(VAR_DESCRIPTION));
+        dto.setAssignee(assignee);
         dto.setInitiator(StringUtils.isNotBlank(assignee) ? assignee : HistoryService.SYSTEM_USER);
 
         return Optional.of(dto);
+    }
+
+    private String getTaskFormKey(DelegateTask task) {
+        String formKey = task.getFormKey();
+        if (StringUtils.isNotBlank(formKey)) {
+            return formKey;
+        }
+
+        formKey = (String) task.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY);
+        if (StringUtils.isNotBlank(formKey)) {
+            return formKey;
+        }
+
+        formKey = (String) task.getVariable(TASK_FORM_KEY);
+        if (StringUtils.isNotBlank(formKey)) {
+            return formKey;
+        }
+
+        throw new RuntimeException("Failed get taskForm, from task: " + task.getId());
     }
 
     private String getTaskOutcome(DelegateTask task) {
