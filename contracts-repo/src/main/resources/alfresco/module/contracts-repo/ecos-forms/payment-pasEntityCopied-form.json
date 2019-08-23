@@ -91,7 +91,7 @@
                 "inputMask": "",
                 "wysiwyg": false,
                 "editor": "",
-                "id": "eigcswb"
+                "id": "ecpsjrm"
               }
             ],
             "width": 6,
@@ -150,7 +150,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eipvod"
+            "id": "eoshomw"
           },
           {
             "components": [
@@ -232,7 +232,7 @@
                 "inputMask": "",
                 "wysiwyg": false,
                 "editor": "",
-                "id": "eplbnzg"
+                "id": "ec6gp8r"
               }
             ],
             "width": 6,
@@ -291,7 +291,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e8lg2cl"
+            "id": "esqk20p"
           }
         ],
         "mask": false,
@@ -348,7 +348,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ejywd3k"
+        "id": "eg1a3pd"
       },
       {
         "conditional": {
@@ -403,7 +403,7 @@
         "inputType": "horizontalLine",
         "useNegativeIndents": true,
         "addVerticalIndents": false,
-        "id": "eo2wtd"
+        "id": "eqfi0wz"
       },
       {
         "label": "Columns",
@@ -503,7 +503,7 @@
                 "fuseOptions": {},
                 "customOptions": {},
                 "refreshEventName": "",
-                "id": "ers4dgf"
+                "id": "ervviip"
               }
             ],
             "width": 6,
@@ -562,7 +562,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e5xw3k"
+            "id": "esm4qz"
           },
           {
             "components": [
@@ -631,7 +631,7 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "id": "eeala2"
+                "id": "ew7sw1m"
               }
             ],
             "width": 6,
@@ -690,7 +690,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ee383n"
+            "id": "e13bw33a"
           },
           {
             "xs": 0,
@@ -771,7 +771,7 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "id": "et3d68"
+                "id": "edq0xm4"
               }
             ],
             "placeholder": "",
@@ -814,7 +814,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ecd88xr"
+            "id": "edi9ml"
           },
           {
             "xs": 0,
@@ -865,7 +865,7 @@
                 "customConditional": "",
                 "logic": [],
                 "attributes": {},
-                "decimalLimit": 4,
+                "decimalLimit": 2,
                 "type": "number",
                 "input": true,
                 "tags": [],
@@ -896,7 +896,7 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "id": "e76cnr8"
+                "id": "egtq05h"
               }
             ],
             "placeholder": "",
@@ -939,7 +939,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ek439ib"
+            "id": "etz22z"
           },
           {
             "xs": 0,
@@ -969,8 +969,10 @@
                   "resource": ""
                 },
                 "refreshOnEvent": false,
+                "readOnlyValue": true,
                 "selectThreshold": 0.3,
                 "defaultValue": "",
+                "refreshOn": [],
                 "encrypted": false,
                 "validate": {
                   "required": true,
@@ -1021,7 +1023,6 @@
                 "calculateValue": "",
                 "allowCalculateOverride": false,
                 "widget": null,
-                "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
                 "limit": 100,
@@ -1030,7 +1031,6 @@
                 "searchEnabled": true,
                 "searchField": "",
                 "minSearch": 0,
-                "readOnlyValue": false,
                 "authenticate": false,
                 "template": "<span>{{ item.label }}</span>",
                 "selectFields": "",
@@ -1038,7 +1038,7 @@
                 "fuseOptions": {},
                 "customOptions": {},
                 "refreshEventName": "",
-                "id": "ep101o"
+                "id": "e1npr2o"
               }
             ],
             "placeholder": "",
@@ -1081,7 +1081,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ehv8g0n"
+            "id": "egpanv5"
           },
           {
             "xs": 0,
@@ -1180,7 +1180,7 @@
                 "searchThreshold": 0.3,
                 "fuseOptions": {},
                 "customOptions": {},
-                "id": "epgp7"
+                "id": "e90posa"
               }
             ],
             "placeholder": "",
@@ -1223,7 +1223,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e4kou3q"
+            "id": "esim6vr"
           }
         ],
         "mask": false,
@@ -1280,7 +1280,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ec9nhw5"
+        "id": "eydsrmls"
       },
       {
         "label": "Columns",
@@ -1374,7 +1374,7 @@
                 "mask": false,
                 "inputType": "asyncData",
                 "executionCondition": "",
-                "id": "eo70wra"
+                "id": "eha0u7g"
               },
               {
                 "label": "unit",
@@ -1462,7 +1462,7 @@
                 "inputType": "asyncData",
                 "eventName": "",
                 "executionCondition": "",
-                "id": "e7x28p"
+                "id": "e4bfdn"
               }
             ],
             "width": 3,
@@ -1515,7 +1515,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ewwo5nk"
+            "id": "exzbyeo"
           },
           {
             "width": 3,
@@ -1589,7 +1589,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "eafgb5t"
+                "id": "e0dmqmd"
               }
             ],
             "placeholder": "",
@@ -1632,7 +1632,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eqys2y"
+            "id": "e3z3cw"
           },
           {
             "components": [
@@ -1703,7 +1703,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "efb9u4a"
+                "id": "ejcw6oh"
               }
             ],
             "width": 3,
@@ -1756,7 +1756,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e8umq5f"
+            "id": "e5t4vbc"
           },
           {
             "width": 3,
@@ -1810,7 +1810,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e4rzelq"
+            "id": "e17r9xd"
           }
         ],
         "autoAdjust": true,
@@ -1860,7 +1860,7 @@
           "eq": ""
         },
         "hideOnChildrenHidden": false,
-        "id": "eip9awz"
+        "id": "eqty86y"
       }
     ]
   },
