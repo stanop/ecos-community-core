@@ -121,15 +121,16 @@ public class JavaBehaviour extends BaseBehaviour {
             MethodPerformance perf = new MethodPerformance(behaviour.instance, delegateMethod, args);
 
             // Handle Object level methods
-            if (method.getName().equals("toString")) {
-                return toString();
-            } else if (method.getName().equals("hashCode")) {
-                return hashCode();
-            } else if (method.getName().equals("equals")) {
-                if (Proxy.isProxyClass(args[0].getClass())) {
-                    return equals(Proxy.getInvocationHandler(args[0]));
-                }
-                return false;
+            switch (method.getName()) {
+                case "toString":
+                    return toString();
+                case "hashCode":
+                    return hashCode();
+                case "equals":
+                    if (Proxy.isProxyClass(args[0].getClass())) {
+                        return equals(Proxy.getInvocationHandler(args[0]));
+                    }
+                    return false;
             }
 
             // Delegate to designated method pointer
