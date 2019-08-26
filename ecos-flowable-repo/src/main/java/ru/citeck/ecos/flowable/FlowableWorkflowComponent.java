@@ -488,9 +488,8 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
                 return flowableTransformService.transformHistoryProcessInstanceToWorkflowInstance(
                         historicProcessInstance);
             } else {
-                WorkflowInstance result = flowableTransformService.transformProcessInstanceToWorkflowInstance(
+                return flowableTransformService.transformProcessInstanceToWorkflowInstance(
                         processInstance);
-                return result;
             }
         } else {
             HistoricProcessInstance historicProcessInstance = flowableHistoryService.getProcessInstanceById(

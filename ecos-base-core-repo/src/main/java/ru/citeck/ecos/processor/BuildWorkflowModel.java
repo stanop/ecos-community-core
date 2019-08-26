@@ -75,8 +75,7 @@ public class BuildWorkflowModel extends AbstractDataBundleLine
 		if(workflowId == null) {
 			return null;
 		}
-		WorkflowInstance workflowInstance = workflowService.getWorkflowById(workflowId);
-		return workflowInstance;
+        return workflowService.getWorkflowById(workflowId);
 	}
 
 	private Object getTasksModel(String workflowId) {
@@ -93,8 +92,7 @@ public class BuildWorkflowModel extends AbstractDataBundleLine
 	}
 	
 	private Object getPathsModel(String workflowId) {
-		List<WorkflowPath> paths = workflowService.getWorkflowPaths(workflowId);
-		return paths;
+		return workflowService.getWorkflowPaths(workflowId);
 	}
 	
 	private Object getPropsModel(String workflowId) {

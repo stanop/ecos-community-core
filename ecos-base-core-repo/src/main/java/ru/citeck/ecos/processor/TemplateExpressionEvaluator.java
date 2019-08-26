@@ -48,8 +48,7 @@ public class TemplateExpressionEvaluator implements ExpressionEvaluator
 		newModel.putAll(model);
 		newModel.putAll(templateService.buildDefaultModel(person, companyHome, userHome, null, null));
 
-		String result = templateService.processTemplateString(engine, expression, newModel);
-		return result;
+        return templateService.processTemplateString(engine, expression, newModel);
 	}
 
 	public void setTemplateService(TemplateService templateService) {

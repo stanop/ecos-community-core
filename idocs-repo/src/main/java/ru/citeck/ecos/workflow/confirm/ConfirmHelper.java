@@ -230,8 +230,7 @@ public class ConfirmHelper
     }
 
 	private QName getConfirmDecisionAssocName(String confirmerRole) {
-		QName assocName = QName.createQName(ConfirmWorkflowModel.NAMESPACE, "decision-" + confirmerRole);
-		return assocName;
+        return QName.createQName(ConfirmWorkflowModel.NAMESPACE, "decision-" + confirmerRole);
 	}
 	
 	public void setServiceRegistry(ServiceRegistry services) {

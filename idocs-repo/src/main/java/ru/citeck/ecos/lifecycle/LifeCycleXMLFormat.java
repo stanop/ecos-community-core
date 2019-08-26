@@ -170,9 +170,8 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
 
             // build document
         	DocumentBuilder builder = DOMFactory.newDocumentBuilder();
-        	Document doc = builder.parse(is);
 
-        	return doc;
+            return builder.parse(is);
         } catch (SAXException | IOException | ParserConfigurationException e) {
 			logger.error(e.getMessage(), e);
 

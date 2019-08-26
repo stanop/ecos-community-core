@@ -182,15 +182,14 @@ public class HistoryService {
             properties.remove(HistoryModel.ASSOC_DOCUMENT);
 
             //sorting in history for assocs
-            Date now = creationDate;
             if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))) {
-                now.setTime(now.getTime() + 1000);
+                creationDate.setTime(creationDate.getTime() + 1000);
             }
             if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
                     || "node.updated".equals(properties.get(HistoryModel.PROP_NAME))) {
-                now.setTime(now.getTime() - 5000);
+                creationDate.setTime(creationDate.getTime() - 5000);
             }
-            properties.put(HistoryModel.PROP_DATE, now);
+            properties.put(HistoryModel.PROP_DATE, creationDate);
             QName assocName = QName.createQName(HistoryModel.HISTORY_NAMESPACE, "event." + properties.get(HistoryModel.PROP_NAME));
 
             QName assocType;

@@ -368,9 +368,8 @@ public class InvariantDefinition {
                     
                     Object firstElement = ((JAXBElement<?>) first).getValue();
                     if(firstElement instanceof String) {
-                        
-                        List<String> itemList = getElementList(contents, String.class);
-                        value = itemList;
+
+                        value = getElementList(contents, String.class);
                         
                     } else if(firstElement instanceof Criterion) {
                         

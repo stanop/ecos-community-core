@@ -125,8 +125,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
     @Override
     public List<HistoricProcessInstance> getProcessInstancesByQuery(WorkflowInstanceQuery workflowInstanceQuery, int maxItems, int skipCount) {
         HistoricProcessInstanceQuery query = buildProcessInstanceQuery(workflowInstanceQuery);
-        List<HistoricProcessInstance> historicProcessInstances = query.listPage(skipCount, maxItems);
-        return historicProcessInstances;
+        return query.listPage(skipCount, maxItems);
     }
 
     /**
@@ -138,8 +137,7 @@ public class FlowableHistoryServiceImpl implements FlowableHistoryService {
     @Override
     public List<HistoricProcessInstance> getProcessInstancesByQuery(WorkflowInstanceQuery workflowInstanceQuery) {
         HistoricProcessInstanceQuery query = buildProcessInstanceQuery(workflowInstanceQuery);
-        List<HistoricProcessInstance> historicProcessInstances = query.list();
-        return historicProcessInstances;
+        return query.list();
     }
 
     /**

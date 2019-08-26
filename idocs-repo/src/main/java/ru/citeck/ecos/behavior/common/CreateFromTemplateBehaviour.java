@@ -174,8 +174,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
                 .append("\" AND (ISNULL:\"" + ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND + "\"")
                 .append("OR ISUNSET:\"" + ClassificationModel.PROP_DOCUMENT_APPLIES_TO_KIND + "\")")
                 .append(")");
-		NodeRef template = getTemplate(sb);
-		return template;
+        return getTemplate(sb);
 	}
 	
 	private NodeRef getTemplateBasedOnKind(NodeRef node)

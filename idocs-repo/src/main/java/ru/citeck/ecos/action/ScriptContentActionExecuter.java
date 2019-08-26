@@ -87,7 +87,6 @@ public class ScriptContentActionExecuter extends ActionExecuterAbstractBase
         NodeService nodeService = this.serviceRegistry.getNodeService();
         if (nodeService.exists(actionedUponNodeRef))
         {
-            NodeRef scriptRef = actionedUponNodeRef;
             NodeRef spaceRef = this.serviceRegistry.getRuleService().getOwningNodeRef(action);
             
             // get the references we need to build the default scripting data-model
@@ -101,7 +100,7 @@ public class ScriptContentActionExecuter extends ActionExecuterAbstractBase
                     personRef,
                     getCompanyHome(),
                     homeSpaceRef,
-                    scriptRef,
+                    actionedUponNodeRef,
                     actionedUponNodeRef,
                     spaceRef);
             
@@ -111,7 +110,7 @@ public class ScriptContentActionExecuter extends ActionExecuterAbstractBase
             model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams)); 
 
             Object result = this.serviceRegistry.getScriptService().executeScript(
-                scriptRef,
+                    actionedUponNodeRef,
                 ContentModel.PROP_CONTENT,
                 model);
             
