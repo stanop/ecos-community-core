@@ -70,7 +70,7 @@ public class Control {
      */
     public List<Property> getProp() {
         if (prop == null) {
-            prop = new ArrayList<Property>();
+            prop = new ArrayList<>();
         }
         return this.prop;
     }

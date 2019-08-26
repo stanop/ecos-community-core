@@ -101,7 +101,7 @@ public class CMMNDiagram
      */
     public List<JAXBElement<? extends DiagramElement>> getCMMNDiagramElement() {
         if (cmmnDiagramElement == null) {
-            cmmnDiagramElement = new ArrayList<JAXBElement<? extends DiagramElement>>();
+            cmmnDiagramElement = new ArrayList<>();
         }
         return this.cmmnDiagramElement;
     }

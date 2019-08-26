@@ -86,7 +86,7 @@ public class Header {
      */
     public List<Option> getOption() {
         if (option == null) {
-            option = new ArrayList<Option>();
+            option = new ArrayList<>();
         }
         return this.option;
     }
@@ -115,7 +115,7 @@ public class Header {
      */
     public List<BatchEdit> getBatchEdit() {
         if (batchEdit == null) {
-            batchEdit = new ArrayList<BatchEdit>();
+            batchEdit = new ArrayList<>();
         }
         return this.batchEdit;
     }

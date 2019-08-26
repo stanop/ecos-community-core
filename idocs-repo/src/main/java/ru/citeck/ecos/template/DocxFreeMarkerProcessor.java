@@ -218,7 +218,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		logger.debug("Start processing of texts: " + textParts.size());
 		LexerState state = LexerState.TEXT;
 		
-		Map<Character, Character> parentheses = new HashMap<Character, Character>();
+		Map<Character, Character> parentheses = new HashMap<>();
 		parentheses.put(']', '[');
 		parentheses.put('}', '{');
 		Collection<Character> openingParentheses = parentheses.values();
@@ -227,7 +227,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		StringBuilder buffer = new StringBuilder();
 		
 		// process docx text parts
-		Stack<Character> stack = new Stack<Character>();
+		Stack<Character> stack = new Stack<>();
 		char prevChar = ' ';
 		for (Text text : textParts) {
 			String textValue = text.getValue();
@@ -316,7 +316,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 	private List<Text> getTexts(Part part, Object paragraph)
 			throws JAXBException, Docx4JException {
 		List<Object> elements = ((JaxbXmlPartXPathAware<Object>) part).getJAXBNodesViaXPath(".//w:t", paragraph, true);
-		List<Text> texts = new ArrayList<Text>(elements.size());
+		List<Text> texts = new ArrayList<>(elements.size());
 		for (Object element : elements) {
 			if(element instanceof JAXBElement) {
 				texts.add((Text) ((JAXBElement<Object>) element).getValue());
@@ -352,7 +352,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		int j = 1;
 		TextIndex prev = null;
 		Object paragraph;
-		List<TextIndex> paragraphText = new LinkedList<TextIndex>();
+		List<TextIndex> paragraphText = new LinkedList<>();
 		for (TextIndex index : indexes) {
 			if (prev == null || prev.getNewLineIndex() == index.getNewLineIndex()) {
 				paragraphText.add(index);
@@ -360,7 +360,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 			else {
 				paragraph = createNewParagraph(p, paragraphText, texts);
 				contentAccessor.getContent().add(paragraphPos + j, paragraph);
-				paragraphText = new LinkedList<TextIndex>();
+				paragraphText = new LinkedList<>();
 				paragraphText.add(index);
 				j++;
 			}
@@ -381,7 +381,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 	 * @return
 	 */
 	private List<TextIndex> collectTextIndexes(List<Text> texts) {
-		List<TextIndex> indexes = new LinkedList<TextIndex>();
+		List<TextIndex> indexes = new LinkedList<>();
 		int textIndex = 0;
 		int newLineIndex = 0;
 		for (Text text : texts) {

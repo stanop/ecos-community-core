@@ -52,7 +52,7 @@ public class HistoryServiceJS extends BaseProcessorExtension {
 
     public void persistEvent(String type, Object properties) {
         if (properties instanceof ScriptableObject) {
-            Map<QName, Serializable> propertiesMap = new HashMap<QName, Serializable>();
+            Map<QName, Serializable> propertiesMap = new HashMap<>();
             JavaScriptImplUtils.extractPropertiesMap((ScriptableObject) properties, propertiesMap, new ValueConverter(), namespaceService);
             QName typeQName = JavaScriptImplUtils.convertQName(type, namespaceService);
             historyService.persistEvent(typeQName, propertiesMap);

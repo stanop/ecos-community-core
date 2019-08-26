@@ -47,7 +47,7 @@ public class FlowableDelegateExecutionScriptBase extends FlowableScriptBase {
      * @return Script model map
      */
     protected Map<String, Object> getInputMap(DelegateExecution execution, String runAsUser) {
-        HashMap<String, Object> scriptModel = new HashMap<String, Object>(1);
+        HashMap<String, Object> scriptModel = new HashMap<>(1);
 
         /** Run as user */
         NodeRef personNode = getPersonNode(runAsUser);

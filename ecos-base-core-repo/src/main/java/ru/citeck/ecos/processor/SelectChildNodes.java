@@ -52,7 +52,7 @@ public class SelectChildNodes extends AbstractDataBundleLine {
     @Override
     public DataBundle process(DataBundle input) {
         Map<String, Object> model = input.needModel();
-        HashMap<String, Object> newModel = new HashMap<String, Object>();
+        HashMap<String, Object> newModel = new HashMap<>();
         newModel.putAll(model);
 
         NodeRef parent = new NodeRef((String) evaluateExpression(parentNodeRef, model));

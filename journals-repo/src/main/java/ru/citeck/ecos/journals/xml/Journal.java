@@ -210,7 +210,7 @@ public class Journal {
      */
     public List<Option> getOption() {
         if (option == null) {
-            option = new ArrayList<Option>();
+            option = new ArrayList<>();
         }
         return this.option;
     }
@@ -340,7 +340,7 @@ public class Journal {
          */
         public List<GroupAction> getAction() {
             if (action == null) {
-                action = new ArrayList<GroupAction>();
+                action = new ArrayList<>();
             }
             return this.action;
         }
@@ -400,7 +400,7 @@ public class Journal {
          */
         public List<Header> getHeader() {
             if (header == null) {
-                header = new ArrayList<Header>();
+                header = new ArrayList<>();
             }
             return this.header;
         }

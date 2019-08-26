@@ -69,7 +69,7 @@ public class Evaluator {
      */
     public List<Option> getParam() {
         if (param == null) {
-            param = new ArrayList<Option>();
+            param = new ArrayList<>();
         }
         return this.param;
     }
@@ -98,7 +98,7 @@ public class Evaluator {
      */
     public List<Evaluator> getEvaluator() {
         if (evaluator == null) {
-            evaluator = new ArrayList<Evaluator>();
+            evaluator = new ArrayList<>();
         }
         return this.evaluator;
     }

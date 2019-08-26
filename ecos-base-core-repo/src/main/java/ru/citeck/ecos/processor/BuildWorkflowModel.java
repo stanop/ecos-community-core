@@ -52,7 +52,7 @@ public class BuildWorkflowModel extends AbstractDataBundleLine
 		Map<String, Object> model = input.needModel();
 		String workflowId = this.evaluateExpression(workflowIdExpr, model).toString();
 
-		Map<String, Object> newModel = new HashMap<String,Object>(model.size() + 1);
+		Map<String, Object> newModel = new HashMap<>(model.size() + 1);
 		newModel.putAll(model);
 		
 		if(workflowModelKey != null) {
@@ -99,7 +99,7 @@ public class BuildWorkflowModel extends AbstractDataBundleLine
 	
 	private Object getPropsModel(String workflowId) {
 		List<WorkflowPath> paths = workflowService.getWorkflowPaths(workflowId);
-		Map<String,Object> props = new HashMap<String,Object>();
+		Map<String,Object> props = new HashMap<>();
 		for(WorkflowPath path : paths) {
 			Map<QName, Serializable> pathProps = workflowService.getPathProperties(path.getId());
 			for(QName propQName : pathProps.keySet()) {

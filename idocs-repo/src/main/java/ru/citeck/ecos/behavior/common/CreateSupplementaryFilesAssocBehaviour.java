@@ -75,7 +75,7 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 	public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean isNew) {
 		logger.debug("onCreateChildAssociation event");
 		NodeRef nodeNewSource = null;
-		List<NodeRef> suppFiles = new ArrayList<NodeRef>();
+		List<NodeRef> suppFiles = new ArrayList<>();
 		NodeRef nodeTarget = childAssociationRef.getChildRef(); //supp file
 		if(nodeService.exists(nodeTarget) && (ignoredTypes==null || !ignoredTypes.contains(nodeService.getType(nodeTarget))))
 		{

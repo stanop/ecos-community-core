@@ -66,7 +66,7 @@ import java.util.*;
                         if (name.equals(qname.getLocalName())) {
                             QName classQname = getClassQname(qname.getPrefixString().split(":")[0], name);
                             classdef.put(classQname, dictionaryservice.getClass(classQname));
-                            propdef.put(classQname, new HashSet<PropertyDefinition>(dictionaryservice.getClass(classQname).getProperties().values()));
+                            propdef.put(classQname, new HashSet<>(dictionaryservice.getClass(classQname).getProperties().values()));
                             assocdef.put(classQname, dictionaryservice.getClass(classQname).getAssociations().values());
                             addAspectProperties(withAspectProperties, propdef, classQname);
                         }
@@ -97,13 +97,13 @@ import java.util.*;
             if(classdef.isEmpty()) {
                 for (QName qname: qnames) {
                     classdef.put(qname, dictionaryservice.getClass(qname));
-                    propdef.put(qname, new HashSet<PropertyDefinition>(dictionaryservice.getClass(qname).getProperties().values()));
+                    propdef.put(qname, new HashSet<>(dictionaryservice.getClass(qname).getProperties().values()));
                     assocdef.put(qname, dictionaryservice.getClass(qname).getAssociations().values());
                     addAspectProperties(withAspectProperties, propdef, qname);
                 }
             }
 
-            List<ClassDefinition> classDefinitions = new ArrayList<ClassDefinition>(classdef.values());
+            List<ClassDefinition> classDefinitions = new ArrayList<>(classdef.values());
             Collections.sort(classDefinitions, new DictionaryComparators.ClassDefinitionComparator(dictionaryservice));
             model.put(MODEL_PROP_KEY_CLASS_DEFS, classDefinitions);
             model.put(MODEL_PROP_KEY_PROP_DETAILS, reorderedValues(classDefinitions, propdef));

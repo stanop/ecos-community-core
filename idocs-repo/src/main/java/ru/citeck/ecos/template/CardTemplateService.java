@@ -51,7 +51,7 @@ public class CardTemplateService {
 				DmsModel.PROP_CARD_TYPE, documentType,
 				DmsModel.PROP_TEMPLATE_TYPE, templateType);
 		ResultSet nodes = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, query);
-		List<NodeRef> results = new ArrayList<NodeRef>(nodes.length());
+		List<NodeRef> results = new ArrayList<>(nodes.length());
 		if (nodes.length() == 0) {
 			QName parent = dictionaryService.getType(documentType).getParentName();
 			if(parent != null) {
@@ -66,7 +66,7 @@ public class CardTemplateService {
 
 	public List<NodeRef> getTemplates(QName documentType) {
 		List<NodeRef> nodes = getTemplateTypes();
-		List<NodeRef> results = new ArrayList<NodeRef>();
+		List<NodeRef> results = new ArrayList<>();
 		for (NodeRef nodeRef : nodes) {
 			List<NodeRef> templatesForType = getTemplatesForType(documentType,
 					(String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
@@ -80,7 +80,7 @@ public class CardTemplateService {
 	public List<NodeRef> getTemplateTypes() {
 		String query = "TYPE:\"" + CDLModel.TYPE_CARD_TEMPLATE_TYPE + "\"";
 		ResultSet templatesResultSet = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, query);
-		List<NodeRef> results = new ArrayList<NodeRef>();
+		List<NodeRef> results = new ArrayList<>();
 		for (ResultSetRow row : templatesResultSet) {
 			results.add(row.getNodeRef());
 		}

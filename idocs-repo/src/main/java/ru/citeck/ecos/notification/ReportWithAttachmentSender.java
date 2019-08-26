@@ -60,7 +60,7 @@ public class ReportWithAttachmentSender extends AbstractNotificationSender<Array
 	
 	@Override
 	protected Map<String, Serializable> getNotificationArgs(ArrayList<Map<String, Serializable>> item) {
-		Map<String, Serializable> args = new HashMap<String, Serializable>();
+		Map<String, Serializable> args = new HashMap<>();
 		args.put(ARG_ATTACHMENTS, item);
 		return args;
 	}

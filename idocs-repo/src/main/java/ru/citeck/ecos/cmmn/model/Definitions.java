@@ -109,7 +109,7 @@ public class Definitions {
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar creationDate;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the import property.
@@ -135,7 +135,7 @@ public class Definitions {
      */
     public List<TImport> getImport() {
         if (_import == null) {
-            _import = new ArrayList<TImport>();
+            _import = new ArrayList<>();
         }
         return this._import;
     }
@@ -164,7 +164,7 @@ public class Definitions {
      */
     public List<TCaseFileItemDefinition> getCaseFileItemDefinition() {
         if (caseFileItemDefinition == null) {
-            caseFileItemDefinition = new ArrayList<TCaseFileItemDefinition>();
+            caseFileItemDefinition = new ArrayList<>();
         }
         return this.caseFileItemDefinition;
     }
@@ -193,7 +193,7 @@ public class Definitions {
      */
     public List<Case> getCase() {
         if (_case == null) {
-            _case = new ArrayList<Case>();
+            _case = new ArrayList<>();
         }
         return this._case;
     }
@@ -222,7 +222,7 @@ public class Definitions {
      */
     public List<TProcess> getProcess() {
         if (process == null) {
-            process = new ArrayList<TProcess>();
+            process = new ArrayList<>();
         }
         return this.process;
     }
@@ -251,7 +251,7 @@ public class Definitions {
      */
     public List<TDecision> getDecision() {
         if (decision == null) {
-            decision = new ArrayList<TDecision>();
+            decision = new ArrayList<>();
         }
         return this.decision;
     }
@@ -304,7 +304,7 @@ public class Definitions {
      */
     public List<TRelationship> getRelationship() {
         if (relationship == null) {
-            relationship = new ArrayList<TRelationship>();
+            relationship = new ArrayList<>();
         }
         return this.relationship;
     }
@@ -335,7 +335,7 @@ public class Definitions {
      */
     public List<JAXBElement<? extends TArtifact>> getArtifact() {
         if (artifact == null) {
-            artifact = new ArrayList<JAXBElement<? extends TArtifact>>();
+            artifact = new ArrayList<>();
         }
         return this.artifact;
     }

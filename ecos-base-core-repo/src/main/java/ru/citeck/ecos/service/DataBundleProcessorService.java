@@ -75,7 +75,7 @@ public class DataBundleProcessorService {
     private DataBundle getInputBundle(
             NodeRef document, String templateType, Format format, Map<String, Object> additionalArgs) {
 
-        Map<String, Object> model = new HashMap<String, Object>(3);
+        Map<String, Object> model = new HashMap<>(3);
         Map<String, Object> argsMap = new HashMap<>();
         argsMap.put("nodeRef", document.toString());
         argsMap.put("templateType", templateType);

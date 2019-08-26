@@ -50,7 +50,7 @@ public class WorkflowHistoryListener extends AbstractExecutionListener {
     private static final Map<String, String> eventNames;
 
     static {
-        eventNames = new HashMap<String, String>(3);
+        eventNames = new HashMap<>(3);
         eventNames.put(ExecutionListener.EVENTNAME_START, "workflow.start");
         eventNames.put(ExecutionListener.EVENTNAME_END, "workflow.end");
     }
@@ -105,7 +105,7 @@ public class WorkflowHistoryListener extends AbstractExecutionListener {
         NodeRef document = documentResolverRegistry.getResolver(workflowDefinitionName).getDocument(execution);
 
         // persist it
-        Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(5);
+        Map<QName, Serializable> eventProperties = new HashMap<>(5);
         eventProperties.put(HistoryModel.PROP_NAME, eventName);
         eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ACTIVITI_PREFIX + execution.getProcessInstanceId());
         eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) execution.getVariable(VAR_DESCRIPTION));

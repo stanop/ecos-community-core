@@ -80,7 +80,7 @@ public class RegisterPost extends DeclarativeWebScript {
             }
         });
 
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put("nodeRef", nodeRef);
         return result;
     }

@@ -35,7 +35,7 @@ public class HistoryUtils {
     public static final Serializable CHILD_ASSOC_REMOVED = "child.assoc.removed";
 
     public static Map<QName, Serializable> eventProperties(Serializable name, Serializable assocDocument, Serializable propertyName, Serializable propertyValue, Serializable taskComment, Serializable propTargetNodeType, Serializable propTargetNodeKind) {
-        Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
+        Map<QName, Serializable> eventProperties = new HashMap<>(7);
         eventProperties.put(HistoryModel.PROP_NAME, name);
         eventProperties.put(HistoryModel.ASSOC_DOCUMENT, assocDocument);
         eventProperties.put(HistoryModel.PROP_PROPERTY_NAME, propertyName);
@@ -305,8 +305,8 @@ public class HistoryUtils {
     public static void addUpdateChildAsscosResourseToTransaction(final Serializable resourceKey, final HistoryService historyService, final DictionaryService dictionaryService, final NodeService nodeService, final String nodeRefName) {
         TransactionUtils.doBeforeCommit("HistoryUtils.addUpdateChildAsscosResourseToTransaction", () -> {
 
-            List<ChildAssociationRef> added = new ArrayList<ChildAssociationRef>();
-            List<ChildAssociationRef> removed =  new ArrayList<ChildAssociationRef>();
+            List<ChildAssociationRef> added = new ArrayList<>();
+            List<ChildAssociationRef> removed = new ArrayList<>();
 
             if (AlfrescoTransactionSupport.getResource(CHILD_ASSOC_ADDED) != null) {
                 added.addAll(AlfrescoTransactionSupport.getResource(CHILD_ASSOC_ADDED));

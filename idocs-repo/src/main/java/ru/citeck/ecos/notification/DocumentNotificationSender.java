@@ -93,7 +93,7 @@ public class DocumentNotificationSender extends AbstractNotificationSender<NodeR
 
 	@Override
 	protected Collection<String> getNotificationRecipients(NodeRef item) {
-		Set<String> recipients = new HashSet<String>();
+		Set<String> recipients = new HashSet<>();
 		// add default recipients:
 		if(defaultRecipients != null) {
 			recipients.addAll(defaultRecipients);

@@ -609,7 +609,7 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
     }
 
     protected List<Element> serializeParameters(Document document, Map<String, String> parameters) {
-        List<Element> elList = new ArrayList<Element>();
+        List<Element> elList = new ArrayList<>();
 
         if (parameters != null) {
             for (String key : parameters.keySet()) {
@@ -656,9 +656,9 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
     }
 
 	class SimpleNamespaceContext implements NamespaceContext {
-		private Map<String, String> urisByPrefix = new HashMap<String, String>();
+		private Map<String, String> urisByPrefix = new HashMap<>();
 
-		private Map<String, Set<String>> prefixesByURI = new HashMap<String, Set<String>>();
+		private Map<String, Set<String>> prefixesByURI = new HashMap<>();
 
 		public SimpleNamespaceContext() {
 			addNamespace(XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI);
@@ -670,7 +670,7 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
 			if (prefixesByURI.containsKey(namespaceURI)) {
 				(prefixesByURI.get(namespaceURI)).add(prefix);
 			} else {
-				Set<String> set = new HashSet<String>();
+				Set<String> set = new HashSet<>();
 				set.add(prefix);
 				prefixesByURI.put(namespaceURI, set);
 			}

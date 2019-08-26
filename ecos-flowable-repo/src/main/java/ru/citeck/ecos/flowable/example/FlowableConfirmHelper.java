@@ -41,7 +41,7 @@ public class FlowableConfirmHelper {
                 return null;
             }
 
-            Map<QName, Serializable> properties = new HashMap<QName, Serializable>(2);
+            Map<QName, Serializable> properties = new HashMap<>(2);
             properties.put(ContentModel.PROP_AUTO_VERSION, true);
             properties.put(ContentModel.PROP_AUTO_VERSION_PROPS, false);
             versionService.ensureVersioningEnabled(nodeRef, properties);
@@ -62,7 +62,7 @@ public class FlowableConfirmHelper {
     public Set<NodeRef> getCurrentVersionRefs(NodeRef workflowPackage) {
         List<ChildAssociationRef> packageItems = nodeService.getChildAssocs(workflowPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
 
-        HashSet<NodeRef> versions = new HashSet<NodeRef>();
+        HashSet<NodeRef> versions = new HashSet<>();
         for(ChildAssociationRef item : packageItems) {
             NodeRef nodeRef = item.getChildRef();
             NodeRef versRef = getCurrentVersionRef(nodeRef, true);
@@ -103,10 +103,10 @@ public class FlowableConfirmHelper {
     public void saveConfirmDecision(NodeRef workflowPackage, String confirmerRole, String confirmTaskId) {
         // create confirm decision object
         Set<NodeRef> confirmVersions = this.getCurrentVersionRefs(workflowPackage);
-        ArrayList<NodeRef> confirmVersionsValue = new ArrayList<NodeRef>(confirmVersions.size());
+        ArrayList<NodeRef> confirmVersionsValue = new ArrayList<>(confirmVersions.size());
         confirmVersionsValue.addAll(confirmVersions);
 
-        Map<QName,Serializable> confirmDecisionProperties = new HashMap<QName,Serializable>();
+        Map<QName,Serializable> confirmDecisionProperties = new HashMap<>();
         confirmDecisionProperties.put(ConfirmWorkflowModel.PROP_CONFIRM_TASK_ID, confirmTaskId.replace("activiti", "flowable"));
         confirmDecisionProperties.put(ConfirmWorkflowModel.PROP_CONFIRM_VERSIONS, confirmVersionsValue);
         confirmDecisionProperties.put(ConfirmWorkflowModel.PROP_CONFIRM_ROLE, confirmerRole);
@@ -156,7 +156,7 @@ public class FlowableConfirmHelper {
 
     private List<ConfirmDecision> getConfirmDecisions(NodeRef workflowPackage) {
         List<ChildAssociationRef> decisionAssocs = nodeService.getChildAssocs(workflowPackage, ConfirmWorkflowModel.ASSOC_CONFIRM_DECISIONS, RegexQNamePattern.MATCH_ALL);
-        List<ConfirmDecision> confirmDecisions = new ArrayList<ConfirmDecision>(decisionAssocs.size());
+        List<ConfirmDecision> confirmDecisions = new ArrayList<>(decisionAssocs.size());
         for(ChildAssociationRef decisionAssoc : decisionAssocs) {
             NodeRef confirmDecision = decisionAssoc.getChildRef();
             confirmDecisions.add(new ConfirmDecision(confirmDecision, nodeService, workflowService));
@@ -165,7 +165,7 @@ public class FlowableConfirmHelper {
     }
 
     public List<ConfirmDecision> getLatestConfirmDecisions(NodeRef document) {
-        Map<String, ConfirmDecision> latestDecisions = new HashMap<String, ConfirmDecision>();
+        Map<String, ConfirmDecision> latestDecisions = new HashMap<>();
         List<ChildAssociationRef> workflowPackageRefs = nodeService.getParentAssocs(document, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
         for(ChildAssociationRef workflowPackageRef : workflowPackageRefs) {
             NodeRef workflowPackage = workflowPackageRef.getParentRef();
@@ -182,14 +182,14 @@ public class FlowableConfirmHelper {
                 }
             }
         }
-        List<ConfirmDecision> decisions = new ArrayList<ConfirmDecision>(latestDecisions.size());
+        List<ConfirmDecision> decisions = new ArrayList<>(latestDecisions.size());
         decisions.addAll(latestDecisions.values());
         return decisions;
     }
 
     public Set<String> getLatestConfirmers(NodeRef document) {
         List<ConfirmDecision> decisions = getLatestConfirmDecisions(document);
-        Set<String> confirmers = new HashSet<String>(decisions.size());
+        Set<String> confirmers = new HashSet<>(decisions.size());
         for(ConfirmDecision decision : decisions) {
             confirmers.add(decision.getConfirmerRole());
         }
@@ -198,7 +198,7 @@ public class FlowableConfirmHelper {
 
     public Set<String> getLatestConfirmers(NodeRef document, String confirmOutcome) {
         List<ConfirmDecision> decisions = getLatestConfirmDecisions(document);
-        Set<String> confirmers = new HashSet<String>(decisions.size());
+        Set<String> confirmers = new HashSet<>(decisions.size());
         for(ConfirmDecision decision : decisions) {
             if(confirmOutcome.equals(decision.getConfirmOutcome())) {
                 confirmers.add(decision.getConfirmerRole());
@@ -228,10 +228,10 @@ public class FlowableConfirmHelper {
         NodeRef workflowPackage = FlowableListenerUtils.getWorkflowPackage(execution);
         List<ChildAssociationRef> packageItems = nodeService.getChildAssocs(workflowPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
 
-        HashSet<NodeRef> versions = new HashSet<NodeRef>();
+        HashSet<NodeRef> versions = new HashSet<>();
         List<ConfirmDecision> confirmDecisions = getConfirmDecisions(execution);
         boolean versionIsLatest = true;
-        ArrayList<NodeRef> confirmerForOldVersions = new ArrayList<NodeRef>(confirmDecisions.size());
+        ArrayList<NodeRef> confirmerForOldVersions = new ArrayList<>(confirmDecisions.size());
         for(int i=0; i< confirmDecisions.size(); i++)
         {
             ConfirmDecision confirmDecision = confirmDecisions.get(i);

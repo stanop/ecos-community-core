@@ -470,7 +470,7 @@ public class ImporterComponent implements ImporterService
         private QName[] excludedClasses;
 
         // Import tracking
-        private List<ImportedNodeRef> nodeRefs = new ArrayList<ImportedNodeRef>();
+        private List<ImportedNodeRef> nodeRefs = new ArrayList<>();
 
         /**
          * Construct
@@ -860,7 +860,7 @@ public class ImporterComponent implements ImporterService
                     if (importedRef.value instanceof Collection)
                     {
                         Collection<String> unresolvedRefs = (Collection<String>)importedRef.value;
-                        List<NodeRef> resolvedRefs = new ArrayList<NodeRef>(unresolvedRefs.size());
+                        List<NodeRef> resolvedRefs = new ArrayList<>(unresolvedRefs.size());
                         for (String unresolvedRef : unresolvedRefs)
                         {
                             if (unresolvedRef != null)
@@ -988,7 +988,7 @@ public class ImporterComponent implements ImporterService
             //
 
             // build type and aspect list for node
-            List<QName> nodeTypes = new ArrayList<QName>();
+            List<QName> nodeTypes = new ArrayList<>();
             nodeTypes.add(context.getTypeDefinition().getName());
             for (QName aspect : context.getNodeAspects())
             {
@@ -996,7 +996,7 @@ public class ImporterComponent implements ImporterService
             }
 
             // build target class types for parent
-            Map<QName, QName> targetTypes = new HashMap<QName, QName>();
+            Map<QName, QName> targetTypes = new HashMap<>();
             QName parentType = nodeService.getType(context.getParentContext().getParentRef());
             ClassDefinition classDef = dictionaryService.getClass(parentType);
             Map<QName, ChildAssociationDefinition> childAssocDefs = classDef.getChildAssociations();
@@ -1056,7 +1056,7 @@ public class ImporterComponent implements ImporterService
          */
         private Set<QName> getNodeTypeAndAspects(ImportNode context)
         {
-            Set<QName> classNames = new HashSet<QName>();
+            Set<QName> classNames = new HashSet<>();
 
             // disable the type
             TypeDefinition typeDef = context.getTypeDefinition();
@@ -1081,7 +1081,7 @@ public class ImporterComponent implements ImporterService
         private Map<QName, Serializable> bindProperties(ImportNode context)
         {
             Map<QName, Serializable> properties = context.getProperties();
-            Map<QName, Serializable> boundProperties = new HashMap<QName, Serializable>(properties.size());
+            Map<QName, Serializable> boundProperties = new HashMap<>(properties.size());
             for (QName property : properties.keySet())
             {
                 // get property datatype
@@ -1099,7 +1099,7 @@ public class ImporterComponent implements ImporterService
                 // bind property value to configuration and convert to appropriate type
                 if (value instanceof Collection)
                 {
-                    List<Serializable> boundCollection = new ArrayList<Serializable>();
+                    List<Serializable> boundCollection = new ArrayList<>();
                     for (Serializable collectionValue : (Collection<Serializable>)value)
                     {
                         Serializable objValue = bindValue(context, property, valueDataType, collectionValue);
@@ -1137,7 +1137,7 @@ public class ImporterComponent implements ImporterService
          */
         private List<AccessPermission> bindPermissions(List<AccessPermission> permissions)
         {
-            List<AccessPermission> boundPermissions = new ArrayList<AccessPermission>(permissions.size());
+            List<AccessPermission> boundPermissions = new ArrayList<>(permissions.size());
 
             for (AccessPermission permission : permissions)
             {

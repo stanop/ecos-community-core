@@ -130,7 +130,7 @@ public class BusinessCalendar extends GregorianCalendar {
 	
 	public Map<Date, Date> fillDateSet(String remark)
 	{
-		Map<Date, Date> dateSet = new HashMap<Date, Date>();
+		Map<Date, Date> dateSet = new HashMap<>();
 		String search_query = "TYPE:\""+BusinessCalendarModel.TYPE_CALENDAR+"\" AND @bcal\\:remark:\""+remark+"\"";
 		//if (log.isDebugEnabled())
 			log.debug("   Search query: " + search_query);

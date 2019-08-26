@@ -39,7 +39,7 @@ public class ModulesInfoGet extends DeclarativeWebScript
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
     {
 		List<ModuleDetails> modules = moduleService.getAllModules();
-		Map<String,Object> model = new TreeMap<String,Object>();
+		Map<String,Object> model = new TreeMap<>();
 		model.put(KEY_MODULES, modules);
 		return model;
 	}

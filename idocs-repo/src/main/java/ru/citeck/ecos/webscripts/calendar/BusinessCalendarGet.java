@@ -79,7 +79,7 @@ public class BusinessCalendarGet extends DeclarativeWebScript
 		
 		int amount = Integer.parseInt(add_amount);
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 		BusinessCalendar calendar = new BusinessCalendar();
 		calendar.setSearchService(searchService);
 		calendar.setWorkingDays();

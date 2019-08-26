@@ -65,8 +65,8 @@ public class PDFMerge extends AbstractDataBundleMerge
 		}
 		
 		// leave only PDFs
-		List<DataBundle> pdfInputs = new ArrayList<DataBundle>(inputs.size());
-		List<PdfReader> pdfReaders = new ArrayList<PdfReader>(inputs.size());
+		List<DataBundle> pdfInputs = new ArrayList<>(inputs.size());
+		List<PdfReader> pdfReaders = new ArrayList<>(inputs.size());
 		for(DataBundle input : inputs) {
 			Object mimetype = input.getModel().get(ProcessorConstants.KEY_MIMETYPE);
 			if(mimetype == null || !mimetype.equals(MimetypeMap.MIMETYPE_PDF)) {

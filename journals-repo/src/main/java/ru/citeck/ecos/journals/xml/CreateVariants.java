@@ -60,7 +60,7 @@ public class CreateVariants {
      */
     public List<CreateVariant> getVariant() {
         if (variant == null) {
-            variant = new ArrayList<CreateVariant>();
+            variant = new ArrayList<>();
         }
         return this.variant;
     }

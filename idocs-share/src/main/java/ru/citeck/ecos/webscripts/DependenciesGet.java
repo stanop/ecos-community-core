@@ -65,7 +65,7 @@ public class DependenciesGet extends AbstractWebScript
 		String suffix = req.getParameter(PARAM_SUFFIX);
 
 		// get dependencies for specified family and format
-		List<String> dependencies = new ArrayList<String>();
+		List<String> dependencies = new ArrayList<>();
 		// forms have special treating
 		if(family.equals(FAMILY_FORMS)) 
 		{

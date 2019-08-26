@@ -60,7 +60,7 @@ public class NotificationForLoggingItemSender extends AbstractNotificationSender
 
 	@Override
 	protected Map<String, Serializable> getNotificationArgs(NodeRef item) {
-		Map<String, Serializable> args = new HashMap<String, Serializable>();
+		Map<String, Serializable> args = new HashMap<>();
 		args.put(ARG_ITEM, item);
 		args.put(ARG_AUTO_SENT, "true");
 		return args;

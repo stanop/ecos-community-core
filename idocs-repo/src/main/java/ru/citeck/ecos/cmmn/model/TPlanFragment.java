@@ -76,7 +76,7 @@ public class TPlanFragment
      */
     public List<TPlanItem> getPlanItem() {
         if (planItem == null) {
-            planItem = new ArrayList<TPlanItem>();
+            planItem = new ArrayList<>();
         }
         return this.planItem;
     }
@@ -105,7 +105,7 @@ public class TPlanFragment
      */
     public List<Sentry> getSentry() {
         if (sentry == null) {
-            sentry = new ArrayList<Sentry>();
+            sentry = new ArrayList<>();
         }
         return this.sentry;
     }

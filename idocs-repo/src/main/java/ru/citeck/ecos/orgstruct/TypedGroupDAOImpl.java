@@ -114,7 +114,7 @@ public class TypedGroupDAOImpl implements TypedGroupDAO {
 		} else {
 			groups = authorityService.getAllAuthorities(AuthorityType.GROUP);
 		}
-		List<String> typeGroups = new ArrayList<String>();
+		List<String> typeGroups = new ArrayList<>();
 		for(String group : groups) {
 			if(isTypedGroup(group)) {
 				typeGroups.add(group);
@@ -126,7 +126,7 @@ public class TypedGroupDAOImpl implements TypedGroupDAO {
 	@Override
 	public List<String> getAllTypedGroups(String subtype, boolean rootOnly) {
 		List<String> allGroups = getAllTypedGroups(rootOnly);
-		List<String> groups = new ArrayList<String>();
+		List<String> groups = new ArrayList<>();
 		for(String group : allGroups) {
 			String groupSubtype = (String) nodeService.getProperty(getGroupNode(group), propertyQName.getQName());
 			if(groupSubtype.equals(subtype)) {
@@ -149,7 +149,7 @@ public class TypedGroupDAOImpl implements TypedGroupDAO {
 			nodeRef = getGroupNode(name);
 		}
 		
-		Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
+		Map<QName, Serializable> properties = new HashMap<>();
 		properties.put(propertyQName.getQName(), subtype);
 		nodeService.addAspect(nodeRef, aspectQName.getQName(), properties);
 		return AuthorityType.GROUP.getPrefixString() + name;
@@ -199,7 +199,7 @@ public class TypedGroupDAOImpl implements TypedGroupDAO {
 
 	@Override
 	public List<String> filterTypedGroups(Collection<String> groups, String subtype) {
-		List<String> filteredGroups = new ArrayList<String>();
+		List<String> filteredGroups = new ArrayList<>();
 		for(String group : groups) {
 			NodeRef groupNodeRef = getGroupNode(group);
 			if(this.isTypedGroup(groupNodeRef)) {

@@ -70,11 +70,11 @@ public class ParameterizedJavaBehaviour<P> extends BaseBehaviour
     }
     
     public static <P> ParameterizedJavaBehaviour<P> newInstance(Object instance, String method, P parameter) {
-        return new ParameterizedJavaBehaviour<P>(instance, method, NotificationFrequency.EVERY_EVENT, parameter);
+        return new ParameterizedJavaBehaviour<>(instance, method, NotificationFrequency.EVERY_EVENT, parameter);
     }
 
     public static <P> ParameterizedJavaBehaviour<P> newInstance(Object instance, String method, NotificationFrequency frequency, P parameter) {
-        return new ParameterizedJavaBehaviour<P>(instance, method, frequency, parameter);
+        return new ParameterizedJavaBehaviour<>(instance, method, frequency, parameter);
     }
     
 
@@ -123,7 +123,7 @@ public class ParameterizedJavaBehaviour<P> extends BaseBehaviour
             
             Class<?> instanceClass = instance.getClass();
             Method delegateMethod = instanceClass.getMethod(method, extendedParameterTypes);
-            return new JavaMethodInvocationHandler<P>(this, delegateMethod);
+            return new JavaMethodInvocationHandler<>(this, delegateMethod);
         }
         catch (NoSuchMethodException e)
         {

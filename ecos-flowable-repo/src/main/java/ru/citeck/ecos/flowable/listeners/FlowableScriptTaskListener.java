@@ -55,7 +55,7 @@ public class FlowableScriptTaskListener extends FlowableScriptBase implements Ta
      * @return Script model map
      */
     protected Map<String, Object> getInputMap(DelegateTask delegateTask, String runAsUser) {
-        HashMap<String, Object> scriptModel = new HashMap<String, Object>(1);
+        HashMap<String, Object> scriptModel = new HashMap<>(1);
 
         NodeRef personNode = getPersonNode(runAsUser);
         if (personNode != null) {

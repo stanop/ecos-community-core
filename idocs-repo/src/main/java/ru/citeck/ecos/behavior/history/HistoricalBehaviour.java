@@ -70,7 +70,7 @@ public class HistoricalBehaviour implements
 		if(!nodeService.exists(nodeRef)) {
 			return;
 		}
-		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
+		Map<QName, Serializable> eventProperties = new HashMap<>(7);
 		eventProperties.put(HistoryModel.PROP_NAME, NODE_CREATED);
 		eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeRef);
 		Serializable initiator = nodeService.getProperty(nodeRef, ContentModel.PROP_CREATOR);
@@ -85,7 +85,7 @@ public class HistoricalBehaviour implements
 			return;
 		}
 
-		Map<QName, Serializable> eventProperties = new HashMap<QName, Serializable>(7);
+		Map<QName, Serializable> eventProperties = new HashMap<>(7);
 		eventProperties.put(HistoryModel.PROP_NAME, NODE_UPDATED);
 		eventProperties.put(HistoryModel.ASSOC_DOCUMENT, nodeRef);
 		eventProperties.put(HistoryModel.PROP_DOCUMENT_VERSION, nodeDetails.getProperties().get(ContentModel.PROP_VERSION_LABEL));

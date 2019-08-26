@@ -107,7 +107,7 @@ public class ListOfValuesConstraint extends AbstractConstraint
         List<String> rawValues = getRawAllowedValues(); 
         if (sorted == true)
         {
-            List<String> values = new ArrayList<String>(rawValues);
+            List<String> values = new ArrayList<>(rawValues);
             Collections.sort(values);
             return values;
         }
@@ -200,10 +200,10 @@ public class ListOfValuesConstraint extends AbstractConstraint
             throw new DictionaryException(ERR_NO_VALUES);
         }
         this.allowedValues = Collections.unmodifiableList(allowedValues);
-        this.allowedValuesSet = new HashSet<String>(allowedValues);
+        this.allowedValuesSet = new HashSet<>(allowedValues);
         // make the upper case versions
-        this.allowedValuesUpper = new ArrayList<String>(valueCount);
-        this.allowedValuesUpperSet = new HashSet<String>(valueCount);
+        this.allowedValuesUpper = new ArrayList<>(valueCount);
+        this.allowedValuesUpperSet = new HashSet<>(valueCount);
         for (String allowedValue : this.allowedValues)
         {
             String allowedValueUpper = allowedValue.toUpperCase();
@@ -267,7 +267,7 @@ public class ListOfValuesConstraint extends AbstractConstraint
     @Override
     public Map<String, Object> getParameters()
     {
-        Map<String, Object> params = new HashMap<String, Object>(2);
+        Map<String, Object> params = new HashMap<>(2);
         
         params.put(CASE_SENSITIVE_PARAM, this.caseSensitive);
         params.put(ALLOWED_VALUES_PARAM, this.allowedValues);

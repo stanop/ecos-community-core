@@ -73,13 +73,13 @@ public class RelatedWorkflowService extends BaseScopableProcessorExtension {
 
     private String getRelatedWorkflowsForNodeImpl(NodeRef nodeRef) {
         List<WorkflowInstance> workflows = workflowService.getWorkflowsForContent(nodeRef, true);
-        List<WorkflowInstance> relatedWorkflows = new ArrayList<WorkflowInstance>();
+        List<WorkflowInstance> relatedWorkflows = new ArrayList<>();
         for (WorkflowInstance workflow : workflows) {
             relatedWorkflows.addAll(
                     getRelatedWorkflows(workflow)
             );
         }
-        List<WorkflowDTO> result = new LinkedList<WorkflowDTO>();
+        List<WorkflowDTO> result = new LinkedList<>();
         for (WorkflowInstance workflow : relatedWorkflows) {
             result.add(
                     WorkflowDTOBuilder.getInstance().build(new WorkflowDTO(), workflow)
@@ -95,7 +95,7 @@ public class RelatedWorkflowService extends BaseScopableProcessorExtension {
         tasksQuery.setProcessId(workflow.getId());
 
         List<WorkflowTask> tasks = workflowService.queryTasks(tasksQuery);
-        List<WorkflowInstance> results = new ArrayList<WorkflowInstance>();
+        List<WorkflowInstance> results = new ArrayList<>();
         for (WorkflowTask task : tasks) {
             String sRelatedWorkflows = (String) task.getProperties().get(PROP_RELATED_WF);
             if (null != sRelatedWorkflows) {
@@ -108,7 +108,7 @@ public class RelatedWorkflowService extends BaseScopableProcessorExtension {
     }
 
     private List<WorkflowInstance> parseRelatedWorkflows(String[] sRelatedWorkflows) {
-        List<WorkflowInstance> results = new ArrayList<WorkflowInstance>();
+        List<WorkflowInstance> results = new ArrayList<>();
         for (String id : sRelatedWorkflows ) {
             if (!id.trim().isEmpty()) {
                 WorkflowInstance workflow = workflowService.getWorkflowById(id);

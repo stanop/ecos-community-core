@@ -484,7 +484,7 @@ public class HistoryService {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void addHistoricalProperty(NodeRef nodeRef, QName sourceProp, QName historyProp) {
         Object oldValue = nodeService.getProperty(nodeRef, HistoryModel.PROP_ADDITIONAL_PROPERTIES);
-        HashMap<QName, QName> propertyMapping = new HashMap<QName, QName>();
+        HashMap<QName, QName> propertyMapping = new HashMap<>();
         if (oldValue != null && oldValue instanceof Map) {
             propertyMapping.putAll((Map) oldValue);
         }
@@ -593,7 +593,7 @@ public class HistoryService {
         }
         @SuppressWarnings("unchecked")
         Map<QName, QName> propertyMapping = (Map<QName, QName>) mapping;
-        Map<QName, Serializable> additionalProperties = new HashMap<QName, Serializable>(propertyMapping.size());
+        Map<QName, Serializable> additionalProperties = new HashMap<>(propertyMapping.size());
         for (QName documentProp : propertyMapping.keySet()) {
             QName historyProp = propertyMapping.get(documentProp);
             additionalProperties.put(historyProp, nodeService.getProperty(document, documentProp));
