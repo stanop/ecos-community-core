@@ -115,7 +115,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
         if (workflowPackage != null && nodeService.exists(workflowPackage)) {
             List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(workflowPackage);
             for (ChildAssociationRef child : children) {
-                recipient.clear();
                 NodeRef node = child.getChildRef();
                 if (node != null && nodeService.exists(node)) {
                     if (allowDocList == null) {

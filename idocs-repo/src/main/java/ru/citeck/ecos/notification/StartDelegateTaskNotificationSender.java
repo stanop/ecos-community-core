@@ -255,7 +255,6 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
         if (workflowPackage != null && sendBasedOnUser) {
             List<ChildAssociationRef> children = services.getNodeService().getChildAssocs(workflowPackage);
             for (ChildAssociationRef child : children) {
-                recipient.clear();
                 NodeRef node = child.getChildRef();
                 if (node != null && nodeService.exists(node)) {
                     if (allowDocList == null) {
