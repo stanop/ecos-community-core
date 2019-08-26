@@ -43,7 +43,7 @@ public class CurrentVersionConsideredEvaluator extends BaseEvaluator {
 		// get current version of document
 		Object currentVersion = this.getJSONValue(object, currentVersionAccessor);
 		
-		return decisionVersion != null && currentVersion != null && decisionVersion.equals(currentVersion);
+		return decisionVersion != null && decisionVersion.equals(currentVersion);
 	}
 
 }

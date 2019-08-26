@@ -71,7 +71,7 @@ public class SubGroupBehaviour implements
         Object oldType = before.get(subGroupTypeProp);
         Object newType = after.get(subGroupTypeProp);
         if (oldType == null && newType == null
-                || oldType != null && newType != null && oldType.equals(newType)) {
+                || oldType != null && oldType.equals(newType)) {
             return;
         }
 

@@ -465,16 +465,16 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
     public Set<String> getRecipients(ItemType task, NodeRef template, NodeRef document) {
         Set<String> authorities = new HashSet<String>();
         Boolean sendToAssigneeProp = isSendToAssignee(template);
-        if (sendToAssigneeProp != null && Boolean.TRUE.equals(sendToAssigneeProp)) {
+        if (Boolean.TRUE.equals(sendToAssigneeProp)) {
             sendToAssignee(task, authorities);
         }
         Boolean sendToInitiatorProp = isSendToInitiator(template);
-        if (sendToInitiatorProp != null && Boolean.TRUE.equals(sendToInitiatorProp)) {
+        if (Boolean.TRUE.equals(sendToInitiatorProp)) {
             sendToInitiator(task, authorities);
         }
         Boolean sendToOwnerProp = (Boolean) nodeService.getProperty(template,
                 qNameConverter.mapNameToQName("dms_sendToOwner"));
-        if (sendToOwnerProp != null && Boolean.TRUE.equals(sendToOwnerProp)
+        if (Boolean.TRUE.equals(sendToOwnerProp)
                 && document != null && nodeService.exists(document)) {
             sendToOwner(authorities, document);
         }
