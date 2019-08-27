@@ -28,21 +28,21 @@ import org.alfresco.service.cmr.repository.NodeRef;
  * OrgMetaService implementation.
  * Contains registry of GroupSubTypeDAO.
  * Delegates all requests to corresponding DAO.
- * 
+ *
  * @author Sergey Tiunov
  *
  */
 public class OrgMetaServiceImpl implements OrgMetaService
 {
 	private Map<String,GroupSubTypeDAO> components;
-	
+
 	private GroupSubTypeDAO getComponent(String type) {
 		if(!components.containsKey(type)) {
 			throw new IllegalArgumentException("No such group type: " + type);
 		}
 		return components.get(type);
 	}
-	
+
 	public void setComponents(Map<String,GroupSubTypeDAO> components) {
 		this.components = components;
 	}

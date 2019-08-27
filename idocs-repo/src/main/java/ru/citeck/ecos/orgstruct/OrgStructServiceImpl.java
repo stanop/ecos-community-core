@@ -35,7 +35,7 @@ import ru.citeck.ecos.model.OrgStructModel;
  * OrgStructService implementation.
  * Contains registry of TypedGroupDAO.
  * Delegates all requests to corresponding DAO.
- * 
+ *
  * @author Sergey Tiunov
  *
  */
@@ -48,7 +48,7 @@ public class OrgStructServiceImpl implements OrgStructService
 
 	private static final String BRANCH_TYPE = "branch";
 	private static final String ROLE_TYPE = "role";
-	
+
 	private TypedGroupDAO getComponent(String type) {
 		if(!components.containsKey(type)) {
 			throw new IllegalArgumentException("No such group type: " + type);
@@ -81,7 +81,7 @@ public class OrgStructServiceImpl implements OrgStructService
 		}
 		return null;
 	}
-	
+
 	@Override
 	public String getGroupSubtype(String name) {
 		String type = getGroupType(name);
@@ -139,7 +139,7 @@ public class OrgStructServiceImpl implements OrgStructService
 		Set<String> userGroups = authorityService.getAuthoritiesForUser(userName);
 		return getComponent(type).filterTypedGroups(userGroups, null);
 	}
-	
+
 	@Override
 	public List<String> getTypedGroupsForUser(String userName, String type, String subtype) {
 		Set<String> userGroups = authorityService.getAuthoritiesForUser(userName);
@@ -180,13 +180,13 @@ public class OrgStructServiceImpl implements OrgStructService
 		}
 		return null;
 	}
-	
-	
+
+
 	@Override
 	public String getUserManager(String userName) {
 
 		// look for the branches "breadth first"
-		
+
 		Set<String> groupsToVisit = authorityService.getContainingAuthorities(null, userName, true);
 		Set<String> visitedGroups = new TreeSet<String>();
 
@@ -197,14 +197,14 @@ public class OrgStructServiceImpl implements OrgStructService
 				if(isTypedGroup(BRANCH_TYPE, group)) {
 					String managerGroup = getBranchManager(group);
 					if(managerGroup != null) {
-						
+
 						Set<String> managerUsers = authorityService.getContainedAuthorities(AuthorityType.USER, managerGroup, false);
 						if(!managerUsers.contains(userName)) {
 							return managerGroup;
 						}
 					}
 				}
-				
+
 				Set<String> parentGroups = authorityService.getContainingAuthorities(null, group, true);
 				for(String parentGroup : parentGroups) {
 					if(!visitedGroups.contains(parentGroup)) {
@@ -214,7 +214,7 @@ public class OrgStructServiceImpl implements OrgStructService
 				visitedGroups.add(group);
 				groupsToVisit.remove(group);
 			}
-		}		
+		}
 		return null;
 	}
 
