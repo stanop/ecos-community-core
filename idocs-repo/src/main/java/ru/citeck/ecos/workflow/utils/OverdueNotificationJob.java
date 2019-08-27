@@ -67,7 +67,7 @@ public class OverdueNotificationJob extends AbstractLockedJob
 				for(WorkflowTask task : tasks) {
 					Date dueDate = (Date) task.getProperties().get(WorkflowModel.PROP_DUE_DATE);
 					logger.debug("dueDate "+dueDate);
-					if(dueDate != null && !"".equals(dueDate))
+					if(dueDate != null)
 					{
 						dueDate.setHours(23); // use 23:59, not 00:00
 						dueDate.setMinutes(59);
