@@ -72,14 +72,15 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
             case DATE_NOT_EQUALS:
             case TYPE_NOT_EQUALS:
             case ASPECT_NOT_EQUALS:
+            case NODEREF_NOT_CONTAINS:
+            case ASSOC_NOT_CONTAINS:
+            case QNAME_NOT_CONTAINS:
                 inverse = true;
             case STRING_EQUALS:
                 term = buildExactValueTerm(field, value);
                 break;
             case NUMBER_EQUALS:
             case DATE_EQUALS:
-                term = buildEqualsTerm(field, value);
-                break;
             case TYPE_EQUALS:
             case ASPECT_EQUALS:
             case PARENT_EQUALS:
@@ -136,10 +137,6 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
             case ANY:
                 term = buildEqualsTerm(field, "*");
                 break;
-            case NODEREF_NOT_CONTAINS:
-            case ASSOC_NOT_CONTAINS:
-            case QNAME_NOT_CONTAINS:
-                inverse = true;
             case NODEREF_CONTAINS:
             case ASSOC_CONTAINS:
             case QNAME_CONTAINS:

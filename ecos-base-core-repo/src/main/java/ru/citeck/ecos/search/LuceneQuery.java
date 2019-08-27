@@ -350,6 +350,9 @@ public class LuceneQuery implements SearchQueryBuilder {
                 case DATE_NOT_EQUALS:
                 case TYPE_NOT_EQUALS:
                 case ASPECT_NOT_EQUALS:
+                case NODEREF_NOT_CONTAINS:
+                case ASSOC_NOT_CONTAINS:
+                case QNAME_NOT_CONTAINS:
                     if (shouldAppendQuery) {
                         query.append(NOT);
                     }
@@ -414,12 +417,6 @@ public class LuceneQuery implements SearchQueryBuilder {
                 case ANY:
                     buildEqualsTerm(field, WILD);
                     break;
-                case NODEREF_NOT_CONTAINS:
-                case ASSOC_NOT_CONTAINS:
-                case QNAME_NOT_CONTAINS:
-                    if (shouldAppendQuery) {
-                        query.append(NOT);
-                    }
                 case NODEREF_CONTAINS:
                 case ASSOC_CONTAINS:
                 case QNAME_CONTAINS:
@@ -492,9 +489,7 @@ public class LuceneQuery implements SearchQueryBuilder {
                         return true;
                     }
                 case STRING_EQUALS:
-                    return true;
                 case NUMBER_EQUALS:
-                    return true;
                 case DATE_EQUALS:
                     return true;
                 default:
