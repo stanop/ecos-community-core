@@ -23,7 +23,6 @@ import org.activiti.engine.delegate.TaskListener;
 import org.activiti.engine.task.IdentityLinkType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import ru.citeck.ecos.deputy.AvailabilityServiceImpl;
 import ru.citeck.ecos.deputy.TaskDeputyListener;
 
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ import java.util.ArrayList;
  */
 public class TaskOriginalOwnerListener implements TaskListener, ApplicationContextAware {
 
-    private AvailabilityServiceImpl availabilityService;
     private ApplicationContext applicationContext;
 
     // NOTE: we have to import delegate listener by name
@@ -47,10 +45,6 @@ public class TaskOriginalOwnerListener implements TaskListener, ApplicationConte
 
     public void setDelegateListenerName(String delegateListenerName) {
         this.delegateListenerName = delegateListenerName;
-    }
-
-    public void setAvailabilityService(AvailabilityServiceImpl availabilityService) {
-        this.availabilityService = availabilityService;
     }
 
     @Override

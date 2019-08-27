@@ -28,7 +28,6 @@ import org.alfresco.service.cmr.action.ActionCondition;
 import org.alfresco.service.cmr.action.ParameterDefinition;
 import org.alfresco.service.cmr.dictionary.DataTypeDefinition;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 
@@ -45,7 +44,6 @@ public class UserInDocumentEvaluator extends ComparePropertyValueEvaluator {
     public static final String NAME = "user-in-document";
     public static final String PARAM_USER = "userName";
 
-    PersonService personService;
     NamespaceService namespaceService;
 
     /**
@@ -82,10 +80,6 @@ public class UserInDocumentEvaluator extends ComparePropertyValueEvaluator {
     protected void addParameterDefinitions(List<ParameterDefinition> paramList) {
         paramList.add(new ParameterDefinitionImpl(PARAM_USER, DataTypeDefinition.TEXT, false, getParamDisplayLabel(PARAM_USER), false));
         paramList.add(new ParameterDefinitionImpl(PARAM_PROPERTY, DataTypeDefinition.TEXT, true, getParamDisplayLabel(PARAM_PROPERTY), false));
-    }
-
-    public void setPersonService(PersonService personService) {
-        this.personService = personService;
     }
 
     public void setNamespaceService(NamespaceService namespaceService) {
