@@ -50,17 +50,17 @@ public class SupplementaryFilesGet extends BaseAbstractWebscript {
 		JSONArray array = new JSONArray();
 		result.put("data", array);
 
-		String targetRefs = "";
+		StringBuilder targetRefs = new StringBuilder();
 		int i = 0;
 		
 		for (NodeRef ref : files) {
-			if (i==files.size()-1) targetRefs = targetRefs + ref;
-			else targetRefs = targetRefs + ref+",";
+			if (i==files.size()-1) targetRefs.append(ref);
+			else targetRefs.append(ref).append(",");
 			i++;
 		}
 		if (files.isEmpty()) {
 			JSONObject data = new JSONObject();
-			data.put("targetRefs",targetRefs);
+			data.put("targetRefs", targetRefs.toString());
 			array.put(data);
 		}
 		for (NodeRef ref : files) {
@@ -68,7 +68,7 @@ public class SupplementaryFilesGet extends BaseAbstractWebscript {
 			data.put("title",
 					nodeService.getProperty(ref, ContentModel.PROP_NAME));
 			data.put("nodeRef", ref);
-			data.put("targetRefs", targetRefs);
+			data.put("targetRefs", targetRefs.toString());
 			array.put(data);
 
 		}
