@@ -35,7 +35,7 @@ public class ExecuteScriptPost  extends AbstractWebScript {
             List<String> messages = new ArrayList<>();
             model.put(MODEL_MESSAGES, messages);
 
-            String script = String.format("function print(msg) {messages.add(msg);} \n %s", request.script);
+            String script = String.format("function print(msg) {messages.add(msg);} %n%s", request.script);
             Object resultJs = scriptProcessor.executeScript(new Script(script), model);
             if (resultJs instanceof Undefined) {
                 resultJs = "undefined";
