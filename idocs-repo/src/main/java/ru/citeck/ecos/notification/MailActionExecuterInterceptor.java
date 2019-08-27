@@ -98,7 +98,6 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 	{
 		logger.debug("!!!!createLoggingItem");
 		NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo();
-		Map<String, Serializable> parameterValues = act.getParameterValues();
 		logger.debug("act.getParameterValue "+act.getParameterValues());
 		Map<String, Serializable> template_modelParameterValue = (Map<String, Serializable>)act.getParameterValue("template_model");
 		if(template_modelParameterValue!=null)

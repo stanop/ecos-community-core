@@ -79,7 +79,6 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 	@Override
 	public void onRoleAssistantAdded(String roleFullName, String assistantName) {
 		RoleMembersContainer roleMembersContainer = new RoleMembersContainer(roleFullName).getAssistantsUsersAndMembers();
-		Set<String> memberUsers = roleMembersContainer.getMemberUsers();
 		Set<String> deputyUsers = roleMembersContainer.getDeputyUsers();
 		deputy(roleFullName, deputyUsers);
 	}
@@ -87,7 +86,6 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 	@Override
 	public void onRoleAssistantRemoved(String roleFullName, String assistantName) {
 		RoleMembersContainer roleMembersContainer = new RoleMembersContainer(roleFullName).getAssistantsUsersAndMembers();
-		Set<String> memberUsers = roleMembersContainer.getMemberUsers();
 		Set<String> deputyUsers = roleMembersContainer.getDeputyUsers();
 		undeputy(roleFullName, deputyUsers);
 	}

@@ -48,7 +48,6 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
         Set<String> countForJournals;
         if (displayCount && StringUtils.isNotEmpty(countForJournalsParam)) {
             countForJournals = new HashSet<>(Arrays.asList(countForJournalsParam.split(",")));
-            displayCount = countForJournals.contains(journalId);
         }
         Boolean displayIcon = context.getParams().containsKey("rootElement");
 
