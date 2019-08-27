@@ -261,6 +261,11 @@
           parent="webscript">
     </bean>
 
+    <bean id="webscript.ru.citeck.ecos.ecos-eureka-status.get"
+          class="ru.citeck.ecos.webscripts.utils.EcosEurekaStatusGet"
+          parent="webscript">
+    </bean>
+
     <bean id="webscript.ru.citeck.ecos.records-group-action.post"
           class="ru.citeck.ecos.records.RecordsGroupActionPost"
           parent="webscript">
