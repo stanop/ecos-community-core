@@ -7,7 +7,7 @@ import org.alfresco.util.GUID;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -18,13 +18,15 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
 
     private static final String HEALTH_URL = "/alfresco/service/citeck/ecos/eureka-status";
 
+    private static final String UUID = GUID.generate();
+
     public EurekaAlfInstanceConfig(Properties globalProperties) {
         super(globalProperties);
     }
 
     @Override
     public String getInstanceId() {
-        return getAppname() + ":" + GUID.generate();
+        return getAppname() + ":" + UUID;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
 
     @Override
     public int getNonSecurePort() {
-        return getGlobalIntParam("alfresco.port", () -> getIntParam("port", () -> 8080));
+        return getIntParam("port", () -> getGlobalIntParam("alfresco.port", () -> 8080));
     }
 
     @Override
@@ -74,12 +76,12 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
 
     @Override
     public String getVirtualHostName() {
-        return this.getHostName(false) + ":" + this.getNonSecurePort();
+        return getAppname();
     }
 
     @Override
     public String getSecureVirtualHostName() {
-        return this.getHostName(false) + ":" + this.getSecurePort();
+        return getAppname();
     }
 
     @Override
@@ -89,16 +91,19 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
 
     @Override
     public String getHostName(boolean refresh) {
-        String host = getGlobalStrParam("alfresco.host", () -> getStrParam("host", () -> "localhost"));
+        String host = getStrParam("host", () -> getGlobalStrParam("alfresco.host", () -> "localhost"));
         if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
-            host = getHostInfo().first();
+            host = HOST_INFO.second();
         }
         return host;
     }
 
     @Override
     public Map<String, String> getMetadataMap() {
-        return Collections.emptyMap();
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("zone", "primary");
+        metadata.put("records-base-url", "/alfresco/s/citeck/ecos/records/");
+        return metadata;
     }
 
     @Override
@@ -166,7 +171,6 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
             //logger.error("Cannot get host info", var2);
             pair = new Pair<>("", "");
         }
-
         return pair;
     }
 }
