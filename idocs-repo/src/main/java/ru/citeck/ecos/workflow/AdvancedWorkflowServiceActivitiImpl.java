@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.workflow;
 
-import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.alfresco.repo.workflow.activiti.ActivitiWorkflowEngine;
 import org.alfresco.service.cmr.security.AuthorityService;
@@ -38,18 +37,12 @@ class AdvancedWorkflowServiceActivitiImpl implements AdvancedWorkflowService {
 
     private ActivitiWorkflowEngine engine;
 
-    private TaskService taskService;
-
     private AuthorityService authorityService;
 
     private QueryExecutor queryExecutor;
 
     public void setEngine(ActivitiWorkflowEngine engine) {
         this.engine = engine;
-    }
-
-    public void setTaskService(TaskService taskService) {
-        this.taskService = taskService;
     }
 
     public void setAuthorityService(AuthorityService authorityService) {

@@ -21,7 +21,6 @@ package ru.citeck.ecos.behavior.common;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
-//import ru.citeck.ecos.behavior.OrderedBehaviour;
 import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
@@ -48,12 +47,10 @@ public class EnumerationBehaviour implements NodeServicePolicies.OnCreateNodePol
 	private QName enumerationStateField;
 	private Object enabledState;
 	private String templateName;
-	private int order = 75;
 
 	public void init() {
 		
-		policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, 
-//				className, new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, order));
+		policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME,
 				className, new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
 		if(enumerationStateField == null) {
 			enumerationStateField = numberField;
@@ -118,9 +115,4 @@ public class EnumerationBehaviour implements NodeServicePolicies.OnCreateNodePol
 	public void setTemplateName(String templateName) {
 		this.templateName = templateName;
 	}
-
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
 }

@@ -31,8 +31,6 @@ import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.task.Task;
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.admin.SysAdminParams;
-import org.alfresco.repo.dictionary.types.period.Days;
 import org.alfresco.repo.workflow.WorkflowNotificationUtils;
 import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.repo.workflow.activiti.ActivitiScriptNode;
@@ -42,9 +40,7 @@ import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.util.UrlUtil;
 import org.apache.commons.lang.time.DateFormatUtils;
-import org.jbpm.calendar.Day;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,17 +53,12 @@ import ru.citeck.ecos.model.DmsModel;
 public class OverDueTaskGeneration extends AbstractWebScript {
 
 	private ServiceRegistry serviceRegistry;
-	private SysAdminParams sysAdminParams;
 
 
 	private String engineId = ActivitiConstants.ENGINE_ID + "$";
 
 	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
 		this.serviceRegistry = serviceRegistry;
-	}
-
-	public void setSysAdminParams(SysAdminParams sysAdminParams) {
-		this.sysAdminParams = sysAdminParams;
 	}
 
 	@Override

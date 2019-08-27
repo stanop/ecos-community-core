@@ -27,7 +27,6 @@ import org.alfresco.service.cmr.action.ParameterDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.rule.RuleService;
 import org.alfresco.service.namespace.QName;
 
 import ru.citeck.ecos.icase.element.CaseElementService;
@@ -44,7 +43,6 @@ import ru.citeck.ecos.model.ICaseModel;
 public class AddToCaseActionExecuter extends ActionExecuterAbstractBase {
 
 	private NodeService nodeService;
-	private RuleService ruleService;
 	private CaseElementService caseElementService;
 	private DictionaryService dictionaryService;
 	
@@ -91,10 +89,6 @@ public class AddToCaseActionExecuter extends ActionExecuterAbstractBase {
 
 	public void setNodeService(NodeService nodeService) {
 		this.nodeService = nodeService;
-	}
-
-	public void setRuleService(RuleService ruleService) {
-		this.ruleService = ruleService;
 	}
 
 	public void setCaseElementService(CaseElementService caseElementService) {

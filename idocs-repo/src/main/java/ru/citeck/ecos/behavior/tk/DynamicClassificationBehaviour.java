@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.alfresco.repo.node.NodeServicePolicies;
-//import ru.citeck.ecos.behavior.OrderedBehaviour;
 import ru.citeck.ecos.behavior.JavaBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.repo.policy.Behaviour.NotificationFrequency;
@@ -45,11 +44,9 @@ public class DynamicClassificationBehaviour implements NodeServicePolicies.OnUpd
     private NodeService nodeService;
     private DictionaryService dictionaryService;
     private PolicyComponent policyComponent;
-    private int order = 50;
 
     public void init() {
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME, ClassificationModel.ASPECT_DOCUMENT_TYPE_KIND,
-//                new OrderedBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT, order));
                 new JavaBehaviour(this, "onUpdateProperties", NotificationFrequency.TRANSACTION_COMMIT));
     }
 
@@ -117,10 +114,6 @@ public class DynamicClassificationBehaviour implements NodeServicePolicies.OnUpd
 
     public void setPolicyComponent(PolicyComponent policyComponent) {
         this.policyComponent = policyComponent;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
     }
 
 }

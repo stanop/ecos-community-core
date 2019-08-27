@@ -5,7 +5,6 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.pvm.process.ProcessDefinitionImpl;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.workflow.listeners.AbstractExecutionListener;
@@ -19,7 +18,6 @@ import java.util.Objects;
 public class SetConfirmationStatusToOrdersListener extends AbstractExecutionListener {
 
     private NodeService nodeService;
-    private WorkflowService workflowService;
     private WorkflowDocumentResolverRegistry documentResolverRegistry;
     private QName requiredDocType;
     private String requiredWorkflowName;
@@ -59,10 +57,6 @@ public class SetConfirmationStatusToOrdersListener extends AbstractExecutionList
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
-    }
-
-    public void setWorkflowService(WorkflowService workflowService) {
-        this.workflowService = workflowService;
     }
 
     public void setRequiredDocType(QName requiredDocType) {
