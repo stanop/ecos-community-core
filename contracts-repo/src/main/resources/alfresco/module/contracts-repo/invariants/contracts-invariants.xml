@@ -226,6 +226,7 @@
         <property name="payments:paymentAmount">
             <invariant on="valid" language="javascript" description="invariant.validation.only-positive-number">value >= 0</invariant>
             <invariant on="mandatory" language="javascript">node.properties["dms:updateContent"] == false</invariant>
+            <invariant on="protected" language="javascript">node.properties["dms:updateContent"] == true</invariant>
             <invariant on="default" language="javascript"><![CDATA[
                 (function() {
                     var sum = 0;
