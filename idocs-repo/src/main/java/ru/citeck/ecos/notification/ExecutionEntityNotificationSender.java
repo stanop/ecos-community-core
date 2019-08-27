@@ -219,7 +219,6 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 				if(template!=null && nodeService.exists(template))
 				{
                     recipient.addAll(getRecipients(task, template, getDocsInfo()));
-					String from = null;
 					String notificationProviderName = EMailNotificationProvider.NAME;
 					if(subjectTemplates!=null)
 					{
@@ -246,15 +245,11 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 					}
 					for(String to : recipient) {
 						notificationContext.addTo(to);
-						
 					}
 					notificationContext.setSubject(subject);
 					setBodyTemplate(notificationContext, template);
 					notificationContext.setTemplateArgs(getNotificationArgs(task));
 					notificationContext.setAsyncNotification(getAsyncNotification());
-					if (null != from) {
-						notificationContext.setFrom(from);
-					}
 					// send
 					logger.debug("Send notification");
 					services.getNotificationService().sendNotification(notificationProviderName, notificationContext);

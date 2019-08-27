@@ -312,9 +312,7 @@ public class RepoUtils {
 
     public static String getOriginalName(NodeRef nodeRef, NodeService nodeService, MimetypeService mimetypeService) {
 
-        String result = null;//(String) nodeService.getProperty(nodeRef, IdocsTemplateModel.PROP_GENERATED_NAME);
-        if (result == null)
-            result = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
+        String result = (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME);
         ContentData content = (ContentData) nodeService.getProperty(nodeRef, ContentModel.PROP_CONTENT);
         if (content != null) {
             String mimeType = mimetypeService.guessMimetype(result);

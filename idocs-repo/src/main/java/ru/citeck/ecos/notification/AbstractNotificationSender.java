@@ -489,9 +489,8 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
             String[] additionRecipientsArr = additionRecipientsStr.split(",");
             ArrayList<String> additionRecipients = new ArrayList<String>(Arrays.asList(additionRecipientsArr));
 
-            if (additionRecipients != null && additionRecipients.size() > 0) {
+            if (additionRecipients.size() > 0) {
                 authorities.addAll(additionRecipients);
-
             }
         }
         return authorities;

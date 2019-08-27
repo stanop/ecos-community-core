@@ -137,7 +137,6 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
     public void sendNotification(DelegateTask task) {
         NotificationContext notificationContext = new NotificationContext();
         NodeRef template = getNotificationTemplate(task);
-        String from = null;
         notificationContext.setTemplateArgs(getNotificationArgs(task));
         String notificationProviderName = EMailNotificationProvider.NAME;
         String subject = null;
@@ -153,9 +152,6 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
             notificationContext.addTo(to);
         }
         notificationContext.setAsyncNotification(getAsyncNotification());
-        if (null != from) {
-            notificationContext.setFrom(from);
-        }
         // send
         logger.debug("before sent");
         services.getNotificationService().sendNotification(notificationProviderName, notificationContext);

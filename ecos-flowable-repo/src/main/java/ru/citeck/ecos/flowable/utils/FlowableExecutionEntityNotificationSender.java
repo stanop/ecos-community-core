@@ -134,7 +134,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
                 NodeRef template = getNotificationTemplate(task);
                 if (template != null && nodeService.exists(template)) {
                     recipient.addAll(getRecipients(task, template, getDocsInfo()));
-                    String from = null;
                     String notificationProviderName = EMailNotificationProvider.NAME;
                     if (subjectTemplates != null) {
                         String processDef = task.getProcessDefinitionId();
@@ -159,9 +158,6 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
                     setBodyTemplate(notificationContext, template);
                     notificationContext.setTemplateArgs(getNotificationArgs(task));
                     notificationContext.setAsyncNotification(getAsyncNotification());
-                    if (null != from) {
-                        notificationContext.setFrom(from);
-                    }
                     // send
                     logger.debug("Send notification");
                     services.getNotificationService().sendNotification(notificationProviderName, notificationContext);

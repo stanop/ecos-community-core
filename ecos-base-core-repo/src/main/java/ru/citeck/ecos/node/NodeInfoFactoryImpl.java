@@ -335,7 +335,7 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
             parent = nodeInfo.getParent();
             parentAssoc = nodeInfo.getParentAssoc();
 
-            if (parent == null || parentAssoc == null || nodeType == null) {
+            if (parent == null || parentAssoc == null) {
                 throw new IllegalArgumentException("Either nodeRef, or parent/parentAssoc/type should be specified");
             }
 
