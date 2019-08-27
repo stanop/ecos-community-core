@@ -89,7 +89,11 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
 
     @Override
     public String getHostName(boolean refresh) {
-        return getGlobalStrParam("alfresco.host", () -> getStrParam("host", () -> "localhost"));
+        String host = getGlobalStrParam("alfresco.host", () -> getStrParam("host", () -> "localhost"));
+        if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
+            host = getHostInfo().first();
+        }
+        return host;
     }
 
     @Override
