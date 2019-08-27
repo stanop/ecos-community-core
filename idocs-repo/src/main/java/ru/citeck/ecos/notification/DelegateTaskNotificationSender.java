@@ -241,7 +241,7 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
 
     public NodeRef getNotificationTemplate(DelegateTask task) {
         String processDef = task.getProcessDefinitionId();
-        String wfkey = "activiti$" + processDef.substring(0, processDef.indexOf(":"));
+        String wfkey = "activiti$" + processDef.substring(0, processDef.indexOf(':'));
         String tkey = (String) task.getVariableLocal("taskFormKey");
         return getNotificationTemplate(wfkey, tkey);
     }

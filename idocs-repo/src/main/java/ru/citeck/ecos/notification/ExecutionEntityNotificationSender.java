@@ -224,7 +224,7 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 					if(subjectTemplates!=null)
 					{
 						String processDef = task.getProcessDefinitionId();
-						String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(":"));
+						String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(':'));
 						if(subjectTemplates.containsKey(wfkey))
 						{
 							Map<String,String> taskSubjectTemplate = subjectTemplates.get(wfkey);
@@ -267,7 +267,7 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	public NodeRef getNotificationTemplate(ExecutionEntity task)
 	{
 		String processDef = task.getProcessDefinitionId();
-		String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(":"));
+		String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(':'));
 		String tkey = (String)task.getVariableLocal("taskFormKey");
 		logger.debug("template for notification "+getNotificationTemplate(wfkey, tkey));
 		return getNotificationTemplate(wfkey, tkey, nodeService.getType(getDocsInfo()));

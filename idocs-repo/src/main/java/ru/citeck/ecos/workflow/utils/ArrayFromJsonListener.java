@@ -59,7 +59,7 @@ public class ArrayFromJsonListener extends AbstractExecutionListener {
 			return;
 		String element = null;
 		String pathRest = null;
-		int pos = path.indexOf(".");
+		int pos = path.indexOf('.');
 		if (pos < 0) {
 			element = path;
 		}

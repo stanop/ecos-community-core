@@ -138,7 +138,7 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
                     String notificationProviderName = EMailNotificationProvider.NAME;
                     if (subjectTemplates != null) {
                         String processDef = task.getProcessDefinitionId();
-                        String wfkey = FlowableConstants.ENGINE_PREFIX + processDef.substring(0, processDef.indexOf(":"));
+                        String wfkey = FlowableConstants.ENGINE_PREFIX + processDef.substring(0, processDef.indexOf(':'));
                         if (subjectTemplates.containsKey(wfkey)) {
                             Map<String, String> taskSubjectTemplate = subjectTemplates.get(wfkey);
                             if (taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo())))) {
@@ -173,7 +173,7 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
 
     public NodeRef getNotificationTemplate(ExecutionEntity task) {
         String processDef = task.getProcessDefinitionId();
-        String wfkey = FlowableConstants.ENGINE_PREFIX + processDef.substring(0, processDef.indexOf(":"));
+        String wfkey = FlowableConstants.ENGINE_PREFIX + processDef.substring(0, processDef.indexOf(':'));
         String tkey = (String) task.getVariableLocal("taskFormKey");
         logger.debug("template for notification " + getNotificationTemplate(wfkey, tkey));
         return getNotificationTemplate(wfkey, tkey, nodeService.getType(getDocsInfo()));
