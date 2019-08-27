@@ -16,6 +16,10 @@ public class EurekaAlfClientConfig extends AbstractEurekaConfig implements Eurek
         super(globalProperties);
     }
 
+    boolean isEurekaEnabled() {
+        return getBoolParam("enabled", () -> true);
+    }
+
     @Override
     public int getRegistryFetchIntervalSeconds() {
         return defaultConfig.getRegistryFetchIntervalSeconds();

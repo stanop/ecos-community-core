@@ -1,11 +1,9 @@
 package ru.citeck.ecos.eureka;
 
 import com.netflix.appinfo.EurekaInstanceConfig;
-import com.netflix.appinfo.HealthCheckHandler;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.DiscoveryManager;
 import com.netflix.discovery.EurekaClient;
-import com.netflix.discovery.EurekaClientConfig;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -15,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.utils.TransactionUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
@@ -45,6 +42,8 @@ public class EcosEurekaClient {
     public void init() {
         try {
             getClient();
+        } catch (EurekaDisabled e) {
+            logger.info("Eureka disabled");
         } catch (Exception e) {
             logger.error("Eureka client init failed", e);
         }
@@ -76,7 +75,11 @@ public class EcosEurekaClient {
         DiscoveryManager manager = DiscoveryManager.getInstance();
 
         EurekaInstanceConfig instanceConfig = new EurekaAlfInstanceConfig(properties);
-        EurekaClientConfig clientConfig = new EurekaAlfClientConfig(properties);
+        EurekaAlfClientConfig clientConfig = new EurekaAlfClientConfig(properties);
+
+        if (!clientConfig.isEurekaEnabled()) {
+            throw new EurekaDisabled();
+        }
 
         logger.info("===================================");
         logger.info("Register in eureka with params:");
@@ -88,11 +91,6 @@ public class EcosEurekaClient {
         manager.getEurekaClient().registerHealthCheck(instanceStatus -> status);
 
         status = InstanceInfo.InstanceStatus.UP;
-        /*
-        TransactionUtils.doAfterCommit(() -> {
-            logger.info("Eureka status: UP");
-            status = InstanceInfo.InstanceStatus.UP;
-        });*/
 
         return manager;
     }
@@ -107,5 +105,8 @@ public class EcosEurekaClient {
     private class ServerInfo {
         private InstanceInfo info;
         private Long resolvedTimeMs;
+    }
+
+    private static class EurekaDisabled extends RuntimeException {
     }
 }
