@@ -233,7 +233,7 @@ public class HistoricalPropertiesBehaviour implements
         if(enableHistoryOnAddChildAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(childAssociationRef.getTypeQName()) && nodeService.exists(nodeTarget))
 		{
             HistoryUtils.addResourceTransaction(HistoryUtils.CHILD_ASSOC_ADDED, childAssociationRef);
-            if(assoc!=null && (ignoreAssocsWithTypes==null || ignoreAssocsWithTypes!=null && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
+            if(assoc!=null && (ignoreAssocsWithTypes==null || !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
                 historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
 						HistoryUtils.ASSOC_ADDED, nodeSource, assoc.getName(), nodeTarget.toString(), null,
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
@@ -253,7 +253,7 @@ public class HistoricalPropertiesBehaviour implements
 		if(enableHistoryOnDeleteChildAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(childAssociationRef.getTypeQName()))
 		{
             HistoryUtils.addResourceTransaction(HistoryUtils.CHILD_ASSOC_REMOVED, childAssociationRef);
-			if(assoc!=null && (ignoreAssocsWithTypes==null || ignoreAssocsWithTypes!=null && nodeService.exists(nodeTarget) && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
+			if(assoc!=null && (ignoreAssocsWithTypes==null || nodeService.exists(nodeTarget) && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
 						HistoryUtils.ASSOC_REMOVED, nodeSource, assoc.getName(), null, null,
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
@@ -278,7 +278,7 @@ public class HistoricalPropertiesBehaviour implements
 		if(enableHistoryOnDeleteChildAssocs && nodeService.exists(nodeSource) && className!=null && className.equals(nodeService.getType(nodeSource)) && allowedProperties!=null && allowedProperties.contains(childAssociationRef.getTypeQName()))
 		{
 			HistoryUtils.addResourceTransaction(HistoryUtils.CHILD_ASSOC_REMOVED, childAssociationRef);
-			if(assoc!=null && (ignoreAssocsWithTypes==null || ignoreAssocsWithTypes!=null && nodeService.exists(nodeTarget) && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
+			if(assoc!=null && (ignoreAssocsWithTypes==null || nodeService.exists(nodeTarget) && !ignoreAssocsWithTypes.contains(nodeService.getType(nodeTarget)))) {
 				historyService.persistEvent(HistoryModel.TYPE_BASIC_EVENT, HistoryUtils.eventProperties(
 						HistoryUtils.ASSOC_REMOVED, nodeSource, assoc.getName(), null, null,
 						nodeService.getProperty(nodeTarget, ClassificationModel.PROP_DOCUMENT_TYPE),
