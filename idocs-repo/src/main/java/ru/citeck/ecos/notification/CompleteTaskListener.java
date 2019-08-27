@@ -24,8 +24,6 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.security.AuthenticationService;
-import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.NamespaceService;
 
@@ -37,8 +35,6 @@ public class CompleteTaskListener
 		// NotificationSender
 	private AbstractNotificationSender<DelegateTask> sender;
 	protected ServiceRegistry serviceRegistry;
-    private PersonService personService;
-    private AuthenticationService authenticationService;
 	protected NodeService nodeService;
 	private Map<String, Map<String,String>> conditions;
 	protected NamespaceService namespaceService;
