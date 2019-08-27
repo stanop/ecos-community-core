@@ -11,6 +11,7 @@ import java.util.List;
 @Configuration
 public class EurekaContextConfig {
 
+
     public static final String REST_TEMPLATE_ID = "eurekaRestTemplate";
 
     @Bean(name = REST_TEMPLATE_ID)
