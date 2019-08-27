@@ -21,15 +21,15 @@ public class FlowableDelegateExecutionScriptBase extends FlowableScriptBase {
      * @param scriptString Script string
      */
     protected Object runScript(DelegateExecution execution, String scriptString) throws Exception {
-        /** Check authenticated user */
+        /* Check authenticated user */
         String runAsUser = getStringValue(runAs, execution);
         boolean clearAuthenticationContext = checkFullyAuthenticatedUser(execution);
 
-        /** Load script model */
+        /* Load script model */
         Map<String, Object> scriptModel = getInputMap(execution, runAsUser);
         getServiceRegistry().getScriptService().buildCoreModel(scriptModel);
 
-        /** Run script */
+        /* Run script */
         try {
             return executeScript(scriptString, scriptModel, getLanguage(), runAsUser);
         }
@@ -49,7 +49,7 @@ public class FlowableDelegateExecutionScriptBase extends FlowableScriptBase {
     protected Map<String, Object> getInputMap(DelegateExecution execution, String runAsUser) {
         HashMap<String, Object> scriptModel = new HashMap<>(1);
 
-        /** Run as user */
+        /* Run as user */
         NodeRef personNode = getPersonNode(runAsUser);
         if (personNode != null) {
             scriptModel.put(PERSON_BINDING_NAME, personNode);
@@ -57,7 +57,7 @@ public class FlowableDelegateExecutionScriptBase extends FlowableScriptBase {
 
         scriptModel.put(EXECUTION_BINDING_NAME, execution);
 
-        /** Workflow variables */
+        /* Workflow variables */
         Map<String, Object> variables = execution.getVariables();
 
         for (Map.Entry<String, Object> varEntry : variables.entrySet()) {

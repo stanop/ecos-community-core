@@ -128,7 +128,7 @@ public class HistoryUtils {
             return nodeService.getProperty(nodeRef, ContentModel.PROP_LASTNAME)
                     + " " + nodeService.getProperty(nodeRef, ContentModel.PROP_FIRSTNAME);
         } else {
-            /** Single title */
+            /* Single title */
             QName titleQName = getHistoryEventTitleMapperService().getTitleQName(nodeService.getType(nodeRef));
             if (titleQName != null) {
                 if (nodeService.getProperty(nodeRef, titleQName) != null) {
@@ -136,7 +136,7 @@ public class HistoryUtils {
                     return transformValueToString(value, nodeService);
                 }
             }
-            /** List title */
+            /* List title */
             List<QName> titlesQName = getHistoryEventTitleMapperService().getTitleQNames(nodeService.getType(nodeRef));
             if (CollectionUtils.isNotEmpty(titlesQName)) {
                 List<String> paramValues = new ArrayList<>(titlesQName.size());
@@ -145,7 +145,7 @@ public class HistoryUtils {
                 }
                 return String.join("; ", paramValues);
             }
-            /** Default title */
+            /* Default title */
             return String.valueOf(nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE) != null
                     ? nodeService.getProperty(nodeRef, ContentModel.PROP_TITLE)
                     : nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
@@ -153,12 +153,12 @@ public class HistoryUtils {
     }
 
     private static String getValueByQName(NodeRef nodeRef, QName title, NodeService nodeService) {
-        /** Property */
+        /* Property */
         Serializable value = nodeService.getProperty(nodeRef, title);
         if (value != null) {
             return transformValueToString(value, nodeService);
         }
-        /** Target association */
+        /* Target association */
         AssociationRef associationRef = getTargetAssociation(nodeRef, title, nodeService);
         if (associationRef != null) {
             NodeRef targetNodeRef = associationRef.getTargetRef();
