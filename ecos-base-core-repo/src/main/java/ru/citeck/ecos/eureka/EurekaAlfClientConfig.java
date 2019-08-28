@@ -155,11 +155,14 @@ public class EurekaAlfClientConfig extends AbstractEurekaConfig implements Eurek
     public List<String> getEurekaServerServiceUrls(String myZone) {
 
         String serviceUrls = System.getenv("EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE");
+        String password = System.getenv("JHIPSTER_REGISTRY_PASSWORD");
 
         if (StringUtils.isBlank(serviceUrls)) {
             serviceUrls = getStrParam("serviceUrl." + myZone, () ->
                     getStrParam("serviceUrl.default", () -> null)
             );
+        } else {
+            serviceUrls = serviceUrls.replaceAll("\\$?\\$\\{jhipster\\.registry\\.password}", password);
         }
 
         if (serviceUrls != null) {
