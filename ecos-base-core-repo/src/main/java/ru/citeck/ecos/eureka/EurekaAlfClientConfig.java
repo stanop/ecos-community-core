@@ -3,6 +3,7 @@ package ru.citeck.ecos.eureka;
 import com.netflix.discovery.DefaultEurekaClientConfig;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.shared.transport.EurekaTransportConfig;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -153,9 +154,13 @@ public class EurekaAlfClientConfig extends AbstractEurekaConfig implements Eurek
     @Override
     public List<String> getEurekaServerServiceUrls(String myZone) {
 
-        String serviceUrls = getStrParam("serviceUrl." + myZone, () ->
-            getStrParam("serviceUrl.default", () -> null)
-        );
+        String serviceUrls = System.getenv("EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE");
+
+        if (StringUtils.isBlank(serviceUrls)) {
+            serviceUrls = getStrParam("serviceUrl." + myZone, () ->
+                    getStrParam("serviceUrl.default", () -> null)
+            );
+        }
 
         if (serviceUrls != null) {
             return Arrays.asList(serviceUrls.split(DefaultEurekaClientConfig.URL_SEPARATOR));
