@@ -4,6 +4,9 @@ import com.netflix.appinfo.DataCenterInfo;
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.discovery.shared.Pair;
 import org.alfresco.util.GUID;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -12,6 +15,12 @@ import java.util.Map;
 import java.util.Properties;
 
 public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements EurekaInstanceConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(EurekaAlfInstanceConfig.class);
+
+    private static final String ENV_PROP_PORT = "ECOS_EUREKA_INSTANCE_PORT";
+    private static final String ENV_PROP_IP = "ECOS_EUREKA_INSTANCE_IP";
+    private static final String ENV_PROP_HOST = "ECOS_EUREKA_INSTANCE_HOST";
 
     private static final Pair<String, String> HOST_INFO = getHostInfo();
     private static final DataCenterInfo DATA_CENTER_INFO = () -> DataCenterInfo.Name.MyOwn;
@@ -46,6 +55,14 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
 
     @Override
     public int getNonSecurePort() {
+        String portFromEnv = System.getenv(ENV_PROP_PORT);
+        if (portFromEnv != null) {
+            try {
+                return Integer.parseInt(portFromEnv);
+            } catch (NumberFormatException e) {
+                logger.warn("Incorrect port in " + ENV_PROP_PORT + " param. Value: " + portFromEnv);
+            }
+        }
         return getIntParam("port", () -> getGlobalIntParam("alfresco.port", () -> 8080));
     }
 
@@ -91,9 +108,12 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
 
     @Override
     public String getHostName(boolean refresh) {
-        String host = getStrParam("host", () -> getGlobalStrParam("alfresco.host", () -> "localhost"));
-        if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
-            host = HOST_INFO.second();
+        String host = System.getenv(ENV_PROP_HOST);
+        if (StringUtils.isBlank(host)) {
+            host = getStrParam("host", () -> getGlobalStrParam("alfresco.host", () -> "localhost"));
+            if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
+                host = HOST_INFO.second();
+            }
         }
         return host;
     }
@@ -113,6 +133,10 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
 
     @Override
     public String getIpAddress() {
+        String envValue = System.getenv(ENV_PROP_IP);
+        if (StringUtils.isNotEmpty(envValue)) {
+            return envValue;
+        }
         return HOST_INFO.first();
     }
 
