@@ -133,11 +133,13 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
 
     @Override
     public String getIpAddress() {
-        String envValue = System.getenv(ENV_PROP_IP);
-        if (StringUtils.isNotEmpty(envValue)) {
-            return envValue;
-        }
-        return HOST_INFO.first();
+        return getStrParam("instance.ip", () -> {
+            String envValue = System.getenv(ENV_PROP_IP);
+            if (StringUtils.isNotEmpty(envValue)) {
+                return envValue;
+            }
+            return HOST_INFO.first();
+        });
     }
 
     @Override
