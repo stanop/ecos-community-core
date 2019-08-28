@@ -27,7 +27,6 @@ public class ImportCaseWebScript  extends AbstractWebScript {
 
     @Override
     public void execute(WebScriptRequest request, WebScriptResponse response) throws IOException {
-        String nodeRefParam = request.getParameter("destination");
         FormData formData = (FormData) request.parseContent();
         if (formData == null || !formData.getIsMultiPart())
         {

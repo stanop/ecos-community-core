@@ -45,10 +45,6 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
         String elemId = String.format("%s_%s_JOURNAL", parentElemId, elemIdVar);
         Boolean displayCount = Boolean.parseBoolean(getParam(params, context, "displayCount"));
         String countForJournalsParam = getParam(params, context, "countForJournals");
-        Set<String> countForJournals;
-        if (displayCount && StringUtils.isNotEmpty(countForJournalsParam)) {
-            countForJournals = new HashSet<>(Arrays.asList(countForJournalsParam.split(",")));
-        }
         Boolean displayIcon = context.getParams().containsKey("rootElement");
 
         /* icon. if journal element is placed in root category */
