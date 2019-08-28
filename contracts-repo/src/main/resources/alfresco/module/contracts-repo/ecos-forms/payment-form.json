@@ -36,11 +36,11 @@
                 "components": [
                   {
                     "label": "payments:basis",
+                    "hideCreateButton": true,
                     "mask": false,
                     "tableView": true,
                     "alwaysEnabled": false,
                     "journalId": "contract-agreements",
-                    "hideCreateButton": true,
                     "displayColumns": [],
                     "customPredicateJs": "",
                     "computed": {
@@ -50,6 +50,7 @@
                     "ecos": {
                       "dataType": "assoc"
                     },
+                    "defaultValue": "",
                     "encrypted": false,
                     "displayColumnsAsyncData": [
                       {
@@ -153,7 +154,6 @@
                     "customClass": "",
                     "suffix": "",
                     "multiple": false,
-                    "defaultValue": null,
                     "protected": false,
                     "unique": false,
                     "persistent": true,
@@ -180,7 +180,7 @@
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "emmdwv"
+                    "id": "e0yg24k"
                   }
                 ],
                 "width": 6,
@@ -239,7 +239,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eepanv"
+                "id": "e0vi4do"
               },
               {
                 "components": [
@@ -271,9 +271,9 @@
                       }
                     ],
                     "validate": {
-                      "required": true,
                       "customMessage": "",
                       "json": "",
+                      "required": false,
                       "custom": "",
                       "customPrivate": false
                     },
@@ -293,12 +293,12 @@
                     "type": "selectJournal",
                     "input": true,
                     "tags": [],
+                    "defaultValue": "",
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
                     "suffix": "",
                     "multiple": false,
-                    "defaultValue": null,
                     "protected": false,
                     "unique": false,
                     "persistent": true,
@@ -325,7 +325,7 @@
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "elo4b9k"
+                    "id": "epeyhhk"
                   }
                 ],
                 "width": 6,
@@ -384,7 +384,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ediop47"
+                "id": "e3g555m"
               },
               {
                 "xs": 0,
@@ -483,7 +483,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "exuhv6f"
+                    "id": "e56o4f9"
                   }
                 ],
                 "placeholder": "",
@@ -526,7 +526,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e97fs4q"
+                "id": "e6kytmd"
               }
             ],
             "hideOnChildrenHidden": true,
@@ -583,7 +583,7 @@
               "customPrivate": false
             },
             "autoAdjust": false,
-            "id": "enjxj3j"
+            "id": "epilux"
           },
           {
             "conditional": {
@@ -638,7 +638,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "e8dj1ei"
+            "id": "ekpj9e"
           },
           {
             "label": "payments:paymentPurpose",
@@ -718,7 +718,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "edh93bc"
+            "id": "elw236"
           },
           {
             "conditional": {
@@ -773,7 +773,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "ed6cwcd"
+            "id": "e4ccugh"
           },
           {
             "label": "Columns",
@@ -782,11 +782,11 @@
                 "components": [
                   {
                     "label": "payments:payer",
+                    "hideCreateButton": true,
                     "mask": false,
                     "tableView": true,
                     "alwaysEnabled": false,
                     "journalId": "legal-entities",
-                    "hideCreateButton": true,
                     "displayColumns": [],
                     "customPredicateJs": "",
                     "computed": {
@@ -796,9 +796,10 @@
                     "ecos": {
                       "dataType": "assoc"
                     },
+                    "defaultValue": "",
                     "refreshOn": "payments_basis",
+                    "clearOnRefresh": true,
                     "customDefaultValue": "if (data.paymentsBasis) {\r\n    if ((data.paymentsBasis.type == \"contracts:agreement\" || data.paymentsBasis.type == \"contracts:supplementaryAgreement\") && data.paymentsBasis.agreementLegalEntity)  {\r\n        value = data.paymentsBasis.agreementLegalEntity;\r\n    } else if (data.paymentsBasis.type == \"contracts:closingDocument\" && data.paymentsBasis.legalEntity) {\r\n        value = data.paymentsBasis.legalEntity;  \r\n    }\r\n}",
-                    "allowCalculateOverride": true,
                     "encrypted": false,
                     "displayColumnsAsyncData": [
                       {
@@ -894,7 +895,6 @@
                     "customClass": "",
                     "suffix": "",
                     "multiple": false,
-                    "defaultValue": null,
                     "protected": false,
                     "unique": false,
                     "persistent": true,
@@ -913,12 +913,12 @@
                     "autofocus": false,
                     "dbIndex": false,
                     "calculateValue": "",
+                    "allowCalculateOverride": false,
                     "widget": null,
-                    "clearOnRefresh": false,
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "e61znrm"
+                    "id": "ezx9tie"
                   }
                 ],
                 "width": 6,
@@ -977,7 +977,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ewly7tl"
+                "id": "eclkv6q"
               },
               {
                 "components": [
@@ -1007,6 +1007,7 @@
                     "selectThreshold": 0.3,
                     "defaultValue": "",
                     "refreshOn": [],
+                    "customDefaultValue": "value = 'cashless';",
                     "encrypted": false,
                     "validate": {
                       "required": true,
@@ -1053,7 +1054,6 @@
                     "disabled": false,
                     "autofocus": false,
                     "dbIndex": false,
-                    "customDefaultValue": "",
                     "calculateValue": "",
                     "allowCalculateOverride": false,
                     "widget": null,
@@ -1074,7 +1074,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "ekkguk"
+                    "id": "ec10yb"
                   }
                 ],
                 "width": 6,
@@ -1133,7 +1133,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ez3ms3n"
+                "id": "e97lbi"
               },
               {
                 "xs": 0,
@@ -1205,9 +1205,19 @@
                             "state": "true"
                           },
                           {
-                            "name": "value_on",
+                            "name": "required_off",
+                            "type": "property",
+                            "property": {
+                              "label": "Required",
+                              "value": "validate.required",
+                              "type": "boolean"
+                            },
+                            "state": "false"
+                          },
+                          {
+                            "name": "value_gen",
                             "type": "value",
-                            "value": "if (instance.options.formMode === 'CREATE') {\n  value = ' ';\n}"
+                            "value": "value = data.payment.totalCount +1;"
                           }
                         ]
                       },
@@ -1221,13 +1231,7 @@
                             "eq": "false"
                           }
                         },
-                        "actions": [
-                          {
-                            "name": "value_off",
-                            "type": "value",
-                            "value": "if (instance.options.formMode === 'CREATE' && data.payments_paymentNumber === ' ') {\n  value = '';\n}"
-                          }
-                        ]
+                        "actions": []
                       }
                     ],
                     "attributes": {},
@@ -1271,7 +1275,7 @@
                     "mask": false,
                     "inputType": "text",
                     "inputMask": "",
-                    "id": "e0mgkg9"
+                    "id": "ebzd2ru"
                   },
                   {
                     "label": "Generate",
@@ -1334,7 +1338,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "ez41baq"
+                    "id": "eaafyf"
                   }
                 ],
                 "placeholder": "",
@@ -1377,7 +1381,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "el7svr9"
+                "id": "ex3qsd"
               }
             ],
             "mask": false,
@@ -1434,7 +1438,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e5w80ib"
+            "id": "e7r237"
           },
           {
             "conditional": {
@@ -1489,7 +1493,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "e9zjnpf"
+            "id": "ezm8py"
           },
           {
             "label": "Columns",
@@ -1498,11 +1502,11 @@
                 "components": [
                   {
                     "label": "payments:beneficiary",
+                    "hideCreateButton": true,
                     "mask": false,
                     "tableView": true,
                     "alwaysEnabled": false,
                     "journalId": "idocs-contractor",
-                    "hideCreateButton": true,
                     "displayColumns": [],
                     "customPredicateJs": "",
                     "computed": {
@@ -1512,9 +1516,10 @@
                     "ecos": {
                       "dataType": "assoc"
                     },
+                    "defaultValue": "",
                     "refreshOn": "payments_basis",
+                    "clearOnRefresh": true,
                     "customDefaultValue": "if (data.paymentsBasis && data.paymentsBasis.contractor !== null) {\r\n    value = data.paymentsBasis.contractor; \r\n}",
-                    "allowCalculateOverride": true,
                     "encrypted": false,
                     "displayColumnsAsyncData": [
                       {
@@ -1610,7 +1615,6 @@
                     "customClass": "",
                     "suffix": "",
                     "multiple": false,
-                    "defaultValue": null,
                     "protected": false,
                     "unique": false,
                     "persistent": true,
@@ -1629,12 +1633,12 @@
                     "autofocus": false,
                     "dbIndex": false,
                     "calculateValue": "",
+                    "allowCalculateOverride": false,
                     "widget": null,
-                    "clearOnRefresh": false,
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "eb0sxc"
+                    "id": "eqan66"
                   }
                 ],
                 "width": 6,
@@ -1693,7 +1697,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e7meg2y"
+                "id": "evtwj9"
               },
               {
                 "components": [
@@ -1790,7 +1794,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "exvlc6c"
+                    "id": "e33ym"
                   }
                 ],
                 "width": 6,
@@ -1849,7 +1853,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eqyb2wf"
+                "id": "e423248"
               },
               {
                 "xs": 0,
@@ -1905,7 +1909,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e95nv8h"
+                "id": "eztsyr7"
               }
             ],
             "mask": false,
@@ -1962,7 +1966,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "et51p3q"
+            "id": "e4543er"
           }
         ],
         "tags": [],
@@ -2004,7 +2008,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "e676p9b"
+        "id": "eh5nvi"
       },
       {
         "label": "Panel",
@@ -2221,7 +2225,7 @@
                     "displayInTimezone": "viewer",
                     "timezone": "",
                     "datepickerMode": "day",
-                    "id": "e0lw5dp"
+                    "id": "euxx5xo"
                   }
                 ],
                 "width": 6,
@@ -2280,7 +2284,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eu2fmr4"
+                "id": "eu5sk4"
               },
               {
                 "components": [
@@ -2461,7 +2465,7 @@
                       "mousewheel": true,
                       "arrowkeys": true
                     },
-                    "id": "e06lf8m"
+                    "id": "evp8ua"
                   }
                 ],
                 "width": 6,
@@ -2520,7 +2524,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ecz1t4n"
+                "id": "ehemw3r"
               },
               {
                 "xs": 0,
@@ -2544,14 +2548,16 @@
                     "dataSrc": "custom",
                     "data": {
                       "url": "/citeck/ecos/records/query",
-                      "custom": "for (var i in data.period.records) {\n        values.push({label: data.period.records[i].name,value: data.period.records[i].id})\n}",
+                      "custom": "for (var i in data.period.records) {\n    values.push({label: data.period.records[i].name,value: data.period.records[i].id})\n}",
                       "values": [],
                       "json": "",
                       "resource": ""
                     },
-                    "refreshOnEvent": false,
+                    "refreshOnEvent": true,
                     "selectThreshold": 0.3,
-                    "defaultValue": "",
+                    "refreshOn": [],
+                    "calculateValue": "value = data.payments_period",
+                    "allowCalculateOverride": true,
                     "encrypted": false,
                     "validate": {
                       "customMessage": "",
@@ -2576,6 +2582,8 @@
                     "type": "ecosSelect",
                     "input": true,
                     "tags": [],
+                    "refreshEventName": "periodEvent",
+                    "defaultValue": "",
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -2599,10 +2607,7 @@
                     "autofocus": false,
                     "dbIndex": false,
                     "customDefaultValue": "",
-                    "calculateValue": "",
-                    "allowCalculateOverride": false,
                     "widget": null,
-                    "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
                     "limit": 100,
@@ -2618,8 +2623,7 @@
                     "searchThreshold": 0.3,
                     "fuseOptions": {},
                     "customOptions": {},
-                    "refreshEventName": "",
-                    "id": "eurneo"
+                    "id": "egse67l"
                   }
                 ],
                 "placeholder": "",
@@ -2662,7 +2666,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ee0mby"
+                "id": "ebt2q5u"
               }
             ],
             "mask": false,
@@ -2719,7 +2723,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e3ljd7o"
+            "id": "e05k2bo"
           }
         ],
         "tags": [],
@@ -2756,7 +2760,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "erduzga"
+        "id": "eosq3ca"
       },
       {
         "label": "Panel",
@@ -2812,7 +2816,10 @@
                     "refreshEventName": "currencyListEvent",
                     "selectThreshold": 0.3,
                     "defaultValue": "workspace://SpacesStore/currency-rur",
-                    "refreshOn": "payments_basis",
+                    "refreshOn": [
+                      "payments_basis"
+                    ],
+                    "clearOnRefresh": true,
                     "customDefaultValue": "if (data.paymentsBasis && data.paymentsBasis.agreementCurrency && data.paymentsBasis.agreementCurrency !== null) {\r\n    value = data.paymentsBasis.agreementCurrency;\r\n} else if (data.paymentsBasis && data.paymentsBasis.currency && data.paymentsBasis.currency !== null) {\r\n    value = data.paymentsBasis.currency;\t\r\n} else {\r\n\tvalue = 'workspace://SpacesStore/currency-rur';\r\n}",
                     "encrypted": false,
                     "validate": {
@@ -2833,7 +2840,27 @@
                       "eq": ""
                     },
                     "customConditional": "",
-                    "logic": [],
+                    "logic": [
+                      {
+                        "name": "disabled_on",
+                        "trigger": {
+                          "type": "javascript",
+                          "javascript": "if (data.paymentsBasis && data.paymentsBasis.agreementCurrency !== null) {\r\n    result = true;\r\n} else if (data.paymentsBasis && data.paymentsBasis.currency !== null) {\r\n    result = true;\r\n} else {\r\n    result = false;\r\n}"
+                        },
+                        "actions": [
+                          {
+                            "name": "disabled_on",
+                            "type": "property",
+                            "property": {
+                              "label": "Disabled",
+                              "value": "disabled",
+                              "type": "boolean"
+                            },
+                            "state": "true"
+                          }
+                        ]
+                      }
+                    ],
                     "attributes": {},
                     "type": "ecosSelect",
                     "input": true,
@@ -2863,7 +2890,6 @@
                     "calculateValue": "",
                     "allowCalculateOverride": false,
                     "widget": null,
-                    "clearOnRefresh": false,
                     "validateOn": "change",
                     "limit": 100,
                     "valueProperty": "value",
@@ -2878,7 +2904,7 @@
                     "searchThreshold": 0.3,
                     "fuseOptions": {},
                     "customOptions": {},
-                    "id": "en5gdz"
+                    "id": "edtqv2"
                   },
                   {
                     "label": "payments:overexpenditure",
@@ -2904,7 +2930,7 @@
                       "json": "",
                       "eq": ""
                     },
-                    "customConditional": "show = instance.options.formMode == 'CREATE' ? true : false;",
+                    "customConditional": "",
                     "logic": [],
                     "attributes": {},
                     "type": "checkbox",
@@ -2943,7 +2969,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "e31aywn"
+                    "id": "ekt4r1"
                   }
                 ],
                 "width": 6,
@@ -3002,7 +3028,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eot4b2k"
+                "id": "e8ekgdj"
               },
               {
                 "components": [
@@ -3013,13 +3039,15 @@
                     "alwaysEnabled": false,
                     "delimiter": false,
                     "requireDecimal": false,
-                    "calculateValue": "for (var i in data.containsProductsAndServices) {\n    value += parseFloat (data.containsProductsAndServices[i].total);\n}",
+                    "defaultValue": 0,
+                    "calculateValue": "value = 0;\r\nif (instance.options.formMode === 'CREATE' && data.containsProductsAndServices.length > 0) {\r\n    for (var i in data.containsProductsAndServices) {\r\n        value += parseFloat (data.containsProductsAndServices[i].total);\r\n    }\r\n}",
+                    "allowCalculateOverride": true,
                     "encrypted": false,
                     "validate": {
+                      "required": true,
                       "customMessage": "",
                       "json": "",
                       "min": 0,
-                      "required": false,
                       "custom": "",
                       "customPrivate": false,
                       "max": "",
@@ -3042,7 +3070,7 @@
                         "name": "required_off",
                         "trigger": {
                           "type": "javascript",
-                          "javascript": "result = !!data.dms_updateContent ? true : false;"
+                          "javascript": "result = data.dms_updateContent ? true : false;"
                         },
                         "actions": [
                           {
@@ -3054,6 +3082,25 @@
                               "type": "boolean"
                             },
                             "state": "false"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "protected_on",
+                        "trigger": {
+                          "type": "javascript",
+                          "javascript": "result = data.dms_updateContent || (instance.options.formMode !== 'CREATE' && data.pas_containsProductsAndServices.length > 0) ? true : false;"
+                        },
+                        "actions": [
+                          {
+                            "name": "protected_on",
+                            "type": "property",
+                            "property": {
+                              "label": "Disabled",
+                              "value": "disabled",
+                              "type": "boolean"
+                            },
+                            "state": "true"
                           }
                         ]
                       }
@@ -3068,7 +3115,6 @@
                     "customClass": "",
                     "suffix": "",
                     "multiple": false,
-                    "defaultValue": null,
                     "protected": false,
                     "unique": false,
                     "persistent": true,
@@ -3087,12 +3133,11 @@
                     "autofocus": false,
                     "dbIndex": false,
                     "customDefaultValue": "",
-                    "allowCalculateOverride": false,
                     "widget": null,
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "e0dijdg"
+                    "id": "e0ynoi"
                   }
                 ],
                 "width": 6,
@@ -3151,7 +3196,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e6o5uum"
+                "id": "egvr5y5"
               },
               {
                 "xs": 0,
@@ -3174,6 +3219,7 @@
                     "alwaysEnabled": false,
                     "delimiter": false,
                     "requireDecimal": false,
+                    "defaultValue": 0,
                     "encrypted": false,
                     "validate": {
                       "required": true,
@@ -3202,7 +3248,6 @@
                     "type": "number",
                     "input": true,
                     "tags": [],
-                    "defaultValue": 0,
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -3232,7 +3277,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "ed42y7h"
+                    "id": "emb8fi"
                   }
                 ],
                 "placeholder": "",
@@ -3275,7 +3320,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ez49wtq"
+                "id": "e28bhnl7"
               },
               {
                 "xs": 0,
@@ -3331,7 +3376,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ef1omus"
+                "id": "epc2lt3"
               }
             ],
             "mask": false,
@@ -3388,7 +3433,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "ec2vcv"
+            "id": "e165rb"
           }
         ],
         "tags": [],
@@ -3425,7 +3470,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "ea0k7mh"
+        "id": "et1woxh1"
       },
       {
         "label": "Panel",
@@ -3516,7 +3561,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "eg1xt1l"
+                    "id": "e2h243g"
                   }
                 ],
                 "width": 6,
@@ -3575,7 +3620,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ehc254"
+                "id": "e733o3o"
               },
               {
                 "components": [],
@@ -3635,7 +3680,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e6bezp"
+                "id": "eghuyt"
               }
             ],
             "mask": false,
@@ -3692,7 +3737,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e57wqmf"
+            "id": "e8ndowc"
           },
           {
             "label": "Columns",
@@ -3799,7 +3844,7 @@
                     "uploadOnly": false,
                     "defaultOverlayWidth": 200,
                     "defaultOverlayHeight": 200,
-                    "id": "e8h2opr"
+                    "id": "ecgabx"
                   },
                   {
                     "label": "pas:containsProductsAndServices",
@@ -3822,6 +3867,9 @@
                             "name": "cm:title"
                           },
                           {
+                            "name": "cm:description"
+                          },
+                          {
                             "name": "pas:pricePerUnit"
                           },
                           {
@@ -3829,6 +3877,9 @@
                           },
                           {
                             "name": "pas:entityUnit"
+                          },
+                          {
+                            "name": "pas:total"
                           },
                           {
                             "name": "pas:type"
@@ -3842,6 +3893,7 @@
                         "attribute": null
                       }
                     },
+                    "defaultValue": [],
                     "encrypted": false,
                     "displayColumnsAsyncData": [],
                     "validate": {
@@ -3861,7 +3913,7 @@
                       "json": "",
                       "eq": ""
                     },
-                    "customConditional": "show = (instance.options.formMode === 'CREATE' && data.dms_updateContent) ? true : false;",
+                    "customConditional": "show = ((instance.options.formMode !== 'CREATE' && data.pas_containsProductsAndServices.length > 0) || data.dms_updateContent) ? true : false;",
                     "logic": [
                       {
                         "name": "required_off",
@@ -3881,6 +3933,25 @@
                             "state": "false"
                           }
                         ]
+                      },
+                      {
+                        "name": "disabled_on",
+                        "trigger": {
+                          "type": "javascript",
+                          "javascript": "result = instance.options.formMode !== 'CREATE' ? true : false;"
+                        },
+                        "actions": [
+                          {
+                            "name": "disabled_on",
+                            "type": "property",
+                            "property": {
+                              "label": "Disabled",
+                              "value": "disabled",
+                              "type": "boolean"
+                            },
+                            "state": "true"
+                          }
+                        ]
                       }
                     ],
                     "attributes": {},
@@ -3888,7 +3959,6 @@
                     "input": true,
                     "tags": [],
                     "_journalId": "alf_term:teReqRoute",
-                    "defaultValue": [],
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -3917,7 +3987,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "eeecana"
+                    "id": "eg1rnfc"
                   }
                 ],
                 "width": 6,
@@ -3976,7 +4046,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "elqi3nu"
+                "id": "eayn7ta"
               },
               {
                 "components": [],
@@ -4036,7 +4106,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "emba1kl"
+                "id": "ekcckz8"
               }
             ],
             "mask": false,
@@ -4093,7 +4163,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "epctt0f1"
+            "id": "e6ej52q"
           },
           {
             "label": "payments:paymentComment",
@@ -4173,7 +4243,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "exk8ldb"
+            "id": "efyye4"
           }
         ],
         "tags": [],
@@ -4215,7 +4285,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "e6ivofn"
+        "id": "elcsw5o"
       },
       {
         "label": "paymentsBasis",
@@ -4225,11 +4295,11 @@
             "id": "{{data.payments_basis}}",
             "attributes": {
               "contractWith": "contracts:contractWith",
-              "contractor": "contracts:contractor",
+              "contractor": "contracts:contractor?id",
               "type": "_type",
               "agreementCurrency": "contracts:agreementCurrency?id",
               "currency": "payments:currency?id",
-              "agreementLegalEntity": "contracts:agreementLegalEntity",
+              "agreementLegalEntity": "contracts:agreementLegalEntity?id",
               "legalEntity": "idocs:legalEntity"
             }
           },
@@ -4262,12 +4332,13 @@
           "force": false
         },
         "refreshOn": [],
-        "triggerEventOnChange": false,
+        "triggerEventOnChange": true,
         "key": "paymentsBasis",
         "type": "asyncData",
         "input": true,
         "tableView": true,
         "tags": [],
+        "eventName": "paymentsBasisEvent",
         "placeholder": "",
         "prefix": "",
         "customClass": "",
@@ -4309,9 +4380,8 @@
         },
         "mask": false,
         "inputType": "asyncData",
-        "eventName": "",
         "executionCondition": "",
-        "id": "ec3qh17"
+        "id": "erhn148"
       },
       {
         "label": "period",
@@ -4351,7 +4421,7 @@
         },
         "refreshOn": [],
         "triggerEventOnChange": true,
-        "eventName": "legalEntitiesEvent",
+        "eventName": "periodEvent",
         "key": "period",
         "type": "asyncData",
         "input": true,
@@ -4399,7 +4469,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "eucvnhi"
+        "id": "exwm2n"
       },
       {
         "label": "containsProductsAndServices",
@@ -4414,7 +4484,8 @@
           },
           "recordsArray": {
             "attributes": {
-              "total": "pas:total"
+              "total": "pas:total",
+              "entityUnit": "pas:entityUnit"
             },
             "id": "{{data.pas_containsProductsAndServices}}"
           },
@@ -4489,7 +4560,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "eva76og"
+        "id": "ep53ssq"
       },
       {
         "label": "payer",
@@ -4579,7 +4650,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "e541dn"
+        "id": "e9gu5ln"
       },
       {
         "label": "currencyList",
@@ -4667,7 +4738,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "eqny1dm"
+        "id": "ead1k3q"
       },
       {
         "label": "legalEntities",
@@ -4756,7 +4827,95 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "eyb6hm4"
+        "id": "en87lrg"
+      },
+      {
+        "label": "payment",
+        "source": {
+          "type": "recordsQuery",
+          "recordsQuery": {
+            "attributes": {
+              "key": "cm:title"
+            },
+            "query": "var value = {\r\n  query: 'TYPE:\"payments:payment\"',\r\n  language: 'fts-alfresco'\r\n}",
+            "isSingle": false
+          },
+          "ajax": {
+            "method": "GET",
+            "url": "",
+            "data": "",
+            "mapping": ""
+          },
+          "record": {
+            "id": "",
+            "attributes": {}
+          },
+          "recordsArray": {
+            "id": "",
+            "attributes": {}
+          },
+          "custom": {
+            "syncData": {},
+            "asyncData": {}
+          }
+        },
+        "update": {
+          "type": "any-change",
+          "event": "",
+          "rate": 100,
+          "force": false
+        },
+        "refreshOn": [],
+        "triggerEventOnChange": false,
+        "key": "payment",
+        "type": "asyncData",
+        "input": true,
+        "tableView": true,
+        "tags": [],
+        "placeholder": "",
+        "prefix": "",
+        "customClass": "",
+        "suffix": "",
+        "multiple": false,
+        "defaultValue": null,
+        "protected": false,
+        "unique": false,
+        "persistent": true,
+        "hidden": false,
+        "clearOnHide": true,
+        "dataGridLabel": false,
+        "labelPosition": "top",
+        "labelWidth": 30,
+        "labelMargin": 3,
+        "description": "",
+        "errorLabel": "",
+        "tooltip": "",
+        "hideLabel": false,
+        "tabindex": "",
+        "disabled": false,
+        "autofocus": false,
+        "dbIndex": false,
+        "customDefaultValue": "",
+        "calculateValue": "",
+        "allowCalculateOverride": false,
+        "widget": null,
+        "clearOnRefresh": false,
+        "validateOn": "change",
+        "validate": {
+          "required": false,
+          "custom": "",
+          "customPrivate": false
+        },
+        "conditional": {
+          "show": null,
+          "when": null,
+          "eq": ""
+        },
+        "mask": false,
+        "inputType": "asyncData",
+        "eventName": "",
+        "executionCondition": "",
+        "id": "etbhqkl"
       },
       {
         "label": "Columns",
@@ -4831,7 +4990,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "equhkb2"
+                "id": "e5og0ha"
               }
             ],
             "width": 6,
@@ -4890,7 +5049,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "esb0plm"
+            "id": "e1yanfm"
           },
           {
             "components": [
@@ -4961,7 +5120,7 @@
                 "action": "submit",
                 "disableOnInvalid": false,
                 "removeIndents": false,
-                "id": "e4ej7ub"
+                "id": "e0twtn"
               }
             ],
             "width": 6,
@@ -5020,7 +5179,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "en3uhgh"
+            "id": "e5c82bm"
           },
           {
             "xs": 0,
@@ -5103,7 +5262,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "e5voo7c"
+                "id": "eotc8i"
               }
             ],
             "placeholder": "",
@@ -5146,7 +5305,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e82ofi2"
+            "id": "eu8uux2"
           }
         ],
         "mask": false,
@@ -5202,7 +5361,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "egt3anu"
+        "id": "eluyx5"
       },
       {
         "label": "Columns",
@@ -5265,7 +5424,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ee7w0h"
+            "id": "e7ws7d4"
           },
           {
             "components": [
@@ -5337,7 +5496,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "ezqb4nt"
+                "id": "ery7xsr"
               }
             ],
             "width": 6,
@@ -5396,7 +5555,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e8yuv3r"
+            "id": "e97vudm"
           },
           {
             "xs": 0,
@@ -5478,7 +5637,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "ex1ry7r"
+                "id": "egm1twn"
               }
             ],
             "placeholder": "",
@@ -5521,7 +5680,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ebxky1i"
+            "id": "egfj1uq"
           },
           {
             "xs": 0,
@@ -5577,7 +5736,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e6e1f3"
+            "id": "eknsctm"
           }
         ],
         "mask": false,
@@ -5633,7 +5792,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e8kzvce"
+        "id": "eqswvxt"
       }
     ]
   },
@@ -5651,8 +5810,11 @@
       "Budget item": "Статья бюджета",
       "Several budgets": "Несколько бюджетов",
       "Single budget initial amount": "Сумма",
-      "Заголовок": "Заголовок",
-      "Finance": "Финансы"
+      "Title": "Заголовок",
+      "Finance": "Финансы",
+      "Create invoice": "Создать счет",
+      "product": "Продукт",
+      "service": "Услуга"
     },
     "en": {
       "Save": "Save",
@@ -5667,8 +5829,11 @@
       "Budget item": "Budget item",
       "Several budgets": "Several budgets",
       "Single budget initial amount": "Single budget initial amount",
-      "Заголовок": "Title",
-      "Finance": "Finance"
+      "Title": "Title",
+      "Finance": "Finance",
+      "Create invoice": "Create invoice",
+      "product": "Product",
+      "service": "Service"
     }
   }
 }
