@@ -164,16 +164,20 @@ public class EurekaAlfClientConfig extends AbstractEurekaConfig implements Eurek
             serviceUrls = getStrParam("serviceUrl." + myZone, () ->
                     getStrParam("serviceUrl.default", () -> null)
             );
+            if (serviceUrls == null) {
+                Boolean isDevEnv = getBoolParam("ecos.environment.dev", () -> false);
+                if (isDevEnv) {
+                    serviceUrls = "http://admin:admin@127.0.0.1:8761/eureka";
+                } else {
+                    serviceUrls = "http://admin:admin@jhipster-registry:8761/eureka";
+                }
+            }
         } else {
             serviceUrls = serviceUrls.replaceAll("\\$?\\$\\{ecos\\.registry\\.password}", password);
             serviceUrls = serviceUrls.replaceAll("\\$?\\$\\{jhipster\\.registry\\.password}", password);
         }
 
-        if (serviceUrls != null) {
-            return Arrays.asList(serviceUrls.split(DefaultEurekaClientConfig.URL_SEPARATOR));
-        } else {
-            return defaultConfig.getEurekaServerServiceUrls(myZone);
-        }
+        return Arrays.asList(serviceUrls.split(DefaultEurekaClientConfig.URL_SEPARATOR));
     }
 
     @Override
