@@ -54,11 +54,9 @@ public class CaseSubcaseBehavior implements
     private NodeService nodeService;
     private CaseElementServiceImpl caseElementService;
 
-    private int order = 50;
 
     public void init() {
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME, ICaseModel.ASPECT_CASE,
-//                new OrderedBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT, order));
                 new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
         policyComponent.bindClassBehaviour(CaseElementPolicies.OnCaseElementAddPolicy.QNAME, ICaseModel.ASPECT_CASE,
                 new JavaBehaviour(this, "onCaseElementAdd", NotificationFrequency.TRANSACTION_COMMIT));
@@ -234,10 +232,6 @@ public class CaseSubcaseBehavior implements
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
     }
 
     public void setCaseElementService(CaseElementServiceImpl caseElementService) {
