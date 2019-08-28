@@ -148,10 +148,8 @@ public class AlfNodeAttValue implements MetaValue {
             return MetaUtils.getReflectionValue(qName, name);
         } else if (rawValue instanceof MLText) {
             return new MLTextValue((MLText) rawValue);
-        } else if (rawValue instanceof ContentData) {
-            if ("previewInfo".equals(name)) {
-                return getContentInfo();
-            }
+        } else if (rawValue instanceof ContentData && "previewInfo".equals(name)) {
+            return getContentInfo();
         }
         return null;
     }

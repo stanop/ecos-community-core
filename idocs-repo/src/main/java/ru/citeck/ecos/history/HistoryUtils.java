@@ -130,11 +130,9 @@ public class HistoryUtils {
         } else {
             /** Single title */
             QName titleQName = getHistoryEventTitleMapperService().getTitleQName(nodeService.getType(nodeRef));
-            if (titleQName != null) {
-                if (nodeService.getProperty(nodeRef, titleQName) != null) {
-                    Serializable value = nodeService.getProperty(nodeRef, titleQName);
-                    return transformValueToString(value, nodeService);
-                }
+            if (titleQName != null && nodeService.getProperty(nodeRef, titleQName) != null) {
+                Serializable value = nodeService.getProperty(nodeRef, titleQName);
+                return transformValueToString(value, nodeService);
             }
             /** List title */
             List<QName> titlesQName = getHistoryEventTitleMapperService().getTitleQNames(nodeService.getType(nodeRef));

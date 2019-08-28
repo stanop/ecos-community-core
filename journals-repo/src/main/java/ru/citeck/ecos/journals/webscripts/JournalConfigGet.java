@@ -225,12 +225,10 @@ public class JournalConfigGet extends AbstractWebScript {
 
         fillMetaFromRepo(meta, journalData);
 
-        if (meta.getPredicate() == null) {
-            if (StringUtils.isNotBlank(type)) {
-                Predicate predicate = ValuePredicate.equal("TYPE", type);
-                meta.setPredicate(predicateService.writeJson(predicate));
-                meta.setMetaRecord(String.format(META_RECORD_TEMPLATE, type));
-            }
+        if (meta.getPredicate() == null && StringUtils.isNotBlank(type)) {
+            Predicate predicate = ValuePredicate.equal("TYPE", type);
+            meta.setPredicate(predicateService.writeJson(predicate));
+            meta.setMetaRecord(String.format(META_RECORD_TEMPLATE, type));
         }
 
         if (StringUtils.isBlank(journal.getDataSource()) && StringUtils.isNotBlank(type)) {

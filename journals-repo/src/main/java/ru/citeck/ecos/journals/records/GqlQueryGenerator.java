@@ -86,10 +86,8 @@ public class GqlQueryGenerator {
 
         // attributes
         Set<String> attributesToLoad = new HashSet<>();
-        if (javaClass != null) {
-            if (QName.class.isAssignableFrom(javaClass)) {
-                attributesToLoad.add("shortName");
-            }
+        if (javaClass != null && QName.class.isAssignableFrom(javaClass)) {
+            attributesToLoad.add("shortName");
         }
 
         Matcher attrMatcher = FORMATTER_ATTRIBUTES_PATTERN.matcher(formatter);

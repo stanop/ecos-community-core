@@ -52,10 +52,8 @@ public class CaseStatusServiceJS extends AlfrescoScopableProcessorExtension {
         NodeRef statusRef = caseStatusService.getStatusRef(docRef);
         for (String status : statuses) {
             NodeRef statRef = caseStatusService.getStatusByName(status);
-            if (statRef != null) {
-                if (statRef.equals(statusRef)) {
-                    return true;
-                }
+            if (statRef != null && statRef.equals(statusRef)) {
+                return true;
             }
         }
         return false;

@@ -104,10 +104,8 @@ public enum SearchPredicate {
                 criterionValue = QName.createQName(String.valueOf(criterionValue));
             }
 
-            if (nodeValue instanceof QName && criterionValue instanceof QName) {
-                if (nodeValue.equals(criterionValue)) {
-                    return true;
-                }
+            if (nodeValue.equals(criterionValue)) {
+                return true;
             }
             return false;
 

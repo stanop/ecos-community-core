@@ -246,27 +246,24 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
 	public void onUpdateProperties(final NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) 
 	{
 		logger.debug("onUpdateProperties event");
-		if(nodeService.exists(nodeRef)) 
+		if(nodeService.exists(nodeRef) && nameDetermineProp!=null)
 		{
-			if(nameDetermineProp!=null)
+			Object propBefore = (Object) before.get(nameDetermineProp);
+			Object propAfter = (Object) after.get(nameDetermineProp);
+			NodeRef currentParentFolder = null;
+			if((propBefore!=null && !propBefore.equals(propAfter)) || (propBefore==null && propAfter!=null))
 			{
-				Object propBefore = (Object) before.get(nameDetermineProp);
-				Object propAfter = (Object) after.get(nameDetermineProp);
-				NodeRef currentParentFolder = null;
-				if((propBefore!=null && !propBefore.equals(propAfter)) || (propBefore==null && propAfter!=null))
+				for(ChildAssociationRef parent : nodeService.getParentAssocs(nodeRef))
 				{
-					for(ChildAssociationRef parent : nodeService.getParentAssocs(nodeRef))
+					if(nodeService.exists(parent.getParentRef()) && folderQName!=null && folderQName.equals(nodeService.getType(parent.getParentRef())))
 					{
-						if(nodeService.exists(parent.getParentRef()) && folderQName!=null && folderQName.equals(nodeService.getType(parent.getParentRef())))
-						{
-							currentParentFolder = parent.getParentRef();
-							break;
-						}
+						currentParentFolder = parent.getParentRef();
+						break;
 					}
-					if(currentParentFolder!=null && nodeService.exists(currentParentFolder))
-					{
-						nodeService.setProperty(currentParentFolder, ContentModel.PROP_NAME, propAfter.toString());
-					}
+				}
+				if(currentParentFolder!=null && nodeService.exists(currentParentFolder))
+				{
+					nodeService.setProperty(currentParentFolder, ContentModel.PROP_NAME, propAfter.toString());
 				}
 			}
 		}

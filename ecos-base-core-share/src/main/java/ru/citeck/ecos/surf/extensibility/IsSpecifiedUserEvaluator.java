@@ -42,9 +42,8 @@ public class IsSpecifiedUserEvaluator extends AbstractUniversalEvaluator {
 			}
 		}
 		String inverseStr = params.get(INVERSE);
-		if (isNotEmpty(inverseStr)) {
-			if (Boolean.parseBoolean(inverseStr))
-				result = !result;
+		if (isNotEmpty(inverseStr) && Boolean.parseBoolean(inverseStr)) {
+			result = !result;
 		}
 		return result;
 	}

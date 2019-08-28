@@ -367,10 +367,8 @@ public class HistoryService {
                 skipCount += documents.size();
                 resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
                 logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
-                if (stopCount != null && stopCount > 0) {
-                    if (stopCount < documentsTransferred) {
-                        break;
-                    }
+                if (stopCount != null && stopCount > 0 && stopCount < documentsTransferred) {
+                    break;
                 }
             } while (hasMore);
             logger.info("History transferring - all documents have been transferred - " + (documentsTransferred + offset));

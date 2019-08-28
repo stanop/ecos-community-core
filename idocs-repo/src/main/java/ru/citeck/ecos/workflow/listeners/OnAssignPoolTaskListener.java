@@ -44,12 +44,8 @@ public class OnAssignPoolTaskListener implements TaskListener
 		{
 			workflowService = serviceRegistry.getWorkflowService();
 			WorkflowTask wftask = workflowService.getTaskById("activiti$"+task.getId());
-			if(task.getAssignee()==null)
-			{
-				if(wftask!=null)
-				{
-					sender.sendNotification(wftask);
-				}
+			if(task.getAssignee() == null && wftask != null) {
+				sender.sendNotification(wftask);
 			}
 		}
 	}

@@ -124,10 +124,8 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
             }
         }
 
-        if (elementConfigs.isEmpty()) {
-            if (isElementMatched(caseRef, requirement, caseRef)) {
-                matchedElements.add(caseRef);
-            }
+        if (elementConfigs.isEmpty() && isElementMatched(caseRef, requirement, caseRef)) {
+            matchedElements.add(caseRef);
         }
 
         return matchedElements;

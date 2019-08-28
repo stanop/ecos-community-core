@@ -56,12 +56,10 @@ public class DropDownFieldConverter extends FieldConverter<OptionFormField> {
                 Matcher matcher = pattern.matcher(optionsExpression);
                 if (matcher.find()) {
                     optionsExpressionVariable = matcher.group(1);
-                    if (StringUtils.isNotBlank(optionsExpressionVariable)) {
-                        if (variables.containsKey(optionsExpressionVariable)) {
-                            Object optionsExpressionValue = variables.get(optionsExpressionVariable);
-                            if (optionsExpressionValue instanceof List) {
-                                options.addAll((Collection<? extends String>) optionsExpressionValue);
-                            }
+                    if (StringUtils.isNotBlank(optionsExpressionVariable) && variables.containsKey(optionsExpressionVariable)) {
+                        Object optionsExpressionValue = variables.get(optionsExpressionVariable);
+                        if (optionsExpressionValue instanceof List) {
+                            options.addAll((Collection<? extends String>) optionsExpressionValue);
                         }
                     }
                 }

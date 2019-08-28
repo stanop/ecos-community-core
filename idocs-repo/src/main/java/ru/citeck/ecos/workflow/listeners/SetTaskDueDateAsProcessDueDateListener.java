@@ -34,12 +34,9 @@ public class SetTaskDueDateAsProcessDueDateListener
 	{
     	Object wfDueDate = task.getExecution().getVariable("bpm_workflowDueDate");
 		Object setDueDate = task.getExecution().getVariable("cwf_setDueDate");
-		if (Boolean.TRUE.equals((Boolean)setDueDate))
+		if (Boolean.TRUE.equals((Boolean) setDueDate) && wfDueDate != null)
 		{
-			if(wfDueDate!=null)
-			{
-				task.setDueDate((Date)wfDueDate);
-			}
+			task.setDueDate((Date) wfDueDate);
 		}
     }
 
