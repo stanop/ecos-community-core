@@ -24,9 +24,7 @@ public class RemoveDetachedJob extends AbstractLockedJob
 
 	private static final Object PARAM_SEARCH_SERVICE = "searchService";
 	private static final Object PARAM_NODE_SERVICE = "NodeService";
-	private static final Object PARAM_SERVICE = "ServiceRegistry";
-	private static final Object PARAM_MINUS_DAYS = "ServiceRegistry";
-	
+
 	private int minusDays;
 	  
     public void setMinusDays(int timeout) {

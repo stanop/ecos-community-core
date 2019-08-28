@@ -47,8 +47,6 @@ import java.util.*;
  */
 public class ReportProducer extends AbstractDataBundleLine {
 
-    private final static String NAMESPACE_BEGIN = "" + QName.NAMESPACE_BEGIN;
-
     private static final String NODES = "nodes";
     private static final String REPORT_COLUMNS = "reportColumns";
     private static final String COLUMN_ATTR = "attribute";

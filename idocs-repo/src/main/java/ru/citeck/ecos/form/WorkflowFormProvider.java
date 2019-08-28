@@ -1,6 +1,5 @@
 package ru.citeck.ecos.form;
 
-import org.activiti.engine.TaskService;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.workflow.WorkflowModel;
 import org.alfresco.repo.workflow.activiti.ActivitiConstants;
@@ -41,8 +40,6 @@ public class WorkflowFormProvider implements NodeViewProvider {
     private NodeViewService nodeViewService;
     @Autowired
     private NamespaceService namespaceService;
-    @Autowired
-    private TaskService taskService;
     @Autowired
     @Qualifier("workflowServiceImpl")
     private WorkflowService workflowService;

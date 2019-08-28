@@ -5,10 +5,7 @@ import ru.citeck.ecos.workflow.perform.PerformExecution;
 
 public class FlowablePerformExecution extends FlowableVariableScopeDelegate implements PerformExecution {
 
-    private final ExecutionEntity entity;
-
     public FlowablePerformExecution(ExecutionEntity impl) {
         super(impl);
-        entity = impl;
     }
 }

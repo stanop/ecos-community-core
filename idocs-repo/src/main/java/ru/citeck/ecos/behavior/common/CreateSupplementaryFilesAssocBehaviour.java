@@ -40,7 +40,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.AssociationExistsException;
-import org.alfresco.service.cmr.repository.TemplateService;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import ru.citeck.ecos.document.SupplementaryFilesDAO;
 import org.alfresco.service.cmr.repository.CyclicChildRelationshipException;
@@ -53,9 +52,6 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 	protected NodeService nodeService;
 	protected ServiceRegistry services;
 	protected DictionaryService dictionaryService;
-	private TemplateService templateService;
-	private String nodeVariable;
-	private String templateEngine;
 	private SupplementaryFilesDAO supplFilesDAO;
 
 	// distinct properties
@@ -138,20 +134,8 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 		this.nodeService = nodeService;
 	}
 
-	public void setTemplateService(TemplateService templateService) {
-		this.templateService = templateService;
-	}
-
 	public void setClassName(QName className) {
 		this.className = className;
-	}
-
-	public void setTemplateEngine(String templateEngine) {
-		this.templateEngine = templateEngine;
-	}
-
-	public void setNodeVariable(String nodeVariable) {
-		this.nodeVariable = nodeVariable;
 	}
 
 	public void setAllowedDocTypes(List<QName> allowedDocTypes) {

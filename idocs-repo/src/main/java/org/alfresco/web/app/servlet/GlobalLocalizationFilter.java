@@ -49,7 +49,6 @@ import ru.citeck.ecos.server.utils.StrictLocaleRequest;
  *         ALL requests.
  */
 public class GlobalLocalizationFilter implements Filter {
-	private static final String LOCALE = "locale";
 	public static final String MESSAGE_BUNDLE = "alfresco.messages.webclient";
 
 	/**

@@ -92,7 +92,6 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
     public static final String ARG_WORKFLOW_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
     private static final String ARG_RECIPIENTS_FROM_ROLE = "iCase_Role";
-    private Map<String, Map<String, List<String>>> taskSubscribers;
     protected WorkflowQNameConverter qNameConverter;
     protected PersonService personService;
     protected AuthenticationService authenticationService;
@@ -100,7 +99,6 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
     protected boolean sendToOwner;
     protected boolean mandatoryFieldsFilled = true;
     private NodeOwnerDAO nodeOwnerDAO;
-    private Map<String, Map<String, String>> taskProperties;
     private Map<String, Boolean> checkAssignee;
     private Map<String, List<String>> additionRecipients;
     private Map<String, List<String>> supervisors;
@@ -120,15 +118,6 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
         this.authenticationService = serviceRegistry.getAuthenticationService();
         this.personService = serviceRegistry.getPersonService();
         this.authorityService = serviceRegistry.getAuthorityService();
-    }
-
-    /**
-     * Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
-     *
-     * @param taskSubscribers subscribers
-     */
-    public void setTaskSubscribers(Map<String, Map<String, List<String>>> taskSubscribers) {
-        this.taskSubscribers = taskSubscribers;
     }
 
     // get notification template arguments for the task
@@ -393,10 +382,6 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 
     public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
         this.nodeOwnerDAO = nodeOwnerDAO;
-    }
-
-    public void setTaskProperties(Map<String, Map<String, String>> taskProperties) {
-        this.taskProperties = taskProperties;
     }
 
     public void setAdditionRecipients(Map<String, List<String>> additionRecipients) {

@@ -88,10 +88,6 @@ public class HistoryService {
     private static final String PROPERTY_NAME = "propertyName";
     private static final String EXPECTED_PERFORM_TIME = "expectedPerformTime";
 
-    private static final String TRANSFER_PROCESS_NAME = "transfer-old-history-process";
-    private static final int BATCH_SIZE = 1;
-    private static final int LOGGING_INTERVAL = 10;
-
     private static Log logger = LogFactory.getLog(HistoryService.class);
     private static final String PROPERTY_PREFIX = "event";
     private static final String HISTORY_ROOT = "/" + "history:events";

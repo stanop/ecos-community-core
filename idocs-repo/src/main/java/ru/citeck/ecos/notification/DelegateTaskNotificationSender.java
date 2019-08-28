@@ -84,11 +84,9 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
     public static final String ARG_WORKFLOW_ID = "id";
     public static final String ARG_WORKFLOW_PROPERTIES = "properties";
     public static final String ARG_WORKFLOW_DOCUMENTS = "documents";
-    private Map<String, Map<String, String>> taskProperties;
     List<String> allowDocList;
     Map<String, Map<String, String>> subjectTemplates;
     Map<String, String> subjectTemplatesForWorkflow;
-    private TemplateService templateService;
     private String nodeVariable;
     private String templateEngine = "freemarker";
     private static final Log logger = LogFactory.getLog(DelegateTaskNotificationSender.class);
@@ -223,10 +221,6 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
         this.subjectTemplates = subjectTemplates;
     }
 
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
-    }
-
     public void setTemplateEngine(String templateEngine) {
         this.templateEngine = templateEngine;
     }
@@ -244,13 +238,6 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
         String wfkey = "activiti$" + processDef.substring(0, processDef.indexOf(":"));
         String tkey = (String) task.getVariableLocal("taskFormKey");
         return getNotificationTemplate(wfkey, tkey);
-    }
-
-    /* Properties for tasks provided as map: "task name"-{"property1"-"value1", ...}
-    * @param task subscribers
-    */
-    public void setTaskProperties(Map<String, Map<String, String>> taskProperties) {
-        this.taskProperties = taskProperties;
     }
 
     protected void sendToAssignee(DelegateTask task, Set<String> authorities) {
