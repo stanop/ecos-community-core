@@ -9,6 +9,7 @@ services:
       - PROXY_TARGET=$ALFRESCO_TARGET
       - GATEWAY_TARGET=$GATEWAY_TARGET
       - CADVISOR_TARGET=<CADVISOR_TARGET
+      - API_AUTH_TARGET=<API_AUTH_TARGET
     depends_on:
       - gateway-app
   gateway-app:
