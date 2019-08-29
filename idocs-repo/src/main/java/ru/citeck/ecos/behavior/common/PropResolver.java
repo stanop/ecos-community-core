@@ -32,7 +32,7 @@ public class PropResolver {
 
     private static NodeService nodeService;
 
-    public static enum UniqueType {
+    public enum UniqueType {
         INCREMENT_POSTFIX,
         FILENAME_INCREMENT_POSTFIX
     }
