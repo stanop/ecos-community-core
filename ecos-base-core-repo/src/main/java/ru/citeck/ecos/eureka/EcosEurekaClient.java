@@ -84,6 +84,7 @@ public class EcosEurekaClient {
         logger.info("===================================");
         logger.info("Register in eureka with params:");
         logger.info("Host: " + instanceConfig.getHostName(false) + ":" + instanceConfig.getNonSecurePort());
+        logger.info("IP:   " + instanceConfig.getIpAddress() + ":" + instanceConfig.getNonSecurePort());
         logger.info("Application name: " + instanceConfig.getAppname());
         logger.info("===================================");
 
