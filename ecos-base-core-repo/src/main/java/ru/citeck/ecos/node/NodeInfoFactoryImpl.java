@@ -544,9 +544,9 @@ class NodeInfoFactoryImpl implements NodeInfoFactory {
                     Collection<?> objects = (Collection) value;
                     List<NodeRef> targets = new ArrayList<>(objects.size());
                     for (Object object : objects) {
-                        if (object == null) {
-                            continue;
-                        } else if (object instanceof NodeRef) {
+                        if (object == null) continue;
+
+                        if (object instanceof NodeRef) {
                             targets.add((NodeRef) object);
                         } else if (object instanceof String) {
                             targets.add(new NodeRef((String) object));

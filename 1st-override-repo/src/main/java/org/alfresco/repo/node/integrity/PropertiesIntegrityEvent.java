@@ -53,7 +53,6 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
                 logger.debug("Event ignored - node gone: " + this);
             }
             eventResults.clear();
-            return;
         }
         else
         {
@@ -182,8 +181,6 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
                             "   Property: " + propertyQName + "\n" +
                             "   Constraint: " + e.getMessage());
                     eventResults.add(result);
-                    // next one
-                    continue;
                 }
             }
         }

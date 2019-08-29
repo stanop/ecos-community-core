@@ -132,9 +132,9 @@ public class FlowableListenerUtils {
         Collection source = (Collection) taskAttachments;
         ArrayList<NodeRef> target = new ArrayList<>(source.size());
         for (Object item : source) {
-            if (item == null) {
-                continue;
-            } else if (item instanceof NodeRef) {
+            if (item == null) continue;
+
+            if (item instanceof NodeRef) {
                 target.add((NodeRef) item);
             } else if (item instanceof ScriptNode) {
                 target.add(((ScriptNode) item).getNodeRef());
