@@ -98,7 +98,7 @@ public class PropResolver {
         return false;
     }
 
-    public void setNodeService(NodeService nodeService) {
+    public static void setNodeService(NodeService nodeService) {
         PropResolver.nodeService = nodeService;
     }
 
