@@ -3,6 +3,7 @@ package ru.citeck.ecos.currency;
 import org.alfresco.service.cmr.repository.NodeRef;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Currency entity
@@ -60,8 +61,8 @@ public class Currency {
 
         Currency currency = (Currency) o;
 
-        if (code != null ? !code.equals(currency.code) : currency.code != null) return false;
-        return numberCode != null ? numberCode.equals(currency.numberCode) : currency.numberCode == null;
+        if (!Objects.equals(code, currency.code)) return false;
+        return Objects.equals(numberCode, currency.numberCode);
     }
 
     @Override

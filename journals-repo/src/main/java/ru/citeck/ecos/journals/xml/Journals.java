@@ -3,6 +3,7 @@ package ru.citeck.ecos.journals.xml;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -122,8 +123,8 @@ public class Journals {
 
         Journals journals = (Journals) o;
 
-        if (imports != null ? !imports.equals(journals.imports) : journals.imports != null) return false;
-        return journal != null ? journal.equals(journals.journal) : journals.journal == null;
+        if (!Objects.equals(imports, journals.imports)) return false;
+        return Objects.equals(journal, journals.journal);
 
     }
 
@@ -215,7 +216,7 @@ public class Journals {
 
             Imports imports = (Imports) o;
 
-            return _import != null ? _import.equals(imports._import) : imports._import == null;
+            return Objects.equals(_import, imports._import);
 
         }
 
@@ -313,8 +314,8 @@ public class Journals {
 
                 Import anImport = (Import) o;
 
-                if (uri != null ? !uri.equals(anImport.uri) : anImport.uri != null) return false;
-                return prefix != null ? prefix.equals(anImport.prefix) : anImport.prefix == null;
+                if (!Objects.equals(uri, anImport.uri)) return false;
+                return Objects.equals(prefix, anImport.prefix);
 
             }
 
