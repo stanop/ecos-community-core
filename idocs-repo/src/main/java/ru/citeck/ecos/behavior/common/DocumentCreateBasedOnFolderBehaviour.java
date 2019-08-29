@@ -181,8 +181,7 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
 					FileInfo newParentFolder = fileFolderService.create(defaultParentFolder, oldName.replace("/","_")+"_", folderQName);
 					NodeRef parentNodeRef = childAssocRef.getParentRef();
 					NodeRef parentFolderNodeRef = newParentFolder.getNodeRef();
-					FileInfo newFile = fileFolderService.move(nodeRef, parentFolderNodeRef, nodeService.getProperty(nodeRef, ContentModel.PROP_NAME).toString());
-					QName childQName = QName.createQName(ContentModel.ASSOC_CONTAINS.getNamespaceURI(), oldName+"_1_");
+					fileFolderService.move(nodeRef, parentFolderNodeRef, nodeService.getProperty(nodeRef, ContentModel.PROP_NAME).toString());
 					nodeService.setProperty(parentFolderNodeRef, ContentModel.PROP_NAME, oldName.replace("/","_"));
 					if(cpecialParentFolderNodeRef!=null)
 					{
