@@ -25,7 +25,6 @@ import org.alfresco.repo.forms.processor.node.EncodingFieldProcessor;
 import org.alfresco.repo.forms.processor.node.MimetypeFieldProcessor;
 import org.alfresco.repo.forms.processor.node.SizeFieldProcessor;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
-import org.alfresco.service.cmr.dictionary.PropertyDefinition;
 import org.alfresco.service.cmr.dictionary.TypeDefinition;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.namespace.NamespaceService;

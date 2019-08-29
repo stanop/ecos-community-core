@@ -3,7 +3,6 @@ package ru.citeck.ecos.service;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.cmr.repository.MimetypeService;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.apache.commons.io.IOUtils;
 import ru.citeck.ecos.processor.CompositeDataBundleProcessor;
 import ru.citeck.ecos.processor.DataBundle;
 import ru.citeck.ecos.processor.DataBundleProcessor;

@@ -16,7 +16,6 @@ import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
 import ru.citeck.ecos.dto.*;
 import ru.citeck.ecos.model.*;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;

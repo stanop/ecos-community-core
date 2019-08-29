@@ -11,7 +11,6 @@ import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.thumbnail.ThumbnailService;
 import org.alfresco.service.namespace.QName;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.graphql.node.Attribute;
 import ru.citeck.ecos.graphql.node.GqlAlfNode;

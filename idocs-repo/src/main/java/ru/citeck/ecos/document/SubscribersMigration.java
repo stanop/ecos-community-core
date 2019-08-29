@@ -32,8 +32,6 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceService;
 import ru.citeck.ecos.utils.LazyQName;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.service.namespace.RegexQNamePattern;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import ru.citeck.ecos.security.NodeOwnerDAO;
 import org.alfresco.service.cmr.security.PersonService;

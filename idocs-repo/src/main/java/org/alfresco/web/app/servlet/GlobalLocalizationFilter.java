@@ -24,7 +24,6 @@
 package org.alfresco.web.app.servlet;
 
 import java.io.IOException;
-import javax.servlet.http.HttpSession;
 import java.util.Locale;
 import java.util.StringTokenizer;
 

@@ -2,7 +2,6 @@ package ru.citeck.ecos.flowable.listeners.global.impl.task.create;
 
 import org.flowable.task.service.delegate.DelegateTask;
 import ru.citeck.ecos.flowable.listeners.global.GlobalAssignmentTaskListener;
-import ru.citeck.ecos.flowable.listeners.global.GlobalCompleteTaskListener;
 import ru.citeck.ecos.flowable.listeners.global.GlobalCreateTaskListener;
 import ru.citeck.ecos.workflow.mirror.WorkflowMirrorService;
 

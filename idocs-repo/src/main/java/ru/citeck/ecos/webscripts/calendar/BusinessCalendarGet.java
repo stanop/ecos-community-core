@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.webscripts.calendar;
 
-import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;

@@ -23,7 +23,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.util.ParameterCheck;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 /**

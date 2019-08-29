@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.QName;
 
 /**
  * Notification Sender for documents (ItemType = NodeRef).

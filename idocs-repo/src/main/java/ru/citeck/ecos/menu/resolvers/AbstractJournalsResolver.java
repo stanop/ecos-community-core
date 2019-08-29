@@ -1,8 +1,5 @@
 package ru.citeck.ecos.menu.resolvers;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -15,7 +12,6 @@ import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver {
 

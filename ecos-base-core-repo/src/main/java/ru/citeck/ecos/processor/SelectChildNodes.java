@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.processor;
 
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.QName;
@@ -26,7 +25,6 @@ import org.alfresco.service.namespace.QNamePattern;
 import org.alfresco.service.namespace.RegexQNamePattern;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

@@ -18,7 +18,6 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.StatefulJob;
 import org.apache.commons.logging.Log;
 import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.job.AbstractLockedJob;
