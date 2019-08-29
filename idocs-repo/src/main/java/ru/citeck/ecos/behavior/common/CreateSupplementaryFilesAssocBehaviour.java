@@ -91,7 +91,7 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 				{
 					String nameTemplate = null;
 					QName folderType = nodeService.getType(nodeSource);
-					if(folderType!=null && className!=null && folderType.equals(className))
+					if(folderType != null && folderType.equals(className))
 					{
 						try
 						{
