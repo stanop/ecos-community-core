@@ -151,7 +151,7 @@ public class JavaBehaviour extends BaseBehaviour {
         public boolean equals(Object obj) {
             if (obj == this) {
                 return true;
-            } else if (obj == null || !(obj instanceof JavaBehaviour.JavaMethodInvocationHandler)) {
+            } else if (!(obj instanceof JavaBehaviour.JavaMethodInvocationHandler)) {
                 return false;
             }
             JavaBehaviour.JavaMethodInvocationHandler other = (JavaBehaviour.JavaMethodInvocationHandler) obj;

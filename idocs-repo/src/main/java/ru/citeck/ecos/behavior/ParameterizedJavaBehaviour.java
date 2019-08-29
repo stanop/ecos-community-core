@@ -208,7 +208,7 @@ public class ParameterizedJavaBehaviour<P> extends BaseBehaviour
             {
                 return true;
             }
-            else if (obj == null || !(obj instanceof JavaMethodInvocationHandler))
+            else if (!(obj instanceof JavaMethodInvocationHandler))
             {
                 return false;
             }

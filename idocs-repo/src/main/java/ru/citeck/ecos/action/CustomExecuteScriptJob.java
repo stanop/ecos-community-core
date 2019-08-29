@@ -43,7 +43,7 @@ public class CustomExecuteScriptJob implements Job {
 
         // Get the script service from the job map
         Object scriptServiceObj = jobData.get(PARAM_SCRIPT_SERVICE);
-        if (scriptServiceObj == null || !(scriptServiceObj instanceof ScriptService))
+        if (!(scriptServiceObj instanceof ScriptService))
         {
             throw new AlfrescoRuntimeException(
                     "ExecuteScriptJob data must contain valid script service");
