@@ -112,7 +112,7 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
         if (StringUtils.isBlank(host)) {
             host = getStrParam("host", () -> getGlobalStrParam("alfresco.host", () -> "localhost"));
             if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
-                host = HOST_INFO.second();
+                host = getIpAddress();
             }
         }
         return host;
