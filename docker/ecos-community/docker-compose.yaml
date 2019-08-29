@@ -4,15 +4,16 @@ services:
     container_name: ecos-ui-develop
     ports:
       - 80:80/tcp
-    image: nexus.citeck.ru/ecos-ui:develop
+    image: nexus.citeck.ru/ecos-ui:release-1.4.1
     environment:
       - PROXY_TARGET=$ALFRESCO_TARGET
       - GATEWAY_TARGET=$GATEWAY_TARGET
       - CADVISOR_TARGET=<CADVISOR_TARGET
+      - API_AUTH_TARGET=<API_AUTH_TARGET
     depends_on:
       - gateway-app
   gateway-app:
-    image: nexus.citeck.ru/gateway:develop
+    image: nexus.citeck.ru/ecos-gateway:release-1.2.0
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m
       - SPRING_PROFILES_ACTIVE=dev,swagger
@@ -47,7 +48,7 @@ services:
     ports:
       - 8761:8761
   uiserv-app:
-    image: nexus.citeck.ru/uiserv:develop
+    image: nexus.citeck.ru/ecos-uiserv:release-1.2.0
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m -DLOCAL_HOST="$LOCAL_HOST"
       - SPRING_PROFILES_ACTIVE=dev,swagger
