@@ -51,7 +51,7 @@ public class CustomExecuteScriptJob implements Job {
 
         // Get the script location from the job map
         Object scriptLocationObj = jobData.get(PARAM_SCRIPT_LOCATION);
-        if (scriptLocationObj == null || !(scriptLocationObj instanceof ScriptLocation))
+        if (!(scriptLocationObj instanceof ScriptLocation))
         {
             throw new AlfrescoRuntimeException(
                     "ExecuteScriptJob data must contain valid script location");
@@ -59,7 +59,7 @@ public class CustomExecuteScriptJob implements Job {
 
         // Get the authentication component from the job map
         Object authenticationComponentObj = jobData.get(PARAM_AUTHENTICATION_COMPONENT);
-        if (authenticationComponentObj == null || !(authenticationComponentObj instanceof AuthenticationComponent))
+        if (!(authenticationComponentObj instanceof AuthenticationComponent))
         {
             throw new AlfrescoRuntimeException(
                     "ExecuteScriptJob data must contain valid authentication component");
