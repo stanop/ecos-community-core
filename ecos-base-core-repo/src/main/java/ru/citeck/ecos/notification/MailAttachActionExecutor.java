@@ -61,10 +61,9 @@ public class MailAttachActionExecutor extends MailActionExecuter {
                 if (attachments != null) {
                     try {
                         logger.debug("attachments != null");
-                        MimeMessage i$ = mimeMessageHelper.getMimeMessage();
-                        MimeMessage attachment = new MimeMessage(i$);
+                        MimeMessage attachment = mimeMessageHelper.getMimeMessage();
                         helper = new MimeMessageHelper(attachment, true, enc);
-                        Object name = i$.getContent();
+                        Object name = attachment.getContent();
                         logger.debug("name "+name);
                         if (name == null) {
                             throw new AlfrescoRuntimeException("You need to set body of the message");
@@ -77,10 +76,10 @@ public class MailAttachActionExecutor extends MailActionExecuter {
                         throw new AlfrescoRuntimeException("You need to set body of the message");
                     }
 
-                    Iterator i$1 = attachments.iterator();
+                    Iterator iter = attachments.iterator();
 
-                    while (i$1.hasNext()) {
-                        Map<String, Serializable> attachment1 = (Map<String, Serializable>)i$1.next();
+                    while (iter.hasNext()) {
+                        Map<String, Serializable> attachment1 = (Map<String, Serializable>)iter.next();
                         logger.debug("attachment1 "+attachment1);
                         String name1 = (String)attachment1.get("name");
                         logger.debug("name1 "+name1);
