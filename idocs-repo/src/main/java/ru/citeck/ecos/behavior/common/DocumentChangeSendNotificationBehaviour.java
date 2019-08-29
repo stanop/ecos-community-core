@@ -137,7 +137,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 				if(propertiesMode == PropertiesMode.INCLUDE && isContains
 						|| propertiesMode == PropertiesMode.EXCLUDE && !isContains) {
 
-					if((propBefore!=null && !propBefore.equals(propAfter))||(propBefore==null && propAfter!=null))
+					if(!Objects.equals(propBefore, propAfter))
 					{
 						PropertyDefinition propDefinition = dictionaryService.getProperty(entry.getKey());
 						String propTitle = null;

@@ -36,6 +36,8 @@ import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.service.CiteckServices;
 
+import java.util.Objects;
+
 public class EnumerationBehaviour implements NodeServicePolicies.OnCreateNodePolicy 
 {
 	private PolicyComponent policyComponent;
@@ -69,8 +71,7 @@ public class EnumerationBehaviour implements NodeServicePolicies.OnCreateNodePol
 		}
 		// check if enumeration is enabled
 		Object enumerationState = nodeService.getProperty(nodeRef, enumerationStateField);
-		if ((enabledState != null && !enabledState.equals(enumerationState)) ||
-				(enabledState == null && enumerationState != null)) {
+		if (!Objects.equals(enabledState, enumerationState)) {
 			return;
 		}
 		NodeRef template = enumerationService.getTemplate(templateName);

@@ -19,11 +19,7 @@
 package ru.citeck.ecos.icase;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.model.FileFolderService;
@@ -193,7 +189,7 @@ public class CaseUtils {
         List<NodeRef> configs = getConfigs(caseNodeRef, caseElementService);
         for (NodeRef config : configs) {
             Serializable prop = nodeService.getProperty(config, propertyName);
-            if (prop == null && value == null || prop != null && prop.equals(value)) {
+            if (Objects.equals(prop, value)) {
                 result = config;
                 break;
             }
@@ -208,7 +204,7 @@ public class CaseUtils {
         List<NodeRef> result = new LinkedList<>();
         for (NodeRef config : configs) {
             Serializable configValue = nodeService.getProperty(config, propertyName);
-            if (configValue == null && requiredValue == null || configValue != null && configValue.equals(requiredValue)) {
+            if (Objects.equals(configValue, requiredValue)) {
                 result.add(config);
             }
         }
