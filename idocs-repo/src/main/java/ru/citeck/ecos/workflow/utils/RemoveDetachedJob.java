@@ -41,7 +41,7 @@ public class RemoveDetachedJob extends AbstractLockedJob
 
         final SearchService searchService = (SearchService) data.get(PARAM_SEARCH_SERVICE);
 		final NodeService nodeService = (NodeService) data.get(PARAM_NODE_SERVICE);
-		final Integer minusDayz = minusDays;
+		final int minusDayz = minusDays;
 		
 		Integer deletedNodes = AuthenticationUtil.runAs(new RunAsWork<Integer>() {
 

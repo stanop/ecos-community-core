@@ -144,11 +144,11 @@ public class CaseActivityGet extends DeclarativeWebScript {
         objectNode.put("expectedPerformTime", performTime);
 
         /** Flags */
-        Boolean manualStarted = nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STARTED) != null ?
+        boolean manualStarted = nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STARTED) != null ?
                 (Boolean) nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STARTED) : false;
-        Boolean manualStopped = nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STOPPED) != null ?
+        boolean manualStopped = nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STOPPED) != null ?
                 (Boolean) nodeService.getProperty(nodeRef, ActivityModel.PROP_MANUAL_STOPPED) : false;
-        Boolean repeatable = nodeService.getProperty(nodeRef, ActivityModel.PROP_REPEATABLE) != null ?
+        boolean repeatable = nodeService.getProperty(nodeRef, ActivityModel.PROP_REPEATABLE) != null ?
                 (Boolean) nodeService.getProperty(nodeRef, ActivityModel.PROP_REPEATABLE) : false;
 
         AccessStatus writePermission = permissionService.hasPermission(nodeRef, "Write");
