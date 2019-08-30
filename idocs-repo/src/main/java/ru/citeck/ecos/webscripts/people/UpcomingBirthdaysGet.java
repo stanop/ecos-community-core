@@ -91,7 +91,7 @@ public class UpcomingBirthdaysGet extends AbstractWebScript {
         if (date == null) {
             return null;
         }
-        DateFormat df = new SimpleDateFormat("YYYY-MM-dd");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         return df.format(date);
     }
 
