@@ -484,13 +484,9 @@ public class LuceneQuery implements SearchQueryBuilder {
 
             switch (criterion) {
                 case ASSOC_CONTAINS:
-                    if (dictionaryService.getAssociation(fieldQName) != null && !dictionaryService.getAssociation(fieldQName).isTargetMany()) {
-                        return true;
-                    }
+                    return dictionaryService.getAssociation(fieldQName) != null && !dictionaryService.getAssociation(fieldQName).isTargetMany();
                 case NODEREF_CONTAINS:
-                    if (dictionaryService.getProperty(fieldQName) != null && !dictionaryService.getProperty(fieldQName).isMultiValued()) {
-                        return true;
-                    }
+                    return dictionaryService.getProperty(fieldQName) != null && !dictionaryService.getProperty(fieldQName).isMultiValued();
                 case STRING_EQUALS:
                     return true;
                 case NUMBER_EQUALS:
@@ -500,6 +496,8 @@ public class LuceneQuery implements SearchQueryBuilder {
                 default:
                     return false;
             }
+
+
         }
 
         private void buildEqualsTerm(String field, String value) {
