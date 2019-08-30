@@ -89,6 +89,26 @@ public class AlfNodeRecord implements MetaValue {
     @Override
     public boolean has(String name) {
 
+        if ("_content".equals(name)) {
+            AlfNodeContentPathRegistry contentPath = context.getService(AlfNodeContentPathRegistry.QNAME);
+            String path = contentPath.getContentPath(new NodeInfo());
+            if (path == null) {
+                path = "cm:content";
+            }
+            RecordsService recordsService = context.getRecordsService();
+            if (recordsService == null) {
+                return false;
+            }
+            if (path.indexOf('.') == -1) {
+                if ("_content".equals(path)) {
+                    return false;
+                }
+                return has(path);
+            }
+            String query = AlfNodeUtils.resolveHasContentPathQuery(path);
+            return Boolean.TRUE.toString().equals(recordsService.getAttribute(recordRef, query).asText());
+        }
+
         Attribute nodeAtt = node.attribute(name);
 
         if (Attribute.Type.UNKNOWN.equals(nodeAtt.type())) {

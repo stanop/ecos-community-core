@@ -36,11 +36,11 @@
                 "components": [
                   {
                     "label": "payments:basis",
+                    "hideCreateButton": true,
                     "mask": false,
                     "tableView": true,
                     "alwaysEnabled": false,
                     "journalId": "contract-agreements",
-                    "hideCreateButton": true,
                     "displayColumns": [],
                     "customPredicateJs": "",
                     "computed": {
@@ -50,6 +50,7 @@
                     "ecos": {
                       "dataType": "assoc"
                     },
+                    "defaultValue": "",
                     "encrypted": false,
                     "displayColumnsAsyncData": [
                       {
@@ -153,7 +154,6 @@
                     "customClass": "",
                     "suffix": "",
                     "multiple": false,
-                    "defaultValue": null,
                     "protected": false,
                     "unique": false,
                     "persistent": true,
@@ -180,7 +180,7 @@
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "ecpobsf"
+                    "id": "e0yg24k"
                   }
                 ],
                 "width": 6,
@@ -239,7 +239,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eeoqea1"
+                "id": "e0vi4do"
               },
               {
                 "components": [
@@ -325,7 +325,7 @@
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "eyip8vz"
+                    "id": "epeyhhk"
                   }
                 ],
                 "width": 6,
@@ -384,7 +384,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e27656"
+                "id": "e3g555m"
               },
               {
                 "xs": 0,
@@ -483,7 +483,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "elpj8q9"
+                    "id": "e56o4f9"
                   }
                 ],
                 "placeholder": "",
@@ -526,7 +526,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e3do5rb"
+                "id": "e6kytmd"
               }
             ],
             "hideOnChildrenHidden": true,
@@ -583,7 +583,7 @@
               "customPrivate": false
             },
             "autoAdjust": false,
-            "id": "e0yxsc"
+            "id": "epilux"
           },
           {
             "conditional": {
@@ -638,7 +638,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "es63cyb"
+            "id": "ekpj9e"
           },
           {
             "label": "payments:paymentPurpose",
@@ -718,7 +718,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "ed4imd"
+            "id": "elw236"
           },
           {
             "conditional": {
@@ -773,7 +773,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "eqbw4qk"
+            "id": "e4ccugh"
           },
           {
             "label": "Columns",
@@ -918,7 +918,7 @@
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "ewnc35"
+                    "id": "ezx9tie"
                   }
                 ],
                 "width": 6,
@@ -977,7 +977,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e28ywet"
+                "id": "eclkv6q"
               },
               {
                 "components": [
@@ -1074,7 +1074,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "e9ki61l"
+                    "id": "ec10yb"
                   }
                 ],
                 "width": 6,
@@ -1133,7 +1133,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e3fojdr"
+                "id": "e97lbi"
               },
               {
                 "xs": 0,
@@ -1275,7 +1275,7 @@
                     "mask": false,
                     "inputType": "text",
                     "inputMask": "",
-                    "id": "e093msm"
+                    "id": "ebzd2ru"
                   },
                   {
                     "label": "Generate",
@@ -1338,7 +1338,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "el5hqc"
+                    "id": "eaafyf"
                   }
                 ],
                 "placeholder": "",
@@ -1381,7 +1381,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "erdt3qe"
+                "id": "ex3qsd"
               }
             ],
             "mask": false,
@@ -1438,7 +1438,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "eiesug5"
+            "id": "e7r237"
           },
           {
             "conditional": {
@@ -1493,7 +1493,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "evidchg"
+            "id": "ezm8py"
           },
           {
             "label": "Columns",
@@ -1638,7 +1638,7 @@
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "edescuj"
+                    "id": "eqan66"
                   }
                 ],
                 "width": 6,
@@ -1697,7 +1697,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eam4qt"
+                "id": "evtwj9"
               },
               {
                 "components": [
@@ -1794,7 +1794,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "e0o6ca"
+                    "id": "e33ym"
                   }
                 ],
                 "width": 6,
@@ -1853,7 +1853,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ektd0b"
+                "id": "e423248"
               },
               {
                 "xs": 0,
@@ -1909,7 +1909,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "enfvni"
+                "id": "eztsyr7"
               }
             ],
             "mask": false,
@@ -1966,7 +1966,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e4iis3"
+            "id": "e4543er"
           }
         ],
         "tags": [],
@@ -2008,7 +2008,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "eojbi4h"
+        "id": "eh5nvi"
       },
       {
         "label": "Panel",
@@ -2123,26 +2123,26 @@
                         "resources": {
                           "en": {
                             "translation": {
-                              "complete": "Сохранение прошло успешно",
-                              "error": "Пожалуйста, исправьте следующие ошибки перед отправкой:",
-                              "required": "Поле {{field}} не может быть пустым",
-                              "pattern": "{{field}} не совпадает с паттерном {{pattern}}",
-                              "minLength": "{{field}} должен быть длиннее чем {{length}} символов.",
-                              "maxLength": "{{field}} должен быть короче чем {{length}} символов.",
+                              "complete": "Submission Complete",
+                              "error": "Please fix the following errors before submitting.",
+                              "required": "{{field}} is required",
+                              "pattern": "{{field}} does not match the pattern {{pattern}}",
+                              "minLength": "{{field}} must be longer than {{length}} characters.",
+                              "maxLength": "{{field}} must be shorter than {{length}} characters.",
                               "minWords": "{{field}} must have more than {{length}} words.",
                               "maxWords": "{{field}} must have less than {{length}} words.",
-                              "min": "{{field}} не может быть меньше чем {{min}}.",
-                              "max": "{{field}} не может быть больше чем {{max}}.",
+                              "min": "{{field}} cannot be less than {{min}}.",
+                              "max": "{{field}} cannot be greater than {{max}}.",
                               "minSelectedCount": "You must select at least {{minCount}} items to continue.",
                               "maxSelectedCount": "You can only select up to {{maxCount}} items to continue.",
                               "maxDate": "{{field}} should not contain date after {{- maxDate}}",
                               "minDate": "{{field}} should not contain date before {{- minDate}}",
-                              "invalid_email": "{{field}} некорректный email.",
+                              "invalid_email": "{{field}} must be a valid email.",
                               "invalid_url": "{{field}} must be a valid url.",
-                              "invalid_regex": "{{field}} не соответствует паттерну {{regex}}.",
-                              "invalid_date": "{{field}} некорректная дата.",
+                              "invalid_regex": "{{field}} does not match the pattern {{regex}}.",
+                              "invalid_date": "{{field}} is not a valid date.",
                               "invalid_day": "{{field}} is not a valid day.",
-                              "mask": "{{field}} не совпадает с маской.",
+                              "mask": "{{field}} does not match the mask.",
                               "stripe": "{{stripe}}",
                               "month": "Month",
                               "day": "Day",
@@ -2159,39 +2159,10 @@
                               "october": "October",
                               "november": "November",
                               "december": "December",
-                              "next": "Далее",
-                              "previous": "Назад",
+                              "next": "Next",
+                              "previous": "Previous",
                               "cancel": "Cancel",
-                              "submit": "Submit Form",
-                              "or": "или",
-                              "browse": "выбрать",
-                              "File Name": "Имя файла",
-                              "Type": "Тип",
-                              "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
-                              "Size": "Размер",
-                              "ecos:documentNumber": "Number of document",
-                              "Generate": "Generate",
-                              "ecos:responsible": "Responsible",
-                              "idocs:initiator": "Initiator",
-                              "ecos:startDate": "Start date",
-                              "ecos:stopDate": "Date of completion",
-                              "idocs:legalEntity": "Legal entity",
-                              "idocs:currencyDocument": "Currency",
-                              "ecos:documentAmount": "Amount",
-                              "idocs:contractor": "Contractor",
-                              "typeGeneralCaseList": "typeGeneralCaseList",
-                              "currencyList": "currencyList",
-                              "tk:type": "Type",
-                              "defaultLegalEntity": "defaultLegalEntity",
-                              "Main": "Main",
-                              "Case kind": "Case kind",
-                              "Date of creation": "Date of creation",
-                              "Additional": "Additional",
-                              "Note": "Note",
-                              "Name": "Name",
-                              "Create": "Create",
-                              "Cancel": "Cancel",
-                              "Save": "Save"
+                              "submit": "Submit Form"
                             }
                           },
                           "ru": {
@@ -2254,7 +2225,7 @@
                     "displayInTimezone": "viewer",
                     "timezone": "",
                     "datepickerMode": "day",
-                    "id": "e1yap4s"
+                    "id": "euxx5xo"
                   }
                 ],
                 "width": 6,
@@ -2313,7 +2284,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ettndx1i"
+                "id": "eu5sk4"
               },
               {
                 "components": [
@@ -2384,26 +2355,26 @@
                         "resources": {
                           "en": {
                             "translation": {
-                              "complete": "Сохранение прошло успешно",
-                              "error": "Пожалуйста, исправьте следующие ошибки перед отправкой:",
-                              "required": "Поле {{field}} не может быть пустым",
-                              "pattern": "{{field}} не совпадает с паттерном {{pattern}}",
-                              "minLength": "{{field}} должен быть длиннее чем {{length}} символов.",
-                              "maxLength": "{{field}} должен быть короче чем {{length}} символов.",
+                              "complete": "Submission Complete",
+                              "error": "Please fix the following errors before submitting.",
+                              "required": "{{field}} is required",
+                              "pattern": "{{field}} does not match the pattern {{pattern}}",
+                              "minLength": "{{field}} must be longer than {{length}} characters.",
+                              "maxLength": "{{field}} must be shorter than {{length}} characters.",
                               "minWords": "{{field}} must have more than {{length}} words.",
                               "maxWords": "{{field}} must have less than {{length}} words.",
-                              "min": "{{field}} не может быть меньше чем {{min}}.",
-                              "max": "{{field}} не может быть больше чем {{max}}.",
+                              "min": "{{field}} cannot be less than {{min}}.",
+                              "max": "{{field}} cannot be greater than {{max}}.",
                               "minSelectedCount": "You must select at least {{minCount}} items to continue.",
                               "maxSelectedCount": "You can only select up to {{maxCount}} items to continue.",
                               "maxDate": "{{field}} should not contain date after {{- maxDate}}",
                               "minDate": "{{field}} should not contain date before {{- minDate}}",
-                              "invalid_email": "{{field}} некорректный email.",
+                              "invalid_email": "{{field}} must be a valid email.",
                               "invalid_url": "{{field}} must be a valid url.",
-                              "invalid_regex": "{{field}} не соответствует паттерну {{regex}}.",
-                              "invalid_date": "{{field}} некорректная дата.",
+                              "invalid_regex": "{{field}} does not match the pattern {{regex}}.",
+                              "invalid_date": "{{field}} is not a valid date.",
                               "invalid_day": "{{field}} is not a valid day.",
-                              "mask": "{{field}} не совпадает с маской.",
+                              "mask": "{{field}} does not match the mask.",
                               "stripe": "{{stripe}}",
                               "month": "Month",
                               "day": "Day",
@@ -2420,39 +2391,10 @@
                               "october": "October",
                               "november": "November",
                               "december": "December",
-                              "next": "Далее",
-                              "previous": "Назад",
+                              "next": "Next",
+                              "previous": "Previous",
                               "cancel": "Cancel",
-                              "submit": "Submit Form",
-                              "or": "или",
-                              "browse": "выбрать",
-                              "File Name": "Имя файла",
-                              "Type": "Тип",
-                              "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
-                              "Size": "Размер",
-                              "ecos:documentNumber": "Number of document",
-                              "Generate": "Generate",
-                              "ecos:responsible": "Responsible",
-                              "idocs:initiator": "Initiator",
-                              "ecos:startDate": "Start date",
-                              "ecos:stopDate": "Date of completion",
-                              "idocs:legalEntity": "Legal entity",
-                              "idocs:currencyDocument": "Currency",
-                              "ecos:documentAmount": "Amount",
-                              "idocs:contractor": "Contractor",
-                              "typeGeneralCaseList": "typeGeneralCaseList",
-                              "currencyList": "currencyList",
-                              "tk:type": "Type",
-                              "defaultLegalEntity": "defaultLegalEntity",
-                              "Main": "Main",
-                              "Case kind": "Case kind",
-                              "Date of creation": "Date of creation",
-                              "Additional": "Additional",
-                              "Note": "Note",
-                              "Name": "Name",
-                              "Create": "Create",
-                              "Cancel": "Cancel",
-                              "Save": "Save"
+                              "submit": "Submit Form"
                             }
                           },
                           "ru": {
@@ -2523,7 +2465,7 @@
                       "mousewheel": true,
                       "arrowkeys": true
                     },
-                    "id": "emgcccf"
+                    "id": "evp8ua"
                   }
                 ],
                 "width": 6,
@@ -2582,7 +2524,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ebnf83"
+                "id": "ehemw3r"
               },
               {
                 "xs": 0,
@@ -2681,7 +2623,7 @@
                     "searchThreshold": 0.3,
                     "fuseOptions": {},
                     "customOptions": {},
-                    "id": "e83di97"
+                    "id": "egse67l"
                   }
                 ],
                 "placeholder": "",
@@ -2724,7 +2666,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ecz25vi"
+                "id": "ebt2q5u"
               }
             ],
             "mask": false,
@@ -2781,7 +2723,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e23jsjd"
+            "id": "e05k2bo"
           }
         ],
         "tags": [],
@@ -2818,7 +2760,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "eah172e"
+        "id": "eosq3ca"
       },
       {
         "label": "Panel",
@@ -2962,7 +2904,7 @@
                     "searchThreshold": 0.3,
                     "fuseOptions": {},
                     "customOptions": {},
-                    "id": "e28twmr"
+                    "id": "edtqv2"
                   },
                   {
                     "label": "payments:overexpenditure",
@@ -3027,7 +2969,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "e32fv5f"
+                    "id": "ekt4r1"
                   }
                 ],
                 "width": 6,
@@ -3086,7 +3028,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eskeder"
+                "id": "e8ekgdj"
               },
               {
                 "components": [
@@ -3097,7 +3039,8 @@
                     "alwaysEnabled": false,
                     "delimiter": false,
                     "requireDecimal": false,
-                    "calculateValue": "if (data.containsProductsAndServices.length > 0) {\n    for (var i in data.containsProductsAndServices) {\n        value += parseFloat (data.containsProductsAndServices[i].total);\n    }\n} else if (data.containsProductsAndServices.length === 0) {\n  value = data.payments_paymentAmount;\n}",
+                    "defaultValue": 0,
+                    "calculateValue": "value = 0;\r\nif (instance.options.formMode === 'CREATE' && data.containsProductsAndServices.length > 0) {\r\n    for (var i in data.containsProductsAndServices) {\r\n        value += parseFloat (data.containsProductsAndServices[i].total);\r\n    }\r\n}",
                     "allowCalculateOverride": true,
                     "encrypted": false,
                     "validate": {
@@ -3141,6 +3084,25 @@
                             "state": "false"
                           }
                         ]
+                      },
+                      {
+                        "name": "protected_on",
+                        "trigger": {
+                          "type": "javascript",
+                          "javascript": "result = data.dms_updateContent || (instance.options.formMode !== 'CREATE' && data.pas_containsProductsAndServices.length > 0) ? true : false;"
+                        },
+                        "actions": [
+                          {
+                            "name": "protected_on",
+                            "type": "property",
+                            "property": {
+                              "label": "Disabled",
+                              "value": "disabled",
+                              "type": "boolean"
+                            },
+                            "state": "true"
+                          }
+                        ]
                       }
                     ],
                     "attributes": {},
@@ -3153,7 +3115,6 @@
                     "customClass": "",
                     "suffix": "",
                     "multiple": false,
-                    "defaultValue": null,
                     "protected": false,
                     "unique": false,
                     "persistent": true,
@@ -3176,7 +3137,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "exxt7er"
+                    "id": "e0ynoi"
                   }
                 ],
                 "width": 6,
@@ -3235,7 +3196,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eufs13i"
+                "id": "egvr5y5"
               },
               {
                 "xs": 0,
@@ -3258,6 +3219,7 @@
                     "alwaysEnabled": false,
                     "delimiter": false,
                     "requireDecimal": false,
+                    "defaultValue": 0,
                     "encrypted": false,
                     "validate": {
                       "required": true,
@@ -3286,7 +3248,6 @@
                     "type": "number",
                     "input": true,
                     "tags": [],
-                    "defaultValue": 0,
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -3316,7 +3277,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "eoc1njc"
+                    "id": "emb8fi"
                   }
                 ],
                 "placeholder": "",
@@ -3359,7 +3320,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e8m5zfi"
+                "id": "e28bhnl7"
               },
               {
                 "xs": 0,
@@ -3415,7 +3376,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ej63ht3"
+                "id": "epc2lt3"
               }
             ],
             "mask": false,
@@ -3472,7 +3433,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e3b6dl8"
+            "id": "e165rb"
           }
         ],
         "tags": [],
@@ -3509,7 +3470,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "ei1xi08"
+        "id": "et1woxh1"
       },
       {
         "label": "Panel",
@@ -3600,7 +3561,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "egj578s"
+                    "id": "e2h243g"
                   }
                 ],
                 "width": 6,
@@ -3659,7 +3620,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eg49sx"
+                "id": "e733o3o"
               },
               {
                 "components": [],
@@ -3719,7 +3680,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "euxzj7"
+                "id": "eghuyt"
               }
             ],
             "mask": false,
@@ -3776,7 +3737,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "ezqn1gm"
+            "id": "e8ndowc"
           },
           {
             "label": "Columns",
@@ -3883,7 +3844,7 @@
                     "uploadOnly": false,
                     "defaultOverlayWidth": 200,
                     "defaultOverlayHeight": 200,
-                    "id": "ew2ps48"
+                    "id": "ecgabx"
                   },
                   {
                     "label": "pas:containsProductsAndServices",
@@ -3906,6 +3867,9 @@
                             "name": "cm:title"
                           },
                           {
+                            "name": "cm:description"
+                          },
+                          {
                             "name": "pas:pricePerUnit"
                           },
                           {
@@ -3913,6 +3877,9 @@
                           },
                           {
                             "name": "pas:entityUnit"
+                          },
+                          {
+                            "name": "pas:total"
                           },
                           {
                             "name": "pas:type"
@@ -3926,6 +3893,7 @@
                         "attribute": null
                       }
                     },
+                    "defaultValue": [],
                     "encrypted": false,
                     "displayColumnsAsyncData": [],
                     "validate": {
@@ -3945,7 +3913,7 @@
                       "json": "",
                       "eq": ""
                     },
-                    "customConditional": "show = (instance.options.formMode === 'CREATE' && data.dms_updateContent) ? true : false;",
+                    "customConditional": "show = ((instance.options.formMode !== 'CREATE' && data.pas_containsProductsAndServices.length > 0) || data.dms_updateContent) ? true : false;",
                     "logic": [
                       {
                         "name": "required_off",
@@ -3965,6 +3933,25 @@
                             "state": "false"
                           }
                         ]
+                      },
+                      {
+                        "name": "disabled_on",
+                        "trigger": {
+                          "type": "javascript",
+                          "javascript": "result = instance.options.formMode !== 'CREATE' ? true : false;"
+                        },
+                        "actions": [
+                          {
+                            "name": "disabled_on",
+                            "type": "property",
+                            "property": {
+                              "label": "Disabled",
+                              "value": "disabled",
+                              "type": "boolean"
+                            },
+                            "state": "true"
+                          }
+                        ]
                       }
                     ],
                     "attributes": {},
@@ -3972,7 +3959,6 @@
                     "input": true,
                     "tags": [],
                     "_journalId": "alf_term:teReqRoute",
-                    "defaultValue": [],
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -4001,7 +3987,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "e6syy5b"
+                    "id": "eg1rnfc"
                   }
                 ],
                 "width": 6,
@@ -4060,7 +4046,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ee0mwnn"
+                "id": "eayn7ta"
               },
               {
                 "components": [],
@@ -4120,7 +4106,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eq82ce"
+                "id": "ekcckz8"
               }
             ],
             "mask": false,
@@ -4177,7 +4163,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "elwhb2k"
+            "id": "e6ej52q"
           },
           {
             "label": "payments:paymentComment",
@@ -4257,7 +4243,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "e0mmcxm"
+            "id": "efyye4"
           }
         ],
         "tags": [],
@@ -4299,7 +4285,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "ep1yp5p"
+        "id": "elcsw5o"
       },
       {
         "label": "paymentsBasis",
@@ -4395,7 +4381,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "e4uniaq"
+        "id": "erhn148"
       },
       {
         "label": "period",
@@ -4483,7 +4469,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "e3omm6b"
+        "id": "exwm2n"
       },
       {
         "label": "containsProductsAndServices",
@@ -4498,7 +4484,8 @@
           },
           "recordsArray": {
             "attributes": {
-              "total": "pas:total"
+              "total": "pas:total",
+              "entityUnit": "pas:entityUnit"
             },
             "id": "{{data.pas_containsProductsAndServices}}"
           },
@@ -4573,7 +4560,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "e1dddeu"
+        "id": "ep53ssq"
       },
       {
         "label": "payer",
@@ -4663,7 +4650,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "ey7t51"
+        "id": "e9gu5ln"
       },
       {
         "label": "currencyList",
@@ -4751,7 +4738,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "erd5flv"
+        "id": "ead1k3q"
       },
       {
         "label": "legalEntities",
@@ -4840,7 +4827,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "eu7seij"
+        "id": "en87lrg"
       },
       {
         "label": "payment",
@@ -4928,7 +4915,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "egt2jsn"
+        "id": "etbhqkl"
       },
       {
         "label": "Columns",
@@ -5003,7 +4990,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "ehb0zoo"
+                "id": "e5og0ha"
               }
             ],
             "width": 6,
@@ -5062,7 +5049,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e1i1tc"
+            "id": "e1yanfm"
           },
           {
             "components": [
@@ -5133,7 +5120,7 @@
                 "action": "submit",
                 "disableOnInvalid": false,
                 "removeIndents": false,
-                "id": "ewvkpk4"
+                "id": "e0twtn"
               }
             ],
             "width": 6,
@@ -5192,7 +5179,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ehqp5s"
+            "id": "e5c82bm"
           },
           {
             "xs": 0,
@@ -5275,7 +5262,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "emu0qg"
+                "id": "eotc8i"
               }
             ],
             "placeholder": "",
@@ -5318,7 +5305,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eawdmfq"
+            "id": "eu8uux2"
           }
         ],
         "mask": false,
@@ -5374,7 +5361,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "eorytrq"
+        "id": "eluyx5"
       },
       {
         "label": "Columns",
@@ -5437,7 +5424,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e9t0j64"
+            "id": "e7ws7d4"
           },
           {
             "components": [
@@ -5509,7 +5496,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "e2zics"
+                "id": "ery7xsr"
               }
             ],
             "width": 6,
@@ -5568,7 +5555,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e5femx"
+            "id": "e97vudm"
           },
           {
             "xs": 0,
@@ -5650,7 +5637,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "ede0bh8"
+                "id": "egm1twn"
               }
             ],
             "placeholder": "",
@@ -5693,7 +5680,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ek2fefk"
+            "id": "egfj1uq"
           },
           {
             "xs": 0,
@@ -5749,7 +5736,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e3jr9x8"
+            "id": "eknsctm"
           }
         ],
         "mask": false,
@@ -5805,7 +5792,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e54l7wt"
+        "id": "eqswvxt"
       }
     ]
   },
@@ -5823,9 +5810,9 @@
       "Budget item": "Статья бюджета",
       "Several budgets": "Несколько бюджетов",
       "Single budget initial amount": "Сумма",
-      "Заголовок": "Заголовок",
+      "Title": "Заголовок",
       "Finance": "Финансы",
-      "Создать счет": "Создать счет",
+      "Create invoice": "Создать счет",
       "product": "Продукт",
       "service": "Услуга"
     },
@@ -5842,9 +5829,9 @@
       "Budget item": "Budget item",
       "Several budgets": "Several budgets",
       "Single budget initial amount": "Single budget initial amount",
-      "Заголовок": "Title",
+      "Title": "Title",
       "Finance": "Finance",
-      "Создать счет": "Create invoice",
+      "Create invoice": "Create invoice",
       "product": "Product",
       "service": "Service"
     }
