@@ -44,14 +44,14 @@ public class FlowableBeansContextSetListener implements ApplicationListener<Cont
         /** Global execution listeners */
         Map<String, GlobalExecutionListener> executionListenerMap = ApplicationContextProvider.getApplicationContext().
                 getBeansOfType(GlobalExecutionListener.class);
-        for (String key : executionListenerMap.keySet()) {
-            beans.put(key, executionListenerMap.get(key));
+        for (Map.Entry<String, GlobalExecutionListener> entry : executionListenerMap.entrySet()) {
+            beans.put(entry.getKey(), entry.getValue());
         }
         /** Global task listeners */
         Map<String, GlobalTaskListener> taskListenerMap = ApplicationContextProvider.getApplicationContext().
                 getBeansOfType(GlobalTaskListener.class);
-        for (String key : taskListenerMap.keySet()) {
-            beans.put(key, taskListenerMap.get(key));
+        for (Map.Entry<String, GlobalTaskListener> entry : taskListenerMap.entrySet()) {
+            beans.put(entry.getKey(), entry.getValue());
         }
         /** Script services */
         Map<String, BaseScopableProcessorExtension> servicesMap = ApplicationContextProvider.getApplicationContext().

@@ -65,8 +65,8 @@ public class IdBasedElement extends GenericConfigElement {
 		if(attributes == null) {
 			return;
 		}
-		for(String key : attributes.keySet()) {
-			addAttribute(key, attributes.get(key));
+		for(Map.Entry<String, String> entry : attributes.entrySet()) {
+			addAttribute(entry.getKey(), entry.getValue());
 		}
 	}
 	

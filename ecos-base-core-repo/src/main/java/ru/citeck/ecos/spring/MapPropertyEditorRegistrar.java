@@ -30,8 +30,8 @@ public class MapPropertyEditorRegistrar implements PropertyEditorRegistrar
 
 	@Override
 	public void registerCustomEditors(PropertyEditorRegistry registry) {
-		for(Class<?> cls : propertyEditors.keySet()) {
-			registry.registerCustomEditor(cls, propertyEditors.get(cls));
+		for(Map.Entry<Class<?>, PropertyEditor> propEntry : propertyEditors.entrySet()) {
+			registry.registerCustomEditor(propEntry.getKey(), propEntry.getValue());
 		}
 		
 	}

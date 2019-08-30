@@ -62,11 +62,12 @@ public class ParseJSON extends AbstractDataBundleLine {
             newModel.put(modelKey, result);
         } else if(result instanceof Map) {
             Map<?,?> object = (Map<?,?>) result;
-            for(Object key : object.keySet()) {
+            for(Map.Entry<?,?> entry : object.entrySet()) {
+                Object key = entry.getKey();
                 if(key instanceof String) {
-                    newModel.put((String) key, object.get(key));
+                    newModel.put((String) key, entry.getValue());
                 } else if(key != null) {
-                    newModel.put(key.toString(), object.get(key));
+                    newModel.put(key.toString(), entry.getValue());
                 }
             }
         } else {

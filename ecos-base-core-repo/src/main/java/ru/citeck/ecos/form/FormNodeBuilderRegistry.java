@@ -39,9 +39,10 @@ public class FormNodeBuilderRegistry {
 	
 	public FormNodeBuilder getNodeBuilder(TypeDefinition typeDef) {
 		// search for typeDef:
-		for(String builderTypeName : registry.keySet()) {
-			if(dictionaryService.isSubClass(typeDef.getName(), QName.resolveToQName(namespaceService, builderTypeName))) {
-				return registry.get(builderTypeName);
+		for(Map.Entry<String, FormNodeBuilder> regEntry : registry.entrySet()) {
+			QName qName = QName.resolveToQName(namespaceService, regEntry.getKey());
+			if (dictionaryService.isSubClass(typeDef.getName(), qName)) {
+				return regEntry.getValue();
 			}
 		}
 		return null;

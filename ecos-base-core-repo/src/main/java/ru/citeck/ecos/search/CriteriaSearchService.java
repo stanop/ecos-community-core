@@ -78,18 +78,19 @@ public class CriteriaSearchService {
             parameters.setSkipCount(criteria.getSkip());
         }
         Map<String, Boolean> sortCriteria = criteria.getSort();
-        for (String field : sortCriteria.keySet()) {
+        for (Map.Entry<String, Boolean> entry : sortCriteria.entrySet()) {
+            String field = entry.getKey();
             if(sortFieldChanger != null) {
                 field = sortFieldChanger.getSortField(field);
             }
             QName fieldQName = QName.resolveToQName(namespaceService, field);
             if(dictionaryService.getProperty(fieldQName) != null) {
-                parameters.addSort("@" + field, sortCriteria.get(field));
+                parameters.addSort("@" + field, entry.getValue());
                 continue;
             }
             if(dictionaryService.getAssociation(fieldQName) != null) {
                 QName indexField = associationIndexPropertyRegistry.getAssociationIndexProperty(fieldQName);
-                parameters.addSort("@" + indexField, sortCriteria.get(field));
+                parameters.addSort("@" + indexField, entry.getValue());
                 continue;
             }
             throw new IllegalArgumentException("Field " + field + " is neither property, nor association");

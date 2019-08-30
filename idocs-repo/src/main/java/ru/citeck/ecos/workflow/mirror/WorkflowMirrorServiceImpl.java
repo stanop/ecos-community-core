@@ -346,9 +346,9 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     }
 
     private NodeRef getPackage(Map<QName, List<NodeRef>> assoc) {
-        for (QName qName : assoc.keySet()) {
-            if (qName.equals(WorkflowModel.ASSOC_PACKAGE)) {
-                List<NodeRef> packageNodeRefs = assoc.get(qName);
+        for (Map.Entry<QName, List<NodeRef>> entry : assoc.entrySet()) {
+            if (entry.getKey().equals(WorkflowModel.ASSOC_PACKAGE)) {
+                List<NodeRef> packageNodeRefs = entry.getValue();
                 if (!packageNodeRefs.isEmpty()) {
                     return packageNodeRefs.get(0);
                 }

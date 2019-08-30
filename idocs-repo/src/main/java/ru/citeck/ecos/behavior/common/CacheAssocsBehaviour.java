@@ -124,9 +124,9 @@ public class CacheAssocsBehaviour implements
 			// and elements that should remain with MARK_OLD|MARK_NEW
 
 			// so we remove old ones and add new ones
-			for(NodeRef element : existanceMap.keySet()) {
-				
-				switch(existanceMap.get(element)) {
+			for(Map.Entry<NodeRef, Integer> entry : existanceMap.entrySet()) {
+				NodeRef element = entry.getKey();
+				switch(entry.getValue()) {
 				case MARK_OLD:
 					nodeService.removeAssociation(cacheObject, element, assocToSync);
 					break;

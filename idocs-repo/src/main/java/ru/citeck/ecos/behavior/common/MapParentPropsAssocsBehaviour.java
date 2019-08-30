@@ -62,8 +62,9 @@ public class MapParentPropsAssocsBehaviour implements NodeServicePolicies.OnCrea
 		Map<QName, Serializable> newProperties = new HashMap<QName, Serializable>(mapping.size());
 		
 		// process mapping
-		for(QName parentAttrib : mapping.keySet()) {
-			QName childAttrib = mapping.get(parentAttrib);
+		for(Map.Entry<QName, QName> entry : mapping.entrySet()) {
+			QName parentAttrib = entry.getKey();
+			QName childAttrib = entry.getValue();
 			
 			// try to get parent property
 			PropertyDefinition parentPropDef = dictionaryService.getProperty(parentAttrib);

@@ -740,9 +740,10 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         ArrayNode taskPropertiesNode = objectMapper.createArrayNode();
         Map<QName, Serializable> properties = nodeService.getProperties(caseModelRef);
         List<QName> excludeProperties = Arrays.asList(EXCLUDE_PROPERTIES);
-        for (QName key : properties.keySet()) {
+        for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
+            QName key = entry.getKey();
             if (!excludeProperties.contains(key)) {
-                Serializable value = properties.get(key);
+                Serializable value = entry.getValue();
                 if (value != null) {
                     ObjectNode propertyNode = createPropertyObjectNode(key, value);
                     if (propertyNode != null) {

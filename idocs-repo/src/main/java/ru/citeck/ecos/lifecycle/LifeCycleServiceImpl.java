@@ -716,8 +716,9 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 
     @Override
     public void undeployStoredLifeCycle(NodeRef lifeCycleDefinitionNodeRef) {
-        for (QName qName : deployedRepoDefinitions.keySet()) {
-            NodeRef nodeRef = deployedRepoDefinitions.get(qName);
+        for (Map.Entry<QName, NodeRef> entry : deployedRepoDefinitions.entrySet()) {
+            QName qName = entry.getKey();
+            NodeRef nodeRef = entry.getValue();
             if ((nodeRef != null) && (nodeRef.equals(lifeCycleDefinitionNodeRef))) {
                 deployedRepoDefinitions.remove(qName);
                 definitions.remove(qName);

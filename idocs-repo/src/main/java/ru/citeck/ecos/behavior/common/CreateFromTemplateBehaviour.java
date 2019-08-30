@@ -84,9 +84,8 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
         }
 
         Map<QName, Serializable> properties = nodeService.getProperties(node);
-        Set<QName> keys = properties.keySet();
-        for (QName key : keys) {
-            Serializable value = properties.get(key);
+        for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
+            Serializable value = entry.getValue();
             if (value != null) {
                 if (value instanceof NodeRef) {
                     NodeRef nodeRef = (NodeRef) value;

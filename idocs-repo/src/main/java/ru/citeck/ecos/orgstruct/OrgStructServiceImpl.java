@@ -74,9 +74,9 @@ public class OrgStructServiceImpl implements OrgStructService
 
 	@Override
 	public String getGroupType(String name) {
-		for(String type : components.keySet()) {
-			if(components.get(type).isTypedGroup(name)) {
-				return type;
+		for(Map.Entry<String, TypedGroupDAO> entry : components.entrySet()) {
+			if(entry.getValue().isTypedGroup(name)) {
+				return entry.getKey();
 			}
 		}
 		return null;

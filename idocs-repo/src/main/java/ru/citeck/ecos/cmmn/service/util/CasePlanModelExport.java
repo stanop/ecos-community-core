@@ -446,16 +446,18 @@ public class CasePlanModelExport {
 
     private void saveTypeProperties(TCmmnElement element, NodeRef sourceRef) {
         Map<org.alfresco.service.namespace.QName, Serializable> properties = nodeService.getProperties(sourceRef);
-        for (org.alfresco.service.namespace.QName key : properties.keySet()) {
+        for (Map.Entry<org.alfresco.service.namespace.QName, Serializable> entry : properties.entrySet()) {
+            org.alfresco.service.namespace.QName key = entry.getKey();
             if (!key.getNamespaceURI().equals("http://www.alfresco.org/model/system/1.0") &&
                     !key.getNamespaceURI().equals("http://www.alfresco.org/model/content/1.0")) {
                 QName qName = utils.convertToXMLQName(key);
                 if (!qName.getLocalPart().contains("_added")) {
-                    if (properties.get(key) != null) {
-                        if (properties.get(key).getClass().equals(Date.class)) {
-                            element.getOtherAttributes().put(qName, ISO8601DateFormat.format((Date) properties.get(key)));
+                    Serializable value = entry.getValue();
+                    if (value != null) {
+                        if (value.getClass().equals(Date.class)) {
+                            element.getOtherAttributes().put(qName, ISO8601DateFormat.format((Date) value));
                         } else {
-                            element.getOtherAttributes().put(qName, properties.get(key).toString());
+                            element.getOtherAttributes().put(qName, value.toString());
                         }
                     } else {
                         element.getOtherAttributes().put(qName, "");

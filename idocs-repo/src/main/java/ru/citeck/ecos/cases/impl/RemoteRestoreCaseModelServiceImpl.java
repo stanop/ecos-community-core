@@ -251,9 +251,9 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
      * @return Case model node reference
      */
     private NodeRef getCaseModelBySourceId(String sourceId, Map<CaseModelDto, NodeRef> restoreMap) {
-        for (CaseModelDto caseModelDto : restoreMap.keySet()) {
-            if (sourceId.equals(caseModelDto.getNodeUUID())) {
-                return restoreMap.get(caseModelDto);
+        for (Map.Entry<CaseModelDto, NodeRef> entry : restoreMap.entrySet()) {
+            if (sourceId.equals(entry.getKey().getNodeUUID())) {
+                return entry.getValue();
             }
         }
         return null;

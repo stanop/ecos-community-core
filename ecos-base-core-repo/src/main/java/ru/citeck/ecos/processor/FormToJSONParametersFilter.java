@@ -87,8 +87,9 @@ public class FormToJSONParametersFilter extends AbstractDataBundleLine {
     			else {
     				JSONObject data = new JSONObject();
     				
-    				for (String key : args.keySet()) {
-    					String value = args.get(key);
+    				for (Map.Entry<String, String> entry : args.entrySet()) {
+						String key = entry.getKey();
+    					String value = entry.getValue();
     				
     					if (value != null) {
     						value = value.trim();

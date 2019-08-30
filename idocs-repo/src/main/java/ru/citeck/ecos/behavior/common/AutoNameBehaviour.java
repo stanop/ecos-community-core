@@ -179,9 +179,10 @@ public class AutoNameBehaviour implements
             boolean matches;
             do {
                 matches = false;
-                for (String restrictedPattern : restrictedPatterns.keySet()) {
+                for (Map.Entry<String, String> entry : restrictedPatterns.entrySet()) {
+                    String restrictedPattern = entry.getKey();
                     if (newName.matches(".*" + restrictedPattern + ".*")) {
-                        newName = newName.replaceAll(restrictedPattern, restrictedPatterns.get(restrictedPattern));
+                        newName = newName.replaceAll(restrictedPattern, entry.getValue());
                         matches = true;
                     }
                 }

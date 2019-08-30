@@ -107,9 +107,9 @@ public class UpdateCasePerformAssignees implements CaseRolePolicies.OnRoleAssign
                 if (reassignmentByWorkflow != null) {
                     Map<NodeRef, NodeRef> reassignment = reassignmentByWorkflow.get(id);
                     if (reassignment != null) {
-                        for (NodeRef from : reassignment.keySet()) {
-                            toRemove.remove(from);
-                            toAdd.remove(reassignment.get(from));
+                        for (Map.Entry<NodeRef, NodeRef> entry : reassignment.entrySet()) {
+                            toRemove.remove(entry.getKey());
+                            toAdd.remove(entry.getValue());
                         }
                     }
                 }
