@@ -389,8 +389,9 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 	                }
 	    		}
 	        }
-    	} else
-    		filteredStateList = stateList;
+    	} else {
+            filteredStateList = stateList;
+        }
 
     	if (filteredStateList.size() == 1)
     		return filteredStateList.get(0);
