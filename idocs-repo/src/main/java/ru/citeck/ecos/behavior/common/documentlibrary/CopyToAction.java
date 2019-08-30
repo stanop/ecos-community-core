@@ -34,7 +34,8 @@ public class CopyToAction extends BaseScopableProcessorExtension {
 
 
     public String evaluate(String sourceNodeRef, String destinationNodeRef) {
-        NodeRef source = new NodeRef(sourceNodeRef), destination = new NodeRef(destinationNodeRef);
+        NodeRef source = new NodeRef(sourceNodeRef);
+        NodeRef destination = new NodeRef(destinationNodeRef);
         ParameterCheck.mandatory("Source Node", source);
         ParameterCheck.mandatory("Destination Node", destination);
         for(CopyToActionStrategy strategy : strategies) {
@@ -46,7 +47,8 @@ public class CopyToAction extends BaseScopableProcessorExtension {
     }
 
     public String copy(String sourceNodeRef, String destinationNodeRef) {
-        NodeRef source = new NodeRef(sourceNodeRef), destination = new NodeRef(destinationNodeRef);
+        NodeRef source = new NodeRef(sourceNodeRef);
+        NodeRef destination = new NodeRef(destinationNodeRef);
         ParameterCheck.mandatory("Source Node", source);
         ParameterCheck.mandatory("Destination Node", destination);
         String targetNodeRef = "";

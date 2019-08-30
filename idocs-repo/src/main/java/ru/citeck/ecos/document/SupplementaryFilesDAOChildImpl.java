@@ -47,8 +47,10 @@ public class SupplementaryFilesDAOChildImpl extends SupplementaryFilesDAOAbstrac
 {
 	// assocTypeName - child-association, where supplementary files are stored
 	// aspectTypeName - aspect, that declares child-association
-	private String assocTypeName, aspectTypeName;
-	private LazyQName assocTypeQName, aspectTypeQName;
+	private String assocTypeName;
+	private String aspectTypeName;
+	private LazyQName assocTypeQName;
+	private LazyQName aspectTypeQName;
 	
 	private NodeService nodeService;
 	private NamespaceService namespaceService;

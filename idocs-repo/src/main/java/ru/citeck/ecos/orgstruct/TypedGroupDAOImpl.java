@@ -53,7 +53,8 @@ public class TypedGroupDAOImpl implements TypedGroupDAO {
 	private LazyQName aspectQName;
 	private LazyQName propertyQName;
 	
-	private String aspectName, propertyName;
+	private String aspectName;
+	private String propertyName;
 	
 	/////////////////////////////////////////////////////////////////
 	//                     SPRING INTERFACE                        //

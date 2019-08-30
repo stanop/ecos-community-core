@@ -374,7 +374,8 @@ public class GrantPermissionServiceImpl implements
 	
 	private class Permission {
 		
-		private String authority, permission;
+		private String authority;
+		private String permission;
 		private ChildAssociationRef permissionRef;
 
 		public Permission(ChildAssociationRef permissionRef) {

@@ -38,7 +38,8 @@ public class MergeStagesListener implements ExecutionListener {
     private static final String CONFIRMERS = "confirmers";
     private static final String STAGES = "stages";
     
-    private Expression stages1, stages2;
+    private Expression stages1;
+    private Expression stages2;
     private Expression resultVar;
 
     @Override

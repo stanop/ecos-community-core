@@ -61,7 +61,8 @@ public class WorkflowHistoryListener extends AbstractExecutionListener {
     private WorkflowService workflowService;
     private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
-    private String VAR_COMMENT, VAR_DESCRIPTION;
+    private String VAR_COMMENT;
+    private String VAR_DESCRIPTION;
 
     /* (non-Javadoc)
      * @see ru.citeck.ecos.workflow.listeners.AbstractExecutionListener#notifyImpl(org.activiti.engine.delegate.DelegateExecution)

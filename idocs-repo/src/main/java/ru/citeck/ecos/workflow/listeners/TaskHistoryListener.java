@@ -74,7 +74,9 @@ public class TaskHistoryListener extends AbstractTaskListener {
     private List<String> panelOfAuthorized; //группа уполномоченных
 
     private WorkflowQNameConverter qNameConverter;
-    private String VAR_OUTCOME_PROPERTY_NAME, VAR_COMMENT, VAR_DESCRIPTION;
+    private String VAR_OUTCOME_PROPERTY_NAME;
+    private String VAR_COMMENT;
+    private String VAR_DESCRIPTION;
     private WorkflowDocumentResolverRegistry documentResolverRegistry;
 
     /* (non-Javadoc)
