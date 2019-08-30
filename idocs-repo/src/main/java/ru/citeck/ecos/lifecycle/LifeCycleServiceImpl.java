@@ -24,6 +24,7 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -916,7 +917,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 contentWriter = contentService.getWriter(nodeRef, ContentModel.PROP_CONTENT, true);
                 contentWriter.setMimetype(MediaType.APPLICATION_XML.toString());
 
-                writer = new OutputStreamWriter(contentWriter.getContentOutputStream(), Charset.forName("UTF-8"));
+                writer = new OutputStreamWriter(contentWriter.getContentOutputStream(), StandardCharsets.UTF_8);
 
                 writer.write(content);
             } catch (IOException e) {
