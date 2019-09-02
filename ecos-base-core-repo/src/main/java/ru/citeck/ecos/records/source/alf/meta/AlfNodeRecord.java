@@ -237,34 +237,54 @@ public class AlfNodeRecord implements MetaValue {
         return null;
     }
 
-    private List<String> getFormAndDashboardKeys() {
+    private List<KeyWithDisp> getFormAndDashboardKeys() {
 
-        List<String> keys = new ArrayList<>();
+        List<KeyWithDisp> keys = new ArrayList<>();
 
-        Attribute ecosType = node.attribute("tk:type");
+        NodeRef type = getNodeRefFromProp("tk:type");
 
-        String type = getNodeRefUuid(ecosType.value().orElse(""));
-        if (!type.isEmpty()) {
+        if (type != null) {
+            String typeTitle = getNodeRefDisplayName(type);
 
-            Attribute ecosKind = node.attribute("tk:kind");
-            String kind = getNodeRefUuid(ecosKind.value().orElse(""));
+            NodeRef kind = getNodeRefFromProp("tk:kind");
+            if (kind != null) {
 
-            if (!kind.isEmpty()) {
-                keys.add(type + "/" + kind);
+                String kindTitle = getNodeRefDisplayName(kind);
+
+                String value = String.format("%s/%s", type.getId(), kind.getId());
+                String disp = String.format("%s - %s", typeTitle, kindTitle);
+
+                keys.add(new KeyWithDisp(value, disp));
             }
-            keys.add(type);
+
+            keys.add(new KeyWithDisp(type.getId(), typeTitle));
         }
 
-        keys.add("alf_" + node.type());
+        String alfTypeKey = "alf_" + node.type();
+        String alfTypeTitle = node.typeQName().map(GqlQName::classTitle).orElse(alfTypeKey);
+        alfTypeTitle = "A: " + alfTypeTitle;
+
+        keys.add(new KeyWithDisp(alfTypeKey, alfTypeTitle));
 
         return keys;
     }
 
-    private String getNodeRefUuid(String nodeRef) {
-        if (nodeRef == null || nodeRef.isEmpty()) {
-            return "";
+    private String getNodeRefDisplayName(NodeRef nodeRef) {
+        if (nodeRef == null) {
+            return "null";
         }
-        return nodeRef.replaceAll("workspace://SpacesStore/", "");
+        RecordRef ref = RecordRef.create("", nodeRef.toString());
+        JsonNode value = context.getRecordsService().getAttribute(ref, ".disp");
+        return value != null ? value.asText() : nodeRef.getId();
+    }
+
+    private NodeRef getNodeRefFromProp(String propName) {
+        Attribute att = node.attribute(propName);
+        String value = null;
+        if (att != null) {
+            value = att.value().orElse(null);
+        }
+        return value != null && NodeRef.isNodeRef(value) ? new NodeRef(value) : null;
     }
 
     @Override
@@ -343,6 +363,27 @@ public class AlfNodeRecord implements MetaValue {
             }
 
             return result;
+        }
+    }
+
+    public static class KeyWithDisp implements MetaValue {
+
+        String value;
+        String disp;
+
+        public KeyWithDisp(String value, String disp) {
+            this.value = value;
+            this.disp = disp;
+        }
+
+        @Override
+        public String getString() {
+            return value;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return disp;
         }
     }
 }

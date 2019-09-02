@@ -214,7 +214,14 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
                 }
             }
 
-            return typeName != null ? typeName.getLocalName() : DataTypeDefinition.TEXT.getLocalName();
+            if (typeName != null) {
+                if (typeName.equals(DataTypeDefinition.NODE_REF)) {
+                    return "assoc";
+                } else {
+                    return typeName.getLocalName();
+                }
+            }
+            return DataTypeDefinition.TEXT.getLocalName();
 
         } else if (definition instanceof AssociationDefinition) {
 
