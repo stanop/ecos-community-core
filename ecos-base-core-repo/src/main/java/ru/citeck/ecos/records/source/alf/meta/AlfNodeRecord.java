@@ -160,13 +160,16 @@ public class AlfNodeRecord implements MetaValue {
                 AlfNodeAttValue parentValue = new AlfNodeAttValue(node.getParent());
                 parentValue.init(context, field);
                 attribute = Collections.singletonList(parentValue);
-
                 break;
 
             case RecordConstants.ATT_FORM_KEY:
+
+                attribute = MetaUtils.toMetaValues(getFormAndDashboardKeys(true), context, field);
+                break;
+
             case RecordConstants.ATT_DASHBOARD_KEY:
 
-                attribute = MetaUtils.toMetaValues(getFormAndDashboardKeys(), context, field);
+                attribute = MetaUtils.toMetaValues(getFormAndDashboardKeys(false), context, field);
                 break;
 
             case RecordConstants.ATT_DASHBOARD_TYPE:
@@ -237,7 +240,7 @@ public class AlfNodeRecord implements MetaValue {
         return null;
     }
 
-    private List<KeyWithDisp> getFormAndDashboardKeys() {
+    private List<KeyWithDisp> getFormAndDashboardKeys(boolean withAlfType) {
 
         List<KeyWithDisp> keys = new ArrayList<>();
 
@@ -260,11 +263,12 @@ public class AlfNodeRecord implements MetaValue {
             keys.add(new KeyWithDisp(type.getId(), typeTitle));
         }
 
-        String alfTypeKey = "alf_" + node.type();
-        String alfTypeTitle = node.typeQName().map(GqlQName::classTitle).orElse(alfTypeKey);
-        alfTypeTitle = "A: " + alfTypeTitle;
-
-        keys.add(new KeyWithDisp(alfTypeKey, alfTypeTitle));
+        if (withAlfType) {
+            String alfTypeKey = "alf_" + node.type();
+            String alfTypeTitle = node.typeQName().map(GqlQName::classTitle).orElse(alfTypeKey);
+            alfTypeTitle = "A: " + alfTypeTitle;
+            keys.add(new KeyWithDisp(alfTypeKey, alfTypeTitle));
+        }
 
         return keys;
     }
