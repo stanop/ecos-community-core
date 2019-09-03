@@ -180,7 +180,7 @@
                     "validateOn": "change",
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "e00xdf"
+                    "id": "etffzdm"
                   }
                 ],
                 "width": 6,
@@ -239,13 +239,12 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e9kx37m"
+                "id": "enomt9"
               },
               {
                 "components": [
                   {
                     "label": "Budget item",
-                    "hideCreateButton": true,
                     "mask": false,
                     "tableView": true,
                     "alwaysEnabled": false,
@@ -259,6 +258,7 @@
                     "ecos": {
                       "dataType": "assoc"
                     },
+                    "defaultValue": "",
                     "encrypted": false,
                     "displayColumnsAsyncData": [
                       {
@@ -293,7 +293,6 @@
                     "type": "selectJournal",
                     "input": true,
                     "tags": [],
-                    "defaultValue": "",
                     "placeholder": "",
                     "prefix": "",
                     "customClass": "",
@@ -323,9 +322,10 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
+                    "hideCreateButton": false,
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "e8nx66"
+                    "id": "edg8xkb"
                   }
                 ],
                 "width": 6,
@@ -384,7 +384,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e4s1l09"
+                "id": "e4yiyf"
               },
               {
                 "xs": 0,
@@ -483,7 +483,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "egtsly"
+                    "id": "eayp79o"
                   }
                 ],
                 "placeholder": "",
@@ -526,7 +526,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ej062i"
+                "id": "e6e8dmb"
               }
             ],
             "hideOnChildrenHidden": true,
@@ -583,7 +583,7 @@
               "customPrivate": false
             },
             "autoAdjust": false,
-            "id": "ei4zavm"
+            "id": "ey0nkxi"
           },
           {
             "conditional": {
@@ -638,7 +638,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "e64gv4i"
+            "id": "eswbmw8"
           },
           {
             "label": "payments:paymentPurpose",
@@ -718,7 +718,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "e81whh5"
+            "id": "e526cb9"
           },
           {
             "conditional": {
@@ -773,7 +773,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "eh7jctf"
+            "id": "exifrqs"
           },
           {
             "label": "Columns",
@@ -918,7 +918,7 @@
                     "hideCreateButton": false,
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "evh1o2h"
+                    "id": "ekag5li"
                   }
                 ],
                 "width": 6,
@@ -977,7 +977,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "esotuqx"
+                "id": "elj0pbl"
               },
               {
                 "components": [
@@ -1074,7 +1074,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "eu49hh"
+                    "id": "e2shwia"
                   }
                 ],
                 "width": 6,
@@ -1133,7 +1133,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ev84uue"
+                "id": "eclzwh"
               },
               {
                 "xs": 0,
@@ -1275,7 +1275,7 @@
                     "mask": false,
                     "inputType": "text",
                     "inputMask": "",
-                    "id": "eryg73"
+                    "id": "emo6ye"
                   },
                   {
                     "label": "Generate",
@@ -1338,7 +1338,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "e1xwv9a"
+                    "id": "elk9lh3"
                   }
                 ],
                 "placeholder": "",
@@ -1381,7 +1381,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eb5ov4m"
+                "id": "enidjud"
               }
             ],
             "mask": false,
@@ -1438,7 +1438,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "ew2aud"
+            "id": "emgwfrb"
           },
           {
             "conditional": {
@@ -1493,7 +1493,7 @@
             "inputType": "horizontalLine",
             "useNegativeIndents": true,
             "addVerticalIndents": false,
-            "id": "e1lxqc"
+            "id": "eim987i"
           },
           {
             "label": "Columns",
@@ -1638,7 +1638,7 @@
                     "hideCreateButton": false,
                     "hideEditRowButton": false,
                     "hideDeleteRowButton": false,
-                    "id": "ekkr07"
+                    "id": "equdmf"
                   }
                 ],
                 "width": 6,
@@ -1697,7 +1697,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eccghzi"
+                "id": "e5dzl"
               },
               {
                 "components": [
@@ -1794,7 +1794,7 @@
                     "fuseOptions": {},
                     "customOptions": {},
                     "refreshEventName": "",
-                    "id": "e50y11l"
+                    "id": "etqob8f"
                   }
                 ],
                 "width": 6,
@@ -1853,7 +1853,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eq7lp6c"
+                "id": "eejdtdo"
               },
               {
                 "xs": 0,
@@ -1909,7 +1909,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e8v82mn"
+                "id": "ez8mnb9"
               }
             ],
             "mask": false,
@@ -1966,7 +1966,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e8dqsvf"
+            "id": "ei3zzrq"
           }
         ],
         "tags": [],
@@ -2008,7 +2008,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "ebqml2i"
+        "id": "ekx7cms"
       },
       {
         "label": "Panel",
@@ -2225,7 +2225,7 @@
                     "displayInTimezone": "viewer",
                     "timezone": "",
                     "datepickerMode": "day",
-                    "id": "et6ptc"
+                    "id": "edr4zq8"
                   }
                 ],
                 "width": 6,
@@ -2284,7 +2284,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "efrmnon"
+                "id": "e7b2x3s"
               },
               {
                 "components": [
@@ -2465,7 +2465,7 @@
                       "mousewheel": true,
                       "arrowkeys": true
                     },
-                    "id": "ecu8d3p"
+                    "id": "em4g07v"
                   }
                 ],
                 "width": 6,
@@ -2524,7 +2524,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "emws3y"
+                "id": "ec1ovwo"
               },
               {
                 "xs": 0,
@@ -2623,7 +2623,7 @@
                     "searchThreshold": 0.3,
                     "fuseOptions": {},
                     "customOptions": {},
-                    "id": "e83hzu"
+                    "id": "ewylkic"
                   }
                 ],
                 "placeholder": "",
@@ -2666,7 +2666,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eottuel9"
+                "id": "e71c1lm"
               }
             ],
             "mask": false,
@@ -2723,7 +2723,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "ewa8jf5"
+            "id": "ewui6ia"
           }
         ],
         "tags": [],
@@ -2760,7 +2760,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "em06bsv"
+        "id": "e85gf3"
       },
       {
         "label": "Panel",
@@ -2904,7 +2904,7 @@
                     "searchThreshold": 0.3,
                     "fuseOptions": {},
                     "customOptions": {},
-                    "id": "e50y1oo"
+                    "id": "e1nbeok"
                   },
                   {
                     "label": "payments:overexpenditure",
@@ -2969,7 +2969,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "ewc6ale"
+                    "id": "e1snhps"
                   }
                 ],
                 "width": 6,
@@ -3028,7 +3028,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "es9mnjd"
+                "id": "eiw3z5w"
               },
               {
                 "components": [
@@ -3137,7 +3137,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "el288y8"
+                    "id": "e63da6a"
                   }
                 ],
                 "width": 6,
@@ -3196,7 +3196,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e9at69n"
+                "id": "e4tn5xp"
               },
               {
                 "xs": 0,
@@ -3277,7 +3277,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "e8eovp"
+                    "id": "esnii6r"
                   }
                 ],
                 "placeholder": "",
@@ -3320,7 +3320,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e5q5jgg"
+                "id": "ec80y1"
               },
               {
                 "xs": 0,
@@ -3376,7 +3376,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e7v7xq9"
+                "id": "ea4px5s"
               }
             ],
             "mask": false,
@@ -3433,7 +3433,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "eifc78"
+            "id": "esfnkp"
           }
         ],
         "tags": [],
@@ -3470,7 +3470,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "eznn3xm"
+        "id": "ew1skhn"
       },
       {
         "label": "Panel",
@@ -3561,7 +3561,7 @@
                     "inputType": "checkbox",
                     "value": "",
                     "name": "",
-                    "id": "eehjh5r"
+                    "id": "emo2uu"
                   }
                 ],
                 "width": 6,
@@ -3620,7 +3620,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "edlq526"
+                "id": "eyf0vb"
               },
               {
                 "components": [],
@@ -3680,7 +3680,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e8gc1cd"
+                "id": "ei9hbq"
               }
             ],
             "mask": false,
@@ -3737,7 +3737,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "eer9rwm"
+            "id": "ek1m4s"
           },
           {
             "label": "Columns",
@@ -3844,7 +3844,7 @@
                     "uploadOnly": false,
                     "defaultOverlayWidth": 200,
                     "defaultOverlayHeight": 200,
-                    "id": "ehuypdj"
+                    "id": "erreab"
                   },
                   {
                     "label": "pas:containsProductsAndServices",
@@ -3987,7 +3987,7 @@
                     "refreshOn": "",
                     "clearOnRefresh": false,
                     "validateOn": "change",
-                    "id": "emphb6d"
+                    "id": "e49g28"
                   }
                 ],
                 "width": 6,
@@ -4046,7 +4046,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eofj4g"
+                "id": "et0vjyq"
               },
               {
                 "components": [],
@@ -4106,7 +4106,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "euk04pg"
+                "id": "efwcy3"
               }
             ],
             "mask": false,
@@ -4163,7 +4163,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "eaw8j1q"
+            "id": "e1s7c3s"
           },
           {
             "label": "payments:paymentComment",
@@ -4243,7 +4243,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "e6nlie"
+            "id": "eszdc1"
           }
         ],
         "tags": [],
@@ -4285,7 +4285,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "eo0jpoi"
+        "id": "ezu5lrk"
       },
       {
         "label": "paymentsBasis",
@@ -4381,7 +4381,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "el1hdx"
+        "id": "ec40wvv"
       },
       {
         "label": "period",
@@ -4469,7 +4469,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "e9sadns"
+        "id": "ej0715u"
       },
       {
         "label": "containsProductsAndServices",
@@ -4560,7 +4560,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "eia8rhm"
+        "id": "ee1zq8"
       },
       {
         "label": "payer",
@@ -4650,7 +4650,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "e8r6uq0k"
+        "id": "e6ki796"
       },
       {
         "label": "currencyList",
@@ -4738,7 +4738,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "ezq0com"
+        "id": "exjkqqj"
       },
       {
         "label": "legalEntities",
@@ -4827,7 +4827,7 @@
         "mask": false,
         "inputType": "asyncData",
         "executionCondition": "",
-        "id": "e1ehz4o"
+        "id": "ez9hlb"
       },
       {
         "label": "payment",
@@ -4915,7 +4915,7 @@
         "inputType": "asyncData",
         "eventName": "",
         "executionCondition": "",
-        "id": "efht7nj"
+        "id": "e1l6it"
       },
       {
         "label": "Columns",
@@ -4990,7 +4990,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "ejqi926"
+                "id": "ewvoa3"
               }
             ],
             "width": 6,
@@ -5049,7 +5049,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eo4ajsf"
+            "id": "epgsm3"
           },
           {
             "components": [
@@ -5120,7 +5120,7 @@
                 "action": "submit",
                 "disableOnInvalid": false,
                 "removeIndents": false,
-                "id": "eajvhg"
+                "id": "evjoyxd"
               }
             ],
             "width": 6,
@@ -5179,7 +5179,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eovhru"
+            "id": "eg2t359"
           },
           {
             "xs": 0,
@@ -5262,7 +5262,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "elrfxyr"
+                "id": "eeq7l1"
               }
             ],
             "placeholder": "",
@@ -5305,7 +5305,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eqqtq1"
+            "id": "eoqzqed"
           }
         ],
         "mask": false,
@@ -5361,7 +5361,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e114qe6"
+        "id": "ejx7lo"
       },
       {
         "label": "Columns",
@@ -5424,7 +5424,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ep8643n"
+            "id": "e0hk68k"
           },
           {
             "components": [
@@ -5496,7 +5496,7 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "eafy0ku"
+                "id": "eril93"
               }
             ],
             "width": 6,
@@ -5555,7 +5555,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e0xdhe"
+            "id": "emw6tv"
           },
           {
             "xs": 0,
@@ -5637,7 +5637,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "e54dg9x"
+                "id": "euhomop"
               }
             ],
             "placeholder": "",
@@ -5680,7 +5680,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e9cplw"
+            "id": "eh9hls"
           },
           {
             "xs": 0,
@@ -5736,7 +5736,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e1gt139"
+            "id": "etckec"
           }
         ],
         "mask": false,
@@ -5792,7 +5792,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ee3hzz8"
+        "id": "emc9pnf"
       }
     ]
   },
