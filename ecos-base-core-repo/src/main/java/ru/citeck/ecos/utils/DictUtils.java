@@ -80,17 +80,15 @@ public class DictUtils {
     public ClassAttributeDefinition getAttDefinition(String name) {
 
         QName field = QName.resolveToQName(namespaceService, name);
+        if (field == null) {
+            return null;
+        }
 
         AssociationDefinition assocDef = dictionaryService.getAssociation(field);
         if (assocDef != null) {
             return assocDef;
-        } else {
-            PropertyDefinition propDef = dictionaryService.getProperty(field);
-            if (propDef != null) {
-                return propDef;
-            }
         }
-        return null;
+        return dictionaryService.getProperty(field);
     }
 
     public String getPropertyDisplayName(QName name, String value) {

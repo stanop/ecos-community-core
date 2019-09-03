@@ -154,6 +154,8 @@ CreateVariant
         var options = this.resolve("journal.type.options") || {};
         var redirectionMethod = options["createVariantRedirectionMethod"] || "card";
 
+        var createParams = Citeck.forms.parseCreateArguments(this.createArguments());
+
         Citeck.forms.createRecord(this.recordRef(), this.type(), this.destination(), function() {
 
             var url = self.url();
@@ -164,7 +166,7 @@ CreateVariant
             } else {
                 window.location = self.link();
             }
-        }, redirectionMethod, this.formKey(), this.attributes());
+        }, redirectionMethod, this.formKey(), this.attributes(), { params: createParams });
     })
 
     .computed('link', function () {
