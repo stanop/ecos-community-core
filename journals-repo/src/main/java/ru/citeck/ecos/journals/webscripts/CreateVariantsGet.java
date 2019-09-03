@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -172,23 +173,26 @@ public class CreateVariantsGet extends AbstractWebScript {
     }
 
     public List<ResponseVariant> getVariantsByJournalId(String journalId, Boolean writable) {
-        return convertMlVariants(getVariantsByJournalId(journalId), writable);
+        return convertMlVariants(() -> getVariantsByJournalId(journalId), writable);
     }
 
     public List<ResponseVariant> getVariantsByJournalRef(NodeRef journalRef, Boolean writable) {
-        return convertMlVariants(getVariantsByJournalRef(journalRef), writable);
+        return convertMlVariants(() -> getVariantsByJournalRef(journalRef), writable);
     }
 
-    private List<ResponseVariant> convertMlVariants(List<CreateVariant> variants, Boolean writable) {
+    private List<ResponseVariant> convertMlVariants(Supplier<List<CreateVariant>> variants, Boolean writable) {
         MLPropertyInterceptor.setMLAware(true);
         try {
-            return convertVariants(variants, writable);
+            return convertVariants(variants.get(), writable);
         } finally {
             MLPropertyInterceptor.setMLAware(false);
         }
     }
 
     private List<ResponseVariant> convertVariants(List<CreateVariant> variants, Boolean writable) {
+        if (variants == null) {
+            return Collections.emptyList();
+        }
         return variants.stream()
                        .filter(v -> hasPermission(v.getNode(), PermissionService.READ))
                        .map(ResponseVariant::new)
