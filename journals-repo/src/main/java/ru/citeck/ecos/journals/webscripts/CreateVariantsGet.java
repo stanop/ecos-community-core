@@ -56,6 +56,7 @@ public class CreateVariantsGet extends AbstractWebScript {
     private LoadingCache<String, List<CreateVariant>> createVariantsBySite;
     private LoadingCache<String, List<CreateVariant>> createVariantsByNodeType;
     private LoadingCache<String, List<CreateVariant>> createVariantsByJournalType;
+    private LoadingCache<NodeRef, List<CreateVariant>> createVariantsByJournalRef;
 
     private NodeUtils nodeUtils;
     private NodeService nodeService;
@@ -87,6 +88,9 @@ public class CreateVariantsGet extends AbstractWebScript {
         createVariantsData = CacheBuilder.newBuilder()
                 .expireAfterWrite(cacheAgeSeconds, TimeUnit.SECONDS)
                 .build(CacheLoader.from(this::getCreateVariantData));
+        createVariantsByJournalRef = CacheBuilder.newBuilder()
+                .expireAfterWrite(cacheAgeSeconds, TimeUnit.SECONDS)
+                .build(CacheLoader.from(this::getVariantsByJournalRefImpl));
 
         initialized = true;
     }
@@ -168,9 +172,17 @@ public class CreateVariantsGet extends AbstractWebScript {
     }
 
     public List<ResponseVariant> getVariantsByJournalId(String journalId, Boolean writable) {
+        return convertMlVariants(getVariantsByJournalId(journalId), writable);
+    }
+
+    public List<ResponseVariant> getVariantsByJournalRef(NodeRef journalRef, Boolean writable) {
+        return convertMlVariants(getVariantsByJournalRef(journalRef), writable);
+    }
+
+    private List<ResponseVariant> convertMlVariants(List<CreateVariant> variants, Boolean writable) {
         MLPropertyInterceptor.setMLAware(true);
         try {
-            return convertVariants(getVariantsByJournalId(journalId), writable);
+            return convertVariants(variants, writable);
         } finally {
             MLPropertyInterceptor.setMLAware(false);
         }
@@ -209,6 +221,22 @@ public class CreateVariantsGet extends AbstractWebScript {
         );
     }
 
+    private List<CreateVariant> getVariantsByJournalRef(NodeRef journalRef) {
+        if (journalRef == null) {
+            return Collections.emptyList();
+        }
+        return createVariantsByJournalRef.getUnchecked(journalRef);
+    }
+
+    private List<CreateVariant> getVariantsByJournalRefImpl(NodeRef journalRef) {
+        return nodeService.getChildAssocs(journalRef,
+                                          JournalsModel.ASSOC_CREATE_VARIANTS,
+                                          RegexQNamePattern.MATCH_ALL)
+                .stream()
+                .map(variantRef -> createVariantsData.getUnchecked(variantRef.getChildRef()))
+                .collect(Collectors.toList());
+    }
+
     private List<CreateVariant> getVariantsByJournalId(String journalId) {
 
         List<CreateVariant> variants = new ArrayList<>(AuthenticationUtil.runAsSystem(() ->
@@ -218,10 +246,7 @@ public class CreateVariantsGet extends AbstractWebScript {
                         .transactional()
                         .query(searchService)
                         .stream()
-                        .flatMap(journalRef -> nodeService.getChildAssocs(journalRef,
-                                JournalsModel.ASSOC_CREATE_VARIANTS,
-                                RegexQNamePattern.MATCH_ALL).stream())
-                        .map(variantRef -> createVariantsData.getUnchecked(variantRef.getChildRef()))
+                        .flatMap(journalRef -> getVariantsByJournalRef(journalRef).stream())
                         .collect(Collectors.toList())
         ));
 
