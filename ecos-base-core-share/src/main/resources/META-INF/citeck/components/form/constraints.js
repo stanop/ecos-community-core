@@ -455,7 +455,8 @@ require([
 
                 var params = {
                     attributes: config.attributes || {},
-                    onSubmit: config.onSubmit
+                    onSubmit: config.onSubmit,
+                    options: config.options
                 };
                 if (formKey) {
                     params.formKey = config.formKey
@@ -538,7 +539,34 @@ require([
         });
     }
 
+    Citeck.forms.parseCreateArguments = function (createArgs) {
+        if (!createArgs) {
+            return {};
+        }
+        var params = {};
+        try {
+            var args = createArgs.split("&");
+            for (var i = 0; i < args.length; i++) {
+                var keyValue = (args[i] || '').split("=");
+                if (keyValue.length == 2) {
+                    var key = keyValue[0] || '';
+                    var value = keyValue[1] || '';
+                    if (key.indexOf("param_") === 0) {
+                        params[key.substring("param_".length)] = value;
+                    }
+                }
+            }
+        } catch (e) {
+            //protection for hotfix
+            //todo: remove it in develop
+            console.error(e);
+        }
+        return params;
+    };
+
     Citeck.forms.handleHeaderCreateVariant = function (variant) {
+
+        var params = Citeck.forms.parseCreateArguments(variant.createArguments);
 
         Citeck.forms.createRecord(variant.recordRef, variant.type, variant.destination, function() {
 
@@ -551,10 +579,17 @@ require([
             }
 
             window.location = "/share/page/node-create?" + createArguments;
-        });
+        }, null, null, {}, { params: params });
     };
 
-    Citeck.forms.createRecord = function (recordRef, type, destination, fallback, redirectionMethod, formKey, attributes) {
+    Citeck.forms.createRecord = function (recordRef,
+                                          type,
+                                          destination,
+                                          fallback,
+                                          redirectionMethod,
+                                          formKey,
+                                          attributes,
+                                          options) {
 
         var createAttributes = attributes || {};
         if (destination) {
@@ -565,6 +600,7 @@ require([
             recordRef: recordRef || 'dict@' + type,
             attributes: createAttributes,
             formKey: formKey,
+            options: options,
             forceNewForm: formKey || !type,
             fallback: fallback,
             onSubmit: function(record, form) {

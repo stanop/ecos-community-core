@@ -220,8 +220,13 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
         Map<String, Object> executionVariables = new HashMap<>(transientVariables);
 
+        Object comment = variables.get(EcosTaskService.FIELD_COMMENT);
+        if (comment != null) {
+            taskVariables.put("bpm_comment", comment);
+        }
+
         String lastCommentProp = converter.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
-        variables.put(lastCommentProp, variables.get(EcosTaskService.FIELD_COMMENT));
+        variables.put(lastCommentProp, comment);
 
         taskService.complete(taskId, taskVariables, executionVariables);
     }

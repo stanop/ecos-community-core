@@ -190,23 +190,35 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     public RecordsQueryResult<RecordRef> getLocalRecords(RecordsQuery query) {
 
         WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
+        String document = tasksQuery.document;
 
-        if (tasksQuery.actors != null
-                && tasksQuery.actors.size() == 1
-                && StringUtils.isNotBlank(tasksQuery.document)) {
+        if (StringUtils.isNotBlank(document) && NodeRef.isNodeRef(document)) {
 
-            String actor = tasksQuery.actors.get(0);
-            String document = tasksQuery.document;
+            List<WorkflowTask> tasks = null;
+            NodeRef docRef = new NodeRef(document);
 
-            if (CURRENT_USER.equals(actor) && NodeRef.isNodeRef(document)) {
+            if (tasksQuery.actors != null) {
 
-                List<WorkflowTask> tasks;
+                if (tasksQuery.actors.size() == 1) {
+                    String actor = tasksQuery.actors.get(0);
+                    if (CURRENT_USER.equals(actor)) {
 
-                if (tasksQuery.active == null) {
-                    tasks = workflowUtils.getDocumentUserTasks(new NodeRef(document));
-                } else {
-                    tasks = workflowUtils.getDocumentUserTasks(new NodeRef(document), tasksQuery.active);
+                        if (tasksQuery.active == null) {
+                            tasks = workflowUtils.getDocumentUserTasks(docRef);
+                        } else {
+                            tasks = workflowUtils.getDocumentUserTasks(docRef, tasksQuery.active);
+                        }
+                    }
                 }
+            } else {
+                if (tasksQuery.active == null) {
+                    tasks = workflowUtils.getDocumentTasks(docRef);
+                } else {
+                    tasks = workflowUtils.getDocumentTasks(docRef, tasksQuery.active);
+                }
+            }
+
+            if (tasks != null) {
 
                 List<RecordRef> taskRefs = tasks.stream()
                         .map(t -> RecordRef.valueOf(t.getId()))
@@ -288,6 +300,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
         @Override
         public <T extends QueryContext> void init(T context, MetaField field) {
+
             Map<String, String> documentAttributes = new HashMap<>();
             RecordRef documentRef = getDocumentRef();
             Map<String, String> attributesMap = field.getInnerAttributesMap();
