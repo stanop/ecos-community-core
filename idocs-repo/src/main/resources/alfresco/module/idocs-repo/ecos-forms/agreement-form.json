@@ -181,7 +181,7 @@
                         "hideCreateButton": false,
                         "hideEditRowButton": false,
                         "hideDeleteRowButton": false,
-                        "id": "e9eh0ip"
+                        "id": "eik0rc"
                       },
                       {
                         "useNegativeIndents": false,
@@ -236,7 +236,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eghwcv7"
+                        "id": "ef97wn9"
                       },
                       {
                         "label": "contracts:contractor",
@@ -358,7 +358,7 @@
                         "hideCreateButton": false,
                         "hideEditRowButton": false,
                         "hideDeleteRowButton": false,
-                        "id": "e6j0yr9"
+                        "id": "exvn8ih"
                       },
                       {
                         "useNegativeIndents": false,
@@ -413,7 +413,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eg1rif5"
+                        "id": "em6z6pd"
                       },
                       {
                         "label": "contracts:contractWith",
@@ -507,7 +507,7 @@
                         "fuseOptions": {},
                         "customOptions": {},
                         "refreshEventName": "",
-                        "id": "efm6la"
+                        "id": "ee3xnwa"
                       },
                       {
                         "useNegativeIndents": false,
@@ -562,7 +562,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "en4iyqe"
+                        "id": "e30eul3"
                       },
                       {
                         "label": "Type of contract",
@@ -647,7 +647,7 @@
                         "searchThreshold": 0.3,
                         "fuseOptions": {},
                         "customOptions": {},
-                        "id": "er2lk5m"
+                        "id": "eiu6tqg"
                       },
                       {
                         "useNegativeIndents": false,
@@ -702,7 +702,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "euf95fm"
+                        "id": "eeeoww"
                       },
                       {
                         "label": "contracts:agreementSubject",
@@ -795,7 +795,7 @@
                         "hideCreateButton": false,
                         "hideEditRowButton": false,
                         "hideDeleteRowButton": false,
-                        "id": "e3vp8b8"
+                        "id": "ej24mfm"
                       },
                       {
                         "useNegativeIndents": false,
@@ -850,7 +850,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eodgni"
+                        "id": "eis76j9"
                       },
                       {
                         "label": "Columns",
@@ -979,7 +979,7 @@
                                 "mask": false,
                                 "inputType": "text",
                                 "inputMask": "",
-                                "id": "eoone2m"
+                                "id": "eif6lxwj"
                               }
                             ],
                             "width": 6,
@@ -1038,7 +1038,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "ejv0tx8"
+                            "id": "ewa0aei"
                           },
                           {
                             "components": [
@@ -1103,7 +1103,7 @@
                                 "inputType": "checkbox",
                                 "value": "",
                                 "name": "",
-                                "id": "ecz5ydm"
+                                "id": "ecit3x6"
                               }
                             ],
                             "width": 6,
@@ -1162,7 +1162,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "efuzzl"
+                            "id": "e9pu09l"
                           }
                         ],
                         "mask": false,
@@ -1219,7 +1219,7 @@
                         },
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "efj9c1a"
+                        "id": "ed97gwg"
                       },
                       {
                         "label": "Columns",
@@ -1402,7 +1402,7 @@
                                   "mousewheel": true,
                                   "arrowkeys": true
                                 },
-                                "id": "eomi2w"
+                                "id": "ew876i"
                               }
                             ],
                             "width": 6,
@@ -1461,7 +1461,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "eo973r5"
+                            "id": "edfgbmt"
                           },
                           {
                             "components": [
@@ -1641,7 +1641,7 @@
                                   "mousewheel": true,
                                   "arrowkeys": true
                                 },
-                                "id": "ew3ln8e"
+                                "id": "e65tscj"
                               }
                             ],
                             "width": 6,
@@ -1700,7 +1700,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "eep1f5e"
+                            "id": "erpzp"
                           }
                         ],
                         "mask": false,
@@ -1757,7 +1757,7 @@
                         },
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "euckvx9"
+                        "id": "ewr1xgg"
                       }
                     ],
                     "tags": [],
@@ -1799,7 +1799,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "e4jlsh"
+                    "id": "eja2uvu"
                   },
                   {
                     "label": "Panel",
@@ -1905,7 +1905,7 @@
                         "searchThreshold": 0.3,
                         "fuseOptions": {},
                         "customOptions": {},
-                        "id": "emdsmrcj"
+                        "id": "et685z"
                       },
                       {
                         "useNegativeIndents": false,
@@ -1960,7 +1960,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e5lf7l"
+                        "id": "expnc1"
                       },
                       {
                         "label": "Columns",
@@ -2031,7 +2031,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "e4z57lp"
+                                "id": "ee1juw"
                               }
                             ],
                             "width": 6,
@@ -2090,7 +2090,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "e4ga54g"
+                            "id": "e8n1cki"
                           },
                           {
                             "components": [
@@ -2158,7 +2158,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "efdaxo5"
+                                "id": "er8obwb"
                               }
                             ],
                             "width": 6,
@@ -2217,7 +2217,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "enl6zur"
+                            "id": "erq5leo"
                           }
                         ],
                         "mask": false,
@@ -2274,7 +2274,7 @@
                         },
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "eseeyk"
+                        "id": "e3pghgy"
                       },
                       {
                         "useNegativeIndents": false,
@@ -2329,7 +2329,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "ec2dksf"
+                        "id": "ehbsbhy"
                       },
                       {
                         "label": "payments:payments",
@@ -2423,7 +2423,7 @@
                         "clearOnRefresh": false,
                         "validateOn": "change",
                         "eventName": "",
-                        "id": "ehmlub3"
+                        "id": "e87w9me"
                       }
                     ],
                     "tags": [],
@@ -2465,7 +2465,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "ew997ig"
+                    "id": "eoj61ip"
                   }
                 ],
                 "width": 6,
@@ -2524,7 +2524,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e5vqwop"
+                "id": "evuopwd"
               },
               {
                 "components": [
@@ -2624,7 +2624,7 @@
                         "inputMask": "",
                         "wysiwyg": false,
                         "editor": "",
-                        "id": "ec5wygm"
+                        "id": "e2e0jr5"
                       },
                       {
                         "label": "dms:updateContent",
@@ -2689,7 +2689,7 @@
                         "inputType": "checkbox",
                         "value": "",
                         "name": "",
-                        "id": "e9elvyb"
+                        "id": "equragk"
                       },
                       {
                         "useNegativeIndents": false,
@@ -2744,7 +2744,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e024ku"
+                        "id": "e09n0k"
                       },
                       {
                         "label": "cm:content",
@@ -2824,7 +2824,7 @@
                         "uploadOnly": false,
                         "defaultOverlayWidth": 200,
                         "defaultOverlayHeight": 200,
-                        "id": "evzefki"
+                        "id": "emac8ri"
                       },
                       {
                         "label": "idocs:note",
@@ -2902,7 +2902,7 @@
                         "inputMask": "",
                         "wysiwyg": false,
                         "editor": "",
-                        "id": "enifmu7"
+                        "id": "e41htn"
                       },
                       {
                         "useNegativeIndents": false,
@@ -2957,7 +2957,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e7l8dc"
+                        "id": "ephfcy"
                       },
                       {
                         "label": "icase:documents",
@@ -3038,7 +3038,7 @@
                         "uploadOnly": false,
                         "defaultOverlayWidth": 200,
                         "defaultOverlayHeight": 200,
-                        "id": "e9uihlf"
+                        "id": "exdbr"
                       }
                     ],
                     "tags": [],
@@ -3080,7 +3080,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "eyk4o7q"
+                    "id": "ea9zgke"
                   },
                   {
                     "label": "Panel",
@@ -3165,7 +3165,7 @@
                         "refreshOn": "",
                         "clearOnRefresh": false,
                         "validateOn": "change",
-                        "id": "eocab5l"
+                        "id": "ea3s32h"
                       },
                       {
                         "useNegativeIndents": false,
@@ -3220,7 +3220,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "ex5er1k"
+                        "id": "epv54sa"
                       },
                       {
                         "label": "contracts:digiSign",
@@ -3284,7 +3284,7 @@
                         "inputType": "checkbox",
                         "value": "",
                         "name": "",
-                        "id": "ewt459a"
+                        "id": "ebeqt9g"
                       },
                       {
                         "useNegativeIndents": false,
@@ -3339,7 +3339,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "etiiny"
+                        "id": "eoa45ta"
                       },
                       {
                         "label": "idocs:performer",
@@ -3404,7 +3404,7 @@
                         "refreshOn": "",
                         "clearOnRefresh": false,
                         "validateOn": "change",
-                        "id": "emk6hdq"
+                        "id": "ej1udc"
                       },
                       {
                         "conditional": {
@@ -3459,7 +3459,7 @@
                         "inputType": "horizontalLine",
                         "useNegativeIndents": true,
                         "addVerticalIndents": false,
-                        "id": "ezz1o8b"
+                        "id": "e7ufnpz"
                       },
                       {
                         "label": "idocs:supervisor",
@@ -3524,7 +3524,7 @@
                         "refreshOn": "",
                         "clearOnRefresh": false,
                         "validateOn": "change",
-                        "id": "euwqb7e"
+                        "id": "envfeok"
                       },
                       {
                         "label": "docTypeList",
@@ -3612,7 +3612,7 @@
                         "mask": false,
                         "inputType": "asyncData",
                         "executionCondition": "",
-                        "id": "ev22i9"
+                        "id": "e0rb6wg"
                       },
                       {
                         "useNegativeIndents": false,
@@ -3667,7 +3667,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eh1ei96"
+                        "id": "e2gh0yg"
                       },
                       {
                         "label": "docTypeList",
@@ -3755,7 +3755,7 @@
                         "mask": false,
                         "inputType": "asyncData",
                         "executionCondition": "",
-                        "id": "euch01e"
+                        "id": "e8gjelh"
                       }
                     ],
                     "tags": [],
@@ -3797,7 +3797,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "esqnmsl"
+                    "id": "eqklbj"
                   },
                   {
                     "label": "currencyList",
@@ -3885,7 +3885,7 @@
                     "mask": false,
                     "inputType": "asyncData",
                     "executionCondition": "",
-                    "id": "ehnsz1a"
+                    "id": "ezwd31a"
                   },
                   {
                     "label": "caseStatus",
@@ -3905,7 +3905,7 @@
                       },
                       "custom": {
                         "syncData": "value = recordId",
-                        "asyncData": "function getCaseStatus(recordId, attemptsNumber, period = 2000) {\r\n    return new Promise(function(resolve, reject) {\r\n        (function attempt(attemptsLeft) {\r\n        \twindow.Citeck.Records.get(data).load('icase:caseStatusAssoc.cm:name', true).then(status => {\r\n        \t\tif (status !== null) {\r\n        \t\t\treturn resolve(status);\r\n        \t\t}\r\n        \t\tif (attemptsLeft < 1) {\r\n        \t\t\treturn resolve(null);\r\n        \t\t}\r\n        \t\t\r\n        \t\tsetTimeout(attempt.bind(null, attemptsLeft - 1), period);\r\n        \t}).catch(reject);\r\n        })(attemptsNumber);\r\n    });\r\n}\r\n\r\nconst isViewMode = instance.options.readOnly && instance.options.viewAsHtml;\r\nconst formMode = instance.options.formMode;\r\n\r\nif (!isViewMode && formMode === 'EDIT') {\r\n  value = getCaseStatus(data, 10); \r\n} else {\r\n  value = null\r\n}"
+                        "asyncData": "function getCaseStatus(recordId, attemptsNumber, period = 2000) {\r\n    return new Promise(function(resolve, reject) {\r\n        (function attempt(attemptsLeft) {\r\n        \twindow.Citeck.Records.get(data).load('icase:caseStatusAssoc.cm:name', true).then(status => {\r\n        \t\tif (status !== null) {\r\n        \t\t\treturn resolve(status);\r\n        \t\t}\r\n        \t\tif (attemptsLeft < 1) {\r\n        \t\t\treturn resolve(null);\r\n        \t\t}\r\n        \t\t\r\n        \t\tsetTimeout(attempt.bind(null, attemptsLeft - 1), period);\r\n        \t}).catch(reject);\r\n        })(attemptsNumber);\r\n    });\r\n}\r\n\r\nconst isViewMode = instance.options.readOnly && instance.options.viewAsHtml;\r\nconst formMode = instance.options.formMode;\r\n\r\nif (!isViewMode && formMode === 'EDIT') {\r\n  value = getCaseStatus(data, 10); \r\n} else {\r\n  value = 'status is null';\r\n}"
                       },
                       "recordsArray": {
                         "id": "",
@@ -3973,7 +3973,7 @@
                     "inputType": "asyncData",
                     "eventName": "",
                     "executionCondition": "",
-                    "id": "e27li8t"
+                    "id": "eytyoik"
                   }
                 ],
                 "width": 6,
@@ -4032,7 +4032,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eogjtlr"
+                "id": "evaf1g"
               }
             ],
             "mask": false,
@@ -4089,7 +4089,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "ebgnltc"
+            "id": "e2a26r"
           }
         ],
         "tags": [],
@@ -4127,7 +4127,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "ew48i2"
+        "id": "e2jf5a"
       },
       {
         "label": "Container",
@@ -4230,7 +4230,7 @@
                     "rightIcon": "",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "ehj77p"
+                    "id": "equi7iw"
                   }
                 ],
                 "width": 6,
@@ -4289,7 +4289,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e7xjrck"
+                "id": "ee85hwk"
               },
               {
                 "components": [],
@@ -4349,7 +4349,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "epnkrb"
+                "id": "eevgvp"
               },
               {
                 "xs": 0,
@@ -4432,7 +4432,7 @@
                     "action": "submit",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "ezg8mm"
+                    "id": "e3r8b5e"
                   }
                 ],
                 "placeholder": "",
@@ -4475,7 +4475,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ehe73f"
+                "id": "ebud5rn"
               },
               {
                 "xs": 0,
@@ -4558,7 +4558,7 @@
                     "rightIcon": "",
                     "action": "submit",
                     "disableOnInvalid": false,
-                    "id": "ew0gz07"
+                    "id": "edchu96"
                   }
                 ],
                 "placeholder": "",
@@ -4601,7 +4601,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "etzsi5j"
+                "id": "eg6js5"
               }
             ],
             "mask": false,
@@ -4658,7 +4658,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e7uptka"
+            "id": "eiw60bg"
           },
           {
             "label": "Columns",
@@ -4721,7 +4721,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "el2nlqe"
+                "id": "ezzku354"
               },
               {
                 "components": [
@@ -4794,7 +4794,7 @@
                     "rightIcon": "",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "ezk42i"
+                    "id": "e21wugo"
                   }
                 ],
                 "width": 6,
@@ -4853,7 +4853,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "egv0l0j"
+                "id": "edd8mwq"
               },
               {
                 "xs": 0,
@@ -4936,7 +4936,7 @@
                     "rightIcon": "",
                     "action": "submit",
                     "disableOnInvalid": false,
-                    "id": "e9a066b"
+                    "id": "e2d2hvm"
                   }
                 ],
                 "placeholder": "",
@@ -4979,7 +4979,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eq5u8rn"
+                "id": "es3nru7"
               },
               {
                 "xs": 0,
@@ -5035,7 +5035,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ebg03ui"
+                "id": "eip4pq"
               }
             ],
             "mask": false,
@@ -5092,7 +5092,7 @@
             },
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "esz6j1"
+            "id": "enuevn8"
           }
         ],
         "tags": [],
@@ -5126,7 +5126,7 @@
         "clearOnRefresh": false,
         "validateOn": "change",
         "tree": true,
-        "id": "e6e3al5"
+        "id": "epgd426"
       }
     ]
   },
