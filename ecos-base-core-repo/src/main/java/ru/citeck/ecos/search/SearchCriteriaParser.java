@@ -86,35 +86,43 @@ public class SearchCriteriaParser {
                 } else if (name.equals(LIMIT)) {
                     searchCriteria.setLimit(criteria.getInt(name));
                 } else if (name.startsWith(FIELD_KEY)) {
-                    String field = criteria.getString(name);
-                    Integer criteriaIndex = Integer.valueOf(name.substring(fieldIndexPos));
-                    String predicate;
-                    String value;
-                    try {
-                        predicate = criteria.getString(PREDICATE_KEY + SEPARATOR + criteriaIndex);
-                        value = criteria.getString(VALUE_KEY + SEPARATOR + criteriaIndex);
-                    } catch (JSONException e) {
-                        throw new IllegalArgumentException("Can not get predicate or value for field with index " + criteriaIndex);
-                    }
-                    searchCriteria.addCriteriaTriplet(field, predicate, value);
+                    addCriteriaTriplet(searchCriteria, criteria, name);
                 } else if (name.equals(SORT_BY)) {
-                    JSONArray sortParams = criteria.getJSONArray(name);
-                    for (int i = 0, ii = sortParams.length(); i < ii; i++) {
-                        JSONObject sortParam = sortParams.getJSONObject(i);
-                        String field = sortParam.getString(ATTRIBUTE);
-                        String order = sortParam.getString(ORDER);
-                        if (order != null) {
-                            searchCriteria.addSort(field, order);
-                        } else {
-                            searchCriteria.addSort(field, SortOrder.ASCENDING);
-                        }
-                    }
+                    addCriteriaSort(searchCriteria, criteria, name);
                 }
             } catch (JSONException ex) {
                 throw new IllegalArgumentException(ex.getMessage());
             }
         }
         return searchCriteria;
+    }
+
+    private void addCriteriaTriplet(SearchCriteria searchCriteria, JSONObject criteria, String name) throws JSONException {
+        String field = criteria.getString(name);
+        Integer criteriaIndex = Integer.valueOf(name.substring(fieldIndexPos));
+        String predicate;
+        String value;
+        try {
+            predicate = criteria.getString(PREDICATE_KEY + SEPARATOR + criteriaIndex);
+            value = criteria.getString(VALUE_KEY + SEPARATOR + criteriaIndex);
+        } catch (JSONException e) {
+            throw new IllegalArgumentException("Can not get predicate or value for field with index " + criteriaIndex);
+        }
+        searchCriteria.addCriteriaTriplet(field, predicate, value);
+    }
+
+    private void addCriteriaSort(SearchCriteria searchCriteria, JSONObject criteria, String name) throws JSONException {
+        JSONArray sortParams = criteria.getJSONArray(name);
+        for (int i = 0, ii = sortParams.length(); i < ii; i++) {
+            JSONObject sortParam = sortParams.getJSONObject(i);
+            String field = sortParam.getString(ATTRIBUTE);
+            String order = sortParam.getString(ORDER);
+            if (order != null) {
+                searchCriteria.addSort(field, order);
+            } else {
+                searchCriteria.addSort(field, SortOrder.ASCENDING);
+            }
+        }
     }
 
     public void setCriteriaFactory(SearchCriteriaFactory criteriaFactory) {

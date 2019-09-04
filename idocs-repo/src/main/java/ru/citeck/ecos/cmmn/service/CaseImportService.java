@@ -78,12 +78,12 @@ public class CaseImportService {
                 writer.putContent(new ByteArrayInputStream(bytes));
             } catch (Exception e) {
                 logger.error("Failed to get writer", e);
-            } finally {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    logger.error("Failed to close file stream on form submit", e);
-                }
+            }
+
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                logger.error("Failed to close file stream on form submit", e);
             }
 
         } catch (Exception e) {

@@ -38,13 +38,7 @@ public class ChangeTaskOwnerPut extends AbstractWorkflowWebscript {
                 owner = null;
             }
 
-            OwnerAction action;
-            try {
-                action = OwnerAction.valueOf(parameters.getString(ACTION_PARAM).toUpperCase());
-            } catch (IllegalArgumentException | NullPointerException e) {
-                throw new Exception("Unrecognized parameter value. Parameter " + ACTION_PARAM
-                        + " is expected to be either claim or release");
-            }
+            OwnerAction action = getOwnerAction(parameters);
 
             WorkflowTask workflowTask = ownerService.changeOwner(taskId, action, owner);
 
@@ -55,6 +49,15 @@ public class ChangeTaskOwnerPut extends AbstractWorkflowWebscript {
             throw new WebScriptException(400, "Could not parse JSON from request.", e);
         } catch (Exception e) {
             throw new WebScriptException(400, e.getMessage(), e);
+        }
+    }
+
+    private OwnerAction getOwnerAction(JSONObject parameters) throws Exception {
+        try {
+            return OwnerAction.valueOf(parameters.getString(ACTION_PARAM).toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new Exception("Unrecognized parameter value. Parameter " + ACTION_PARAM
+                    + " is expected to be either claim or release");
         }
     }
 
