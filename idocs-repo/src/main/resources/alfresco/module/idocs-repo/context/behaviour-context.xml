@@ -344,9 +344,6 @@
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
-        <property name="templateService" ref="TemplateService"/>
-        <property name="templateEngine" value="freemarker"/>
-        <property name="nodeVariable" value="node"/>
         <property name="supplFilesDAO" ref="supplementaryFilesDAO"/>
     </bean>
 
