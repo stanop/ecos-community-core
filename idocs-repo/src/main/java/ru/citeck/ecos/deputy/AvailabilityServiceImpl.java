@@ -28,6 +28,8 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.cmr.security.AuthenticationService;
 import ru.citeck.ecos.model.DeputyModel;
 
+import java.util.List;
+
 public class AvailabilityServiceImpl implements AvailabilityService
 {
 
@@ -78,11 +80,11 @@ public class AvailabilityServiceImpl implements AvailabilityService
 
 	public String getUserUnavailableAutoAnswer(String userName) {
 		if (!getUserAvailability(userName)) {
-			ResultSet userAbsenceEventsResultSet = getUserAbsenceEvents(userName);
-			for (NodeRef event: userAbsenceEventsResultSet.getNodeRefs()) {
-				String autoAnswer = (String) nodeService.getProperty(event, DeputyModel.PROP_AUTO_ANSWER);
-				return autoAnswer != null ? autoAnswer : "";
-			}
+			List<NodeRef> events = getUserAbsenceEvents(userName).getNodeRefs();
+			if (events.isEmpty()) return null;
+
+			String autoAnswer = (String) nodeService.getProperty(events.get(0), DeputyModel.PROP_AUTO_ANSWER);
+			return autoAnswer != null ? autoAnswer : "";
 		}
 		return null;
 	}
