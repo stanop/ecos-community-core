@@ -90,7 +90,31 @@ public class WorkflowUtils {
      */
     public List<WorkflowTask> getDocumentUserTasks(NodeRef nodeRef, boolean active, String engine) {
 
-        List<WorkflowTask> tasks = new LinkedList<>();
+        List<WorkflowTask> tasks = getDocumentTasks(nodeRef, active, engine);
+
+        if (!tasks.isEmpty()) {
+
+            String userName = AuthenticationUtil.getFullyAuthenticatedUser();
+            Set<NodeRef> authorities = authorityUtils.getUserAuthoritiesRefs();
+
+            tasks = tasks.stream()
+                         .filter(t -> isTaskActor(t, userName, authorities))
+                         .collect(Collectors.toList());
+        }
+        return tasks;
+    }
+
+    public List<WorkflowTask> getDocumentTasks(NodeRef nodeRef) {
+        List<WorkflowTask> tasks = new ArrayList<>(getDocumentTasks(nodeRef, true));
+        tasks.addAll(new ArrayList<>(getDocumentTasks(nodeRef, false)));
+        return tasks;
+    }
+
+    public List<WorkflowTask> getDocumentTasks(NodeRef nodeRef, boolean active) {
+        return getDocumentTasks(nodeRef, active, null);
+    }
+
+    public List<WorkflowTask> getDocumentTasks(NodeRef nodeRef, boolean active, String engine) {
 
         List<WorkflowInstance> workflows = workflowService.getWorkflowsForContent(nodeRef, active);
 
@@ -102,18 +126,10 @@ public class WorkflowUtils {
                     .collect(Collectors.toList());
         }
 
-        if (workflows.size() > 0) {
+        List<WorkflowTask> tasks = new LinkedList<>();
 
-            String userName = AuthenticationUtil.getFullyAuthenticatedUser();
-            Set<NodeRef> authorities = authorityUtils.getUserAuthoritiesRefs();
-
-            for (WorkflowInstance workflow : workflows) {
-                for (WorkflowTask task : getWorkflowTasks(workflow, active)) {
-                    if (isTaskActor(task, userName, authorities)) {
-                        tasks.add(task);
-                    }
-                }
-            }
+        for (WorkflowInstance workflow : workflows) {
+            tasks.addAll(AuthenticationUtil.runAsSystem(() -> getWorkflowTasks(workflow, active)));
         }
 
         return tasks;
