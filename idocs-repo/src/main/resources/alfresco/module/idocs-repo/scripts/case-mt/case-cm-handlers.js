@@ -4,7 +4,13 @@ function onCaseCreate() {
 }
 
 function onProcessStart() {
-    if (document.properties['ecos:documentNumber'] == null || document.properties['ecos:documentNumber'] == ' ') {
+
+    var currentNum = document.properties['ecos:documentNumber'];
+
+    if (!currentNum || currentNum == ' ') {
+
+        var numTemplate = null;
+
         if (document.type == "{http://www.citeck.ru/model/content/ecos/1.0}case") {
             var mapping = {
                 'workspace://SpacesStore/cat-doc-kind-application':         'ecos-case-application-num-template',
@@ -15,13 +21,16 @@ function onProcessStart() {
             };
             var kindNode = document.properties['tk:kind'] ? document.properties['tk:kind'].nodeRef : "";
             if (kindNode) {
-                var numberTemplate = search.findNode("workspace://SpacesStore/" + mapping[kindNode]);
-            } else {
-                var numberTemplate = search.findNode("workspace://SpacesStore/" + "ecos-case-number-template");
+                numTemplate = mapping[kindNode];
             }
         }
-        var registrationNumber = enumeration.getNumber(numberTemplate, document);
-        document.properties['ecos:documentNumber'] = registrationNumber;
+
+        if (!numTemplate) {
+            numTemplate = "ecos-case-number-template";
+        }
+
+        var numberTemplate = search.findNode("workspace://SpacesStore/" + numTemplate);
+        document.properties['ecos:documentNumber'] = enumeration.getNumber(numberTemplate, document);
         document.save();
     }
 }
