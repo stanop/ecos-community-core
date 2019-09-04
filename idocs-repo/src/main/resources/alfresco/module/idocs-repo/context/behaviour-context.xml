@@ -148,7 +148,6 @@
         <property name="policyComponent" ref="policyComponent"/>
         <property name="serviceRegistry" ref="ServiceRegistry"/>
         <property name="nodeInfoFactory" ref="NodeInfoFactory"/>
-        <property name="order" value="${behavior.order.enumeration}"/>
     </bean>
 
     <bean id="CacheAssocsBehaviour" class="ru.citeck.ecos.behavior.common.CacheAssocsBehaviour"
@@ -169,7 +168,6 @@
 		<property name="policyComponent" ref="policyComponent" />
 		<property name="nodeService" ref="NodeService" />
 		<property name="dictionaryService" ref="DictionaryService" />
-		<property name="order" value="${behavior.order.classification}" />
 	</bean>
 
     <bean id="fileAssociationBehaviour" class="ru.citeck.ecos.behavior.common.FileAssociationBehaviour"
