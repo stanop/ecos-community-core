@@ -75,13 +75,6 @@ public class CaseTaskEndProcessListener extends AbstractExecutionListener {
         }
     }
 
-    private static <T> T castOrNull(Object obj, Class<T> clazz) {
-        if (obj != null && clazz.isAssignableFrom(obj.getClass())) {
-            return clazz.cast(obj);
-        }
-        return null;
-    }
-
     @Override
     protected void initImpl() {
         this.nodeService = serviceRegistry.getNodeService();

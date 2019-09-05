@@ -229,30 +229,6 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
             sheet.autoSizeColumn(s, false);
     }
     
-    private void copyCellFormats(Workbook workbook, Sheet sheet, Cell sourceCell, Cell destCell) {
-        if (sourceCell == null) {
-            return;
-        }
-
-        // copy styles
-        CellStyle destCellStyle = workbook.createCellStyle();
-        destCellStyle.cloneStyleFrom(sourceCell.getCellStyle());
-        destCell.setCellStyle(destCellStyle);
-        
-        // copy hyperlink
-        if (sourceCell.getHyperlink() != null) {
-            destCell.setHyperlink(sourceCell.getHyperlink());
-        }
-
-        // copy comment
-        if (destCell.getCellComment() != null) {
-            destCell.setCellComment(sourceCell.getCellComment());
-        }
-
-        // copy type
-        destCell.setCellType(sourceCell.getCellType());
-    }
-    
     private void appendStringValue(Cell cell, String value) {
         if (value != null) {
             String currentValue = cell.getStringCellValue();
