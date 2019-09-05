@@ -220,11 +220,7 @@ public class AddJournalBehaviour implements NodeServicePolicies.OnCreateNodePoli
     public void setTypeNamePlural(String typeNamePlural) {
         this.typeNamePlural = typeNamePlural;
     }
-    /*
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-    }
-    */
+
     public void setCheckTypeSite(Boolean checkTypeSite) {
         this.checkTypeSite = checkTypeSite;
     }

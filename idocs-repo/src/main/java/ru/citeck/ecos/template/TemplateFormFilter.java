@@ -111,10 +111,6 @@ public class TemplateFormFilter extends AbstractFilter<Object, NodeRef> {
 
 			}
 		});
-
-		// remove all renditions
-		// removeRenditions(persistedObject);
-
 	}
 	
 	public void setNodeService(NodeService nodeService) {

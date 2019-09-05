@@ -57,7 +57,6 @@ public class AvailabilityBehaviour implements NodeServicePolicies.OnUpdateProper
 	}
 
 	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-//		this.nodeService = serviceRegistry.getNodeService();
 		this.deputyService = (DeputyService) serviceRegistry.getService(CiteckServices.DEPUTY_SERVICE);
 	}
 	

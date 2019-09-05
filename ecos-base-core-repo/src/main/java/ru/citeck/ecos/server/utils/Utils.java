@@ -84,15 +84,6 @@ public class Utils {
             contentDisposition += "filename*=UTF-8''" + fName;
         }
 
-//		if (agent != null && agent.indexOf("opera") == -1 && agent.indexOf("msie") != -1)
-//			// IE
-//			contentDisposition += "filename=\"" + toUTF8String(fileName + "." + fileExtension) + "\"";
-//		else if (agent.indexOf("opera") != -1)
-//			// Opera
-//			contentDisposition += "filename=" + toUTF8String(fileName);
-//		else
-//			// Firefox and others
-//			contentDisposition += "filename=\"" + MimeUtility.encodeText(fileName, "UTF8", "B") + "\"";
 		return contentDisposition;
 	}
 

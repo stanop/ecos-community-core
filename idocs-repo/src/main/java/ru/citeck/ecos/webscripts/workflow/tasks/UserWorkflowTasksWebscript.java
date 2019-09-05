@@ -83,7 +83,6 @@ public class UserWorkflowTasksWebscript extends BaseAbstractWebscript {
 		result.put("id", aTask.id);
 		result.put("title", aTask.title);
 		result.put("description", aTask.path.instance.description);
-//		result.put("url", "/page/user/" + aUsername + "/task-edit?taskId=" + aTask.id + "&referrer=tasks");
 		result.put("url", (new StringBuilder()).append(shareApp).append("/page/user/").append(aUsername).append("/task-edit?taskId=").append(aTask.id).append("&referrer=tasks").toString());
 		
 		return result;

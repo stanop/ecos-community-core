@@ -185,10 +185,6 @@ public class OverDueTaskGeneration extends AbstractWebScript {
 			assignee = authorityDisplayName;
 		}
 		
-
-		//int overDueDays = new Date().getDate() - task.getDueDate().getDate();
-		
-		
 		result.put("overDueDays", Math.abs(subtractDays(new  Date(), task.getDueDate())));
 		result.put("assignee", assignee);		
 		result.put("taskName", task.getDescription()+" ("+taskById.getTitle()+")");
@@ -201,29 +197,7 @@ public class OverDueTaskGeneration extends AbstractWebScript {
 	}
 	 
 	  private int subtractDays(Date date1, Date date2) 
-	  { 
-		  /*
-	    GregorianCalendar gc1 = new GregorianCalendar();  gc1.setTime(date1); 
-	    GregorianCalendar gc2 = new GregorianCalendar();  gc2.setTime(date2); 
-
-	    int days1 = 0; 
-	    int days2 = 0; 
-	    int maxYear = Math.max(gc1.get(Calendar.YEAR), gc2.get(Calendar.YEAR)); 
-
-	    GregorianCalendar gctmp = (GregorianCalendar) gc1.clone(); 
-	    for (int f = gctmp.get(Calendar.YEAR);  f < maxYear;  f++) 
-	      {days1 += gctmp.getActualMaximum(Calendar.DAY_OF_YEAR);  gctmp.add(Calendar.YEAR, 1);} 
-
-	    gctmp = (GregorianCalendar) gc2.clone(); 
-	    for (int f = gctmp.get(Calendar.YEAR);  f < maxYear;  f++) 
-	      {days2 += gctmp.getActualMaximum(Calendar.DAY_OF_YEAR);  gctmp.add(Calendar.YEAR, 1);} 
-
-	    days1 += gc1.get(Calendar.DAY_OF_YEAR) - 1; 
-	    days2 += gc2.get(Calendar.DAY_OF_YEAR) - 1; 
-	    
-	    return (days1 - days2); 
-	    */
-		  
+	  {
 	    long diff = date1.getTime() - date2.getTime();
 	    int days = (int) (diff / (1000 * 60 * 60 * 24));
 	    return days+1;

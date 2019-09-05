@@ -74,8 +74,6 @@ public class UserInGroupEvaluator extends ActionConditionEvaluatorAbstractBase {
                             }
                             return isUserInGroup;
                         }
-//                        if ((userAuthorities != null) && (userAuthorities.contains(groupName)))
-//                            return true;
                     }
                 }
 

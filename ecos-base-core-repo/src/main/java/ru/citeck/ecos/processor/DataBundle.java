@@ -83,16 +83,7 @@ public class DataBundle {
 	public DataBundle(DataBundle that, Map<String,Object> model) {
 		init(that.inputStream, model);
 	}
-	
-//	public DataBundle(DataBundle that, InputStream inputStream, Map<String,Object> model) {
-//		Map<String,Object> myModel = new HashMap<String,Object>(that.model.size() + model.size());
-//		myModel.putAll(that.model);
-//		if(model != null) {
-//			myModel.putAll(model);
-//		}
-//		init(inputStream, myModel);
-//	}
-//	
+
 	protected void init(InputStream inputStream, Map<String,Object> model) {
 		this.inputStream = inputStream;
 		// model is unmodifiable

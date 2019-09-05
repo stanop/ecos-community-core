@@ -43,12 +43,6 @@ public class PermissionAccessEvaluator extends BaseEvaluator {
 
     @Override
     public boolean evaluate(JSONObject jsonObject) {
-        //String nodeRefId = (String) jsonObject.get(KEY_NODE_REF);
-        //jsonObject.get('node').get('permissions').get('user')
-        //RequestContext context = ThreadLocalRequestContext.getRequestContext();
-        //User user = context.getUser();
-        //user.getId()
-
         final RequestContext rc = ThreadLocalRequestContext.getRequestContext();
         final String userId = rc.getUserId();
         final Connector conn;

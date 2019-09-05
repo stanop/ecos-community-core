@@ -83,7 +83,6 @@ public class SetProcessDefinitionVersionCmd implements Command<Void>, Serializab
         if (processInstance == null) {
 
             HistoricProcessInstanceEntityManager historicProcessInstanceManager = commandContext.getHistoricProcessInstanceEntityManager();
-            // if (historicProcessInstanceManager.isHistoryEnabled()) {
             HistoricProcessInstanceEntity historicProcessInstance = historicProcessInstanceManager.findHistoricProcessInstance(processInstanceId);
             if (historicProcessInstance != null) {
                 if(!"".equals(newProcessDefinitionId)) {
@@ -94,9 +93,6 @@ public class SetProcessDefinitionVersionCmd implements Command<Void>, Serializab
             } else {
                 throw new ActivitiObjectNotFoundException("historicProcessInstance is null", HistoricProcessInstanceEntity.class);
             }
-            // }
-
-            // throw new ActivitiObjectNotFoundException("No active process instance found for id = \'" + this.processInstanceId + "\'.", ProcessInstance.class);
 
         } else if (!processInstance.isProcessInstanceType()) {
             throw new ActivitiIllegalArgumentException("A process instance id is required, but the provided id \'" + this.processInstanceId + "\' " + "points to a child execution of process instance " + "\'" + processInstance.getProcessInstanceId() + "\'. " + "Please invoke the " + this.getClass().getSimpleName() + " with a root execution id.");

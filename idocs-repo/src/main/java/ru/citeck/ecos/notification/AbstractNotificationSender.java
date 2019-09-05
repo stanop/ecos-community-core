@@ -456,7 +456,6 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
 
     protected void setBodyTemplate(NotificationContext notificationContext,
                                    NodeRef template) {
-        // notificationContext.setBodyTemplate(template);
         // NOTE: for compatibility with Alfresco Community 4.2.c
         ReflectionUtils.callSetterIfDeclared(notificationContext, "setBodyTemplate", template);
         ReflectionUtils.callSetterIfDeclared(notificationContext, "setBodyTemplate", template.toString());

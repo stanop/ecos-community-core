@@ -114,7 +114,6 @@ public class EurekaAlfClientConfig implements EurekaClientConfig {
     @Override
     public boolean shouldRegisterWithEureka() {
         return false;
-        //return defaultConfig.shouldRegisterWithEureka();
     }
 
     @Override

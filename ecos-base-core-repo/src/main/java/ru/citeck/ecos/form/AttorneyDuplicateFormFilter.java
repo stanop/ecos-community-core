@@ -39,7 +39,6 @@ public class AttorneyDuplicateFormFilter extends AbstractFilter<Object, NodeRef>
     // fields list that will be filtered
     protected Map<String, Map<String, Object>> config = new HashMap<String, Map<String, Object>>();
 
-    //public static final String FIELD_DATA_ASSOC = "assoc_";
     public static final String FIELD_DATA_PROP  = "prop_";
     public static final String FIELD_DATA_ADDED = "_added";
     public static final String FIELD_DATA_REMOVED = "_removed";

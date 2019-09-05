@@ -117,7 +117,6 @@ public class BranchAssignBehavior implements OnCreateNodePolicy {
                     
                     for (String groupName : branches) {
                         NodeRef groupRef = authorityService.getAuthorityNodeRef(groupName);
-//                        Set<QName> aspects = nodeService.getAspects(groupRef);
                         if (targetDefinition == null)
                         {
                             PropertyDefinition propertyDefinition = dictionaryService.getProperty(targetAssociationOrProperty);

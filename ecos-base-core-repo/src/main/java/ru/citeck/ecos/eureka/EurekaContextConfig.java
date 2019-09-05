@@ -28,24 +28,5 @@ public class EurekaContextConfig {
         template.setInterceptors(interceptors);
 
         return template;
-    }/*
-
-    @Bean
-    public RemoteRecordsDAO createIntegrationsRecordsDao(@Qualifier(REST_TEMPLATE_ID) RestTemplate restTemplate,
-                                                         RecordsService recordsService) {
-
-        RemoteRecordsDAO dao = new RemoteRecordsDAO();
-        dao.setEnabled(true);
-        dao.setRestConnection(new RecordsRestConnection() {
-            @Override
-            public <T> T jsonPost(String url, Object body, Class<T> respType) {
-                return restTemplate.postForObject("http://integrations" + url, body, respType);
-            }
-        });
-        dao.setId("integrations");
-
-        recordsService.register(dao);
-
-        return dao;
-    }*/
+    }
 }

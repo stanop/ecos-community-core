@@ -66,7 +66,6 @@ public class AddToCaseActionExecuter extends ActionExecuterAbstractBase {
 		String caseFolderName = (String) nodeService.getProperty(caseFolder, ContentModel.PROP_NAME);
 		NodeRef elementConfig = CaseUtils.getConfigByPropertyValue(caseNode, ICaseModel.PROP_FOLDER_NAME, caseFolderName, nodeService, caseElementService);
 		if(elementConfig == null) {
-//			throw new IllegalArgumentException("Can not find element config for folder " + caseFolderName);
 			return;
 		}
 		

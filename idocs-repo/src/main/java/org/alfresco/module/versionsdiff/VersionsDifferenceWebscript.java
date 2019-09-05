@@ -60,9 +60,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-// Google Diff Match Patch import
-//import org.alfresco.module.versionsdiff.util.diff_match_patch.Operation;
-
 public class VersionsDifferenceWebscript extends DeclarativeWebScript {
 
     private static Log logger = LogFactory.getLog(VersionsDifferenceWebscript.class);

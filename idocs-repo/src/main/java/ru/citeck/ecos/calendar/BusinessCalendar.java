@@ -91,7 +91,6 @@ public class BusinessCalendar extends GregorianCalendar {
 				return true;
 			}
 		}
-		//return false;
 	}
 
 	public BusinessCalendar()
@@ -132,16 +131,14 @@ public class BusinessCalendar extends GregorianCalendar {
 	{
 		Map<Date, Date> dateSet = new HashMap<Date, Date>();
 		String search_query = "TYPE:\""+BusinessCalendarModel.TYPE_CALENDAR+"\" AND @bcal\\:remark:\""+remark+"\"";
-		//if (log.isDebugEnabled())
-			log.debug("   Search query: " + search_query);
+		log.debug("   Search query: " + search_query);
 		ResultSet rs = null;
 		try {
 			log.debug("SearchService "+searchService);
 			rs = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_LUCENE, search_query);
-					log.debug("      Query result contains " + rs.length() + " records.");
+			log.debug("      Query result contains " + rs.length() + " records.");
 			if (rs.length() > 0) {
-				//if (log.isDebugEnabled())
-					log.debug("      Query result contains " + rs.length() + " records.");
+				log.debug("      Query result contains " + rs.length() + " records.");
 				for (ResultSetRow row : rs) {
 					dateSet.put((Date)row.getValue(BusinessCalendarModel.PROP_DATE_FROM), (Date)row.getValue(BusinessCalendarModel.PROP_DATE_TO));
 				}
@@ -170,7 +167,4 @@ public class BusinessCalendar extends GregorianCalendar {
 		cal.setDayOff();
 		return cal;
 	}
-
-   /*public void init() {
-    }*/
 }

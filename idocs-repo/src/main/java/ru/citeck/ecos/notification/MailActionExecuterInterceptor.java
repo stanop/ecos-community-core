@@ -66,23 +66,19 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 			try {
 				Object result = methodInvocation.proceed();
 				isSent = true;
-				//createLoggingItem(act, currentDate, true);
 				logger.debug("COMPLETED!!!");
 				return result;
 
 			} catch (MailSendException e) {
 					isSent = false;
-					//createLoggingItem(act, currentDate, false);
 					logger.error("MailSendException COMPLETED!!!");
 				throw e;
 			}  catch (NullPointerException e) {
 					isSent = false;
-					//createLoggingItem(act, currentDate, false);
 					logger.error("NullPointerException COMPLETED!!!");
 				throw e;
 			} catch (Exception e) {
 					isSent = false;
-					//createLoggingItem(act, currentDate, false);
 					logger.error("Exception COMPLETED!!!");
 				throw e;
 			}

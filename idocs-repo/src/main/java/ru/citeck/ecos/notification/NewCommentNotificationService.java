@@ -93,7 +93,6 @@ public class NewCommentNotificationService {
         NotificationContext notificationContext = new NotificationContext();
         notificationContext.setSubject("Уведомление");
         
-        // notificationContext.setBodyTemplate(NEW_COMMENT_NOTIFICATION_EMAIL_TEMPLATE);
         // NOTE: for compatibility with Alfresco Community 4.2.c
         NodeRef template = NEW_COMMENT_NOTIFICATION_EMAIL_TEMPLATE;
         ReflectionUtils.callSetterIfDeclared(notificationContext, "setBodyTemplate", template);

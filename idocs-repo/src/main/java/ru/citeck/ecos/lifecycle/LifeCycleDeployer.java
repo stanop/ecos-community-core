@@ -82,13 +82,6 @@ public class LifeCycleDeployer extends AbstractLifecycleBean {
                 try {
                     lifeCycleDefinition = lifeCycleResource.getInputStream();
                     lifeCycleService.deployLifeCycle(lifeCycleDefinition, format, entityType, location);
-
-                    // temp storing to repo
-                    //StringWriter writer = new StringWriter();
-                    //IOUtils.copy(lifeCycleResource.getInputStream(), writer, "UTF-8");
-                    //String content = writer.toString();
-                    //lifeCycleService.storeLifeCycleDefinition(null, content, format, entityType, location, false);
-                    // end temp
                 } catch (IOException e) {
                     logger.warn("Could not deploy lifecycle", e);
                 }
