@@ -27,12 +27,12 @@ public class CaseTemplateContentSyncBehaviour extends AbstractBehaviour
 
     private static final String TXN_TEMPLATE_DATA_KEY = CaseTemplateContentSyncBehaviour.class.toString();
 
-    private static final Map<QName, javax.xml.namespace.QName> FIELDS_MAPPING
-                            = new HashMap<QName, javax.xml.namespace.QName>() {{
-        put(ICaseModel.PROP_CASE_ECOS_TYPE, CMMNUtils.QNAME_CASE_ECOS_TYPE);
-        put(ICaseModel.PROP_CASE_ECOS_KIND, CMMNUtils.QNAME_CASE_ECOS_KIND);
-        put(ICaseModel.PROP_CASE_TYPE, CMMNUtils.QNAME_CASE_TYPE);
-    }};
+    private static final Map<QName, javax.xml.namespace.QName> FIELDS_MAPPING = new HashMap<>();
+    static {
+        FIELDS_MAPPING.put(ICaseModel.PROP_CASE_ECOS_TYPE, CMMNUtils.QNAME_CASE_ECOS_TYPE);
+        FIELDS_MAPPING.put(ICaseModel.PROP_CASE_ECOS_KIND, CMMNUtils.QNAME_CASE_ECOS_KIND);
+        FIELDS_MAPPING.put(ICaseModel.PROP_CASE_TYPE, CMMNUtils.QNAME_CASE_TYPE);
+    }
 
     private CaseTemplateRegistry registry;
     private ContentValueConverter converter;
