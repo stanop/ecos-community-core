@@ -252,6 +252,8 @@
             <header key="ecos:documentAmount" default="true" />
             <header key="idocs:currencyDocument" default="true" />
             <header key="ecos:VAT" default="true" />
+            <header key="ecos:startDate" default="true" />
+            <header key="ecos:stopDate" default="true" />
         </headers>
     </journal>
 
