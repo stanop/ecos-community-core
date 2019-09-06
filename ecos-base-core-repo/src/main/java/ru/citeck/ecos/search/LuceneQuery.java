@@ -173,7 +173,6 @@ public class LuceneQuery implements SearchQueryBuilder {
                     logger.warn(String.format("Association value building failed! field is '%s' and value is '%s'",
                                 triplet.getField(), triplet.getValue()), e);
                 }
-                break;
             case ASSOC_NOT_EMPTY:
             case ASSOC_EMPTY:
                 newField = getAssocIndexProp(triplet.getField());
@@ -354,7 +353,6 @@ public class LuceneQuery implements SearchQueryBuilder {
                     if (shouldAppendQuery) {
                         query.append(NOT);
                     }
-                    break;
                 case STRING_EQUALS:
                 case NUMBER_EQUALS:
                 case DATE_EQUALS:

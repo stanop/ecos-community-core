@@ -73,7 +73,6 @@ public class FTSQueryBuilder implements SearchQueryBuilder {
             case TYPE_NOT_EQUALS:
             case ASPECT_NOT_EQUALS:
                 inverse = true;
-                break;
             case STRING_EQUALS:
                 term = buildExactValueTerm(field, value);
                 break;
