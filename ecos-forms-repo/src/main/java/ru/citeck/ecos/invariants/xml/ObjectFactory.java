@@ -24,9 +24,9 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _Views_QNAME = new QName("http://www.citeck.ru/ecos/views/1.0", "views");
-    private final static QName _InvariantItem_QNAME = new QName("http://www.citeck.ru/ecos/invariants/1.0", "item");
-    private final static QName _InvariantCriterion_QNAME = new QName("http://www.citeck.ru/ecos/invariants/1.0", "criterion");
+    private static final QName _Views_QNAME = new QName("http://www.citeck.ru/ecos/views/1.0", "views");
+    private static final QName _InvariantItem_QNAME = new QName("http://www.citeck.ru/ecos/invariants/1.0", "item");
+    private static final QName _InvariantCriterion_QNAME = new QName("http://www.citeck.ru/ecos/invariants/1.0", "criterion");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ru.citeck.ecos.invariants.xml

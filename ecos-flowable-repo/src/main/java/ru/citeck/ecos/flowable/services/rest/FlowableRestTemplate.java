@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class FlowableRestTemplate {
 
-    private final static Log logger = LogFactory.getLog(RestFormService.class);
+    private static final Log logger = LogFactory.getLog(RestFormService.class);
 
     @Value("${flowable.rest-api.username}")
     private String username;

@@ -23,9 +23,9 @@ public class DocumentChangeContentNotificationBehaviour extends AbstractICaseDoc
     private String documentType;
     private HashMap<String, Object> addition = new HashMap<>();
 
-    private final static String PARAM_METHOD = "method";
-    private final static String PARAM_METHOD_UPDATE = "update";
-    private final static String PARAM_METHOD_DELETE = "delete";
+    private static final String PARAM_METHOD = "method";
+    private static final String PARAM_METHOD_UPDATE = "update";
+    private static final String PARAM_METHOD_DELETE = "delete";
 
     public void init() {
         this.policyComponent.bindClassBehaviour(NodeServicePolicies.OnUpdatePropertiesPolicy.QNAME,

@@ -24,7 +24,7 @@ public class CaseStatusChangeNotificationBehaviour extends AbstractICaseDocument
     private String caseStatus;
     private String excludeStageName;
 
-    private final static String ALL_STATUS_KEY = "AllStatus";
+    private static final String ALL_STATUS_KEY = "AllStatus";
 
     public void init() {
         OrderedBehaviour statusChangeBehaviour = new OrderedBehaviour(

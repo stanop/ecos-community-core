@@ -23,7 +23,7 @@ import java.util.Map;
 @Component
 public class EcosBpmAppModelUtils {
 
-    public final static String MODEL_TYPE_PROCESS = "bpm_process";
+    public static final String MODEL_TYPE_PROCESS = "bpm_process";
 
     private NodeService nodeService;
     private ContentService contentService;
