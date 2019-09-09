@@ -107,11 +107,7 @@ public class MailAttachActionExecutor extends MailActionExecuter {
                         }
                         logger.debug("attachmentContent " + attachmentContent.length);
 
-                        InputStreamSource inputStreamSource = new InputStreamSource() {
-                            public InputStream getInputStream() throws IOException {
-                                return new ByteArrayInputStream(attachmentContent);
-                            }
-                        };
+                        InputStreamSource inputStreamSource = () -> new ByteArrayInputStream(attachmentContent);
                         try
                         {
                             helper.addAttachment(name1, inputStreamSource);

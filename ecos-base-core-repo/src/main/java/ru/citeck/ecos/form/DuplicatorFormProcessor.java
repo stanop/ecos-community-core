@@ -248,12 +248,10 @@ public class DuplicatorFormProcessor extends ContentModelFormProcessor<NodeRef, 
 
         if (nodeService.hasAspect(nodeRef, ASPECT_FILE_PLAN_COMPONENT)) {
             // persist the form data as the admin user
-            AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<Object>() {
-                    public Object doWork() throws Exception {
-                        persistNode(nodeRef, data);
-                        return null;
-                    }
-                },
+            AuthenticationUtil.runAs(() -> {
+                persistNode(nodeRef, data);
+                return null;
+            },
                 AuthenticationUtil.getSystemUserName()
             );
         } else {

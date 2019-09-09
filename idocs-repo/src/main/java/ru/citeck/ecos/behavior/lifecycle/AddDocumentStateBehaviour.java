@@ -74,13 +74,9 @@ public class AddDocumentStateBehaviour implements NodeServicePolicies.OnCreateNo
             return;
         }
 
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                nodeService.setProperty(nodeRef,
-                        LifeCycleModel.PROP_STATE, START_STATE);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            nodeService.setProperty(nodeRef, LifeCycleModel.PROP_STATE, START_STATE);
+            return null;
         });
         boolean transited = lifeCycleService.doTransition(nodeRef, LifeCycleModel.CONSTR_AUTOMATIC_TRANSITION);
         if(!transited) {

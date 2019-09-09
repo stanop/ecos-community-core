@@ -87,13 +87,11 @@ public class FlowableGrantWorkflowPackageHelper {
         if(authorities.size() == 0 || workflowPackage == null) {
             return;
         }
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            public Object doWork() throws Exception {
-                for(String authority : authorities) {
-                    grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
-                }
-                return null;
+        AuthenticationUtil.runAsSystem(() -> {
+            for(String authority : authorities) {
+                grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
             }
+            return null;
         });
 
     }
@@ -115,13 +113,11 @@ public class FlowableGrantWorkflowPackageHelper {
             return;
         }
 
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            public Object doWork() throws Exception {
-                for (String authority : authorities) {
-                    grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
-                }
-                return null;
+        AuthenticationUtil.runAsSystem(() -> {
+            for (String authority : authorities) {
+                grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
             }
+            return null;
         });
 
     }
@@ -140,11 +136,9 @@ public class FlowableGrantWorkflowPackageHelper {
             return;
         }
 
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            public Object doWork() throws Exception {
-                grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
+            return null;
         });
     }
 
@@ -161,11 +155,9 @@ public class FlowableGrantWorkflowPackageHelper {
             return;
         }
 
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            public Object doWork() throws Exception {
-                grantPermissionService.revokePermission(workflowPackage, provider);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            grantPermissionService.revokePermission(workflowPackage, provider);
+            return null;
         });
     }
 
@@ -182,11 +174,9 @@ public class FlowableGrantWorkflowPackageHelper {
             return;
         }
 
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            public Object doWork() throws Exception {
-                grantPermissionService.revokePermission(workflowPackage, provider);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            grantPermissionService.revokePermission(workflowPackage, provider);
+            return null;
         });
     }
 
@@ -204,11 +194,9 @@ public class FlowableGrantWorkflowPackageHelper {
             return;
         }
 
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            public Object doWork() throws Exception {
-                grantPermissionService.revokePermission(workflowPackage, provider);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            grantPermissionService.revokePermission(workflowPackage, provider);
+            return null;
         });
     }
 
@@ -225,11 +213,9 @@ public class FlowableGrantWorkflowPackageHelper {
             return;
         }
 
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            public Object doWork() throws Exception {
-                grantPermissionService.revokePermission(workflowPackage, provider);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            grantPermissionService.revokePermission(workflowPackage, provider);
+            return null;
         });
     }
 

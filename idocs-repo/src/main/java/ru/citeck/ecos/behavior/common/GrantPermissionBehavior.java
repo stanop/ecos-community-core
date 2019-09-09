@@ -75,12 +75,9 @@ public class GrantPermissionBehavior implements OnCreateAssociationPolicy, OnDel
         if (!nodeService.exists(document) || !nodeService.exists(authority)) return;
 
         final String authorityName = RepoUtils.getAuthorityName(authority, nodeService, dictionaryService);
-        AuthenticationUtil.runAsSystem(new RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                grantPermissionService.grantPermission(document, authorityName, permission, provider);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem((RunAsWork<Void>) () -> {
+            grantPermissionService.grantPermission(document, authorityName, permission, provider);
+            return null;
         });
     }
 
@@ -91,12 +88,9 @@ public class GrantPermissionBehavior implements OnCreateAssociationPolicy, OnDel
         if(!nodeService.exists(document) || !nodeService.exists(authority)) return;
 
         final String authorityName = RepoUtils.getAuthorityName(authority, nodeService, dictionaryService);
-        AuthenticationUtil.runAsSystem(new RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                grantPermissionService.revokePermission(document, authorityName, permission, provider);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem((RunAsWork<Void>) () -> {
+            grantPermissionService.revokePermission(document, authorityName, permission, provider);
+            return null;
         });
     }
 

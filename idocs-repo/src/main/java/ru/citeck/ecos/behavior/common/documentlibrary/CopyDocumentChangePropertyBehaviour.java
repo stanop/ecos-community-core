@@ -40,12 +40,7 @@ public class CopyDocumentChangePropertyBehaviour implements OnCopyCompletePolicy
         final Map<String,Object> model = new HashMap<>(1);
         model.put(KEY_NODE, target);
 
-        return AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
-            @Override
-            public Boolean doWork() throws Exception {
-                return String.valueOf(scriptService.executeScriptString(property.getCondition(), model)).equals("true");
-            }
-        });
+        return AuthenticationUtil.runAsSystem(() -> String.valueOf(scriptService.executeScriptString(property.getCondition(), model)).equals("true"));
 
     }
 

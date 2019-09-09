@@ -52,44 +52,29 @@ public class ConfiscatedBehaviour extends AssociationWalkerBehaviour implements 
 
 	@Override
 	protected void onCreateAssociation(final NodeRef child, NodeRef parent, final boolean primary) {
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-
-			@Override
-			public Object doWork() throws Exception {
-				// do not restrict inheritance on primary associations:
-				boolean restrictInheritance = !primary;
-				confiscateService.confiscateNodeImpl(child, restrictInheritance);
-				return null;
-			}
-
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+            // do not restrict inheritance on primary associations:
+            boolean restrictInheritance = !primary;
+            confiscateService.confiscateNodeImpl(child, restrictInheritance);
+            return null;
+        });
 	}
 
 	@Override
 	protected void onDeleteAssociation(final NodeRef child, NodeRef parent, boolean primary) {
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-
-			@Override
-			public Object doWork() throws Exception {
-				confiscateService.returnNodeImpl(child, true);
-				return null;
-			}
-
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+            confiscateService.returnNodeImpl(child, true);
+            return null;
+        });
 	}
 
 	@Override
 	public void onCopyComplete(QName classRef, NodeRef source, final NodeRef target,
 			boolean copyToNewNode, Map<NodeRef, NodeRef> copyMap) {
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-
-			@Override
-			public Object doWork() throws Exception {
-				confiscateService.returnNodeImpl(target, false);
-				return null;
-			}
-
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+            confiscateService.returnNodeImpl(target, false);
+            return null;
+        });
 	}
 
 }

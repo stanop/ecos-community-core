@@ -60,19 +60,9 @@ public class ConcreteBeanPostProcessor implements BeanPostProcessor, Ordered, Ap
         Object convert(Object bean, String beanName, BeanProcessor processor);
     }
     
-    private static Converter beforeConverter = new Converter() {
-        @Override
-        public Object convert(Object bean, String beanName, BeanProcessor processor) {
-            return processor.postProcessBeforeInitialization(bean);
-        }
-    };
+    private static Converter beforeConverter = (bean, beanName, processor) -> processor.postProcessBeforeInitialization(bean);
     
-    private static Converter afterConverter = new Converter() {
-        @Override
-        public Object convert(Object bean, String beanName, BeanProcessor processor) {
-            return processor.postProcessAfterInitialization(bean);
-        }
-    };
+    private static Converter afterConverter = (bean, beanName, processor) -> processor.postProcessAfterInitialization(bean);
     
     @Override
     public void afterPropertiesSet() throws Exception {

@@ -59,21 +59,13 @@ public class UserHasPermissionEvaluator extends ActionConditionEvaluatorAbstract
         if ((permission != null) && (!permission.isEmpty())) {
             boolean isCorrectUserNameGiven = false;
             if (paramUserName != null) {
-                isCorrectUserNameGiven = AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Boolean>() {
-                    @Override
-                    public Boolean doWork() throws Exception {
-                        return personService.personExists(paramUserName);
-                    }
-                });
+                isCorrectUserNameGiven = AuthenticationUtil.runAsSystem(() -> personService.personExists(paramUserName));
             }
 
             if (isCorrectUserNameGiven && !paramUserName.equals(currentUserName)) {
-                return AuthenticationUtil.runAs(new AuthenticationUtil.RunAsWork<Boolean>() {
-                    @Override
-                    public Boolean doWork() throws Exception {
-                        AccessStatus as = permissionService.hasPermission(actionedUponNodeRef, permission);
-                        return AccessStatus.ALLOWED.equals(as);
-                    }
+                return AuthenticationUtil.runAs(() -> {
+                    AccessStatus as = permissionService.hasPermission(actionedUponNodeRef, permission);
+                    return AccessStatus.ALLOWED.equals(as);
                 }, paramUserName);
             } else if ((paramUserName == null) || (paramUserName.equals(currentUserName))) {
                 AccessStatus as = permissionService.hasPermission(actionedUponNodeRef, permission);

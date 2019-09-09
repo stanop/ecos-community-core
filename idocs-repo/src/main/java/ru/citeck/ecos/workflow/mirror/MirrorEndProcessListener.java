@@ -56,13 +56,10 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
             List<NodeRef> mirrors = service.getTaskMirrorsByWorkflowId(workflowId);
             for (NodeRef mirror : mirrors) {
                 final NodeRef taskMirror = mirror;
-                AuthenticationUtil.runAs(new RunAsWork<Void>() {
-                    @Override
-                    public Void doWork() throws Exception {
+                AuthenticationUtil.runAs((RunAsWork<Void>) () -> {
 
-                        nodeService.deleteNode(taskMirror);
-                        return null;
-                    }
+                    nodeService.deleteNode(taskMirror);
+                    return null;
                 }, AuthenticationUtil.getSystemUserName());
                 if(logger.isDebugEnabled()) {
                     logger.debug(String.format("Mirror node removed after workflow was %s. nodeRef:%s", deleteReason, taskMirror));

@@ -76,14 +76,11 @@ public class CaseActionsProvider extends NodeActionsProvider {
     private List<NodeRef> getUserActionEvents(final NodeRef eventSource) {
         List<NodeRef> events = RepoUtils.getSourceNodeRefs(eventSource, EventModel.ASSOC_EVENT_SOURCE, nodeService);
 
-        return CollectionUtils.filter(events, new Function<NodeRef, Boolean>() {
-            @Override
-            public Boolean apply(NodeRef eventRef) {
-                QName eventType = nodeService.getType(eventRef);
-                return eventType.equals(EventModel.TYPE_USER_ACTION)
-                        && checkRoles(eventRef)
-                        && eventService.checkConditions(eventRef, eventSource);
-            }
+        return CollectionUtils.filter(events, eventRef -> {
+            QName eventType = nodeService.getType(eventRef);
+            return eventType.equals(EventModel.TYPE_USER_ACTION)
+                    && checkRoles(eventRef)
+                    && eventService.checkConditions(eventRef, eventSource);
         });
     }
 

@@ -72,15 +72,12 @@ public class NewCommentNotificationService {
             final String commentLink,
             final String author,
             final String subscribersString) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                notificationService.sendNotification(
-                        EMailNotificationProvider.NAME,
-                        getNewCommentNotification(nodeRef, comment, commentLink, author, subscribersString)
-                );
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            notificationService.sendNotification(
+                    EMailNotificationProvider.NAME,
+                    getNewCommentNotification(nodeRef, comment, commentLink, author, subscribersString)
+            );
+            return null;
         });
     }
 

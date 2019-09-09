@@ -29,11 +29,7 @@ public class CompositeDeputyListener implements DeputyListener
 	
 	public void addDeputyListener(DeputyListener listener) {
 		listeners.add(listener);
-		Collections.sort(listeners, new Comparator<DeputyListener>() {
-			public int compare(DeputyListener a, DeputyListener b) {
-				return a.getPriority() - b.getPriority();
-			}
-		});
+		Collections.sort(listeners, (a, b) -> a.getPriority() - b.getPriority());
 	}
 
 	@Override

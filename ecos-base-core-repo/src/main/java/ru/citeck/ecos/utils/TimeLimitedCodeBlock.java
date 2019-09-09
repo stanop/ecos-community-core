@@ -36,18 +36,16 @@ public abstract class TimeLimitedCodeBlock<T> {
 	
 	public T run() throws Throwable {
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
-		final Future<T> future = executor.submit(new Callable<T>() {
-			public T call() throws Exception {
-				try {
-					return codeBlock();
-				} catch (Exception e) {
-					throw e;
-				} catch (Throwable e) {
-					// we shouldn't normally get here
-					throw new Exception(e);
-				}
-			}
-		});
+		final Future<T> future = executor.submit(() -> {
+            try {
+                return codeBlock();
+            } catch (Exception e) {
+                throw e;
+            } catch (Throwable e) {
+                // we shouldn't normally get here
+                throw new Exception(e);
+            }
+        });
 		executor.shutdown(); // This does not cancel the already-scheduled task.
 		try {
 			return future.get(timeoutMs, TimeUnit.MILLISECONDS);

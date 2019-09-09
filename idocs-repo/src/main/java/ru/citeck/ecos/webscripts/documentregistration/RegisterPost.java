@@ -59,25 +59,22 @@ public class RegisterPost extends DeclarativeWebScript {
         }
         final NodeRef nodeRef = new NodeRef(req.getParameter(PARAM_NODEREF));
 
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                nodeService.setProperty(nodeRef, IdocsModel.PROP_REGISTRATION_DATE, new Date());
-                nodeService.setProperty(nodeRef, IdocsModel.PROP_DOCUMENT_STATUS, "onConsideration");
+        AuthenticationUtil.runAsSystem(() -> {
+            nodeService.setProperty(nodeRef, IdocsModel.PROP_REGISTRATION_DATE, new Date());
+            nodeService.setProperty(nodeRef, IdocsModel.PROP_DOCUMENT_STATUS, "onConsideration");
 
-                NodeRef template = enumerationService.getTemplate(getTemplateName(nodeRef));
-                NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo(nodeRef);
+            NodeRef template = enumerationService.getTemplate(getTemplateName(nodeRef));
+            NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo(nodeRef);
 
-                String number = null;
-                try {
-                    number = enumerationService.getNumber(template, nodeInfo);
-                } catch (EnumerationException e) {
-                    throw new AlfrescoRuntimeException(e.getMessage(), e);
-                }
-
-                nodeService.setProperty(nodeRef, IdocsModel.PROP_REGISTRATION_NUMBER, number);
-                return null;
+            String number = null;
+            try {
+                number = enumerationService.getNumber(template, nodeInfo);
+            } catch (EnumerationException e) {
+                throw new AlfrescoRuntimeException(e.getMessage(), e);
             }
+
+            nodeService.setProperty(nodeRef, IdocsModel.PROP_REGISTRATION_NUMBER, number);
+            return null;
         });
 
         Map<String, Object> result = new HashMap<String, Object>();

@@ -180,20 +180,17 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
     }
 
     public void sendNotification(final ItemType item, final boolean afterCommit) {
-        AuthenticationUtil.runAsSystem(new RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                sendNotification(
-                        getNotificationProviderName(item),
-                        getNotificationFrom(item),
-                        getNotificationSubject(item),
-                        getNotificationTemplate(item),
-                        getNotificationArgs(item),
-                        getNotificationRecipients(item),
-                        afterCommit
-                );
-                return null;
-            }
+        AuthenticationUtil.runAsSystem((RunAsWork<Void>) () -> {
+            sendNotification(
+                    getNotificationProviderName(item),
+                    getNotificationFrom(item),
+                    getNotificationSubject(item),
+                    getNotificationTemplate(item),
+                    getNotificationArgs(item),
+                    getNotificationRecipients(item),
+                    afterCommit
+            );
+            return null;
         });
     }
 
@@ -442,15 +439,12 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
     }
 
     private void sendNotificationContext(final String notificationProviderName, final NotificationContext notificationContext) {
-        AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-            @Override
-            public Object doWork() throws Exception {
-                services.getNotificationService().sendNotification(
-                        notificationProviderName,
-                        notificationContext
-                );
-                return null;
-            }
+        AuthenticationUtil.runAsSystem(() -> {
+            services.getNotificationService().sendNotification(
+                    notificationProviderName,
+                    notificationContext
+            );
+            return null;
         });
     }
 

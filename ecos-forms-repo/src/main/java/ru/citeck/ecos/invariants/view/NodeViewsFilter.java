@@ -89,11 +89,8 @@ class NodeViewsFilter {
         // view is registered if there is any matching concrete element
         return SearchNode.search(
                 Collections.singletonList(rootNode), view,
-                new SearchNode.Predicate() {
-                    public boolean check(NodeViewElement element, SearchNode node) {
-                        return element.isConcrete();
-                    }
-                }) != null;
+                (element, node) -> element.isConcrete()
+        ) != null;
     }
 
     public NodeView resolveView(NodeView view) {
@@ -125,12 +122,10 @@ class NodeViewsFilter {
             while (true) {
 
                 NodeViewElement matchingElement = SearchNode.search(searchRoots, element,
-                        new SearchNode.Predicate() {
-                            public boolean check(NodeViewElement matchingElement, SearchNode node) {
-                                if (mergedElements.contains(matchingElement)) return false;
-                                usedNodes.add(node);
-                                return true;
-                            }
+                        (matchingElement1, node) -> {
+                            if (mergedElements.contains(matchingElement1)) return false;
+                            usedNodes.add(node);
+                            return true;
                         });
 
                 if (logger.isDebugEnabled()) {
@@ -283,11 +278,7 @@ class NodeViewsFilter {
             V create();
         }
 
-        private static Producer<SearchNode> searchNodeProducer = new Producer<SearchNode>() {
-            public SearchNode create() {
-                return new SearchNode();
-            }
-        };
+        private static Producer<SearchNode> searchNodeProducer = () -> new SearchNode();
 
         private interface Predicate {
 

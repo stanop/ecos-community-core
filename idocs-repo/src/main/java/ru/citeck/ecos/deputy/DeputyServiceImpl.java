@@ -433,33 +433,30 @@ public class DeputyServiceImpl implements DeputyService
 
 	@Override
 	public void userAvailabilityChanged(final String userName) {
-		AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-			@Override
-			public Object doWork() throws Exception {
-				authorityHelper.needUser(userName);
-				boolean available = availabilityService.getUserAvailability(userName);
-				List<String> userRoles = getUserRoles(userName);
-				List<String> deputiedRoles = getRolesDeputiedToUser(userName);
-				if(available) {
-					deputyListener.onUserAvailable(userName);
-					for(String role : userRoles) {
-						deputyListener.onRoleMemberAvailable(role, userName);
-					}
-					for(String role : deputiedRoles) {
-						deputyListener.onRoleDeputyAvailable(role, userName);
-					}
-				} else {
-					deputyListener.onUserUnavailable(userName);
-					for(String role : userRoles) {
-						deputyListener.onRoleMemberUnavailable(role, userName);
-					}
-					for(String role : deputiedRoles) {
-						deputyListener.onRoleDeputyUnavailable(role, userName);
-					}
-				}
-				return null;
-			}
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+            authorityHelper.needUser(userName);
+            boolean available = availabilityService.getUserAvailability(userName);
+            List<String> userRoles = getUserRoles(userName);
+            List<String> deputiedRoles = getRolesDeputiedToUser(userName);
+            if(available) {
+                deputyListener.onUserAvailable(userName);
+                for(String role : userRoles) {
+                    deputyListener.onRoleMemberAvailable(role, userName);
+                }
+                for(String role : deputiedRoles) {
+                    deputyListener.onRoleDeputyAvailable(role, userName);
+                }
+            } else {
+                deputyListener.onUserUnavailable(userName);
+                for(String role : userRoles) {
+                    deputyListener.onRoleMemberUnavailable(role, userName);
+                }
+                for(String role : deputiedRoles) {
+                    deputyListener.onRoleDeputyUnavailable(role, userName);
+                }
+            }
+            return null;
+        });
 	}
 
 	@Override

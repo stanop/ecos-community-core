@@ -92,16 +92,14 @@ public class GrantWorkflowPackageHelper {
 		if(authorities.size() == 0 || workflowPackage == null) return;
 
 		// grant specified permission on workflow package to all task actors:
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-			public Object doWork() throws Exception {
-				
-				for(String authority : authorities) {
-					grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
-				}
-				
-				return null;
-			}
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+
+            for(String authority : authorities) {
+                grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
+            }
+
+            return null;
+        });
 
 	}
 
@@ -122,16 +120,14 @@ public class GrantWorkflowPackageHelper {
 		if (authorities.size() == 0 || workflowPackage == null) return;
 
 		// grant specified permission on workflow package to all task actors:
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-			public Object doWork() throws Exception {
+		AuthenticationUtil.runAsSystem(() -> {
 
-				for (String authority : authorities) {
-					grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
-				}
+            for (String authority : authorities) {
+                grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
+            }
 
-				return null;
-			}
-		});
+            return null;
+        });
 
 	}
 	
@@ -147,12 +143,10 @@ public class GrantWorkflowPackageHelper {
 		
 		if(workflowPackage == null) return;
 
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-			public Object doWork() throws Exception {
-				grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
-				return null;
-			}
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+            grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
+            return null;
+        });
 	}
 	
 	/**
@@ -168,14 +162,12 @@ public class GrantWorkflowPackageHelper {
 		if(workflowPackage == null) return;
 
 		// revoke all task-granted permissions from workflow package:
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-			public Object doWork() throws Exception {
-				
-				grantPermissionService.revokePermission(workflowPackage, provider);
+		AuthenticationUtil.runAsSystem(() -> {
 
-				return null;
-			}
-		});
+            grantPermissionService.revokePermission(workflowPackage, provider);
+
+            return null;
+        });
 	}
 
 	/**
@@ -191,14 +183,12 @@ public class GrantWorkflowPackageHelper {
 		if (workflowPackage == null) return;
 
 		// revoke all task-granted permissions from workflow package:
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-			public Object doWork() throws Exception {
+		AuthenticationUtil.runAsSystem(() -> {
 
-				grantPermissionService.revokePermission(workflowPackage, provider);
+            grantPermissionService.revokePermission(workflowPackage, provider);
 
-				return null;
-			}
-		});
+            return null;
+        });
 	}
 	
 	/**
@@ -214,14 +204,12 @@ public class GrantWorkflowPackageHelper {
 		if(workflowPackage == null) return;
 
 		// revoke all task-granted permissions from workflow package:
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-			public Object doWork() throws Exception {
-				
-				grantPermissionService.revokePermission(workflowPackage, provider);
-				
-				return null;
-			}
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+
+            grantPermissionService.revokePermission(workflowPackage, provider);
+
+            return null;
+        });
 	}
 	
 	/**
@@ -236,14 +224,12 @@ public class GrantWorkflowPackageHelper {
 		if(workflowPackage == null) return;
 
 		// revoke all process-granted permissions from workflow package:
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-			public Object doWork() throws Exception {
-				
-				grantPermissionService.revokePermission(workflowPackage, provider);
-				
-				return null;
-			}
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+
+            grantPermissionService.revokePermission(workflowPackage, provider);
+
+            return null;
+        });
 	}
 	
 	// get task actors (authorities)

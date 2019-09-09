@@ -50,34 +50,29 @@ public class OverdueWorkflowNotificationJob extends AbstractLockedJob
 		final WorkflowService workflowService = (WorkflowService) data.get(PARAM_WORKFLOW_SERVICE);
 		final NotificationSender<WorkflowTask> sender = (NotificationSender<WorkflowTask>) data.get(PARAM_NOTIFICATION_SENDER);
 		
-		Integer sent = AuthenticationUtil.runAs(new RunAsWork<Integer>() {
-
-			@Override
-			public Integer doWork() throws Exception {
-				logger.debug("OverdueWorkflowNotificationJob start");
-				WorkflowTaskQuery query = new WorkflowTaskQuery();
-				query.setTaskState(WorkflowTaskState.IN_PROGRESS);
-				query.setOrderBy(new OrderBy[] { OrderBy.TaskDue_Asc });
-				List<WorkflowTask> tasks = workflowService.queryTasks(query);
-				Date now = new Date();
-				int sent = 0;
-				for(WorkflowTask task : tasks) {
-					Date dueDate = task.getPath().getInstance().getDueDate();
-					if(dueDate != null)
-					{
-						dueDate.setHours(23); // use 23:59, not 00:00
-						dueDate.setMinutes(59);
-							if(dueDate.before(now)) {
-								logger.info("Send notification");
-								sender.sendNotification(task);
-								sent++;
-							}
-					}
-				}
-				return sent;
-			}
-			
-		}, AuthenticationUtil.getSystemUserName());
+		Integer sent = AuthenticationUtil.runAs(() -> {
+            logger.debug("OverdueWorkflowNotificationJob start");
+            WorkflowTaskQuery query = new WorkflowTaskQuery();
+            query.setTaskState(WorkflowTaskState.IN_PROGRESS);
+            query.setOrderBy(new OrderBy[] { OrderBy.TaskDue_Asc });
+            List<WorkflowTask> tasks = workflowService.queryTasks(query);
+            Date now = new Date();
+            int sent1 = 0;
+            for(WorkflowTask task : tasks) {
+                Date dueDate = task.getPath().getInstance().getDueDate();
+                if(dueDate != null)
+                {
+                    dueDate.setHours(23); // use 23:59, not 00:00
+                    dueDate.setMinutes(59);
+                        if(dueDate.before(now)) {
+                            logger.info("Send notification");
+                            sender.sendNotification(task);
+                            sent1++;
+                        }
+                }
+            }
+            return sent1;
+        }, AuthenticationUtil.getSystemUserName());
 		if(logger.isInfoEnabled()) {
 			logger.info("Sent notifications for " + sent + " overdue tasks");
 		}

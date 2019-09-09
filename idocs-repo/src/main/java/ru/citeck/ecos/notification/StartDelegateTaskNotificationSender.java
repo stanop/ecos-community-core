@@ -206,12 +206,9 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
      */
     @Override
     public void sendNotification(final DelegateTask task) {
-        AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Void>() {
-            @Override
-            public Void doWork() throws Exception {
-                send(task);
-                return null;
-            }
+        AuthenticationUtil.runAsSystem((AuthenticationUtil.RunAsWork<Void>) () -> {
+            send(task);
+            return null;
         });
     }
 

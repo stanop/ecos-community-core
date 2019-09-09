@@ -56,16 +56,11 @@ public class ConfiscateWorkflowPackageHelper {
      */
 	public void confiscatePackage(final DelegateExecution execution) {
 		final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-
-			@Override
-			public Object doWork() throws Exception {
-				confiscateService.confiscateNode(workflowPackage);
-				grantHelper.grant(execution, ListenerUtils.getInitiator(execution), PermissionService.CONSUMER);
-				return null;
-			}
-			
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+            confiscateService.confiscateNode(workflowPackage);
+            grantHelper.grant(execution, ListenerUtils.getInitiator(execution), PermissionService.CONSUMER);
+            return null;
+        });
 	}
 
 	/**
@@ -76,15 +71,10 @@ public class ConfiscateWorkflowPackageHelper {
 	 */
 	public void returnPackage(final DelegateExecution execution) {
 		final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-
-			@Override
-			public Object doWork() throws Exception {
-				confiscateService.returnNode(workflowPackage);
-				return null;
-			}
-			
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+            confiscateService.returnNode(workflowPackage);
+            return null;
+        });
 	}
 	
 }

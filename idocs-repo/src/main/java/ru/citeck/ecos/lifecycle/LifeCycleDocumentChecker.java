@@ -51,12 +51,9 @@ public class LifeCycleDocumentChecker extends AbstractLockedJob {
 
         List<NodeRef> docs = lifeCycleService.getDocumentsWithTimer();
         for (final NodeRef doc : docs) {
-            AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
-                @Override
-                public Object doWork() throws Exception {
-                    lifeCycleService.doTimerTransition(doc);
-                    return null;
-                }
+            AuthenticationUtil.runAsSystem(() -> {
+                lifeCycleService.doTimerTransition(doc);
+                return null;
             });
         }
     }

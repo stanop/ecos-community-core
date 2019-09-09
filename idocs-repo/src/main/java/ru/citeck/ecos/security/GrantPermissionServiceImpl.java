@@ -424,71 +424,65 @@ public class GrantPermissionServiceImpl implements
 	
 	// grant parent permissions to child
 	/*package*/ void grantPermissionsImpl(final NodeRef child, final NodeRef parent) {
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-			public Object doWork() throws Exception {
-				// check existence:
-				if(!nodeService.exists(parent) || !nodeService.exists(child)) {
-					return null;
-				}
+		AuthenticationUtil.runAsSystem(() -> {
+            // check existence:
+            if(!nodeService.exists(parent) || !nodeService.exists(child)) {
+                return null;
+            }
 
-				// get all permissions, granted to parent:
-				List<ChildAssociationRef> parentPermissions = nodeService.getChildAssocs(parent, GrantModel.ASSOC_PERMISSIONS, RegexQNamePattern.MATCH_ALL);
-				
-				for(ChildAssociationRef permissionRef : parentPermissions) {
-					Map<QName, Serializable> permission = nodeService.getProperties(permissionRef.getChildRef());
-					grantPermissionImpl(child, 
-							(String) permission.get(GrantModel.PROP_AUTHORITY), 
-							(String) permission.get(GrantModel.PROP_PERMISSION), 
-							(String) permission.get(GrantModel.PROP_PROVIDER),
-							(Boolean) permission.get(GrantModel.PROP_ALLOW));
-				}
-				return null;
-			}
-		});
+            // get all permissions, granted to parent:
+            List<ChildAssociationRef> parentPermissions = nodeService.getChildAssocs(parent, GrantModel.ASSOC_PERMISSIONS, RegexQNamePattern.MATCH_ALL);
+
+            for(ChildAssociationRef permissionRef : parentPermissions) {
+                Map<QName, Serializable> permission = nodeService.getProperties(permissionRef.getChildRef());
+                grantPermissionImpl(child,
+                        (String) permission.get(GrantModel.PROP_AUTHORITY),
+                        (String) permission.get(GrantModel.PROP_PERMISSION),
+                        (String) permission.get(GrantModel.PROP_PROVIDER),
+                        (Boolean) permission.get(GrantModel.PROP_ALLOW));
+            }
+            return null;
+        });
 	}
 
 	// revoke parent permissions from child
 	/*package*/ void revokePermissionsImpl(final NodeRef child, final NodeRef parent) {
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-			public Object doWork() throws Exception {
-				// check existence:
-				if(!nodeService.exists(parent) || !nodeService.exists(child)) {
-					return null;
-				}
-				
-				// get all permissions, granted to parent:
-				List<ChildAssociationRef> parentPermissions = nodeService.getChildAssocs(parent, GrantModel.ASSOC_PERMISSIONS, RegexQNamePattern.MATCH_ALL);
-				
-				for(ChildAssociationRef permissionRef : parentPermissions) {
-					Map<QName, Serializable> permission = nodeService.getProperties(permissionRef.getChildRef());
-					revokePermissionImpl(child, 
-							(String) permission.get(GrantModel.PROP_AUTHORITY), 
-							(String) permission.get(GrantModel.PROP_PERMISSION), 
-							(String) permission.get(GrantModel.PROP_PROVIDER));
-				}
-				return null;
-			}
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+            // check existence:
+            if(!nodeService.exists(parent) || !nodeService.exists(child)) {
+                return null;
+            }
+
+            // get all permissions, granted to parent:
+            List<ChildAssociationRef> parentPermissions = nodeService.getChildAssocs(parent, GrantModel.ASSOC_PERMISSIONS, RegexQNamePattern.MATCH_ALL);
+
+            for(ChildAssociationRef permissionRef : parentPermissions) {
+                Map<QName, Serializable> permission = nodeService.getProperties(permissionRef.getChildRef());
+                revokePermissionImpl(child,
+                        (String) permission.get(GrantModel.PROP_AUTHORITY),
+                        (String) permission.get(GrantModel.PROP_PERMISSION),
+                        (String) permission.get(GrantModel.PROP_PROVIDER));
+            }
+            return null;
+        });
 	}
 	
 	// revoke permission from copied node
 	/*package*/ void revokePermissionsOnCopy(final NodeRef source, final NodeRef target) {
-		AuthenticationUtil.runAsSystem(new RunAsWork<Object>() {
-			public Object doWork() throws Exception {
-				// check existence:
-				if(!nodeService.exists(source) || nodeService.hasAspect(source, ContentModel.ASPECT_WORKING_COPY)) {
-					return null;
-				}
-				if(!nodeService.exists(target) || nodeService.hasAspect(target, ContentModel.ASPECT_WORKING_COPY)) {
-					return null;
-				}
-				
-				// if copy is not deep, grant:permission objects are not copied and are taken from source
-				// if copy is deep, grant:permission objects are copied and are taken from both source and target
-				revokePermissionImpl(source, target, ALL, ALL, ALL);
-				return null;
-			}
-		});
+		AuthenticationUtil.runAsSystem(() -> {
+            // check existence:
+            if(!nodeService.exists(source) || nodeService.hasAspect(source, ContentModel.ASPECT_WORKING_COPY)) {
+                return null;
+            }
+            if(!nodeService.exists(target) || nodeService.hasAspect(target, ContentModel.ASPECT_WORKING_COPY)) {
+                return null;
+            }
+
+            // if copy is not deep, grant:permission objects are not copied and are taken from source
+            // if copy is deep, grant:permission objects are copied and are taken from both source and target
+            revokePermissionImpl(source, target, ALL, ALL, ALL);
+            return null;
+        });
 	}
 
 }
