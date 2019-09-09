@@ -269,12 +269,12 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
                 String user = item.getUserId();
                 ExecutionEntity executionEntity = ((ExecutionEntity) task.getExecution()).getProcessInstance();
                 NodeRef initiator = ((ActivitiScriptNode) executionEntity.getVariable("initiator")).getNodeRef();
-                String initiator_name = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
+                String initiatorName = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
                 String sender = (String) task.getVariable("cwf_sender");
                 logger.debug("!!!! user " + user);
                 logger.debug("!!!! sender " + sender);
-                logger.debug("!!!! initiator_name " + initiator_name);
-                if (user != null && !user.equals(initiator_name) && !user.equals(sender)) {
+                logger.debug("!!!! initiatorName " + initiatorName);
+                if (user != null && !user.equals(initiatorName) && !user.equals(sender)) {
                     authorities.add(user);
                 }
             }
@@ -312,8 +312,8 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
                     for (AssociationRef assoc : assocs) {
                         NodeRef ref = assoc.getTargetRef();
                         if (nodeService.exists(ref)) {
-                            String sub_name = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
-                            authorities.add(sub_name);
+                            String subName = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
+                            authorities.add(subName);
                         }
                     }
                 }

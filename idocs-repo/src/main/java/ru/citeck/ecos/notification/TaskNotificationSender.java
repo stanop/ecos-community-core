@@ -274,8 +274,8 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
 		if(task.getPath()!=null && task.getPath().getInstance()!=null && task.getPath().getInstance().getInitiator()!=null)
 		{
 			NodeRef initiator = task.getPath().getInstance().getInitiator();
-			String initiator_name = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
-			authorities.add(initiator_name);
+			String initiatorName = (String) nodeService.getProperty(initiator, ContentModel.PROP_USERNAME);
+			authorities.add(initiatorName);
 		}
 	}
 
@@ -300,8 +300,8 @@ class TaskNotificationSender extends AbstractNotificationSender<WorkflowTask> {
 							NodeRef ref = assoc.getTargetRef();
 							if(nodeService.exists(ref))
 							{
-								String sub_name = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
-								authorities.add(sub_name);
+								String subName = (String) nodeService.getProperty(ref, ContentModel.PROP_USERNAME);
+								authorities.add(subName);
 							}
 						}
 					}

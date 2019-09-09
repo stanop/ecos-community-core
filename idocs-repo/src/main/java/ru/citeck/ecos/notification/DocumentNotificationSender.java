@@ -85,9 +85,9 @@ public class DocumentNotificationSender extends AbstractNotificationSender<NodeR
 		args.put(ARG_ADDITION, add);
 		String userName = authenticationService.getCurrentUserName();
 		NodeRef person = personService.getPerson(userName);
-		String last_name = (String)nodeService.getProperty(person,ContentModel.PROP_FIRSTNAME);
-		String first_name = (String)nodeService.getProperty(person,ContentModel.PROP_LASTNAME);
-		args.put(ARG_MODIFIER, last_name+" "+first_name);
+		String lastName = (String)nodeService.getProperty(person,ContentModel.PROP_FIRSTNAME);
+		String firstName = (String)nodeService.getProperty(person,ContentModel.PROP_LASTNAME);
+		args.put(ARG_MODIFIER, lastName +" "+ firstName);
 		return args;
 	}
 

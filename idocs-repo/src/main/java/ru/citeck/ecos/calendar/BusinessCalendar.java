@@ -39,7 +39,7 @@ public class BusinessCalendar extends GregorianCalendar {
 	private Map<Date, Date> extraDayOff /*= fillDateSet("day-off")*/;
 	private static final Log log = LogFactory.getLog(BusinessCalendar.class);
 	private SearchService searchService;
-	
+
 	public void add(int field, int amount)
 	{
 		if(amount>0)
@@ -61,7 +61,7 @@ public class BusinessCalendar extends GregorianCalendar {
 				if(this.isBusinessDay())
 				{
 					amount++;
-				
+
 				}
 			}
 		}
@@ -97,13 +97,13 @@ public class BusinessCalendar extends GregorianCalendar {
 	public BusinessCalendar()
 	{
 	}
-	
+
 	public void setWorkingDays()
 	{
 		log.debug("fillDateSet(working-day)");
 		extraWorkingDays = fillDateSet("working-day");
 	}
-	
+
 	public void setDayOff()
 	{
 		log.debug("fillDateSet(day-off)");
@@ -115,7 +115,7 @@ public class BusinessCalendar extends GregorianCalendar {
 		Date dateToCheck = calendar.getTime();
 		if(dates!=null && !dates.isEmpty())
 		{
-			for(Map.Entry<Date, Date> entry : dates.entrySet()) 
+			for(Map.Entry<Date, Date> entry : dates.entrySet())
 			{
 				Date dateFrom = entry.getKey();
 				Date dateTo = entry.getValue();
@@ -127,7 +127,7 @@ public class BusinessCalendar extends GregorianCalendar {
 		}
 		return false;
 	}
-	
+
 	public Map<Date, Date> fillDateSet(String remark)
 	{
 		Map<Date, Date> dateSet = new HashMap<Date, Date>();
@@ -147,7 +147,7 @@ public class BusinessCalendar extends GregorianCalendar {
 				}
 			}
 		}
-		catch (Exception e) 
+		catch (Exception e)
 		{
 			log.error("error "+e);
 		}

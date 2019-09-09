@@ -51,17 +51,17 @@ public class BusinessCalendarGet extends DeclarativeWebScript
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache)
     {
 
-        String add_field = req.getParameter(PARAM_ADD_FIELD);
-        String add_amount = req.getParameter(PARAM_ADD_AMOUNT);
-		String current_date = req.getParameter(PARAM_CURRENT_DATE);
+        String addField = req.getParameter(PARAM_ADD_FIELD);
+        String addAmount = req.getParameter(PARAM_ADD_AMOUNT);
+		String currentDateParam = req.getParameter(PARAM_CURRENT_DATE);
 
 
-        if(add_field == null) {
+        if(addField == null) {
             status.setCode(Status.STATUS_BAD_REQUEST, "Parameter addField is mandatory");
             return null;
         }
 
-        if(add_amount == null) {
+        if(addAmount == null) {
             status.setCode(Status.STATUS_BAD_REQUEST, "Parameter addAmount is mandatory");
             return null;
         }
@@ -69,7 +69,7 @@ public class BusinessCalendarGet extends DeclarativeWebScript
 		Date currentDate = null;
 		try 
 		{
-			currentDate = dateFormat.parse(current_date);
+			currentDate = dateFormat.parse(currentDateParam);
 
 		} 
 		catch (ParseException ex) 
@@ -77,7 +77,7 @@ public class BusinessCalendarGet extends DeclarativeWebScript
 			throw new WebScriptException("Unable to parse date: " + ex.getMessage(), ex);
 		}
 		
-		int amount = Integer.parseInt(add_amount);
+		int amount = Integer.parseInt(addAmount);
 
         Map<String, Object> model = new HashMap<String, Object>();
 		BusinessCalendar calendar = new BusinessCalendar();
@@ -85,7 +85,7 @@ public class BusinessCalendarGet extends DeclarativeWebScript
 		calendar.setWorkingDays();
 		calendar.setDayOff();
 		calendar.setTime(currentDate);
-		if("days".equals(add_field))
+		if("days".equals(addField))
 		{
 			calendar.add(Calendar.DAY_OF_YEAR, amount);
 			model.put("date", calendar.getTime());

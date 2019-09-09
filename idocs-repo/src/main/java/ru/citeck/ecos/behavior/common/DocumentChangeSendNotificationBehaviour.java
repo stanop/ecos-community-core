@@ -147,13 +147,13 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 							List<ConstraintDefinition> cdef = propDefinition.getConstraints();
 							if(cdef!=null)
 							{
-								ListIterator constr_iter = cdef.listIterator();
-								while (constr_iter.hasNext()) 
+								ListIterator constrIter = cdef.listIterator();
+								while (constrIter.hasNext())
 								{
-									Constraint constr_def2 = ((ConstraintDefinition)constr_iter.next()).getConstraint();
-									if(constr_def2 instanceof ListOfValuesConstraint) 
+									Constraint constrDef2 = ((ConstraintDefinition) constrIter.next()).getConstraint();
+									if(constrDef2 instanceof ListOfValuesConstraint)
 									{
-										ListOfValuesConstraint listConstraint = (ListOfValuesConstraint) constr_def2;
+										ListOfValuesConstraint listConstraint = (ListOfValuesConstraint) constrDef2;
 										propBefore = listConstraint.getDisplayLabel(String.valueOf(propBefore), messageService);
 										propAfter = listConstraint.getDisplayLabel(String.valueOf(propAfter), messageService);
 									}
@@ -173,13 +173,13 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 									List<ConstraintDefinition> cdef = apropers.get(entry.getKey()).getConstraints();
 									if(cdef!=null)
 									{
-										ListIterator constr_iter = cdef.listIterator();
-										while (constr_iter.hasNext()) 
+										ListIterator constrIter = cdef.listIterator();
+										while (constrIter.hasNext())
 										{
-											Constraint constr_def2 = ((ConstraintDefinition)constr_iter.next()).getConstraint();
-											if(constr_def2 instanceof ListOfValuesConstraint) 
+											Constraint constrDef2 = ((ConstraintDefinition) constrIter.next()).getConstraint();
+											if(constrDef2 instanceof ListOfValuesConstraint)
 											{
-												ListOfValuesConstraint listConstraint = (ListOfValuesConstraint) constr_def2;
+												ListOfValuesConstraint listConstraint = (ListOfValuesConstraint) constrDef2;
 												propBefore = listConstraint.getDisplayLabel(String.valueOf(propBefore), messageService);
 												propAfter = listConstraint.getDisplayLabel(String.valueOf(propAfter), messageService);
 											}
@@ -499,8 +499,8 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 		Set<String> subs = new HashSet <String>();
 		if(subscribers!=null)
 		{
-			List<String> list_subs = subscribers.get(mode);
-			ListIterator iter = list_subs.listIterator();
+			List<String> listSubs = subscribers.get(mode);
+			ListIterator iter = listSubs.listIterator();
 			while (iter.hasNext()) 
 			{
 				String property = iter.next().toString();
@@ -536,8 +536,8 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 	public void createAssociasionSubscribersOnEdit(NodeRef nodeRef) {
 		if(subscribers!=null)
 		{
-			List<String> list_subs = subscribers.get("edit");
-			ListIterator iter = list_subs.listIterator();
+			List<String> listSubs = subscribers.get("edit");
+			ListIterator iter = listSubs.listIterator();
 			logger.debug("subscriberAssoc "+subscriberAssoc);
 			if(subscriberAssoc!=null)
 			{
@@ -587,8 +587,8 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 	public void addAssociasionSubscribersOnEdit(AssociationRef nodeAssocRef) {
 		if(subscribers!=null)
 		{
-			List<String> list_subs = subscribers.get("edit");
-			ListIterator iter = list_subs.listIterator();
+			List<String> listSubs = subscribers.get("edit");
+			ListIterator iter = listSubs.listIterator();
 			logger.debug("subscriberAssoc "+subscriberAssoc);
 			if(subscriberAssoc!=null)
 			{
@@ -624,8 +624,8 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 	public void deleteAssociasionSubscribersOnEdit(AssociationRef nodeAssocRef) {
 		if(subscribers!=null)
 		{
-			List<String> list_subs = subscribers.get("edit");
-			ListIterator iter = list_subs.listIterator();
+			List<String> listSubs = subscribers.get("edit");
+			ListIterator iter = listSubs.listIterator();
 			logger.debug("subscriberAssoc "+subscriberAssoc);
 			if(subscriberAssoc!=null)
 			{
