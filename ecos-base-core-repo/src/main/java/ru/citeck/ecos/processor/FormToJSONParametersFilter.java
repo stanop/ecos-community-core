@@ -74,76 +74,75 @@ public class FormToJSONParametersFilter extends AbstractDataBundleLine {
     
     @SuppressWarnings("unchecked")
 	private String checkAndConvertFromArgsToJSON(Map<String, Object> model) {
-    	String jsonStr = null;
+		Object keyMimetype = model.get(ProcessorConstants.KEY_MIMETYPE);
+		if (keyMimetype == null || !keyMimetype.toString().equals(MediaType.MULTIPART_FORM_DATA.toString())) {
+			return null;
+		}
 
-    	if ((model.get(ProcessorConstants.KEY_MIMETYPE) != null) && 
-    			(((String) model.get(ProcessorConstants.KEY_MIMETYPE)).equals(MediaType.MULTIPART_FORM_DATA.toString()))) {
-    		Map<String, String> args = (Map<String, String>) model.get(DataBundleProcessorWebscript.KEY_ARGS);
+		Map<String, String> args = (Map<String, String>) model.get(DataBundleProcessorWebscript.KEY_ARGS);
 
-    		if (args != null) {
-    			// get data from one field or entire args
-    			if (args.get(ARGS_PARAMETER_WITH_JSON) != null)
-    				jsonStr = args.get(ARGS_PARAMETER_WITH_JSON);
-    			else {
-    				JSONObject data = new JSONObject();
-    				
-    				for (String key : args.keySet()) {
-    					String value = args.get(key);
-    				
-    					if (value != null) {
-    						value = value.trim();
-    						
-    						if ((value.startsWith("[")) && (value.endsWith("]"))) {
-    							try {
-									JSONArray arr = new JSONArray(value);
-									data.put(key, arr);
-								} catch (JSONException e) {
-									Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as JSONArray");
-								}
-    						} else if ((value.startsWith("{")) && (value.endsWith("}"))) {
-    							try {
-									JSONObject obj = new JSONObject(value);
-									data.put(key, obj);
-								} catch (JSONException e) {
-									Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as JSONObject");
-								}
-    						} else if ((value.equalsIgnoreCase("true")) || (value.equalsIgnoreCase("false"))) {
-    							try {
-    								Boolean b = Boolean.valueOf(value);
-									data.put(key, b.booleanValue());
-								} catch (Exception e) {
-									Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as boolean");
-								}
-    						} else if (value.matches("\\-?\\d+")) {
-    							try {
-    								Long l = Long.valueOf(value);
-									data.put(key, l.longValue());
-								} catch (Exception e) {
-									Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as long");
-								}
-    						} else if (value.matches("\\-?\\d+\\.\\d+")) {
-    							try {
-    								Double d = Double.valueOf(value);
-									data.put(key, d.doubleValue());
-								} catch (Exception e) {
-									Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as double");
-								}
-    						} else {
-    							try {
-    								data.put(key, value);
-    							} catch (JSONException e) {
-									Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as String");
-								}	
-    						}	
-    					}
-    				}
-    				
-    				jsonStr = data.toString();
-    			}
-    		}
-    	}
-    	
-    	return jsonStr;
+		if (args == null) return null;
+
+		// get data from one field or entire args
+		if (args.get(ARGS_PARAMETER_WITH_JSON) != null) {
+			return args.get(ARGS_PARAMETER_WITH_JSON);
+		}
+
+		JSONObject data = new JSONObject();
+
+		for (Map.Entry<String, String> entry : args.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+
+			if (value != null) {
+				value = value.trim();
+
+				if ((value.startsWith("[")) && (value.endsWith("]"))) {
+					try {
+						JSONArray arr = new JSONArray(value);
+						data.put(key, arr);
+					} catch (JSONException e) {
+						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as JSONArray");
+					}
+				} else if ((value.startsWith("{")) && (value.endsWith("}"))) {
+					try {
+						JSONObject obj = new JSONObject(value);
+						data.put(key, obj);
+					} catch (JSONException e) {
+						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as JSONObject");
+					}
+				} else if ((value.equalsIgnoreCase("true")) || (value.equalsIgnoreCase("false"))) {
+					try {
+						Boolean b = Boolean.valueOf(value);
+						data.put(key, b.booleanValue());
+					} catch (Exception e) {
+						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as boolean");
+					}
+				} else if (value.matches("\\-?\\d+")) {
+					try {
+						Long l = Long.valueOf(value);
+						data.put(key, l.longValue());
+					} catch (Exception e) {
+						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as long");
+					}
+				} else if (value.matches("\\-?\\d+\\.\\d+")) {
+					try {
+						Double d = Double.valueOf(value);
+						data.put(key, d.doubleValue());
+					} catch (Exception e) {
+						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as double");
+					}
+				} else {
+					try {
+						data.put(key, value);
+					} catch (JSONException e) {
+						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as String");
+					}
+				}
+			}
+		}
+
+		return data.toString();
     }
     
     private ByteArrayOutputStream copyInputStream(InputStream is) {

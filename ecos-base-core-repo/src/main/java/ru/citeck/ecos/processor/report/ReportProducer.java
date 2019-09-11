@@ -94,49 +94,54 @@ public class ReportProducer extends AbstractDataBundleLine {
     private List<List<Map<String, Object>>> produceReportData(List<Map<String, String>> reportColumns, List<NodeRef> nodes) {
         List<List<Map<String, Object>>> res = new ArrayList<>();
 
-        if ((reportColumns != null) && (reportColumns.size() > 0) && (nodes != null) && (nodes.size() > 0)) {
-            int i = 0;
-            for (NodeRef node : nodes) {
-                if (node != null) {
-                    List<Map<String, Object>> row = new ArrayList<>();
+        if (reportColumns == null || reportColumns.isEmpty() || nodes == null || nodes.isEmpty()) {
+            return res;
+        }
 
-                    for (Map<String, String> col : reportColumns) {
-                        Map<String, Object> data = new HashMap<>();
+        int i = 0;
+        for (NodeRef node : nodes) {
+            if (node == null) {
+                continue;
+            }
 
-                        // default type
-                        data.put(DATA_TYPE_ATTR, "String");
+            List<Map<String, Object>> row = new ArrayList<>();
 
-                        String colAttribute = col.get(COLUMN_ATTR);
-                        String colDateFormat = col.get(COLUMN_DATE_FORMAT);
+            for (Map<String, String> col : reportColumns) {
+                Map<String, Object> data = new HashMap<>();
 
-                        if (colAttribute != null) {
-                            if (colAttribute.equals(ROW_NUM)) {
+                // default type
+                data.put(DATA_TYPE_ATTR, "String");
+
+                String colAttribute = col.get(COLUMN_ATTR);
+                String colDateFormat = col.get(COLUMN_DATE_FORMAT);
+
+                if (colAttribute != null) {
+                    if (colAttribute.equals(ROW_NUM)) {
+                        data.put(DATA_TYPE_ATTR, "Integer");
+                        data.put(DATA_VALUE_ATTR, i + 1);
+                    } else {
+                        QName colAttrQName = QName.resolveToQName(namespaceService, colAttribute);
+                        Object value = nodeAttributeService.getAttribute(node, colAttrQName);
+                        QName typeQName = getAttributeTypeName(colAttrQName);
+                        if (typeQName != null) {
+                            if (typeQName.equals(DataTypeDefinition.DOUBLE)) {
+                                data.put(DATA_TYPE_ATTR, "Double");
+                            } else if (typeQName.equals(DataTypeDefinition.INT)) {
                                 data.put(DATA_TYPE_ATTR, "Integer");
-                                data.put(DATA_VALUE_ATTR, i + 1);
-                            } else {
-                                QName colAttrQName = QName.resolveToQName(namespaceService, colAttribute);
-                                Object value = nodeAttributeService.getAttribute(node, colAttrQName);
-                                QName typeQName = getAttributeTypeName(colAttrQName);
-                                if (typeQName != null) {
-                                    if (typeQName.equals(DataTypeDefinition.DOUBLE)) {
-                                        data.put(DATA_TYPE_ATTR, "Double");
-                                    } else if (typeQName.equals(DataTypeDefinition.INT)) {
-                                        data.put(DATA_TYPE_ATTR, "Integer");
-                                    }
-                                }
-
-                                data.put(DATA_VALUE_ATTR, getFormattedValue(colAttrQName, value, colDateFormat));
                             }
                         }
 
-                        row.add(data);
+                        data.put(DATA_VALUE_ATTR, getFormattedValue(colAttrQName, value, colDateFormat));
                     }
-
-                    res.add(row);
-                    i++;
                 }
+
+                row.add(data);
             }
+
+            res.add(row);
+            i++;
         }
+
         return res;
     }
 
@@ -150,41 +155,41 @@ public class ReportProducer extends AbstractDataBundleLine {
 
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 
-        if (value != null) {
-            if (value instanceof Boolean) {
-                boolean bValue = (Boolean) value;
-                if (bValue)
-                    res = new StringBuilder(I18NUtil.getMessage("label.yes"));
-                else
-                    res = new StringBuilder(I18NUtil.getMessage("label.no"));
-            } else if (ClassUtils.isPrimitiveOrWrapper(value.getClass())) {
-                res = new StringBuilder(String.valueOf(value));
-            } else if (value instanceof String) {
-                res = new StringBuilder(getLabel(property, (String) value));
-            } else if (value instanceof List) {
-                for (Object o : (List) value) {
-                    String itemValue = getFormattedValue(property, o, dateFormat);
-                    if ((res.length() > 0) && !itemValue.isEmpty()) {
-                        res.append(", ");
-                    }
-                    res.append(itemValue);
-                }
-            } else if (value instanceof Date) {
-                res = new StringBuilder(sdf.format((Date) value));
-            } else if (value instanceof TemplateNode) {
-                res = new StringBuilder(getNodeAsString((TemplateNode) value));
-            } else if (value instanceof NodeRef) {
-                res = new StringBuilder(getNodeAsString(new TemplateNode((NodeRef) value, serviceRegistry, null)));
-            } else if (value instanceof QName) {
-                res = new StringBuilder(shortQName(value.toString()));
-            } else if (value instanceof TemplateContentData) {
-                TemplateContentData data = (TemplateContentData) value;
-                res = new StringBuilder("/api/node/" + (data.getUrl() != null ? data.getUrl().replaceFirst("/d/d/", "")
-                        : ""));
-            } else if (value.toString() != null) {
-                res = new StringBuilder(value.toString());
-            }
+        if (value == null) {
+            return res.toString();
         }
+
+        if (value instanceof Boolean) {
+            boolean bValue = (Boolean) value;
+            res = new StringBuilder(I18NUtil.getMessage(bValue ? "label.yes" : "label.no"));
+        } else if (ClassUtils.isPrimitiveOrWrapper(value.getClass())) {
+            res = new StringBuilder(String.valueOf(value));
+        } else if (value instanceof String) {
+            res = new StringBuilder(getLabel(property, (String) value));
+        } else if (value instanceof List) {
+            for (Object o : (List) value) {
+                String itemValue = getFormattedValue(property, o, dateFormat);
+                if ((res.length() > 0) && !itemValue.isEmpty()) {
+                    res.append(", ");
+                }
+                res.append(itemValue);
+            }
+        } else if (value instanceof Date) {
+            res = new StringBuilder(sdf.format((Date) value));
+        } else if (value instanceof TemplateNode) {
+            res = new StringBuilder(getNodeAsString((TemplateNode) value));
+        } else if (value instanceof NodeRef) {
+            res = new StringBuilder(getNodeAsString(new TemplateNode((NodeRef) value, serviceRegistry, null)));
+        } else if (value instanceof QName) {
+            res = new StringBuilder(shortQName(value.toString()));
+        } else if (value instanceof TemplateContentData) {
+            TemplateContentData data = (TemplateContentData) value;
+            res = new StringBuilder("/api/node/" + (data.getUrl() != null ? data.getUrl().replaceFirst("/d/d/", "")
+                    : ""));
+        } else if (value.toString() != null) {
+            res = new StringBuilder(value.toString());
+        }
+
         return res.toString();
     }
 

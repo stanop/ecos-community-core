@@ -46,27 +46,22 @@ public class DictUtils {
             containerClass = dictionaryService.getClass(containerName);
         }
 
-        if (containerClass != null) {
+        ClassDefinition propContainerClass = propDef.getContainerClass();
+        if (containerClass != null && !propContainerClass.equals(containerClass)) {
+            if (dictionaryService.isSubClass(containerClass.getName(), propContainerClass.getName())) {
 
-            ClassDefinition propContainerClass = propDef.getContainerClass();
+                propContainerClass = containerClass;
 
-            if (!propContainerClass.equals(containerClass)) {
+            } else if (propContainerClass.isAspect()) {
 
-                if (dictionaryService.isSubClass(containerClass.getName(), propContainerClass.getName())) {
-
-                    propContainerClass = containerClass;
-
-                } else if (propContainerClass.isAspect()) {
-
-                    for (ClassDefinition aspectDef : containerClass.getDefaultAspects(true)) {
-                        if (dictionaryService.isSubClass(aspectDef.getName(), propContainerClass.getName())) {
-                            propContainerClass = aspectDef;
-                        }
+                for (ClassDefinition aspectDef : containerClass.getDefaultAspects(true)) {
+                    if (dictionaryService.isSubClass(aspectDef.getName(), propContainerClass.getName())) {
+                        propContainerClass = aspectDef;
                     }
                 }
-
-                propDef = dictionaryService.getProperty(propContainerClass.getName(), propertyName);
             }
+
+            propDef = dictionaryService.getProperty(propContainerClass.getName(), propertyName);
         }
 
         return propDef;

@@ -79,8 +79,7 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
     	if (criteriaObj instanceof String) {
             try {
             	criteriaJSON = new JSONObject((String) criteriaObj);
-            } catch (JSONException e) {
-            }
+            } catch (JSONException ignored) {}
         } else if (criteriaObj instanceof JSONObject) {
         	criteriaJSON = (JSONObject) criteriaObj;
         }
@@ -94,8 +93,7 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
 	                	if (name.equals("reportFilename"))
 	                		model.put(ProcessorConstants.KEY_FILENAME, simpleJSON2Java(criteriaJSON.get(name)));
 	                	model.put(name, simpleJSON2Java(criteriaJSON.get(name)));
-	                } catch (JSONException e) {
-	                }
+	                } catch (JSONException ignored) {}
 	            }
 	        }
     	}
@@ -104,39 +102,38 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
     }
     
     private Object simpleJSON2Java(Object o) {
-    	if (o != null) {
-    		if (o instanceof JSONArray) {
-    			JSONArray arr = (JSONArray) o;
-    			List<Object> list = new ArrayList<Object>();
-    			
-    			for (int i = 0; i < arr.length(); i++) {
-					try {
-						list.add(simpleJSON2Java(arr.get(i)));
-					} catch (JSONException e) {
-					}
-    			}
-    			
-    			return list;
-    		} else if (o instanceof JSONObject) {
-    			JSONObject obj = (JSONObject) o;
-    			Map<String, Object> map = new HashMap<String, Object>(); 
-    			Iterator keys = obj.sortedKeys();
-    			
-    	        while (keys.hasNext()) {
-    	            String name = (String) keys.next();
-    	            try {
-						map.put(name, simpleJSON2Java(obj.get(name)));
-					} catch (JSONException e) {
-					}
-    	        }
-    	        
-    	        return map;
-    		} else
-    			return o;
-    	}
-    	
-    	return null;
-    }
+		if (o == null) return null;
+
+		if (o instanceof JSONArray) {
+			JSONArray arr = (JSONArray) o;
+			List<Object> list = new ArrayList<>();
+
+			for (int i = 0; i < arr.length(); i++) {
+				try {
+					list.add(simpleJSON2Java(arr.get(i)));
+				} catch (JSONException ignored) {}
+			}
+
+			return list;
+		}
+
+		if (o instanceof JSONObject) {
+			JSONObject obj = (JSONObject) o;
+			Map<String, Object> map = new HashMap<>();
+			Iterator keys = obj.sortedKeys();
+
+			while (keys.hasNext()) {
+				String name = (String) keys.next();
+				try {
+					map.put(name, simpleJSON2Java(obj.get(name)));
+				} catch (JSONException ignored) {}
+			}
+
+			return map;
+		}
+
+		return o;
+	}
     
     private ByteArrayOutputStream copyInputStream(InputStream is) {
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();

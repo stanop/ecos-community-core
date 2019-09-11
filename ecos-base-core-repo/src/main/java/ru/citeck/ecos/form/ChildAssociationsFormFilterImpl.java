@@ -88,33 +88,32 @@ public class ChildAssociationsFormFilterImpl
 
 	@Override
 	public void afterPersist(Object item, FormData data, NodeRef persistedObject) {
-		if (nodeService.exists(persistedObject)) {
-			for (Map.Entry<String, QName> entry : fieldsChildAssocs.entrySet()) {
-				String fieldName = entry.getKey();
-				QName childAssoc = entry.getValue();
-				FieldData fieldData = data.getFieldData(fieldName);
-				if (fieldData != null && fieldData.getValue() != null &&
-						StringUtils.isNotEmpty(fieldData.getValue().toString())) {
-					String childAssocsStr = fieldData.getValue().toString();
-					String[] nodeRefsStr = childAssocsStr.split(",");
-					for (String nodeRefStr : nodeRefsStr) {
-						NodeRef nodeRef = new NodeRef(nodeRefStr);
-						if (nodeService.exists(nodeRef)) {
-							try {
-								move(nodeRef, persistedObject, childAssoc);
-							}
-							catch (RuntimeException e) {
-								if (log.isErrorEnabled()) {
-									log.error("Can not filter child association nodeRef=" +
-											nodeRef + "; type=" + childAssoc.getPrefixString(), e);
-								}
-								if (!skipExceptions)
-									throw e;
-							}
-						}
+		if (!nodeService.exists(persistedObject)) return;
+
+		for (Map.Entry<String, QName> entry : fieldsChildAssocs.entrySet()) {
+			String fieldName = entry.getKey();
+			QName childAssoc = entry.getValue();
+			FieldData fieldData = data.getFieldData(fieldName);
+			if (fieldData == null || fieldData.getValue() == null || !StringUtils.isNotEmpty(fieldData.getValue().toString())) continue;
+
+			String childAssocsStr = fieldData.getValue().toString();
+			String[] nodeRefsStr = childAssocsStr.split(",");
+			for (String nodeRefStr : nodeRefsStr) {
+				NodeRef nodeRef = new NodeRef(nodeRefStr);
+
+				if (!nodeService.exists(nodeRef)) continue;
+
+				try {
+					move(nodeRef, persistedObject, childAssoc);
+				} catch (RuntimeException e) {
+					if (log.isErrorEnabled()) {
+						log.error("Can not filter child association nodeRef=" +
+								nodeRef + "; type=" + childAssoc.getPrefixString(), e);
 					}
+					if (!skipExceptions) throw e;
 				}
 			}
+
 		}
 	}
 
@@ -166,13 +165,12 @@ public class ChildAssociationsFormFilterImpl
 			if (parentAssoc.isPrimary()) {
 				if (!parent.equals(parentAssoc.getParentRef()))
 					shouldMove = true;
-			}
-			else {
+			} else {
 				if (removeSecondaryAssocs) {
 					nodeService.removeChildAssociation(parentAssoc);
 					if (log.isDebugEnabled()) {
-						log.debug("The secondary parent associaton is successufully removed from " + 
-								target + " parent association=" + parentAssoc.getTypeQName().getPrefixString() + 
+						log.debug("The secondary parent associaton is successufully removed from " +
+								target + " parent association=" + parentAssoc.getTypeQName().getPrefixString() +
 								" parent node=" + parentAssoc.getParentRef());
 					}
 				}

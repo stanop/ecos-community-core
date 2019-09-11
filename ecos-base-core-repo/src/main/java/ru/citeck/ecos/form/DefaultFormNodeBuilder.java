@@ -29,6 +29,7 @@ import org.alfresco.repo.forms.FormException;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.dictionary.TypeDefinition;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.repository.StoreRef;
@@ -50,74 +51,64 @@ public class DefaultFormNodeBuilder extends AbstractFormNodeBuilder {
 	// taken from original TypeFormProcessor
 	@Override
 	public NodeRef createNode(TypeDefinition typeDef, FormData data) {
-		NodeRef nodeRef = null;
+		if (data == null) return null;
 
-		if (data != null)
+		// firstly, ensure we have a destination to create the node in
+		FieldData destination = data.getFieldData(DESTINATION);
+		if (destination == null)
 		{
-			// firstly, ensure we have a destination to create the node in
-			NodeRef parentRef = null;
-			FieldData destination = data.getFieldData(DESTINATION);
-			if (destination == null) 
-			{ 
-				throw new FormException("Failed to persist form for '"
-						+ typeDef.getName().toPrefixString(this.namespaceService) + 
-						"' as '" + DESTINATION + "' data was not provided."); 
-			}
-
-			// create the parent NodeRef
-			parentRef = getDestinationNodeRef(destination);
-
-			// remove the destination data to avoid warning during persistence,
-			// this can
-			// always be retrieved by looking up the created node's parent
-			data.removeFieldData(DESTINATION);
-
-			QName assocType = ContentModel.ASSOC_CONTAINS;
-			FieldData assocTypeParam = data.getFieldData(ASSOC_TYPE);
-			if (assocTypeParam != null)
-			{
-				String assocTypeStr = (String) assocTypeParam.getValue();
-				if (!assocTypeStr.isEmpty()) {
-					QName at = QName.createQName(assocTypeStr,
-							namespaceService);
-					AssociationDefinition assocDef = dictionaryService.getAssociation(at);
-					if (assocDef != null)
-						assocType = at;
-					data.removeFieldData(ASSOC_TYPE);
-				}
-			}
-
-			// if a name property is present in the form data use it as the node
-			// name,
-			// otherwise generate a guid
-			String nodeName = null;
-			FieldData nameData = data.getFieldData(NAME_PROP_DATA);
-			if (nameData != null)
-			{
-				nodeName = (String) nameData.getValue();
-
-				// remove the name data otherwise 'rename' gets called in
-				// persistNode
-				data.removeFieldData(NAME_PROP_DATA);
-			}
-			if (nodeName == null || nodeName.length() == 0)
-			{
-				nodeName = GUID.generate();
-			}
-
-			// create the node
-			Map<QName, Serializable> nodeProps = new HashMap<QName, Serializable>(1);
-			nodeProps.put(ContentModel.PROP_NAME, nodeName);
-			nodeRef = this.nodeService.createNode(
-					parentRef,
-					assocType,
-					QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI,
-							QName.createValidLocalName(nodeName)),
-							typeDef.getName(),
-							nodeProps).getChildRef();
+			throw new FormException("Failed to persist form for '"
+					+ typeDef.getName().toPrefixString(this.namespaceService) +
+					"' as '" + DESTINATION + "' data was not provided.");
 		}
 
-		return nodeRef;
+		// create the parent NodeRef
+		NodeRef parentRef = getDestinationNodeRef(destination);
+
+		// remove the destination data to avoid warning during persistence,
+		// this can
+		// always be retrieved by looking up the created node's parent
+		data.removeFieldData(DESTINATION);
+
+		QName assocType = ContentModel.ASSOC_CONTAINS;
+		FieldData assocTypeParam = data.getFieldData(ASSOC_TYPE);
+		if (assocTypeParam != null) {
+			String assocTypeStr = (String) assocTypeParam.getValue();
+			if (!assocTypeStr.isEmpty()) {
+				QName at = QName.createQName(assocTypeStr, namespaceService);
+				AssociationDefinition assocDef = dictionaryService.getAssociation(at);
+
+				if (assocDef != null) assocType = at;
+
+				data.removeFieldData(ASSOC_TYPE);
+			}
+		}
+
+		// if a name property is present in the form data use it as the node
+		// name,
+		// otherwise generate a guid
+		String nodeName = null;
+		FieldData nameData = data.getFieldData(NAME_PROP_DATA);
+		if (nameData != null) {
+			nodeName = (String) nameData.getValue();
+
+			// remove the name data otherwise 'rename' gets called in
+			// persistNode
+			data.removeFieldData(NAME_PROP_DATA);
+		}
+
+		if (nodeName == null || nodeName.isEmpty()) {
+			nodeName = GUID.generate();
+		}
+
+		// create the node
+		Map<QName, Serializable> nodeProps = new HashMap<>(1);
+		nodeProps.put(ContentModel.PROP_NAME, nodeName);
+
+		QName qNodeName = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, QName.createValidLocalName(nodeName));
+		ChildAssociationRef nodeRef = this.nodeService.createNode(parentRef, assocType, qNodeName, typeDef.getName(), nodeProps);
+
+		return nodeRef.getChildRef();
 	}
 
 	private NodeRef getDestinationNodeRef(FieldData destination) {

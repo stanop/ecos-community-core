@@ -127,16 +127,12 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
             Collection<IntegrityRecord> eventResults)
     {
         // check for null or empty definitions
-        if (propertyDefs == null || propertyDefs.isEmpty())
-        {
-            return;
-        }
-        for (PropertyDefinition propertyDef : propertyDefs)
-        {
+        if (propertyDefs == null || propertyDefs.isEmpty()) return;
+
+        for (PropertyDefinition propertyDef : propertyDefs) {
             QName propertyQName = propertyDef.getName();
             // check that enforced, mandatoryproperties are set
-            if (propertyDef.isMandatory() && propertyDef.isMandatoryEnforced() && !nodeProperties.containsKey(propertyQName))
-            {
+            if (propertyDef.isMandatory() && propertyDef.isMandatoryEnforced() && !nodeProperties.containsKey(propertyQName)) {
                 IntegrityRecord result = new IntegrityRecord(
                         "Mandatory property not set: \n" +
                         "   Node: " + nodeRef + "\n" +
@@ -146,12 +142,11 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
                 // next one
                 continue;
             }
+
             Serializable propertyValue = nodeProperties.get(propertyQName);
             // Check for encryption first
-            if (propertyDef.getDataType().getName().equals(DataTypeDefinition.ENCRYPTED))
-            {
-                if (propertyValue != null && !(propertyValue instanceof SealedObject))
-                {
+            if (propertyDef.getDataType().getName().equals(DataTypeDefinition.ENCRYPTED)) {
+                if (propertyValue != null && !(propertyValue instanceof SealedObject)) {
                     IntegrityRecord result = new IntegrityRecord(
                             "Property must be encrypted: \n" +
                             "   Node: " + nodeRef + "\n" +
@@ -160,21 +155,18 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
                     eventResults.add(result);
                 }
             }
+
             // check constraints
             List<ConstraintDefinition> constraintDefs = propertyDef.getConstraints();
-            for (ConstraintDefinition constraintDef : constraintDefs)
-            {
+            for (ConstraintDefinition constraintDef : constraintDefs) {
                 // get the constraint implementation
                 Constraint constraint = constraintDef.getConstraint();
-                try
-                {
+                try {
                 	if (constraint instanceof NodeRefAbstractConstraint) {
                 		((NodeRefAbstractConstraint)constraint).evaluate(propertyQName, propertyValue, nodeRef);
                 	}
                     constraint.evaluate(propertyValue);
-                }
-                catch (ConstraintException e)
-                {
+                } catch (ConstraintException e) {
                     IntegrityRecord result = new IntegrityRecord(
                             "Invalid property value: \n" +
                             "   Node: " + nodeRef + "\n" +
