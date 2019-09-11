@@ -2906,9 +2906,9 @@
                   "type": "recordsQuery",
                   "recordsQuery": {
                     "attributes": {
-                      "key": "cm:title"
+                      "key": ".disp"
                     },
-                    "query": "var value = {\n  query: 'PARENT: \"workspace://SpacesStore/cat-doc-type-general-case\"',\n  language: 'fts-alfresco'\n}",
+                    "query": "var value = {\n  query: 'PARENT: \"' + data.tk_type + '\"',\n  language: 'fts-alfresco'\n}",
                     "isSingle": false
                   },
                   "ajax": {
@@ -3276,7 +3276,7 @@
                 "alwaysEnabled": false,
                 "defaultValue": "",
                 "inputFormat": "plain",
-                "customDefaultValue": "value = 'workspace://SpacesStore/cat-doc-type-general-case';",
+                "customDefaultValue": "var deflt = 'workspace://SpacesStore/cat-doc-type-general-case';\nvalue = _.get(instance, 'options.params.tk_type', deflt); \n",
                 "encrypted": false,
                 "validate": {
                   "customMessage": "",
