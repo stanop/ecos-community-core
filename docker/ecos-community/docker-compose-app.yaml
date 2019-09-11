@@ -63,6 +63,24 @@ services:
       - uiserv-psql
     volumes:
       - ./volumes/uiserv/:/default-menu-override
+  eapps-app:
+    image: nexus.citeck.ru/ecos-apps:develop
+    environment:
+      - _JAVA_OPTIONS=-Xmx512m -Xms256m
+      - SPRING_PROFILES_ACTIVE=dev,swagger
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - EAPPS_AUTOUPLOAD_LOCATIONS=file:/ecos-apps
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/eureka
+      - SPRING_CLOUD_CONFIG_URI=http://admin:$${jhipster.registry.password}@jhipster-registry:8761/config
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://eapps-psql:5432/eapps
+      - JHIPSTER_SLEEP=20
+    ports:
+      - 8089:8089
+    links:
+      - jhipster-registry
+      - eapps-psql
+    volumes:
+      - ./volumes/ecos-apps/:/ecos-apps
   rabbitmq:
     image: "rabbitmq:3-management"
     restart: on-failure:5
