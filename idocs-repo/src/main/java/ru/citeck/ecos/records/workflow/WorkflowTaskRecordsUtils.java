@@ -23,10 +23,7 @@ import ru.citeck.ecos.utils.AuthorityUtils;
 import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -159,7 +156,7 @@ public class WorkflowTaskRecordsUtils {
                 WorkflowTaskRecords.TaskIdQuery.class);
 
         if (Boolean.TRUE.equals(tasksQuery.active)) {
-            filterActiveTask(result, query);
+            filterActiveTask(result, query, taskRecordsQuery);
         }
 
         if (!filterByDocStatusRequired) {
@@ -170,10 +167,13 @@ public class WorkflowTaskRecordsUtils {
     }
 
     private void filterActiveTask(RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> taskQueryResult,
-                                  RecordsQuery query) {
+                                  RecordsQuery query, RecordsQuery taskRecordsQuery) {
+        log.warn("start filterActiveTask");
+
         int maxItems = query.getMaxItems();
         AtomicInteger recordsCount = new AtomicInteger(0);
         AtomicInteger filtered = new AtomicInteger(0);
+        AtomicInteger sFiltered = new AtomicInteger(0);
 
         List<WorkflowTaskRecords.TaskIdQuery> records = taskQueryResult.getRecords()
                 .stream()
@@ -191,8 +191,57 @@ public class WorkflowTaskRecordsUtils {
                 })
                 .collect(Collectors.toList());
 
+        //TODO: refactor
+        List<WorkflowTaskRecords.TaskIdQuery> sRecords = new ArrayList<>();
+
+        log.warn("First records size: " + records.size());
+        log.warn("MaxItems: " + maxItems);
+
+        if (records.isEmpty() || maxItems < records.size() / 2) {
+            log.warn("start 2nd search");
+
+            taskRecordsQuery.setSkipCount(maxItems);
+
+            RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> queryResult = recordsService.queryRecords(taskRecordsQuery,
+                    WorkflowTaskRecords.TaskIdQuery.class);
+
+            int sMaxItems = query.getMaxItems();
+            AtomicInteger sRecordsCount = new AtomicInteger(0);
+
+            sRecords = queryResult.getRecords()
+                    .stream()
+                    .filter(taskIdQuery -> {
+                        if (sMaxItems > -1 && sMaxItems <= sRecordsCount.getAndIncrement()) {
+                            return false;
+                        }
+
+                        if (taskIsActive(taskIdQuery.getTaskId())) {
+                            return true;
+                        } else {
+                            sFiltered.incrementAndGet();
+                            return false;
+                        }
+                    })
+                    .collect(Collectors.toList());
+            log.warn("sMaxItems: " + sMaxItems);
+            log.warn("sRecordsCount: " + sRecordsCount);
+            log.warn("sFiltered: " + sFiltered);
+
+
+        }
+
+        records.addAll(sRecords);
+
+        log.warn("recordsCount: " + recordsCount);
+        log.warn("filtered: " + filtered);
+
+        long totalCount = taskQueryResult.getTotalCount() - filtered.get();
+
+        log.warn(totalCount);
+
+
         taskQueryResult.setRecords(records);
-        taskQueryResult.setTotalCount(taskQueryResult.getTotalCount() - filtered.get());
+        taskQueryResult.setTotalCount(totalCount);
     }
 
     private boolean taskIsActive(String taskId) {
