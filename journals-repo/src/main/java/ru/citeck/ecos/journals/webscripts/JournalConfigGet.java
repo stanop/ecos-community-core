@@ -3,7 +3,9 @@ package ru.citeck.ecos.journals.webscripts;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -142,7 +144,7 @@ public class JournalConfigGet extends AbstractWebScript {
 
             Column column = new Column();
 
-            column.setFormatter(journalType.getFormatter(name));
+            column.setFormatter(getFormatter(journalType.getFormatter(name)));
             column.setDefault(journalType.isAttributeDefault(name));
             column.setGroupable(journalType.isAttributeGroupable(name));
             column.setSearchable(journalType.isAttributeSearchable(name));
@@ -175,6 +177,42 @@ public class JournalConfigGet extends AbstractWebScript {
         response.setParams(journalType.getOptions());
 
         return response;
+    }
+
+    private Formatter getFormatter(JournalFormatter formatter) {
+
+        if (formatter == null) {
+            return null;
+        }
+
+        Formatter result = new Formatter();
+        result.setName(formatter.getName());
+
+        Map<String, String> journalParams = formatter.getParams();
+
+        if (journalParams != null) {
+
+            ObjectNode params = JsonNodeFactory.instance.objectNode();
+
+            journalParams.forEach((k, v) -> {
+
+                String value = v.trim();
+
+                if (value.startsWith("{") || value.startsWith("[")) {
+                    try {
+                        params.put(k, objectMapper.readTree(value));
+                    } catch (IOException e) {
+                        logger.error("Invalid JSON value: " + value, e);
+                    }
+                } else {
+                    params.put(k, TextNode.valueOf(value));
+                }
+            });
+
+            result.setParams(params);
+        }
+
+        return result;
     }
 
     private String getColumnLabel(Column column) {
@@ -524,13 +562,19 @@ public class JournalConfigGet extends AbstractWebScript {
         String javaClass;
         String attribute;
         String schema;
-        JournalFormatter formatter;
+        Formatter formatter;
         Map<String, String> params;
         boolean isDefault;
         boolean isSearchable;
         boolean isSortable;
         boolean isVisible;
         boolean isGroupable;
+    }
+
+    @Data
+    static class Formatter {
+        String name;
+        ObjectNode params;
     }
 
     @Data
