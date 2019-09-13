@@ -40,7 +40,7 @@ public interface JournalType {
     List<String> getSortableAttributes();
     
     List<String> getGroupableAttributes();
-    
+
     Map<String, String> getAttributeOptions(String attributeKey);
     
     boolean isAttributeDefault(String attributeKey);
@@ -54,6 +54,8 @@ public interface JournalType {
     boolean isAttributeGroupable(String attributeKey);
 
     List<JournalBatchEdit> getBatchEdit(String attributeKey);
+
+    JournalFormatter getFormatter(String attributeKey);
 
     List<JournalGroupAction> getGroupActions();
 

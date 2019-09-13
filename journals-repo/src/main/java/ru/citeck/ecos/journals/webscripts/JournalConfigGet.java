@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.alfresco.repo.i18n.MessageService;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.ClassAttributeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -27,10 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
-import ru.citeck.ecos.journals.JournalBatchEdit;
-import ru.citeck.ecos.journals.JournalGroupAction;
-import ru.citeck.ecos.journals.JournalService;
-import ru.citeck.ecos.journals.JournalType;
+import ru.citeck.ecos.journals.*;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.Predicate;
@@ -96,7 +94,16 @@ public class JournalConfigGet extends AbstractWebScript {
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
 
+        res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
+
         String journalId = req.getParameter(PARAM_JOURNAL);
+        Response response = AuthenticationUtil.runAsSystem(() -> executeImpl(journalId));
+
+        objectMapper.writeValue(res.getWriter(), response);
+        res.setStatus(Status.STATUS_OK);
+    }
+
+    private Response executeImpl(String journalId) {
 
         if (StringUtils.isBlank(journalId)) {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "journalId is a mandatory parameter!");
@@ -135,6 +142,7 @@ public class JournalConfigGet extends AbstractWebScript {
 
             Column column = new Column();
 
+            column.setFormatter(journalType.getFormatter(name));
             column.setDefault(journalType.isAttributeDefault(name));
             column.setGroupable(journalType.isAttributeGroupable(name));
             column.setSearchable(journalType.isAttributeSearchable(name));
@@ -166,9 +174,7 @@ public class JournalConfigGet extends AbstractWebScript {
         response.setSourceId(sourceId);
         response.setParams(journalType.getOptions());
 
-        res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
-        objectMapper.writeValue(res.getWriter(), response);
-        res.setStatus(Status.STATUS_OK);
+        return response;
     }
 
     private String getColumnLabel(Column column) {
@@ -518,19 +524,13 @@ public class JournalConfigGet extends AbstractWebScript {
         String javaClass;
         String attribute;
         String schema;
-        Formatter formatter;
+        JournalFormatter formatter;
         Map<String, String> params;
         boolean isDefault;
         boolean isSearchable;
         boolean isSortable;
         boolean isVisible;
         boolean isGroupable;
-    }
-
-    @Data
-    static class Formatter {
-        String name;
-        Map<String, String> params;
     }
 
     @Data

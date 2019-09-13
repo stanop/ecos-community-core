@@ -19,12 +19,14 @@
 package ru.citeck.ecos.journals;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 
 import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.journals.xml.*;
+import ru.citeck.ecos.journals.xml.Formatter;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.EcosU18NUtils;
 
@@ -49,6 +51,7 @@ class JournalTypeImpl implements JournalType {
     private final Map<String, Map<String, String>> attributeOptions;
     private final Map<String, List<JournalBatchEdit>> batchEdit;
     private final Map<String, JournalCriterion> criterion;
+    private final Map<String, JournalFormatter> formatters;
 
     private final List<CreateVariant> createVariants;
 
@@ -61,6 +64,7 @@ class JournalTypeImpl implements JournalType {
         this.predicate = journal.getPredicate() != null ? journal.getPredicate().getValue() : null;
         this.groupBy = journal.getGroupBy() != null ? journal.getGroupBy().getValue() : null;
         this.createVariants = convertCreateVariants(journal.getCreate());
+        this.formatters = new ConcurrentHashMap<>();
 
         List<Header> headers = journal.getHeaders().getHeader();
         List<String> allAttributes = new ArrayList<>(headers.size());
@@ -101,6 +105,11 @@ class JournalTypeImpl implements JournalType {
                 groupableAttributes.set(index);
             }
 
+            JournalFormatter formatter = readFormatter(header.getFormatter());
+            if (formatter != null) {
+                formatters.put(header.getKey(), formatter);
+            }
+
             Map<String, String> headerOptions = Collections.unmodifiableMap(getOptions(header.getOption()));
             this.attributeOptions.put(attributeKey, headerOptions);
 
@@ -119,6 +128,19 @@ class JournalTypeImpl implements JournalType {
         }
 
         this.attributes = Collections.unmodifiableList(allAttributes);
+    }
+
+    private JournalFormatter readFormatter(Formatter formatter) {
+
+        if (formatter == null) {
+            return null;
+        }
+
+        JournalFormatter result = new JournalFormatter();
+        result.setName(formatter.getName());
+        result.setParams(getOptions(formatter.getParam()));
+
+        return result;
     }
 
     private List<CreateVariant> convertCreateVariants(CreateVariants variants) {
@@ -265,7 +287,9 @@ class JournalTypeImpl implements JournalType {
     }
 
     private static Map<String, String> getOptions(List<Option> options) {
-        if (options == null) return Collections.emptyMap();
+        if (options == null) {
+            return Collections.emptyMap();
+        }
         Map<String, String> optionMap = new HashMap<>(options.size());
         for (Option option : options) {
             optionMap.put(option.getName(), option.getValue().trim());
@@ -290,6 +314,11 @@ class JournalTypeImpl implements JournalType {
 
     public String getPredicate() {
         return predicate;
+    }
+
+    @Override
+    public JournalFormatter getFormatter(String attributeKey) {
+        return formatters.get(attributeKey);
     }
 
     @Override

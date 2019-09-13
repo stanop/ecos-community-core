@@ -52,6 +52,13 @@
         <xs:attribute name="title" type="xs:string" use="required" />
     </xs:complexType>
 
+    <xs:complexType name="formatter">
+        <xs:sequence>
+            <xs:element name="param" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+
     <xs:complexType name="groupBy">
         <xs:simpleContent>
             <xs:extension base="xs:string" />
@@ -160,6 +167,7 @@
 
     <xs:complexType name="header">
         <xs:sequence>
+            <xs:element name="formatter" type="j:formatter" minOccurs="0" />
             <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="batch-edit" type="j:batchEdit" minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="criterion" type="j:criterion" minOccurs="0" />
