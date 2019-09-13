@@ -8,10 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.citeck.ecos.records.source.alf.search.CriteriaAlfNodesSearch;
-import ru.citeck.ecos.records2.RecordMeta;
-import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.RecordsService;
-import ru.citeck.ecos.records2.RecordsServiceAware;
+import ru.citeck.ecos.records2.*;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
 import ru.citeck.ecos.records2.request.result.RecordsResult;
 import ru.citeck.ecos.search.*;
@@ -22,7 +19,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO implements RecordsServiceAware {
+public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO implements ServiceFactoryAware {
 
     private static final Log logger = LogFactory.getLog(ExactCriteriaRecordsDAO.class);
 
@@ -124,8 +121,8 @@ public class ExactCriteriaRecordsDAO extends FilteredRecordsDAO implements Recor
     }
 
     @Override
-    public void setRecordsService(RecordsService recordsService) {
-        this.recordsService = recordsService;
+    public void setRecordsServiceFactory(RecordsServiceFactory serviceFactory) {
+        this.recordsService = serviceFactory.getRecordsService();
     }
 
     private class CriterionFilter {
