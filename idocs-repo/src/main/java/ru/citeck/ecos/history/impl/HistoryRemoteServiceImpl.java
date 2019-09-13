@@ -116,7 +116,7 @@ public class HistoryRemoteServiceImpl implements HistoryRemoteService {
     private NodeUtils nodeUtils;
 
     @Autowired(required = false)
-    @Qualifier("historyRabbitTemplate")
+    @Qualifier("rabbitTemplate")
     private RabbitTemplate rabbitTemplate;
 
     @Autowired(required = false)

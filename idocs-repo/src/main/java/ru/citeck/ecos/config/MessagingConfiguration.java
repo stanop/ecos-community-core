@@ -1,20 +1,29 @@
 package ru.citeck.ecos.config;
 
+import com.sun.media.jfxmedia.logging.Logger;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.jms.core.JmsTemplate;
 
+import java.io.IOException;
 import java.util.Properties;
 
 /**
  * Messaging configuration
  */
 @Configuration
+@PropertySource("classpath:application.properties")
 public class MessagingConfiguration {
 
     /**
@@ -26,13 +35,8 @@ public class MessagingConfiguration {
     private static final String RABBIT_MQ_PASSWORD = "rabbitmq.server.password";
     private static final String BROKER_URL = "messaging.broker.url";
 
-    /**
-     * Global properties
-     */
     @Autowired
-    @Qualifier("global-properties")
-    private Properties properties;
-
+    Environment env;
 
     /**
      * ActiveMQ connection factory
@@ -40,13 +44,9 @@ public class MessagingConfiguration {
      */
     @Bean(name = "activeMQConnectionFactory")
     public ActiveMQConnectionFactory activeMQConnectionFactory() {
-        if (properties.getProperty(BROKER_URL) != null) {
-            ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
-            activeMQConnectionFactory.setBrokerURL(properties.getProperty(BROKER_URL));
-            return activeMQConnectionFactory;
-        } else {
-            return null;
-        }
+        ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
+        activeMQConnectionFactory.setBrokerURL(env.getProperty(BROKER_URL));
+        return activeMQConnectionFactory;
     }
 
     /**
@@ -63,23 +63,18 @@ public class MessagingConfiguration {
         }
     }
 
-
     /**
      * Connection factory bean
      * @return Connection factory or null (in case of absence "rabbitmq.server.host" global property)
      */
-    @Bean(name = "historyRabbitConnectionFactory")
-    public CachingConnectionFactory historyRabbitConnectionFactory() {
-        if (properties.getProperty(RABBIT_MQ_HOST) != null) {
-            CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-            connectionFactory.setHost(properties.getProperty(RABBIT_MQ_HOST));
-            connectionFactory.setPort(Integer.valueOf(properties.getProperty(RABBIT_MQ_PORT)));
-            connectionFactory.setUsername(properties.getProperty(RABBIT_MQ_USERNAME));
-            connectionFactory.setPassword(properties.getProperty(RABBIT_MQ_PASSWORD));
-            return connectionFactory;
-        } else {
-            return null;
-        }
+    @Bean(name = "rabbitConnectionFactory")
+    public CachingConnectionFactory rabbitConnectionFactory() {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setHost(env.getProperty(RABBIT_MQ_HOST));
+        connectionFactory.setPort(Integer.valueOf(env.getProperty(RABBIT_MQ_PORT)));
+        connectionFactory.setUsername(env.getProperty(RABBIT_MQ_USERNAME));
+        connectionFactory.setPassword(env.getProperty(RABBIT_MQ_PASSWORD));
+        return connectionFactory;
     }
 
     /**
@@ -87,9 +82,8 @@ public class MessagingConfiguration {
      * @param connectionFactory Connection factory
      * @return Rabbit template or null (in case of absence connection factory)
      */
-    @Bean(name = "historyRabbitTemplate")
-    public RabbitTemplate historyRabbitTemplate(@Qualifier("historyRabbitConnectionFactory")
-                                                CachingConnectionFactory connectionFactory) {
+    @Bean(name = "rabbitTemplate")
+    public RabbitTemplate rabbitTemplate(@Qualifier("rabbitConnectionFactory") CachingConnectionFactory connectionFactory) {
         if (connectionFactory != null) {
             return new RabbitTemplate(connectionFactory);
         } else {
