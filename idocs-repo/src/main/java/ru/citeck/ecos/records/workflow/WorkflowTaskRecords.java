@@ -251,6 +251,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     public static class TaskIdQuery {
         @MetaAtt("cm:name")
         @Getter @Setter public String taskId;
+
+        @Override
+        public String toString() {
+            return taskId;
+        }
     }
 
     public static class TasksQuery {
