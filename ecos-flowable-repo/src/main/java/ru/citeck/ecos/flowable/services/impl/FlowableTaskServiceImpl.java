@@ -59,12 +59,9 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     @Autowired
     private NamespaceService namespaceService;
 
-    private WorkflowQNameConverter converter;
-
     @PostConstruct
     public void init() {
         ecosTaskService.register(FlowableConstants.ENGINE_ID, this);
-        converter = new WorkflowQNameConverter(namespaceService);
     }
 
     /**
@@ -225,8 +222,8 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
             taskVariables.put("bpm_comment", comment);
         }
 
-        String lastCommentProp = converter.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
-        variables.put(lastCommentProp, comment);
+        String lastCommentProp = workflowUtils.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
+        taskVariables.put(lastCommentProp, comment);
 
         taskService.complete(taskId, taskVariables, executionVariables);
     }

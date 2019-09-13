@@ -3,6 +3,7 @@ package ru.citeck.ecos.utils;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
+import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -10,6 +11,7 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.PersonService;
 import org.alfresco.service.cmr.workflow.*;
+import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.apache.commons.collections.CollectionUtils;
@@ -41,17 +43,33 @@ public class WorkflowUtils {
     private final AuthorityService authorityService;
     private final PersonService personService;
     private final WorkflowAdminService workflowAdminService;
+    private final WorkflowQNameConverter qnameConverter;
 
     @Autowired
-    public WorkflowUtils(@Qualifier("WorkflowService") WorkflowService workflowService, AuthorityUtils authorityUtils,
-                         NodeService nodeService, AuthorityService authorityService, PersonService personService,
-                         WorkflowAdminService workflowAdminService) {
+    public WorkflowUtils(
+            @Qualifier("WorkflowService") WorkflowService workflowService,
+            AuthorityUtils authorityUtils,
+            NodeService nodeService,
+            AuthorityService authorityService,
+            PersonService personService,
+            WorkflowAdminService workflowAdminService,
+            NamespaceService namespaceService
+    ) {
         this.workflowService = workflowService;
         this.authorityUtils = authorityUtils;
         this.nodeService = nodeService;
         this.authorityService = authorityService;
         this.personService = personService;
         this.workflowAdminService = workflowAdminService;
+        this.qnameConverter = new WorkflowQNameConverter(namespaceService);
+    }
+
+    public String mapQNameToName(QName qname) {
+        return qnameConverter.mapQNameToName(qname);
+    }
+
+    public QName mapNameToQName(String name) {
+        return qnameConverter.mapNameToQName(name);
     }
 
     /**
