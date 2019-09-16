@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 public class RabbitMQPackageSender implements ApplicationListener<ContextRefreshedEvent> {
@@ -38,19 +40,22 @@ public class RabbitMQPackageSender implements ApplicationListener<ContextRefresh
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        String filepath = env.getProperty(PACKAGE_FORMS_LOCATION);
-        Path path = Paths.get(filepath);
-        try {
-            byte[] fileBytes = Files.readAllBytes(path);
-            LOGGER.info("Sending package to RabbitMQ: " + path.getFileName());
-            retryTemplate.execute(
-                    task -> rabbitTemplate.convertSendAndReceive(EcosAppQueues.ECOS_APPS_UPLOAD_ID, fileBytes),
-                    callback -> {
-                        LOGGER.error("Package isn't send to RabbitMQ: " + path.getFileName());
-                        return null;
-                    });
-        } catch (IOException ioe) {
-            LOGGER.error(ioe.getLocalizedMessage());
-        }
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            String filepath = env.getProperty(PACKAGE_FORMS_LOCATION);
+            Path path = Paths.get(filepath);
+            try {
+                byte[] fileBytes = Files.readAllBytes(path);
+                LOGGER.info("Sending package to RabbitMQ: " + path.getFileName());
+                retryTemplate.execute(
+                        task -> rabbitTemplate.convertSendAndReceive(EcosAppQueues.ECOS_APPS_UPLOAD_ID, fileBytes),
+                        callback -> {
+                            LOGGER.error("Package isn't send to RabbitMQ: " + path.getFileName());
+                            return null;
+                        });
+            } catch (IOException ioe) {
+                LOGGER.error(ioe.getLocalizedMessage());
+            }
+        });
     }
 }
