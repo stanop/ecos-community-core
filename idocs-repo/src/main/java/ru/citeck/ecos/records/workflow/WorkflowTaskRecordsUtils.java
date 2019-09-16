@@ -205,11 +205,9 @@ public class WorkflowTaskRecordsUtils {
         int totalFilteredCount = filteredCount.get() + secondFilteredCount.get();
         long totalCount = queryResultTotalCount - totalFilteredCount;
 
-        Set<WorkflowTaskRecords.TaskIdQuery> result = new HashSet<>();
-        result.addAll(filteredRecords);
-        result.addAll(secondFilteredRecords);
+        filteredRecords.addAll(secondFilteredRecords);
 
-        taskQueryResult.setRecords(new ArrayList<>(result));
+        taskQueryResult.setRecords(filteredRecords);
         taskQueryResult.setTotalCount(totalCount);
 
         log.debug(String.format("finish filtering:" +
@@ -220,7 +218,7 @@ public class WorkflowTaskRecordsUtils {
                         "\nfilteredCount:%s" +
                         "\nsecondTaskQueryResultTotalCount:%s" +
                         "\nsecondRecordsCount:%s" +
-                        "\nsecondFilteredCount%s", result, maxItems, taskQueryResultTotalCount, recordsCount, filteredCount,
+                        "\nsecondFilteredCount%s", filteredRecords, maxItems, taskQueryResultTotalCount, recordsCount, filteredCount,
                 secondTaskQueryResultTotalCount, secondRecordsCount, secondFilteredCount));
     }
 
