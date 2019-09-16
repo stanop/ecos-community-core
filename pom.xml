@@ -69,6 +69,7 @@
         <ecos.flowable.version>1.5.0</ecos.flowable.version>
         <ecos.records.version>1.7.0-SNAPSHOT</ecos.records.version>
         <ecos.apps.lib.version>1.0.0-SNAPSHOT</ecos.apps.lib.version>
+        <spring.retry.version>1.2.4.RELEASE</spring.retry.version>
 
         <web.compression.skip>false</web.compression.skip>
 
@@ -577,6 +578,12 @@
                 <artifactId>ecos-apps-lib</artifactId>
                 <version>${ecos.apps.lib.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.retry</groupId>
+                <artifactId>spring-retry</artifactId>
+                <version>${spring.retry.version}</version>
             </dependency>
 
         </dependencies>

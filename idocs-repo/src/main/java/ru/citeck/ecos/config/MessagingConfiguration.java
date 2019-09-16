@@ -15,6 +15,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -44,9 +48,13 @@ public class MessagingConfiguration {
      */
     @Bean(name = "activeMQConnectionFactory")
     public ActiveMQConnectionFactory activeMQConnectionFactory() {
-        ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
-        activeMQConnectionFactory.setBrokerURL(env.getProperty(BROKER_URL));
-        return activeMQConnectionFactory;
+        if (env.getProperty(BROKER_URL) != null) {
+            ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
+            activeMQConnectionFactory.setBrokerURL(env.getProperty(BROKER_URL));
+            return activeMQConnectionFactory;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -69,12 +77,16 @@ public class MessagingConfiguration {
      */
     @Bean(name = "rabbitConnectionFactory")
     public CachingConnectionFactory rabbitConnectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-        connectionFactory.setHost(env.getProperty(RABBIT_MQ_HOST));
-        connectionFactory.setPort(Integer.valueOf(env.getProperty(RABBIT_MQ_PORT)));
-        connectionFactory.setUsername(env.getProperty(RABBIT_MQ_USERNAME));
-        connectionFactory.setPassword(env.getProperty(RABBIT_MQ_PASSWORD));
-        return connectionFactory;
+        if (env.getProperty(RABBIT_MQ_HOST) != null) {
+            CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+            connectionFactory.setHost(env.getProperty(RABBIT_MQ_HOST));
+            connectionFactory.setPort(Integer.valueOf(env.getProperty(RABBIT_MQ_PORT)));
+            connectionFactory.setUsername(env.getProperty(RABBIT_MQ_USERNAME));
+            connectionFactory.setPassword(env.getProperty(RABBIT_MQ_PASSWORD));
+            return connectionFactory;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -89,5 +101,20 @@ public class MessagingConfiguration {
         } else {
             return null;
         }
+    }
+
+    @Bean(name = "retryTemplate")
+    public RetryTemplate retryTemplate() {
+        RetryTemplate retryTemplate = new RetryTemplate();
+
+        FixedBackOffPolicy fixedBackOffPolicy = new FixedBackOffPolicy();
+        fixedBackOffPolicy.setBackOffPeriod(10000);
+        retryTemplate.setBackOffPolicy(fixedBackOffPolicy);
+
+        SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
+        retryPolicy.setMaxAttempts(6);
+        retryTemplate.setRetryPolicy(retryPolicy);
+
+        return retryTemplate;
     }
 }
