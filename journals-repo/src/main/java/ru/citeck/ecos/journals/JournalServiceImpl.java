@@ -21,7 +21,11 @@ package ru.citeck.ecos.journals;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import ecos.com.google.common.cache.CacheBuilder;
+import ecos.com.google.common.cache.CacheLoader;
+import ecos.com.google.common.cache.LoadingCache;
 import org.alfresco.model.ContentModel;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -55,6 +59,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 class JournalServiceImpl implements JournalService {
 
@@ -73,13 +78,17 @@ class JournalServiceImpl implements JournalService {
 
     @Autowired
     private TemplateExpressionEvaluator expressionEvaluator;
-
     private List<CriterionInvariantsProvider> criterionInvariantsProviders;
-
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    private LoadingCache<String, Optional<JournalType>> journalTypeByJournalIdOrRef;
 
     public JournalServiceImpl() {
         criterionInvariantsProviders = Collections.synchronizedList(new ArrayList<>());
+
+        journalTypeByJournalIdOrRef = CacheBuilder.newBuilder()
+                .expireAfterWrite(60, TimeUnit.SECONDS)
+                .build(CacheLoader.from(this::getJournalTypeByIdOrNodeRefImpl));
     }
 
     @Override
@@ -227,6 +236,7 @@ class JournalServiceImpl implements JournalService {
             provider.clearCache();
         }
         recordsDAO.clearCache();
+        journalTypeByJournalIdOrRef.invalidateAll();
     }
 
     @Override
@@ -234,7 +244,13 @@ class JournalServiceImpl implements JournalService {
         if (id == null) {
             return null;
         }
-        return journalTypes.get(id);
+        Optional<JournalType> typeOpt = journalTypeByJournalIdOrRef.getUnchecked(id);
+        return typeOpt.orElse(null);
+    }
+
+    @Override
+    public JournalType getJournalType(NodeRef nodeRef) {
+        return getJournalType(nodeRef.toString());
     }
 
     @Override
@@ -302,19 +318,39 @@ class JournalServiceImpl implements JournalService {
     }
 
     @Override
-    public JournalType needJournalType(String journalIdOrNodeRef) {
-        MandatoryParam.check("journalId", journalIdOrNodeRef);
-        String journalId;
-        if (NodeRef.isNodeRef(journalIdOrNodeRef)) {
-            journalId = nodeUtils.getProperty(new NodeRef(journalIdOrNodeRef), JournalsModel.PROP_JOURNAL_TYPE);
+    public JournalType needJournalType(String journalIdOrRef) {
+        MandatoryParam.check("journalIdOrRef", journalIdOrRef);
+        Optional<JournalType> typeOpt = journalTypeByJournalIdOrRef.getUnchecked(journalIdOrRef);
+        if (!typeOpt.isPresent()) {
+            throw new IllegalArgumentException("Journal with id " + journalIdOrRef + " is not found");
+        }
+        return typeOpt.orElse(null);
+    }
+
+    private Optional<JournalType> getJournalTypeByIdOrNodeRefImpl(String journalIdOrRef) {
+
+        MandatoryParam.check("journalIdOrRef", journalIdOrRef);
+
+        if (journalIdOrRef.startsWith("alf_")) {
+
+            QName typeQName = QName.resolveToQName(namespaceService, journalIdOrRef.substring(4));
+            return typeQName != null ? getJournalForType(typeQName) : Optional.empty();
+
         } else {
-            journalId = journalIdOrNodeRef;
+
+            String journalId;
+
+            if (NodeRef.isNodeRef(journalIdOrRef)) {
+
+                journalId = AuthenticationUtil.runAsSystem(() ->
+                        nodeUtils.getProperty(new NodeRef(journalIdOrRef), JournalsModel.PROP_JOURNAL_TYPE)
+                );
+            } else {
+                journalId = journalIdOrRef;
+            }
+
+            return Optional.ofNullable(journalTypes.get(journalId));
         }
-        JournalType journalType = getJournalType(journalId);
-        if (journalType == null) {
-            throw new IllegalArgumentException("Journal with id " + journalIdOrNodeRef + " is not found");
-        }
-        return journalType;
     }
 
     public void setJournalsRoot(LazyNodeRef journalsRoot) {

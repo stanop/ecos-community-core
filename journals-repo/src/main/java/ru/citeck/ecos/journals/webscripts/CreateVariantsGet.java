@@ -233,12 +233,19 @@ public class CreateVariantsGet extends AbstractWebScript {
     }
 
     private List<CreateVariant> getVariantsByJournalRefImpl(NodeRef journalRef) {
-        return nodeService.getChildAssocs(journalRef,
-                                          JournalsModel.ASSOC_CREATE_VARIANTS,
-                                          RegexQNamePattern.MATCH_ALL)
+
+        List<CreateVariant> variants = nodeService.getChildAssocs(journalRef,
+                                                                  JournalsModel.ASSOC_CREATE_VARIANTS,
+                                                                  RegexQNamePattern.MATCH_ALL)
                 .stream()
                 .map(variantRef -> createVariantsData.getUnchecked(variantRef.getChildRef()))
                 .collect(Collectors.toList());
+
+        JournalType journalType = journalService.getJournalType(journalRef);
+        if (journalType != null) {
+            variants.addAll(journalType.getCreateVariants());
+        }
+        return variants;
     }
 
     private List<CreateVariant> getVariantsByJournalId(String journalId) {

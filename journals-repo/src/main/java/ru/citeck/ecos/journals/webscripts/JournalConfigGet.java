@@ -99,7 +99,7 @@ public class JournalConfigGet extends AbstractWebScript {
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
 
         String journalId = req.getParameter(PARAM_JOURNAL);
-        Response response = AuthenticationUtil.runAsSystem(() -> executeImpl(journalId));
+        Response response = executeImpl(journalId);
 
         objectMapper.writeValue(res.getWriter(), response);
         res.setStatus(Status.STATUS_OK);
@@ -111,22 +111,11 @@ public class JournalConfigGet extends AbstractWebScript {
             throw new WebScriptException(Status.STATUS_NOT_FOUND, "journalId is a mandatory parameter!");
         }
 
-        JournalType journalType;
-        NodeRef journalRef = null;
-
-        if (journalId.startsWith("alf_")) {
-            QName typeQName = QName.resolveToQName(namespaceService, journalId.substring(4));
-            journalType = journalService.getJournalForType(typeQName).orElse(null);
-        } else {
-            if (NodeRef.isNodeRef(journalId)) {
-                journalRef = new NodeRef(journalId);
-                journalId = nodeUtils.getProperty(journalRef, JournalsModel.PROP_JOURNAL_TYPE);
-            }
-            journalType = journalService.getJournalType(journalId);
-        }
+        JournalType journalType = journalService.getJournalType(journalId);
+        NodeRef journalRef = NodeRef.isNodeRef(journalId) ? new NodeRef(journalId) : null;
 
         if (journalType == null) {
-            throw new WebScriptException(Status.STATUS_NOT_FOUND, "Journal with id '" + journalId + "' not found!");
+            throw new WebScriptException(Status.STATUS_NOT_FOUND, "Journal with id '" + journalId + "' is not found!");
         }
 
         List<String> attributes = journalType.getAttributes();
