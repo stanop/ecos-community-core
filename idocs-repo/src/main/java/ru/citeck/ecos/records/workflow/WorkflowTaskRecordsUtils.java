@@ -158,7 +158,7 @@ public class WorkflowTaskRecordsUtils {
                 WorkflowTaskRecords.TaskIdQuery.class);
 
         if (filterByActiveTaskRequired) {
-            filterActiveTask(result, query, taskRecordsQuery);
+            filterActiveTask(result, query);
         }
 
         if (!filterByDocStatusRequired) {
@@ -169,43 +169,19 @@ public class WorkflowTaskRecordsUtils {
     }
 
     private void filterActiveTask(RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> taskQueryResult,
-                                  RecordsQuery query, RecordsQuery taskRecordsQuery) {
+                                  RecordsQuery query) {
         log.debug("Start filterActiveTask...");
 
         final int maxItems = query.getMaxItems();
         long taskQueryResultTotalCount = taskQueryResult.getTotalCount();
-        long secondTaskQueryResultTotalCount = 0;
 
         FilterByActiveTask resultOfFiltering = new FilterByActiveTask(taskQueryResult, maxItems);
 
         List<WorkflowTaskRecords.TaskIdQuery> filteredRecords = resultOfFiltering.getFilteredData();
-
         AtomicInteger recordsCount = resultOfFiltering.getRecordsCount();
         AtomicInteger filteredCount = resultOfFiltering.getFilteredCount();
-        AtomicInteger secondRecordsCount = new AtomicInteger(0);
-        AtomicInteger secondFilteredCount = new AtomicInteger(0);
 
-        List<WorkflowTaskRecords.TaskIdQuery> secondFilteredRecords = new ArrayList<>();
-
-        if (filteredRecords.isEmpty() || maxItems < filteredRecords.size() / 2) {
-            log.debug("Start second iteration of filtering");
-
-            taskRecordsQuery.setSkipCount(maxItems);
-            RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> secondTaskQueryResult = recordsService.queryRecords(
-                    taskRecordsQuery, WorkflowTaskRecords.TaskIdQuery.class);
-            secondTaskQueryResultTotalCount = secondTaskQueryResult.getTotalCount();
-
-            FilterByActiveTask secondResultOfFiltering = new FilterByActiveTask(secondTaskQueryResult, maxItems);
-            secondFilteredRecords.addAll(secondResultOfFiltering.getFilteredData());
-            secondRecordsCount = secondResultOfFiltering.getRecordsCount();
-            secondFilteredCount = secondResultOfFiltering.getFilteredCount();
-        }
-
-        long queryResultTotalCount = taskQueryResultTotalCount + secondTaskQueryResultTotalCount;
-        int totalFilteredCount = filteredCount.get() + secondFilteredCount.get();
-        long totalCount = queryResultTotalCount - totalFilteredCount;
-
-        filteredRecords.addAll(secondFilteredRecords);
+        long totalCount = taskQueryResultTotalCount - filteredCount.get();
 
         taskQueryResult.setRecords(filteredRecords);
         taskQueryResult.setTotalCount(totalCount);
@@ -215,11 +191,8 @@ public class WorkflowTaskRecordsUtils {
                         "\nmaxItems:%s" +
                         "\ntaskQueryResultTotalCount:%s" +
                         "\nrecordsCount:%s" +
-                        "\nfilteredCount:%s" +
-                        "\nsecondTaskQueryResultTotalCount:%s" +
-                        "\nsecondRecordsCount:%s" +
-                        "\nsecondFilteredCount%s", filteredRecords, maxItems, taskQueryResultTotalCount, recordsCount, filteredCount,
-                secondTaskQueryResultTotalCount, secondRecordsCount, secondFilteredCount));
+                        "\nfilteredCount:%s", filteredRecords, maxItems, taskQueryResultTotalCount, recordsCount,
+                filteredCount));
     }
 
     private boolean taskIsActive(String taskId) {
