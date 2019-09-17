@@ -13,14 +13,14 @@
 
     <files>
         <file>
-            <source>src/main/resources/meta.json</source>
+            <source>../src/assembly/meta.json</source>
             <filtered>true</filtered>
         </file>
     </files>
 
     <fileSets>
         <fileSet>
-            <directory>target/classes/alfresco/module/idocs-repo/ecos-forms</directory>
+            <directory>target/classes/alfresco/module/${project.artifactId}/ecos-forms</directory>
             <outputDirectory>modules/form</outputDirectory>
             <filtered>false</filtered>
         </fileSet>

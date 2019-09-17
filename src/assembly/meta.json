@@ -1,0 +1,6 @@
+{
+  "id": "${project.artifactId}",
+  "name": "${project.name}",
+  "version": "${versionWithOutPrefix}.${timestamp}",
+  "dependencies": []
+}

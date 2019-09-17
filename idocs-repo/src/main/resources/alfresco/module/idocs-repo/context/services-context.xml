@@ -12,6 +12,20 @@
 
     <bean id="messagingConfiguration" class="ru.citeck.ecos.config.MessagingConfiguration"/>
 
+    <bean id="rabbitMQZipPackagesSender" class="ru.citeck.ecos.rabbit.sender.RabbitMQZipPackagesSender">
+        <constructor-arg name="rabbitTemplate" ref="historyRabbitTemplate"/>
+        <constructor-arg name="retryTemplate" ref="retryTemplate"/>
+        <property name="locations">
+            <bean factory-bean="resourceResolver" factory-method="getResources">
+                <constructor-arg>
+                    <list>
+                        <value>classpath*:alfresco/module/*/ecos-apps/**/*.zip</value>
+                    </list>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
     <context:component-scan base-package="ru.citeck.ecos"/>
     <context:annotation-config/>
     <mvc:annotation-driven/>

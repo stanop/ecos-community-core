@@ -599,6 +599,19 @@
                     <version>2.6</version>
                     <executions>
                         <execution>
+                            <id>build-zip-file</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>target/classes/alfresco/module/${project.artifactId}/ecos-apps</outputDirectory>
+                                <finalName>${project.artifactId}</finalName>
+                                <appendAssemblyId>false</appendAssemblyId>
+                                <descriptor>../src/assembly/zip.xml</descriptor>
+                            </configuration>
+                        </execution>
+                        <execution>
                             <id>build-amp-file</id>
                             <phase>package</phase>
                             <goals>
