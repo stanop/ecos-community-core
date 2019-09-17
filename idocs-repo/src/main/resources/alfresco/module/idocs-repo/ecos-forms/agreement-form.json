@@ -181,7 +181,7 @@
                         "hideCreateButton": false,
                         "hideEditRowButton": false,
                         "hideDeleteRowButton": false,
-                        "id": "eik0rc"
+                        "id": "escjzwk"
                       },
                       {
                         "useNegativeIndents": false,
@@ -236,7 +236,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "ef97wn9"
+                        "id": "esdw8cc9"
                       },
                       {
                         "label": "contracts:contractor",
@@ -358,7 +358,7 @@
                         "hideCreateButton": false,
                         "hideEditRowButton": false,
                         "hideDeleteRowButton": false,
-                        "id": "exvn8ih"
+                        "id": "e6bqeyr"
                       },
                       {
                         "useNegativeIndents": false,
@@ -413,7 +413,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "em6z6pd"
+                        "id": "elorzn"
                       },
                       {
                         "label": "contracts:contractWith",
@@ -507,7 +507,7 @@
                         "fuseOptions": {},
                         "customOptions": {},
                         "refreshEventName": "",
-                        "id": "ee3xnwa"
+                        "id": "ep97p7k"
                       },
                       {
                         "useNegativeIndents": false,
@@ -562,7 +562,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e30eul3"
+                        "id": "erxdw9g"
                       },
                       {
                         "label": "Type of contract",
@@ -647,7 +647,7 @@
                         "searchThreshold": 0.3,
                         "fuseOptions": {},
                         "customOptions": {},
-                        "id": "eiu6tqg"
+                        "id": "e9iooad"
                       },
                       {
                         "useNegativeIndents": false,
@@ -702,7 +702,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eeeoww"
+                        "id": "ej7c0mx"
                       },
                       {
                         "label": "contracts:agreementSubject",
@@ -795,7 +795,7 @@
                         "hideCreateButton": false,
                         "hideEditRowButton": false,
                         "hideDeleteRowButton": false,
-                        "id": "ej24mfm"
+                        "id": "e76ujmu"
                       },
                       {
                         "useNegativeIndents": false,
@@ -850,7 +850,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eis76j9"
+                        "id": "e9ysvtl"
                       },
                       {
                         "label": "Columns",
@@ -979,7 +979,7 @@
                                 "mask": false,
                                 "inputType": "text",
                                 "inputMask": "",
-                                "id": "eif6lxwj"
+                                "id": "ekqcmia"
                               }
                             ],
                             "width": 6,
@@ -998,6 +998,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "",
+                            "index": 0,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -1038,7 +1039,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "ewa0aei"
+                            "id": "ef3macq"
                           },
                           {
                             "components": [
@@ -1103,7 +1104,7 @@
                                 "inputType": "checkbox",
                                 "value": "",
                                 "name": "",
-                                "id": "ecit3x6"
+                                "id": "e3tvgft"
                               }
                             ],
                             "width": 6,
@@ -1122,6 +1123,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "d-flex justify-content-start align-items-center",
+                            "index": 1,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -1162,7 +1164,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "e9pu09l"
+                            "id": "e6fdb1r"
                           }
                         ],
                         "mask": false,
@@ -1217,9 +1219,10 @@
                           "custom": "",
                           "customPrivate": false
                         },
+                        "inlineColumns": false,
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "ed97gwg"
+                        "id": "ezhc0dy"
                       },
                       {
                         "label": "Columns",
@@ -1354,7 +1357,41 @@
                                           "Type": "Тип",
                                           "required": "Поле {{field}} не может быть пустым",
                                           "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
-                                          "Size": "Размер"
+                                          "Size": "Размер",
+                                          "contracts:agreementLegalEntity": "Юридическое лицо",
+                                          "contracts:contractor": "Контрагент",
+                                          "contracts:contractWith": "Договор с",
+                                          "contracts:agreementSubject": "Предмет договора",
+                                          "contracts:agreementNumber": "Номер договора",
+                                          "Generate": "Сгенерировать",
+                                          "contracts:agreementDate": "Дата договора",
+                                          "contracts:duration": "Срок действия",
+                                          "contracts:agreementCurrency": "Валюта",
+                                          "contracts:agreementAmount": "Сумма договора",
+                                          "contracts:VAT": "НДС",
+                                          "payments:payments": "График платежей",
+                                          "idocs:summary": "Краткое содержание",
+                                          "dms:updateContent": "Сгенерировать из шаблона",
+                                          "cm:content": "Содержимое",
+                                          "idocs:note": "Примечание",
+                                          "icase:documents": "Документы",
+                                          "idocs:signatory": "Подписант",
+                                          "contracts:digiSign": "Подписание ЭЦП",
+                                          "idocs:performer": "Исполнитель",
+                                          "idocs:supervisor": "Руководитель",
+                                          "docTypeList": "docTypeList",
+                                          "currencyList": "currencyList",
+                                          "caseStatus": "caseStatus",
+                                          "isEntInstalled": "isEntInstalled",
+                                          "Basic": "Основные",
+                                          "Finance": "Финансы",
+                                          "Content": "Содержание",
+                                          "Additionally": "Дополнительно",
+                                          "Cancel": "Отмена",
+                                          "Save": "Сохранить",
+                                          "Create": "Создать",
+                                          "rest": "Остаток",
+                                          "Type of contract": "Вид договора"
                                         }
                                       }
                                     }
@@ -1402,7 +1439,7 @@
                                   "mousewheel": true,
                                   "arrowkeys": true
                                 },
-                                "id": "ew876i"
+                                "id": "ez3j8p"
                               }
                             ],
                             "width": 6,
@@ -1421,6 +1458,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "",
+                            "index": 0,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -1461,7 +1499,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "edfgbmt"
+                            "id": "erkn93"
                           },
                           {
                             "components": [
@@ -1593,7 +1631,41 @@
                                           "Type": "Тип",
                                           "required": "Поле {{field}} не может быть пустым",
                                           "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
-                                          "Size": "Размер"
+                                          "Size": "Размер",
+                                          "contracts:agreementLegalEntity": "Юридическое лицо",
+                                          "contracts:contractor": "Контрагент",
+                                          "contracts:contractWith": "Договор с",
+                                          "contracts:agreementSubject": "Предмет договора",
+                                          "contracts:agreementNumber": "Номер договора",
+                                          "Generate": "Сгенерировать",
+                                          "contracts:agreementDate": "Дата договора",
+                                          "contracts:duration": "Срок действия",
+                                          "contracts:agreementCurrency": "Валюта",
+                                          "contracts:agreementAmount": "Сумма договора",
+                                          "contracts:VAT": "НДС",
+                                          "payments:payments": "График платежей",
+                                          "idocs:summary": "Краткое содержание",
+                                          "dms:updateContent": "Сгенерировать из шаблона",
+                                          "cm:content": "Содержимое",
+                                          "idocs:note": "Примечание",
+                                          "icase:documents": "Документы",
+                                          "idocs:signatory": "Подписант",
+                                          "contracts:digiSign": "Подписание ЭЦП",
+                                          "idocs:performer": "Исполнитель",
+                                          "idocs:supervisor": "Руководитель",
+                                          "docTypeList": "docTypeList",
+                                          "currencyList": "currencyList",
+                                          "caseStatus": "caseStatus",
+                                          "isEntInstalled": "isEntInstalled",
+                                          "Basic": "Основные",
+                                          "Finance": "Финансы",
+                                          "Content": "Содержание",
+                                          "Additionally": "Дополнительно",
+                                          "Cancel": "Отмена",
+                                          "Save": "Сохранить",
+                                          "Create": "Создать",
+                                          "rest": "Остаток",
+                                          "Type of contract": "Вид договора"
                                         }
                                       }
                                     }
@@ -1641,7 +1713,7 @@
                                   "mousewheel": true,
                                   "arrowkeys": true
                                 },
-                                "id": "e65tscj"
+                                "id": "erjueem"
                               }
                             ],
                             "width": 6,
@@ -1660,6 +1732,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "",
+                            "index": 1,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -1700,7 +1773,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "erpzp"
+                            "id": "e50pft"
                           }
                         ],
                         "mask": false,
@@ -1755,9 +1828,10 @@
                           "custom": "",
                           "customPrivate": false
                         },
+                        "inlineColumns": false,
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "ewr1xgg"
+                        "id": "eiaz9ob"
                       }
                     ],
                     "tags": [],
@@ -1799,7 +1873,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "eja2uvu"
+                    "id": "ekcqixc"
                   },
                   {
                     "label": "Panel",
@@ -1905,7 +1979,7 @@
                         "searchThreshold": 0.3,
                         "fuseOptions": {},
                         "customOptions": {},
-                        "id": "et685z"
+                        "id": "es9t1p"
                       },
                       {
                         "useNegativeIndents": false,
@@ -1960,7 +2034,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "expnc1"
+                        "id": "etlkz52j"
                       },
                       {
                         "label": "Columns",
@@ -2031,7 +2105,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "ee1juw"
+                                "id": "ehkuzu9"
                               }
                             ],
                             "width": 6,
@@ -2050,6 +2124,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "",
+                            "index": 0,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -2090,7 +2165,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "e8n1cki"
+                            "id": "ejvd9qe"
                           },
                           {
                             "components": [
@@ -2158,7 +2233,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "er8obwb"
+                                "id": "emd55re"
                               }
                             ],
                             "width": 6,
@@ -2177,6 +2252,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "",
+                            "index": 1,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -2217,7 +2293,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "erq5leo"
+                            "id": "et7zyo"
                           }
                         ],
                         "mask": false,
@@ -2272,9 +2348,10 @@
                           "custom": "",
                           "customPrivate": false
                         },
+                        "inlineColumns": false,
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "e3pghgy"
+                        "id": "eq5e9lh"
                       },
                       {
                         "useNegativeIndents": false,
@@ -2329,7 +2406,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "ehbsbhy"
+                        "id": "eg6mny8"
                       },
                       {
                         "label": "payments:payments",
@@ -2423,7 +2500,7 @@
                         "clearOnRefresh": false,
                         "validateOn": "change",
                         "eventName": "",
-                        "id": "e87w9me"
+                        "id": "exfrqai"
                       }
                     ],
                     "tags": [],
@@ -2465,7 +2542,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "eoj61ip"
+                    "id": "e7d4i5q"
                   }
                 ],
                 "width": 6,
@@ -2484,6 +2561,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 0,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -2524,7 +2602,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "evuopwd"
+                "id": "eehobr"
               },
               {
                 "components": [
@@ -2624,7 +2702,7 @@
                         "inputMask": "",
                         "wysiwyg": false,
                         "editor": "",
-                        "id": "e2e0jr5"
+                        "id": "ejqc44"
                       },
                       {
                         "label": "dms:updateContent",
@@ -2689,7 +2767,7 @@
                         "inputType": "checkbox",
                         "value": "",
                         "name": "",
-                        "id": "equragk"
+                        "id": "e2tcunf"
                       },
                       {
                         "useNegativeIndents": false,
@@ -2744,7 +2822,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e09n0k"
+                        "id": "emwuxkl"
                       },
                       {
                         "label": "cm:content",
@@ -2824,7 +2902,7 @@
                         "uploadOnly": false,
                         "defaultOverlayWidth": 200,
                         "defaultOverlayHeight": 200,
-                        "id": "emac8ri"
+                        "id": "een82y"
                       },
                       {
                         "label": "idocs:note",
@@ -2902,7 +2980,7 @@
                         "inputMask": "",
                         "wysiwyg": false,
                         "editor": "",
-                        "id": "e41htn"
+                        "id": "et375q"
                       },
                       {
                         "useNegativeIndents": false,
@@ -2957,7 +3035,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "ephfcy"
+                        "id": "e6mg35"
                       },
                       {
                         "label": "icase:documents",
@@ -3038,7 +3116,7 @@
                         "uploadOnly": false,
                         "defaultOverlayWidth": 200,
                         "defaultOverlayHeight": 200,
-                        "id": "exdbr"
+                        "id": "eib8dl"
                       }
                     ],
                     "tags": [],
@@ -3080,7 +3158,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "ea9zgke"
+                    "id": "ef1dg1t"
                   },
                   {
                     "label": "Panel",
@@ -3165,7 +3243,7 @@
                         "refreshOn": "",
                         "clearOnRefresh": false,
                         "validateOn": "change",
-                        "id": "ea3s32h"
+                        "id": "ejltdhp"
                       },
                       {
                         "useNegativeIndents": false,
@@ -3220,13 +3298,13 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "epv54sa"
+                        "id": "eu4l98"
                       },
                       {
                         "label": "contracts:digiSign",
-                        "labelPosition": "",
                         "shortcut": "",
                         "mask": false,
+                        "disabled": true,
                         "tableView": true,
                         "alwaysEnabled": false,
                         "defaultValue": false,
@@ -3249,7 +3327,28 @@
                           "eq": ""
                         },
                         "customConditional": "",
-                        "logic": [],
+                        "logic": [
+                          {
+                            "name": "enableEvent",
+                            "trigger": {
+                              "type": "javascript",
+                              "javascript": "result = data.isEntInstalled.isEntInstalled == 'true';"
+                            },
+                            "actions": [
+                              {
+                                "name": "enable",
+                                "type": "property",
+                                "property": {
+                                  "label": "Disabled",
+                                  "value": "disabled",
+                                  "type": "boolean"
+                                },
+                                "state": "false"
+                              }
+                            ]
+                          }
+                        ],
+                        "attributes": {},
                         "type": "checkbox",
                         "input": true,
                         "tags": [],
@@ -3264,6 +3363,7 @@
                         "hidden": false,
                         "clearOnHide": true,
                         "dataGridLabel": true,
+                        "labelPosition": "right",
                         "labelWidth": 30,
                         "labelMargin": 3,
                         "description": "",
@@ -3271,7 +3371,6 @@
                         "tooltip": "",
                         "hideLabel": false,
                         "tabindex": "",
-                        "disabled": false,
                         "autofocus": false,
                         "dbIndex": false,
                         "customDefaultValue": "",
@@ -3284,7 +3383,7 @@
                         "inputType": "checkbox",
                         "value": "",
                         "name": "",
-                        "id": "ebeqt9g"
+                        "id": "edbjl36"
                       },
                       {
                         "useNegativeIndents": false,
@@ -3339,7 +3438,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eoa45ta"
+                        "id": "ex1ggds"
                       },
                       {
                         "label": "idocs:performer",
@@ -3404,7 +3503,7 @@
                         "refreshOn": "",
                         "clearOnRefresh": false,
                         "validateOn": "change",
-                        "id": "ej1udc"
+                        "id": "e4navd"
                       },
                       {
                         "conditional": {
@@ -3459,7 +3558,7 @@
                         "inputType": "horizontalLine",
                         "useNegativeIndents": true,
                         "addVerticalIndents": false,
-                        "id": "e7ufnpz"
+                        "id": "eholyb"
                       },
                       {
                         "label": "idocs:supervisor",
@@ -3524,7 +3623,7 @@
                         "refreshOn": "",
                         "clearOnRefresh": false,
                         "validateOn": "change",
-                        "id": "envfeok"
+                        "id": "e92nrf6"
                       },
                       {
                         "label": "docTypeList",
@@ -3612,7 +3711,7 @@
                         "mask": false,
                         "inputType": "asyncData",
                         "executionCondition": "",
-                        "id": "e0rb6wg"
+                        "id": "ewxojuk"
                       },
                       {
                         "useNegativeIndents": false,
@@ -3667,7 +3766,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e2gh0yg"
+                        "id": "e4d6buw"
                       },
                       {
                         "label": "docTypeList",
@@ -3755,7 +3854,7 @@
                         "mask": false,
                         "inputType": "asyncData",
                         "executionCondition": "",
-                        "id": "e8gjelh"
+                        "id": "el7l0m"
                       }
                     ],
                     "tags": [],
@@ -3797,7 +3896,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "eqklbj"
+                    "id": "ewplveh"
                   },
                   {
                     "label": "currencyList",
@@ -3885,7 +3984,7 @@
                     "mask": false,
                     "inputType": "asyncData",
                     "executionCondition": "",
-                    "id": "ezwd31a"
+                    "id": "eyyprcm"
                   },
                   {
                     "label": "caseStatus",
@@ -3973,7 +4072,93 @@
                     "inputType": "asyncData",
                     "eventName": "",
                     "executionCondition": "",
-                    "id": "eytyoik"
+                    "id": "e9jcx95"
+                  },
+                  {
+                    "label": "isEntInstalled",
+                    "source": {
+                      "type": "ajax",
+                      "ajax": {
+                        "method": "GET",
+                        "url": "/citeck/info/is-ent-installed",
+                        "data": "value = {}",
+                        "mapping": ""
+                      },
+                      "record": {
+                        "id": "",
+                        "attributes": {}
+                      },
+                      "recordsArray": {
+                        "id": "",
+                        "attributes": {}
+                      },
+                      "recordsQuery": {
+                        "query": "",
+                        "attributes": {},
+                        "isSingle": false
+                      },
+                      "custom": {
+                        "syncData": {},
+                        "asyncData": {}
+                      }
+                    },
+                    "update": {
+                      "type": "any-change",
+                      "event": "",
+                      "rate": 100,
+                      "force": false
+                    },
+                    "refreshOn": [],
+                    "triggerEventOnChange": false,
+                    "key": "isEntInstalled",
+                    "type": "asyncData",
+                    "input": true,
+                    "tableView": true,
+                    "tags": [],
+                    "placeholder": "",
+                    "prefix": "",
+                    "customClass": "",
+                    "suffix": "",
+                    "multiple": false,
+                    "defaultValue": null,
+                    "protected": false,
+                    "unique": false,
+                    "persistent": true,
+                    "hidden": false,
+                    "clearOnHide": true,
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "labelWidth": 30,
+                    "labelMargin": 3,
+                    "description": "",
+                    "errorLabel": "",
+                    "tooltip": "",
+                    "hideLabel": false,
+                    "tabindex": "",
+                    "disabled": false,
+                    "autofocus": false,
+                    "dbIndex": false,
+                    "customDefaultValue": "",
+                    "calculateValue": "",
+                    "allowCalculateOverride": false,
+                    "widget": null,
+                    "clearOnRefresh": false,
+                    "validateOn": "change",
+                    "validate": {
+                      "required": false,
+                      "custom": "",
+                      "customPrivate": false
+                    },
+                    "conditional": {
+                      "show": null,
+                      "when": null,
+                      "eq": ""
+                    },
+                    "mask": false,
+                    "inputType": "asyncData",
+                    "eventName": "",
+                    "executionCondition": "",
+                    "id": "etrr58"
                   }
                 ],
                 "width": 6,
@@ -3992,6 +4177,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 1,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4032,7 +4218,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "evaf1g"
+                "id": "es44qgk"
               }
             ],
             "mask": false,
@@ -4087,9 +4273,10 @@
               "custom": "",
               "customPrivate": false
             },
+            "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e2a26r"
+            "id": "e14ija"
           }
         ],
         "tags": [],
@@ -4127,7 +4314,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "e2jf5a"
+        "id": "e2mgmh"
       },
       {
         "label": "Container",
@@ -4230,7 +4417,7 @@
                     "rightIcon": "",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "equi7iw"
+                    "id": "e2j4bp7"
                   }
                 ],
                 "width": 6,
@@ -4249,6 +4436,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 0,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4289,7 +4477,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ee85hwk"
+                "id": "emikwb7"
               },
               {
                 "components": [],
@@ -4309,6 +4497,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 1,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4349,7 +4538,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eevgvp"
+                "id": "esy0kbl"
               },
               {
                 "xs": 0,
@@ -4432,9 +4621,10 @@
                     "action": "submit",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "e3r8b5e"
+                    "id": "e0dxrer"
                   }
                 ],
+                "index": 2,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4475,7 +4665,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ebud5rn"
+                "id": "ey97xi"
               },
               {
                 "xs": 0,
@@ -4558,9 +4748,10 @@
                     "rightIcon": "",
                     "action": "submit",
                     "disableOnInvalid": false,
-                    "id": "edchu96"
+                    "id": "e02xkaa"
                   }
                 ],
+                "index": 3,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4601,7 +4792,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eg6js5"
+                "id": "ee35bc9"
               }
             ],
             "mask": false,
@@ -4656,9 +4847,10 @@
               "custom": "",
               "customPrivate": false
             },
+            "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "eiw60bg"
+            "id": "eisfxwd"
           },
           {
             "label": "Columns",
@@ -4681,6 +4873,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 0,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4721,7 +4914,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ezzku354"
+                "id": "euwxtr9"
               },
               {
                 "components": [
@@ -4794,7 +4987,7 @@
                     "rightIcon": "",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "e21wugo"
+                    "id": "ews1t1i"
                   }
                 ],
                 "width": 6,
@@ -4813,6 +5006,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 1,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4853,7 +5047,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "edd8mwq"
+                "id": "e5j2q94"
               },
               {
                 "xs": 0,
@@ -4936,9 +5130,10 @@
                     "rightIcon": "",
                     "action": "submit",
                     "disableOnInvalid": false,
-                    "id": "e2d2hvm"
+                    "id": "e6w1q3u"
                   }
                 ],
+                "index": 2,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4979,7 +5174,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "es3nru7"
+                "id": "eri28rj"
               },
               {
                 "xs": 0,
@@ -4995,6 +5190,7 @@
                 "tableView": true,
                 "label": "Column",
                 "components": [],
+                "index": 3,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -5035,7 +5231,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eip4pq"
+                "id": "eg0yvf"
               }
             ],
             "mask": false,
@@ -5090,9 +5286,10 @@
               "custom": "",
               "customPrivate": false
             },
+            "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "enuevn8"
+            "id": "eu2gsr"
           }
         ],
         "tags": [],
@@ -5126,7 +5323,7 @@
         "clearOnRefresh": false,
         "validateOn": "change",
         "tree": true,
-        "id": "epgd426"
+        "id": "ex85hyk"
       }
     ]
   },
