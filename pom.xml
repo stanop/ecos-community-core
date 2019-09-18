@@ -584,6 +584,7 @@
                 <groupId>org.springframework.retry</groupId>
                 <artifactId>spring-retry</artifactId>
                 <version>${spring.retry.version}</version>
+                <scope>provided</scope>
             </dependency>
 
         </dependencies>
@@ -599,7 +600,7 @@
                     <version>2.6</version>
                     <executions>
                         <execution>
-                            <id>build-zip-file</id>
+                            <id>build-ecos-app</id>
                             <phase>package</phase>
                             <goals>
                                 <goal>single</goal>
@@ -608,7 +609,7 @@
                                 <outputDirectory>target/classes/alfresco/module/${project.artifactId}/ecos-apps</outputDirectory>
                                 <finalName>${project.artifactId}</finalName>
                                 <appendAssemblyId>false</appendAssemblyId>
-                                <descriptor>../src/assembly/zip.xml</descriptor>
+                                <descriptor>../src/assembly/ecos-app/ecos-app.xml</descriptor>
                             </configuration>
                         </execution>
                         <execution>

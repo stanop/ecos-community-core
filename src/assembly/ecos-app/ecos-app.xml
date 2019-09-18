@@ -13,7 +13,7 @@
 
     <files>
         <file>
-            <source>../src/assembly/meta.json</source>
+            <source>../src/assembly/ecos-app/meta.json</source>
             <filtered>true</filtered>
         </file>
     </files>
