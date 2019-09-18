@@ -254,13 +254,13 @@ public class AlfNodeRecord implements MetaValue {
 
                 String kindTitle = getNodeRefDisplayName(kind);
 
-                String value = String.format("%s/%s", type.getId(), kind.getId());
+                String value = String.format("type_%s/%s", type.getId(), kind.getId());
                 String disp = String.format("%s - %s", typeTitle, kindTitle);
 
                 keys.add(new KeyWithDisp(value, disp));
             }
 
-            keys.add(new KeyWithDisp(type.getId(), typeTitle));
+            keys.add(new KeyWithDisp(String.format("type_%s", type.getId()), typeTitle));
         }
 
         if (withAlfType) {
