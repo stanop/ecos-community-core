@@ -11,6 +11,8 @@ import java.util.Properties;
 
 public class EurekaAlfClientConfig extends AbstractEurekaConfig implements EurekaClientConfig {
 
+    private static final String ENV_PROP_SHOULD_REGISTER = "ECOS_EUREKA_REGISTRATION_ENABLED";
+
     private EurekaClientConfig defaultConfig = new DefaultEurekaClientConfig();
 
     public EurekaAlfClientConfig(Properties globalProperties) {
@@ -113,6 +115,10 @@ public class EurekaAlfClientConfig extends AbstractEurekaConfig implements Eurek
 
     @Override
     public boolean shouldRegisterWithEureka() {
+        String shouldRegisterFromEnv = System.getenv(ENV_PROP_SHOULD_REGISTER);
+        if (StringUtils.isNotBlank(shouldRegisterFromEnv)) {
+            return Boolean.TRUE.toString().equals(shouldRegisterFromEnv);
+        }
         return getBoolParam("registration.enabled", defaultConfig::shouldRegisterWithEureka);
     }
 

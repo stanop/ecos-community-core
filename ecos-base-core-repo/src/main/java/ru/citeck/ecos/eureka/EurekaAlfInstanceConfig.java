@@ -2,14 +2,12 @@ package ru.citeck.ecos.eureka;
 
 import com.netflix.appinfo.DataCenterInfo;
 import com.netflix.appinfo.EurekaInstanceConfig;
-import com.netflix.discovery.shared.Pair;
 import org.alfresco.util.GUID;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.citeck.ecos.utils.InetUtils;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -22,15 +20,17 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
     private static final String ENV_PROP_IP = "ECOS_EUREKA_INSTANCE_IP";
     private static final String ENV_PROP_HOST = "ECOS_EUREKA_INSTANCE_HOST";
 
-    private static final Pair<String, String> HOST_INFO = getHostInfo();
     private static final DataCenterInfo DATA_CENTER_INFO = () -> DataCenterInfo.Name.MyOwn;
 
     private static final String HEALTH_URL = "/alfresco/service/citeck/ecos/eureka-status";
 
     private static final String UUID = GUID.generate();
 
-    public EurekaAlfInstanceConfig(Properties globalProperties) {
+    private InetUtils.HostInfo hostInfo;
+
+    public EurekaAlfInstanceConfig(Properties globalProperties, InetUtils inetUtils) {
         super(globalProperties);
+        hostInfo = inetUtils.findFirstNonLoopbackHostInfo();
     }
 
     @Override
@@ -137,7 +137,7 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
         if (StringUtils.isNotEmpty(envValue)) {
             return envValue;
         }
-        return getStrParam("instance.ip", HOST_INFO::first);
+        return getStrParam("instance.ip", () -> hostInfo.getIpAddress());
     }
 
     @Override
@@ -184,17 +184,5 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
     @Override
     public String getNamespace() {
         return "alfresco";
-    }
-
-    private static Pair<String, String> getHostInfo() {
-        Pair<String, String> pair;
-        try {
-            InetAddress localHost = InetAddress.getLocalHost();
-            pair = new Pair<>(localHost.getHostAddress(), localHost.getHostName());
-        } catch (UnknownHostException var2) {
-            //logger.error("Cannot get host info", var2);
-            pair = new Pair<>("", "");
-        }
-        return pair;
     }
 }

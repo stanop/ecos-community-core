@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.utils.InetUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
@@ -34,6 +35,9 @@ public class EcosEurekaClient {
     @Autowired
     @Qualifier("global-properties")
     private Properties properties;
+
+    @Autowired
+    private InetUtils inetUtils;
 
     @Getter(lazy = true) private final DiscoveryManager manager = initManager();
     @Getter(lazy = true) private final EurekaClient client = initClient();
@@ -74,19 +78,25 @@ public class EcosEurekaClient {
     private DiscoveryManager initManager() {
         DiscoveryManager manager = DiscoveryManager.getInstance();
 
-        EurekaInstanceConfig instanceConfig = new EurekaAlfInstanceConfig(properties);
+        EurekaInstanceConfig instanceConfig = new EurekaAlfInstanceConfig(properties, inetUtils);
         EurekaAlfClientConfig clientConfig = new EurekaAlfClientConfig(properties);
 
         if (!clientConfig.isEurekaEnabled()) {
             throw new EurekaDisabled();
         }
 
-        logger.info("===================================");
-        logger.info("Register in eureka with params:");
-        logger.info("Host: " + instanceConfig.getHostName(false) + ":" + instanceConfig.getNonSecurePort());
-        logger.info("IP:   " + instanceConfig.getIpAddress() + ":" + instanceConfig.getNonSecurePort());
-        logger.info("Application name: " + instanceConfig.getAppname());
-        logger.info("===================================");
+        if (!clientConfig.shouldRegisterWithEureka()) {
+            logger.info("===============================================");
+            logger.info("Eureka enabled, but instance won't be registered");
+            logger.info("===============================================");
+        } else {
+            logger.info("===================================");
+            logger.info("Register in eureka with params:");
+            logger.info("Host: " + instanceConfig.getHostName(false) + ":" + instanceConfig.getNonSecurePort());
+            logger.info("IP:   " + instanceConfig.getIpAddress() + ":" + instanceConfig.getNonSecurePort());
+            logger.info("Application name: " + instanceConfig.getAppname());
+            logger.info("===================================");
+        }
 
         manager.initComponent(instanceConfig, clientConfig);
         manager.getEurekaClient().registerHealthCheck(instanceStatus -> status);
