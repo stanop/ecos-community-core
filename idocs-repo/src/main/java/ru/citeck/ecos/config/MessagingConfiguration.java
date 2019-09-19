@@ -8,9 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 
 import java.util.Properties;
 
@@ -32,9 +29,10 @@ public class MessagingConfiguration {
     /**
      * Global properties
      */
-     @Autowired
-     @Qualifier("global-properties")
-     private Properties properties;
+    @Autowired
+    @Qualifier("global-properties")
+    private Properties properties;
+
 
     /**
      * ActiveMQ connection factory
@@ -65,6 +63,7 @@ public class MessagingConfiguration {
         }
     }
 
+
     /**
      * Connection factory bean
      * @return Connection factory or null (in case of absence "rabbitmq.server.host" global property)
@@ -90,7 +89,7 @@ public class MessagingConfiguration {
      */
     @Bean(name = "historyRabbitTemplate")
     public RabbitTemplate historyRabbitTemplate(@Qualifier("historyRabbitConnectionFactory")
-                                                            CachingConnectionFactory connectionFactory) {
+                                                CachingConnectionFactory connectionFactory) {
         if (connectionFactory != null) {
             return new RabbitTemplate(connectionFactory);
         } else {
