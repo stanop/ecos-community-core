@@ -14,6 +14,19 @@ public class EcosU18NUtils {
             Locale.ENGLISH
     };
 
+    public static MLText getMLText(String key, Object... args) {
+
+        MLText mlText = getMLText(key);
+
+        if (args == null || args.length == 0) {
+            return mlText;
+        }
+
+        MLText result = new MLText();
+        mlText.forEach((k, v) -> result.put(k, String.format(v, args)));
+        return result;
+    }
+
     public static MLText getMLText(String key) {
 
         MLText result = new MLText();
