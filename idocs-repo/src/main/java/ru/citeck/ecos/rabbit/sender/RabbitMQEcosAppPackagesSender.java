@@ -54,14 +54,16 @@ public class RabbitMQEcosAppPackagesSender implements ApplicationListener<Contex
         executor.execute(() -> {
             for (String location : locations) {
                 try {
-                    Resource resource = location.contains(":") ? new UrlResource(location) : new ClassPathResource(location);
+                    Resource resource = location.contains(":") ? new UrlResource(location) :
+                            new ClassPathResource(location);
                     byte[] fileBytes = IOUtils.toByteArray(resource.getInputStream());
                     log.info("Sending package to RabbitMQ: " + resource.getFilename());
                     RetryTemplate retryTemplate = getRetryTemplate();
                     Object callback = retryTemplate.execute(
                             t -> rabbitTemplate.convertSendAndReceive(EcosAppQueues.ECOS_APPS_UPLOAD_ID, fileBytes),
                             c -> {
-                                log.error("Package isn't send to RabbitMQ: " + resource.getFilename(), c.getLastThrowable());
+                                log.error("Package isn't send to RabbitMQ: " + resource.getFilename(),
+                                        c.getLastThrowable());
                                 return c.getLastThrowable();
                             });
                     if (callback != null) {
@@ -79,11 +81,11 @@ public class RabbitMQEcosAppPackagesSender implements ApplicationListener<Contex
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-//        if (rabbitTemplate != null) {
+        if (rabbitTemplate != null) {
             sendFiles(locations);
-//        } else {
-//            log.warn("Bean \"historyRabbitTemplate\" wasn't initialized, packages not send");
-//        }
+        } else {
+            log.warn("Bean \"historyRabbitTemplate\" wasn't initialized, packages not send");
+        }
     }
 
     private RetryTemplate getRetryTemplate() {
