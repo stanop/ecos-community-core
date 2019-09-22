@@ -82,7 +82,7 @@ services:
     volumes:
       - ./volumes/ecos-apps/:/ecos-apps
   rabbitmq:
-    image: "rabbitmq:3-management"
+    image: "rabbitmq:3.7.18-management-alpine"
     restart: on-failure:5
     container_name: rabbitmq
     hostname: rabbitmq
