@@ -10,8 +10,8 @@
         <property name="appliesFromVersion" value="3.14.0"/>
     </bean>
 
-    <bean id="idocs.module-component.currencies" parent="idocs.import-spaces.3-14-0">
-        <property name="name" value="Currency ua data"/>
+    <bean id="idocs.module-component.currencies-ua" parent="idocs.import-spaces.3-14-0">
+        <property name="name" value="Currency-ua-data"/>
         <property name="description" value="Currency ua data"/>
         <property name="dependsOn">
             <list>
