@@ -24,6 +24,16 @@
             <outputDirectory>modules/form</outputDirectory>
             <filtered>false</filtered>
         </fileSet>
+        <fileSet>
+            <directory>target/classes/alfresco/module/${project.artifactId}/ecos-types</directory>
+            <outputDirectory>modules/type</outputDirectory>
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
+            <directory>target/classes/alfresco/module/${project.artifactId}/ecos-sections</directory>
+            <outputDirectory>modules/section</outputDirectory>
+            <filtered>false</filtered>
+        </fileSet>
     </fileSets>
 
 </assembly>
