@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.alfresco.repo.i18n.MessageService;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.ClassAttributeDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
@@ -51,6 +50,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author Pavel Simonov
@@ -252,6 +252,7 @@ public class JournalConfigGet extends AbstractWebScript {
         JournalRepoData journalData = repoDataByJournalRef.getUnchecked(journalRef);
         JournalMeta meta = new JournalMeta();
 
+        meta.setActions(getActions(journal));
         meta.setGroupActions(getGroupActions(journal));
 
         try {
@@ -332,6 +333,31 @@ public class JournalConfigGet extends AbstractWebScript {
         }
     }
 
+    private List<Action> getActions(JournalType journal) {
+        return journal.getActions()
+                .stream()
+                .map(journalAction -> {
+                    Action action = new Action();
+                    action.setId(journalAction.getId());
+                    action.setTitle(journalAction.getTitle());
+                    action.setType(journalAction.getType());
+                    action.setParams(journalAction.getOptions());
+
+                    JournalActionEvaluator evaluator = journalAction.getEvaluator();
+                    if (evaluator != null) {
+                        Evaluator ev = new Evaluator();
+                        ev.setId(evaluator.getId());
+                        ev.setParams(evaluator.getOptions());
+
+                        action.setEvaluator(ev);
+                    }
+
+                    return action;
+                })
+                .collect(Collectors.toList());
+
+    }
+
     private List<GroupAction> getGroupActions(JournalType type) {
 
         List<GroupAction> resultActions = new ArrayList<>();
@@ -403,11 +429,11 @@ public class JournalConfigGet extends AbstractWebScript {
     private JournalRef findJournalRef(String journalId) {
         return new JournalRef(
                 FTSQuery.create()
-                       .type(JournalsModel.TYPE_JOURNAL).and()
-                       .exact(JournalsModel.PROP_JOURNAL_TYPE, journalId)
-                       .transactional()
-                       .queryOne(searchService)
-                       .orElse(null)
+                        .type(JournalsModel.TYPE_JOURNAL).and()
+                        .exact(JournalsModel.PROP_JOURNAL_TYPE, journalId)
+                        .transactional()
+                        .queryOne(searchService)
+                        .orElse(null)
         );
     }
 
@@ -524,7 +550,23 @@ public class JournalConfigGet extends AbstractWebScript {
         JsonNode groupBy;
         String metaRecord;
         List<CreateVariantsGet.ResponseVariant> createVariants;
+        List<Action> actions;
         List<GroupAction> groupActions;
+    }
+
+    @Data
+    static class Action {
+        String id;
+        String title;
+        String type;
+        Evaluator evaluator;
+        Map<String, String> params;
+    }
+
+    @Data
+    static class Evaluator {
+        String id;
+        Map<String, String> params;
     }
 
     @Data

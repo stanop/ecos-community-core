@@ -57,6 +57,8 @@ public interface JournalType {
 
     JournalFormatter getFormatter(String attributeKey);
 
+    List<JournalAction> getActions();
+
     List<JournalGroupAction> getGroupActions();
 
     JournalCriterion getCriterion(String attributeKey);

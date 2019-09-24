@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2015 Citeck LLC.
+ * Copyright (C) 2008-2019 Citeck LLC.
  *
  * This file is part of Citeck EcoS
  *
@@ -18,17 +18,17 @@
  */
 package ru.citeck.ecos.journals;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
-
 import org.apache.commons.lang.StringUtils;
-import ru.citeck.ecos.journals.xml.*;
 import ru.citeck.ecos.journals.xml.Formatter;
+import ru.citeck.ecos.journals.xml.*;
 import ru.citeck.ecos.search.SearchCriteriaSettingsRegistry;
 import ru.citeck.ecos.utils.EcosU18NUtils;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 class JournalTypeImpl implements JournalType {
 
@@ -40,6 +40,7 @@ class JournalTypeImpl implements JournalType {
 
     private final Map<String, String> options;
     private final List<String> attributes;
+    private final List<JournalAction> actions;
     private final List<JournalGroupAction> groupActions;
 
     private final BitSet defaultAttributes;
@@ -61,6 +62,7 @@ class JournalTypeImpl implements JournalType {
         this.id = journal.getId();
         this.options = Collections.unmodifiableMap(getOptions(journal.getOption()));
         this.groupActions = Collections.unmodifiableList(getGroupActions(journal, serviceRegistry));
+        this.actions = Collections.unmodifiableList(getActions(journal));
         this.predicate = journal.getPredicate() != null ? journal.getPredicate().getValue() : null;
         this.groupBy = journal.getGroupBy() != null ? journal.getGroupBy().getValue() : null;
         this.createVariants = convertCreateVariants(journal.getCreate());
@@ -258,6 +260,11 @@ class JournalTypeImpl implements JournalType {
     }
 
     @Override
+    public List<JournalAction> getActions() {
+       return actions;
+    }
+
+    @Override
     public List<JournalGroupAction> getGroupActions() {
         List<JournalGroupAction> result = new ArrayList<>(groupActions.size());
         for (JournalGroupAction action : groupActions) {
@@ -295,6 +302,17 @@ class JournalTypeImpl implements JournalType {
             optionMap.put(option.getName(), option.getValue().trim());
         }
         return optionMap;
+    }
+
+    private static List<JournalAction> getActions(Journal journal) {
+        if (journal.getActions() == null) {
+            return Collections.emptyList();
+        }
+
+        return journal.getActions().getAction()
+                .stream()
+                .map(JournalAction::new)
+                .collect(Collectors.toList());
     }
 
     private static List<JournalGroupAction> getGroupActions(Journal journal, ServiceRegistry serviceRegistry) {

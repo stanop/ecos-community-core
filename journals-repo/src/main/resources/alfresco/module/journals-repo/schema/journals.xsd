@@ -74,6 +74,16 @@
         <xs:attribute name="title" type="xs:string" use="required" />
         <xs:attribute name="type" type="j:groupActionType" default="selected" />
     </xs:complexType>
+    
+    <xs:complexType name="action">
+        <xs:sequence>
+            <xs:element name="param" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="evaluator" type="j:actionEvaluator" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="title" type="xs:string"/>
+        <xs:attribute name="type" type="xs:string"/>
+    </xs:complexType>
 
     <xs:simpleType name="groupActionType">
         <xs:restriction base="xs:string">
@@ -89,6 +99,13 @@
             <xs:element name="create" type="j:createVariants" minOccurs="0" />
             <xs:element name="group-by" type="j:groupBy" minOccurs="0" />
             <xs:element name="option" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="actions" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="action" type="j:action" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="group-actions" minOccurs="0">
                 <xs:complexType>
                     <xs:sequence>
@@ -129,6 +146,13 @@
         </xs:sequence>
         <xs:attribute name="id" type="xs:string" use="optional" />
         <xs:attribute name="joinBy" type="j:logicJoinType" use="optional" />
+    </xs:complexType>
+
+    <xs:complexType name="actionEvaluator">
+        <xs:sequence>
+            <xs:element name="param" type="j:option" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required" />
     </xs:complexType>
 
     <xs:complexType name="batchEdit">
