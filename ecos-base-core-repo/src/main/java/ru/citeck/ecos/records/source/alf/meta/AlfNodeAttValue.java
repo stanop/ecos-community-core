@@ -21,12 +21,15 @@ import ru.citeck.ecos.node.DisplayNameService;
 import ru.citeck.ecos.records.meta.MetaUtils;
 import ru.citeck.ecos.records.source.alf.file.FileRepresentation;
 import ru.citeck.ecos.records.source.common.MLTextValue;
+import ru.citeck.ecos.records2.QueryConstants;
 import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
 import ru.citeck.ecos.utils.DictUtils;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -128,6 +131,18 @@ public class AlfNodeAttValue implements MetaValue {
                 ContentReader reader = contentService.getRawReader(contentUrl);
                 return reader.exists() ? reader.getContentString() : null;
             });
+        }
+        if (rawValue instanceof Number) {
+
+            DecimalFormat format = context.getOrPutData("DecimalFormat", DecimalFormat.class, () -> {
+
+                DecimalFormatSymbols locale = DecimalFormatSymbols.getInstance(Locale.ENGLISH);
+                DecimalFormat fmt = new DecimalFormat("0", locale);
+                fmt.setMaximumFractionDigits(340);
+                return fmt;
+            });
+
+            return format.format(((Number) rawValue).doubleValue());
         }
         return rawValue.toString();
     }

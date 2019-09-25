@@ -32,7 +32,7 @@ public class EcosU18NUtils {
         MLText result = new MLText();
 
         for (Locale locale : LOCALES) {
-            String msg = I18NUtil.getMessage(key, Locale.ENGLISH);
+            String msg = I18NUtil.getMessage(key, locale);
             if (msg != null) {
                 result.put(locale, msg);
             }
