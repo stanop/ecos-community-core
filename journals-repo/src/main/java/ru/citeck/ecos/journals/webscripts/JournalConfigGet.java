@@ -29,6 +29,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
+import ru.citeck.ecos.action.dto.ActionDTO;
+import ru.citeck.ecos.action.dto.EvaluatorDTO;
 import ru.citeck.ecos.journals.*;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.predicate.PredicateService;
@@ -333,11 +335,11 @@ public class JournalConfigGet extends AbstractWebScript {
         }
     }
 
-    private List<Action> getActions(JournalType journal) {
+    private List<ActionDTO> getActions(JournalType journal) {
         return journal.getActions()
                 .stream()
                 .map(journalAction -> {
-                    Action action = new Action();
+                    ActionDTO action = new ActionDTO();
                     action.setId(journalAction.getId());
                     action.setTitle(journalAction.getTitle());
                     action.setType(journalAction.getType());
@@ -345,7 +347,7 @@ public class JournalConfigGet extends AbstractWebScript {
 
                     JournalActionEvaluator evaluator = journalAction.getEvaluator();
                     if (evaluator != null) {
-                        Evaluator ev = new Evaluator();
+                        EvaluatorDTO ev = new EvaluatorDTO();
                         ev.setId(evaluator.getId());
                         ev.setParams(evaluator.getOptions());
 
@@ -355,7 +357,6 @@ public class JournalConfigGet extends AbstractWebScript {
                     return action;
                 })
                 .collect(Collectors.toList());
-
     }
 
     private List<GroupAction> getGroupActions(JournalType type) {
@@ -550,23 +551,8 @@ public class JournalConfigGet extends AbstractWebScript {
         JsonNode groupBy;
         String metaRecord;
         List<CreateVariantsGet.ResponseVariant> createVariants;
-        List<Action> actions;
+        List<ActionDTO> actions;
         List<GroupAction> groupActions;
-    }
-
-    @Data
-    static class Action {
-        String id;
-        String title;
-        String type;
-        Evaluator evaluator;
-        Map<String, String> params;
-    }
-
-    @Data
-    static class Evaluator {
-        String id;
-        Map<String, String> params;
     }
 
     @Data

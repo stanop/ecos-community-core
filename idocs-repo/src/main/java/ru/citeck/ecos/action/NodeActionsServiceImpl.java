@@ -4,28 +4,37 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheStats;
 import com.google.common.cache.LoadingCache;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.util.Pair;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
+import ru.citeck.ecos.action.dto.ActionDTO;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
+import ru.citeck.ecos.action.node.NodeActionsProvider;
+import ru.citeck.ecos.action.node.NodeActionsService;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author deathNC on 30.04.2016.
  * @author Pavel Simonov
  */
-public class NodeActionsService {
+@Slf4j
+public class NodeActionsServiceImpl implements NodeActionsService {
 
-    private static final Log LOGGER = LogFactory.getLog(NodeActionsService.class);
+    private static final String PARAM_ACTION_ID = "actionId";
+    private static final String PARAM_ACTION_TITLE = "title";
+    private static final String PARAM_ACTION_TYPE = "actionType";
+
+    private static final List<String> EXCLUDE_FROM_CONFIG = Arrays.asList(PARAM_ACTION_ID, PARAM_ACTION_TITLE,
+            PARAM_ACTION_TYPE);
 
     private List<NodeActionsProvider> providerList = new ArrayList<>();
 
@@ -37,12 +46,12 @@ public class NodeActionsService {
 
     public void init() {
         cache = CacheBuilder.newBuilder()
-                            .expireAfterWrite(cacheAge, TimeUnit.SECONDS)
-                            .maximumSize(1000)
-                            .build(CacheLoader.from(this::getNodeActionsImpl));
+                .expireAfterWrite(cacheAge, TimeUnit.SECONDS)
+                .maximumSize(1000)
+                .build(CacheLoader.from(this::getNodeActionsImpl));
     }
 
-    public List<Map<String, String>> getNodeActions(NodeRef nodeRef) {
+    public List<Map<String, String>> getNodeActionsRaw(NodeRef nodeRef) {
 
         NodeActions data;
         Pair<String, NodeRef> key = new Pair<>(AuthenticationUtil.getRunAsUser(), nodeRef);
@@ -60,13 +69,37 @@ public class NodeActionsService {
         return data.actionsData;
     }
 
+    @Override
+    public List<ActionDTO> getNodeActions(NodeRef nodeRef) {
+        List<Map<String, String>> rawActions = getNodeActionsRaw(nodeRef);
+
+        List<ActionDTO> result = new ArrayList<>();
+
+        for (Map<String, String> actionRaw : rawActions) {
+            ActionDTO action = new ActionDTO();
+            action.setId(actionRaw.get("actionId"));
+            action.setTitle(actionRaw.get("title"));
+            action.setType(actionRaw.get("actionType"));
+
+            Map<String, String> config = actionRaw.entrySet()
+                    .stream()
+                    .filter(x -> !EXCLUDE_FROM_CONFIG.contains(x.getKey()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+            action.setParams(config);
+            result.add(action);
+        }
+
+        return result;
+    }
+
     private NodeActions getNodeActionsImpl(Pair<String, NodeRef> userNode) {
 
         List<Map<String, String>> actionsData = new ArrayList<>();
 
         int id = 0;
         for (NodeActionsProvider provider : providerList) {
-            List<NodeActionDefinition> list = provider.getNodeActions(userNode.getSecond());
+            List<ru.citeck.ecos.action.node.NodeActionDefinition> list = provider.getNodeActions(userNode.getSecond());
             for (NodeActionDefinition action : list) {
                 action.setActionId(Integer.toString(id++));
                 if (action.isValid()) {
@@ -80,7 +113,7 @@ public class NodeActionsService {
                     for (Map.Entry<String, String> entry : action.getProperties().entrySet()) {
                         sb.append(entry.getKey()).append(" = ").append(entry.getValue()).append("; ");
                     }
-                    LOGGER.warn("Server action is invalid. Properties: " + sb.toString());
+                    log.warn("Server action is invalid. Properties: " + sb.toString());
                 }
             }
         }
