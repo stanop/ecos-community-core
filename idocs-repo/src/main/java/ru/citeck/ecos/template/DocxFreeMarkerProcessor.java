@@ -159,11 +159,9 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 							}
 						}
 					}
-				} catch (JAXBException e) {
+				} catch (JAXBException | Docx4JException e) {
 					logger.error(e.getLocalizedMessage(), e);
-				} catch (Docx4JException e) {
-                    logger.error(e.getLocalizedMessage(), e);
-                }
+				}
 			}
 		}
 		
