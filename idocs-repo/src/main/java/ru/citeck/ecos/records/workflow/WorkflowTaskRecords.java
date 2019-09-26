@@ -36,6 +36,7 @@ import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryLocalDAO;
+import ru.citeck.ecos.utils.AuthorityUtils;
 import ru.citeck.ecos.utils.WorkflowUtils;
 import ru.citeck.ecos.workflow.owner.OwnerAction;
 import ru.citeck.ecos.workflow.owner.OwnerService;
@@ -64,13 +65,14 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final OwnerService ownerService;
     private final DocSumResolveRegistry docSumResolveRegistry;
     private final WorkflowUtils workflowUtils;
+    private final AuthorityUtils authorityUtils;
 
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
                                AuthorityService authorityService, OwnerService ownerService,
                                DocSumResolveRegistry docSumResolveRegistry,
-                               WorkflowUtils workflowUtils) {
+                               WorkflowUtils workflowUtils, AuthorityUtils authorityUtils) {
         setId(ID);
         this.ecosTaskService = ecosTaskService;
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
@@ -78,6 +80,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         this.ownerService = ownerService;
         this.docSumResolveRegistry = docSumResolveRegistry;
         this.workflowUtils = workflowUtils;
+        this.authorityUtils = authorityUtils;
     }
 
     @Override
@@ -171,6 +174,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         String owner = null;
         if (changeOwner.has(ATT_OWNER)) {
             String ownerParam = changeOwner.get(ATT_OWNER).asText();
+            if (NodeRef.isNodeRef(ownerParam)) {
+                ownerParam = authorityUtils.getAuthorityName(new NodeRef(ownerParam));
+            }
+
             owner = CURRENT_USER.equals(ownerParam) ? AuthenticationUtil.getRunAsUser() : ownerParam;
         }
 
