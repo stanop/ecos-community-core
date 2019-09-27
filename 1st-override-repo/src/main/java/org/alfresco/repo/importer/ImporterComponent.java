@@ -600,8 +600,7 @@ public class ImporterComponent implements ImporterService
          * @see org.alfresco.repo.importer.Importer#importNode(org.alfresco.repo.importer.ImportNode)
          */
         @SuppressWarnings("unchecked")
-        public NodeRef importNode(ImportNode context)
-        {
+        public NodeRef importNode(ImportNode context) {
             // import node
             NodeRef nodeRef;
             if (context.isReference()) {
@@ -625,14 +624,16 @@ public class ImporterComponent implements ImporterService
             for (Map.Entry<QName,Serializable> property : context.getProperties().entrySet()) {
                 // filter out content properties (they're imported later)
                 DataTypeDefinition valueDataType = context.getPropertyDataType(property.getKey());
-                if (valueDataType == null || !valueDataType.getName().equals(DataTypeDefinition.CONTENT)) continue;
+                if (valueDataType == null || !valueDataType.getName().equals(DataTypeDefinition.CONTENT)) {
+                    continue;
+                }
 
                 // the property may be a single value or a collection - handle both
                 Object objVal = property.getValue();
                 if (objVal instanceof String) {
                     importContent(nodeRef, property.getKey(), (String)objVal);
                 } else if (objVal instanceof Collection) {
-                    for (String value : (Collection<String>)objVal) {
+                    for (String value : (Collection<String>) objVal) {
                         importContent(nodeRef, property.getKey(), value);
                     }
                 }
@@ -640,7 +641,7 @@ public class ImporterComponent implements ImporterService
 
             // if the node has the versionable aspect applied to it,
             //  create an initial version for it
-            if(context.getNodeAspects().contains(ContentModel.ASPECT_VERSIONABLE)) {
+            if (context.getNodeAspects().contains(ContentModel.ASPECT_VERSIONABLE)) {
                 generateVersioningForVersionableNode(nodeRef);
             }
 
@@ -753,13 +754,17 @@ public class ImporterComponent implements ImporterService
 
             // bind import content data description
             importContentData = bindPlaceHolder(importContentData, binding);
-            if (importContentData == null || importContentData.isEmpty()) return;
+            if (importContentData == null || importContentData.isEmpty()) {
+                return;
+            }
 
             DataTypeDefinition dataTypeDef = dictionaryService.getDataType(DataTypeDefinition.CONTENT);
             ContentData contentData = (ContentData)DefaultTypeConverter.INSTANCE.convert(dataTypeDef, importContentData);
             String contentUrl = contentData.getContentUrl();
 
-            if (contentUrl == null || contentUrl.isEmpty()) return;
+            if (contentUrl == null || contentUrl.isEmpty()) {
+                return;
+            }
 
             Map<QName, Serializable> propsBefore = null;
             if (contentUsageImpl != null && contentUsageImpl.getEnabled()) {
@@ -841,7 +846,9 @@ public class ImporterComponent implements ImporterService
                         Collection<String> unresolvedRefs = (Collection<String>)importedRef.value;
                         List<NodeRef> resolvedRefs = new ArrayList<NodeRef>(unresolvedRefs.size());
                         for (String unresolvedRef : unresolvedRefs) {
-                            if (unresolvedRef == null) continue;
+                            if (unresolvedRef == null) {
+                                continue;
+                            }
 
                             NodeRef nodeRef = resolveImportedNodeRef(importedRef.context.getNodeRef(), unresolvedRef);
                             // TODO: Provide a better mechanism for invalid references? e.g. report warning
@@ -987,10 +994,8 @@ public class ImporterComponent implements ImporterService
             // find target class that is closest to node type or aspects
             QName closestAssocType = null;
             int closestHit = 1;
-            for (QName nodeType : nodeTypes)
-            {
-                for (QName targetType : targetTypes.keySet())
-                {
+            for (QName nodeType : nodeTypes) {
+                for (QName targetType : targetTypes.keySet()) {
                     QName testType = nodeType;
                     int howClose = 1;
                     while (testType != null) {
@@ -1170,12 +1175,10 @@ public class ImporterComponent implements ImporterService
                 return new NodeRef(importedRef);
             } else {
                 // resolve relative path
-                try
-                {
+                try {
                     String path = createValidPath(importedRef);
                     List<NodeRef> nodeRefs = searchService.selectNodes(sourceNodeRef, path, null, namespaceService, false);
-                    if (!nodeRefs.isEmpty())
-                    {
+                    if (!nodeRefs.isEmpty()) {
                         return nodeRefs.get(0);
                     }
                 } catch(XPathException e) {
@@ -1528,12 +1531,13 @@ public class ImporterComponent implements ImporterService
          * Note: this will only allow incremental update of an existing node - it does not
          *       delete properties or associations.
          */
-        private class UpdateExistingNodeImporterStrategy implements NodeImporterStrategy
-        {
+        private class UpdateExistingNodeImporterStrategy implements NodeImporterStrategy {
             private NodeImporterStrategy createNewStrategy = new CreateNewNodeImporterStrategy(false);
 
             private NodeRef getExistingNodeRef(String uuid, ImportNode node) {
-                if (uuid != null || location.getPath() == null) return null;
+                if (uuid != null || location.getPath() == null) {
+                    return null;
+                }
 
                 NodeRef parentNodeRef = node.getParentContext().getParentRef();
 
@@ -1549,8 +1553,7 @@ public class ImporterComponent implements ImporterService
              *  (non-Javadoc)
              * @see org.alfresco.repo.importer.ImporterComponent.NodeImporterStrategy#importNode(org.alfresco.repo.importer.ImportNode)
              */
-            public NodeRef importNode(ImportNode node)
-            {
+            public NodeRef importNode(ImportNode node) {
                 // replace existing node, if node to import has a UUID and an existing node of the same
                 // uuid already exists
                 String uuid = node.getUUID();
@@ -1559,7 +1562,7 @@ public class ImporterComponent implements ImporterService
                 NodeRef existingNodeRef = getExistingNodeRef(uuid, node);
 
                 // import as if a new node
-                if ((uuid == null || uuid.isEmpty()) && existingNodeRef == null){
+                if ((uuid == null || uuid.isEmpty()) && existingNodeRef == null) {
                     return createNewStrategy.importNode(node);
                 }
 

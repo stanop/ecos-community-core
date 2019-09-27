@@ -104,12 +104,16 @@ public class ReportOutputCSV extends AbstractDataBundleLine {
     }
     
     private void createSheetData(StringBuilder builder, List<List<Map<String, Object>>> reportData) {
-        if (reportData == null || reportData.isEmpty()) return;
+        if (reportData == null || reportData.isEmpty()) {
+            return;
+        }
 
         for (int i = 0; i < reportData.size(); i++) {
             List<Map<String, Object>> rowData = reportData.get(i);
 
-            if (rowData == null || rowData.isEmpty()) continue;
+            if (rowData == null || rowData.isEmpty()) {
+                continue;
+            }
 
             for (int j = 0; j < rowData.size(); j++) {
                 Map<String, Object> cellData = rowData.get(j);

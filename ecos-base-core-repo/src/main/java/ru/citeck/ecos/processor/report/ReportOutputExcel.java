@@ -132,7 +132,9 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
     }
     
     private void createColumnTitlesRow(Workbook wb, Sheet sheet, List<Map<String, String>> reportColumns) {
-        if ((reportColumns == null) || (reportColumns.isEmpty())) return;
+        if ((reportColumns == null) || (reportColumns.isEmpty())) {
+            return;
+        }
 
         Row row = sheet.getRow(0);
         Cell formatCell = row.getCell(0);
@@ -141,11 +143,15 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
 
         int i = 0;
         for (Map<String, String> col : reportColumns) {
-            if (col == null) continue;
+            if (col == null) {
+                continue;
+            }
 
             String title = col.get(COLUMN_TITLE);
 
-            if (title == null) title = "";
+            if (title == null) {
+                title = "";
+            }
 
             if (i == 0) {
                 formatCell.setCellValue(title);
@@ -211,14 +217,16 @@ public class ReportOutputExcel extends AbstractDataBundleLine {
                     j++;
                 }
 
-                if (i == 19)
+                if (i == 19) {
                     autoSizeColumns(sheet);
+                }
 
                 i++;
             }
 
-            if (i < 20)
+            if (i < 20) {
                 autoSizeColumns(sheet);
+            }
         }
 
         removeRow(sheet, 1);

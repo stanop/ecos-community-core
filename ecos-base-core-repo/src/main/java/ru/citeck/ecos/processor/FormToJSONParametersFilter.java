@@ -41,119 +41,121 @@ import java.util.Map;
  * @author Alexey Moiseev <alexey.moiseev@citeck.ru>
  */
 public class FormToJSONParametersFilter extends AbstractDataBundleLine {
-	
-	public static final String ARGS_PARAMETER_WITH_JSON = "jsondata";
+
+    public static final String ARGS_PARAMETER_WITH_JSON = "jsondata";
 
     @Override
     public DataBundle process(DataBundle input) {
         Map<String, Object> model = input.needModel();
-        
+
         HashMap<String, Object> newModel = new HashMap<String, Object>();
         newModel.putAll(model);
-        
+
         String jsonStr = checkAndConvertFromArgsToJSON(model);
         InputStream newIS = null;
-        
+
         if (jsonStr != null) {
-        	newIS = new ByteArrayInputStream(jsonStr.getBytes(Charset.forName("UTF-8")));
-        	newModel.put(ProcessorConstants.KEY_MIMETYPE, MediaType.APPLICATION_JSON.toString());
+            newIS = new ByteArrayInputStream(jsonStr.getBytes(Charset.forName("UTF-8")));
+            newModel.put(ProcessorConstants.KEY_MIMETYPE, MediaType.APPLICATION_JSON.toString());
         } else {
-        	InputStream is = input.needInputStream();
-        	ByteArrayOutputStream os = copyInputStream(is);
-        	newIS = new ByteArrayInputStream(os.toByteArray());
-        	
-        	try {
-    			os.close();
-    		} catch (IOException e) {
-    			Logger.getLogger(FormToJSONParametersFilter.class).error(e.getMessage(), e);
-    		}
-        }	
+            InputStream is = input.needInputStream();
+            ByteArrayOutputStream os = copyInputStream(is);
+            newIS = new ByteArrayInputStream(os.toByteArray());
+
+            try {
+                os.close();
+            } catch (IOException e) {
+                Logger.getLogger(FormToJSONParametersFilter.class).error(e.getMessage(), e);
+            }
+        }
 
         return new DataBundle(newIS, newModel);
     }
-    
+
     @SuppressWarnings("unchecked")
-	private String checkAndConvertFromArgsToJSON(Map<String, Object> model) {
-		Object keyMimetype = model.get(ProcessorConstants.KEY_MIMETYPE);
-		if (keyMimetype == null || !keyMimetype.toString().equals(MediaType.MULTIPART_FORM_DATA.toString())) {
-			return null;
-		}
+    private String checkAndConvertFromArgsToJSON(Map<String, Object> model) {
+        Object keyMimetype = model.get(ProcessorConstants.KEY_MIMETYPE);
+        if (keyMimetype == null || !keyMimetype.toString().equals(MediaType.MULTIPART_FORM_DATA.toString())) {
+            return null;
+        }
 
-		Map<String, String> args = (Map<String, String>) model.get(DataBundleProcessorWebscript.KEY_ARGS);
+        Map<String, String> args = (Map<String, String>) model.get(DataBundleProcessorWebscript.KEY_ARGS);
 
-		if (args == null) return null;
+        if (args == null) {
+            return null;
+        }
 
-		// get data from one field or entire args
-		if (args.get(ARGS_PARAMETER_WITH_JSON) != null) {
-			return args.get(ARGS_PARAMETER_WITH_JSON);
-		}
+        // get data from one field or entire args
+        if (args.get(ARGS_PARAMETER_WITH_JSON) != null) {
+            return args.get(ARGS_PARAMETER_WITH_JSON);
+        }
 
-		JSONObject data = new JSONObject();
+        JSONObject data = new JSONObject();
 
-		for (Map.Entry<String, String> entry : args.entrySet()) {
-			String key = entry.getKey();
-			String value = entry.getValue();
+        for (Map.Entry<String, String> entry : args.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
 
-			if (value != null) {
-				value = value.trim();
+            if (value != null) {
+                value = value.trim();
 
-				if ((value.startsWith("[")) && (value.endsWith("]"))) {
-					try {
-						JSONArray arr = new JSONArray(value);
-						data.put(key, arr);
-					} catch (JSONException e) {
-						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as JSONArray");
-					}
-				} else if ((value.startsWith("{")) && (value.endsWith("}"))) {
-					try {
-						JSONObject obj = new JSONObject(value);
-						data.put(key, obj);
-					} catch (JSONException e) {
-						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as JSONObject");
-					}
-				} else if ((value.equalsIgnoreCase("true")) || (value.equalsIgnoreCase("false"))) {
-					try {
-						Boolean b = Boolean.valueOf(value);
-						data.put(key, b.booleanValue());
-					} catch (Exception e) {
-						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as boolean");
-					}
-				} else if (value.matches("\\-?\\d+")) {
-					try {
-						Long l = Long.valueOf(value);
-						data.put(key, l.longValue());
-					} catch (Exception e) {
-						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as long");
-					}
-				} else if (value.matches("\\-?\\d+\\.\\d+")) {
-					try {
-						Double d = Double.valueOf(value);
-						data.put(key, d.doubleValue());
-					} catch (Exception e) {
-						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as double");
-					}
-				} else {
-					try {
-						data.put(key, value);
-					} catch (JSONException e) {
-						Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as String");
-					}
-				}
-			}
-		}
+                if ((value.startsWith("[")) && (value.endsWith("]"))) {
+                    try {
+                        JSONArray arr = new JSONArray(value);
+                        data.put(key, arr);
+                    } catch (JSONException e) {
+                        Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as JSONArray");
+                    }
+                } else if ((value.startsWith("{")) && (value.endsWith("}"))) {
+                    try {
+                        JSONObject obj = new JSONObject(value);
+                        data.put(key, obj);
+                    } catch (JSONException e) {
+                        Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as JSONObject");
+                    }
+                } else if ((value.equalsIgnoreCase("true")) || (value.equalsIgnoreCase("false"))) {
+                    try {
+                        Boolean b = Boolean.valueOf(value);
+                        data.put(key, b.booleanValue());
+                    } catch (Exception e) {
+                        Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as boolean");
+                    }
+                } else if (value.matches("\\-?\\d+")) {
+                    try {
+                        Long l = Long.valueOf(value);
+                        data.put(key, l.longValue());
+                    } catch (Exception e) {
+                        Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as long");
+                    }
+                } else if (value.matches("\\-?\\d+\\.\\d+")) {
+                    try {
+                        Double d = Double.valueOf(value);
+                        data.put(key, d.doubleValue());
+                    } catch (Exception e) {
+                        Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as double");
+                    }
+                } else {
+                    try {
+                        data.put(key, value);
+                    } catch (JSONException e) {
+                        Logger.getLogger(FormToJSONParametersFilter.class).warn("Unable parse/put " + value + " as String");
+                    }
+                }
+            }
+        }
 
-		return data.toString();
+        return data.toString();
     }
-    
+
     private ByteArrayOutputStream copyInputStream(InputStream is) {
-    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    	
-    	try {
-    		IOUtils.copy(is, baos);
-    	} catch (IOException e) {
-    		Logger.getLogger(FormToJSONParametersFilter.class).error("Cannot copy input stream", e);
-    	}
-    	
-    	return baos;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            IOUtils.copy(is, baos);
+        } catch (IOException e) {
+            Logger.getLogger(FormToJSONParametersFilter.class).error("Cannot copy input stream", e);
+        }
+
+        return baos;
     }
 }

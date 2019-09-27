@@ -127,7 +127,9 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
             Collection<IntegrityRecord> eventResults)
     {
         // check for null or empty definitions
-        if (propertyDefs == null || propertyDefs.isEmpty()) return;
+        if (propertyDefs == null || propertyDefs.isEmpty()) {
+            return;
+        }
 
         for (PropertyDefinition propertyDef : propertyDefs) {
             QName propertyQName = propertyDef.getName();

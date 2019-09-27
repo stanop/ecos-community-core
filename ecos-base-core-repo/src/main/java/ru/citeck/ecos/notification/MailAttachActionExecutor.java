@@ -43,34 +43,38 @@ public class MailAttachActionExecutor extends MailActionExecuter {
     private ContentService contentService;
 
     @Override
-    public MimeMessageHelper prepareEmail(Action ruleAction, NodeRef actionedUponNodeRef, Pair<String, Locale> recipient, Pair<InternetAddress, Locale> sender)
-    {
+    public MimeMessageHelper prepareEmail(Action ruleAction, NodeRef actionedUponNodeRef, Pair<String, Locale> recipient, Pair<InternetAddress, Locale> sender) {
         MimeMessageHelper mimeMessageHelper = super.prepareEmail(ruleAction, actionedUponNodeRef, recipient, sender);
         MimeMessageHelper helper = mimeMessageHelper;
-        logger.debug("actionedUponNodeRef "+actionedUponNodeRef);
-        logger.debug("ruleAction.getParameterValues "+ruleAction.getParameterValues());
-        Map<String, Object> template_modelParameterValue = (Map<String, Object>)ruleAction.getParameterValue("template_model");
+        logger.debug("actionedUponNodeRef "+ actionedUponNodeRef);
+        logger.debug("ruleAction.getParameterValues "+ ruleAction.getParameterValues());
+        Map<String, Object> template_modelParameterValue = (Map<String, Object>) ruleAction.getParameterValue("template_model");
 
-        if (template_modelParameterValue == null) return helper;
+        if (template_modelParameterValue == null) {
+            return helper;
+        }
 
 
-        Map<String, Object> argsParameterValues = (Map<String, Object>)template_modelParameterValue.get("args");
+        Map<String, Object> argsParameterValues = (Map<String, Object>) template_modelParameterValue.get("args");
 
-        if (argsParameterValues == null) return helper;
+        if (argsParameterValues == null) {
+            return helper;
+        }
 
         ArrayList attachments = (ArrayList)argsParameterValues.get("attachments");
         String enc = helper.getEncoding();
         logger.debug("helper.getEncoding() 1 " + enc);
 
-        if (attachments == null) return helper;
+        if (attachments == null) {
+            return helper;
+        }
 
         try {
             logger.debug("attachments != null");
             MimeMessage attachment = mimeMessageHelper.getMimeMessage();
-                        MimeMessage attachment = new MimeMessage(i$);
-            helper = new MimeMessageHelper(attachment, true, enc);
+            helper = new MimeMessageHelper(new MimeMessage(attachment), true, enc);
             Object name = attachment.getContent();
-            logger.debug("name "+name);
+            logger.debug("name "+ name);
             if (name == null) {
                 throw new AlfrescoRuntimeException("You need to set body of the message");
             }
@@ -85,10 +89,10 @@ public class MailAttachActionExecutor extends MailActionExecuter {
         Iterator iter = attachments.iterator();
 
         while (iter.hasNext()) {
-            Map<String, Serializable> attachment1 = (Map<String, Serializable>)iter.next();
-            logger.debug("attachment1 "+attachment1);
+            Map<String, Serializable> attachment1 = (Map<String, Serializable>) iter.next();
+            logger.debug("attachment1 "+ attachment1);
             String name1 = (String)attachment1.get("name");
-            logger.debug("name1 "+name1);
+            logger.debug("name1 "+ name1);
             final Object attachmentContentObject = attachment1.get("attachmentContent");
             byte[] attachmentContent;
             if (attachmentContentObject instanceof List) {
@@ -113,12 +117,8 @@ public class MailAttachActionExecutor extends MailActionExecuter {
             logger.debug("attachmentContent " + attachmentContent.length);
 
             InputStreamSource inputStreamSource = () -> new ByteArrayInputStream(attachmentContent);
-                            public InputStream getInputStream() throws IOException {
-                                return new ByteArrayInputStream(attachmentContent);
-                            }
-                        };
-            try
-            {
+
+            try {
                 helper.addAttachment(name1, inputStreamSource);
             } catch (MessagingException var14) {
                 logger.error("System can't add attachment. " + var14.getMessage());

@@ -47,146 +47,150 @@ import org.apache.commons.logging.LogFactory;
  * <br>
  * The property {@code skipExceptions} - allows to continue processing
  * child associations if an error occurs.<br>
- * 
+ *
  * The property {@code removeSecondaryAssocs} - allows to remove all
  * non primary associations of the child association, if it is {@code true}.
- * 
+ *
  * @author Ruslan
  *
  */
 public class ChildAssociationsFormFilterImpl
-		extends AbstractFilter<Object, NodeRef>
-		implements ChildAssociationsFormFilter {
-	private static final Log log = LogFactory.getLog(ChildAssociationsFormFilterImpl.class);
-	private final Map<String, QName> fieldsChildAssocs = new HashMap<String, QName>();
-	private NodeService nodeService;
-	private DictionaryService dictionaryService;
-	/**
-	 * It allows to continue processing child associations if an error occurs.
-	 * By default it is {@code false}.
-	 */
-	private boolean skipExceptions;
-	/**
-	 * It allows to remove all non primary associations of the child
-	 * association, if it is {@code true}, by default it is {@code false}.
-	 */
-	private boolean removeSecondaryAssocs = false;
+        extends AbstractFilter<Object, NodeRef>
+        implements ChildAssociationsFormFilter {
+    private static final Log log = LogFactory.getLog(ChildAssociationsFormFilterImpl.class);
+    private final Map<String, QName> fieldsChildAssocs = new HashMap<String, QName>();
+    private NodeService nodeService;
+    private DictionaryService dictionaryService;
+    /**
+     * It allows to continue processing child associations if an error occurs.
+     * By default it is {@code false}.
+     */
+    private boolean skipExceptions;
+    /**
+     * It allows to remove all non primary associations of the child
+     * association, if it is {@code true}, by default it is {@code false}.
+     */
+    private boolean removeSecondaryAssocs = false;
 
-	@Override
-	public void beforeGenerate(Object item, List<String> fields,
-			List<String> forcedFields, Form form, Map<String, Object> context) {
-	}
+    @Override
+    public void beforeGenerate(Object item, List<String> fields,
+                               List<String> forcedFields, Form form, Map<String, Object> context) {
+    }
 
-	@Override
-	public void afterGenerate(Object item, List<String> fields,
-			List<String> forcedFields, Form form, Map<String, Object> context) {
-	}
+    @Override
+    public void afterGenerate(Object item, List<String> fields,
+                              List<String> forcedFields, Form form, Map<String, Object> context) {
+    }
 
-	@Override
-	public void beforePersist(Object item, FormData data) {
-	}
+    @Override
+    public void beforePersist(Object item, FormData data) {
+    }
 
-	@Override
-	public void afterPersist(Object item, FormData data, NodeRef persistedObject) {
-		if (!nodeService.exists(persistedObject)) return;
+    @Override
+    public void afterPersist(Object item, FormData data, NodeRef persistedObject) {
+        if (!nodeService.exists(persistedObject)) {
+            return;
+        }
 
-		for (Map.Entry<String, QName> entry : fieldsChildAssocs.entrySet()) {
-			String fieldName = entry.getKey();
-			QName childAssoc = entry.getValue();
-			FieldData fieldData = data.getFieldData(fieldName);
-			if (fieldData == null || fieldData.getValue() == null || !StringUtils.isNotEmpty(fieldData.getValue().toString())) continue;
+        for (Map.Entry<String, QName> entry : fieldsChildAssocs.entrySet()) {
+            String fieldName = entry.getKey();
+            QName childAssoc = entry.getValue();
+            FieldData fieldData = data.getFieldData(fieldName);
+            if (fieldData == null || fieldData.getValue() == null || !StringUtils.isNotEmpty(fieldData.getValue().toString())) {
+                continue;
+            }
 
-			String childAssocsStr = fieldData.getValue().toString();
-			String[] nodeRefsStr = childAssocsStr.split(",");
-			for (String nodeRefStr : nodeRefsStr) {
-				NodeRef nodeRef = new NodeRef(nodeRefStr);
+            String childAssocsStr = fieldData.getValue().toString();
+            String[] nodeRefsStr = childAssocsStr.split(",");
+            for (String nodeRefStr : nodeRefsStr) {
+                NodeRef nodeRef = new NodeRef(nodeRefStr);
 
-				if (!nodeService.exists(nodeRef)) continue;
+                if (!nodeService.exists(nodeRef)) {
+                    continue;
+                }
 
-				try {
-					move(nodeRef, persistedObject, childAssoc);
-				} catch (RuntimeException e) {
-					if (log.isErrorEnabled()) {
-						log.error("Can not filter child association nodeRef=" +
-								nodeRef + "; type=" + childAssoc.getPrefixString(), e);
-					}
-					if (!skipExceptions) throw e;
-				}
-			}
+                try {
+                    move(nodeRef, persistedObject, childAssoc);
+                } catch (RuntimeException e) {
+                    if (log.isErrorEnabled()) {
+                        log.error("Can not filter child association nodeRef=" + nodeRef + "; type=" + childAssoc.getPrefixString(), e);
+                    }
+                    if (!skipExceptions) {
+                        throw e;
+                    }
+                }
+            }
+        }
+    }
 
-		}
-	}
+    /**
+     * This implementation checks the input {@param childAssociation}.
+     * It should be child association.
+     */
+    @Override
+    public void registerChildAssociation(QName childAssociation) {
+        if (childAssociation != null) {
+            AssociationDefinition ad = dictionaryService.getAssociation(childAssociation);
+            if (ad.isChild()) {
+                StringBuilder fieldName = new StringBuilder("assoc_");
+                fieldName.append(childAssociation.getPrefixString().replace(':', '_'));
+                fieldName.append("_added");
+                fieldsChildAssocs.put(fieldName.toString(), childAssociation);
+                if (log.isDebugEnabled()) {
+                    log.debug("Registered child association=" + childAssociation.toPrefixString());
+                }
+            } else {
+                if (log.isWarnEnabled()) {
+                    log.warn("The input association is not child. input=" + childAssociation.getPrefixString());
+                }
+            }
+        }
+    }
 
-	/**
-	 * This implementation checks the input {@param childAssociation}.
-	 * It should be child association.
-	 */
-	@Override
-	public void registerChildAssociation(QName childAssociation) {
-		if (childAssociation != null) {
-			AssociationDefinition ad = dictionaryService.getAssociation(childAssociation);
-			if (ad.isChild()) {
-				StringBuilder fieldName = new StringBuilder("assoc_");
-				fieldName.append(childAssociation.getPrefixString().replace(':', '_'));
-				fieldName.append("_added");
-				fieldsChildAssocs.put(fieldName.toString(), childAssociation);
-				if (log.isDebugEnabled())
-					log.debug("Registered child association=" + childAssociation.toPrefixString());
-			}
-			else {
-				if (log.isWarnEnabled()) {
-					log.warn("The input association is not child. input=" +
-							childAssociation.getPrefixString());
-				}
-			}
-		}
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
+    }
 
-	public void setDictionaryService(DictionaryService dictionaryService) {
-		this.dictionaryService = dictionaryService;
-	}
+    public void setSkipExceptions(boolean skipExceptions) {
+        this.skipExceptions = skipExceptions;
+    }
 
-	public void setSkipExceptions(boolean skipExceptions) {
-		this.skipExceptions = skipExceptions;
-	}
+    public void setRemoveSecondaryAssocs(boolean removeSecondaryAssocs) {
+        this.removeSecondaryAssocs = removeSecondaryAssocs;
+    }
 
-	public void setRemoveSecondaryAssocs(boolean removeSecondaryAssocs) {
-		this.removeSecondaryAssocs = removeSecondaryAssocs;
-	}
-
-	private void move(NodeRef target, NodeRef parent, QName childAssociation) {
-		boolean shouldMove = false;
-		List<ChildAssociationRef> parentAssocs = nodeService.getParentAssocs(target);
-		for (ChildAssociationRef parentAssoc : parentAssocs) {
-			if (parentAssoc.isPrimary()) {
-				if (!parent.equals(parentAssoc.getParentRef()))
-					shouldMove = true;
-			} else {
-				if (removeSecondaryAssocs) {
-					nodeService.removeChildAssociation(parentAssoc);
-					if (log.isDebugEnabled()) {
-						log.debug("The secondary parent associaton is successufully removed from " +
-								target + " parent association=" + parentAssoc.getTypeQName().getPrefixString() +
-								" parent node=" + parentAssoc.getParentRef());
-					}
-				}
-			}
-		}
-		if (shouldMove) {
-			nodeService.moveNode(
-					target,
-					parent,
-					childAssociation,
-					nodeService.getPrimaryParent(target).getQName());
-			if (log.isDebugEnabled()) {
-				log.debug("The node " + target + " successufully moved under " + 
-						parent + " child association is " + childAssociation.toPrefixString());
-			}
-		}
-	}
+    private void move(NodeRef target, NodeRef parent, QName childAssociation) {
+        boolean shouldMove = false;
+        List<ChildAssociationRef> parentAssocs = nodeService.getParentAssocs(target);
+        for (ChildAssociationRef parentAssoc : parentAssocs) {
+            if (parentAssoc.isPrimary()) {
+                if (!parent.equals(parentAssoc.getParentRef()))
+                    shouldMove = true;
+            } else {
+                if (removeSecondaryAssocs) {
+                    nodeService.removeChildAssociation(parentAssoc);
+                    if (log.isDebugEnabled()) {
+                        log.debug("The secondary parent associaton is successufully removed from " +
+                                target + " parent association=" + parentAssoc.getTypeQName().getPrefixString() +
+                                " parent node=" + parentAssoc.getParentRef());
+                    }
+                }
+            }
+        }
+        if (shouldMove) {
+            nodeService.moveNode(
+                    target,
+                    parent,
+                    childAssociation,
+                    nodeService.getPrimaryParent(target).getQName());
+            if (log.isDebugEnabled()) {
+                log.debug("The node " + target + " successufully moved under " + parent + " child association is " + childAssociation.toPrefixString());
+            }
+        }
+    }
 
 }

@@ -134,25 +134,20 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 
 				String propertyName = qNameConverter.mapQNameToName(entry.getKey());
 				boolean isContains = allowedProperties != null && allowedProperties.contains(propertyName);
-				if(propertiesMode == PropertiesMode.INCLUDE && isContains
+				if (propertiesMode == PropertiesMode.INCLUDE && isContains
 						|| propertiesMode == PropertiesMode.EXCLUDE && !isContains) {
 
-					if((propBefore!=null && !propBefore.equals(propAfter))||(propBefore==null && propAfter!=null))
-					{
+					if ((propBefore!=null && !propBefore.equals(propAfter))||(propBefore==null && propAfter!=null)) {
 						PropertyDefinition propDefinition = dictionaryService.getProperty(entry.getKey());
 						String propTitle = null;
-						if(propDefinition!=null)
-						{
+						if (propDefinition!=null) {
 							propTitle = propDefinition.getTitle();
 							List<ConstraintDefinition> cdef = propDefinition.getConstraints();
-							if(cdef!=null)
-							{
+							if (cdef!=null) {
 								ListIterator constrIter = cdef.listIterator();
-								while (constrIter.hasNext())
-								{
+								while (constrIter.hasNext()) {
 									Constraint constrDef2 = ((ConstraintDefinition) constrIter.next()).getConstraint();
-									if(constrDef2 instanceof ListOfValuesConstraint)
-									{
+									if (constrDef2 instanceof ListOfValuesConstraint) {
 										ListOfValuesConstraint listConstraint = (ListOfValuesConstraint) constrDef2;
 										propBefore = listConstraint.getDisplayLabel(String.valueOf(propBefore), messageService);
 										propAfter = listConstraint.getDisplayLabel(String.valueOf(propAfter), messageService);
@@ -161,24 +156,18 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 								}
 							}
 						}
-						if(propTitle==null)
-						{
+						if (propTitle == null) {
 							AspectDefinition aspectDefinition = dictionaryService.getAspect(entry.getKey());
-							if(aspectDefinition!=null)
-							{
+							if (aspectDefinition != null) {
 								Map<QName, PropertyDefinition> apropers = aspectDefinition.getProperties();
-								if(apropers!=null && apropers.get(entry.getKey())!=null)
-								{
+								if (apropers != null && apropers.get(entry.getKey()) != null) {
 									propTitle = apropers.get(entry.getKey()).getTitle();
 									List<ConstraintDefinition> cdef = apropers.get(entry.getKey()).getConstraints();
-									if(cdef!=null)
-									{
+									if (cdef != null) {
 										ListIterator constrIter = cdef.listIterator();
-										while (constrIter.hasNext())
-										{
+										while (constrIter.hasNext()) {
 											Constraint constrDef2 = ((ConstraintDefinition) constrIter.next()).getConstraint();
-											if(constrDef2 instanceof ListOfValuesConstraint)
-											{
+											if (constrDef2 instanceof ListOfValuesConstraint) {
 												ListOfValuesConstraint listConstraint = (ListOfValuesConstraint) constrDef2;
 												propBefore = listConstraint.getDisplayLabel(String.valueOf(propBefore), messageService);
 												propAfter = listConstraint.getDisplayLabel(String.valueOf(propAfter), messageService);
@@ -189,8 +178,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 								}
 							}
 						}
-						if(propTitle==null)
-						{
+						if (propTitle == null) {
 							propTitle=entry.getKey().getLocalName();
 						}
 						changedProperties.put("title",propTitle);
