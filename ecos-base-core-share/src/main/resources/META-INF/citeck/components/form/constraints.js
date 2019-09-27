@@ -567,6 +567,7 @@ require([
     Citeck.forms.handleHeaderCreateVariant = function (variant) {
 
         var params = Citeck.forms.parseCreateArguments(variant.createArguments);
+        var attributes = variant.attributes || {};
 
         Citeck.forms.createRecord(variant.recordRef, variant.type, variant.destination, function() {
 
@@ -579,7 +580,7 @@ require([
             }
 
             window.location = "/share/page/node-create?" + createArguments;
-        }, null, null, {}, { params: params });
+        }, null, null, attributes, { params: params });
     };
 
     Citeck.forms.createRecord = function (recordRef,
