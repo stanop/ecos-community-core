@@ -54,8 +54,11 @@ public class SupplementaryFilesGet extends BaseAbstractWebscript {
 		int i = 0;
 		
 		for (NodeRef ref : files) {
-			if (i==files.size()-1) targetRefs.append(ref);
-			else targetRefs.append(ref).append(",");
+			if (i==files.size()-1) {
+				targetRefs.append(ref);
+			} else {
+				targetRefs.append(ref).append(",");
+			}
 			i++;
 		}
 		if (files.isEmpty()) {

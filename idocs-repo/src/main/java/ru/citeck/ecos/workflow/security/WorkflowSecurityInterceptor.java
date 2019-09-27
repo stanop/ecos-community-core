@@ -118,9 +118,9 @@ public class WorkflowSecurityInterceptor extends SimpleMethodInterceptor {
         }
 
         NodeRef userNodeRef = null;
-        if(statuses.contains(WorkflowUserStatus.INITIATOR)) {
+        if (statuses.contains(WorkflowUserStatus.INITIATOR)) {
             userNodeRef = personService.getPerson(username);
-            if(task.getPath().getInstance().getInitiator().equals(userNodeRef)) {
+            if (task.getPath().getInstance().getInitiator().equals(userNodeRef)) {
                 return true;
             }
         }

@@ -85,8 +85,7 @@ public class CurrentDateGreaterComparator implements Comparator {
 							"; error=" + e);
 				}
 			}
-		}
-		else {
+		} else {
 			if (log.isDebugEnabled()) {
 				CurrentDateGreaterComparator.class.getName();
 				log.debug(arg0.getClass().getName());
