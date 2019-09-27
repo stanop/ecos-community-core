@@ -476,18 +476,30 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj) return true;
+			if (this == obj) {
+				return true;
+			}
 
-			if (obj == null || getClass() != obj.getClass()) return false;
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
 
 			TextIndex other = (TextIndex) obj;
-			if (!getOuterType().equals(other.getOuterType())) return false;
+			if (!getOuterType().equals(other.getOuterType())) {
+				return false;
+			}
 
-			if (newLineIndex != other.newLineIndex) return false;
+			if (newLineIndex != other.newLineIndex) {
+				return false;
+			}
 
-			if (!Objects.equals(text, other.text)) return false;
+			if (!Objects.equals(text, other.text)) {
+				return false;
+			}
 
-			if (textIndex != other.textIndex) return false;
+			if (textIndex != other.textIndex) {
+				return false;
+			}
 
 			return true;
 		}

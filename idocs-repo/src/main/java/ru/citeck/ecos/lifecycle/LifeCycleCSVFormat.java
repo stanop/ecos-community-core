@@ -102,8 +102,9 @@ public class LifeCycleCSVFormat extends LifeCycleAbstractFormat {
                 }
 
             } finally {
-                if (mapReader != null)
+                if (mapReader != null) {
                     mapReader.close();
+                }
             }
 
             return result;

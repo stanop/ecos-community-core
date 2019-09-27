@@ -496,8 +496,6 @@ public class LuceneQuery implements SearchQueryBuilder {
                 default:
                     return false;
             }
-
-
         }
 
         private void buildEqualsTerm(String field, String value) {

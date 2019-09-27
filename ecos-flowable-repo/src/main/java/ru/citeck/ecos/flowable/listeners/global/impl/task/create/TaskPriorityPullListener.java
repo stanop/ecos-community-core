@@ -15,7 +15,7 @@ public class TaskPriorityPullListener implements GlobalCreateTaskListener {
     @Override
     public void notify(DelegateTask delegateTask) {
         Object workflowPriority = delegateTask.getVariable("bpm_workflowPriority");
-        if(workflowPriority instanceof Integer) {
+        if (workflowPriority instanceof Integer) {
             delegateTask.setPriority((Integer) workflowPriority);
         }
     }

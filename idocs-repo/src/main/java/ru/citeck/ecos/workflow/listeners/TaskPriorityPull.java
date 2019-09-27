@@ -30,7 +30,7 @@ public class TaskPriorityPull implements TaskListener
 		
 		DelegateExecution execution = task.getExecution();
 		Object workflowPriority = execution.getVariable("bpm_workflowPriority");
-		if(workflowPriority instanceof Integer) {
+		if (workflowPriority instanceof Integer) {
 			task.setPriority((Integer) workflowPriority);
 		}
 		
