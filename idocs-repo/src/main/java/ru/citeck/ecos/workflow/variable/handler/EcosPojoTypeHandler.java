@@ -112,7 +112,7 @@ public class EcosPojoTypeHandler<T> implements VariableType {
             @SuppressWarnings("unchecked")
             PojoVariableWrapper<T> wrapper = objectMapper.readValue(text, PojoVariableWrapper.class);
             result = wrapper.variable;
-        } catch(IOException e){
+        } catch(IOException e) {
             throw new AlfrescoRuntimeException("Error!", e);
         }
         return result;

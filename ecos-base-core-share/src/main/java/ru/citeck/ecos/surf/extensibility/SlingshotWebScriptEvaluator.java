@@ -34,7 +34,7 @@ import org.springframework.extensions.webscripts.connector.Response;
 
 /**
  * SubComponent Evaluator that does its evaluation via request to remote service and processing its response.
- * 
+ *
  * Parameters, specified via Spring: 
  * - endpoint, 
  * - urlTemplate - string with @{code {placeholders}}, 
@@ -43,10 +43,10 @@ import org.springframework.extensions.webscripts.connector.Response;
  * - values (if not specified, it allowes null), 
  * - valueSeparator (default comma), 
  * - all other parameters, used to construct url from urlTemplate.
- * 
+ *
  * Example:
  * Suppose there is @{code api/property} webscript, that returns value of specified property for specified node.
- * 
+ *
  * <pre>
  * @{code
  * <bean id="nodeproperty.component.evaluator" class="SlingshotWebScriptEvaluator">
@@ -60,7 +60,7 @@ import org.springframework.extensions.webscripts.connector.Response;
  *    </property>
  * </bean>
  * }
- * 
+ *
  * @{code
  * <evaluator type="nodeproperty.component.evaluator">
  *    <params>
@@ -70,167 +70,166 @@ import org.springframework.extensions.webscripts.connector.Response;
  *    </params>
  * </evaluator>
  * }
- * 
+ *
  * </pre>
- * 
+ *
  * @author Sergey Tiunov
  *
  */
 public class SlingshotWebScriptEvaluator extends AbstractUniversalEvaluator
 {
-	private String endpoint = "alfresco";
-	private String urlTemplate;
-	private String accessor;
-	private static final String PARAM_VALUES = "values";
-	private static final String PARAM_SEPARATOR = "valueSeparator";
+    private String endpoint = "alfresco";
+    private String urlTemplate;
+    private String accessor;
+    private static final String PARAM_VALUES = "values";
+    private static final String PARAM_SEPARATOR = "valueSeparator";
 
-	private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = Logger.getLogger(getClass());
 
-	@Override
-	public boolean evaluateImpl(RequestContext rc, Map<String, String> params)
-	{
-		try {
-			if(urlTemplate == null) {
-				logger.error("mandatory parameter is not specified");
-				return false;
-			}
+    @Override
+    public boolean evaluateImpl(RequestContext rc, Map<String, String> params) {
+        try {
+            if (urlTemplate == null) {
+                logger.error("mandatory parameter is not specified");
+                return false;
+            }
 
-			// get connector
-			Connector conn = getConnector(rc);
-			if(conn == null) {
-				return false;
-			}
+            // get connector
+            Connector conn = getConnector(rc);
+            if (conn == null) {
+                return false;
+            }
 
-			// extract params
-			Map<String, String> paramValues = new HashMap<String, String>(params.size());
-			for(String key : params.keySet()) {
-				String paramValue = substitute(params.get(key), rc.getParameters());
-				paramValues.put(key, paramValue);
-			}
+            // extract params
+            Map<String, String> paramValues = new HashMap<String, String>(params.size());
+            for (String key : params.keySet()) {
+                String paramValue = substitute(params.get(key), rc.getParameters());
+                paramValues.put(key, paramValue);
+            }
 
-			// get url
-			String url = substitute(urlTemplate, paramValues);
-			// submit request
-			final Response response = conn.call(url);
+            // get url
+            String url = substitute(urlTemplate, paramValues);
+            // submit request
+            final Response response = conn.call(url);
 
-			// check response
-			if (response.getStatus().getCode() != Status.STATUS_OK) {
-				logger.error("Response status isn't OK");
-				return false;
-			}
+            // check response
+            if (response.getStatus().getCode() != Status.STATUS_OK) {
+                logger.error("Response status isn't OK");
+                return false;
+            }
 
-			// process response
-			return evaluateImplResponse(response, params);
-		} catch (Exception e) {
-			logger.error("Failed to evaluate the result", e);
-		}
+            // process response
+            return evaluateImplResponse(response, params);
+        } catch (Exception e) {
+            logger.error("Failed to evaluate the result", e);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	private boolean evaluateImplResponse(Response response, Map<String, String> params){
-		Object object;
-		try {
-			object = JSONValue.parseWithException(response.getText());
-		} catch (ParseException e) {
-			logger.error("Failed to parse web script response using JSON", e);
-			return false;
-		}
+    private boolean evaluateImplResponse(Response response, Map<String, String> params){
+        Object object;
+        try {
+            object = JSONValue.parseWithException(response.getText());
+        } catch (ParseException e) {
+            logger.error("Failed to parse web script response using JSON", e);
+            return false;
+        }
 
-		Object value = getJSONValue(object, accessor);
-		String valuesParam = params.get(PARAM_VALUES);
+        Object value = getJSONValue(object, accessor);
+        String valuesParam = params.get(PARAM_VALUES);
 
-		// no values is used to allow null
-		if(valuesParam == null || value == null) {
-			return value == null;
-		}
+        // no values is used to allow null
+        if(valuesParam == null || value == null) {
+            return value == null;
+        }
 
-		// default separator is comma
-		String separator = params.getOrDefault(PARAM_SEPARATOR, "[,]");
+        // default separator is comma
+        String separator = params.getOrDefault(PARAM_SEPARATOR, "[,]");
 
-		// get list of allowed values
-		String[] allowedValues = valuesParam.split(separator);
+        // get list of allowed values
+        String[] allowedValues = valuesParam.split(separator);
 
-		// compare
-		String stringValue = value.toString();
-		for (String allowedValue : allowedValues) {
-			if (allowedValue.equals(stringValue)) {
-				return true;
-			}
-		}
+        // compare
+        String stringValue = value.toString();
+        for (String allowedValue : allowedValues) {
+            if (allowedValue.equals(stringValue)) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	private Connector getConnector(RequestContext rc){
-		final String userId = rc.getUserId();
+    private Connector getConnector(RequestContext rc){
+        final String userId = rc.getUserId();
 
-		try {
-			return rc.getServiceRegistry().getConnectorService().getConnector(
-					endpoint,
-					userId,
-					ServletUtil.getSession()
-			);
-		} catch (ConnectorServiceException e) {
-			logger.error("Can not get connector for endpoint '" + endpoint + "' and user '" + userId + "'", e);
-		}
+        try {
+            return rc.getServiceRegistry().getConnectorService().getConnector(
+                    endpoint,
+                    userId,
+                    ServletUtil.getSession()
+            );
+        } catch (ConnectorServiceException e) {
+            logger.error("Can not get connector for endpoint '" + endpoint + "' and user '" + userId + "'", e);
+        }
 
-		return null;
-	}
-	
-	private String substitute(String template, Map<String, String> params) {
-		String result = template;
-		for(String key : params.keySet()) {
-			String value = params.get(key);
-			if (value != null)
-				result = result.replace("{" + key + "}", value);
-		}
-		return result;
-	}
+        return null;
+    }
 
-	@SuppressWarnings("rawtypes")
-	private Object getJSONValue(Object object, String accessor) {
-		String[] keys = accessor.split("\\.");
-		Object result = object;
-		for(int i = 0; i < keys.length; i++) {
-			if(result == null) {
-				break;
-			}
-			if(keys[i].isEmpty()) {
-				continue;
-			}
-			if(result instanceof Map) {
-				result = ((Map)result).get(keys[i]);
-				continue;
-			}
-			if(result instanceof List) {
-				Integer index = null;
-				try {
-					index = Integer.parseInt(keys[i]);
-				} catch(Exception e) {
-					// do nothing
-				}
-				if(index != null) {
-					result = ((List)result).get(index);
-					continue;
-				}
-			}
-			result = null;
-			break;
-		}
-		return result;
-	}
+    private String substitute(String template, Map<String, String> params) {
+        String result = template;
+        for(String key : params.keySet()) {
+            String value = params.get(key);
+            if (value != null)
+                result = result.replace("{" + key + "}", value);
+        }
+        return result;
+    }
 
-	public void setEndpoint(String endpoint) {
-		this.endpoint = endpoint;
-	}
+    @SuppressWarnings("rawtypes")
+    private Object getJSONValue(Object object, String accessor) {
+        String[] keys = accessor.split("\\.");
+        Object result = object;
+        for(int i = 0; i < keys.length; i++) {
+            if(result == null) {
+                break;
+            }
+            if(keys[i].isEmpty()) {
+                continue;
+            }
+            if(result instanceof Map) {
+                result = ((Map)result).get(keys[i]);
+                continue;
+            }
+            if(result instanceof List) {
+                Integer index = null;
+                try {
+                    index = Integer.parseInt(keys[i]);
+                } catch(Exception e) {
+                    // do nothing
+                }
+                if(index != null) {
+                    result = ((List)result).get(index);
+                    continue;
+                }
+            }
+            result = null;
+            break;
+        }
+        return result;
+    }
 
-	public void setUrlTemplate(String urlTemplate) {
-		this.urlTemplate = urlTemplate;
-	}
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
 
-	public void setAccessor(String accessor) {
-		this.accessor = accessor;
-	}
+    public void setUrlTemplate(String urlTemplate) {
+        this.urlTemplate = urlTemplate;
+    }
+
+    public void setAccessor(String accessor) {
+        this.accessor = accessor;
+    }
 
 }
