@@ -42,20 +42,15 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
         super(nodeService, dictionaryService, nodeRef, null, null);
     }
     
-    public void checkIntegrity(List<IntegrityRecord> eventResults)
-    {
+    public void checkIntegrity(List<IntegrityRecord> eventResults) {
         NodeRef nodeRef = getNodeRef();
-        if (!nodeService.exists(nodeRef))
-        {
+        if (!nodeService.exists(nodeRef)) {
             // node has gone
-            if (logger.isDebugEnabled())
-            {
+            if (logger.isDebugEnabled()) {
                 logger.debug("Event ignored - node gone: " + this);
             }
             eventResults.clear();
-        }
-        else
-        {
+        } else {
             checkAllProperties(getNodeRef(), eventResults);
         }
     }
@@ -161,19 +156,15 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
             }
             // check constraints
             List<ConstraintDefinition> constraintDefs = propertyDef.getConstraints();
-            for (ConstraintDefinition constraintDef : constraintDefs)
-            {
+            for (ConstraintDefinition constraintDef : constraintDefs) {
                 // get the constraint implementation
                 Constraint constraint = constraintDef.getConstraint();
-                try
-                {
+                try {
                 	if (constraint instanceof NodeRefAbstractConstraint) {
                 		((NodeRefAbstractConstraint)constraint).evaluate(propertyQName, propertyValue, nodeRef);
                 	}
                     constraint.evaluate(propertyValue);
-                }
-                catch (ConstraintException e)
-                {
+                } catch (ConstraintException e) {
                     IntegrityRecord result = new IntegrityRecord(
                             "Invalid property value: \n" +
                             "   Node: " + nodeRef + "\n" +

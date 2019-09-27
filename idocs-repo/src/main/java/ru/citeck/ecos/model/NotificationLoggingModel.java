@@ -34,8 +34,8 @@ public interface NotificationLoggingModel {
     public static final QName PROP_NOTIFICATION_EMAIL = QName.createQName(NAMESPACE, "notificationEmail");
     public static final QName PROP_NOTIFICATION_SUBJECT = QName.createQName(NAMESPACE, "notificationSubject");
     public static final QName PROP_NOTIFICATION_WOKFLOW_ID = QName.createQName(NAMESPACE, "wokflowId");
-	public enum EventType {
-		NotificationForTask, Other
-	}
+    public enum EventType {
+        NotificationForTask, Other
+    }
 
 }
