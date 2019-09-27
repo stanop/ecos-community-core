@@ -70,7 +70,7 @@ public class AddDocumentStateBehaviour implements NodeServicePolicies.OnCreateNo
     }
 
     private void startLifecycle(final NodeRef nodeRef) {
-        if(!nodeService.exists(nodeRef)) {
+        if (!nodeService.exists(nodeRef)) {
             return;
         }
 
@@ -79,7 +79,7 @@ public class AddDocumentStateBehaviour implements NodeServicePolicies.OnCreateNo
             return null;
         });
         boolean transited = lifeCycleService.doTransition(nodeRef, LifeCycleModel.CONSTR_AUTOMATIC_TRANSITION);
-        if(!transited) {
+        if (!transited) {
             lifeCycleService.doTimerTransition(nodeRef);
         }
     }

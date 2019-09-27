@@ -84,11 +84,11 @@ public class FlowableGrantWorkflowPackageHelper {
                 getProcessPermissionProvider(task) :
                 getTaskPermissionProvider(task);
 
-        if(authorities.size() == 0 || workflowPackage == null) {
+        if (authorities.size() == 0 || workflowPackage == null) {
             return;
         }
         AuthenticationUtil.runAsSystem(() -> {
-            for(String authority : authorities) {
+            for (String authority : authorities) {
                 grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
             }
             return null;
@@ -132,7 +132,7 @@ public class FlowableGrantWorkflowPackageHelper {
         final NodeRef workflowPackage = FlowableListenerUtils.getWorkflowPackage(execution);
         final String provider = getProcessPermissionProvider(execution);
 
-        if(workflowPackage == null) {
+        if (workflowPackage == null) {
             return;
         }
 
@@ -151,7 +151,7 @@ public class FlowableGrantWorkflowPackageHelper {
         final NodeRef workflowPackage = FlowableListenerUtils.getWorkflowPackage(task);
         final String provider = getTaskPermissionProvider(task);
 
-        if(workflowPackage == null) {
+        if (workflowPackage == null) {
             return;
         }
 
@@ -190,7 +190,7 @@ public class FlowableGrantWorkflowPackageHelper {
         final NodeRef workflowPackage = FlowableListenerUtils.getWorkflowPackage(execution);
         final String provider = getTaskPermissionProvider(task);
 
-        if(workflowPackage == null) {
+        if (workflowPackage == null) {
             return;
         }
 
@@ -209,7 +209,7 @@ public class FlowableGrantWorkflowPackageHelper {
         final NodeRef workflowPackage = FlowableListenerUtils.getWorkflowPackage(execution);
         final String provider = getProcessPermissionProvider(execution);
 
-        if(workflowPackage == null) {
+        if (workflowPackage == null) {
             return;
         }
 

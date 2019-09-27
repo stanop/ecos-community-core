@@ -87,7 +87,9 @@ public class FieldAutoFillBehaviour implements
     }
 
     private String getObjectFromTemplate(final NodeRef nodeRef, final String template) {
-        if (template == null) {return null;}
+        if (template == null) {
+            return null;
+        }
         return AuthenticationUtil.runAsSystem(() -> {
             HashMap<String, Object> model = new HashMap<>(1);
             model.put(nodeVariable, nodeRef);

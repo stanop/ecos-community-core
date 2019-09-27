@@ -44,12 +44,14 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
 
     @Override
     protected void notifyImpl(final DelegateExecution delegateExecution) {
-        if(!(delegateExecution instanceof ExecutionEntity)) return;
+        if (!(delegateExecution instanceof ExecutionEntity)) {
+            return;
+        }
 
         ExecutionEntity entity = (ExecutionEntity) delegateExecution;
         String deleteReason = entity.getDeleteReason();
 
-        if(!entity.isEnded() && deleteReason != null
+        if (!entity.isEnded() && deleteReason != null
                 && (deleteReason.equals("cancelled") || deleteReason.equals("deleted"))) {
 
             String workflowId = "activiti$" + entity.getProcessInstanceId();
@@ -61,11 +63,11 @@ public class MirrorEndProcessListener extends AbstractExecutionListener {
                     nodeService.deleteNode(taskMirror);
                     return null;
                 }, AuthenticationUtil.getSystemUserName());
-                if(logger.isDebugEnabled()) {
+                if (logger.isDebugEnabled()) {
                     logger.debug(String.format("Mirror node removed after workflow was %s. nodeRef:%s", deleteReason, taskMirror));
                 }
             }
-        } else if(entity.getProcessInstance().isEnded()) {
+        } else if (entity.getProcessInstance().isEnded()) {
             String workflowId = "activiti$" + entity.getProcessInstanceId();
             List<NodeRef> mirrors = service.getTaskMirrorsByWorkflowId(workflowId);
             for (NodeRef mirror : mirrors) {

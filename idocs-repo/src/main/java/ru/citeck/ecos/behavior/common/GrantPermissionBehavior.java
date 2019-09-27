@@ -85,7 +85,7 @@ public class GrantPermissionBehavior implements OnCreateAssociationPolicy, OnDel
     public void onDeleteAssociation(AssociationRef associationRef) {
         final NodeRef document = associationRef.getSourceRef();
         final NodeRef authority = associationRef.getTargetRef();
-        if(!nodeService.exists(document) || !nodeService.exists(authority)) return;
+        if (!nodeService.exists(document) || !nodeService.exists(authority)) return;
 
         final String authorityName = RepoUtils.getAuthorityName(authority, nodeService, dictionaryService);
         AuthenticationUtil.runAsSystem((RunAsWork<Void>) () -> {

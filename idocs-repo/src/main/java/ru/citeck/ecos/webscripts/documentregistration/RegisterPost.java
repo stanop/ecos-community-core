@@ -54,7 +54,7 @@ public class RegisterPost extends DeclarativeWebScript {
     @Override
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
         String nodeRefStr = req.getParameter(PARAM_NODEREF);
-        if(nodeRefStr == null) {
+        if (nodeRefStr == null) {
             throw new RuntimeException("nodeRef is required");
         }
         final NodeRef nodeRef = new NodeRef(req.getParameter(PARAM_NODEREF));
@@ -85,7 +85,7 @@ public class RegisterPost extends DeclarativeWebScript {
     //ugly solution
     private String getTemplateName(NodeRef nodeRef) {
         QName type = nodeService.getType(nodeRef);
-        if(type.isMatch(IdocsModel.TYPE_ATTORNEY)) {
+        if (type.isMatch(IdocsModel.TYPE_ATTORNEY)) {
             return "idocs-attorney-number-template";
         } else {
             return null;
