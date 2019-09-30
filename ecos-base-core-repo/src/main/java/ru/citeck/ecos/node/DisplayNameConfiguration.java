@@ -1,6 +1,7 @@
 package ru.citeck.ecos.node;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,16 @@ public class DisplayNameConfiguration {
 
         Map<QName, Serializable> props = info.getProperties();
 
-        String title = (String) props.get(ContentModel.PROP_TITLE);
+        String title = null;
+
+        if (props.get(ContentModel.PROP_TITLE) != null &&
+                MLText.class.equals(props.get(ContentModel.PROP_TITLE).getClass())) {
+            MLText mlText = (MLText) props.get(ContentModel.PROP_TITLE);
+            title = mlText.getDefaultValue();
+        } else {
+            title = (String) props.get(ContentModel.PROP_TITLE);
+        }
+
         String name = (String) props.get(ContentModel.PROP_NAME);
 
         return StringUtils.isNotBlank(title) ? title : name;
