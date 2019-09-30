@@ -4,7 +4,7 @@ services:
     container_name: ecos-ui-develop
     ports:
       - 80:80/tcp
-    image: nexus.citeck.ru/ecos-ui:release-1.4.1
+    image: nexus.citeck.ru/ecos-ui:1.4.2
     environment:
       - PROXY_TARGET=$ALFRESCO_TARGET
       - GATEWAY_TARGET=$GATEWAY_TARGET
