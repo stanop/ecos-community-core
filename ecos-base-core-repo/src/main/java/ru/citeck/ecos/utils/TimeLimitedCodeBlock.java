@@ -25,18 +25,18 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public abstract class TimeLimitedCodeBlock<T> {
-	
-	private long timeoutMs;
-	
-	public TimeLimitedCodeBlock(long timeoutMs) {
-		this.timeoutMs = timeoutMs;
-	}
-	
-	protected abstract T codeBlock() throws Throwable;
-	
-	public T run() throws Throwable {
-		final ExecutorService executor = Executors.newSingleThreadExecutor();
-		final Future<T> future = executor.submit(() -> {
+
+    private long timeoutMs;
+
+    public TimeLimitedCodeBlock(long timeoutMs) {
+        this.timeoutMs = timeoutMs;
+    }
+
+    protected abstract T codeBlock() throws Throwable;
+
+    public T run() throws Throwable {
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        final Future<T> future = executor.submit(() -> {
             try {
                 return codeBlock();
             } catch (Exception e) {
@@ -46,13 +46,14 @@ public abstract class TimeLimitedCodeBlock<T> {
                 throw new Exception(e);
             }
         });
-		executor.shutdown(); // This does not cancel the already-scheduled task.
-		try {
-			return future.get(timeoutMs, TimeUnit.MILLISECONDS);
-		} finally {
-			if (!executor.isTerminated())
-			    executor.shutdownNow(); // If you want to stop the code that hasn't finished.
-		}
-	}
+        executor.shutdown(); // This does not cancel the already-scheduled task.
+        try {
+            return future.get(timeoutMs, TimeUnit.MILLISECONDS);
+        } finally {
+            if (!executor.isTerminated()) {
+                executor.shutdownNow(); // If you want to stop the code that hasn't finished.
+            }
+        }
+    }
 
 }
