@@ -64,6 +64,14 @@ public class FlowableExecutionEntityNotificationSender extends AbstractNotificat
         this.personService = serviceRegistry.getPersonService();
     }
 
+    /**
+     * Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
+     */
+    @Deprecated
+    public void setTaskSubscribers(Map<String, Map<String, List<String>>> taskSubscribers) {
+        // not used
+    }
+
     // get notification template arguments for the task
     protected Map<String, Serializable> getNotificationArgs(ExecutionEntity task) {
         Map<String, Serializable> args = new HashMap<String, Serializable>();

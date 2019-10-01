@@ -120,6 +120,16 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
         this.authorityService = serviceRegistry.getAuthorityService();
     }
 
+    /**
+     * Recipients provided as parameter taskSubscribers: "task name"-{"doc type1"-"recepient field1", ...}
+     *
+     * @param taskSubscribers subscribers
+     */
+    @Deprecated
+    public void setTaskSubscribers(Map<String, Map<String, List<String>>> taskSubscribers) {
+        // not used
+    }
+
     // get notification template arguments for the task
     protected Map<String, Serializable> getNotificationArgs(DelegateTask task) {
         Map<String, Serializable> args = new HashMap<>();
@@ -382,6 +392,11 @@ class StartDelegateTaskNotificationSender extends AbstractNotificationSender<Del
 
     public void setNodeOwnerDAO(NodeOwnerDAO nodeOwnerDAO) {
         this.nodeOwnerDAO = nodeOwnerDAO;
+    }
+
+    @Deprecated
+    public void setTaskProperties(Map<String, Map<String, String>> taskProperties) {
+        // not used
     }
 
     public void setAdditionRecipients(Map<String, List<String>> additionRecipients) {

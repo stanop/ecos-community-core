@@ -221,6 +221,11 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
         this.subjectTemplates = subjectTemplates;
     }
 
+    @Deprecated
+    public void setTemplateService(TemplateService templateService) {
+        // not used
+    }
+
     public void setTemplateEngine(String templateEngine) {
         this.templateEngine = templateEngine;
     }
@@ -238,6 +243,14 @@ class DelegateTaskNotificationSender extends AbstractNotificationSender<Delegate
         String wfkey = "activiti$" + processDef.substring(0, processDef.indexOf(":"));
         String tkey = (String) task.getVariableLocal("taskFormKey");
         return getNotificationTemplate(wfkey, tkey);
+    }
+
+    /* Properties for tasks provided as map: "task name"-{"property1"-"value1", ...}
+    * @param task subscribers
+    */
+    @Deprecated
+    public void setTaskProperties(Map<String, Map<String, String>> taskProperties) {
+        // not used
     }
 
     protected void sendToAssignee(DelegateTask task, Set<String> authorities) {
