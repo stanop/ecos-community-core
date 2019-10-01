@@ -246,11 +246,7 @@ public class ConfirmHelper
 	@SuppressWarnings("unchecked")
 	public boolean isLatestVersionConfirmedByAll(DelegateExecution execution) {
 		Set<NodeRef> currentVersions = getCurrentVersionRefs(execution);
-		Set<NodeRef> confirmableVersions = (Set<NodeRef>) execution.getVariable(qNameConverter.mapQNameToName(ConfirmWorkflowModel.PROP_CONFIRMABLE_VERSION));
-		NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
-		List<ChildAssociationRef> packageItems = nodeService.getChildAssocs(workflowPackage, WorkflowModel.ASSOC_PACKAGE_CONTAINS, RegexQNamePattern.MATCH_ALL);
 
-		HashSet<NodeRef> versions = new HashSet<NodeRef>();
 		List<ConfirmDecision> confirmDecisions = getConfirmDecisions(execution);
 		boolean versionIsLatest = true;
 		ArrayList<NodeRef> confirmerForOldVersions = new ArrayList<NodeRef>(confirmDecisions.size());

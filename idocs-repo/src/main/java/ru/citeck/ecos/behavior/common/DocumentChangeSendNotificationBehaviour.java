@@ -123,7 +123,6 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 		logger.debug("onUpdateProperties event");
 		if(enabled && nodeService.exists(nodeRef)) 
 		{
-			Set<String> subs = new HashSet <String>();
 			Map<QName, Serializable> properties = nodeService.getProperties(nodeRef);
 			ArrayList<Object> listProperties = new ArrayList<Object>();
 			HashMap<String, Object> addition =  new HashMap<String, Object>();
