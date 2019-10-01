@@ -69,9 +69,7 @@ public class OrgMetaServiceImpl implements OrgMetaService
 
 	@Override
 	public List<String> getGroupTypes() {
-		List<String> groupTypes = new ArrayList<String>();
-		groupTypes.addAll(components.keySet());
-		return groupTypes;
+		return new ArrayList<>(components.keySet());
 	}
 
 	@Override

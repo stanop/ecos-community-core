@@ -127,8 +127,7 @@ public class NewCommentNotificationService {
     }
 
     private Set<String> getNotificationListeners(NodeRef nodeRef) {
-        Set<String> authorities = new HashSet<String>();
-        authorities.addAll(getNodeOwners(nodeRef));
+        Set<String> authorities = new HashSet<>(getNodeOwners(nodeRef));
         return authorities;
     }
 

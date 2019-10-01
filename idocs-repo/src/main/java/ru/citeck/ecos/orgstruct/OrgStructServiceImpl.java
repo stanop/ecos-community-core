@@ -129,9 +129,7 @@ public class OrgStructServiceImpl implements OrgStructService
 
 	@Override
 	public List<String> getGroupTypes() {
-		List<String> groupTypes = new ArrayList<String>();
-		groupTypes.addAll(components.keySet());
-		return groupTypes;
+		return new ArrayList<>(components.keySet());
 	}
 
 	@Override
@@ -191,8 +189,7 @@ public class OrgStructServiceImpl implements OrgStructService
 		Set<String> visitedGroups = new TreeSet<String>();
 
 		while(groupsToVisit.size() > 0) {
-			Set<String> currentGroups = new TreeSet<String>();
-			currentGroups.addAll(groupsToVisit);
+			Set<String> currentGroups = new TreeSet<>(groupsToVisit);
 			for(String group : currentGroups) {
 				if(isTypedGroup(BRANCH_TYPE, group)) {
 					String managerGroup = getBranchManager(group);
