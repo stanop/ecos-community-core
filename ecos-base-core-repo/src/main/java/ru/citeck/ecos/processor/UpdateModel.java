@@ -45,11 +45,11 @@ public class UpdateModel extends AbstractDataBundleLine
 	
 	// evaluate all strings as expressions
 	private Map<String,Object> processTemplateMap(Map<String,Object> templateMap, 
-			Map<String,Object> inputModel) 
-	{
+			Map<String,Object> inputModel) {
 		Map<String,Object> map = new HashMap<String,Object>(templateMap.size());
-		for(String key : templateMap.keySet()) {
-			Object template = templateMap.get(key);
+		for (Map.Entry<String, Object> entry : templateMap.entrySet()) {
+			String key = entry.getKey();
+			Object template = entry.getValue();
 			Object value = this.processTemplateObject(template, inputModel);
 			map.put(key, value);
 		}

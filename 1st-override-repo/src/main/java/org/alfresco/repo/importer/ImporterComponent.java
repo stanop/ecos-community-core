@@ -1024,18 +1024,15 @@ public class ImporterComponent implements ImporterService
             // find target class that is closest to node type or aspects
             QName closestAssocType = null;
             int closestHit = 1;
-            for (QName nodeType : nodeTypes)
-            {
-                for (QName targetType : targetTypes.keySet())
-                {
+            for (QName nodeType : nodeTypes) {
+                for (Map.Entry<QName,QName> targetTypesEntry : targetTypes.entrySet()) {
+                    QName targetType = targetTypesEntry.getKey();
                     QName testType = nodeType;
                     int howClose = 1;
-                    while (testType != null)
-                    {
+                    while (testType != null) {
                         howClose--;
-                        if (targetType.equals(testType) && howClose < closestHit)
-                        {
-                            closestAssocType = targetTypes.get(targetType);
+                        if (targetType.equals(testType) && howClose < closestHit) {
+                            closestAssocType = targetTypesEntry.getValue();
                             closestHit = howClose;
                             break;
                         }
@@ -1078,23 +1075,21 @@ public class ImporterComponent implements ImporterService
          * @return Map
          */
         @SuppressWarnings("unchecked")
-        private Map<QName, Serializable> bindProperties(ImportNode context)
-        {
+        private Map<QName, Serializable> bindProperties(ImportNode context) {
             Map<QName, Serializable> properties = context.getProperties();
             Map<QName, Serializable> boundProperties = new HashMap<QName, Serializable>(properties.size());
-            for (QName property : properties.keySet())
-            {
+            for (Map.Entry<QName, Serializable> propEntry : properties.entrySet()) {
+                QName property = propEntry.getKey();
                 // get property datatype
                 DataTypeDefinition valueDataType = context.getPropertyDataType(property);
 
                 // filter out content properties (they're imported later)
-                if (valueDataType != null && valueDataType.getName().equals(DataTypeDefinition.CONTENT))
-                {
+                if (valueDataType != null && valueDataType.getName().equals(DataTypeDefinition.CONTENT)) {
                     continue;
                 }
 
                 // get property value
-                Serializable value = properties.get(property);
+                Serializable value = propEntry.getValue();
 
                 // bind property value to configuration and convert to appropriate type
                 if (value instanceof Collection)
@@ -1341,13 +1336,10 @@ public class ImporterComponent implements ImporterService
          * @param nodeRef NodeRef
          * @param properties Map<QName, Serializable>
          */
-        private void reportPropertySet(NodeRef nodeRef, Map<QName, Serializable> properties)
-        {
-            if (progress != null && properties != null)
-            {
-                for (QName property : properties.keySet())
-                {
-                    progress.propertySet(nodeRef, property, properties.get(property));
+        private void reportPropertySet(NodeRef nodeRef, Map<QName, Serializable> properties) {
+            if (progress != null && properties != null) {
+                for (Map.Entry<QName, Serializable> propEntry : properties.entrySet()) {
+                    progress.propertySet(nodeRef, propEntry.getKey(), propEntry.getValue());
                 }
             }
         }
