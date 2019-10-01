@@ -79,7 +79,7 @@ public class MailAttachActionExecutor extends MailActionExecuter {
                     Iterator iter = attachments.iterator();
 
                     while (iter.hasNext()) {
-                        Map<String, Serializable> attachment1 = (Map<String, Serializable>)iter.next();
+                        Map<String, Serializable> attachment1 = (Map<String, Serializable>) iter.next();
                         logger.debug("attachment1 "+attachment1);
                         String name1 = (String)attachment1.get("name");
                         logger.debug("name1 "+name1);

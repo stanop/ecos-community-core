@@ -234,6 +234,11 @@ public class CaseSubcaseBehavior implements
         this.nodeService = nodeService;
     }
 
+    @Deprecated
+    public void setOrder(int order) {
+        // not used
+    }
+
     public void setCaseElementService(CaseElementServiceImpl caseElementService) {
         this.caseElementService = caseElementService;
     }
