@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.alfresco.model.ContentModel;
 import ru.citeck.ecos.model.DmsModel;
@@ -105,7 +106,7 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
 						QName property = (QName) entry.getKey();
 						String value = (String) entry.getValue();
 						String actualValue = (String) nodeService.getProperty(nodeRef,property);
-						if(actualValue!=null && !actualValue.equals(value) || actualValue==null && value!=null)
+						if(!Objects.equals(actualValue, value))
 						{
 							evaluateConditions = false;
 						}
@@ -246,14 +247,14 @@ public class DocumentCreateBasedOnFolderBehaviour implements NodeServicePolicies
 	public void onUpdateProperties(final NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) 
 	{
 		logger.debug("onUpdateProperties event");
-		if(nodeService.exists(nodeRef)) 
+		if(nodeService.exists(nodeRef))
 		{
 			if(nameDetermineProp!=null)
 			{
 				Object propBefore = (Object) before.get(nameDetermineProp);
 				Object propAfter = (Object) after.get(nameDetermineProp);
 				NodeRef currentParentFolder = null;
-				if((propBefore!=null && !propBefore.equals(propAfter)) || (propBefore==null && propAfter!=null))
+				if(!Objects.equals(propBefore, propAfter))
 				{
 					for(ChildAssociationRef parent : nodeService.getParentAssocs(nodeRef))
 					{
