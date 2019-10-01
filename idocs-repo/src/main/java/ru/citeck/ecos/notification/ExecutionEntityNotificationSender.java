@@ -123,7 +123,6 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
   // get notification template arguments for the task
 	protected Map<String, Serializable> getNotificationArgs(ExecutionEntity task) {
 		Map<String, Serializable> args = new HashMap<String, Serializable>();
-		//args.put(ARG_TASK, getTaskInfo(task));
 		args.put(ARG_WORKFLOW, getWorkflowInfo(task));
 		String userName = authenticationService.getCurrentUserName();
 		NodeRef person = personService.getPerson(userName);
@@ -132,28 +131,9 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 		args.put(ARG_MODIFIER, last_name+" "+first_name);
 		return args;
 	}
-	
-	/*private Serializable getTaskInfo(DelegateTask task) {
-		HashMap<String, Object> taskInfo = new HashMap<String, Object>();
-		taskInfo.put(ARG_TASK_ID, task.getId());
-		taskInfo.put(ARG_TASK_NAME, task.getName());
-		taskInfo.put(ARG_TASK_DESCRIPTION, task.getDescription());
-		HashMap<String, Serializable> properties = new HashMap<String, Serializable>();
-		taskInfo.put(ARG_TASK_PROPERTIES, properties);
-		properties.put(ARG_TASK_PROPERTIES_PRIORITY, task.getPriority());
-		properties.put(ARG_TASK_PROPERTIES_DESCRIPTION, task.getDescription());
-		properties.put(ARG_TASK_PROPERTIES_DUEDATE, task.getDueDate());
-		String userName = authenticationService.getCurrentUserName();
-		NodeRef person = personService.getPerson(userName);
-		String last_name = (String)nodeService.getProperty(person,ContentModel.PROP_FIRSTNAME);
-		String first_name = (String)nodeService.getProperty(person,ContentModel.PROP_LASTNAME);
-		taskInfo.put(ARG_TASK_EDITOR,last_name+" "+first_name);
-		return taskInfo;
-	}*/
-	
+
 	private Serializable getWorkflowInfo(ExecutionEntity task) {
 		HashMap<String, Object> workflowInfo = new HashMap<String, Object>();
-		//workflowInfo.put(ARG_WORKFLOW_ID, "activiti$" +task.getId());
 		workflowInfo.put(ARG_WORKFLOW_ID, task.getId());
 		HashMap<String, Serializable> properties = new HashMap<String, Serializable>();
 		workflowInfo.put(ARG_WORKFLOW_PROPERTIES, properties);
@@ -183,7 +163,6 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 		String subject = null;
 		NodeRef workflowPackage = null;
 		Vector<String> recipient = new Vector<String>();
-		//ExecutionEntity executionEntity = ((ExecutionEntity)task.getExecution()).getProcessInstance();
 		ActivitiScriptNode scriptNode = (ActivitiScriptNode)task.getVariable("bpm_package");
 		if (scriptNode != null)
 		{
