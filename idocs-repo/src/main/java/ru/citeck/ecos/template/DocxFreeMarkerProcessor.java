@@ -27,14 +27,8 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Stack;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -122,7 +116,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		process(template, model, outputStream);
 
 		try {
-			out.write(new String(outputStream.toByteArray(), Charset.forName("ISO-8859-1")));
+			out.write(new String(outputStream.toByteArray(), StandardCharsets.ISO_8859_1));
 		} catch (IOException e) {
 			logger.error("Write failed", e);
 		}
