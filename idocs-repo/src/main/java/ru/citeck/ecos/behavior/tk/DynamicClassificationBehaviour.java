@@ -116,4 +116,9 @@ public class DynamicClassificationBehaviour implements NodeServicePolicies.OnUpd
         this.policyComponent = policyComponent;
     }
 
+    @Deprecated
+    public void setOrder(int order) {
+        // not used
+    }
+
 }

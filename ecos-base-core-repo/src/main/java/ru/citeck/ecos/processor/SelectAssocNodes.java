@@ -87,6 +87,11 @@ public class SelectAssocNodes extends AbstractDataBundleLine {
         this.childName = childName;
     }
 
+    @Deprecated
+    public void setOnlyFirstNode(Boolean onlyFirstNode) {
+        // not used
+    }
+
     public void setAssocType(String assocType) {
         this.assocType = assocType;
     }

@@ -35,84 +35,90 @@ import ru.citeck.ecos.node.NodeInfo;
 import ru.citeck.ecos.node.NodeInfoFactory;
 import ru.citeck.ecos.service.CiteckServices;
 
-public class EnumerationBehaviour implements NodeServicePolicies.OnCreateNodePolicy 
+public class EnumerationBehaviour implements NodeServicePolicies.OnCreateNodePolicy
 {
-	private PolicyComponent policyComponent;
-	private NodeService nodeService;
-	private EnumerationService enumerationService;
-	private NodeInfoFactory nodeInfoFactory;
+    private PolicyComponent policyComponent;
+    private NodeService nodeService;
+    private EnumerationService enumerationService;
+    private NodeInfoFactory nodeInfoFactory;
 
-	private QName className;
-	private QName numberField;
-	private QName enumerationStateField;
-	private Object enabledState;
-	private String templateName;
+    private QName className;
+    private QName numberField;
+    private QName enumerationStateField;
+    private Object enabledState;
+    private String templateName;
 
-	public void init() {
-		
-		policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME,
-				className, new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
-		if(enumerationStateField == null) {
-			enumerationStateField = numberField;
-		}
-	}
+    public void init() {
 
-	@Override
-	public void onCreateNode(ChildAssociationRef childAssocRef) 
-	{
-		NodeRef nodeRef = childAssocRef.getChildRef();
-		if (!nodeService.exists(nodeRef)) {
-			return;
-		}
-		// check if enumeration is enabled
-		Object enumerationState = nodeService.getProperty(nodeRef, enumerationStateField);
-		if ((enabledState != null && !enabledState.equals(enumerationState)) ||
-				(enabledState == null && enumerationState != null)) {
-			return;
-		}
-		NodeRef template = enumerationService.getTemplate(templateName);
-		NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo(nodeRef);
+        policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME,
+                className, new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT));
+        if(enumerationStateField == null) {
+            enumerationStateField = numberField;
+        }
+    }
 
-		String number = null;
-		try {
-			number = enumerationService.getNumber(template, nodeInfo);
-		} catch (EnumerationException e) {
-			throw new AlfrescoRuntimeException(e.getMessage(), e);
-		}
+    @Override
+    public void onCreateNode(ChildAssociationRef childAssocRef)
+    {
+        NodeRef nodeRef = childAssocRef.getChildRef();
+        if (!nodeService.exists(nodeRef)) {
+            return;
+        }
+        // check if enumeration is enabled
+        Object enumerationState = nodeService.getProperty(nodeRef, enumerationStateField);
+        if ((enabledState != null && !enabledState.equals(enumerationState)) ||
+                (enabledState == null && enumerationState != null)) {
+            return;
+        }
+        NodeRef template = enumerationService.getTemplate(templateName);
+        NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo(nodeRef);
 
-		nodeService.setProperty(nodeRef, numberField, number);
-	}
+        String number = null;
+        try {
+            number = enumerationService.getNumber(template, nodeInfo);
+        } catch (EnumerationException e) {
+            throw new AlfrescoRuntimeException(e.getMessage(), e);
+        }
 
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.nodeService = serviceRegistry.getNodeService();
-		this.enumerationService = (EnumerationService) serviceRegistry.getService(CiteckServices.ENUMERATION_SERVICE);
-	}
+        nodeService.setProperty(nodeRef, numberField, number);
+    }
 
-	public void setPolicyComponent(PolicyComponent policyComponent) {
-		this.policyComponent = policyComponent;
-	}
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.nodeService = serviceRegistry.getNodeService();
+        this.enumerationService = (EnumerationService) serviceRegistry.getService(CiteckServices.ENUMERATION_SERVICE);
+    }
 
-	public void setNodeInfoFactory(NodeInfoFactory nodeInfoFactory) {
-		this.nodeInfoFactory = nodeInfoFactory;
-	}
+    public void setPolicyComponent(PolicyComponent policyComponent) {
+        this.policyComponent = policyComponent;
+    }
 
-	public void setClassName(QName className) {
-		this.className = className;
-	}
+    public void setNodeInfoFactory(NodeInfoFactory nodeInfoFactory) {
+        this.nodeInfoFactory = nodeInfoFactory;
+    }
 
-	public void setNumberField(QName numberField) {
-		this.numberField = numberField;
-	}
+    public void setClassName(QName className) {
+        this.className = className;
+    }
 
-	public void setEnumerationStateField(QName enumerationStateField) {
-		this.enumerationStateField = enumerationStateField;
-	}
+    public void setNumberField(QName numberField) {
+        this.numberField = numberField;
+    }
 
-	public void setEnabledState(Object enabledState) {
-		this.enabledState = enabledState;
-	}
+    public void setEnumerationStateField(QName enumerationStateField) {
+        this.enumerationStateField = enumerationStateField;
+    }
 
-	public void setTemplateName(String templateName) {
-		this.templateName = templateName;
-	}
+    public void setEnabledState(Object enabledState) {
+        this.enabledState = enabledState;
+    }
+
+    public void setTemplateName(String templateName) {
+        this.templateName = templateName;
+    }
+
+    @Deprecated
+    public void setOrder(int order) {
+        // not used
+    }
+
 }
