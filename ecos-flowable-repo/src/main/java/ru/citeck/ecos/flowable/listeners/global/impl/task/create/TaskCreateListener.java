@@ -53,13 +53,11 @@ public class TaskCreateListener implements GlobalCreateTaskListener {
         delegateTask.setVariableLocal(ActivitiConstants.PROP_TASK_FORM_KEY, taskFormKey);
 
         /** Check assignee */
-        if (delegateTask.getAssignee() != null) {
-            if (delegateTask.getAssignee().startsWith(NODE_WORKSPACE_PREFIX)) {
-                NodeRef initiatorNode = new NodeRef(delegateTask.getAssignee());
-                PersonService.PersonInfo initiatorInfo = personService.getPerson(initiatorNode);
-                if (initiatorInfo != null && initiatorInfo.getUserName() != null) {
-                    delegateTask.setAssignee(initiatorInfo.getUserName());
-                }
+        if (delegateTask.getAssignee() != null && delegateTask.getAssignee().startsWith(NODE_WORKSPACE_PREFIX)) {
+            NodeRef initiatorNode = new NodeRef(delegateTask.getAssignee());
+            PersonService.PersonInfo initiatorInfo = personService.getPerson(initiatorNode);
+            if (initiatorInfo != null && initiatorInfo.getUserName() != null) {
+                delegateTask.setAssignee(initiatorInfo.getUserName());
             }
         }
 
