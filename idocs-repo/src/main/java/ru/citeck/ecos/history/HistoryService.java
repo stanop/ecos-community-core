@@ -485,7 +485,7 @@ public class HistoryService {
     public void addHistoricalProperty(NodeRef nodeRef, QName sourceProp, QName historyProp) {
         Object oldValue = nodeService.getProperty(nodeRef, HistoryModel.PROP_ADDITIONAL_PROPERTIES);
         HashMap<QName, QName> propertyMapping = new HashMap<QName, QName>();
-        if (oldValue != null && oldValue instanceof Map) {
+        if (oldValue instanceof Map) {
             propertyMapping.putAll((Map) oldValue);
         }
         propertyMapping.put(sourceProp, historyProp);
