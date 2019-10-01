@@ -20,6 +20,16 @@
 
     <fileSets>
         <fileSet>
+            <includes>
+                <include>**/*.bpmn20.xml</include>
+                <include>**/*.bpmn</include>
+                <include>**/*-module.json</include>
+            </includes>
+            <directory>target/classes/alfresco/module/${project.artifactId}/workflow</directory>
+            <outputDirectory>modules/workflow</outputDirectory>
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
             <directory>target/classes/alfresco/module/${project.artifactId}/ecos-forms</directory>
             <outputDirectory>modules/form</outputDirectory>
             <filtered>false</filtered>
