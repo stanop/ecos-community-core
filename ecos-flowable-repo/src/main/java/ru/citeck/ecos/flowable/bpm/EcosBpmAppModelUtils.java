@@ -1,59 +1,65 @@
 package ru.citeck.ecos.flowable.bpm;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
-import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.ServiceRegistry;
+import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.namespace.QName;
+import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.util.ParameterCheck;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import ru.citeck.ecos.model.EcosBpmModel;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 
-import java.io.ByteArrayOutputStream;
-import java.io.Serializable;
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
 
+@Slf4j
 @Component
 public class EcosBpmAppModelUtils {
 
-    public final static String MODEL_TYPE_PROCESS = "bpm_process";
-
-    private NodeService nodeService;
     private ContentService contentService;
-    private RestTemplate restTemplate = new RestTemplate();
-
-    @Value("${ecos.applications.model.deploy.url}")
-    private String ecosAppsUrl;
+    private RecordsService recordsService;
+    private WorkflowService workflowService;
 
     public void deployProcessModel(NodeRef nodeRef) {
 
+        log.debug("Deploy workflow from nodeRef: " + nodeRef);
+
         ParameterCheck.mandatory("nodeRef", nodeRef);
 
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-        contentService.getReader(nodeRef, ContentModel.PROP_CONTENT).getContent(data);
+        ProcessDto processDto = recordsService.getMeta(RecordRef.valueOf(nodeRef.toString()), ProcessDto.class);
+        ParameterCheck.mandatory("engine", processDto.getEngineId());
 
-        Map<QName, Serializable> properties = nodeService.getProperties(nodeRef);
+        ContentReader contentReader = contentService.getReader(nodeRef, ContentModel.PROP_CONTENT);
 
-        EcosAppModel model = new EcosAppModel();
-        model.setData(data.toByteArray());
-        model.setKey((String) properties.get(EcosBpmModel.PROP_PROCESS_ID));
-        model.setMimetype(MimetypeMap.MIMETYPE_XML);
-        model.setType(MODEL_TYPE_PROCESS);
-        model.setName((String) properties.get(ContentModel.PROP_TITLE));
+        try (InputStream in = contentReader.getReader().getContentInputStream()) {
+            workflowService.deployDefinition(processDto.getEngineId(), in, contentReader.getMimetype());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        restTemplate.postForObject(ecosAppsUrl, model, Object.class);
+        log.debug("Success deploy of " + nodeRef);
     }
 
     @Autowired
     public void serServiceRegistry(ServiceRegistry serviceRegistry) {
-        nodeService = serviceRegistry.getNodeService();
         contentService = serviceRegistry.getContentService();
+        workflowService = serviceRegistry.getWorkflowService();
+    }
+
+    @Autowired
+    public void setRecordsService(RecordsService recordsService) {
+        this.recordsService = recordsService;
+    }
+
+    @Data
+    public static class ProcessDto {
+        @MetaAtt("ecosbpm:engine?str")
+        private String engineId;
     }
 }

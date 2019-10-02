@@ -3,60 +3,56 @@ package ru.citeck.ecos.rabbit;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Delivery;
 import lombok.extern.slf4j.Slf4j;
-import org.alfresco.model.ContentModel;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.transaction.RetryingTransactionHelper;
 import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.repository.*;
-import org.alfresco.service.cmr.search.SearchService;
-import org.alfresco.service.namespace.NamespaceService;
-import org.alfresco.service.namespace.QName;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.extensions.surf.util.AbstractLifecycleBean;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.apps.module.type.DataType;
 import ru.citeck.ecos.apps.module.type.impl.workflow.WorkflowModule;
 import ru.citeck.ecos.apps.queue.EcosAppQueue;
 import ru.citeck.ecos.apps.queue.EcosAppQueues;
 import ru.citeck.ecos.apps.queue.ModulePublishMsg;
 import ru.citeck.ecos.apps.queue.ModulePublishResultMsg;
-import ru.citeck.ecos.model.EcosBpmModel;
-import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.records2.utils.MandatoryParam;
 
-import javax.annotation.PostConstruct;
 import java.io.*;
-import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Component
-public class EcosModuleMQListener {
-
-    private static final NodeRef ROOT = new NodeRef("workspace://SpacesStore/ecos-bpm-process-root");
-    private static final NodeRef CATEGORY = new NodeRef("workspace://SpacesStore/cat-doc-kind-ecos-bpm-default");
+@DependsOn({"moduleStarter"})
+public class EcosModuleMQListener extends AbstractLifecycleBean {
 
     private ConnectionFactory connectionFactory;
+    private RabbitTemplate rabbitTemplate;
+
     private String consumerTag;
     private Channel channel;
 
-    private SearchService searchService;
     private RetryingTransactionHelper retryHelper;
-    private ContentService contentService;
-    private NodeService nodeService;
+
+    private Map<String, EcosModulePublisher> publishers = new HashMap<>();
 
     @Autowired
-    public EcosModuleMQListener(ServiceRegistry serviceRegistry) {
-        this.nodeService = serviceRegistry.getNodeService();
-        this.searchService = serviceRegistry.getSearchService();
+    public EcosModuleMQListener(ServiceRegistry serviceRegistry, List<EcosModulePublisher> publishers) {
         this.retryHelper = serviceRegistry.getRetryingTransactionHelper();
-        this.contentService = serviceRegistry.getContentService();
+        publishers.forEach(p -> this.publishers.put(p.getModuleType(), p));
     }
 
-    @PostConstruct
-    public void init() {
-        if (connectionFactory == null) {
-            log.debug("Connection factory is not initialized");
+    @Override
+    protected void onBootstrap(ApplicationEvent event) {
+
+        log.info("Initialize EcosModuleMQListener");
+
+        if (connectionFactory == null || rabbitTemplate == null) {
+            log.debug("RabbitMQ is not initialized");
             return;
         }
         try {
@@ -66,12 +62,12 @@ public class EcosModuleMQListener {
         }
     }
 
-    private void initImpl() throws Exception {
+    @Override
+    protected void onShutdown(ApplicationEvent event) {
+        cancel();
+    }
 
-        channel = connectionFactory.createConnection().createChannel(true);
-
-        EcosAppQueue queue = EcosAppQueues.createQueue(EcosAppQueues.PUBLISH_PREFIX, WorkflowModule.TYPE);
-
+    private void declareQueue(EcosAppQueue queue) throws IOException {
         channel.queueDeclare(
                 queue.getName(),
                 queue.isDurable(),
@@ -79,14 +75,24 @@ public class EcosModuleMQListener {
                 queue.isAutoDelete(),
                 null
         );
+    }
+
+    private void initImpl() throws Exception {
+
+        channel = connectionFactory.createConnection().createChannel(true);
+
+        EcosAppQueue queue = EcosAppQueues.createQueue(EcosAppQueues.PUBLISH_PREFIX, WorkflowModule.TYPE);
+        declareQueue(queue);
+        declareQueue(EcosAppQueues.PUBLISH_ERROR);
+
         consumerTag = channel.basicConsume(
                 queue.getName(),
-                false,
+                true,
                 this::handleMqMessage,
                 this::handleConsumeCancel
         );
 
-        log.info("Subscribe workflow consumer. Tag: " + consumerTag);
+        log.info("Subscribe EcosModule consumer. Tag: " + consumerTag);
     }
 
     private void handleConsumeCancel(String consumerTag) {
@@ -99,23 +105,19 @@ public class EcosModuleMQListener {
         } catch (Exception e) {
             log.error("Message handling failed", e);
             try {
-                channel.basicReject(message.getEnvelope().getDeliveryTag(), false);
+                rabbitTemplate.convertAndSend(EcosAppQueues.PUBLISH_ERROR_ID, message);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         }
     }
 
-    private void handleMqMessageImpl(Delivery message) throws IOException {
-
-        long deliveryTag = message.getEnvelope().getDeliveryTag();
+    private void handleMqMessageImpl(Delivery message) throws Exception {
 
         log.info("Message received");
 
         if (message.getBody() == null) {
-            log.error("Message body is null");
-            channel.basicAck(deliveryTag, false);
-            return;
+            throw new IllegalArgumentException("Message body is null");
         }
 
         ModulePublishMsg publishMsg;
@@ -123,35 +125,40 @@ public class EcosModuleMQListener {
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(message.getBody()));
             publishMsg = (ModulePublishMsg) ois.readObject();
         } catch (Exception e) {
-            log.error("Module can't be published. Body: " + Base64.getEncoder().encodeToString(message.getBody()), e);
-            channel.basicAck(deliveryTag, false);
-            return;
+            throw new IllegalArgumentException("Module publish message read error", e);
         }
+
+        log.info("Start message publishing: " + publishMsg.getId() + " (" + publishMsg.getType() + ")");
 
         try {
 
-            if (publishMsg.getId() == null || publishMsg.getId().isEmpty()) {
-                channel.basicAck(deliveryTag, false);
-                throw new IllegalArgumentException("Incorrect message");
+            MandatoryParam.checkString("id", publishMsg.getId());
+            MandatoryParam.checkString("type", publishMsg.getType());
+
+            EcosModulePublisher publisher = publishers.get(publishMsg.getType());
+            if (publisher == null) {
+                throw new IllegalArgumentException("Publisher is not registered for type " + publishMsg.getType());
             }
 
             retryHelper.doInTransaction(() -> {
                 AuthenticationUtil.runAsSystem(() -> {
-                    handleMqPublishMsg(publishMsg);
+                    publisher.publish(publishMsg);
                     return null;
                 });
                 return null;
             }, false, true);
 
-            log.info("Process published: " + publishMsg.getId());
+            log.info("Module published: " + publishMsg.getId() + " (" + publishMsg.getType() + ")");
 
-            channel.basicAck(deliveryTag, false);
             sendPublishResult(publishMsg, true, null);
 
         } catch (Exception e) {
-            log.error("Message handling error", e);
-            channel.basicAck(deliveryTag, false);
-            sendPublishResult(publishMsg, false, e.getMessage());
+            try {
+                sendPublishResult(publishMsg, false, e.getMessage());
+            } catch (Exception resultEx) {
+                log.error("Publish result sending failed", resultEx);
+            }
+            throw e;
         }
     }
 
@@ -168,52 +175,7 @@ public class EcosModuleMQListener {
 
         oos.writeObject(result);
 
-        channel.basicPublish("", EcosAppQueues.PUBLISH_RESULT_ID, null, out.toByteArray());
-    }
-
-    private void handleMqPublishMsg(ModulePublishMsg publishMsg) {
-
-        NodeRef processNode = FTSQuery.create()
-                .type(EcosBpmModel.TYPE_PROCESS_MODEL).and()
-                .exact(EcosBpmModel.PROP_PROCESS_ID, publishMsg.getId())
-                .transactional()
-                .queryOne(searchService)
-                .orElse(null);
-
-        if (processNode == null) {
-
-            String localName = publishMsg.getId().replace("$", "_");
-            QName assocQName = QName.createQNameWithValidLocalName(NamespaceService.SYSTEM_MODEL_1_0_URI, localName);
-
-            Map<QName, Serializable> props = new HashMap<>();
-            props.put(EcosBpmModel.PROP_PROCESS_ID, publishMsg.getId());
-            props.put(EcosBpmModel.PROP_CATEGORY, CATEGORY);
-
-            processNode = nodeService.createNode(
-                    ROOT,
-                    ContentModel.ASSOC_CONTAINS,
-                    assocQName,
-                    EcosBpmModel.TYPE_PROCESS_MODEL,
-                    props
-            ).getChildRef();
-        }
-
-        QName prop;
-        if (DataType.JSON.equals(publishMsg.getDataType())) {
-            prop = EcosBpmModel.PROP_JSON_MODEL;
-        } else {
-            prop = ContentModel.PROP_CONTENT;
-        }
-
-        ContentWriter writer = contentService.getWriter(processNode, prop, true);
-        writer.putContent(new ByteArrayInputStream(publishMsg.getData()));
-    }
-
-
-
-    @Autowired(required = false)
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+        rabbitTemplate.convertAndSend(EcosAppQueues.PUBLISH_RESULT_ID, result);
     }
 
     public void cancel() {
@@ -225,5 +187,15 @@ public class EcosModuleMQListener {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    @Autowired(required = false)
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
+
+    @Autowired(required = false)
+    public void setRabbitTemplate(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
     }
 }

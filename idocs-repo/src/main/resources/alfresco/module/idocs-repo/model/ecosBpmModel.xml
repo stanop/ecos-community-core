@@ -27,7 +27,6 @@
                 <property name="ecosbpm:category">
                     <type>d:category</type>
                 </property>
-                <!-- deprecated -->
                 <property name="ecosbpm:engine">
                     <type>d:text</type>
                 </property>
