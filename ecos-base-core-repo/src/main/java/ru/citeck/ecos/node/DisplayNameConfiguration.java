@@ -68,14 +68,12 @@ public class DisplayNameConfiguration {
 
         Map<QName, Serializable> props = info.getProperties();
 
-        String title = null;
-
-        if (props.get(ContentModel.PROP_TITLE) != null &&
-                MLText.class.equals(props.get(ContentModel.PROP_TITLE).getClass())) {
-            MLText mlText = (MLText) props.get(ContentModel.PROP_TITLE);
-            title = mlText.getDefaultValue();
+        Serializable titleValue = props.get(ContentModel.PROP_TITLE);
+        String title;
+        if (titleValue instanceof MLText) {
+            title = ((MLText) titleValue).getDefaultValue();
         } else {
-            title = (String) props.get(ContentModel.PROP_TITLE);
+            title = (String) titleValue;
         }
 
         String name = (String) props.get(ContentModel.PROP_NAME);
