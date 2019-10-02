@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view:view xmlns:view="http://www.alfresco.org/view/repository/1.0"
-		   xmlns:cm="http://www.alfresco.org/model/content/1.0">
-
-	<view:reference view:pathref="./cm:${content.name}">
-		<view:properties>
-			<cm:name>${content.name}</cm:name>
-			<cm:content>contentUrl=classpath:${content.path}|mimetype=${content.mimetype}|encoding=${content.encoding}</cm:content>
-		</view:properties>
-	</view:reference>
-
+           xmlns:cm="http://www.alfresco.org/model/content/1.0">
+    <view:reference view:pathref="./cm:${content.name}">
+        <view:properties>
+            <cm:name>${content.name}</cm:name>
+            <cm:content>contentUrl=classpath:${content.path}|mimetype=${content.mimetype}|encoding=${content.encoding}</cm:content>
+        </view:properties>
+    </view:reference>
 </view:view>
