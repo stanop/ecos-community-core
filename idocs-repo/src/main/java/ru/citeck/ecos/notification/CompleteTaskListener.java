@@ -30,78 +30,78 @@ import org.alfresco.service.namespace.NamespaceService;
 import java.util.Map;
 
 public class CompleteTaskListener
-	implements TaskListener
+        implements TaskListener
 {
-		// NotificationSender
-	private AbstractNotificationSender<DelegateTask> sender;
-	protected ServiceRegistry serviceRegistry;
-	protected NodeService nodeService;
-	private Map<String, Map<String,String>> conditions;
-	protected NamespaceService namespaceService;
-	protected WorkflowQNameConverter qNameConverter;
-	protected boolean enabled;
+    // NotificationSender
+    private AbstractNotificationSender<DelegateTask> sender;
+    protected ServiceRegistry serviceRegistry;
+    protected NodeService nodeService;
+    private Map<String, Map<String,String>> conditions;
+    protected NamespaceService namespaceService;
+    protected WorkflowQNameConverter qNameConverter;
+    protected boolean enabled;
 
-	public void notify(DelegateTask task)
-	{
-		if(enabled)
-		{
-		ExecutionEntity executionEntity = ((ExecutionEntity)task.getExecution()).getProcessInstance();
-		Boolean value = (Boolean)executionEntity.getVariable("cwf_sendNotification");
-		
-		if (Boolean.TRUE.equals(value))
-		{
-		WorkflowTask wfTask = serviceRegistry.getWorkflowService().getTaskById("activiti$"+task.getId());
-		nodeService = serviceRegistry.getNodeService();
-		namespaceService = serviceRegistry.getNamespaceService();
-		qNameConverter = new WorkflowQNameConverter(namespaceService);
-		if(conditions!=null && wfTask!=null)
-		{
-			Map <String,String> condition = conditions.get(wfTask.getName());
-			int result = 0;
-			if(condition!=null && condition.size()>0)
-			{
-				for (Map.Entry<String,String> entry : condition.entrySet()) {
-					String actualValue = (String) wfTask.getProperties().get(qNameConverter.mapNameToQName(entry.getKey()));
-					if(!actualValue.equals(entry.getValue()))
-						result++;
-				}
-			}
-			if(result==0)
-				sender.sendNotification(task);
-		}
-		else
-		{
-			sender.sendNotification(task);
-		}
-		}
-	}
-	}
-	public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-		this.serviceRegistry = serviceRegistry;
-	}
-	
-	/**
-	 * Set NotificationSender.
-	 * @param sender
-	 */
-	public void setSender(AbstractNotificationSender<DelegateTask> sender) {
-		this.sender = sender;
-	}
-	
-	/**
-	* Conditions provided as parameter conditions: "task name"-{"field"-"value", ...}
-	* @param task subscribers
-	*/
-	public void setConditions(Map<String, Map<String,String>> conditions) {
-    	this.conditions = conditions;
+    public void notify(DelegateTask task)
+    {
+        if(enabled)
+        {
+            ExecutionEntity executionEntity = ((ExecutionEntity)task.getExecution()).getProcessInstance();
+            Boolean value = (Boolean)executionEntity.getVariable("cwf_sendNotification");
+
+            if (Boolean.TRUE.equals(value))
+            {
+                WorkflowTask wfTask = serviceRegistry.getWorkflowService().getTaskById("activiti$"+task.getId());
+                nodeService = serviceRegistry.getNodeService();
+                namespaceService = serviceRegistry.getNamespaceService();
+                qNameConverter = new WorkflowQNameConverter(namespaceService);
+                if(conditions!=null && wfTask!=null)
+                {
+                    Map <String,String> condition = conditions.get(wfTask.getName());
+                    int result = 0;
+                    if(condition!=null && condition.size()>0)
+                    {
+                        for (Map.Entry<String,String> entry : condition.entrySet()) {
+                            String actualValue = (String) wfTask.getProperties().get(qNameConverter.mapNameToQName(entry.getKey()));
+                            if(!actualValue.equals(entry.getValue()))
+                                result++;
+                        }
+                    }
+                    if(result==0)
+                        sender.sendNotification(task);
+                }
+                else
+                {
+                    sender.sendNotification(task);
+                }
+            }
+        }
     }
-	
-	/**
-	* enabled
-	* @param true or false
-	*/
-	public void setEnabled(Boolean enabled) {
-    	this.enabled = enabled.booleanValue();
+    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+    }
+
+    /**
+     * Set NotificationSender.
+     * @param sender
+     */
+    public void setSender(AbstractNotificationSender<DelegateTask> sender) {
+        this.sender = sender;
+    }
+
+    /**
+     * Conditions provided as parameter conditions: "task name"-{"field"-"value", ...}
+     * @param task subscribers
+     */
+    public void setConditions(Map<String, Map<String,String>> conditions) {
+        this.conditions = conditions;
+    }
+
+    /**
+     * enabled
+     * @param true or false
+     */
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled.booleanValue();
     }
 }
 
