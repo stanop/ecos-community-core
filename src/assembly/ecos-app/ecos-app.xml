@@ -30,6 +30,11 @@
             <filtered>false</filtered>
         </fileSet>
         <fileSet>
+            <directory>target/classes/alfresco/module/${project.artifactId}/dashboard</directory>
+            <outputDirectory>modules/dashboard</outputDirectory>
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
             <directory>target/classes/alfresco/module/${project.artifactId}/ecos-forms</directory>
             <outputDirectory>modules/form</outputDirectory>
             <filtered>false</filtered>
