@@ -1,6 +1,6 @@
 {
   "id": "${project.artifactId}",
   "name": "${project.name}",
-  "version": "${versionWithOutPrefix}",
+  "version": "${versionWithOutPrefix}.${timestamp}",
   "dependencies": {}
 }

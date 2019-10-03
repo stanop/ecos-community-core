@@ -1,4 +1,4 @@
-package ru.citeck.ecos.flowable.bpm;
+package ru.citeck.ecos.workflow;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class EcosBpmAppModelUtils {
     private RecordsService recordsService;
     private WorkflowService workflowService;
 
-    public void deployProcessModel(NodeRef nodeRef) {
+    public void deployProcess(NodeRef nodeRef) {
 
         log.debug("Deploy workflow from nodeRef: " + nodeRef);
 

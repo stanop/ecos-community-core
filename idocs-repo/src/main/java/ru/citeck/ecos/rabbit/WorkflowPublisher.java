@@ -16,6 +16,8 @@ import ru.citeck.ecos.apps.module.type.impl.workflow.WorkflowModule;
 import ru.citeck.ecos.apps.queue.ModulePublishMsg;
 import ru.citeck.ecos.model.EcosBpmModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.utils.TransactionUtils;
+import ru.citeck.ecos.workflow.EcosBpmAppModelUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
@@ -31,6 +33,7 @@ public class WorkflowPublisher implements EcosModulePublisher {
     private NodeService nodeService;
     private SearchService searchService;
     private ContentService contentService;
+    private EcosBpmAppModelUtils bpmAppUtils;
 
     @Autowired
     public WorkflowPublisher(ServiceRegistry serviceRegistry) {
@@ -89,6 +92,14 @@ public class WorkflowPublisher implements EcosModulePublisher {
 
         ContentWriter writer = contentService.getWriter(processNode, prop, true);
         writer.putContent(new ByteArrayInputStream(publishMsg.getData()));
+
+        NodeRef finalNode = processNode;
+        bpmAppUtils.deployProcess(finalNode);
+    }
+
+    @Autowired
+    public void setBpmAppUtils(EcosBpmAppModelUtils bpmAppUtils) {
+        this.bpmAppUtils = bpmAppUtils;
     }
 
     @Override

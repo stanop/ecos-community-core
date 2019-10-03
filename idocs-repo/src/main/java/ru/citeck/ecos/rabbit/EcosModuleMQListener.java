@@ -81,7 +81,7 @@ public class EcosModuleMQListener extends AbstractLifecycleBean {
 
         channel = connectionFactory.createConnection().createChannel(true);
 
-        EcosAppQueue queue = EcosAppQueues.createQueue(EcosAppQueues.PUBLISH_PREFIX, WorkflowModule.TYPE);
+        EcosAppQueue queue = EcosAppQueues.getQueueForType(WorkflowModule.TYPE);
         declareQueue(queue);
         declareQueue(EcosAppQueues.PUBLISH_ERROR);
 
@@ -128,7 +128,7 @@ public class EcosModuleMQListener extends AbstractLifecycleBean {
             throw new IllegalArgumentException("Module publish message read error", e);
         }
 
-        log.info("Start message publishing: " + publishMsg.getId() + " (" + publishMsg.getType() + ")");
+        log.info("Start module publishing: " + publishMsg.getId() + " (" + publishMsg.getType() + ")");
 
         try {
 
