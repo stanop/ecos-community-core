@@ -9,6 +9,7 @@ import org.alfresco.service.ServiceRegistry;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.extensions.surf.util.AbstractLifecycleBean;
@@ -190,11 +191,13 @@ public class EcosModuleMQListener extends AbstractLifecycleBean {
     }
 
     @Autowired(required = false)
+    @Qualifier("historyRabbitConnectionFactory")
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
     @Autowired(required = false)
+    @Qualifier("historyRabbitTemplate")
     public void setRabbitTemplate(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
