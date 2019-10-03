@@ -18,6 +18,7 @@ import ru.citeck.ecos.apps.queue.EcosAppQueues;
 import ru.citeck.ecos.utils.ResourceResolver;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,12 +42,42 @@ public class RabbitMQEcosAppPackagesSender implements ApplicationListener<Contex
         }
     }
 
-    /*
-     * Resending packages manually.
-     * Method added for debug.
-     */
     public void resendPackages() {
         onApplicationEvent(null);
+    }
+
+    public void resendPackage(String name) {
+        locations.stream().filter(l -> l.contains(name)).forEach(this::sendFile);
+    }
+
+    public boolean sendFile(String location) {
+        try {
+            return sendFileImpl(location);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean sendFileImpl(String location) throws IOException {
+
+        Resource resource = location.contains(":") ? new UrlResource(location) :
+                new ClassPathResource(location);
+
+        byte[] fileBytes;
+        try (InputStream in = resource.getInputStream()) {
+            fileBytes = IOUtils.toByteArray(in);
+        }
+
+        log.info("Sending package to RabbitMQ: " + resource.getFilename());
+        RetryTemplate retryTemplate = getRetryTemplate();
+        Object result = retryTemplate.execute(
+                t -> rabbitTemplate.convertSendAndReceive(EcosAppQueues.ECOS_APPS_UPLOAD_ID, fileBytes),
+                c -> {
+                    log.error("Package isn't send to RabbitMQ: " + resource.getFilename(), c.getLastThrowable());
+                    return c.getLastThrowable();
+                });
+
+        return result == null;
     }
 
     private void sendFiles(List<String> locations) {
@@ -54,23 +85,10 @@ public class RabbitMQEcosAppPackagesSender implements ApplicationListener<Contex
         executor.execute(() -> {
             for (String location : locations) {
                 try {
-                    Resource resource = location.contains(":") ? new UrlResource(location) :
-                            new ClassPathResource(location);
-                    byte[] fileBytes = IOUtils.toByteArray(resource.getInputStream());
-                    log.info("Sending package to RabbitMQ: " + resource.getFilename());
-                    RetryTemplate retryTemplate = getRetryTemplate();
-                    Object callback = retryTemplate.execute(
-                            t -> rabbitTemplate.convertSendAndReceive(EcosAppQueues.ECOS_APPS_UPLOAD_ID, fileBytes),
-                            c -> {
-                                log.error("Package isn't send to RabbitMQ: " + resource.getFilename(),
-                                        c.getLastThrowable());
-                                return c.getLastThrowable();
-                            });
-                    if (callback != null) {
+                    if (!sendFileImpl(location)) {
                         break;
                     }
-
-                } catch (IOException ioe) {
+                } catch (Exception ioe) {
                     log.error("Exception when work with file", ioe);
                     break;
                 }
