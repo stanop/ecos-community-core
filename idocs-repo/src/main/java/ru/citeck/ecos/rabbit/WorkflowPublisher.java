@@ -16,7 +16,6 @@ import ru.citeck.ecos.apps.module.type.impl.workflow.WorkflowModule;
 import ru.citeck.ecos.apps.queue.ModulePublishMsg;
 import ru.citeck.ecos.model.EcosBpmModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
-import ru.citeck.ecos.utils.TransactionUtils;
 import ru.citeck.ecos.workflow.EcosBpmAppModelUtils;
 
 import java.io.ByteArrayInputStream;
