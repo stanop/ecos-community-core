@@ -1,4 +1,4 @@
-import { generateSearchTerm } from './util';
+import { generateSearchTerm, getCurrentLocale } from './util';
 import MenuApi from 'ecosui!menu-api';
 
 function handleErrors(response) {
@@ -17,11 +17,6 @@ const getOptions = {
     method: 'get'
 };
 
-const postOptions = {
-    ...getOptions,
-    method: 'post'
-};
-
 const menuApi = new MenuApi();
 
 export default class {
@@ -30,7 +25,12 @@ export default class {
     }
 
     getJSON = url => {
-        return fetch(this.alfrescoProxyUri + url, getOptions)
+        return fetch(this.alfrescoProxyUri + url, {
+            ...getOptions,
+            headers: {
+                'Accept-Language': getCurrentLocale()
+            }
+        })
             .then(handleErrors)
             .then(toJson);
     };
