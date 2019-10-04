@@ -32,6 +32,12 @@
             <type>amp</type>
         </dependency>
         <dependency>
+            <groupId>org.alfresco.module</groupId>
+            <artifactId>my-share-locale</artifactId>
+            <version>0.1</version>
+            <type>amp</type>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ecos-graphql-share</artifactId>
             <version>${project.version}</version>
@@ -163,6 +169,11 @@
                             <artifactId>javascript-console-share</artifactId>
                             <type>amp</type>
                         </overlay>
+                        <dependency>
+                            <groupId>org.alfresco.module</groupId>
+                            <artifactId>my-share-locale</artifactId>
+                            <type>amp</type>
+                        </dependency>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-graphql-share</artifactId>

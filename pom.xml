@@ -600,19 +600,6 @@
                     <version>2.6</version>
                     <executions>
                         <execution>
-                            <id>build-ecos-app</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>single</goal>
-                            </goals>
-                            <configuration>
-                                <outputDirectory>target/classes/alfresco/module/${project.artifactId}/ecos-apps</outputDirectory>
-                                <finalName>${project.artifactId}</finalName>
-                                <appendAssemblyId>false</appendAssemblyId>
-                                <descriptor>../src/assembly/ecos-app/ecos-app.xml</descriptor>
-                            </configuration>
-                        </execution>
-                        <execution>
                             <id>build-amp-file</id>
                             <phase>package</phase>
                             <goals>
@@ -956,6 +943,13 @@
                             <groupId>de.fmaul</groupId>
                             <artifactId>javascript-console-share</artifactId>
                             <version>0.6</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <moduleDependency>
+                            <groupId>org.alfresco.module</groupId>
+                            <artifactId>my-share-locale</artifactId>
+                            <version>0.1</version>
                             <type>amp</type>
                         </moduleDependency>
 
