@@ -1,27 +1,35 @@
 package ru.citeck.ecos.rabbit.sender;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
+import org.alfresco.repo.module.ModuleVersionNumber;
+import org.alfresco.service.cmr.module.ModuleDetails;
+import org.alfresco.service.cmr.module.ModuleService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.apps.app.EcosApp;
+import ru.citeck.ecos.apps.app.EcosAppMetaDto;
+import ru.citeck.ecos.apps.app.EcosAppVersion;
+import ru.citeck.ecos.apps.app.io.EcosAppIO;
 import ru.citeck.ecos.apps.queue.EcosAppQueues;
 import ru.citeck.ecos.utils.ResourceResolver;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -29,16 +37,41 @@ public class RabbitMQEcosAppPackagesSender implements ApplicationListener<Contex
 
     private final RabbitTemplate rabbitTemplate;
     private RetryTemplate retryTemplate;
-    private List<String> locations;
+
+    private List<File> modules;
+    private EcosAppIO ecosAppIO;
+    private ModuleService moduleService;
 
     @Autowired
     public RabbitMQEcosAppPackagesSender(@Qualifier("historyRabbitTemplate") RabbitTemplate rabbitTemplate,
-                                         @Qualifier("resourceResolver") ResourceResolver resolver) {
+                                         @Qualifier("resourceResolver") ResourceResolver resolver,
+                                         EcosAppIO ecosAppIO,
+                                         ModuleService moduleService) {
+        this.ecosAppIO = ecosAppIO;
+        this.moduleService = moduleService;
         this.rabbitTemplate = rabbitTemplate;
         try {
-            locations = resolver.getResources(new String[] {"classpath*:alfresco/module/*/ecos-apps/**/*.zip"});
-        } catch (IOException e) {
-            log.error("Failed to get resources", e);
+            Resource[] modulesResources = resolver.getResources("classpath*:alfresco/module/*");
+            modules = Arrays.stream(modulesResources)
+                    .filter(Resource::exists)
+                    .map(m -> {
+                        try {
+                            return Optional.ofNullable(m.getFile());
+                        } catch (FileNotFoundException e) {
+                            // Resource is not a file. Skip it
+                        } catch (Exception e) {
+                            log.error("Error", e);
+                        }
+                        return Optional.<File>empty();
+                    })
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+
+            log.info("Found " + modules.size() + " module folders");
+
+        } catch (Exception e) {
+            log.error("Modules resolving error", e);
         }
     }
 
@@ -46,61 +79,78 @@ public class RabbitMQEcosAppPackagesSender implements ApplicationListener<Contex
         onApplicationEvent(null);
     }
 
-    public void resendPackage(String name) {
-        locations.stream().filter(l -> l.contains(name)).forEach(this::sendFile);
-    }
+    private boolean sendAppsImpl() {
 
-    public boolean sendFile(String location) {
-        try {
-            return sendFileImpl(location);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public boolean sendFileImpl(String location) throws IOException {
-
-        Resource resource = location.contains(":") ? new UrlResource(location) :
-                new ClassPathResource(location);
-
-        byte[] fileBytes;
-        try (InputStream in = resource.getInputStream()) {
-            fileBytes = IOUtils.toByteArray(in);
+        if (modules == null) {
+            log.warn("Modules is not initialized");
+            return false;
         }
 
-        log.info("Sending package to RabbitMQ: " + resource.getFilename());
+        for (File moduleDir : modules) {
+
+            ModuleDetails module = moduleService.getModule(moduleDir.getName());
+            if (module == null) {
+                log.warn("Module is not registered: " + moduleDir.getName());
+                continue;
+            }
+
+            EcosAppMetaDto meta = new EcosAppMetaDto();
+            meta.setId(module.getId());
+            meta.setName(module.getTitle());
+
+            ModuleVersionNumber version = module.getModuleVersionNumber();
+            if (version == null) {
+                meta.setVersion(new EcosAppVersion("0"));
+            } else {
+                String versionStr = version.toString().replaceAll("[^0-9.]", "");
+                meta.setVersion(new EcosAppVersion(versionStr.isEmpty() ? "0" : versionStr));
+            }
+            meta.setDependencies(Collections.emptyMap());
+
+            try {
+                if (!sendApplication(ecosAppIO.read(moduleDir, meta))) {
+                    return false;
+                }
+            } catch (Exception e) {
+                log.warn("Application parsing/sending error: " + module.getId());
+            }
+        }
+
+        return true;
+    }
+
+    private boolean sendApplication(EcosApp app) {
+
+        if (app.getModules().isEmpty()) {
+            log.info("Application is empty " + app.getId() + " (" + app.getName() + ")");
+            return true;
+        }
+
+        log.info("Sending application " + app.getId() + " (" + app.getName() + ") to MQ");
+
+        byte[] data = ecosAppIO.writeToBytes(app);
+
         RetryTemplate retryTemplate = getRetryTemplate();
         Object result = retryTemplate.execute(
-                t -> rabbitTemplate.convertSendAndReceive(EcosAppQueues.ECOS_APPS_UPLOAD_ID, fileBytes),
+                t -> rabbitTemplate.convertSendAndReceive(EcosAppQueues.ECOS_APPS_UPLOAD_ID, data),
                 c -> {
-                    log.error("Package isn't send to RabbitMQ: " + resource.getFilename(), c.getLastThrowable());
+                    log.error("Application isn't send to MQ: " + app.getId() + " (" + app.getName() + ") to MQ");
                     return c.getLastThrowable();
                 });
 
         return result == null;
     }
 
-    private void sendFiles(List<String> locations) {
+    private void sendApplications() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            for (String location : locations) {
-                try {
-                    if (!sendFileImpl(location)) {
-                        break;
-                    }
-                } catch (Exception ioe) {
-                    log.error("Exception when work with file", ioe);
-                    break;
-                }
-            }
-        });
+        executor.execute(this::sendAppsImpl);
         executor.shutdown();
     }
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         if (rabbitTemplate != null) {
-            sendFiles(locations);
+            sendApplications();
         } else {
             log.warn("Bean \"historyRabbitTemplate\" wasn't initialized, packages not send");
         }
