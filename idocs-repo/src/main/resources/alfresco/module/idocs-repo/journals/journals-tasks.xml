@@ -13,6 +13,7 @@
 
     <journal id="active-tasks">
         <datasource>workflow-tasks</datasource>
+        <option name="metaRecord">@</option>
         <option name="type">bpm:workflowTask</option>
         <option name="formId">search</option>
         <option name="actionGroupId">task</option>
@@ -178,6 +179,7 @@
 
     <journal id="task-statistic">
         <datasource>task-statistic</datasource>
+        <option name="metaRecord">@</option>
         <option name="actionGroupId">none</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
         <option name="formId">filters</option>
