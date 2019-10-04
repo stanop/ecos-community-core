@@ -169,11 +169,11 @@
                             <artifactId>javascript-console-share</artifactId>
                             <type>amp</type>
                         </overlay>
-                        <dependency>
+                        <overlay>
                             <groupId>org.alfresco.module</groupId>
                             <artifactId>my-share-locale</artifactId>
                             <type>amp</type>
-                        </dependency>
+                        </overlay>
                         <overlay>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>ecos-graphql-share</artifactId>
