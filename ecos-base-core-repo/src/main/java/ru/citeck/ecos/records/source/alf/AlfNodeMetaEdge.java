@@ -199,6 +199,10 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
     @Override
     public String getType() {
 
+        if ("wfm:assignee".equals(getName()) ) {
+            return "person";
+        }
+
         ClassAttributeDefinition definition = getDefinition();
 
         if (definition instanceof PropertyDefinition) {

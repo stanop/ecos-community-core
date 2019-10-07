@@ -130,7 +130,9 @@ public class JournalConfigGet extends AbstractWebScript {
         Map<String, String> options = journalType.getOptions();
         String type = MapUtils.getString(options, "type");
 
-        Map<String, AttInfo> columnInfo = getAttributesInfo(sourceId, type, attributes);
+        JournalMeta journalMeta = getJournalMeta(journalType, type, journalRef);
+
+        Map<String, AttInfo> columnInfo = getAttributesInfo(journalMeta.getMetaRecord(), attributes);
         for (String name : attributes) {
 
             Column column = new Column();
@@ -163,7 +165,7 @@ public class JournalConfigGet extends AbstractWebScript {
         Response response = new Response();
         response.setId(journalType.getId());
         response.setColumns(columns);
-        response.setMeta(getJournalMeta(journalType, type, journalRef));
+        response.setMeta(journalMeta);
         response.setSourceId(sourceId);
         response.setParams(journalType.getOptions());
 
@@ -280,11 +282,26 @@ public class JournalConfigGet extends AbstractWebScript {
             if (StringUtils.isNotBlank(type)) {
                 Predicate predicate = ValuePredicate.equal("TYPE", type);
                 meta.setPredicate(predicateService.writeJson(predicate));
-                meta.setMetaRecord(String.format(META_RECORD_TEMPLATE, type));
             }
         }
 
-        if (StringUtils.isBlank(journal.getDataSource()) && StringUtils.isNotBlank(type)) {
+        Map<String, String> options = journal.getOptions();
+        if (options == null) {
+            options = Collections.emptyMap();
+        }
+
+        String metaRecord = options.get("metaRecord");
+
+        if (StringUtils.isNotBlank(metaRecord)) {
+
+            meta.setMetaRecord(metaRecord);
+
+        } else if (StringUtils.isNotBlank(journal.getDataSource())) {
+
+            meta.setMetaRecord(journal.getDataSource() + "@");
+
+        } else if (StringUtils.isNotBlank(type)) {
+
             meta.setMetaRecord(String.format(META_RECORD_TEMPLATE, type));
         }
 
@@ -438,21 +455,21 @@ public class JournalConfigGet extends AbstractWebScript {
         );
     }
 
-    private Map<String, AttInfo> getAttributesInfo(String sourceId, String type, List<String> attributes) {
+    private Map<String, AttInfo> getAttributesInfo(String metaRecord, List<String> attributes) {
 
         Map<String, String> attributesEdges = new HashMap<>();
         for (String attribute : attributes) {
             attributesEdges.put(attribute, ".edge(n:\"" + attribute + "\"){type,editorKey,javaClass}");
         }
 
-        RecordRef recordRef;
-        if (StringUtils.isBlank(sourceId)) {
-            recordRef = StringUtils.isNotBlank(type) ? RecordRef.create(AlfDictionaryRecords.ID, type)
-                    : RecordRef.create(sourceId, "");
+        RecordRef metaRecordRef;
+        if (StringUtils.isBlank(metaRecord)) {
+            metaRecordRef = RecordRef.create(AlfDictionaryRecords.ID, metaRecord);
         } else {
-            recordRef = RecordRef.create(sourceId, "");
+            metaRecordRef = RecordRef.valueOf(metaRecord);
         }
-        RecordMeta attInfoMeta = recordsService.getAttributes(recordRef, attributesEdges);
+
+        RecordMeta attInfoMeta = recordsService.getAttributes(metaRecordRef, attributesEdges);
 
         Map<String, AttInfo> result = new HashMap<>();
 
