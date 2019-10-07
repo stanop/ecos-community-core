@@ -5,10 +5,10 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.graphql.AlfGqlContext;
+import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -92,7 +92,7 @@ public class AlfDictionaryRecords extends LocalRecordsDAO
         }
 
         @Override
-        public <T extends GqlContext> void init(T context, MetaField field) {
+        public <T extends QueryContext> void init(T context, MetaField field) {
             this.context = (AlfGqlContext) context;
             this.dictUtils = this.context.getService(DictUtils.QNAME);
         }

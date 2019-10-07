@@ -13,7 +13,7 @@
     <parent>
         <groupId>ru.citeck.ecos.community</groupId>
         <artifactId>war-solution</artifactId>
-        <version>3.13.3</version>
+        <version>3.14.0</version>
     </parent>
 
     <dependencies>
@@ -29,6 +29,12 @@
             <groupId>de.fmaul</groupId>
             <artifactId>javascript-console-share</artifactId>
             <version>0.6</version>
+            <type>amp</type>
+        </dependency>
+        <dependency>
+            <groupId>org.alfresco.module</groupId>
+            <artifactId>my-share-locale</artifactId>
+            <version>0.1</version>
             <type>amp</type>
         </dependency>
         <dependency>
@@ -161,6 +167,11 @@
                         <overlay>
                             <groupId>de.fmaul</groupId>
                             <artifactId>javascript-console-share</artifactId>
+                            <type>amp</type>
+                        </overlay>
+                        <overlay>
+                            <groupId>org.alfresco.module</groupId>
+                            <artifactId>my-share-locale</artifactId>
                             <type>amp</type>
                         </overlay>
                         <overlay>

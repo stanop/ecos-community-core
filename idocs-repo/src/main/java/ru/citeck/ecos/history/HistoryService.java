@@ -160,7 +160,7 @@ public class HistoryService {
         this.historyRoot = historyRoot;
     }
 
-    public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
+    public NodeRef  persistEvent(final QName type, final Map<QName, Serializable> properties) {
         Date creationDate = new Date();
         TransactionUtils.doAfterCommit(() -> {
             if (isEnabledRemoteHistoryService()) {
@@ -395,9 +395,6 @@ public class HistoryService {
             }
             historyRemoteService.updateDocumentHistoryStatus(documentRef, true);
             trx.commit();
-        } catch (RuntimeException e) {
-            logger.error("Document " + documentRef.getId() + " hadn't been processed correctly");
-            logger.error(e.getMessage(), e);
         } catch (Exception e) {
             logger.error("Document " + documentRef.getId() + " hadn't been processed correctly");
             logger.error(e.getMessage(), e);

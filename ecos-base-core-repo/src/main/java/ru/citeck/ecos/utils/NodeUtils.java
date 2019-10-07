@@ -7,6 +7,7 @@ import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.dictionary.AssociationDefinition;
 import org.alfresco.service.cmr.dictionary.ChildAssociationDefinition;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.*;
 import org.alfresco.service.cmr.search.SearchService;
@@ -178,6 +179,13 @@ public class NodeUtils {
                         ChildAssociationRef primaryParent = nodeService.getPrimaryParent(addRef);
                         if (primaryChildren) {
                             nodeService.moveNode(addRef, nodeRef, assocName, primaryParent.getQName());
+                            ClassDefinition assocClassDef = assocDef.getSourceClass();
+                            if (assocClassDef.isAspect()) {
+                                QName assocAspectQName = assocClassDef.getName();
+                                if (!nodeService.hasAspect(nodeRef, assocAspectQName)) {
+                                    nodeService.addAspect(nodeRef, assocAspectQName, null);
+                                }
+                            }
                         } else {
                             nodeService.addChild(nodeRef, addRef, assocName, primaryParent.getQName());
                         }

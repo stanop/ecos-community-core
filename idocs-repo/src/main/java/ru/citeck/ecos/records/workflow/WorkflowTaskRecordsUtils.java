@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records.workflow;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
@@ -23,10 +24,7 @@ import ru.citeck.ecos.utils.AuthorityUtils;
 import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -144,9 +142,10 @@ public class WorkflowTaskRecordsUtils {
 
         WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
         boolean filterByDocStatusRequired = StringUtils.isNotBlank(tasksQuery.docStatus);
+        boolean filterByActiveTaskRequired = Boolean.TRUE.equals(tasksQuery.active);
 
-        if (query.getMaxItems() > -1 && filterByDocStatusRequired) {
-            taskRecordsQuery.setMaxItems(query.getMaxItems() * 5); //filter by status after query
+        if (query.getMaxItems() > -1 && (filterByDocStatusRequired || filterByActiveTaskRequired)) {
+            taskRecordsQuery.setMaxItems(query.getMaxItems() * 5); //we need to increase the selection for filtering
         } else {
             taskRecordsQuery.setMaxItems(query.getMaxItems());
         }
@@ -158,7 +157,7 @@ public class WorkflowTaskRecordsUtils {
         RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> result = recordsService.queryRecords(taskRecordsQuery,
                 WorkflowTaskRecords.TaskIdQuery.class);
 
-        if (Boolean.TRUE.equals(tasksQuery.active)) {
+        if (filterByActiveTaskRequired) {
             filterActiveTask(result, query);
         }
 
@@ -171,28 +170,29 @@ public class WorkflowTaskRecordsUtils {
 
     private void filterActiveTask(RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> taskQueryResult,
                                   RecordsQuery query) {
-        int maxItems = query.getMaxItems();
-        AtomicInteger recordsCount = new AtomicInteger(0);
-        AtomicInteger filtered = new AtomicInteger(0);
+        log.debug("Start filterActiveTask...");
 
-        List<WorkflowTaskRecords.TaskIdQuery> records = taskQueryResult.getRecords()
-                .stream()
-                .filter(taskIdQuery -> {
-                    if (maxItems > -1 && maxItems <= recordsCount.getAndIncrement()) {
-                        return false;
-                    }
+        final int maxItems = query.getMaxItems();
+        long taskQueryResultTotalCount = taskQueryResult.getTotalCount();
 
-                    if (taskIsActive(taskIdQuery.getTaskId())) {
-                        return true;
-                    } else {
-                        filtered.incrementAndGet();
-                        return false;
-                    }
-                })
-                .collect(Collectors.toList());
+        FilterByActiveTask resultOfFiltering = new FilterByActiveTask(taskQueryResult, maxItems);
 
-        taskQueryResult.setRecords(records);
-        taskQueryResult.setTotalCount(taskQueryResult.getTotalCount() - filtered.get());
+        List<WorkflowTaskRecords.TaskIdQuery> filteredRecords = resultOfFiltering.getFilteredData();
+        AtomicInteger recordsCount = resultOfFiltering.getRecordsCount();
+        AtomicInteger filteredCount = resultOfFiltering.getFilteredCount();
+
+        long totalCount = taskQueryResultTotalCount - filteredCount.get();
+
+        taskQueryResult.setRecords(filteredRecords);
+        taskQueryResult.setTotalCount(totalCount);
+
+        log.debug(String.format("finish filtering:" +
+                        "\nresult:%s" +
+                        "\nmaxItems:%s" +
+                        "\ntaskQueryResultTotalCount:%s" +
+                        "\nrecordsCount:%s" +
+                        "\nfilteredCount:%s", filteredRecords, maxItems, taskQueryResultTotalCount, recordsCount,
+                filteredCount));
     }
 
     private boolean taskIsActive(String taskId) {
@@ -278,6 +278,32 @@ public class WorkflowTaskRecordsUtils {
         boolean isReleasableAllowed = hasPooledActors && (hasOwner || hasClaimOwner);
         boolean isReleasableDisabled = Boolean.FALSE.equals(attributes.get("cwf_isTaskReleasable"));
         return isReleasableAllowed && !isReleasableDisabled;
+    }
+
+    @Getter
+    private class FilterByActiveTask {
+
+        private AtomicInteger recordsCount = new AtomicInteger(0);
+        private AtomicInteger filteredCount = new AtomicInteger(0);
+        private List<WorkflowTaskRecords.TaskIdQuery> filteredData;
+
+        FilterByActiveTask(RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> data, int maxItems) {
+            filteredData = data.getRecords()
+                    .stream()
+                    .filter(taskIdQuery -> {
+                        if (maxItems > -1 && maxItems <= recordsCount.getAndIncrement()) {
+                            return false;
+                        }
+
+                        if (taskIsActive(taskIdQuery.getTaskId())) {
+                            return true;
+                        } else {
+                            filteredCount.incrementAndGet();
+                            return false;
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
     }
 
 }

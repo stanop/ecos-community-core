@@ -4,7 +4,7 @@
 
     <groupId>ru.citeck.ecos.community</groupId>
     <artifactId>ecos-community</artifactId>
-    <version>3.13.3</version>
+    <version>3.14.0</version>
     <packaging>pom</packaging>
 
     <name>ecos-community</name>
@@ -67,7 +67,9 @@
 
         <flowable.version>6.4.1</flowable.version>
         <ecos.flowable.version>1.5.0</ecos.flowable.version>
-        <ecos.records.version>1.5.0</ecos.records.version>
+        <ecos.records.version>1.7.0</ecos.records.version>
+        <ecos.apps.lib.version>1.0.0</ecos.apps.lib.version>
+        <spring.retry.version>1.2.4.RELEASE</spring.retry.version>
 
         <web.compression.skip>false</web.compression.skip>
 
@@ -401,6 +403,23 @@
             </dependency>
 
             <dependency>
+                <groupId>ru.citeck.ecos</groupId>
+                <artifactId>ecos-events</artifactId>
+                <version>1.0</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>jackson-databind</artifactId>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>jackson-annotations</artifactId>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                    </exclusion>
+                </exclusions>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>org.springframework.amqp</groupId>
                 <artifactId>spring-rabbit</artifactId>
                 <version>${spring.rabbitmq.version}</version>
@@ -412,6 +431,10 @@
                     <exclusion>
                         <groupId>org.springframework</groupId>
                         <artifactId>spring-messaging</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.rabbitmq</groupId>
+                        <artifactId>amqp-client</artifactId>
                     </exclusion>
                 </exclusions>
                 <scope>provided</scope>
@@ -547,6 +570,20 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>ecos-records</artifactId>
                 <version>${ecos.records.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.citeck.ecos.community</groupId>
+                <artifactId>ecos-apps-lib</artifactId>
+                <version>${ecos.apps.lib.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.retry</groupId>
+                <artifactId>spring-retry</artifactId>
+                <version>${spring.retry.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -906,6 +943,13 @@
                             <groupId>de.fmaul</groupId>
                             <artifactId>javascript-console-share</artifactId>
                             <version>0.6</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <moduleDependency>
+                            <groupId>org.alfresco.module</groupId>
+                            <artifactId>my-share-locale</artifactId>
+                            <version>0.1</version>
                             <type>amp</type>
                         </moduleDependency>
 

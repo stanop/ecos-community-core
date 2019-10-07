@@ -98,9 +98,9 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
 
         ClassAttributeDefinition definition = getDefinition();
 
-        if (definition instanceof ChildAssociationDefinition) {
+        if (definition instanceof AssociationDefinition) {
 
-            ChildAssociationDefinition assocDef = (ChildAssociationDefinition) definition;
+            AssociationDefinition assocDef = (AssociationDefinition) definition;
             QName targetName = assocDef.getTargetClass().getName();
             Collection<QName> subTypes = dictionaryService.getSubTypes(targetName, true);
 
@@ -199,6 +199,10 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
     @Override
     public String getType() {
 
+        if ("wfm:assignee".equals(getName()) ) {
+            return "person";
+        }
+
         ClassAttributeDefinition definition = getDefinition();
 
         if (definition instanceof PropertyDefinition) {
@@ -214,7 +218,14 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
                 }
             }
 
-            return typeName != null ? typeName.getLocalName() : DataTypeDefinition.TEXT.getLocalName();
+            if (typeName != null) {
+                if (typeName.equals(DataTypeDefinition.NODE_REF)) {
+                    return "assoc";
+                } else {
+                    return typeName.getLocalName();
+                }
+            }
+            return DataTypeDefinition.TEXT.getLocalName();
 
         } else if (definition instanceof AssociationDefinition) {
 

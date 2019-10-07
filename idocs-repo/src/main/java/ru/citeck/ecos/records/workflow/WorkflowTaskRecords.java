@@ -19,9 +19,9 @@ import ru.citeck.ecos.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
 import ru.citeck.ecos.records.models.UserDTO;
+import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordMeta;
 import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 import ru.citeck.ecos.records2.graphql.meta.value.InnerMetaValue;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
@@ -36,6 +36,7 @@ import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryLocalDAO;
+import ru.citeck.ecos.utils.AuthorityUtils;
 import ru.citeck.ecos.utils.WorkflowUtils;
 import ru.citeck.ecos.workflow.owner.OwnerAction;
 import ru.citeck.ecos.workflow.owner.OwnerService;
@@ -64,13 +65,14 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final OwnerService ownerService;
     private final DocSumResolveRegistry docSumResolveRegistry;
     private final WorkflowUtils workflowUtils;
+    private final AuthorityUtils authorityUtils;
 
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
                                AuthorityService authorityService, OwnerService ownerService,
                                DocSumResolveRegistry docSumResolveRegistry,
-                               WorkflowUtils workflowUtils) {
+                               WorkflowUtils workflowUtils, AuthorityUtils authorityUtils) {
         setId(ID);
         this.ecosTaskService = ecosTaskService;
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
@@ -78,6 +80,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         this.ownerService = ownerService;
         this.docSumResolveRegistry = docSumResolveRegistry;
         this.workflowUtils = workflowUtils;
+        this.authorityUtils = authorityUtils;
     }
 
     @Override
@@ -171,6 +174,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         String owner = null;
         if (changeOwner.has(ATT_OWNER)) {
             String ownerParam = changeOwner.get(ATT_OWNER).asText();
+            if (NodeRef.isNodeRef(ownerParam)) {
+                ownerParam = authorityUtils.getAuthorityName(new NodeRef(ownerParam));
+            }
+
             owner = CURRENT_USER.equals(ownerParam) ? AuthenticationUtil.getRunAsUser() : ownerParam;
         }
 
@@ -190,23 +197,35 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     public RecordsQueryResult<RecordRef> getLocalRecords(RecordsQuery query) {
 
         WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
+        String document = tasksQuery.document;
 
-        if (tasksQuery.actors != null
-                && tasksQuery.actors.size() == 1
-                && StringUtils.isNotBlank(tasksQuery.document)) {
+        if (StringUtils.isNotBlank(document) && NodeRef.isNodeRef(document)) {
 
-            String actor = tasksQuery.actors.get(0);
-            String document = tasksQuery.document;
+            List<WorkflowTask> tasks = null;
+            NodeRef docRef = new NodeRef(document);
 
-            if (CURRENT_USER.equals(actor) && NodeRef.isNodeRef(document)) {
+            if (tasksQuery.actors != null) {
 
-                List<WorkflowTask> tasks;
+                if (tasksQuery.actors.size() == 1) {
+                    String actor = tasksQuery.actors.get(0);
+                    if (CURRENT_USER.equals(actor)) {
 
-                if (tasksQuery.active == null) {
-                    tasks = workflowUtils.getDocumentUserTasks(new NodeRef(document));
-                } else {
-                    tasks = workflowUtils.getDocumentUserTasks(new NodeRef(document), tasksQuery.active);
+                        if (tasksQuery.active == null) {
+                            tasks = workflowUtils.getDocumentUserTasks(docRef);
+                        } else {
+                            tasks = workflowUtils.getDocumentUserTasks(docRef, tasksQuery.active);
+                        }
+                    }
                 }
+            } else {
+                if (tasksQuery.active == null) {
+                    tasks = workflowUtils.getDocumentTasks(docRef);
+                } else {
+                    tasks = workflowUtils.getDocumentTasks(docRef, tasksQuery.active);
+                }
+            }
+
+            if (tasks != null) {
 
                 List<RecordRef> taskRefs = tasks.stream()
                         .map(t -> RecordRef.valueOf(t.getId()))
@@ -239,6 +258,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     public static class TaskIdQuery {
         @MetaAtt("cm:name")
         @Getter @Setter public String taskId;
+
+        @Override
+        public String toString() {
+            return taskId;
+        }
     }
 
     public static class TasksQuery {
@@ -287,7 +311,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         private TaskInfo taskInfo;
 
         @Override
-        public <T extends GqlContext> void init(T context, MetaField field) {
+        public <T extends QueryContext> void init(T context, MetaField field) {
+
             Map<String, String> documentAttributes = new HashMap<>();
             RecordRef documentRef = getDocumentRef();
             Map<String, String> attributesMap = field.getInnerAttributesMap();
@@ -362,6 +387,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
         @Override
         public Object getAttribute(String name, MetaField field) {
+
+            if (EcosTaskService.FIELD_COMMENT.equals(name)) {
+                return null;
+            }
 
             if (documentInfo.has(name)) {
                 return new InnerMetaValue(documentInfo.get(name));

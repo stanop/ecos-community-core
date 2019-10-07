@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.WorkflowUtils;
 
@@ -125,6 +126,9 @@ public class EcosActivitiTaskService implements EngineTaskService {
         if (comment != null) {
             taskVariables.put("bpm_comment", comment);
         }
+
+        String lastCommentProp = workflowUtils.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
+        taskVariables.put(lastCommentProp, comment);
 
         //TODO: transient variables should be saved in execution
         taskVariables.putAll(transientVariables);

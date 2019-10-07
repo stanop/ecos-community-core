@@ -84,11 +84,12 @@
         "inputMask": "",
         "wysiwyg": false,
         "editor": "",
-        "id": "e1jarm"
+        "id": "ecg477"
       },
       {
         "label": "Columns",
         "hideLabel": true,
+        "inlineColumns": true,
         "columns": [
           {
             "components": [
@@ -97,6 +98,7 @@
                 "removeIndents": true,
                 "state": "",
                 "theme": "primary",
+                "size": "sm",
                 "shortcut": "",
                 "block": true,
                 "mask": false,
@@ -178,15 +180,14 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "size": "md",
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
                 "disableOnInvalid": false,
-                "id": "eywi5o"
+                "id": "echm3z"
               }
             ],
-            "width": 3,
+            "width": 4,
             "offset": 0,
             "push": 0,
             "pull": 0,
@@ -196,6 +197,13 @@
             "key": "column1",
             "tableView": true,
             "label": "",
+            "xs": 0,
+            "sm": 12,
+            "md": 4,
+            "lg": 0,
+            "xl": 0,
+            "classes": "",
+            "index": 0,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -236,10 +244,10 @@
               "when": null,
               "eq": ""
             },
-            "id": "ewvbrjc"
+            "id": "e6w9kct"
           },
           {
-            "width": 3,
+            "width": 4,
             "offset": 0,
             "type": "column",
             "hideOnChildrenHidden": false,
@@ -341,9 +349,16 @@
                 "rightIcon": "",
                 "action": "submit",
                 "disableOnInvalid": false,
-                "id": "ecy3x2s"
+                "id": "e1rrvf"
               }
             ],
+            "index": 1,
+            "xs": 0,
+            "sm": 12,
+            "md": 4,
+            "lg": 0,
+            "xl": 0,
+            "classes": "",
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -384,7 +399,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eyqt8b"
+            "id": "e9zc3og"
           },
           {
             "components": [
@@ -455,10 +470,10 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "e8bao4"
+                "id": "eccxnuo"
               }
             ],
-            "width": 3,
+            "width": 4,
             "offset": 0,
             "push": 0,
             "pull": 0,
@@ -468,6 +483,13 @@
             "key": "column3",
             "tableView": true,
             "label": "",
+            "index": 2,
+            "xs": 0,
+            "sm": 12,
+            "md": 4,
+            "lg": 0,
+            "xl": 0,
+            "classes": "",
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -508,70 +530,27 @@
               "when": null,
               "eq": ""
             },
-            "id": "e16jo68"
-          },
-          {
-            "width": 3,
-            "type": "column",
-            "hideOnChildrenHidden": false,
-            "input": false,
-            "key": "column4",
-            "tableView": true,
-            "label": "",
-            "offset": 0,
-            "push": 0,
-            "pull": 0,
-            "components": [],
-            "placeholder": "",
-            "prefix": "",
-            "customClass": "",
-            "suffix": "",
-            "multiple": false,
-            "defaultValue": null,
-            "protected": false,
-            "unique": false,
-            "persistent": true,
-            "hidden": false,
-            "clearOnHide": true,
-            "dataGridLabel": false,
-            "labelPosition": "top",
-            "labelWidth": 30,
-            "labelMargin": 3,
-            "description": "",
-            "errorLabel": "",
-            "tooltip": "",
-            "hideLabel": false,
-            "tabindex": "",
-            "disabled": false,
-            "autofocus": false,
-            "dbIndex": false,
-            "customDefaultValue": "",
-            "calculateValue": "",
-            "allowCalculateOverride": false,
-            "widget": null,
-            "refreshOn": "",
-            "clearOnRefresh": false,
-            "validateOn": "change",
-            "validate": {
-              "required": false,
-              "custom": "",
-              "customPrivate": false
-            },
-            "conditional": {
-              "show": null,
-              "when": null,
-              "eq": ""
-            },
-            "id": "ew3adbb"
+            "id": "et2iepp"
           }
         ],
         "autoAdjust": true,
         "mask": false,
         "tableView": false,
         "alwaysEnabled": false,
+        "key": "columns",
+        "properties": {},
+        "conditional": {
+          "show": "",
+          "when": "",
+          "json": "",
+          "eq": ""
+        },
+        "customConditional": "",
+        "logic": [],
+        "attributes": {},
         "type": "columns",
         "input": false,
-        "key": "columns",
+        "tags": [],
         "placeholder": "",
         "prefix": "",
         "customClass": "",
@@ -606,13 +585,8 @@
           "custom": "",
           "customPrivate": false
         },
-        "conditional": {
-          "show": null,
-          "when": null,
-          "eq": ""
-        },
         "hideOnChildrenHidden": false,
-        "id": "esmmin"
+        "id": "e8bnx"
       }
     ]
   },

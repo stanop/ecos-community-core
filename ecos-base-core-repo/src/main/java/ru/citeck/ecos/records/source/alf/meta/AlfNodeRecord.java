@@ -1,6 +1,7 @@
 package ru.citeck.ecos.records.source.alf.meta;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import org.alfresco.repo.node.MLPropertyInterceptor;
 import org.alfresco.service.cmr.repository.MLText;
@@ -12,6 +13,8 @@ import org.alfresco.service.cmr.version.VersionService;
 import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
+import ru.citeck.ecos.action.node.NodeActionsService;
+import ru.citeck.ecos.action.dto.ActionDTO;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
@@ -23,12 +26,12 @@ import ru.citeck.ecos.graphql.node.GqlAlfNode;
 import ru.citeck.ecos.graphql.node.GqlQName;
 import ru.citeck.ecos.records.source.alf.file.FileRepresentation;
 import ru.citeck.ecos.records.source.common.MLTextValue;
+import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordConstants;
 import ru.citeck.ecos.records.RecordsUtils;
 import ru.citeck.ecos.records.source.alf.AlfNodeMetaEdge;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
-import ru.citeck.ecos.records2.graphql.GqlContext;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaEdge;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaField;
 import ru.citeck.ecos.records2.graphql.meta.value.MetaValue;
@@ -39,6 +42,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AlfNodeRecord implements MetaValue {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final String VIRTUAL_SCRIPT_ATTS_ID = "virtualScriptAttributesProvider";
     private static final String DEFAULT_VERSION_LABEL = "1.0";
@@ -64,7 +69,7 @@ public class AlfNodeRecord implements MetaValue {
     }
 
     @Override
-    public <T extends GqlContext> void init(T context, MetaField field) {
+    public <T extends QueryContext> void init(T context, MetaField field) {
         this.context = (AlfGqlContext) context;
         this.nodeRef = RecordsUtils.toNodeRef(recordRef);
         this.node = this.context.getNode(nodeRef).orElse(null);
@@ -88,6 +93,26 @@ public class AlfNodeRecord implements MetaValue {
 
     @Override
     public boolean has(String name) {
+
+        if ("_content".equals(name)) {
+            AlfNodeContentPathRegistry contentPath = context.getService(AlfNodeContentPathRegistry.QNAME);
+            String path = contentPath.getContentPath(new NodeInfo());
+            if (path == null) {
+                path = "cm:content";
+            }
+            RecordsService recordsService = context.getRecordsService();
+            if (recordsService == null) {
+                return false;
+            }
+            if (path.indexOf('.') == -1) {
+                if ("_content".equals(path)) {
+                    return false;
+                }
+                return has(path);
+            }
+            String query = AlfNodeUtils.resolveHasContentPathQuery(path);
+            return Boolean.TRUE.toString().equals(recordsService.getAttribute(recordRef, query).asText());
+        }
 
         Attribute nodeAtt = node.attribute(name);
 
@@ -119,9 +144,9 @@ public class AlfNodeRecord implements MetaValue {
             case ATTR_ASPECTS:
 
                 attribute = node.aspects()
-                                .stream()
-                                .map(o -> toMetaValue(null, o, field))
-                                .collect(Collectors.toList());
+                        .stream()
+                        .map(o -> toMetaValue(null, o, field))
+                        .collect(Collectors.toList());
                 break;
 
             case ATTR_IS_CONTAINER:
@@ -140,12 +165,6 @@ public class AlfNodeRecord implements MetaValue {
                 AlfNodeAttValue parentValue = new AlfNodeAttValue(node.getParent());
                 parentValue.init(context, field);
                 attribute = Collections.singletonList(parentValue);
-
-                break;
-
-            case RecordConstants.ATT_VIEW_FORM_KEY:
-
-                attribute = Collections.singletonList(new AlfNodeAttValue("alf_" + node.type() + "_view"));
                 break;
 
             case RecordConstants.ATT_FORM_KEY:
@@ -192,6 +211,14 @@ public class AlfNodeRecord implements MetaValue {
                 String versionLabel = currentVersion != null && StringUtils.isNotBlank(currentVersion.getVersionLabel())
                         ? currentVersion.getVersionLabel() : DEFAULT_VERSION_LABEL;
                 attribute = Collections.singletonList(toMetaValue(null, versionLabel, field));
+                break;
+
+            case RecordConstants.ATT_ACTIONS:
+
+                NodeActionsService nodeActionsService = context.getService("nodeActionsService");
+                List<ActionDTO> actions = nodeActionsService.getNodeActions(nodeRef);
+                JsonNode actionsNode = OBJECT_MAPPER.valueToTree(actions);
+                attribute = MetaUtils.toMetaValues(actionsNode, context, field);
                 break;
 
             default:

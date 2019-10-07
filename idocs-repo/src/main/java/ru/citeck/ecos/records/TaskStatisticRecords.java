@@ -333,7 +333,9 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
         startedProps.forEach((k, v) -> {
             String key = k.toPrefixString(namespaceService);
             if (v instanceof QName) {
-                recordAttributes.put(key, context.getQName(v));
+                AlfNodeAttValue value = new AlfNodeAttValue(v);
+                value.init(context, null);
+                recordAttributes.put(key, value);
             } else {
                 recordAttributes.put(key, v);
             }
