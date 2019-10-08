@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
     private static final Log logger = LogFactory.getLog(PredicateToFtsAlfrescoConverter.class);
+    public static final String COMMA_DELIMER = ",";
 
     private DictUtils dictUtils;
     private SearchService searchService;
@@ -147,7 +148,14 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
                     switch (valuePred.getType()) {
                         case EQ:
-                            query.exact(field, valueStr);
+                            if (valueStr.contains(COMMA_DELIMER)) {
+                                String[] values = valueStr.split(COMMA_DELIMER);
+                                for (String s : values) {
+                                    query.exact(field, BinOperator.OR, s);
+                                }
+                            } else {
+                                query.exact(field, valueStr);
+                            }
                             break;
                         case LIKE:
                             query.value(field, valueStr.replaceAll("%", "*"));
@@ -160,10 +168,20 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
                             if (attDef instanceof PropertyDefinition) {
 
+                                boolean textFlag = false;
                                 DataTypeDefinition dataType = ((PropertyDefinition) attDef).getDataType();
                                 if (dataType != null && (DataTypeDefinition.TEXT.equals(dataType.getName()) ||
                                                          DataTypeDefinition.MLTEXT.equals(dataType.getName())) ) {
-                                    query.value(field, "*" + valueStr + "*");
+                                    textFlag = true;
+                                }
+                                if (valueStr.contains(COMMA_DELIMER)) {
+                                    String[] values = valueStr.split(COMMA_DELIMER);
+                                    for (String s : values) {
+                                        if (textFlag) {
+                                            s = "*" + s + "*";
+                                        }
+                                        query.value(field, BinOperator.OR, s);
+                                    }
                                 } else {
                                     query.value(field, valueStr);
                                 }
