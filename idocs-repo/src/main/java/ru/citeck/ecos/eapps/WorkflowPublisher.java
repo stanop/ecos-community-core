@@ -1,5 +1,6 @@
-package ru.citeck.ecos.rabbit;
+package ru.citeck.ecos.eapps;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.ContentService;
@@ -11,9 +12,9 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.apps.module.type.DataType;
-import ru.citeck.ecos.apps.module.type.impl.workflow.WorkflowModule;
-import ru.citeck.ecos.apps.queue.ModulePublishMsg;
+import ru.citeck.ecos.apps.app.module.api.ModulePublishMsg;
+import ru.citeck.ecos.apps.app.module.type.DataType;
+import ru.citeck.ecos.apps.app.module.type.impl.workflow.WorkflowModule;
 import ru.citeck.ecos.model.EcosBpmModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.workflow.EcosBpmAppModelUtils;
@@ -23,6 +24,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class WorkflowPublisher implements EcosModulePublisher {
 
@@ -50,6 +52,8 @@ public class WorkflowPublisher implements EcosModulePublisher {
 
         String localName = publishMsg.getId().replaceAll("[^a-zA-Z0-9_\\-]", "_");
         QName assocQName = QName.createQNameWithValidLocalName(NamespaceService.SYSTEM_MODEL_1_0_URI, localName);
+
+        log.info("Workflow publishing: " + publishMsg.getId() + " (" + publishMsg.getName() + ")");
 
         Map<QName, Serializable> props = new HashMap<>();
 

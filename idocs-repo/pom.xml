@@ -180,7 +180,7 @@
 
         <dependency>
             <groupId>ru.citeck.ecos.community</groupId>
-            <artifactId>ecos-apps-lib</artifactId>
+            <artifactId>ecos-apps-lib-rabbit</artifactId>
             <scope>compile</scope>
         </dependency>
 

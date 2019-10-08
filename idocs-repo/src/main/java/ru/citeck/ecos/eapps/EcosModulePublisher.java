@@ -1,6 +1,6 @@
-package ru.citeck.ecos.rabbit;
+package ru.citeck.ecos.eapps;
 
-import ru.citeck.ecos.apps.queue.ModulePublishMsg;
+import ru.citeck.ecos.apps.app.module.api.ModulePublishMsg;
 
 public interface EcosModulePublisher {
 

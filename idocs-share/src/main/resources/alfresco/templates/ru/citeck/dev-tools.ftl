@@ -89,6 +89,7 @@
         </form>
         <form id="reset-repo-cache-form" style="display: inline-block">
             <div style="margin-left: 10px; margin-right: 10px; display: inline-block; width: 350px; vertical-align: middle">
+                <label><input type="checkbox" name="ecos-apps" />ECOS APPS</label>
                 <label><input type="checkbox" name="journals" />Journals</label>
                 <label><input type="checkbox" name="views" />Views</label>
                 <label><input type="checkbox" name="invariants" />Invariants</label>
