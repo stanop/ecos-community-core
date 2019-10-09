@@ -40,8 +40,6 @@ public class SelectChildNodes extends AbstractDataBundleLine {
 
     private NodeService nodeService;
 
-    private Boolean onlyFirstNode;
-
     private String assocType;
 
     @Override
@@ -78,8 +76,9 @@ public class SelectChildNodes extends AbstractDataBundleLine {
         this.childName = childName;
     }
 
+    @Deprecated
     public void setOnlyFirstNode(Boolean onlyFirstNode) {
-        this.onlyFirstNode = onlyFirstNode;
+        // not used
     }
 
     public void setAssocType(String assocType) {
