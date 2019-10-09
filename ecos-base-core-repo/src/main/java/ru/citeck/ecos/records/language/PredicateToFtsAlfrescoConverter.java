@@ -32,6 +32,9 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.CONTAINS;
+import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.EQ;
+
 @Component
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
@@ -146,16 +149,21 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                         break;
                     }
 
+                    // accepting multiple values by comma
+                    if (valueStr.contains(COMMA_DELIMER) &&
+                            (valuePred.getType().equals(EQ) || valuePred.getType().equals(CONTAINS))) {
+                        String[] values = valueStr.split(COMMA_DELIMER);
+                        ComposedPredicate orPredicate = new OrPredicate();
+                        for (String s : values) {
+                            orPredicate.addPredicate(new ValuePredicate(valuePred.getAttribute(), valuePred.getType(), s));
+                        }
+                        processPredicate(orPredicate, query);
+                        break;
+                    }
+
                     switch (valuePred.getType()) {
                         case EQ:
-                            if (valueStr.contains(COMMA_DELIMER)) {
-                                String[] values = valueStr.split(COMMA_DELIMER);
-                                for (String s : values) {
-                                    query.exact(field, BinOperator.OR, s);
-                                }
-                            } else {
-                                query.exact(field, valueStr);
-                            }
+                            query.exact(field, valueStr);
                             break;
                         case LIKE:
                             query.value(field, valueStr.replaceAll("%", "*"));
@@ -168,24 +176,13 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
                             if (attDef instanceof PropertyDefinition) {
 
-                                boolean textFlag = false;
                                 DataTypeDefinition dataType = ((PropertyDefinition) attDef).getDataType();
                                 if (dataType != null && (DataTypeDefinition.TEXT.equals(dataType.getName()) ||
                                                          DataTypeDefinition.MLTEXT.equals(dataType.getName())) ) {
-                                    textFlag = true;
-                                }
-                                if (valueStr.contains(COMMA_DELIMER)) {
-                                    String[] values = valueStr.split(COMMA_DELIMER);
-                                    for (String s : values) {
-                                        if (textFlag) {
-                                            s = "*" + s + "*";
-                                        }
-                                        query.value(field, BinOperator.OR, s);
-                                    }
+                                    query.value(field, "*" + valueStr + "*");
                                 } else {
                                     query.value(field, valueStr);
                                 }
-
                             } else if (attDef instanceof AssociationDefinition) {
 
                                 if (NodeRef.isNodeRef(valueStr)) {

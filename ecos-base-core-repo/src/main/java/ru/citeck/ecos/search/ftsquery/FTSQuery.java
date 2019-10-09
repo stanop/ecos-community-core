@@ -129,17 +129,9 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
         return value(field, value, true);
     }
 
-    public FTSQuery exact(QName field, BinOperator operator, Serializable value) {
-        return value(field, value, operator, true);
-    }
-
     @Override
     public FTSQuery value(QName field, Serializable value) {
         return value(field, value, false);
-    }
-
-    public FTSQuery value(QName field, BinOperator operator, Serializable value) {
-        return value(field, value, operator, false);
     }
 
     @Override
@@ -154,11 +146,6 @@ public class FTSQuery implements OperatorExpected, OperandExpected {
             group.addTerm(valueOperator);
         }
         return this;
-    }
-
-    public FTSQuery value(QName field, Serializable value, BinOperator binOperator, boolean exact) {
-        group.setBiOperator(new BinOperatorTerm(binOperator));
-        return value(field, value, exact);
     }
 
     @Override
