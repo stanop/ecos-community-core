@@ -32,20 +32,34 @@
    </@>
    <#if isReactMenu>
         <script type="text/javascript">//<![CDATA[
-            require([
-                'js/citeck/modules/header/index'
-            ], function(ShareHeader) {
-                ShareHeader.render('share-header', {
-                    userName: "${((user.name)!"")?js_string}",
-                    userFullname: "${((user.fullName)!"")?js_string}",
-                    userNodeRef: "${((user.properties.nodeRef)!"")?js_string}",
-                    userIsAvailable: "${((user.properties.available)!"")?string}",
-                    userIsMutable: "${((user.capabilities.isMutable)!"")?string}",
-                    isExternalAuthentication: "${((context.externalAuthentication)!"")?string}",
-                    siteMenuItems: ${jsonUtils.toJSONString(siteMenuItems)},
-                    isCascadeCreateMenu: "${isCascadeCreateMenu?string}"
+
+            var isNewPage = false;
+            try {
+                isNewPage = document.location.pathname.indexOf("-page-v2") > -1;
+            } catch(e) {}
+
+            if (isNewPage) {
+                require(['ecosui!header'], function(Header) {
+                    Header.render('share-header', {
+                        hideSiteMenu: true
+                    });
                 });
-            });
+            } else {
+                require([
+                    'js/citeck/modules/header/index'
+                ], function(ShareHeader) {
+                    ShareHeader.render('share-header', {
+                        userName: "${((user.name)!"")?js_string}",
+                        userFullname: "${((user.fullName)!"")?js_string}",
+                        userNodeRef: "${((user.properties.nodeRef)!"")?js_string}",
+                        userIsAvailable: "${((user.properties.available)!"")?string}",
+                        userIsMutable: "${((user.capabilities.isMutable)!"")?string}",
+                        isExternalAuthentication: "${((context.externalAuthentication)!"")?string}",
+                        siteMenuItems: ${jsonUtils.toJSONString(siteMenuItems)},
+                        isCascadeCreateMenu: "${isCascadeCreateMenu?string}"
+                    });
+                });
+            }
 
             require([
                 'js/citeck/modules/slide-menu/slide-menu'
