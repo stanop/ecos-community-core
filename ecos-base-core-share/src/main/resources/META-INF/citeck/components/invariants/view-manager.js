@@ -123,7 +123,7 @@ define(['js/citeck/modules/utils/citeck'], function() {
             document.location.href = Alfresco.constants.URL_PAGECONTEXT + "card-details?nodeRef=" + node.nodeRef;
         },
 
-        isV2Page() {
+        isV2Page: function() {
             var link = window.location.pathname || '';
             return /share\/.+-page-v2.*/.test(link);
         },
