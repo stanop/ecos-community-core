@@ -32,10 +32,14 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.CONTAINS;
+import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.EQ;
+
 @Component
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
     private static final Log logger = LogFactory.getLog(PredicateToFtsAlfrescoConverter.class);
+    public static final String COMMA_DELIMER = ",";
 
     private DictUtils dictUtils;
     private SearchService searchService;
@@ -145,6 +149,18 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                         break;
                     }
 
+                    // accepting multiple values by comma
+                    if (valueStr.contains(COMMA_DELIMER) &&
+                            (valuePred.getType().equals(EQ) || valuePred.getType().equals(CONTAINS))) {
+                        String[] values = valueStr.split(COMMA_DELIMER);
+                        ComposedPredicate orPredicate = new OrPredicate();
+                        for (String s : values) {
+                            orPredicate.addPredicate(new ValuePredicate(valuePred.getAttribute(), valuePred.getType(), s));
+                        }
+                        processPredicate(orPredicate, query);
+                        break;
+                    }
+
                     switch (valuePred.getType()) {
                         case EQ:
                             query.exact(field, valueStr);
@@ -167,7 +183,6 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                                 } else {
                                     query.value(field, valueStr);
                                 }
-
                             } else if (attDef instanceof AssociationDefinition) {
 
                                 if (NodeRef.isNodeRef(valueStr)) {
