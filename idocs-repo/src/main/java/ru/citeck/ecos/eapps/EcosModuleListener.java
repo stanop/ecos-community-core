@@ -7,7 +7,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.extensions.surf.util.AbstractLifecycleBean;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.apps.EcosAppsApiFactory;
-import ru.citeck.ecos.apps.app.module.api.ModulePublishMsg;
+import ru.citeck.ecos.apps.app.module.EcosModule;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.Map;
 @DependsOn({"moduleStarter"})
 public class EcosModuleListener extends AbstractLifecycleBean {
 
-    private Map<String, EcosModulePublisher> publishers = new HashMap<>();
+    private Map<Class<?>, EcosModulePublisher> publishers = new HashMap<>();
     private EcosAppsApiFactory apiFactory;
 
     @Autowired
@@ -33,8 +33,10 @@ public class EcosModuleListener extends AbstractLifecycleBean {
         log.info("Initialize EcosModuleListener");
 
         try {
-            for (String type : publishers.keySet()) {
-                apiFactory.getModuleApi().onModulePublished(type, this::handleMessage);
+            for (Class<?> type : publishers.keySet()) {
+                @SuppressWarnings("unchecked")
+                Class<EcosModule> moduleType = (Class<EcosModule>) type;
+                apiFactory.getModuleApi().onModulePublished(moduleType, this::handleMessage);
             }
         } catch (Exception e) {
             log.error("Modules subscription failed", e);
@@ -45,13 +47,14 @@ public class EcosModuleListener extends AbstractLifecycleBean {
     protected void onShutdown(ApplicationEvent event) {
     }
 
-    private void handleMessage(ModulePublishMsg publishMsg) {
+    private void handleMessage(EcosModule module) {
 
-        EcosModulePublisher publisher = publishers.get(publishMsg.getType());
+        @SuppressWarnings("unchecked")
+        EcosModulePublisher<EcosModule> publisher = publishers.get(module.getClass());
         if (publisher == null) {
-            throw new IllegalArgumentException("Publisher is not registered for type " + publishMsg.getType());
+            throw new IllegalArgumentException("Publisher is not registered for type " + module.getClass());
         }
 
-        publisher.publish(publishMsg);
+        publisher.publish(module);
     }
 }

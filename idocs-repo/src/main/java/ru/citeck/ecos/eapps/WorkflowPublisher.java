@@ -12,9 +12,7 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.citeck.ecos.apps.app.module.api.ModulePublishMsg;
-import ru.citeck.ecos.apps.app.module.type.DataType;
-import ru.citeck.ecos.apps.app.module.type.impl.workflow.WorkflowModule;
+import ru.citeck.ecos.apps.app.module.type.workflow.WorkflowModule;
 import ru.citeck.ecos.model.EcosBpmModel;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.workflow.EcosBpmAppModelUtils;
@@ -26,7 +24,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class WorkflowPublisher implements EcosModulePublisher {
+public class WorkflowPublisher implements EcosModulePublisher<WorkflowModule> {
 
     private static final NodeRef ROOT = new NodeRef("workspace://SpacesStore/ecos-bpm-process-root");
     private static final NodeRef CATEGORY = new NodeRef("workspace://SpacesStore/cat-doc-kind-ecos-bpm-default");
@@ -44,16 +42,16 @@ public class WorkflowPublisher implements EcosModulePublisher {
     }
 
     @Override
-    public void publish(ModulePublishMsg publishMsg) {
+    public void publish(WorkflowModule module) {
 
-        String[] engineAndId = publishMsg.getId().split("\\$");
+        String[] engineAndId = module.getId().split("\\$");
         String processId = engineAndId[1];
         String engineId = engineAndId[0];
 
-        String localName = publishMsg.getId().replaceAll("[^a-zA-Z0-9_\\-]", "_");
+        String localName = module.getId().replaceAll("[^a-zA-Z0-9_\\-]", "_");
         QName assocQName = QName.createQNameWithValidLocalName(NamespaceService.SYSTEM_MODEL_1_0_URI, localName);
 
-        log.info("Workflow publishing: " + publishMsg.getId() + " (" + publishMsg.getName() + ")");
+        log.info("Workflow publishing: " + module.getId());
 
         Map<QName, Serializable> props = new HashMap<>();
 
@@ -61,7 +59,6 @@ public class WorkflowPublisher implements EcosModulePublisher {
         props.put(EcosBpmModel.PROP_ENGINE, engineId);
         props.put(EcosBpmModel.PROP_CATEGORY, CATEGORY);
         props.put(EcosBpmModel.PROP_PROCESS_ID, processId);
-        props.put(ContentModel.PROP_TITLE, publishMsg.getName());
 
         NodeRef processNode = FTSQuery.create()
                 .type(EcosBpmModel.TYPE_PROCESS_MODEL).and()
@@ -86,15 +83,10 @@ public class WorkflowPublisher implements EcosModulePublisher {
             nodeService.addProperties(processNode, props);
         }
 
-        QName prop;
-        if (DataType.JSON.equals(publishMsg.getDataType())) {
-            prop = EcosBpmModel.PROP_JSON_MODEL;
-        } else {
-            prop = ContentModel.PROP_CONTENT;
-        }
+        QName prop = ContentModel.PROP_CONTENT;
 
         ContentWriter writer = contentService.getWriter(processNode, prop, true);
-        writer.putContent(new ByteArrayInputStream(publishMsg.getData()));
+        writer.putContent(new ByteArrayInputStream(module.getXmlData()));
 
         NodeRef finalNode = processNode;
         bpmAppUtils.deployProcess(finalNode);
@@ -106,7 +98,7 @@ public class WorkflowPublisher implements EcosModulePublisher {
     }
 
     @Override
-    public String getModuleType() {
-        return WorkflowModule.TYPE;
+    public Class<WorkflowModule> getModuleType() {
+        return WorkflowModule.class;
     }
 }

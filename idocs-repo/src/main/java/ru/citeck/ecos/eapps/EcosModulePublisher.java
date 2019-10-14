@@ -1,10 +1,10 @@
 package ru.citeck.ecos.eapps;
 
-import ru.citeck.ecos.apps.app.module.api.ModulePublishMsg;
+import ru.citeck.ecos.apps.app.module.EcosModule;
 
-public interface EcosModulePublisher {
+public interface EcosModulePublisher<T extends EcosModule> {
 
-    void publish(ModulePublishMsg publishMsg);
+    void publish(T module);
 
-    String getModuleType();
+    Class<T> getModuleType();
 }

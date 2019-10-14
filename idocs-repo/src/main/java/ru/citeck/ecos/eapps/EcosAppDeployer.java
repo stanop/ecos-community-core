@@ -125,14 +125,10 @@ public class EcosAppDeployer implements ApplicationListener<ContextRefreshedEven
 
         log.info("Deploying application: " + app.getId() + " (" + app.getName() + ")");
 
-        EcosAppDeployMsg deployMsg = new EcosAppDeployMsg();
-        deployMsg.setSource("alfresco");
-        deployMsg.setAppData(ecosAppIO.writeToBytes(app));
-
         RetryTemplate retryTemplate = getRetryTemplate();
         Object result = retryTemplate.execute(
                 t -> {
-                    apiFactory.getAppApi().deployApp(deployMsg);
+                    apiFactory.getAppApi().deployApp("alfresco", app);
                     return null;
                 },
                 c -> {

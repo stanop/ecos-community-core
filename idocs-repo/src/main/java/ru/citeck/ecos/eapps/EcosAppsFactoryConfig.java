@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import ru.citeck.ecos.apps.EappsFactory;
 import ru.citeck.ecos.apps.EcosAppsApiFactory;
-import ru.citeck.ecos.apps.EcosAppsFactory;
+import ru.citeck.ecos.apps.EcosAppsApiMock;
 import ru.citeck.ecos.apps.app.EappTxnManager;
 import ru.citeck.ecos.apps.app.io.AppModulesReader;
 import ru.citeck.ecos.apps.app.io.EcosAppIO;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 @Slf4j
 @Configuration
-public class EcosAppsFactoryConfig extends EcosAppsFactory {
+public class EcosAppsFactoryConfig extends EappsFactory {
 
     private Connection connection;
     private ConnectionFactory connectionFactory;
@@ -73,7 +74,7 @@ public class EcosAppsFactoryConfig extends EcosAppsFactory {
             return new EcosAppsApiMock();
         }
 
-        return new EappsRabbitApi(getEappTxnManager(), channel);
+        return new EappsRabbitApi(this, channel);
     }
 
     @Override
