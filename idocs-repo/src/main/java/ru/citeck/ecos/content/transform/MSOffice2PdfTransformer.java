@@ -53,7 +53,10 @@ public class MSOffice2PdfTransformer extends AbstractContentTransformer2 {
     @Override
     protected void transformInternal(ContentReader reader, ContentWriter writer, TransformationOptions options) throws Exception {
 
-        try (InputStream is = new BufferedInputStream(reader.getContentInputStream()); OutputStream out = writer.getContentOutputStream()) {
+        try (
+            InputStream is = new BufferedInputStream(reader.getContentInputStream());
+            OutputStream out = writer.getContentOutputStream()
+        ) {
             long id = transferToConvert(is, reader.getMimetype());
             while (true) {
                 if (getStatus(id) == STATUS_IN_PROCESSING) {

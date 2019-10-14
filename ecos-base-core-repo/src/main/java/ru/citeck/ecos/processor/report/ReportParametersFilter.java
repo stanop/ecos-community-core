@@ -49,105 +49,105 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
     @Override
     public DataBundle process(DataBundle input) {
         Map<String, Object> model = input.needModel();
-        
+
         InputStream is = input.needInputStream();
         ByteArrayOutputStream os = copyInputStream(is);
         InputStream copyIS = new ByteArrayInputStream(os.toByteArray());
         InputStream newIS = new ByteArrayInputStream(os.toByteArray());
-        
+
         try {
-			os.close();
-		} catch (IOException e) {
-			Logger.getLogger(ReportParametersFilter.class).error(e.getMessage(), e);
-		}
-        
+            os.close();
+        } catch (IOException e) {
+            Logger.getLogger(ReportParametersFilter.class).error(e.getMessage(), e);
+        }
+
         DataBundle copyDB = new DataBundle(copyIS, model);
-        
+
         ContentReader contentReader = helper.getContentReader(copyDB);
         Object criteriaObj = evaluateExpression(contentReader.getContentString(), model);
-                
+
         HashMap<String, Object> newModel = new HashMap<String, Object>();
         newModel.putAll(model);
         newModel = insertReportParams(criteriaObj, newModel);
-        
+
         return new DataBundle(newIS, newModel);
     }
-    
+
     private HashMap<String, Object> insertReportParams(Object criteriaObj, HashMap<String, Object> model) {
-    	JSONObject criteriaJSON = null;
-    	
-    	if (criteriaObj instanceof String) {
+        JSONObject criteriaJSON = null;
+
+        if (criteriaObj instanceof String) {
             try {
-            	criteriaJSON = new JSONObject((String) criteriaObj);
+                criteriaJSON = new JSONObject((String) criteriaObj);
             } catch (JSONException e) {
             }
         } else if (criteriaObj instanceof JSONObject) {
-        	criteriaJSON = (JSONObject) criteriaObj;
+            criteriaJSON = (JSONObject) criteriaObj;
         }
-    	
-    	if (criteriaJSON != null) {
-			Iterator criteriaKeys = criteriaJSON.sortedKeys();
-	        while (criteriaKeys.hasNext()) {
-	            String name = (String) criteriaKeys.next();
-	            if (name.startsWith("report")) {
-	                try {
-	                	if (name.equals("reportFilename"))
-	                		model.put(ProcessorConstants.KEY_FILENAME, simpleJSON2Java(criteriaJSON.get(name)));
-	                	model.put(name, simpleJSON2Java(criteriaJSON.get(name)));
-	                } catch (JSONException e) {
-	                }
-	            }
-	        }
-    	}
-    	
-    	return model;
+
+        if (criteriaJSON != null) {
+            Iterator criteriaKeys = criteriaJSON.sortedKeys();
+            while (criteriaKeys.hasNext()) {
+                String name = (String) criteriaKeys.next();
+                if (name.startsWith("report")) {
+                    try {
+                        if (name.equals("reportFilename"))
+                            model.put(ProcessorConstants.KEY_FILENAME, simpleJSON2Java(criteriaJSON.get(name)));
+                        model.put(name, simpleJSON2Java(criteriaJSON.get(name)));
+                    } catch (JSONException e) {
+                    }
+                }
+            }
+        }
+
+        return model;
     }
-    
+
     private Object simpleJSON2Java(Object o) {
-    	if (o != null) {
-    		if (o instanceof JSONArray) {
-    			JSONArray arr = (JSONArray) o;
-    			List<Object> list = new ArrayList<Object>();
-    			
-    			for (int i = 0; i < arr.length(); i++) {
-					try {
-						list.add(simpleJSON2Java(arr.get(i)));
-					} catch (JSONException e) {
-					}
-    			}
-    			
-    			return list;
-    		} else if (o instanceof JSONObject) {
-    			JSONObject obj = (JSONObject) o;
-    			Map<String, Object> map = new HashMap<String, Object>(); 
-    			Iterator keys = obj.sortedKeys();
-    			
-    	        while (keys.hasNext()) {
-    	            String name = (String) keys.next();
-    	            try {
-						map.put(name, simpleJSON2Java(obj.get(name)));
-					} catch (JSONException e) {
-					}
-    	        }
-    	        
-    	        return map;
-    		} else {
-				return o;
-			}
-    	}
-    	
-    	return null;
+        if (o != null) {
+            if (o instanceof JSONArray) {
+                JSONArray arr = (JSONArray) o;
+                List<Object> list = new ArrayList<Object>();
+
+                for (int i = 0; i < arr.length(); i++) {
+                    try {
+                        list.add(simpleJSON2Java(arr.get(i)));
+                    } catch (JSONException e) {
+                    }
+                }
+
+                return list;
+            } else if (o instanceof JSONObject) {
+                JSONObject obj = (JSONObject) o;
+                Map<String, Object> map = new HashMap<String, Object>();
+                Iterator keys = obj.sortedKeys();
+
+                while (keys.hasNext()) {
+                    String name = (String) keys.next();
+                    try {
+                        map.put(name, simpleJSON2Java(obj.get(name)));
+                    } catch (JSONException e) {
+                    }
+                }
+
+                return map;
+            } else {
+                return o;
+            }
+        }
+
+        return null;
     }
-    
+
     private ByteArrayOutputStream copyInputStream(InputStream is) {
-    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    	
-    	try {
-    		IOUtils.copy(is, baos);
-    	} catch (IOException e) {
-    		Logger.getLogger(ReportParametersFilter.class).error("Cannot copy input stream", e);
-    	}
-    	
-    	return baos;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        try {
+            IOUtils.copy(is, baos);
+        } catch (IOException e) {
+            Logger.getLogger(ReportParametersFilter.class).error("Cannot copy input stream", e);
+        }
+
+        return baos;
     }
 }
