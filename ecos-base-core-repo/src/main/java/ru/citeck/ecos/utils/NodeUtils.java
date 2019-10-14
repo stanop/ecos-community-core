@@ -102,7 +102,10 @@ public class NodeUtils {
             return name;
         }
 
-        String extension = "." + FilenameUtils.getExtension(name);
+        String extension = "";
+        if (!FilenameUtils.getExtension(name).isEmpty()) {
+            extension = "." + FilenameUtils.getExtension(name);
+        }
         String nameWithoutExt = FilenameUtils.removeExtension(name);
 
         int index = 0;
