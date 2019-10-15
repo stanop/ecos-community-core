@@ -58,6 +58,7 @@ public class ReportProducer extends AbstractDataBundleLine {
 
     public static final String DATA_TYPE_ATTR = "type";
     public static final String DATA_VALUE_ATTR = "value";
+    public static final String TASK_TYPE = "wfm:taskType";
 
     private TemplateNodeService templateNodeService;
     private NodeAttributeService nodeAttributeService;
@@ -123,6 +124,9 @@ public class ReportProducer extends AbstractDataBundleLine {
                                     } else if (typeQName.equals(DataTypeDefinition.INT)) {
                                         data.put(DATA_TYPE_ATTR, "Integer");
                                     }
+                                }
+                                if (colAttribute.equals(TASK_TYPE)) {
+                                    value = nodeAttributeService.getAttribute(node, QName.resolveToQName(namespaceService, "cm:title"));
                                 }
 
                                 data.put(DATA_VALUE_ATTR, getFormattedValue(colAttrQName, value, colDateFormat));
