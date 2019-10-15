@@ -126,7 +126,8 @@ public class ReportProducer extends AbstractDataBundleLine {
                                     }
                                 }
                                 if (colAttribute.equals(TASK_TYPE)) {
-                                    value = nodeAttributeService.getAttribute(node, QName.resolveToQName(namespaceService, "cm:title"));
+                                    value = nodeAttributeService.getAttribute(node,
+                                            QName.resolveToQName(namespaceService, "cm:title"));
                                 }
 
                                 data.put(DATA_VALUE_ATTR, getFormattedValue(colAttrQName, value, colDateFormat));
