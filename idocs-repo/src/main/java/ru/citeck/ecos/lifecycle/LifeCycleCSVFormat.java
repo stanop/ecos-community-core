@@ -55,10 +55,7 @@ public class LifeCycleCSVFormat extends LifeCycleAbstractFormat {
     @Override
     public LifeCycleDefinition parseLifeCycleDefinition(InputStream lifeCycleDefinitionStream) throws IOException {
 
-        InputStreamReader reader = null;
-
-        try {
-            reader = new InputStreamReader(lifeCycleDefinitionStream, "UTF-8");
+        try (InputStreamReader reader = new InputStreamReader(lifeCycleDefinitionStream, "UTF-8")) {
 
             ICsvMapReader mapReader = null;
 
@@ -77,42 +74,40 @@ public class LifeCycleCSVFormat extends LifeCycleAbstractFormat {
                     LifeCycleTransition transition = new LifeCycleTransition();
 
                     if (recordMap.get(LifeCycleConstants.FROM_STATE) != null)
-                    	transition.setFromState((String) recordMap.get(LifeCycleConstants.FROM_STATE));
+                        transition.setFromState((String) recordMap.get(LifeCycleConstants.FROM_STATE));
 
                     if (recordMap.get(LifeCycleConstants.EVENT) != null) {
-                    	LifeCycleEvent lcEvent = new LifeCycleEvent((String) recordMap.get(LifeCycleConstants.EVENT));
-                    	transition.setEvent(lcEvent);
+                        LifeCycleEvent lcEvent = new LifeCycleEvent((String) recordMap.get(LifeCycleConstants.EVENT));
+                        transition.setEvent(lcEvent);
                     }
 
                     if (recordMap.get(LifeCycleConstants.TO_STATE) != null)
-                    	transition.setToState((String) recordMap.get(LifeCycleConstants.TO_STATE));
+                        transition.setToState((String) recordMap.get(LifeCycleConstants.TO_STATE));
 
                     if ((recordMap.get(LifeCycleConstants.TRANSITION_CONDITION) != null) &&
-                    		(!((String) recordMap.get(LifeCycleConstants.TRANSITION_CONDITION)).isEmpty())) {
+                            (!((String) recordMap.get(LifeCycleConstants.TRANSITION_CONDITION)).isEmpty())) {
                         LifeCycleCondition lcCondition = new LifeCycleCondition(LifeCycleConstants.VAL_JAVASCRIPT);
                         lcCondition.setParam(LifeCycleConstants.VAL_CODE, (String) recordMap.get(LifeCycleConstants.TRANSITION_CONDITION));
-                    	transition.getConditionList().add(lcCondition);
+                        transition.getConditionList().add(lcCondition);
                     }
 
                     if ((recordMap.get(LifeCycleConstants.ACTION) != null) &&
-                    		(!((String) recordMap.get(LifeCycleConstants.ACTION)).isEmpty())) {
+                            (!((String) recordMap.get(LifeCycleConstants.ACTION)).isEmpty())) {
                         LifeCycleAction lcAction = new LifeCycleAction(LifeCycleConstants.VAL_JAVASCRIPT);
                         lcAction.setParam(LifeCycleConstants.VAL_CODE, (String) recordMap.get(LifeCycleConstants.ACTION));
-                    	transition.getActionList().add(lcAction);
+                        transition.getActionList().add(lcAction);
                     }
 
                     result.getTransitionList().add(transition);
                 }
 
             } finally {
-                if (mapReader != null)
+                if (mapReader != null) {
                     mapReader.close();
+                }
             }
 
             return result;
-        } finally {
-            if (reader != null)
-                reader.close();
         }
     }
 

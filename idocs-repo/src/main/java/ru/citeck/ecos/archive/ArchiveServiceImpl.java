@@ -333,25 +333,27 @@ class ArchiveServiceImpl implements ArchiveService {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}
+
+			if (obj == null || getClass() != obj.getClass()) {
 				return false;
-			if (getClass() != obj.getClass())
-				return false;
+			}
+
 			Destination other = (Destination) obj;
-			if (!getOuterType().equals(other.getOuterType()))
+			if (!getOuterType().equals(other.getOuterType())) {
 				return false;
-			if (assocType == null) {
-				if (other.assocType != null)
-					return false;
-			} else if (!assocType.equals(other.assocType))
+			}
+
+			if (!Objects.equals(assocType, other.assocType)) {
 				return false;
-			if (destination == null) {
-				if (other.destination != null)
-					return false;
-			} else if (!destination.equals(other.destination))
+			}
+
+			if (!Objects.equals(destination, other.destination)) {
 				return false;
+			}
+
 			return true;
 		}
 
