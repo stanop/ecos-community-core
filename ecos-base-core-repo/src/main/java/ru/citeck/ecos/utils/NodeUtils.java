@@ -16,6 +16,7 @@ import org.alfresco.service.namespace.QName;
 import org.alfresco.service.namespace.RegexQNamePattern;
 import org.alfresco.util.GUID;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.node.DisplayNameService;
@@ -102,9 +103,10 @@ public class NodeUtils {
             return name;
         }
 
-        String extension = "";
-        if (!FilenameUtils.getExtension(name).isEmpty()) {
-            extension = "." + FilenameUtils.getExtension(name);
+        String extension = FilenameUtils.getExtension(name);
+
+        if (StringUtils.isNotBlank(extension)) {
+            extension = "." + extension;
         }
         String nameWithoutExt = FilenameUtils.removeExtension(name);
 
