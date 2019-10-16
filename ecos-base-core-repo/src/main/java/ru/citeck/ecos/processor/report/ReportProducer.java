@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.processor.report;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.template.BaseContentNode.TemplateContentData;
