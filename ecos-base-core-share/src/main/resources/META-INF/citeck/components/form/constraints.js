@@ -484,7 +484,7 @@ require([
         Promise.all([isFormsEnabled, isShouldDisplay]).then(function (values) {
             if (values[0] || values[1]) {
                 require(['ecosui!ecos-form-utils'], function(utils) {
-                    utils.default.hasForm(recordRef).then(function (result) {
+                    utils.default.hasForm(recordRef, formKey).then(function (result) {
                         if (result) {
                             showForm(recordRef);
                         } else {
