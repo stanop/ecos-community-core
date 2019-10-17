@@ -5,25 +5,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.model.ContentModel;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
-import org.alfresco.service.cmr.search.SearchService;
 import org.springframework.extensions.webscripts.*;
 import ru.citeck.ecos.model.EcosModel;
-import ru.citeck.ecos.search.ftsquery.FTSQuery;
+import ru.citeck.ecos.records.birthday.BirthdaysUtils;
 import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 
 /**
- *  Get people with upcoming birthdays in next 30 days.
- *  Searching by {@code ecos:birthMonthDay} attribute
+ * Get people with upcoming birthdays in next 30 days.
+ * Searching by {@code ecos:birthMonthDay} attribute
  */
 public class UpcomingBirthdaysGet extends AbstractWebScript {
+
     private NodeService nodeService;
-    private SearchService searchService;
+    private BirthdaysUtils birthdaysUtils;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -36,29 +35,14 @@ public class UpcomingBirthdaysGet extends AbstractWebScript {
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) throws IOException {
-        List<NodeRef> result = search();
+        List<NodeRef> result = birthdaysUtils.search();
         res.setContentType(Format.JSON.mimetype() + ";charset=UTF-8");
         objectMapper.writeValue(res.getOutputStream(), buildResponse(result));
         res.setStatus(Status.STATUS_OK);
     }
 
-    private List<NodeRef> search() {
-        Integer currentMonthDay = getCurrentMonthDay();
-        return FTSQuery.create()
-                .type(ContentModel.TYPE_PERSON).and()
-                .not().aspect(ContentModel.ASPECT_PERSON_DISABLED).and()
-                .range(EcosModel.PROP_BIRTH_MONTH_DAY, currentMonthDay, currentMonthDay + 100)
-                .addSort(EcosModel.PROP_BIRTH_MONTH_DAY, true)
-                .query(searchService);
-    }
-
-    private Integer getCurrentMonthDay() {
-        LocalDate localDate = LocalDate.now();
-        return localDate.getMonthValue() * 100 + localDate.getDayOfMonth();
-    }
-
     private List<Map<String, String>> buildResponse(List<NodeRef> nodeRefs) {
-        if (nodeRefs == null || nodeRefs.isEmpty()){
+        if (nodeRefs == null || nodeRefs.isEmpty()) {
             return new ArrayList<>(0);
         }
         List<Map<String, String>> response = new ArrayList<>(nodeRefs.size());
@@ -68,7 +52,7 @@ public class UpcomingBirthdaysGet extends AbstractWebScript {
         return response;
     }
 
-    private Map<String, String> getPersonInfo(NodeRef nodeRef){
+    private Map<String, String> getPersonInfo(NodeRef nodeRef) {
         Map<String, String> personInfo = new HashMap<>(4);
         personInfo.put(KEY_USERNAME, RepoUtils.getProperty(nodeRef, ContentModel.PROP_USERNAME, nodeService));
         personInfo.put(KEY_FIRSTNAME, RepoUtils.getProperty(nodeRef, ContentModel.PROP_FIRSTNAME, nodeService));
@@ -99,7 +83,7 @@ public class UpcomingBirthdaysGet extends AbstractWebScript {
         this.nodeService = nodeService;
     }
 
-    public void setSearchService(SearchService searchService) {
-        this.searchService = searchService;
+    public void setBirthdaysUtils(BirthdaysUtils birthdaysUtils) {
+        this.birthdaysUtils = birthdaysUtils;
     }
 }
