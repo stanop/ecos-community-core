@@ -38,7 +38,7 @@
                 },
                 "key": "idocs_registrationNumber",
                 "properties": {
-                  "attribute": "idocs:registrationNumber"
+                  "attribute": "idocs_registrationNumber"
                 },
                 "conditional": {
                   "show": "",
@@ -72,7 +72,7 @@
                       {
                         "name": "value_gen",
                         "type": "value",
-                        "value": "value = data.letters.totalCount +1;"
+                        "value": "value = \"-\";"
                       }
                     ]
                   },
@@ -86,7 +86,13 @@
                         "eq": "false"
                       }
                     },
-                    "actions": []
+                    "actions": [
+                      {
+                        "name": "value_gen",
+                        "type": "value",
+                        "value": "value = \"\";"
+                      }
+                    ]
                   }
                 ],
                 "attributes": {},
@@ -129,7 +135,7 @@
                 "mask": false,
                 "inputType": "text",
                 "inputMask": "",
-                "id": "euo9hy"
+                "id": "e6rwznk"
               },
               {
                 "label": "Generate",
@@ -137,7 +143,7 @@
                 "mask": false,
                 "tableView": true,
                 "alwaysEnabled": false,
-                "defaultValue": false,
+                "defaultValue": true,
                 "encrypted": false,
                 "validate": {
                   "customMessage": "",
@@ -192,7 +198,7 @@
                 "inputType": "checkbox",
                 "value": "",
                 "name": "",
-                "id": "e713l2q"
+                "id": "eyvoyk"
               }
             ],
             "xs": 0,
@@ -248,7 +254,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eqf89cc"
+            "id": "e8bd1da"
           }
         ],
         "mask": false,
@@ -306,7 +312,7 @@
         "inlineColumns": false,
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e4peepd"
+        "id": "ebv9yot"
       },
       {
         "label": "Columns",
@@ -341,7 +347,7 @@
                 },
                 "key": "idocs_registrationDate",
                 "properties": {
-                  "attribute": "idocs:registrationDate"
+                  "attribute": "idocs_registrationDate"
                 },
                 "conditional": {
                   "show": "",
@@ -490,7 +496,7 @@
                   "mousewheel": true,
                   "arrowkeys": true
                 },
-                "id": "e0ukba"
+                "id": "ec1wg7m"
               }
             ],
             "xs": 0,
@@ -546,7 +552,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eolpiff"
+            "id": "eneohc"
           }
         ],
         "mask": false,
@@ -604,7 +610,7 @@
         "inlineColumns": false,
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e6ou5x"
+        "id": "ehsqnj"
       },
       {
         "label": "Comment",
@@ -682,7 +688,7 @@
         "inputMask": "",
         "wysiwyg": false,
         "editor": "",
-        "id": "efxvvs9"
+        "id": "exyw2b"
       },
       {
         "label": "Columns",
@@ -757,7 +763,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "e51f4m"
+                "id": "ekkc0v"
               }
             ],
             "width": 6,
@@ -817,7 +823,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "emdgpmf"
+            "id": "ef6g47q"
           }
         ],
         "mask": false,
@@ -874,95 +880,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e51qoaf"
-      },
-      {
-        "label": "letters",
-        "source": {
-          "type": "recordsQuery",
-          "recordsQuery": {
-            "attributes": {
-              "key": "cm:title"
-            },
-            "query": "var value = {\r\n  query: 'TYPE:\"letters:outcome\"',\r\n  language: 'fts-alfresco'\r\n}",
-            "isSingle": false
-          },
-          "ajax": {
-            "method": "GET",
-            "url": "",
-            "data": "",
-            "mapping": ""
-          },
-          "record": {
-            "id": "",
-            "attributes": {}
-          },
-          "recordsArray": {
-            "id": "",
-            "attributes": {}
-          },
-          "custom": {
-            "syncData": {},
-            "asyncData": {}
-          }
-        },
-        "update": {
-          "type": "any-change",
-          "event": "",
-          "rate": 100,
-          "force": false
-        },
-        "refreshOn": [],
-        "triggerEventOnChange": false,
-        "key": "letters",
-        "type": "asyncData",
-        "input": true,
-        "tableView": true,
-        "tags": [],
-        "placeholder": "",
-        "prefix": "",
-        "customClass": "",
-        "suffix": "",
-        "multiple": false,
-        "defaultValue": null,
-        "protected": false,
-        "unique": false,
-        "persistent": true,
-        "hidden": false,
-        "clearOnHide": true,
-        "dataGridLabel": false,
-        "labelPosition": "top",
-        "labelWidth": 30,
-        "labelMargin": 3,
-        "description": "",
-        "errorLabel": "",
-        "tooltip": "",
-        "hideLabel": false,
-        "tabindex": "",
-        "disabled": false,
-        "autofocus": false,
-        "dbIndex": false,
-        "customDefaultValue": "",
-        "calculateValue": "",
-        "allowCalculateOverride": false,
-        "widget": null,
-        "clearOnRefresh": false,
-        "validateOn": "change",
-        "validate": {
-          "required": false,
-          "custom": "",
-          "customPrivate": false
-        },
-        "conditional": {
-          "show": null,
-          "when": null,
-          "eq": ""
-        },
-        "mask": false,
-        "inputType": "asyncData",
-        "eventName": "",
-        "executionCondition": "",
-        "id": "ejvism"
+        "id": "efxr77t"
       }
     ]
   },
@@ -971,13 +889,15 @@
       "Date of registration": "Date of registration",
       "Registration number": "Registration number",
       "Generate": "Generate",
-      "Registered": "Registered"
+      "Registered": "Registered",
+      "Comment": "Comment"
     },
     "ru": {
       "Date of registration": "Дата регистрации",
       "Registration number": "Регистрационный номер",
       "Generate": "Генерировать",
-      "Registered": "Зарегистрировать"
+      "Registered": "Зарегистрировать",
+      "Comment": "Комментировать"
     }
   }
 }

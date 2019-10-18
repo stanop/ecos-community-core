@@ -43,7 +43,7 @@
               {
                 "components": [
                   {
-                    "label": "wfsa:affirmDate",
+                    "label": "Payment Date",
                     "format": "dd-MM-yyyy",
                     "mask": false,
                     "tableView": true,
@@ -70,7 +70,7 @@
                     },
                     "key": "wfsa_affirmDate",
                     "properties": {
-                      "attribute": "wfsa:affirmDate"
+                      "attribute": "wfsa_affirmDate"
                     },
                     "conditional": {
                       "show": "",
@@ -219,7 +219,7 @@
                       "mousewheel": true,
                       "arrowkeys": true
                     },
-                    "id": "el9wvas"
+                    "id": "e45g7w"
                   }
                 ],
                 "xs": 0,
@@ -275,7 +275,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ekjldrd"
+                "id": "eokhx3p"
               }
             ],
             "mask": false,
@@ -333,7 +333,7 @@
             "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "el5fxik"
+            "id": "e20hvqq"
           },
           {
             "label": "Comment",
@@ -411,7 +411,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "ew6jbnx"
+            "id": "eqqcpu"
           }
         ],
         "tags": [],
@@ -449,7 +449,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "egekmmr"
+        "id": "el5sbwr"
       },
       {
         "label": "Columns",
@@ -524,7 +524,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "e2isux"
+                "id": "ewhyco"
               }
             ],
             "width": 6,
@@ -584,7 +584,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ecsr5db"
+            "id": "e1uowjq"
           },
           {
             "components": [
@@ -655,7 +655,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "e0txyos"
+                "id": "ebg0lvg"
               }
             ],
             "width": 6,
@@ -715,7 +715,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eymayct"
+            "id": "e218hwp"
           }
         ],
         "mask": false,
@@ -772,7 +772,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ekfk0l"
+        "id": "eimbi8t"
       }
     ]
   },
@@ -780,12 +780,14 @@
     "en": {
       "Affirmed": "Affirmed",
       "Declined": "Declined",
-      "Comment": "Comment"
+      "Comment": "Comment",
+      "Payment Date": "Payment Date"
     },
     "ru": {
       "Affirmed": "Подтвердить",
       "Declined": "Отклонить",
-      "Comment": "Комментировать"
+      "Comment": "Комментировать",
+      "Payment Date": "Дата оплаты"
     }
   }
 }
