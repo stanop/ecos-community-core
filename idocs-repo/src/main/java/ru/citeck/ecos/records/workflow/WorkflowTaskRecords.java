@@ -69,8 +69,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final DocSumResolveRegistry docSumResolveRegistry;
     private final WorkflowUtils workflowUtils;
     private final AuthorityUtils authorityUtils;
-    private NamespaceService namespaceService;
-    private DictionaryService dictionaryService;
+    private final NamespaceService namespaceService;
+    private final DictionaryService dictionaryService;
 
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
@@ -138,7 +138,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
                 if (v.isTextual()) {
                     String value = v.asText();
-                    if(isDate(n) && StringUtils.isEmpty(v.asText())) {
+                    if (isDate(n) && StringUtils.isEmpty(value)) {
                         value = null;
                     }
                     taskProps.put(n, value);
