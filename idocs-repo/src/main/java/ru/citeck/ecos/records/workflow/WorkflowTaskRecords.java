@@ -216,6 +216,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             return false;
         }
 
+        if (fieldName.startsWith(DOCUMENT_FIELD_PREFIX)) {
+            fieldName = getEcmFieldName(fieldName);
+        }
+
         if (fieldName.contains("_")) {
             fieldName = fieldName.replace("_", ":");
         }
