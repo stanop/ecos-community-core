@@ -77,7 +77,9 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
                                AuthorityService authorityService, OwnerService ownerService,
                                DocSumResolveRegistry docSumResolveRegistry,
-                               WorkflowUtils workflowUtils, AuthorityUtils authorityUtils, NamespaceService namespaceService, DictionaryService dictionaryService) {
+                               WorkflowUtils workflowUtils, AuthorityUtils authorityUtils,
+                               NamespaceService namespaceService,
+                               DictionaryService dictionaryService) {
         this.namespaceService = namespaceService;
         this.dictionaryService = dictionaryService;
         setId(ID);
