@@ -231,23 +231,35 @@ public class CreateVariantsGet extends AbstractWebScript {
 
     private List<CreateVariant> getVariantsByJournalRefImpl(NodeRef journalRef) {
 
-        List<CreateVariant> variants = nodeService.getChildAssocs(journalRef,
-                                                                  JournalsModel.ASSOC_CREATE_VARIANTS,
-                                                                  RegexQNamePattern.MATCH_ALL)
-                .stream()
-                .map(variantRef -> createVariantsData.getUnchecked(variantRef.getChildRef()))
-                .collect(Collectors.toList());
+        List<CreateVariant> variants = new ArrayList<>();
 
         JournalType journalType = journalService.getJournalType(journalRef);
         if (journalType != null) {
             variants.addAll(journalType.getCreateVariants());
         }
+
+        variants.addAll(
+                nodeService.getChildAssocs(journalRef,
+                                           JournalsModel.ASSOC_CREATE_VARIANTS,
+                                           RegexQNamePattern.MATCH_ALL)
+                .stream()
+                .map(variantRef -> createVariantsData.getUnchecked(variantRef.getChildRef()))
+                .collect(Collectors.toList())
+        );
+
         return variants;
     }
 
     private List<CreateVariant> getVariantsByJournalId(String journalId) {
 
-        List<CreateVariant> variants = new ArrayList<>(AuthenticationUtil.runAsSystem(() ->
+        List<CreateVariant> variants = new ArrayList<>();
+
+        JournalType journalType = journalService.getJournalType(journalId);
+        if (journalType != null) {
+            variants.addAll(journalType.getCreateVariants());
+        }
+
+        variants.addAll(AuthenticationUtil.runAsSystem(() ->
                 FTSQuery.create()
                         .type(JournalsModel.TYPE_JOURNAL).and()
                         .value(JournalsModel.PROP_JOURNAL_TYPE, journalId)
@@ -258,10 +270,6 @@ public class CreateVariantsGet extends AbstractWebScript {
                         .collect(Collectors.toList())
         ));
 
-        JournalType journalType = journalService.getJournalType(journalId);
-        if (journalType != null) {
-            variants.addAll(journalType.getCreateVariants());
-        }
         return variants;
     }
 

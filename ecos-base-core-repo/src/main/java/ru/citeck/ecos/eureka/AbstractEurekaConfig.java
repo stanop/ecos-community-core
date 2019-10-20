@@ -25,12 +25,16 @@ public abstract class AbstractEurekaConfig {
         return getGlobalIntParam(CONFIG_PREFIX + localKey, orElse);
     }
 
-    protected Boolean getBoolParam(String localKey, Supplier<Boolean> orElse) {
-        String result = globalProperties.getProperty(CONFIG_PREFIX + localKey);
+    protected Boolean getGlobalBoolParam(String globalKey, Supplier<Boolean> orElse) {
+        String result = globalProperties.getProperty(globalKey);
         if (result == null) {
             return orElse.get();
         }
         return Boolean.TRUE.toString().equals(result);
+    }
+
+    protected Boolean getBoolParam(String localKey, Supplier<Boolean> orElse) {
+        return getGlobalBoolParam(CONFIG_PREFIX + localKey, orElse);
     }
 
     protected String getGlobalStrParam(String globalKey, Supplier<String> orElse) {

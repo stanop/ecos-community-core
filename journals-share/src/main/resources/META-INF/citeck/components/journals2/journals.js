@@ -636,6 +636,7 @@ Journal
     .property('type', JournalType)
     .property('criteria', [ Criterion ])
     .property('createVariants', [ CreateVariant ])
+    .property('predicate', o)
 
     .computed('availableCreateVariants', function() {
         return _.filter(this.createVariants(), function(variant) {
@@ -1563,6 +1564,7 @@ JournalsWidget
         }
 
         var result = {
+            journalId: this.journalId(),
             query: recordsQuery,
             pageInfo: {
                 sortBy: this.sortByQuery(),
@@ -2086,19 +2088,28 @@ JournalsWidget
             if (datasource.indexOf('/') >= 0) {
 
                 var queryImpl = function () {
+
+                    var query = {
+                        sourceId: datasource,
+                        page: {
+                            maxItems: recordsQuery.pageInfo.maxItems,
+                            skipCount: recordsQuery.pageInfo.skipCount
+                        },
+                        sortBy: recordsQuery.sortBy
+                    };
+
+                    if (self.journal().predicate()) {
+                        query.language = 'predicate';
+                        query.query = self.journal().predicate();
+                    } else {
+                        query.language = 'criteria';
+                        query.query = recordsQuery.query;
+                    }
+
                     Alfresco.util.Ajax.jsonPost({
                         url: '/share/api/records/query',
                         dataObj: {
-                            query: {
-                                sourceId: datasource,
-                                query: recordsQuery.query,
-                                language: 'criteria',
-                                page: {
-                                    maxItems: recordsQuery.pageInfo.maxItems,
-                                    skipCount: recordsQuery.pageInfo.skipCount
-                                },
-                                sortBy: recordsQuery.sortBy
-                            },
+                            query: query,
                             schema: journalType.gqlschema()
                         },
                         successCallback: {
@@ -2129,6 +2140,9 @@ JournalsWidget
                 }
 
             } else {
+
+                delete recordsQuery.journalId;
+
                 Alfresco.util.Ajax.jsonPost({
                     url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journalType.id(),
                     dataObj: recordsQuery,
