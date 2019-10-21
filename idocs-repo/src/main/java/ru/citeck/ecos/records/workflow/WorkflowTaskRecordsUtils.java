@@ -1,8 +1,6 @@
 package ru.citeck.ecos.records.workflow;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.repo.workflow.WorkflowModel;
@@ -12,10 +10,10 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
 import ru.citeck.ecos.predicate.PredicateService;
 import ru.citeck.ecos.predicate.model.*;
-import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.request.query.QueryConsistency;
 import ru.citeck.ecos.records2.request.query.RecordsQuery;
@@ -39,14 +37,17 @@ public class WorkflowTaskRecordsUtils {
     private final NamespaceService namespaceService;
     private final RecordsService recordsService;
     private final EcosTaskService ecosTaskService;
+    private final CaseStatusService caseStatusService;
 
     @Autowired
     public WorkflowTaskRecordsUtils(AuthorityUtils authorityUtils, NamespaceService namespaceService,
-                                    RecordsService recordsService, EcosTaskService ecosTaskService) {
+                                    RecordsService recordsService, EcosTaskService ecosTaskService,
+                                    CaseStatusService caseStatusService) {
         this.authorityUtils = authorityUtils;
         this.namespaceService = namespaceService;
         this.recordsService = recordsService;
         this.ecosTaskService = ecosTaskService;
+        this.caseStatusService = caseStatusService;
     }
 
     ComposedPredicate buildPredicateQuery(WorkflowTaskRecords.TasksQuery tasksQuery) {
@@ -69,11 +70,7 @@ public class WorkflowTaskRecordsUtils {
         }
 
         String caseStatus = tasksQuery.getDocStatus();
-        if (StringUtils.isNotBlank(caseStatus)) {
-            Predicate caseStatusPredicate = ValuePredicate.equal(
-                    WorkflowMirrorModel.PROP_CASE_STATUS.toPrefixString(namespaceService), caseStatus);
-            predicate.addPredicate(caseStatusPredicate);
-        }
+        appendCaseStatusPredicate(caseStatus, predicate);
 
         String docType = tasksQuery.docType;
         if (StringUtils.isNotBlank(docType)) {
@@ -117,11 +114,29 @@ public class WorkflowTaskRecordsUtils {
         return predicate;
     }
 
+    private void appendCaseStatusPredicate(String caseStatus, AndPredicate predicate) {
+        if (StringUtils.isNotBlank(caseStatus)) {
+            if (!checkForNodeRef(caseStatus)) {
+                NodeRef ref = caseStatusService.getStatusByName(caseStatus.toLowerCase());
+                if (ref != null) {
+                    caseStatus = ref.toString();
+                }
+            }
+            Predicate caseStatusPredicate = ValuePredicate.equal(
+                    WorkflowMirrorModel.PROP_CASE_STATUS.toPrefixString(namespaceService), caseStatus);
+            predicate.addPredicate(caseStatusPredicate);
+        }
+    }
+
+    private boolean checkForNodeRef(String attr) {
+        return attr.startsWith("workspace://");
+    }
+
     private OrPredicate getActorsPredicate(List<String> actors) {
         Set<String> actorRefs = actors.stream().flatMap(actor -> {
             if (CURRENT_USER.equals(actor)) {
                 actor = AuthenticationUtil.getRunAsUser();
-            } else if (actor.startsWith("workspace://")) {
+            } else if (checkForNodeRef(actor)) {
                 actor = authorityUtils.getAuthorityName(new NodeRef(actor));
             }
             return Stream.concat(authorityUtils.getContainingAuthoritiesRefs(actor).stream(),
@@ -168,11 +183,7 @@ public class WorkflowTaskRecordsUtils {
             filterActiveTask(result, query);
         }
 
-        if (!filterByDocStatusRequired) {
-            return result;
-        }
-
-        return filteredByDocStatus(query, result, tasksQuery.docStatus);
+        return result;
     }
 
     private void filterActiveTask(RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> taskQueryResult,
@@ -211,54 +222,6 @@ public class WorkflowTaskRecordsUtils {
         }
 
         return active;
-    }
-
-    private RecordsQueryResult<WorkflowTaskRecords.TaskIdQuery> filteredByDocStatus(RecordsQuery query,
-                                                                                    RecordsQueryResult<WorkflowTaskRecords
-                                                                                            .TaskIdQuery> taskQueryResult,
-                                                                                    @NonNull String docStatus) {
-        String statusAttribute;
-        if (docStatus.startsWith(SPACES_STORE_PREFIX)) {
-            statusAttribute = "icase:caseStatusAssoc?id";
-        } else {
-            statusAttribute = "icase:caseStatusAssoc.cm:name?str";
-        }
-
-        int maxItems = query.getMaxItems();
-        AtomicInteger recordsCount = new AtomicInteger(0);
-        AtomicInteger filtered = new AtomicInteger(0);
-
-        List<WorkflowTaskRecords.TaskIdQuery> taskRecords = taskQueryResult.getRecords().stream().filter(taskIdQuery -> {
-
-            if (maxItems > -1 && maxItems <= recordsCount.getAndIncrement()) {
-                return false;
-            }
-
-            Optional<TaskInfo> taskInfo = ecosTaskService.getTaskInfo(taskIdQuery.taskId);
-            if (!taskInfo.isPresent()) {
-                filtered.incrementAndGet();
-                return false;
-            }
-            RecordRef document = taskInfo.get().getDocument();
-            if (document == null) {
-                filtered.incrementAndGet();
-                return false;
-            }
-
-            JsonNode status = recordsService.getAttribute(document, statusAttribute);
-            if (status.isTextual() && status.toString().contains(docStatus)) {
-                return true;
-            } else {
-                filtered.incrementAndGet();
-                return false;
-            }
-
-        }).collect(Collectors.toList());
-
-        taskQueryResult.setRecords(taskRecords);
-        taskQueryResult.setTotalCount(taskQueryResult.getTotalCount() - filtered.get());
-
-        return taskQueryResult;
     }
 
     boolean isReassignable(Map<String, Object> attributes, boolean hasOwner, boolean hasClaimOwner) {
