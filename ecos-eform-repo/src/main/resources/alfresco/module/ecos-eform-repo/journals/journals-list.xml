@@ -13,6 +13,10 @@
             <variant title="Create Form">
                 <recordRef>eapps/module@form$</recordRef>
             </variant>
+            <variant title="Upload Form">
+                <recordRef>eapps/module@form$</recordRef>
+                <formKey>ecos-module-upload</formKey>
+            </variant>
         </create>
         <option name="actionFormatter">
             [
