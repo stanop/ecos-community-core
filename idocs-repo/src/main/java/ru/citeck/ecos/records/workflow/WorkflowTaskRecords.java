@@ -70,8 +70,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
-                               AuthorityService authorityService,
-                               OwnerService ownerService,
+                               AuthorityService authorityService, OwnerService ownerService,
                                DocSumResolveRegistry docSumResolveRegistry,
                                WorkflowUtils workflowUtils, AuthorityUtils authorityUtils) {
         setId(ID);

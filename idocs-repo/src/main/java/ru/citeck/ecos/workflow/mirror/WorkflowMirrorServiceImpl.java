@@ -289,6 +289,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_COUNTERPARTY, getCounterparty(document));
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_CASE_STATUS,
                     caseStatusService.getStatusByName(caseStatusService.getStatus(document)));
+
             NodeRef documentKind = getDocumentKind(document);
             if (documentKind != null && nodeService.exists(documentKind)) {
                 nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_KIND, documentKind);

@@ -24,16 +24,12 @@ import ru.citeck.ecos.utils.AuthorityUtils;
 import ru.citeck.ecos.workflow.tasks.EcosTaskService;
 import ru.citeck.ecos.workflow.tasks.TaskInfo;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ru.citeck.ecos.records.workflow.WorkflowTaskRecordsConstants.CURRENT_USER;
-import static ru.citeck.ecos.records.workflow.WorkflowTaskRecordsConstants.SPACES_STORE_PREFIX;
+import static ru.citeck.ecos.records.workflow.WorkflowTaskRecordsConstants.*;
 
 @Log4j
 @Component
