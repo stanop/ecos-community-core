@@ -59,6 +59,7 @@
             <header key="idocs:contractorType" default="true" />
             <header key="idocs:inn" default="true" />
             <header key="idocs:kpp" default="true" />
+            <header key="idocs:ogrn"/>
             <header key="idocs:juridicalAddress" />
             <header key="idocs:postAddress" />
             <header key="idocs:phone" />
