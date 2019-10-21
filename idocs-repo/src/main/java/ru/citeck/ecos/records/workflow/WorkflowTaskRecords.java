@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.document.sum.DocSumResolveRegistry;
 import ru.citeck.ecos.document.sum.DocSumResolver;
+import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.records.RecordConstants;
 import ru.citeck.ecos.records.models.AuthorityDTO;
@@ -61,6 +62,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
     private final EcosTaskService ecosTaskService;
     private final AuthorityService authorityService;
+    private final CaseStatusService caseStatusService;
     private final WorkflowTaskRecordsUtils workflowTaskRecordsUtils;
     private final OwnerService ownerService;
     private final DocSumResolveRegistry docSumResolveRegistry;
@@ -70,13 +72,16 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
-                               AuthorityService authorityService, OwnerService ownerService,
+                               AuthorityService authorityService,
+                               CaseStatusService caseStatusService,
+                               OwnerService ownerService,
                                DocSumResolveRegistry docSumResolveRegistry,
                                WorkflowUtils workflowUtils, AuthorityUtils authorityUtils) {
         setId(ID);
         this.ecosTaskService = ecosTaskService;
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
         this.authorityService = authorityService;
+        this.caseStatusService = caseStatusService;
         this.ownerService = ownerService;
         this.docSumResolveRegistry = docSumResolveRegistry;
         this.workflowUtils = workflowUtils;
@@ -274,6 +279,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         @Getter @Setter public String docStatus;
         @Getter @Setter public String docType;
         @Getter @Setter public String document;
+        @Getter @Setter public String caseStatus;
 
         public void setAssignee(String assignee) {
             if (assignees == null) {
@@ -332,6 +338,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     case ATT_DOC_STATUS:
                         documentAttributes.put(ATT_DOC_STATUS, "icase:caseStatusAssoc.cm:name");
                         customAttributes.add(ATT_DOC_STATUS);
+                        break;
+                    case ATT_CASE_STATUS:
+                        documentAttributes.put(ATT_CASE_STATUS, "icase:caseStatusAssoc.cm:title");
+                        customAttributes.add(ATT_CASE_STATUS);
                         break;
                     case ATT_DOC_TYPE:
                         documentAttributes.put(ATT_DOC_TYPE, "_type");

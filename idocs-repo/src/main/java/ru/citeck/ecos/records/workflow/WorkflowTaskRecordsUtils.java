@@ -68,6 +68,13 @@ public class WorkflowTaskRecordsUtils {
             }
         }
 
+        String caseStatus = tasksQuery.getCaseStatus();
+        if (StringUtils.isNotBlank(caseStatus)) {
+            Predicate casePred = ValuePredicate.equal(
+                    WorkflowMirrorModel.PROP_CASE_STATUS.toPrefixString(namespaceService), caseStatus);
+            predicate.addPredicate(casePred);
+        }
+
         String docType = tasksQuery.docType;
         if (StringUtils.isNotBlank(docType)) {
 

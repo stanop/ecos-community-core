@@ -47,6 +47,15 @@
 						<tokenised>false</tokenised>
 					</index>
                 </property>
+                <property name="wfm:caseStatus">
+                    <type>d:noderef</type>
+                    <multiple>true</multiple>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <stored>false</stored>
+                        <tokenised>false</tokenised>
+                    </index>
+                </property>
                 <property name="wfm:assignee">
                     <type>d:noderef</type>
 					<index enabled="true">
