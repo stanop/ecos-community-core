@@ -996,13 +996,19 @@ require([
             });
         };
 
+        var editConfig = {
+            recordRef: itemId,
+            fallback: function() {
+                showOldForms();
+            }
+        };
+
+        if (params.formKey) {
+            editConfig.formKey = params.formKey;
+        }
+
         try {
-            Citeck.forms.editRecord({
-                recordRef: itemId,
-                fallback: function() {
-                    showOldForms();
-                }
-            });
+            Citeck.forms.editRecord(editConfig);
         } catch (e) {
             console.error(e);
             showOldForms();
