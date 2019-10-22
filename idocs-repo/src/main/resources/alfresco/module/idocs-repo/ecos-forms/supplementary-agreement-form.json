@@ -3493,7 +3493,7 @@
                             "name": "protected_on",
                             "trigger": {
                               "type": "javascript",
-                              "javascript": "result = data.isEntInstalled === 'true' ? false : true;"
+                              "javascript": "result = data.isEntInstalled !== 'true';"
                             },
                             "actions": [
                               {
