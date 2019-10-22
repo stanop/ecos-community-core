@@ -56,56 +56,19 @@ public class WorkflowTaskRecordsUtils {
         predicate.addPredicate(ValuePredicate.equal("TYPE", WorkflowModel.TYPE_TASK.toString()));
 
         List<String> actors = tasksQuery.getActors();
-        if (actors != null) {
-            predicate.addPredicate(getActorsPredicate(actors));
-        }
+        appendActorsPredicate(actors, predicate);
 
-        if (tasksQuery.active != null) {
-            Predicate completionEmpty = new EmptyPredicate("bpm:completionDate");
-            if (tasksQuery.active) {
-                predicate.addPredicate(completionEmpty);
-            } else {
-                predicate.addPredicate(new NotPredicate(completionEmpty));
-            }
-        }
+        Boolean active = tasksQuery.active;
+        appendActivePredicate(active, predicate);
 
         String caseStatus = tasksQuery.getDocStatus();
         appendCaseStatusPredicate(caseStatus, predicate);
 
         String docType = tasksQuery.docType;
-        if (StringUtils.isNotBlank(docType)) {
-
-            Predicate typePredicate = null;
-
-            if (docType.contains(":") || docType.contains("{")) {
-                QName docTypeQName = QName.resolveToQName(namespaceService, docType);
-                String docTypeAtt = WorkflowMirrorModel.PROP_DOCUMENT_TYPE.toPrefixString(namespaceService);
-                if (docTypeQName != null) {
-                    typePredicate = ValuePredicate.equal(docTypeAtt, docTypeQName.toString());
-                } else {
-                    log.warn("Document type qname " + docType + " is not found");
-                    typePredicate = ValuePredicate.equal(docTypeAtt, docType);
-                }
-            }
-
-            if (typePredicate == null) {
-                return null;
-            }
-
-            predicate.addPredicate(typePredicate);
-        }
+        appendDocTypePredicate(docType, predicate);
 
         String documentParam = tasksQuery.document;
-        if (StringUtils.isNotBlank(documentParam)) {
-            if (!NodeRef.isNodeRef(documentParam)) {
-                return null;
-            }
-
-            String docAttr = WorkflowMirrorModel.PROP_DOCUMENT.toPrefixString(namespaceService);
-            Predicate documentPredicate = ValuePredicate.equal(docAttr, documentParam);
-
-            predicate.addPredicate(documentPredicate);
-        }
+        appendDocumentParamPredicate(documentParam, predicate);
 
         if (predicate.getPredicates().isEmpty()) {
             return null;
@@ -114,9 +77,26 @@ public class WorkflowTaskRecordsUtils {
         return predicate;
     }
 
+    private void appendActivePredicate(Boolean active, AndPredicate predicate) {
+        if (active != null) {
+            Predicate completionEmpty = new EmptyPredicate("bpm:completionDate");
+            if (active) {
+                predicate.addPredicate(completionEmpty);
+            } else {
+                predicate.addPredicate(new NotPredicate(completionEmpty));
+            }
+        }
+    }
+
+    private void appendActorsPredicate(List<String> actors, AndPredicate predicate) {
+        if (actors != null) {
+            predicate.addPredicate(getActorsPredicate(actors));
+        }
+    }
+
     private void appendCaseStatusPredicate(String caseStatus, AndPredicate predicate) {
         if (StringUtils.isNotBlank(caseStatus)) {
-            if (!checkForNodeRef(caseStatus)) {
+            if (!NodeRef.isNodeRef(caseStatus)) {
                 NodeRef ref = caseStatusService.getStatusByName(caseStatus.toLowerCase());
                 if (ref != null) {
                     caseStatus = ref.toString();
@@ -128,15 +108,41 @@ public class WorkflowTaskRecordsUtils {
         }
     }
 
-    private boolean checkForNodeRef(String attr) {
-        return attr.startsWith("workspace://");
+    private void appendDocTypePredicate(String docType, AndPredicate predicate) {
+        if (StringUtils.isNotBlank(docType)) {
+            if (docType.contains(":") || docType.contains("{")) {
+                Predicate typePredicate;
+                QName docTypeQName = QName.resolveToQName(namespaceService, docType);
+                String docTypeAtt = WorkflowMirrorModel.PROP_DOCUMENT_TYPE.toPrefixString(namespaceService);
+                if (docTypeQName != null) {
+                    typePredicate = ValuePredicate.equal(docTypeAtt, docTypeQName.toString());
+                } else {
+                    log.warn("Document type qname " + docType + " is not found");
+                    typePredicate = ValuePredicate.equal(docTypeAtt, docType);
+                }
+                predicate.addPredicate(typePredicate);
+            }
+        }
+    }
+
+    private void appendDocumentParamPredicate(String documentParam, AndPredicate predicate) {
+        if (StringUtils.isNotBlank(documentParam)) {
+            if (!NodeRef.isNodeRef(documentParam)) {
+                return;
+            }
+
+            String docAttr = WorkflowMirrorModel.PROP_DOCUMENT.toPrefixString(namespaceService);
+            Predicate documentPredicate = ValuePredicate.equal(docAttr, documentParam);
+
+            predicate.addPredicate(documentPredicate);
+        }
     }
 
     private OrPredicate getActorsPredicate(List<String> actors) {
         Set<String> actorRefs = actors.stream().flatMap(actor -> {
             if (CURRENT_USER.equals(actor)) {
                 actor = AuthenticationUtil.getRunAsUser();
-            } else if (checkForNodeRef(actor)) {
+            } else if (NodeRef.isNodeRef(actor)) {
                 actor = authorityUtils.getAuthorityName(new NodeRef(actor));
             }
             return Stream.concat(authorityUtils.getContainingAuthoritiesRefs(actor).stream(),
@@ -163,10 +169,9 @@ public class WorkflowTaskRecordsUtils {
         taskRecordsQuery.setSortBy(query.getSortBy());
 
         WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
-        boolean filterByDocStatusRequired = StringUtils.isNotBlank(tasksQuery.docStatus);
         boolean filterByActiveTaskRequired = Boolean.TRUE.equals(tasksQuery.active);
 
-        if (query.getMaxItems() > -1 && (filterByDocStatusRequired || filterByActiveTaskRequired)) {
+        if (query.getMaxItems() > -1 && filterByActiveTaskRequired) {
             taskRecordsQuery.setMaxItems(query.getMaxItems() * 5); //we need to increase the selection for filtering
         } else {
             taskRecordsQuery.setMaxItems(query.getMaxItems());
