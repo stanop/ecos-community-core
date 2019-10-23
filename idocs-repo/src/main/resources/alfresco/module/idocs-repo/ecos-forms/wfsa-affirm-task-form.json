@@ -59,6 +59,7 @@
                       "yearRows": 4,
                       "yearColumns": 5
                     },
+                    "enableTime": false,
                     "defaultValue": "",
                     "encrypted": false,
                     "validate": {
@@ -91,7 +92,7 @@
                       "useLocaleSettings": false,
                       "allowInput": true,
                       "mode": "single",
-                      "enableTime": true,
+                      "enableTime": false,
                       "noCalendar": false,
                       "format": "dd-MM-yyyy",
                       "defaultDate": "",
@@ -206,7 +207,6 @@
                     "useLocaleSettings": false,
                     "allowInput": true,
                     "enableDate": true,
-                    "enableTime": true,
                     "defaultDate": "",
                     "displayInTimezone": "viewer",
                     "timezone": "",
@@ -219,7 +219,7 @@
                       "mousewheel": true,
                       "arrowkeys": true
                     },
-                    "id": "e45g7w"
+                    "id": "ep3yfsu"
                   }
                 ],
                 "xs": 0,
@@ -275,7 +275,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eokhx3p"
+                "id": "eif10v"
               }
             ],
             "mask": false,
@@ -333,7 +333,7 @@
             "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e20hvqq"
+            "id": "ew1ed2b"
           },
           {
             "label": "Comment",
@@ -411,7 +411,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "eqqcpu"
+            "id": "e26f2sn"
           }
         ],
         "tags": [],
@@ -449,7 +449,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "el5sbwr"
+        "id": "eb8cwda"
       },
       {
         "label": "Columns",
@@ -524,7 +524,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "ewhyco"
+                "id": "e7fr02o"
               }
             ],
             "width": 6,
@@ -584,7 +584,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e1uowjq"
+            "id": "edzqxan"
           },
           {
             "components": [
@@ -655,7 +655,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "ebg0lvg"
+                "id": "eboqb2l"
               }
             ],
             "width": 6,
@@ -715,7 +715,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e218hwp"
+            "id": "e2u0io"
           }
         ],
         "mask": false,
@@ -772,7 +772,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "eimbi8t"
+        "id": "e1h8y2"
       }
     ]
   },

@@ -135,7 +135,7 @@
                 "mask": false,
                 "inputType": "text",
                 "inputMask": "",
-                "id": "e6rwznk"
+                "id": "euiikfe"
               },
               {
                 "label": "Generate",
@@ -198,7 +198,7 @@
                 "inputType": "checkbox",
                 "value": "",
                 "name": "",
-                "id": "eyvoyk"
+                "id": "ep5oe1a"
               }
             ],
             "xs": 0,
@@ -254,7 +254,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e8bd1da"
+            "id": "ep4bs5w"
           }
         ],
         "mask": false,
@@ -312,7 +312,7 @@
         "inlineColumns": false,
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ebv9yot"
+        "id": "e9lcb3"
       },
       {
         "label": "Columns",
@@ -336,6 +336,7 @@
                   "yearRows": 4,
                   "yearColumns": 5
                 },
+                "enableTime": false,
                 "defaultValue": "",
                 "encrypted": false,
                 "validate": {
@@ -368,7 +369,7 @@
                   "useLocaleSettings": false,
                   "allowInput": true,
                   "mode": "single",
-                  "enableTime": true,
+                  "enableTime": false,
                   "noCalendar": false,
                   "format": "dd-MM-yyyy",
                   "defaultDate": "",
@@ -483,7 +484,6 @@
                 "useLocaleSettings": false,
                 "allowInput": true,
                 "enableDate": true,
-                "enableTime": true,
                 "defaultDate": "",
                 "displayInTimezone": "viewer",
                 "timezone": "",
@@ -496,7 +496,7 @@
                   "mousewheel": true,
                   "arrowkeys": true
                 },
-                "id": "ec1wg7m"
+                "id": "euic63"
               }
             ],
             "xs": 0,
@@ -552,7 +552,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eneohc"
+            "id": "ez1mvn5"
           }
         ],
         "mask": false,
@@ -610,7 +610,7 @@
         "inlineColumns": false,
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ehsqnj"
+        "id": "e9nbcuh"
       },
       {
         "label": "Comment",
@@ -688,7 +688,7 @@
         "inputMask": "",
         "wysiwyg": false,
         "editor": "",
-        "id": "exyw2b"
+        "id": "ewhwqt"
       },
       {
         "label": "Columns",
@@ -763,7 +763,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "ekkc0v"
+                "id": "epkbppu"
               }
             ],
             "width": 6,
@@ -823,7 +823,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ef6g47q"
+            "id": "ek6nksp"
           }
         ],
         "mask": false,
@@ -880,7 +880,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "efxr77t"
+        "id": "eahu149"
       }
     ]
   },
