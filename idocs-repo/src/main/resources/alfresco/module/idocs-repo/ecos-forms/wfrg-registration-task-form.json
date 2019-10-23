@@ -90,7 +90,7 @@
                       {
                         "name": "value_gen",
                         "type": "value",
-                        "value": "value = \"\";"
+                        "value": "if ('-' == value) value = '';"
                       }
                     ]
                   }
@@ -135,7 +135,7 @@
                 "mask": false,
                 "inputType": "text",
                 "inputMask": "",
-                "id": "euiikfe"
+                "id": "e9a3xu4"
               },
               {
                 "label": "Generate",
@@ -198,7 +198,7 @@
                 "inputType": "checkbox",
                 "value": "",
                 "name": "",
-                "id": "ep5oe1a"
+                "id": "egsakgq"
               }
             ],
             "xs": 0,
@@ -254,7 +254,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ep4bs5w"
+            "id": "euoe6s"
           }
         ],
         "mask": false,
@@ -312,7 +312,7 @@
         "inlineColumns": false,
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e9lcb3"
+        "id": "e3d8eao"
       },
       {
         "label": "Columns",
@@ -496,7 +496,7 @@
                   "mousewheel": true,
                   "arrowkeys": true
                 },
-                "id": "euic63"
+                "id": "el1g208"
               }
             ],
             "xs": 0,
@@ -552,7 +552,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ez1mvn5"
+            "id": "esmwngj"
           }
         ],
         "mask": false,
@@ -610,7 +610,7 @@
         "inlineColumns": false,
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e9nbcuh"
+        "id": "eeajl2m"
       },
       {
         "label": "Comment",
@@ -688,7 +688,7 @@
         "inputMask": "",
         "wysiwyg": false,
         "editor": "",
-        "id": "ewhwqt"
+        "id": "erq103i"
       },
       {
         "label": "Columns",
@@ -763,7 +763,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "epkbppu"
+                "id": "e82dk3i"
               }
             ],
             "width": 6,
@@ -823,7 +823,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ek6nksp"
+            "id": "eq89vew"
           }
         ],
         "mask": false,
@@ -880,7 +880,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "eahu149"
+        "id": "eof8axv"
       }
     ]
   },
