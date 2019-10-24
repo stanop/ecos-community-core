@@ -1,7 +1,7 @@
 package ru.citeck.ecos.action.node;
 
 import org.alfresco.service.cmr.repository.NodeRef;
-import ru.citeck.ecos.action.dto.ActionDTO;
+import ru.citeck.ecos.apps.app.module.type.action.ActionDTO;
 
 import java.util.List;
 import java.util.Map;

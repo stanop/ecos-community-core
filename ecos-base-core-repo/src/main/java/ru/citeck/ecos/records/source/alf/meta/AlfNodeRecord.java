@@ -14,7 +14,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.node.NodeActionsService;
-import ru.citeck.ecos.action.dto.ActionDTO;
+import ru.citeck.ecos.apps.app.module.type.action.ActionDTO;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.node.AlfNodeContentPathRegistry;

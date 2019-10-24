@@ -1,5 +1,7 @@
 package ru.citeck.ecos.action;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheStats;
@@ -13,10 +15,10 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
-import ru.citeck.ecos.action.dto.ActionDTO;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
 import ru.citeck.ecos.action.node.NodeActionsProvider;
 import ru.citeck.ecos.action.node.NodeActionsService;
+import ru.citeck.ecos.apps.app.module.type.action.ActionDTO;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class NodeActionsServiceImpl implements NodeActionsService {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final String PARAM_ACTION_ID = "actionId";
     private static final String PARAM_ACTION_TITLE = "title";
@@ -86,7 +90,9 @@ public class NodeActionsServiceImpl implements NodeActionsService {
                     .filter(x -> !EXCLUDE_FROM_CONFIG.contains(x.getKey()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            action.setParams(config);
+            JsonNode configNode = OBJECT_MAPPER.convertValue(config, JsonNode.class);
+
+            action.setConfig(configNode);
             result.add(action);
         }
 
