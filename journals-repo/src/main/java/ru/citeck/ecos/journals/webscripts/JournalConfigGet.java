@@ -29,8 +29,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
-import ru.citeck.ecos.action.dto.ActionDTO;
-import ru.citeck.ecos.action.dto.EvaluatorDTO;
+import ru.citeck.ecos.apps.app.module.type.action.ActionDTO;
+import ru.citeck.ecos.apps.app.module.type.evaluator.EvaluatorDTO;
 import ru.citeck.ecos.journals.*;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.predicate.PredicateService;
@@ -360,13 +360,13 @@ public class JournalConfigGet extends AbstractWebScript {
                     action.setId(journalAction.getId());
                     action.setTitle(journalAction.getTitle());
                     action.setType(journalAction.getType());
-                    action.setParams(journalAction.getOptions());
+                    action.setConfig(optionsToNode(journalAction.getOptions()));
 
                     JournalActionEvaluator evaluator = journalAction.getEvaluator();
                     if (evaluator != null) {
                         EvaluatorDTO ev = new EvaluatorDTO();
                         ev.setId(evaluator.getId());
-                        ev.setParams(evaluator.getOptions());
+                        ev.setConfig(optionsToNode(evaluator.getOptions()));
 
                         action.setEvaluator(ev);
                     }
@@ -374,6 +374,10 @@ public class JournalConfigGet extends AbstractWebScript {
                     return action;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private JsonNode optionsToNode(Map<String, String> options) {
+        return objectMapper.convertValue(options, JsonNode.class);
     }
 
     private List<GroupAction> getGroupActions(JournalType type) {

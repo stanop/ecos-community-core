@@ -56,6 +56,12 @@
             <version>1.9.12.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>ru.citeck.ecos.community</groupId>
+            <artifactId>ecos-apps-lib</artifactId>
+            <version>${ecos.apps.lib.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
