@@ -20,6 +20,9 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
     private static final String ENV_PROP_IP = "ECOS_EUREKA_INSTANCE_IP";
     private static final String ENV_PROP_HOST = "ECOS_EUREKA_INSTANCE_HOST";
 
+    private static final String ENV_RECORDS_URL = "ECOS_EUREKA_RECORDS_URL";
+    private static final String ENV_RECORDS_USER_URL = "ECOS_EUREKA_USER_RECORDS_URL";
+
     private static final DataCenterInfo DATA_CENTER_INFO = () -> DataCenterInfo.Name.MyOwn;
 
     private static final String HEALTH_URL = "/alfresco/service/citeck/ecos/eureka-status";
@@ -122,7 +125,21 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
     public Map<String, String> getMetadataMap() {
         Map<String, String> metadata = new HashMap<>();
         metadata.put("zone", "primary");
-        metadata.put("records-base-url", "/alfresco/s/citeck/ecos/records/");
+
+        String recordsUrl = System.getenv(ENV_RECORDS_URL);
+        if (StringUtils.isNotBlank(recordsUrl)) {
+            metadata.put("records-base-url", recordsUrl);
+        } else {
+            metadata.put("records-base-url", "/alfresco/s/citeck/ecos/records/");
+        }
+
+        String userUrl = System.getenv(ENV_RECORDS_USER_URL);
+        if (StringUtils.isNotBlank(userUrl)) {
+            metadata.put("records-user-base-url", userUrl);
+        } else {
+            metadata.put("records-user-base-url", "/share/proxy/alfresco/citeck/ecos/records/");
+        }
+
         return metadata;
     }
 
