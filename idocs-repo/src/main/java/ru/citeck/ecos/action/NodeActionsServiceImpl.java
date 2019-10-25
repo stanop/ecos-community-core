@@ -18,7 +18,7 @@ import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
 import ru.citeck.ecos.action.node.NodeActionsProvider;
 import ru.citeck.ecos.action.node.NodeActionsService;
-import ru.citeck.ecos.apps.app.module.type.action.ActionDTO;
+import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -74,13 +74,13 @@ public class NodeActionsServiceImpl implements NodeActionsService {
     }
 
     @Override
-    public List<ActionDTO> getNodeActions(NodeRef nodeRef) {
+    public List<ActionDto> getNodeActions(NodeRef nodeRef) {
         List<Map<String, String>> rawActions = getNodeActionsRaw(nodeRef);
 
-        List<ActionDTO> result = new ArrayList<>();
+        List<ActionDto> result = new ArrayList<>();
 
         for (Map<String, String> actionRaw : rawActions) {
-            ActionDTO action = new ActionDTO();
+            ActionDto action = new ActionDto();
             action.setId(actionRaw.get("actionId"));
             action.setTitle(actionRaw.get("title"));
             action.setType(actionRaw.get("actionType"));
