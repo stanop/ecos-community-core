@@ -82,7 +82,7 @@ public class NodeActionsServiceImpl implements NodeActionsService {
         for (Map<String, String> actionRaw : rawActions) {
             ActionDto action = new ActionDto();
             action.setId(actionRaw.get("actionId"));
-            action.setTitle(actionRaw.get("title"));
+            action.setName(actionRaw.get("title"));
             action.setType(actionRaw.get("actionType"));
 
             Map<String, String> config = actionRaw.entrySet()
