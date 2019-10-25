@@ -14,7 +14,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.node.NodeActionsService;
-import ru.citeck.ecos.apps.app.module.type.action.ActionDTO;
+import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
@@ -237,7 +237,7 @@ public class AlfNodeRecord implements MetaValue {
             case RecordConstants.ATT_ACTIONS:
 
                 NodeActionsService nodeActionsService = context.getService("nodeActionsService");
-                List<ActionDTO> actions = nodeActionsService.getNodeActions(nodeRef);
+                List<ActionDto> actions = nodeActionsService.getNodeActions(nodeRef);
                 JsonNode actionsNode = OBJECT_MAPPER.valueToTree(actions);
                 attribute = MetaUtils.toMetaValues(actionsNode, context, field);
                 break;

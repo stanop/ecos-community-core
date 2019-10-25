@@ -29,8 +29,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
-import ru.citeck.ecos.apps.app.module.type.action.ActionDTO;
-import ru.citeck.ecos.apps.app.module.type.evaluator.EvaluatorDTO;
+import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
+import ru.citeck.ecos.apps.app.module.type.type.action.EvaluatorDto;
 import ru.citeck.ecos.journals.*;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.predicate.PredicateService;
@@ -352,11 +352,11 @@ public class JournalConfigGet extends AbstractWebScript {
         }
     }
 
-    private List<ActionDTO> getActions(JournalType journal) {
+    private List<ActionDto> getActions(JournalType journal) {
         return journal.getActions()
                 .stream()
                 .map(journalAction -> {
-                    ActionDTO action = new ActionDTO();
+                    ActionDto action = new ActionDto();
                     action.setId(journalAction.getId());
                     action.setTitle(journalAction.getTitle());
                     action.setType(journalAction.getType());
@@ -364,7 +364,7 @@ public class JournalConfigGet extends AbstractWebScript {
 
                     JournalActionEvaluator evaluator = journalAction.getEvaluator();
                     if (evaluator != null) {
-                        EvaluatorDTO ev = new EvaluatorDTO();
+                        EvaluatorDto ev = new EvaluatorDto();
                         ev.setId(evaluator.getId());
                         ev.setConfig(optionsToNode(evaluator.getOptions()));
 
@@ -572,7 +572,7 @@ public class JournalConfigGet extends AbstractWebScript {
         JsonNode groupBy;
         String metaRecord;
         List<CreateVariantsGet.ResponseVariant> createVariants;
-        List<ActionDTO> actions;
+        List<ActionDto> actions;
         List<GroupAction> groupActions;
     }
 
