@@ -43,7 +43,7 @@
               {
                 "components": [
                   {
-                    "label": "wfsa:affirmDate",
+                    "label": "Payment Date",
                     "format": "dd-MM-yyyy",
                     "mask": false,
                     "tableView": true,
@@ -59,6 +59,7 @@
                       "yearRows": 4,
                       "yearColumns": 5
                     },
+                    "enableTime": false,
                     "defaultValue": "",
                     "encrypted": false,
                     "validate": {
@@ -70,7 +71,7 @@
                     },
                     "key": "wfsa_affirmDate",
                     "properties": {
-                      "attribute": "wfsa:affirmDate"
+                      "attribute": "wfsa_affirmDate"
                     },
                     "conditional": {
                       "show": "",
@@ -91,7 +92,7 @@
                       "useLocaleSettings": false,
                       "allowInput": true,
                       "mode": "single",
-                      "enableTime": true,
+                      "enableTime": false,
                       "noCalendar": false,
                       "format": "dd-MM-yyyy",
                       "defaultDate": "",
@@ -206,7 +207,6 @@
                     "useLocaleSettings": false,
                     "allowInput": true,
                     "enableDate": true,
-                    "enableTime": true,
                     "defaultDate": "",
                     "displayInTimezone": "viewer",
                     "timezone": "",
@@ -219,7 +219,7 @@
                       "mousewheel": true,
                       "arrowkeys": true
                     },
-                    "id": "el9wvas"
+                    "id": "ep3yfsu"
                   }
                 ],
                 "xs": 0,
@@ -275,7 +275,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ekjldrd"
+                "id": "eif10v"
               }
             ],
             "mask": false,
@@ -333,7 +333,7 @@
             "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "el5fxik"
+            "id": "ew1ed2b"
           },
           {
             "label": "Comment",
@@ -411,7 +411,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "ew6jbnx"
+            "id": "e26f2sn"
           }
         ],
         "tags": [],
@@ -449,7 +449,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "egekmmr"
+        "id": "eb8cwda"
       },
       {
         "label": "Columns",
@@ -524,7 +524,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "e2isux"
+                "id": "e7fr02o"
               }
             ],
             "width": 6,
@@ -584,7 +584,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ecsr5db"
+            "id": "edzqxan"
           },
           {
             "components": [
@@ -655,7 +655,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "e0txyos"
+                "id": "eboqb2l"
               }
             ],
             "width": 6,
@@ -715,7 +715,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eymayct"
+            "id": "e2u0io"
           }
         ],
         "mask": false,
@@ -772,7 +772,7 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ekfk0l"
+        "id": "e1h8y2"
       }
     ]
   },
@@ -780,12 +780,14 @@
     "en": {
       "Affirmed": "Affirmed",
       "Declined": "Declined",
-      "Comment": "Comment"
+      "Comment": "Comment",
+      "Payment Date": "Payment Date"
     },
     "ru": {
       "Affirmed": "Подтвердить",
       "Declined": "Отклонить",
-      "Comment": "Комментировать"
+      "Comment": "Комментировать",
+      "Payment Date": "Дата оплаты"
     }
   }
 }

@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
+import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,13 +69,19 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final DocSumResolveRegistry docSumResolveRegistry;
     private final WorkflowUtils workflowUtils;
     private final AuthorityUtils authorityUtils;
+    private final NamespaceService namespaceService;
+    private final DictionaryService dictionaryService;
 
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
                                AuthorityService authorityService, OwnerService ownerService,
                                DocSumResolveRegistry docSumResolveRegistry,
-                               WorkflowUtils workflowUtils, AuthorityUtils authorityUtils) {
+                               WorkflowUtils workflowUtils, AuthorityUtils authorityUtils,
+                               NamespaceService namespaceService,
+                               DictionaryService dictionaryService) {
+        this.namespaceService = namespaceService;
+        this.dictionaryService = dictionaryService;
         setId(ID);
         this.ecosTaskService = ecosTaskService;
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
@@ -128,7 +137,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             } else {
 
                 if (v.isTextual()) {
-                    taskProps.put(n, v.asText());
+                    String value = v.asText();
+                    if (isDate(n) && StringUtils.isEmpty(value)) {
+                        value = null;
+                    }
+                    taskProps.put(n, value);
                 } else if (v.isBoolean()) {
                     taskProps.put(n, v.asBoolean());
                 } else if (v.isDouble()) {
@@ -139,6 +152,15 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     taskProps.put(n, v.asLong());
                 } else if (v.isNull()) {
                     taskProps.put(n, null);
+                } else if (v.isArray()) {
+                    Set<NodeRef> nodeRefs = new HashSet<>();
+                    for (JsonNode jsonNode : v) {
+                        String stringNode = jsonNode.asText();
+                        if (NodeRef.isNodeRef(stringNode)) {
+                            nodeRefs.add(new NodeRef(stringNode));
+                        }
+                    }
+                    taskProps.put(n, nodeRefs);
                 }
             }
         });
@@ -186,6 +208,31 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
     private String getEcmFieldName(String name) {
         return name.substring(DOCUMENT_FIELD_PREFIX.length()).replaceAll("_", ":");
+    }
+
+    private boolean isDate(String fieldName) {
+
+        if (fieldName == null) {
+            return false;
+        }
+
+        if (fieldName.startsWith(DOCUMENT_FIELD_PREFIX)) {
+            fieldName = getEcmFieldName(fieldName);
+        }
+
+        if (fieldName.contains("_")) {
+            fieldName = fieldName.replace("_", ":");
+        }
+
+        QName fieldQName = QName.resolveToQName(namespaceService, fieldName);
+        PropertyDefinition property = dictionaryService.getProperty(fieldQName);
+
+        if (property != null) {
+            QName dataTypeQName = property.getDataType().getName();
+            return DataTypeDefinition.DATE.equals(dataTypeQName);
+        }
+
+        return false;
     }
 
     @Override
