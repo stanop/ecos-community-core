@@ -358,7 +358,7 @@ public class JournalConfigGet extends AbstractWebScript {
                 .map(journalAction -> {
                     ActionDto action = new ActionDto();
                     action.setId(journalAction.getId());
-                    action.setTitle(journalAction.getTitle());
+                    action.setName(journalAction.getTitle());
                     action.setType(journalAction.getType());
                     action.setConfig(optionsToNode(journalAction.getOptions()));
 

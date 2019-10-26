@@ -40,6 +40,8 @@ public class NodeActionsServiceImpl implements NodeActionsService {
     private static final List<String> EXCLUDE_FROM_CONFIG = Arrays.asList(PARAM_ACTION_ID, PARAM_ACTION_TITLE,
             PARAM_ACTION_TYPE);
 
+    private DefaultActionsProvider defaultActionsProvider;
+
     private List<NodeActionsProvider> providerList = new ArrayList<>();
 
     private LoadingCache<Pair<String, NodeRef>, NodeActions> cache;
@@ -82,7 +84,7 @@ public class NodeActionsServiceImpl implements NodeActionsService {
         for (Map<String, String> actionRaw : rawActions) {
             ActionDto action = new ActionDto();
             action.setId(actionRaw.get("actionId"));
-            action.setTitle(actionRaw.get("title"));
+            action.setName(actionRaw.get("title"));
             action.setType(actionRaw.get("actionType"));
 
             Map<String, String> config = actionRaw.entrySet()
@@ -95,6 +97,9 @@ public class NodeActionsServiceImpl implements NodeActionsService {
             action.setConfig(configNode);
             result.add(action);
         }
+
+        //TODO: Implement a cache so as not to request action rights each time?
+        result.addAll(defaultActionsProvider.getDefaultActions(nodeRef));
 
         return result;
     }
@@ -166,11 +171,16 @@ public class NodeActionsServiceImpl implements NodeActionsService {
         this.nodeService = serviceRegistry.getNodeService();
     }
 
+    @Autowired
+    public void setDefaultActionsProvider(DefaultActionsProvider defaultActionsProvider) {
+        this.defaultActionsProvider = defaultActionsProvider;
+    }
+
     public void setCacheAge(long cacheAge) {
         this.cacheAge = cacheAge;
     }
 
-    private class NodeActions {
+    private static class NodeActions {
 
         final Date lastModified;
         final List<Map<String, String>> actionsData;
