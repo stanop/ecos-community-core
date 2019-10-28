@@ -36,26 +36,18 @@ public class DefaultActionsProvider {
 
     static {
         ActionDto view = new ActionDto();
-        view.setName("grid.inline-tools.show");
-        view.setIcon("icon-on");
         view.setType("view");
         view.setKey(VIEW_KEY);
 
         ActionDto edit = new ActionDto();
-        edit.setName("grid.inline-tools.edit");
-        edit.setIcon("icon-edit");
         edit.setType("edit");
         edit.setKey(EDIT_KEY);
 
         ActionDto delete = new ActionDto();
-        delete.setName("grid.inline-tools.delete");
-        delete.setIcon("icon-delete");
         delete.setType("delete");
         delete.setKey(DELETE_KEY);
 
         ActionDto download = new ActionDto();
-        download.setName("grid.inline-tools.download");
-        download.setIcon("icon-download");
         download.setType("download");
         download.setKey(DOWNLOAD_KEY);
 
@@ -109,5 +101,4 @@ public class DefaultActionsProvider {
                 HAS_CONTENT_PATTERN);
         return result.asBoolean();
     }
-
 }
