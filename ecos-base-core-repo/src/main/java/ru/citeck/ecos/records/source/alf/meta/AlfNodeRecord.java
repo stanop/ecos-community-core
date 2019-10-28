@@ -43,8 +43,6 @@ import java.util.stream.Collectors;
 
 public class AlfNodeRecord implements MetaValue {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     private static final String VIRTUAL_SCRIPT_ATTS_ID = "virtualScriptAttributesProvider";
     private static final String DEFAULT_VERSION_LABEL = "1.0";
 
@@ -238,8 +236,7 @@ public class AlfNodeRecord implements MetaValue {
 
                 NodeActionsService nodeActionsService = context.getService("nodeActionsService");
                 List<ActionDto> actions = nodeActionsService.getNodeActions(nodeRef);
-                JsonNode actionsNode = OBJECT_MAPPER.valueToTree(actions);
-                attribute = MetaUtils.toMetaValues(actionsNode, context, field);
+                attribute = MetaUtils.toMetaValues(actions, context, field);
                 break;
 
             default:
