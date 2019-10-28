@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+
+    <bean id="ecos.eform.import-spaces.3-15-0" abstract="true" parent="ecos.eform.import-spaces">
+        <property name="sinceVersion" value="3.15.0" />
+        <property name="appliesFromVersion" value="3.15.0" />
+    </bean>
+
+    <bean id="ecos.eform.module-component.types-journal" parent="ecos.eform.import-spaces.3-15-0" depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="ecos.eform.module-component.types-journal" />
+        <property name="description" value="ecos.eform.module-component.types-journal" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+                <ref bean="idocs.module-component.system-journals-list" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-eform-repo/bootstrap/journals/ecos-types-journal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-eform-repo/bootstrap/journals/ecos-types-journal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="ecos.eform.module-component.sections-journal" parent="ecos.eform.import-spaces.3-15-0" depends-on="idocs.dictionaryBootstrap">
+        <property name="name" value="ecos.eform.module-component.sections-journal" />
+        <property name="description" value="ecos.eform.module-component.sections-journal" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="idocs.module-component.journals-meta-root" />
+                <ref bean="idocs.module-component.system-journals-list" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journals</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/journals/journal.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-eform-repo/bootstrap/journals/ecos-sections-journal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+                <props>
+                    <prop key="path">/cm:IDocsRoot/journal:journalMetaRoot/cm:journalLists</prop>
+                    <prop key="location">alfresco/module/idocs-repo/bootstrap/journals/system/journal-in-list.xml</prop>
+                    <prop key="messages">alfresco/module/ecos-eform-repo/bootstrap/journals/ecos-sections-journal</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
+</beans>
