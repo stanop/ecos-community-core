@@ -26,9 +26,9 @@ public class DefaultActionsProvider implements NodeActionsV2Provider {
     private static final String HAS_CONTENT_PATTERN = ".has(n:\"_content\")";
 
     private static final String EDIT_KEY = "dao.edit";
-    private static final String VIEW_KEY = "dto.view";
-    private static final String DOWNLOAD_KEY = "dto.download";
-    private static final String DELETE_KEY = "dto.delete";
+    private static final String VIEW_KEY = "dao.view";
+    private static final String DOWNLOAD_KEY = "dao.download";
+    private static final String DELETE_KEY = "dao.delete";
 
     private static final List<ActionDto> ACTIONS;
 
