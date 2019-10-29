@@ -95,6 +95,14 @@ services:
       - 5672:5672/tcp
     volumes:
       - /opt/rabbitmqdata:/var/lib/rabbitmq
+  mailhog:
+    restart: on-failure:5
+    container_name: mailhog
+    hostname: mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025/tcp
+    image: mailhog/mailhog
   gateway-psql:
     image: postgres:10.4
     ports:
