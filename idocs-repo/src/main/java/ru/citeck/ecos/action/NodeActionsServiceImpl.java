@@ -18,6 +18,7 @@ import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
 import ru.citeck.ecos.action.node.NodeActionsProvider;
 import ru.citeck.ecos.action.node.NodeActionsService;
+import ru.citeck.ecos.action.v2.NodeActionsV2Provider;
 import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
 
 import java.util.*;
@@ -40,9 +41,8 @@ public class NodeActionsServiceImpl implements NodeActionsService {
     private static final List<String> EXCLUDE_FROM_CONFIG = Arrays.asList(PARAM_ACTION_ID, PARAM_ACTION_TITLE,
             PARAM_ACTION_TYPE);
 
-    private DefaultActionsProvider defaultActionsProvider;
-
-    private List<NodeActionsProvider> providerList = new ArrayList<>();
+    private List<NodeActionsV2Provider> v2providersList = new ArrayList<>();
+    private List<NodeActionsProvider> providersList = new ArrayList<>();
 
     private LoadingCache<Pair<String, NodeRef>, NodeActions> cache;
     private long cacheAge = 600;
@@ -98,8 +98,10 @@ public class NodeActionsServiceImpl implements NodeActionsService {
             result.add(action);
         }
 
-        //TODO: Implement a cache so as not to request action rights each time?
-        result.addAll(defaultActionsProvider.getDefaultActions(nodeRef));
+        //todo: cache?
+        result.addAll(v2providersList.stream()
+                                     .flatMap(p -> p.getActions(nodeRef).stream())
+                                     .collect(Collectors.toList()));
 
         return result;
     }
@@ -109,7 +111,7 @@ public class NodeActionsServiceImpl implements NodeActionsService {
         List<Map<String, String>> actionsData = new ArrayList<>();
 
         int id = 0;
-        for (NodeActionsProvider provider : providerList) {
+        for (NodeActionsProvider provider : providersList) {
             List<ru.citeck.ecos.action.node.NodeActionDefinition> list = provider.getNodeActions(userNode.getSecond());
             for (NodeActionDefinition action : list) {
                 action.setActionId(Integer.toString(id++));
@@ -163,7 +165,7 @@ public class NodeActionsServiceImpl implements NodeActionsService {
     }
 
     public void addActionProvider(NodeActionsProvider actionsProvider) {
-        providerList.add(actionsProvider);
+        providersList.add(actionsProvider);
     }
 
     @Autowired
@@ -172,8 +174,8 @@ public class NodeActionsServiceImpl implements NodeActionsService {
     }
 
     @Autowired
-    public void setDefaultActionsProvider(DefaultActionsProvider defaultActionsProvider) {
-        this.defaultActionsProvider = defaultActionsProvider;
+    public void setV2providersList(List<NodeActionsV2Provider> v2providersList) {
+        this.v2providersList = v2providersList;
     }
 
     public void setCacheAge(long cacheAge) {

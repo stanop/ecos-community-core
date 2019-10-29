@@ -1,4 +1,4 @@
-package ru.citeck.ecos.action;
+package ru.citeck.ecos.action.v2;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -15,15 +15,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//TODO: Rewrite check permission/content with evaluators?
-
 /**
  * Provide default actions for node.
  *
  * @author Roman Makarskiy
  */
 @Component
-public class DefaultActionsProvider {
+public class DefaultActionsProvider implements NodeActionsV2Provider {
 
     private static final String HAS_CONTENT_PATTERN = ".has(n:\"_content\")";
 
@@ -63,11 +61,17 @@ public class DefaultActionsProvider {
         this.recordsService = recordsService;
     }
 
-    public List<ActionDto> getDefaultActions(NodeRef nodeRef) {
+    @Override
+    public List<ActionDto> getActions(NodeRef nodeRef) {
         return ACTIONS
                 .stream()
                 .filter(actionDto -> actionIsRequired(actionDto, nodeRef))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getScope() {
+        return "dto";
     }
 
     private boolean actionIsRequired(ActionDto action, NodeRef nodeRef) {
