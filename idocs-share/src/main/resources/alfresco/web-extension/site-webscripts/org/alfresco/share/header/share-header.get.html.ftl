@@ -62,11 +62,9 @@
             }
 
             require([
-                'js/citeck/modules/slide-menu/slide-menu'
+                'ecosui!slide-menu'
             ], function(SlideMenu) {
-                SlideMenu.render('slide-menu', {
-                    slideMenuConfig: ${jsonUtils.toJSONString(slideMenuConfig)},
-                });
+                SlideMenu.render('slide-menu');
             });
 
         //]]></script>
