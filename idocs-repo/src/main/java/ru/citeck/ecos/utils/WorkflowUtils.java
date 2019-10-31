@@ -132,6 +132,28 @@ public class WorkflowUtils {
         return getDocumentTasks(nodeRef, active, null);
     }
 
+    public List<WorkflowTask> getDocumentTasks(NodeRef nodeRef, Boolean tasksStatus, String engine, String user) {
+
+        List<WorkflowTask> tasks = new ArrayList<>();
+
+        if (tasksStatus != null) {
+            tasks = getDocumentTasks(nodeRef, tasksStatus, engine);
+        } else {
+            tasks.addAll(getDocumentTasks(nodeRef, false, engine));
+            tasks.addAll(getDocumentTasks(nodeRef, true, engine));
+        }
+
+        String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
+        if (tasks != null && currentUser.equals(user)) {
+            Set<NodeRef> authorities = authorityUtils.getUserAuthoritiesRefs();
+            tasks = tasks.stream()
+                    .filter(t -> isTaskActor(t, user, authorities))
+                    .collect(Collectors.toList());
+        }
+
+        return tasks;
+    }
+
     public List<WorkflowTask> getDocumentTasks(NodeRef nodeRef, boolean active, String engine) {
 
         List<WorkflowInstance> workflows = workflowService.getWorkflowsForContent(nodeRef, active);
