@@ -1,4 +1,4 @@
-export LOCAL_HOST=$(hostname -I | cut -d' ' -f1)
+export LOCAL_HOST=$(/sbin/ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
 export ALFRESCO_TARGET=$LOCAL_HOST:8080
 export GATEWAY_TARGET=$LOCAL_HOST:8085
 docker-compose pull
