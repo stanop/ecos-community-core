@@ -250,13 +250,13 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
             NodeRef docRef = new NodeRef(document);
 
-            String user = null;
+            String actor = null;
             if (tasksQuery.actors != null && tasksQuery.actors.size() == 1) {
-                user = tasksQuery.actors.get(0);
+                actor = tasksQuery.actors.get(0);
             }
 
             List<WorkflowTask> tasks = workflowUtils.getDocumentTasks(docRef, tasksQuery.active,
-                                                                      tasksQuery.engine, CURRENT_USER.equals(user));
+                                                                      tasksQuery.engine, CURRENT_USER.equals(actor));
             if (tasks != null) {
 
                 List<RecordRef> taskRefs = tasks.stream()
