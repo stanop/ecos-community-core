@@ -261,6 +261,12 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         }
 
         @Override
+        public String getDescription() {
+            WorkflowTask task = workflowService.getTaskById(FlowableConstants.ENGINE_PREFIX + id);
+            return task.getDescription();
+        }
+
+        @Override
         public String getId() {
             return id;
         }

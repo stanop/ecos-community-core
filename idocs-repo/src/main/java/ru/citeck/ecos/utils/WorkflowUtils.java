@@ -139,8 +139,7 @@ public class WorkflowUtils {
         if (StringUtils.isNotBlank(engine)) {
             String enginePrefix = engine + "$";
             workflows = workflows.stream()
-                    .filter(workflow -> workflow.getId()
-                            .startsWith(enginePrefix))
+                    .filter(workflow -> workflow.getId().startsWith(enginePrefix))
                     .collect(Collectors.toList());
         }
 

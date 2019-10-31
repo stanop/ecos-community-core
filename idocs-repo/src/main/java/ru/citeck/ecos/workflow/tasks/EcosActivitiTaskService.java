@@ -222,6 +222,12 @@ public class EcosActivitiTaskService implements EngineTaskService {
         }
 
         @Override
+        public String getDescription() {
+            WorkflowTask task = workflowService.getTaskById(ENGINE_PREFIX + getId());
+            return task.getDescription();
+        }
+
+        @Override
         public String getId() {
             return id;
         }
