@@ -144,7 +144,7 @@ public class WorkflowUtils {
         }
 
         String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
-        if (tasks != null && currentUser.equals(user)) {
+        if (currentUser.equals(user)) {
             Set<NodeRef> authorities = authorityUtils.getUserAuthoritiesRefs();
             tasks = tasks.stream()
                     .filter(t -> isTaskActor(t, user, authorities))
