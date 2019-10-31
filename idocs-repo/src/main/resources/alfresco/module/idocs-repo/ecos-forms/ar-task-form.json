@@ -1,10 +1,20 @@
 {
-  "id": "0b42b2ad-a2dc-464f-90a6-d99ea9e233d5",
-  "title": "Scan task form",
-  "description": "",
-  "formKey": "alf_ctrwf:scanTask",
+  "id": "ar-task-form",
+  "title": "ar-task-form",
+  "formKey": "ar_task_form",
   "formMode": null,
+  "description": "",
   "customModule": null,
+  "i18n": {
+    "en": {
+      "Comment": "Comment",
+      "Done": "Done"
+    },
+    "ru": {
+      "Comment": "Комментарий",
+      "Done": "Выполнить"
+    }
+  },
   "definition": {
     "display": "form",
     "components": [
@@ -34,9 +44,9 @@
         "key": "comment",
         "properties": {},
         "conditional": {
+          "json": "",
           "show": "",
           "when": "",
-          "json": "",
           "eq": ""
         },
         "customConditional": "",
@@ -84,20 +94,19 @@
         "inputMask": "",
         "wysiwyg": false,
         "editor": "",
-        "id": "eo34r8e"
+        "id": "eh94w8"
       },
       {
         "label": "Columns",
-        "hideLabel": true,
         "inlineColumns": true,
         "columns": [
           {
             "components": [
               {
-                "label": "Reject",
-                "removeIndents": true,
+                "label": "Done",
                 "state": "",
                 "theme": "primary",
+                "size": "sm",
                 "shortcut": "",
                 "block": true,
                 "disableOnInvalid": true,
@@ -112,7 +121,7 @@
                   "custom": "",
                   "customPrivate": false
                 },
-                "key": "outcome_Reject",
+                "key": "outcome_Done",
                 "properties": {},
                 "conditional": {
                   "show": "",
@@ -121,41 +130,17 @@
                   "eq": ""
                 },
                 "customConditional": "",
-                "logic": [
-                  {
-                    "name": "event",
-                    "trigger": {
-                      "type": "simple",
-                      "simple": {
-                        "show": true,
-                        "when": "comment",
-                        "eq": ""
-                      }
-                    },
-                    "actions": [
-                      {
-                        "name": "set_disabled",
-                        "type": "property",
-                        "property": {
-                          "label": "Disabled",
-                          "value": "disabled",
-                          "type": "boolean"
-                        },
-                        "state": "true"
-                      }
-                    ]
-                  }
-                ],
+                "logic": [],
                 "attributes": {},
                 "type": "button",
                 "input": true,
                 "tags": [],
-                "defaultValue": false,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
                 "suffix": "",
                 "multiple": false,
+                "defaultValue": null,
                 "protected": false,
                 "unique": false,
                 "persistent": false,
@@ -180,23 +165,23 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "size": "md",
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "eehnkck"
+                "removeIndents": false,
+                "id": "esgureb"
               }
             ],
-            "width": 4,
+            "width": 6,
             "offset": 0,
             "push": 0,
             "pull": 0,
             "type": "column",
-            "hideOnChildrenHidden": false,
             "input": false,
-            "key": "column1",
+            "hideOnChildrenHidden": false,
+            "key": "column",
             "tableView": true,
-            "label": "",
+            "label": "Column",
             "xs": 0,
             "sm": 12,
             "md": 4,
@@ -244,158 +229,27 @@
               "when": null,
               "eq": ""
             },
-            "id": "eldu4wf"
-          },
-          {
-            "width": 4,
-            "offset": 0,
-            "type": "column",
-            "hideOnChildrenHidden": false,
-            "input": false,
-            "key": "column2",
-            "tableView": true,
-            "label": "",
-            "push": 0,
-            "pull": 0,
-            "components": [
-              {
-                "label": "Done",
-                "removeIndents": true,
-                "state": "",
-                "theme": "primary",
-                "shortcut": "",
-                "block": true,
-                "disableOnInvalid": true,
-                "mask": false,
-                "tableView": true,
-                "alwaysEnabled": false,
-                "encrypted": false,
-                "validate": {
-                  "customMessage": "",
-                  "json": "",
-                  "required": false,
-                  "custom": "",
-                  "customPrivate": false
-                },
-                "key": "outcome_Done",
-                "properties": {},
-                "conditional": {
-                  "show": "",
-                  "when": "",
-                  "json": "",
-                  "eq": ""
-                },
-                "customConditional": "",
-                "logic": [],
-                "attributes": {},
-                "type": "button",
-                "input": true,
-                "tags": [],
-                "defaultValue": false,
-                "placeholder": "",
-                "prefix": "",
-                "customClass": "",
-                "suffix": "",
-                "multiple": false,
-                "protected": false,
-                "unique": false,
-                "persistent": false,
-                "hidden": false,
-                "clearOnHide": true,
-                "dataGridLabel": true,
-                "labelPosition": "top",
-                "labelWidth": 30,
-                "labelMargin": 3,
-                "description": "",
-                "errorLabel": "",
-                "tooltip": "",
-                "hideLabel": false,
-                "tabindex": "",
-                "disabled": false,
-                "autofocus": false,
-                "dbIndex": false,
-                "customDefaultValue": "",
-                "calculateValue": "",
-                "allowCalculateOverride": false,
-                "widget": null,
-                "refreshOn": "",
-                "clearOnRefresh": false,
-                "validateOn": "change",
-                "size": "md",
-                "leftIcon": "",
-                "rightIcon": "",
-                "action": "submit",
-                "id": "eenuyu8"
-              }
-            ],
-            "index": 1,
-            "xs": 0,
-            "sm": 12,
-            "md": 4,
-            "lg": 0,
-            "xl": 0,
-            "classes": "",
-            "placeholder": "",
-            "prefix": "",
-            "customClass": "",
-            "suffix": "",
-            "multiple": false,
-            "defaultValue": null,
-            "protected": false,
-            "unique": false,
-            "persistent": true,
-            "hidden": false,
-            "clearOnHide": true,
-            "dataGridLabel": false,
-            "labelPosition": "top",
-            "labelWidth": 30,
-            "labelMargin": 3,
-            "description": "",
-            "errorLabel": "",
-            "tooltip": "",
-            "hideLabel": false,
-            "tabindex": "",
-            "disabled": false,
-            "autofocus": false,
-            "dbIndex": false,
-            "customDefaultValue": "",
-            "calculateValue": "",
-            "allowCalculateOverride": false,
-            "widget": null,
-            "refreshOn": "",
-            "clearOnRefresh": false,
-            "validateOn": "change",
-            "validate": {
-              "required": false,
-              "custom": "",
-              "customPrivate": false
-            },
-            "conditional": {
-              "show": null,
-              "when": null,
-              "eq": ""
-            },
-            "id": "eqijvhf"
+            "id": "eo6b13"
           },
           {
             "components": [],
-            "width": 4,
+            "width": 6,
             "offset": 0,
             "push": 0,
             "pull": 0,
             "type": "column",
-            "hideOnChildrenHidden": false,
             "input": false,
-            "key": "column3",
+            "hideOnChildrenHidden": false,
+            "key": "column",
             "tableView": true,
-            "label": "",
-            "index": 2,
+            "label": "Column",
             "xs": 0,
             "sm": 12,
             "md": 4,
-            "lg": 0,
             "xl": 0,
             "classes": "",
+            "lg": 0,
+            "index": 1,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -436,19 +290,75 @@
               "when": null,
               "eq": ""
             },
-            "id": "e8o0in"
+            "id": "e4t2p78"
+          },
+          {
+            "xs": 0,
+            "sm": 12,
+            "md": 4,
+            "lg": 0,
+            "xl": 0,
+            "classes": "",
+            "type": "column",
+            "input": false,
+            "hideOnChildrenHidden": false,
+            "key": "column",
+            "tableView": true,
+            "label": "Column",
+            "components": [],
+            "index": 2,
+            "placeholder": "",
+            "prefix": "",
+            "customClass": "",
+            "suffix": "",
+            "multiple": false,
+            "defaultValue": null,
+            "protected": false,
+            "unique": false,
+            "persistent": true,
+            "hidden": false,
+            "clearOnHide": true,
+            "dataGridLabel": false,
+            "labelPosition": "top",
+            "labelWidth": 30,
+            "labelMargin": 3,
+            "description": "",
+            "errorLabel": "",
+            "tooltip": "",
+            "hideLabel": false,
+            "tabindex": "",
+            "disabled": false,
+            "autofocus": false,
+            "dbIndex": false,
+            "customDefaultValue": "",
+            "calculateValue": "",
+            "allowCalculateOverride": false,
+            "widget": null,
+            "refreshOn": "",
+            "clearOnRefresh": false,
+            "validateOn": "change",
+            "validate": {
+              "required": false,
+              "custom": "",
+              "customPrivate": false
+            },
+            "conditional": {
+              "show": null,
+              "when": null,
+              "eq": ""
+            },
+            "id": "ei645m"
           }
         ],
-        "autoAdjust": true,
         "mask": false,
         "tableView": false,
         "alwaysEnabled": false,
-        "key": "columns",
+        "key": "columns2",
         "properties": {},
         "conditional": {
-          "json": "",
           "show": "",
           "when": "",
+          "json": "",
           "eq": ""
         },
         "customConditional": "",
@@ -475,6 +385,7 @@
         "description": "",
         "errorLabel": "",
         "tooltip": "",
+        "hideLabel": false,
         "tabindex": "",
         "disabled": false,
         "autofocus": false,
@@ -491,23 +402,10 @@
           "custom": "",
           "customPrivate": false
         },
+        "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "ev6oc6b"
+        "id": "eqwmglg"
       }
     ]
-  },
-  "i18n": {
-    "en": {
-      "Comment": "Comment",
-      "Done": "Done",
-      "Reject": "Reject",
-      "Checklists are not completed: Scan documents": "Checklists are not completed: Scan documents"
-    },
-    "ru": {
-      "Comment": "Комментарий",
-      "Done": "Подтвердить",
-      "Reject": "Аннулировать",
-      "Checklists are not completed: Scan documents": "Не выполнены следующие чек-листы: Документы сканирования"
-    }
   }
 }
