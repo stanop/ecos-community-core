@@ -132,7 +132,8 @@ public class WorkflowUtils {
         return getDocumentTasks(nodeRef, active, null);
     }
 
-    public List<WorkflowTask> getDocumentTasks(NodeRef nodeRef, Boolean tasksStatus, String engine, String user) {
+    public List<WorkflowTask> getDocumentTasks(NodeRef nodeRef, Boolean tasksStatus, String engine,
+                                               boolean filterByCurrentUser) {
 
         List<WorkflowTask> tasks = new ArrayList<>();
 
@@ -143,11 +144,11 @@ public class WorkflowUtils {
             tasks.addAll(getDocumentTasks(nodeRef, true, engine));
         }
 
-        String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
-        if (currentUser.equals(user)) {
+        if (filterByCurrentUser) {
+            String currentUser = AuthenticationUtil.getFullyAuthenticatedUser();
             Set<NodeRef> authorities = authorityUtils.getUserAuthoritiesRefs();
             tasks = tasks.stream()
-                    .filter(t -> isTaskActor(t, user, authorities))
+                    .filter(t -> isTaskActor(t, currentUser, authorities))
                     .collect(Collectors.toList());
         }
 

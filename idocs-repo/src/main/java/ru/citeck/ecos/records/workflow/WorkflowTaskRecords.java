@@ -255,7 +255,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                 user = tasksQuery.actors.get(0);
             }
 
-            List<WorkflowTask> tasks = workflowUtils.getDocumentTasks(docRef, tasksQuery.active, tasksQuery.engine, user);
+            List<WorkflowTask> tasks = workflowUtils.getDocumentTasks(docRef, tasksQuery.active,
+                                                                      tasksQuery.engine, CURRENT_USER.equals(user));
             if (tasks != null) {
 
                 List<RecordRef> taskRefs = tasks.stream()
