@@ -21,6 +21,7 @@ class WorkflowTaskRecordsConstants {
     static final String ATT_ACTORS = "actors";
     static final String ATT_LAST_COMMENT = "lastcomment";
     static final String ATT_TITLE = "title";
+    static final String ATT_DESCRIPTION = "description";
     static final String ATT_REASSIGNABLE = "reassignable";
     static final String ATT_RELEASABLE = "releasable";
     static final String ATT_CLAIMABLE = "claimable";
