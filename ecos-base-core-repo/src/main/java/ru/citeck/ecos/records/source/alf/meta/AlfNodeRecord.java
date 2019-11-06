@@ -181,9 +181,12 @@ public class AlfNodeRecord implements MetaValue {
             case ATTR_PARENT:
             case RecordConstants.ATT_PARENT:
 
-                AlfNodeAttValue parentValue = new AlfNodeAttValue(node.getParent());
-                parentValue.init(context, field);
-                attribute = Collections.singletonList(parentValue);
+                GqlAlfNode parent = node.getParent();
+                if (parent != null) {
+                    MetaValue parentValue = new AlfNodeRecord(RecordRef.valueOf(parent.nodeRef()));
+                    parentValue.init(context, field);
+                    attribute = Collections.singletonList(parentValue);
+                }
                 break;
 
             case RecordConstants.ATT_FORM_KEY:

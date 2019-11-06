@@ -243,7 +243,10 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     @Override
     public TaskInfo getTaskInfo(String taskId) {
-        return new FlowableTaskInfo(taskId);
+        if (taskExists(taskId)) {
+            return new FlowableTaskInfo(taskId);
+        }
+        return null;
     }
 
     private class FlowableTaskInfo implements TaskInfo {

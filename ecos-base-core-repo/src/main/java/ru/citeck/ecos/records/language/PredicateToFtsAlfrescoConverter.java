@@ -9,6 +9,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,6 +185,11 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                                     query.value(field, valueStr);
                                 }
                             } else if (attDef instanceof AssociationDefinition) {
+
+                                int idx = valueStr.lastIndexOf("@workspace://");
+                                if (idx > -1 && idx < valueStr.length() - 1) {
+                                    valueStr = valueStr.substring(idx + 1);
+                                }
 
                                 if (NodeRef.isNodeRef(valueStr)) {
 
