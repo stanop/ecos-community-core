@@ -210,7 +210,7 @@ public class AlfNodeMetaEdge extends SimpleMetaEdge {
             DataTypeDefinition dataType = ((PropertyDefinition) definition).getDataType();
             QName typeName = dataType.getName();
 
-            if (DataTypeDefinition.TEXT.equals(typeName)) {
+            if (DataTypeDefinition.TEXT.equals(typeName) || DataTypeDefinition.INT.equals(typeName)) {
 
                 List<AttOption> options = getOptions();
                 if (options != null && !options.isEmpty()) {
