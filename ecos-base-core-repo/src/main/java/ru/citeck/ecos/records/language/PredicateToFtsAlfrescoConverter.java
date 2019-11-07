@@ -193,12 +193,6 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
                                     query.value(field, valueStr);
                                 }
-
-                                if (dataType != null && () ) {
-                                    query.value(field, "*" + valueStr + "*");
-                                } else {
-                                    query.value(field, valueStr);
-                                }
                             } else if (attDef instanceof AssociationDefinition) {
 
                                 valueStr = toValidNodeRef(valueStr);
