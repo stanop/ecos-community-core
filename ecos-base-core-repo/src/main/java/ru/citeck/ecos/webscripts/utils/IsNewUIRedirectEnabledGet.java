@@ -11,7 +11,7 @@ import ru.citeck.ecos.config.EcosConfigService;
 import java.io.IOException;
 import java.io.Writer;
 
-public class IsNewUiRedirectEnabledGet extends AbstractWebScript {
+public class IsNewUIRedirectEnabledGet extends AbstractWebScript {
 
     private static final String PARAM_NAME = "new-ui-redirect-enabled";
 
