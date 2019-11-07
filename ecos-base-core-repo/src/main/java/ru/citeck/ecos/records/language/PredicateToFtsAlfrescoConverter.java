@@ -178,18 +178,30 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                             if (attDef instanceof PropertyDefinition) {
 
                                 DataTypeDefinition dataType = ((PropertyDefinition) attDef).getDataType();
-                                if (dataType != null && (DataTypeDefinition.TEXT.equals(dataType.getName()) ||
-                                                         DataTypeDefinition.MLTEXT.equals(dataType.getName())) ) {
+                                QName typeName = dataType != null ? dataType.getName() : null;
+
+                                if (DataTypeDefinition.TEXT.equals(typeName) ||
+                                    DataTypeDefinition.MLTEXT.equals(typeName)) {
+
+                                    query.value(field, "*" + valueStr + "*");
+
+                                } else if (DataTypeDefinition.NODE_REF.equals(typeName)) {
+
+                                    query.value(field, toValidNodeRef(valueStr));
+
+                                } else {
+
+                                    query.value(field, valueStr);
+                                }
+
+                                if (dataType != null && () ) {
                                     query.value(field, "*" + valueStr + "*");
                                 } else {
                                     query.value(field, valueStr);
                                 }
                             } else if (attDef instanceof AssociationDefinition) {
 
-                                int idx = valueStr.lastIndexOf("@workspace://");
-                                if (idx > -1 && idx < valueStr.length() - 1) {
-                                    valueStr = valueStr.substring(idx + 1);
-                                }
+                                valueStr = toValidNodeRef(valueStr);
 
                                 if (NodeRef.isNodeRef(valueStr)) {
 
@@ -298,6 +310,15 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         } else {
             throw new RuntimeException("Unknown predicate type: " + predicate);
         }
+    }
+
+    private String toValidNodeRef(String value) {
+
+        int idx = value.lastIndexOf("@workspace://");
+        if (idx > -1 && idx < value.length() - 1) {
+            value = value.substring(idx + 1);
+        }
+        return value;
     }
 
     private String convertTime(String time) {
