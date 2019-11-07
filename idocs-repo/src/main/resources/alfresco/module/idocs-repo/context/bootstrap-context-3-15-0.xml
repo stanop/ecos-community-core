@@ -64,4 +64,23 @@
         </property>
     </bean>
 
+    <bean id="idocs.module-component.config.new-ui-redirect-enabled.create" parent="module.baseComponent"
+          class="ru.citeck.ecos.config.patch.CreateConfig">
+        <property name="dependsOn">
+            <list>
+                <ref bean="ecos-base-core.module-component.ecos-config-root" />
+            </list>
+        </property>
+        <property name="configKey" value="new-ui-redirect-enabled" />
+        <property name="configValue" value="true" />
+        <property name="configTitle" value="ecos-config.new-ui-redirect-enabled.title" />
+        <property name="configDescription" value="ecos-config.new-ui-redirect-enabled.description" />
+        <property name="moduleId" value="idocs-repo" />
+        <property name="sinceVersion" value="3.15.0" />
+        <property name="appliesFromVersion" value="3.15.0" />
+        <property name="name" value="idocs.module-component.config.new-ui-redirect-enabled.create" />
+        <property name="description" value="idocs.module-component.config.new-ui-redirect-enabled.create" />
+    </bean>
+
 </beans>
+
