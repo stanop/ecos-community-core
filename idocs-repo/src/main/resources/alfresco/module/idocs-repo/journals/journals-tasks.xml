@@ -21,7 +21,7 @@
         <option name="doubleClickId">nodeRef</option>
         <option name="doubleClickLink">card-details?nodeRef={id}</option>
         <option name="formId">filters</option>
-        <option name="clickLinkAttribute">cm:name, cm:title, contracts:agreementNumber</option>
+        <option name="clickLinkAttribute">cm:name, contracts:agreementNumber</option>
         <option name="defaultSortBy">[{id: 'cm:created', order: 'desc'}]</option>
         <option name="disableTableEditing">true</option>
         <headers>
@@ -30,7 +30,12 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="wfm:taskType" default="true" sortable="false">
+            <header key="cm:title" default="true" sortable="false" >
+                <option name="customLabel">journal.task.bpm_description.title</option>
+                <option name="formatter">taskTitle</option>
+                <option name="attributeSchema">str</option>
+            </header>
+            <header key="wfm:taskType" visible="false" searchable="false">
                 <option name="customLabel">journal.task.bpm_description.title</option>
                 <option name="formatter">taskTitle</option>
                 <option name="attributeSchema">str</option>
@@ -69,7 +74,6 @@
             <header key="attr:isContainer" visible="false" searchable="false" />
             <header key="attr:isDocument" visible="false" searchable="false" />
             <header key="cwf:taskTitle" visible="false" />
-            <header key="cm:title" visible="false" searchable="false" />
         </headers>
     </journal>
 

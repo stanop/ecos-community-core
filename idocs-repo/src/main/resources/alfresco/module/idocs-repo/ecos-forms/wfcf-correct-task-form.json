@@ -307,7 +307,7 @@
           {
             "components": [
               {
-                "label": "answer",
+                "label": "cancel",
                 "state": "",
                 "theme": "primary",
                 "size": "sm",
@@ -325,7 +325,7 @@
                   "custom": "",
                   "customPrivate": false
                 },
-                "key": "outcome_answer",
+                "key": "outcome_cancel",
                 "properties": {},
                 "conditional": {
                   "show": "",
@@ -373,7 +373,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "e7b8tks"
+                "id": "elj4yt9"
               }
             ],
             "width": 6,
@@ -581,7 +581,7 @@
             "label": "Column",
             "components": [
               {
-                "label": "cancel",
+                "label": "answer",
                 "state": "",
                 "theme": "primary",
                 "size": "sm",
@@ -599,7 +599,7 @@
                   "custom": "",
                   "customPrivate": false
                 },
-                "key": "outcome_cancel",
+                "key": "outcome_answer",
                 "properties": {},
                 "conditional": {
                   "show": "",
@@ -647,7 +647,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "elj4yt9"
+                "id": "e7b8tks"
               }
             ],
             "index": 2,
@@ -764,7 +764,7 @@
       "answer": "Вернуть на согласование",
       "exit": "Завершить задачу",
       "cancel": "Отменить согласование",
-      "Comment": "Комментировать",
+      "Comment": "Комментарий",
       "The decision of approver": "Решение согласующего"
     }
   }
