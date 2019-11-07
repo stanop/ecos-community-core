@@ -267,7 +267,7 @@
     </bean>
 
     <bean id="webscript.ru.citeck.ecos.is-new-ui-redirect-enabled.get"
-          class="ru.citeck.ecos.webscripts.utils.IsNewUiRedirectEnabledGet"
+          class="ru.citeck.ecos.webscripts.utils.IsNewUIRedirectEnabledGet"
           parent="webscript">
     </bean>
 
