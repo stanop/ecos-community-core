@@ -96,7 +96,7 @@
 
 <body id="Share" class="yui-skin-${theme} alfresco-share ${type!} claro">
 
-<div id="page-content-root">
+<div id="page-content-root" class="page-content-root">
     <div class="sticky-wrapper">
         <div id="doc3">
             <div id="alf-hd">

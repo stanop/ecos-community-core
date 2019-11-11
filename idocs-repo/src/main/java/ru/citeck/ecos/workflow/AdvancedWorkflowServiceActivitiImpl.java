@@ -38,8 +38,6 @@ class AdvancedWorkflowServiceActivitiImpl implements AdvancedWorkflowService {
 
     private ActivitiWorkflowEngine engine;
 
-    private TaskService taskService;
-
     private AuthorityService authorityService;
 
     private QueryExecutor queryExecutor;
@@ -48,8 +46,9 @@ class AdvancedWorkflowServiceActivitiImpl implements AdvancedWorkflowService {
         this.engine = engine;
     }
 
+    @Deprecated
     public void setTaskService(TaskService taskService) {
-        this.taskService = taskService;
+        // not used
     }
 
     public void setAuthorityService(AuthorityService authorityService) {

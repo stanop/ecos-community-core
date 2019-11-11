@@ -6,7 +6,10 @@
         if (journal != null && journal != "" && journal) {
 
             model.journal = journal;
-            model.customCreateVariantsJson = journals.getCreateVariantsJson(journal.properties['journal:journalType']);
+
+            var journalType = journal.properties['journal:journalType'];
+            model.customCreateVariantsJson = journals.getCreateVariantsJson(journalType);
+            model.predicate = journals.getPredicate(journalType);
 
         } else {
             status.setCode(status.STATUS_NOT_FOUND, "There is no node found for specified nodeRef.");

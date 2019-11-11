@@ -23,6 +23,9 @@ public class EcosCalendarEntryDTO implements EcosCalendarEntry, MetaValue, Seria
 
     private static final String DISPLAY_NAME_KEY = "ia_CalendarEventModel.type.ia_calendarEvent.title";
 
+    private static final String TRANSPARENT_CONSTRAINT = "transparent";
+    private static final String OPAQUE_CONSTRAINT = "opaque";
+
     private NodeRef nodeRef;
     private NodeRef containerNodeRef;
     private String systemName;
@@ -39,6 +42,7 @@ public class EcosCalendarEntryDTO implements EcosCalendarEntry, MetaValue, Seria
     private String outlookUID;
     private Date createdAt;
     private Date modifiedAt;
+    private String transparency;
     private List<String> tags = new ArrayList<>();
 
     private NodeRef type;
@@ -150,6 +154,8 @@ public class EcosCalendarEntryDTO implements EcosCalendarEntry, MetaValue, Seria
                 return getHasSyncConflicts();
             case CalendarEntryAttrs.ATT_LINK_TO_ENTRY:
                 return getLinkToEntry();
+            case CalendarEntryAttrs.ATT_TRANSPARENCY:
+                return getTransparency();
             case RecordConstants.ATT_FORM_KEY:
                 return "FORM_KEY_FOR_EVENT";
         }
@@ -363,6 +369,20 @@ public class EcosCalendarEntryDTO implements EcosCalendarEntry, MetaValue, Seria
     }
 
     @Override
+    public String getTransparency() {
+        return transparency;
+    }
+
+    @Override
+    public void setTransparency(String transparency) {
+        if (TRANSPARENT_CONSTRAINT.equals(transparency) || OPAQUE_CONSTRAINT.equals(transparency)) {
+            this.transparency = transparency;
+        } else {
+            this.transparency = OPAQUE_CONSTRAINT;
+        }
+    }
+
+    @Override
     public String toString() {
         return "EcosCalendarEntryDTO{" +
                 "nodeRef=" + nodeRef +
@@ -373,6 +393,7 @@ public class EcosCalendarEntryDTO implements EcosCalendarEntry, MetaValue, Seria
                 ", location='" + location + '\'' +
                 ", start=" + start +
                 ", end=" + end +
+                ", transparency=" + transparency +
                 ", recurrenceRule='" + recurrenceRule + '\'' +
                 ", lastRecurrence=" + lastRecurrence +
                 ", sharePointDocFolder='" + sharePointDocFolder + '\'' +
