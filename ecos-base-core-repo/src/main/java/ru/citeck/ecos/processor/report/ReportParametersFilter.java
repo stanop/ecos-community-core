@@ -65,7 +65,7 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
         ContentReader contentReader = helper.getContentReader(copyDB);
         Object criteriaObj = evaluateExpression(contentReader.getContentString(), model);
 
-		HashMap<String, Object> newModel = new HashMap<>(model);
+        HashMap<String, Object> newModel = new HashMap<>(model);
         newModel = insertReportParams(criteriaObj, newModel);
 
         return new DataBundle(newIS, newModel);
@@ -102,36 +102,36 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
     }
 
     private Object simpleJSON2Java(Object o) {
-    	if (o != null) {
-    		if (o instanceof JSONArray) {
-    			JSONArray arr = (JSONArray) o;
-    			List<Object> list = new ArrayList<Object>();
+        if (o != null) {
+            if (o instanceof JSONArray) {
+                JSONArray arr = (JSONArray) o;
+                List<Object> list = new ArrayList<Object>();
 
-    			for (int i = 0; i < arr.length(); i++) {
-					try {
-						list.add(simpleJSON2Java(arr.get(i)));
-					} catch (JSONException e) {
-					}
-    			}
+                for (int i = 0; i < arr.length(); i++) {
+                    try {
+                        list.add(simpleJSON2Java(arr.get(i)));
+                    } catch (JSONException e) {
+                    }
+                }
 
-    			return list;
-    		} else if (o instanceof JSONObject) {
-    			JSONObject obj = (JSONObject) o;
-    			Map<String, Object> map = new HashMap<String, Object>();
-    			Iterator keys = obj.sortedKeys();
+                return list;
+            } else if (o instanceof JSONObject) {
+                JSONObject obj = (JSONObject) o;
+                Map<String, Object> map = new HashMap<String, Object>();
+                Iterator keys = obj.sortedKeys();
 
-    	        while (keys.hasNext()) {
-    	            String name = (String) keys.next();
-    	            try {
-						map.put(name, simpleJSON2Java(obj.get(name)));
-					} catch (JSONException e) {
-					}
-    	        }
+                while (keys.hasNext()) {
+                    String name = (String) keys.next();
+                    try {
+                        map.put(name, simpleJSON2Java(obj.get(name)));
+                    } catch (JSONException e) {
+                    }
+                }
 
-    	        return map;
-    		} else{
-    			return o;
-    	}
+                return map;
+            } else{
+                return o;
+        }
 }
 
         return null;
