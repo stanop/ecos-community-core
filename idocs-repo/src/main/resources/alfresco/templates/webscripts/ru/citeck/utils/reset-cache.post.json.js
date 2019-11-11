@@ -1,6 +1,7 @@
 (function() {
 
     var autoDeployerBeans = {
+        'ecos-apps': 'ecosAppDeployer',
         'journals': 'journals.autoDeployer',
         'views': 'nodeViews.autoDeployer',
         'invariants': 'invariants.autoDeployer.module',
@@ -9,6 +10,12 @@
         'perm-matrix': 'docACLDeployer',
         'cardlets': 'ecos.cardlets.contentDeployer',
         'forms': 'ecos.eform.contentDeployer'
+    };
+
+    var customActions = {
+        'ecos-apps': function (bean) {
+            bean.resendPackages();
+        }
     };
 
     var additionalActions = {
@@ -27,9 +34,13 @@
         if (json.has(key) && Packages.java.lang.Boolean.TRUE.equals(json.get(key))) {
             var bean = services.get(autoDeployerBeans[key]);
             if (bean) {
-                bean.load();
-                if (additionalActions[key]) {
-                    additionalActions[key]();
+                if (customActions[key]) {
+                    customActions[key](bean);
+                } else {
+                    bean.load();
+                    if (additionalActions[key]) {
+                        additionalActions[key]();
+                    }
                 }
                 resetStatus[key] = 'OK';
             } else {

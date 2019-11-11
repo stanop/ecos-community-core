@@ -13,5 +13,6 @@ public interface EcosBpmModel {
     QName PROP_JSON_MODEL = QName.createQName(NAMESPACE, "jsonModel");
     QName PROP_THUMBNAIL = QName.createQName(NAMESPACE, "thumbnail");
     QName PROP_PROCESS_ID = QName.createQName(NAMESPACE, "processId");
+    QName PROP_ENGINE = QName.createQName(NAMESPACE, "engine");
     QName PROP_MODEL_IMAGE = QName.createQName(NAMESPACE, "modelImage");
 }

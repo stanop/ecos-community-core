@@ -65,7 +65,7 @@ var updateDescription = function(id, status) {
                         case STATUS_READY:
                             setStatusAsync(currentNode, STATUS_IN_PROGRESS);
                             updateDescriptionNodeAsync(GLOBAL_STATUS_EXECUTING, descriptions);
-                            parser.processNodes(METHOD_CREATE, currentNode.nodeRef);
+                            parser.processNodes(METHOD_SAVE, currentNode.nodeRef);
                             break;
                         case STATUS_IN_PROGRESS:
                             break;

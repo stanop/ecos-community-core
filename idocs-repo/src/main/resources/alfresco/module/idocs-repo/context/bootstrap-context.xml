@@ -47,6 +47,7 @@
                 <value>alfresco/module/idocs-repo/model/routeModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/notificationLoggingModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/ecosModel.xml</value>
+                <value>alfresco/module/idocs-repo/model/ecosVacationModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/documentSupervisorsModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/businessCalendarModel.xml</value>
                 <value>alfresco/module/idocs-repo/model/productsAndServicesModel.xml</value>
@@ -105,6 +106,7 @@
                 <value>alfresco/module/idocs-repo/messages/menu-config</value>
                 <value>alfresco/module/idocs-repo/messages/working-calendar</value>
                 <value>alfresco/module/idocs-repo/messages/ecosbpm-model</value>
+                <value>alfresco/module/idocs-repo/messages/ecos-vacation-model</value>
             </list>
         </property>
     </bean>

@@ -86,9 +86,9 @@
     </bean>
 
     <!-- Node Actions Services -->
-    <bean id="nodeActionsService" class="ru.citeck.ecos.action.NodeActionsService" init-method="init" />
+    <bean id="nodeActionsService" class="ru.citeck.ecos.action.NodeActionsServiceImpl" init-method="init" />
 
-    <bean id="abstractNodeActionProvider" class="ru.citeck.ecos.action.NodeActionsProvider" abstract="true">
+    <bean id="abstractNodeActionProvider" class="ru.citeck.ecos.action.node.NodeActionsProvider" abstract="true">
         <property name="nodeActionsService" ref="nodeActionsService" />
         <property name="nodeService" ref="nodeService" />
         <property name="dictionaryService" ref="dictionaryService" />

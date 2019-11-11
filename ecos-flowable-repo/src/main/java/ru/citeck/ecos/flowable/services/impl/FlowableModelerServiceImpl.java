@@ -307,9 +307,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
         try {
             xmlStreamReader = xmlFactory.createXMLStreamReader(resource.getInputStream());
-        } catch (XMLStreamException e) {
-            throw new IllegalStateException("Could not create XML streamReader.", e);
-        } catch (IOException e) {
+        } catch (XMLStreamException | IOException e) {
             throw new IllegalStateException("Could not create XML streamReader.", e);
         }
 

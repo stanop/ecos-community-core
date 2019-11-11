@@ -95,6 +95,10 @@ public class JournalTypeJS {
         return impl.getBatchEdit(attributeKey);
     }
 
+    public JournalFormatter getFormatter(String attributeKey) {
+        return impl.getFormatter(attributeKey);
+    }
+
     public List<JournalGroupAction> getGroupActions() {
         return impl.getGroupActions();
     }
