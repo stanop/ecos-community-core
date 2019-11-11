@@ -46,6 +46,7 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.icase.CaseStatusService;
 import ru.citeck.ecos.model.BpmModel;
 import ru.citeck.ecos.model.ClassificationModel;
 import ru.citeck.ecos.model.WorkflowMirrorModel;
@@ -82,6 +83,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
     private MessageLookup messageLookup;
     private NodeService mlAwareNodeService;
     private NamespaceService namespaceService;
+    private CaseStatusService caseStatusService;
     private MappingRegistry<String, String> documentToCounterparty;
     private WorkflowUtils workflowUtils;
 
@@ -283,6 +285,7 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE, nodeService.getType(document));
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_DOCUMENT_TYPE_TITLE, getMlDocumentTypeTitle(document));
             nodeInfo.setProperty(WorkflowMirrorModel.PROP_COUNTERPARTY, getCounterparty(document));
+            nodeInfo.setProperty(WorkflowMirrorModel.PROP_CASE_STATUS, caseStatusService.getStatusRef(document));
 
             NodeRef documentKind = getDocumentKind(document);
             if (documentKind != null && nodeService.exists(documentKind)) {
@@ -544,5 +547,9 @@ public class WorkflowMirrorServiceImpl extends BaseProcessorExtension implements
 
     public void setNamespaceService(NamespaceService namespaceService) {
         this.namespaceService = namespaceService;
+    }
+
+    public void setCaseStatusService(CaseStatusService caseStatusService) {
+        this.caseStatusService = caseStatusService;
     }
 }

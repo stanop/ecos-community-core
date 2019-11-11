@@ -52,6 +52,7 @@
 		<property name="messageLookup" ref="messageService" />
 		<property name="mlAwareNodeService" ref="mlAwareNodeService" />
 		<property name="namespaceService" ref="namespaceService"/>
+		<property name="caseStatusService" ref="caseStatusService"/>
 		<property name="documentToCounterparty" ref="documentToCounterparty.mappingRegistry"/>
 	</bean>
 

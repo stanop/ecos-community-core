@@ -29,22 +29,22 @@
    <@markup id="dojoBootstrap">
       <@region scope="global" id="bootstrap" chromeless="true"/>
    </@>
-   
-   <#-- This is where the JavaScript and CSS dependencies will initially be added through the use of the 
-        <@script> and <@link> directives. The JavaScript can be moved through the use 
-        of the <@relocateJavaScript> directive (i.e. to move it to the end of the page). These directives 
+
+   <#-- This is where the JavaScript and CSS dependencies will initially be added through the use of the
+        <@script> and <@link> directives. The JavaScript can be moved through the use
+        of the <@relocateJavaScript> directive (i.e. to move it to the end of the page). These directives
         must be placed before directives that add dependencies to them otherwise those resources will
         be placed in the output of the ${head} variable (i.e. this applied to all usage of those directives
         in *.head.ftl files) -->
    <@outputJavaScript/>
    <@outputCSS/>
-   
+
    <#-- Common Resources -->
    <@region id="head-resources" scope="global" chromeless="true"/>
-   
+
    <#-- Template Resources (nested content from < @templateHeader > call) -->
    <#nested>
-   
+
    <@markup id="resources">
    <#-- Additional template resources -->
    </@markup>
@@ -73,7 +73,7 @@
 -->
 <#macro templateBody type="">
 <body id="Share" class="yui-skin-${theme} alfresco-share ${type} claro <#if citeckUtils.isMobile()>mobile</#if>">
-   <div id="page-content-root"> <#-- page-content-root start -->
+   <div id="page-content-root" class="page-content-root"> <#-- page-content-root start -->
       <div class="sticky-wrapper" >
          <div id="doc3">
    <#-- Template-specific body markup -->

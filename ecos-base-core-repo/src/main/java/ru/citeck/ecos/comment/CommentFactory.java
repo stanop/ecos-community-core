@@ -3,6 +3,7 @@ package ru.citeck.ecos.comment;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.alfresco.model.ContentModel;
+import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.lock.LockService;
 import org.alfresco.service.cmr.lock.LockStatus;
 import org.alfresco.service.cmr.repository.ContentReader;
@@ -11,6 +12,7 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.security.AccessStatus;
 import org.alfresco.service.cmr.security.AuthorityService;
+import org.alfresco.service.cmr.security.MutableAuthenticationService;
 import org.alfresco.service.cmr.security.PermissionService;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import java.util.Set;
 public class CommentFactory {
 
     private static final int EDITED_DIFF_RANGE = 100;
+    private static final String SITE_MANAGER = "SiteManager";
 
     private final LockService lockService;
     private final PermissionService permissionService;
@@ -41,18 +44,22 @@ public class CommentFactory {
     private final NodeService nodeService;
     private final RecordsService recordsService;
     private final AuthorityService authorityService;
+    private final ServiceRegistry serviceRegistry;
+
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public CommentFactory(LockService lockService, RecordsService recordsService,
                           PermissionService permissionService, ContentService contentService, NodeService nodeService,
-                          AuthorityService authorityService) {
+                          AuthorityService authorityService,
+                          ServiceRegistry serviceRegistry) {
         this.lockService = lockService;
         this.permissionService = permissionService;
         this.contentService = contentService;
         this.nodeService = nodeService;
         this.recordsService = recordsService;
         this.authorityService = authorityService;
+        this.serviceRegistry = serviceRegistry;
     }
 
     public CommentDTO fromNode(NodeRef commentRef) {
@@ -116,7 +123,13 @@ public class CommentFactory {
             canEdit = false;
             canDelete = false;
         } else {
-            canEdit = permissionService.hasPermission(commentRef, PermissionService.WRITE) == AccessStatus.ALLOWED;
+            boolean canAccessAsSiteManager =
+                    permissionService.hasPermission(commentRef, SITE_MANAGER) == AccessStatus.ALLOWED;
+            boolean canAccessAsCoordinator =
+                    permissionService.hasPermission(commentRef, PermissionService.COORDINATOR) == AccessStatus.ALLOWED;
+            String author = (String) nodeService.getProperties(commentRef).get(ContentModel.PROP_CREATOR);
+            String currentUser = serviceRegistry.getAuthenticationService().getCurrentUserName();
+            canEdit = author.equals(currentUser) || canAccessAsSiteManager || canAccessAsCoordinator;
             canDelete = permissionService.hasPermission(commentRef, PermissionService.DELETE) == AccessStatus.ALLOWED;
         }
 

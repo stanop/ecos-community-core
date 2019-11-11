@@ -460,17 +460,11 @@ public class HistoryUtils {
     }
 
     private static boolean isEqualsAssocs(AssociationRef added, AssociationRef removed, NodeService nodeService) {
-        if (HistoryUtils.getCustomChangeValue(removed.getTargetRef(), nodeService).equals(HistoryUtils.getCustomChangeValue(added.getTargetRef(), nodeService))) {
-            return true;
-        }
-        return false;
+        return HistoryUtils.getCustomChangeValue(removed.getTargetRef(), nodeService).equals(HistoryUtils.getCustomChangeValue(added.getTargetRef(), nodeService));
     }
 
     private static boolean isEqualsChildAssocs(ChildAssociationRef added, ChildAssociationRef removed, NodeService nodeService) {
-        if (HistoryUtils.getCustomChangeValue(removed.getChildRef(), nodeService).equals(HistoryUtils.getCustomChangeValue(added.getChildRef(), nodeService))) {
-            return true;
-        }
-        return false;
+        return HistoryUtils.getCustomChangeValue(removed.getChildRef(), nodeService).equals(HistoryUtils.getCustomChangeValue(added.getChildRef(), nodeService));
     }
 
     private static HistoryEventTitleMapperService getHistoryEventTitleMapperService() {

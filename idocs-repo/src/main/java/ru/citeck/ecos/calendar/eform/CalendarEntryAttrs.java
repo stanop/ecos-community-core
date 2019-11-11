@@ -16,4 +16,5 @@ class CalendarEntryAttrs {
     static final String ATT_PARTICIPANTS = "participants";
     static final String ATT_HAS_SYNC_CONFLICTS = "hasSyncConflicts";
     static final String ATT_LINK_TO_ENTRY = "linkToEntry";
+    static final String ATT_TRANSPARENCY = "transparency";
 }

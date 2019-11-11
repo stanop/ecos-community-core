@@ -155,6 +155,26 @@
         </property>
     </bean>
 
+    <bean id="contracts.module-component.script.move-contracts-to-creator-directory-update-script" parent="contracts.import-spaces.3-2-1">
+        <property name="name" value="move-contracts-to-creator-directory-update-script" />
+        <property name="description" value="move-contracts-to-creator-directory-update-script" />
+        <property name="dependsOn">
+            <list>
+                <ref bean="contracts.module-component.script.move-contracts-to-creator-directory" />
+            </list>
+        </property>
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary/app:scripts</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/common/update-content.xml</prop>
+                    <prop key="messages">alfresco/module/contracts-repo/bootstrap/scripts/move-contracts-to-creator-directory</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+
     <bean id="contracts.module-component.changeRuleForContractsFolder" parent="contracts.import-spaces.3-2-1">
         <property name="name" value="contracts.module-component.changeRuleForContractsFolder"/>
         <property name="description" value="contracts.module-component.changeRuleForContractsFolder"/>
