@@ -110,7 +110,7 @@ public class ScriptContentActionExecuter extends ActionExecuterAbstractBase
             model.put("webApplicationContextUrl", UrlUtil.getAlfrescoUrl(sysAdminParams)); 
 
             Object result = this.serviceRegistry.getScriptService().executeScript(
-                    actionedUponNodeRef,
+                actionedUponNodeRef,
                 ContentModel.PROP_CONTENT,
                 model);
             

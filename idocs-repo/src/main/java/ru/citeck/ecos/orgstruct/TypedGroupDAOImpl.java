@@ -193,7 +193,7 @@ public class TypedGroupDAOImpl implements TypedGroupDAO {
 	}
 	
 	private String getGroupSubtype(NodeRef group) {
-        return (String) nodeService.getProperty(group, propertyQName.getQName());
+		return (String) nodeService.getProperty(group, propertyQName.getQName());
 	}
 
 	@Override
