@@ -44,55 +44,55 @@ import java.util.Set;
  * @author Sergey Tiunov
  */
 public class GrantWorkflowPackageHelper {
-	
+
     private static final String TASK_PROVIDER_PREFIX = "task-activiti-";
     private static final String PROCESS_PROVIDER_PREFIX = "process-activiti-";
-	private GrantPermissionService grantPermissionService;
-	private AuthorityHelper authorityHelper;
+    private GrantPermissionService grantPermissionService;
+    private AuthorityHelper authorityHelper;
 
-	public void setGrantPermissionService(GrantPermissionService grantPermissionService) {
-		this.grantPermissionService = grantPermissionService;
-	}
+    public void setGrantPermissionService(GrantPermissionService grantPermissionService) {
+        this.grantPermissionService = grantPermissionService;
+    }
 
-	/**
-	 * Grant specified permission to task assignees on a task scope.
-	 * 
-	 * @param task
-	 * @param permission
-	 */
-	public void grant(DelegateTask task, final String permission) {
-		grant(task, permission, false);
-	}
+    /**
+     * Grant specified permission to task assignees on a task scope.
+     *
+     * @param task
+     * @param permission
+     */
+    public void grant(DelegateTask task, final String permission) {
+        grant(task, permission, false);
+    }
 
-	/**
-	 * Grant specified permission to task assignees on a task scope.
-	 *
-	 * @param task
-	 * @param permission
-	 */
-	public void grant(WorkflowTask task, final String permission) {
-		grant(task, permission, false);
-	}
-	
-	/**
-	 * Grant specified permission to task assignees.
-	 * 
-	 * @param task
-	 * @param permission
-	 * @param processScope - true if permission should be set on process scope, false - if on task scope
-	 */
-	public void grant(DelegateTask task, final String permission, boolean processScope) {
-		
-		final Set<String> authorities = getTaskActors(task);
-		final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(task);
-		final String provider = processScope ? 
-				getProcessPermissionProvider(task.getExecution()) : 
-				getTaskPermissionProvider(task);
+    /**
+     * Grant specified permission to task assignees on a task scope.
+     *
+     * @param task
+     * @param permission
+     */
+    public void grant(WorkflowTask task, final String permission) {
+        grant(task, permission, false);
+    }
 
-		if(authorities.size() == 0 || workflowPackage == null) return;
+    /**
+     * Grant specified permission to task assignees.
+     *
+     * @param task
+     * @param permission
+     * @param processScope - true if permission should be set on process scope, false - if on task scope
+     */
+    public void grant(DelegateTask task, final String permission, boolean processScope) {
 
-		// grant specified permission on workflow package to all task actors:
-		AuthenticationUtil.runAsSystem(() -> {
+        final Set<String> authorities = getTaskActors(task);
+        final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(task);
+        final String provider = processScope ?
+                getProcessPermissionProvider(task.getExecution()) :
+                getTaskPermissionProvider(task);
+
+        if(authorities.size() == 0 || workflowPackage == null) return;
+
+        // grant specified permission on workflow package to all task actors:
+        AuthenticationUtil.runAsSystem(() -> {
 
             for(String authority : authorities) {
                 grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
@@ -101,26 +101,26 @@ public class GrantWorkflowPackageHelper {
             return null;
         });
 
-	}
+    }
 
 
-	/**
-	 * Grant specified permission to task assignees.
-	 *
-	 * @param task
-	 * @param permission
-	 * @param processScope - true if permission should be set on process scope, false - if on task scope
-	 */
-	public void grant(WorkflowTask task, final String permission, boolean processScope) {
+    /**
+     * Grant specified permission to task assignees.
+     *
+     * @param task
+     * @param permission
+     * @param processScope - true if permission should be set on process scope, false - if on task scope
+     */
+    public void grant(WorkflowTask task, final String permission, boolean processScope) {
 
-		final Set<String> authorities = getTaskActors(task);
-		final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(task);
-		final String provider = getTaskPermissionProvider(task);
+        final Set<String> authorities = getTaskActors(task);
+        final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(task);
+        final String provider = getTaskPermissionProvider(task);
 
-		if (authorities.size() == 0 || workflowPackage == null) return;
+        if (authorities.size() == 0 || workflowPackage == null) return;
 
-		// grant specified permission on workflow package to all task actors:
-		AuthenticationUtil.runAsSystem(() -> {
+        // grant specified permission on workflow package to all task actors:
+        AuthenticationUtil.runAsSystem(() -> {
 
             for (String authority : authorities) {
                 grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
@@ -129,171 +129,171 @@ public class GrantWorkflowPackageHelper {
             return null;
         });
 
-	}
-	
-	/**
-	 * Grant specified permission to specified authority on process scope.
-	 * 
-	 * @param execution
-	 * @param permission
-	 */
-	public void grant(DelegateExecution execution, final String authority, final String permission) {
-		final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
-		final String provider = getProcessPermissionProvider(execution);
-		
-		if(workflowPackage == null) return;
+    }
 
-		AuthenticationUtil.runAsSystem(() -> {
+    /**
+     * Grant specified permission to specified authority on process scope.
+     *
+     * @param execution
+     * @param permission
+     */
+    public void grant(DelegateExecution execution, final String authority, final String permission) {
+        final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
+        final String provider = getProcessPermissionProvider(execution);
+
+        if(workflowPackage == null) return;
+
+        AuthenticationUtil.runAsSystem(() -> {
             grantPermissionService.grantPermission(workflowPackage, authority, permission, provider);
             return null;
         });
-	}
-	
-	/**
-	 * Revoke all permissions, granted on task scope.
-	 * 
-	 * @param task
-	 */
-	public void revoke(DelegateTask task) {
-		
-		final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(task);
-		final String provider = getTaskPermissionProvider(task);
+    }
 
-		if(workflowPackage == null) return;
+    /**
+     * Revoke all permissions, granted on task scope.
+     *
+     * @param task
+     */
+    public void revoke(DelegateTask task) {
 
-		// revoke all task-granted permissions from workflow package:
-		AuthenticationUtil.runAsSystem(() -> {
+        final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(task);
+        final String provider = getTaskPermissionProvider(task);
 
-            grantPermissionService.revokePermission(workflowPackage, provider);
+        if(workflowPackage == null) return;
 
-            return null;
-        });
-	}
-
-	/**
-	 * Revoke all permissions, granted on task scope.
-	 *
-	 * @param task
-	 */
-	public void revoke(WorkflowTask task) {
-
-		final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(task);
-		final String provider = getTaskPermissionProvider(task);
-
-		if (workflowPackage == null) return;
-
-		// revoke all task-granted permissions from workflow package:
-		AuthenticationUtil.runAsSystem(() -> {
+        // revoke all task-granted permissions from workflow package:
+        AuthenticationUtil.runAsSystem(() -> {
 
             grantPermissionService.revokePermission(workflowPackage, provider);
 
             return null;
         });
-	}
-	
-	/**
-	 * Revoke all permissions granted on task scope.
-	 * 
-	 * @param task
-	 * @param execution
-	 */
-	public void revoke(Task task, DelegateExecution execution) {
-		final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
-		final String provider = getTaskPermissionProvider(task);
+    }
 
-		if(workflowPackage == null) return;
+    /**
+     * Revoke all permissions, granted on task scope.
+     *
+     * @param task
+     */
+    public void revoke(WorkflowTask task) {
 
-		// revoke all task-granted permissions from workflow package:
-		AuthenticationUtil.runAsSystem(() -> {
+        final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(task);
+        final String provider = getTaskPermissionProvider(task);
 
-            grantPermissionService.revokePermission(workflowPackage, provider);
+        if (workflowPackage == null) return;
 
-            return null;
-        });
-	}
-	
-	/**
-	 * Revoke all permissions granted on process scope.
-	 * 
-	 * @param execution
-	 */
-	public void revoke(DelegateExecution execution) {
-		final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
-		final String provider = getProcessPermissionProvider(execution);
-
-		if(workflowPackage == null) return;
-
-		// revoke all process-granted permissions from workflow package:
-		AuthenticationUtil.runAsSystem(() -> {
+        // revoke all task-granted permissions from workflow package:
+        AuthenticationUtil.runAsSystem(() -> {
 
             grantPermissionService.revokePermission(workflowPackage, provider);
 
             return null;
         });
-	}
-	
-	// get task actors (authorities)
-	private Set<String> getTaskActors(DelegateTask task) {
-		Set<String> actors = new HashSet<String>();
-		// add actor
-		String actor = task.getAssignee();
-		if(actor != null) {
-			actors.add(actor);
-		}
-		// add pooled actors
-		Set<IdentityLink> candidates = ((TaskEntity)task).getCandidates();
-		if(candidates != null) {
-			for(IdentityLink candidate : candidates) {
-				if(candidate.getGroupId() != null) {
-					actors.add(candidate.getGroupId());
-				}
-				if(candidate.getUserId() != null) {
-					actors.add(candidate.getUserId());
-				}
-			}
-		}
-		return actors;
-	}
+    }
 
-	// get task actors (authorities)
-	private Set<String> getTaskActors(WorkflowTask task) {
-		Set<String> actors = new HashSet<String>();
-		// add actor
-		String actor = (String) task.getProperties().get(ContentModel.PROP_OWNER);
-		if (actor != null) {
-			actors.add(actor);
-		}
-		// add pooled actors
-		List<NodeRef> candidates = (List<NodeRef>) task.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
-		if (candidates != null) {
-			for (NodeRef candidate : candidates) {
-				actors.add(authorityHelper.getAuthorityName(candidate));
-			}
-		}
-		return actors;
-	}
+    /**
+     * Revoke all permissions granted on task scope.
+     *
+     * @param task
+     * @param execution
+     */
+    public void revoke(Task task, DelegateExecution execution) {
+        final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
+        final String provider = getTaskPermissionProvider(task);
 
-	// get task permission provider
-	private String getTaskPermissionProvider(DelegateTask task) {
-		return TASK_PROVIDER_PREFIX + task.getId();
-	}
+        if(workflowPackage == null) return;
 
-	// get task permission provider
-	private String getTaskPermissionProvider(Task task) {
-		return TASK_PROVIDER_PREFIX + task.getId();
-	}
+        // revoke all task-granted permissions from workflow package:
+        AuthenticationUtil.runAsSystem(() -> {
 
-	// get task permission provider
-	private String getTaskPermissionProvider(WorkflowTask task) {
-		return TASK_PROVIDER_PREFIX + task.getProperties().get(WorkflowModel.PROP_TASK_ID);
-	}
+            grantPermissionService.revokePermission(workflowPackage, provider);
 
-	// get process permission provider
-	private String getProcessPermissionProvider(DelegateExecution execution) {
-		return PROCESS_PROVIDER_PREFIX + execution.getId();
-	}
+            return null;
+        });
+    }
 
-	public void setAuthorityHelper(AuthorityHelper authorityHelper) {
-		this.authorityHelper = authorityHelper;
-	}
+    /**
+     * Revoke all permissions granted on process scope.
+     *
+     * @param execution
+     */
+    public void revoke(DelegateExecution execution) {
+        final NodeRef workflowPackage = ListenerUtils.getWorkflowPackage(execution);
+        final String provider = getProcessPermissionProvider(execution);
+
+        if(workflowPackage == null) return;
+
+        // revoke all process-granted permissions from workflow package:
+        AuthenticationUtil.runAsSystem(() -> {
+
+            grantPermissionService.revokePermission(workflowPackage, provider);
+
+            return null;
+        });
+    }
+
+    // get task actors (authorities)
+    private Set<String> getTaskActors(DelegateTask task) {
+        Set<String> actors = new HashSet<String>();
+        // add actor
+        String actor = task.getAssignee();
+        if(actor != null) {
+            actors.add(actor);
+        }
+        // add pooled actors
+        Set<IdentityLink> candidates = ((TaskEntity)task).getCandidates();
+        if(candidates != null) {
+            for(IdentityLink candidate : candidates) {
+                if(candidate.getGroupId() != null) {
+                    actors.add(candidate.getGroupId());
+                }
+                if(candidate.getUserId() != null) {
+                    actors.add(candidate.getUserId());
+                }
+            }
+        }
+        return actors;
+    }
+
+    // get task actors (authorities)
+    private Set<String> getTaskActors(WorkflowTask task) {
+        Set<String> actors = new HashSet<String>();
+        // add actor
+        String actor = (String) task.getProperties().get(ContentModel.PROP_OWNER);
+        if (actor != null) {
+            actors.add(actor);
+        }
+        // add pooled actors
+        List<NodeRef> candidates = (List<NodeRef>) task.getProperties().get(WorkflowModel.ASSOC_POOLED_ACTORS);
+        if (candidates != null) {
+            for (NodeRef candidate : candidates) {
+                actors.add(authorityHelper.getAuthorityName(candidate));
+            }
+        }
+        return actors;
+    }
+
+    // get task permission provider
+    private String getTaskPermissionProvider(DelegateTask task) {
+        return TASK_PROVIDER_PREFIX + task.getId();
+    }
+
+    // get task permission provider
+    private String getTaskPermissionProvider(Task task) {
+        return TASK_PROVIDER_PREFIX + task.getId();
+    }
+
+    // get task permission provider
+    private String getTaskPermissionProvider(WorkflowTask task) {
+        return TASK_PROVIDER_PREFIX + task.getProperties().get(WorkflowModel.PROP_TASK_ID);
+    }
+
+    // get process permission provider
+    private String getProcessPermissionProvider(DelegateExecution execution) {
+        return PROCESS_PROVIDER_PREFIX + execution.getId();
+    }
+
+    public void setAuthorityHelper(AuthorityHelper authorityHelper) {
+        this.authorityHelper = authorityHelper;
+    }
 }

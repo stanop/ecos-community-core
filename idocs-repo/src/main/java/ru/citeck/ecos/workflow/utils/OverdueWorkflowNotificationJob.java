@@ -38,19 +38,19 @@ import java.util.List;
 
 public class OverdueWorkflowNotificationJob extends AbstractLockedJob
 {
-	private static Log logger = LogFactory.getLog(OverdueWorkflowNotificationJob.class);
+    private static Log logger = LogFactory.getLog(OverdueWorkflowNotificationJob.class);
 
-	private static final Object PARAM_NOTIFICATION_SENDER = "NotificationSender";
-	private static final Object PARAM_WORKFLOW_SERVICE = "WorkflowService";
+    private static final Object PARAM_NOTIFICATION_SENDER = "NotificationSender";
+    private static final Object PARAM_WORKFLOW_SERVICE = "WorkflowService";
 
-	@Override
-	public void executeJob(JobExecutionContext context) throws JobExecutionException {
+    @Override
+    public void executeJob(JobExecutionContext context) throws JobExecutionException {
         JobDataMap data = context.getJobDetail().getJobDataMap();
 
-		final WorkflowService workflowService = (WorkflowService) data.get(PARAM_WORKFLOW_SERVICE);
-		final NotificationSender<WorkflowTask> sender = (NotificationSender<WorkflowTask>) data.get(PARAM_NOTIFICATION_SENDER);
-		
-		Integer sent = AuthenticationUtil.runAs(() -> {
+        final WorkflowService workflowService = (WorkflowService) data.get(PARAM_WORKFLOW_SERVICE);
+        final NotificationSender<WorkflowTask> sender = (NotificationSender<WorkflowTask>) data.get(PARAM_NOTIFICATION_SENDER);
+
+        Integer sent = AuthenticationUtil.runAs(() -> {
             logger.debug("OverdueWorkflowNotificationJob start");
             WorkflowTaskQuery query = new WorkflowTaskQuery();
             query.setTaskState(WorkflowTaskState.IN_PROGRESS);
@@ -73,9 +73,9 @@ public class OverdueWorkflowNotificationJob extends AbstractLockedJob
             }
             return sent1;
         }, AuthenticationUtil.getSystemUserName());
-		if(logger.isInfoEnabled()) {
-			logger.info("Sent notifications for " + sent + " overdue tasks");
-		}
-	}
+        if(logger.isInfoEnabled()) {
+            logger.info("Sent notifications for " + sent + " overdue tasks");
+        }
+    }
 
 }
