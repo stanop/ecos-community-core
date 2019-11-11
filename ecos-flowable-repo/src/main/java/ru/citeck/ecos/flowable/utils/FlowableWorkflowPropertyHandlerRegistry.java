@@ -82,7 +82,7 @@ public class FlowableWorkflowPropertyHandlerRegistry {
             } else {
                 result = value;
             }
-            if (WorkflowPropertyHandler.DO_NOT_ADD.equals(result)==false) {
+            if (!WorkflowPropertyHandler.DO_NOT_ADD.equals(result)) {
                 String keyStr = qNameConverter.mapQNameToName(key);
                 variablesToSet.put(keyStr, result);
             }

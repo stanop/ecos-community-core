@@ -104,11 +104,7 @@ public class PDFMerge extends AbstractDataBundleMerge
             ContentReader contentReader = contentWriter.getReader();
             return helper.getDataBundle(contentReader, modelBundle.getModel());
 
-        } catch (FileNotFoundException e) {
-            return null;
-        } catch (DocumentException e) {
-            return null;
-        } catch (IOException e) {
+        } catch (IOException | DocumentException e) {
             return null;
         } finally {
             if(resultPdf != null) {

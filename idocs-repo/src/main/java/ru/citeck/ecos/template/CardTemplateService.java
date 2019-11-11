@@ -19,6 +19,7 @@
 package ru.citeck.ecos.template;
 
 import org.alfresco.model.ContentModel;
+import org.alfresco.service.cmr.dictionary.ClassDefinition;
 import org.alfresco.service.cmr.dictionary.DictionaryService;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
@@ -29,9 +30,12 @@ import org.alfresco.service.cmr.search.SearchService;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.model.CDLModel;
 import ru.citeck.ecos.model.DmsModel;
+import ru.citeck.ecos.search.ftsquery.FTSQuery;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,62 +44,82 @@ import java.util.List;
  */
 public class CardTemplateService {
 
-	private SearchService searchService;
-	private DictionaryService dictionaryService;
-	private NodeService nodeService;
+    private SearchService searchService;
+    private DictionaryService dictionaryService;
+    private NodeService nodeService;
 
+    public List<NodeRef> getTemplatesForDocType(QName documentType) {
 
-	public List<NodeRef> getTemplatesForType(QName documentType, String templateType) {
-		String query = MessageFormat.format("TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\"",
-				DmsModel.TYPE_CARD_TEMPLATE,
-				DmsModel.PROP_CARD_TYPE, documentType,
-				DmsModel.PROP_TEMPLATE_TYPE, templateType);
-		ResultSet nodes = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, query);
-		List<NodeRef> results = new ArrayList<>(nodes.length());
-		if (nodes.length() == 0) {
-			QName parent = dictionaryService.getType(documentType).getParentName();
-			if(parent != null) {
-				return getTemplatesForType(parent, templateType);
-			}
-		}
-		for (ResultSetRow node : nodes) {
-			results.add(node.getNodeRef());
-		}
-		return results;
-	}
+        ClassDefinition type = dictionaryService.getType(documentType);
 
-	public List<NodeRef> getTemplates(QName documentType) {
-		List<NodeRef> nodes = getTemplateTypes();
-		List<NodeRef> results = new ArrayList<>();
-		for (NodeRef nodeRef : nodes) {
-			List<NodeRef> templatesForType = getTemplatesForType(documentType,
-					(String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
-			if (templatesForType != null && templatesForType.size() > 0) {
-				results.add(templatesForType.get(0));
-			}
-		}
-		return results;
-	}
+        List<Serializable> types = new ArrayList<>();
+        while (type != null) {
+            types.add(type.getName());
+            type = type.getParentClassDefinition();
+        }
 
-	public List<NodeRef> getTemplateTypes() {
-		String query = "TYPE:\"" + CDLModel.TYPE_CARD_TEMPLATE_TYPE + "\"";
-		ResultSet templatesResultSet = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, query);
-		List<NodeRef> results = new ArrayList<>();
-		for (ResultSetRow row : templatesResultSet) {
-			results.add(row.getNodeRef());
-		}
-		return results;
-	}
+        if (types.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-	public void setDictionaryService(DictionaryService dictionaryService) {
-		this.dictionaryService = dictionaryService;
-	}
+        return FTSQuery.create()
+                        .type(DmsModel.TYPE_CARD_TEMPLATE).and()
+                        .any(DmsModel.PROP_CARD_TYPE, types)
+                        .eventual()
+                        .query(searchService);
+    }
 
-	public void setSearchService(SearchService searchService) {
-		this.searchService = searchService;
-	}
+    public List<NodeRef> getTemplatesForType(QName documentType, String templateType) {
+        String query = MessageFormat.format("TYPE:\"{0}\" AND ISNOTNULL:\"{1}\" AND @{1}:\"{2}\" AND @{3}:\"{4}\"",
+                DmsModel.TYPE_CARD_TEMPLATE,
+                DmsModel.PROP_CARD_TYPE, documentType,
+                DmsModel.PROP_TEMPLATE_TYPE, templateType);
+        ResultSet nodes = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, query);
+        List<NodeRef> results = new ArrayList<>(nodes.length());
+        if (nodes.length() == 0) {
+            QName parent = dictionaryService.getType(documentType).getParentName();
+            if(parent != null) {
+                return getTemplatesForType(parent, templateType);
+            }
+        }
+        for (ResultSetRow node : nodes) {
+            results.add(node.getNodeRef());
+        }
+        return results;
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public List<NodeRef> getTemplates(QName documentType) {
+        List<NodeRef> nodes = getTemplateTypes();
+        List<NodeRef> results = new ArrayList<>();
+        for (NodeRef nodeRef : nodes) {
+            List<NodeRef> templatesForType = getTemplatesForType(documentType,
+                    (String) nodeService.getProperty(nodeRef, ContentModel.PROP_NAME));
+            if (templatesForType != null && templatesForType.size() > 0) {
+                results.add(templatesForType.get(0));
+            }
+        }
+        return results;
+    }
+
+    public List<NodeRef> getTemplateTypes() {
+        String query = "TYPE:\"" + CDLModel.TYPE_CARD_TEMPLATE_TYPE + "\"";
+        ResultSet templatesResultSet = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_FTS_ALFRESCO, query);
+        List<NodeRef> results = new ArrayList<>();
+        for (ResultSetRow row : templatesResultSet) {
+            results.add(row.getNodeRef());
+        }
+        return results;
+    }
+
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
+    }
+
+    public void setSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
+
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 }

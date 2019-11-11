@@ -133,7 +133,7 @@ public class RegexConstraint extends AbstractConstraint
     	//ADDON START
     	//Due to the problem of Scientific double as string representation, we skip server side double validation
     	//and leave only a client side one
-    	if (value!=null && value instanceof Double) {
+    	if (value instanceof Double) {
     		return;
     	}
     	//ADDON END

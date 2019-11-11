@@ -32,8 +32,6 @@ public class LastCurrencyRate extends DeclarativeWebScript {
             " AND @idocs\\:crrTargetCurrency_added:\"%s\"" +
             " AND @idocs\\:crrDate:[MIN TO \"%s\"]";
 
-    private SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
-
     @Setter
     private SearchService searchService;
     @Setter

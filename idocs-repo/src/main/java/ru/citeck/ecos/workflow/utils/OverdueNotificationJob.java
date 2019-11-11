@@ -39,49 +39,48 @@ import java.util.List;
 
 public class OverdueNotificationJob extends AbstractLockedJob
 {
-	private static Log logger = LogFactory.getLog(OverdueNotificationJob.class);
+    private static Log logger = LogFactory.getLog(OverdueNotificationJob.class);
 
-	private static final Object PARAM_NOTIFICATION_SENDER = "NotificationSender";
-	private static final Object PARAM_WORKFLOW_SERVICE = "WorkflowService";
-	private static final Object PARAM_SERVICE = "ServiceRegistry";
+    private static final Object PARAM_NOTIFICATION_SENDER = "NotificationSender";
+    private static final Object PARAM_WORKFLOW_SERVICE = "WorkflowService";
+    private static final Object PARAM_SERVICE = "ServiceRegistry";
 
-	@Override
-	public void executeJob(JobExecutionContext context) throws JobExecutionException {
+    @Override
+    public void executeJob(JobExecutionContext context) throws JobExecutionException {
         JobDataMap data = context.getJobDetail().getJobDataMap();
 
-		final WorkflowService workflowService = (WorkflowService) data.get(PARAM_WORKFLOW_SERVICE);
-		final NotificationSender<WorkflowTask> sender = (NotificationSender<WorkflowTask>) data.get(PARAM_NOTIFICATION_SENDER);
-		final ServiceRegistry services = (ServiceRegistry) data.get(PARAM_SERVICE);
-		
-		Integer sent = AuthenticationUtil.runAs(new RunAsWork<Integer>() {
+        final WorkflowService workflowService = (WorkflowService) data.get(PARAM_WORKFLOW_SERVICE);
+        final NotificationSender<WorkflowTask> sender = (NotificationSender<WorkflowTask>) data.get(PARAM_NOTIFICATION_SENDER);
+        final ServiceRegistry services = (ServiceRegistry) data.get(PARAM_SERVICE);
 
-			@Override
-			public Integer doWork() throws Exception {
-				WorkflowTaskQuery query = new WorkflowTaskQuery();
-				query.setTaskState(WorkflowTaskState.IN_PROGRESS);
-				query.setOrderBy(new OrderBy[] { OrderBy.TaskDue_Asc });
-				List<WorkflowTask> tasks = workflowService.queryTasks(query);
-				Date now = new Date();
-				int sent = 0;
-				for(WorkflowTask task : tasks) {
-					Date dueDate = (Date) task.getProperties().get(WorkflowModel.PROP_DUE_DATE);
-					logger.debug("dueDate "+dueDate);
-					if(dueDate != null && !"".equals(dueDate))
-					{
-						dueDate.setHours(23); // use 23:59, not 00:00
-						dueDate.setMinutes(59);
-						 if(dueDate.before(now)) {
-							logger.debug("dueDate "+dueDate+" before now "+now);
-								sender.sendNotification(task);
-								sent++;
-							}
-					}
-				}
-				return sent;
-			}
-			
-		}, AuthenticationUtil.getSystemUserName());
-			logger.debug("Sent notifications for " + sent + " overdue tasks");
-	}
+        Integer sent = AuthenticationUtil.runAs(new RunAsWork<Integer>() {
+
+            @Override
+            public Integer doWork() throws Exception {
+                WorkflowTaskQuery query = new WorkflowTaskQuery();
+                query.setTaskState(WorkflowTaskState.IN_PROGRESS);
+                query.setOrderBy(new OrderBy[] { OrderBy.TaskDue_Asc });
+                List<WorkflowTask> tasks = workflowService.queryTasks(query);
+                Date now = new Date();
+                int sent = 0;
+                for (WorkflowTask task : tasks) {
+                    Date dueDate = (Date) task.getProperties().get(WorkflowModel.PROP_DUE_DATE);
+                    logger.debug("dueDate " + dueDate);
+                    if (dueDate != null) {
+                        dueDate.setHours(23); // use 23:59, not 00:00
+                        dueDate.setMinutes(59);
+                        if (dueDate.before(now)) {
+                            logger.debug("dueDate " + dueDate + " before now " + now);
+                            sender.sendNotification(task);
+                            sent++;
+                        }
+                    }
+                }
+                return sent;
+            }
+
+        }, AuthenticationUtil.getSystemUserName());
+        logger.debug("Sent notifications for " + sent + " overdue tasks");
+    }
 
 }

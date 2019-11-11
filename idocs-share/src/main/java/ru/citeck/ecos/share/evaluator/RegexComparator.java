@@ -27,7 +27,6 @@ import org.alfresco.web.evaluator.Comparator;
  */
 public class RegexComparator implements Comparator
 {
-    private Boolean caseInsensitive = true;
     private String value = null;
 
     /**

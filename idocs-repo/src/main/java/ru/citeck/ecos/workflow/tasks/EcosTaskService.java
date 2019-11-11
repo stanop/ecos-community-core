@@ -28,8 +28,6 @@ public class EcosTaskService {
     @Autowired
     private WorkflowUtils workflowUtils;
 
-    private ThreadLocal<Map<String, String>> currentTaskAssignee = ThreadLocal.withInitial(HashMap::new);
-
     public void endTask(String taskId, Map<String, Object> variables) {
         endTask(taskId, null, variables, null);
     }

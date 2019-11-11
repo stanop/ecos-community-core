@@ -128,9 +128,7 @@ public class JSONUtils {
             ObjectInputStream in = new ObjectInputStream(bin);
             Object y = in.readObject();
             return y;
-        } catch (IOException e) {
-            return null;
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             return null;
         }
     }

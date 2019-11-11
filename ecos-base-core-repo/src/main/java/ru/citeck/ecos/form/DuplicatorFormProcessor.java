@@ -96,7 +96,7 @@ public class DuplicatorFormProcessor extends ContentModelFormProcessor<NodeRef, 
         }
 
         // check the node itself exists
-        if (this.nodeService.exists(nodeRef) == false) {
+        if (!this.nodeService.exists(nodeRef)) {
             throw new FormNotFoundException(item,
                     new InvalidNodeRefException("Node does not exist: " + nodeRef, nodeRef));
         } else {

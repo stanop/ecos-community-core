@@ -82,7 +82,7 @@ public class ContentNodeBehaviorImpl implements
 			return;
 
 		Serializable contentObj = nodeService.getProperty(nodeRef, ContentModel.PROP_CONTENT);
-		if (contentObj == null || !(contentObj instanceof ContentData))
+		if (!(contentObj instanceof ContentData))
 			return;
 
 		ContentData content = (ContentData)contentObj;

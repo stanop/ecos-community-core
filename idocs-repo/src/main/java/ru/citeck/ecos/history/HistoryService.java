@@ -395,9 +395,6 @@ public class HistoryService {
             }
             historyRemoteService.updateDocumentHistoryStatus(documentRef, true);
             trx.commit();
-        } catch (RuntimeException e) {
-            logger.error("Document " + documentRef.getId() + " hadn't been processed correctly");
-            logger.error(e.getMessage(), e);
         } catch (Exception e) {
             logger.error("Document " + documentRef.getId() + " hadn't been processed correctly");
             logger.error(e.getMessage(), e);
@@ -485,7 +482,7 @@ public class HistoryService {
     public void addHistoricalProperty(NodeRef nodeRef, QName sourceProp, QName historyProp) {
         Object oldValue = nodeService.getProperty(nodeRef, HistoryModel.PROP_ADDITIONAL_PROPERTIES);
         HashMap<QName, QName> propertyMapping = new HashMap<>();
-        if (oldValue != null && oldValue instanceof Map) {
+        if (oldValue instanceof Map) {
             propertyMapping.putAll((Map) oldValue);
         }
         propertyMapping.put(sourceProp, historyProp);

@@ -9,21 +9,19 @@ import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.meta.RecordsMetaService;
 import ru.citeck.ecos.records2.resolver.RecordsResolver;
+import ru.citeck.ecos.records2.RecordsServiceFactory;
 import ru.citeck.ecos.records2.source.dao.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class RecordsServiceImpl extends ru.citeck.ecos.records2.RecordsServiceImpl {
 
     private Map<String, RecordsActionExecutor> actionExecutors = new ConcurrentHashMap<>();
 
-    public RecordsServiceImpl(RecordsMetaService recordsMetaService,
-                              RecordsResolver recordsResolver,
-                              Supplier<? extends QueryContext> contextSupplier) {
-        super(recordsMetaService, recordsResolver, contextSupplier);
+    public RecordsServiceImpl(RecordsServiceFactory factory) {
+        super(factory);
     }
 
     public ActionResults<RecordRef> executeAction(Collection<RecordRef> records,

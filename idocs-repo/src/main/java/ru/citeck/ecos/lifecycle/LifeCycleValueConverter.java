@@ -98,7 +98,7 @@ public class LifeCycleValueConverter {
                 {
                     // convert JavaScript array of values to a List of objects
                     Object[] propIds = values.getIds();
-                    if (isArray(propIds) == true)
+                    if (isArray(propIds))
                     {                    
                         List<Object> propValues = new ArrayList<>(propIds.length);
                         for (int i=0; i<propIds.length; i++)
@@ -204,7 +204,7 @@ public class LifeCycleValueConverter {
         boolean result = true;
         for (Object id : ids)
         {
-            if (id instanceof Integer == false)
+            if (!(id instanceof Integer))
             {
                result = false;
                break;

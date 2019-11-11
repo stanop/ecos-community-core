@@ -40,6 +40,9 @@ public class SetLastTasksOutcomeToOrdersListener extends AbstractTaskListener {
 
         String currentTaskOutcome = (String) delegateTask.getVariable("bpm_outcome");
         if (StringUtils.isBlank(currentTaskOutcome)) {
+            currentTaskOutcome = (String) delegateTask.getVariable("outcome");
+        }
+        if (StringUtils.isBlank(currentTaskOutcome)) {
             return;
         }
 
