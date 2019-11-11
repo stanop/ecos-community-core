@@ -118,6 +118,9 @@ public class FlowableWorkflowComponent implements WorkflowComponent, Initializin
         if (repositoryService == null) {
             return null;
         }
+        if (name == null) {
+            name = "flowable-deploy-definition.bpmn20.xml";
+        }
         DeploymentBuilder deploymentBuilder = this.repositoryService.createDeployment();
         deploymentBuilder.addInputStream(name, workflowDefinition);
         deploymentBuilder.name(name);

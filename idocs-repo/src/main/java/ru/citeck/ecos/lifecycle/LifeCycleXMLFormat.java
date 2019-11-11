@@ -86,7 +86,7 @@ public class LifeCycleXMLFormat extends LifeCycleAbstractFormat {
     public static final String NS_URL = "http://www.citeck.ru/lifecycle/1.0";
     public static final String NS_PREFIX = "lc:";
 
-    public static Log logger = LogFactory.getLog(LifeCycleXMLFormat.class);
+    public static final Log logger = LogFactory.getLog(LifeCycleXMLFormat.class);
 
     @Override
     public String getName() {

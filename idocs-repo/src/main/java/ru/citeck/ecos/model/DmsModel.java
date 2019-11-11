@@ -96,9 +96,9 @@ public final class DmsModel {
 	public static final QName PROP_UPDATE_CONTENT = QName.createQName(DMS_NAMESPACE, "updateContent");
 
 	// type dms:cardType
-	public static final Object TYPE_CARD_TEMPLATE = QName.createQName(DMS_NAMESPACE, "cardTemplate");
-	public static final Object PROP_CARD_TYPE = QName.createQName(DMS_NAMESPACE, "cardType");
-	public static final Object PROP_TEMPLATE_TYPE = QName.createQName(DMS_NAMESPACE, "templateType");
+	public static final QName TYPE_CARD_TEMPLATE = QName.createQName(DMS_NAMESPACE, "cardTemplate");
+	public static final QName PROP_CARD_TYPE = QName.createQName(DMS_NAMESPACE, "cardType");
+	public static final QName PROP_TEMPLATE_TYPE = QName.createQName(DMS_NAMESPACE, "templateType");
 	
 	// type dms:notificationTemplate
 	public static final QName TYPE_NOTIFICATION_TEMPLATE = QName.createQName(DMS_NAMESPACE, "notificationTemplate");

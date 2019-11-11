@@ -3,6 +3,8 @@ package ru.citeck.ecos.records.models;
 import lombok.Data;
 import ru.citeck.ecos.records2.graphql.meta.annotation.MetaAtt;
 
+import java.util.Date;
+
 @Data
 public class UserDTO {
 
@@ -19,6 +21,9 @@ public class UserDTO {
 
     @MetaAtt("cm:middleName")
     private String middleName;
+
+    @MetaAtt("ecos:birthDate")
+    private Date birthDate;
 
     @MetaAtt(".disp")
     private String displayName;

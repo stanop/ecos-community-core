@@ -127,9 +127,7 @@ public class JSONUtils {
             ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
             ObjectInputStream in = new ObjectInputStream(bin);
             return in.readObject();
-        } catch (IOException e) {
-            return null;
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             return null;
         }
     }
