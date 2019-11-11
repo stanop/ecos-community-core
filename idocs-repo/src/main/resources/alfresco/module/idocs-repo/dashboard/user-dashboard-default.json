@@ -1,0 +1,48 @@
+{
+    "id" : "63d35af7-cd83-45a9-8cf3-788b8d6346a8",
+    "key" : "DEFAULT",
+    "type" : "user-dashboard",
+    "user" : null,
+    "config" : {
+        "layouts" : [ {
+            "id" : "layout_aab0b5ab-a63b-4068-8bc4-3840226e37f7",
+            "tab" : {
+                "label" : "Вкладка",
+                "idLayout" : "layout_aab0b5ab-a63b-4068-8bc4-3840226e37f7"
+            },
+            "type" : "1-column",
+            "columns" : [ {
+                "widgets" : [ {
+                    "name" : "journal",
+                    "label" : "Журнал",
+                    "dndId" : "9d102a69-087a-4058-8966-ff4cd7b226c1",
+                    "id" : "a31f6557-4b92-4ce4-b62b-0fb8cd8af94a",
+                    "props" : {
+                        "id" : "a31f6557-4b92-4ce4-b62b-0fb8cd8af94a",
+                        "config" : { }
+                    }
+                }, {
+                    "name" : "journal",
+                    "label" : "Журнал",
+                    "dndId" : "614fb84f-f862-4dbb-9500-7671b5c94b3a",
+                    "id" : "a056289a-3396-47c5-851c-e29ec58a8413",
+                    "props" : {
+                        "id" : "a056289a-3396-47c5-851c-e29ec58a8413",
+                        "config" : { }
+                    }
+                } ]
+            } ]
+        } ],
+        "mobile" : [ {
+            "id" : "layout_829db65d-de51-4754-ad66-eee68c0e844a",
+            "tab" : {
+                "label" : "Вкладка",
+                "idLayout" : "layout_829db65d-de51-4754-ad66-eee68c0e844a"
+            },
+            "type" : "mobile",
+            "columns" : [ {
+                "widgets" : [ ]
+            } ]
+        } ]
+    }
+}

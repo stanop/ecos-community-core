@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<view:view
+        xmlns:view="http://www.alfresco.org/view/repository/1.0"
+        xmlns:sys="http://www.alfresco.org/model/system/1.0"
+        xmlns:cm="http://www.alfresco.org/model/content/1.0"
+        xmlns:idocs="http://www.citeck.ru/model/content/idocs/1.0">
+
+    <idocs:currency view:childName="cm:currency-xpd">
+        <view:properties>
+            <sys:node-uuid>currency-xpd</sys:node-uuid>
+            <cm:name>Палладий</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Palladium</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Палладий</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>XPD</idocs:currencyCode>
+            <idocs:currencyName>Палладий</idocs:currencyName>
+            <idocs:currencyShortName></idocs:currencyShortName>
+            <idocs:currencyNumberCode>964</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-xpt">
+        <view:properties>
+            <sys:node-uuid>currency-xpt</sys:node-uuid>
+            <cm:name>Платина</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Platinum</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Платина</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>XPT</idocs:currencyCode>
+            <idocs:currencyName>Платина</idocs:currencyName>
+            <idocs:currencyShortName></idocs:currencyShortName>
+            <idocs:currencyNumberCode>962</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-xag">
+        <view:properties>
+            <sys:node-uuid>currency-xag</sys:node-uuid>
+            <cm:name>Серебро</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Silver</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Серебро</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>XAG</idocs:currencyCode>
+            <idocs:currencyName>Серебро</idocs:currencyName>
+            <idocs:currencyShortName></idocs:currencyShortName>
+            <idocs:currencyNumberCode>961</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+    <idocs:currency view:childName="cm:currency-xau">
+        <view:properties>
+            <sys:node-uuid>currency-xau</sys:node-uuid>
+            <cm:name>Золото</cm:name>
+            <cm:title>
+                <view:mlvalue view:locale="en_US">Gold</view:mlvalue>
+                <view:mlvalue view:locale="ru_RU">Золото</view:mlvalue>
+            </cm:title>
+            <idocs:currencyCode>XAU</idocs:currencyCode>
+            <idocs:currencyName>Золото</idocs:currencyName>
+            <idocs:currencyShortName></idocs:currencyShortName>
+            <idocs:currencyNumberCode>959</idocs:currencyNumberCode>
+        </view:properties>
+    </idocs:currency>
+
+</view:view>

@@ -25,8 +25,6 @@ public abstract class AbstractJournalsResolver extends AbstractMenuItemsResolver
 
     private JournalService journalService;
 
-    private LoadingCache<RequestKey, Long> itemsCount;
-
     public AbstractJournalsResolver() {
     }
 

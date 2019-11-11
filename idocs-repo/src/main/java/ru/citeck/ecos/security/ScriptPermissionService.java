@@ -45,7 +45,7 @@ public class ScriptPermissionService extends BaseScopableProcessorExtension {
                 nodeRef,
                 authority,
                 permission,
-                new Boolean(allow)
+                Boolean.valueOf(allow)
         );
         return "";
     }
@@ -107,7 +107,7 @@ public class ScriptPermissionService extends BaseScopableProcessorExtension {
         NodeRef nodeRef = new NodeRef(nodeRefId);
         this.services.getPermissionService().setInheritParentPermissions(
                 nodeRef,
-                new Boolean(inheritParentPermissions)
+                Boolean.valueOf(inheritParentPermissions)
         );
         return "";
     }

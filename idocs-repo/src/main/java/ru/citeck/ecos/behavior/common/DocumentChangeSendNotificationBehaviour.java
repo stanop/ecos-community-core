@@ -19,14 +19,7 @@
 package ru.citeck.ecos.behavior.common;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.ListIterator;
+import java.util.*;
 
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.i18n.MessageService;
@@ -557,7 +550,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 							}
 							catch (AssociationExistsException e)
 							{
-								logger.error("Association already exist "+e.getStackTrace());
+								logger.error("Association already exist "+ Arrays.toString(e.getStackTrace()));
 							}
 						}
 					}
@@ -580,7 +573,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 		}
 		catch (AssociationExistsException e)
 		{
-			logger.error("Association already exist "+e.getStackTrace());
+			logger.error("Association already exist "+ Arrays.toString(e.getStackTrace()));
 		}
 	}
 	
@@ -612,7 +605,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 							}
 							catch (AssociationExistsException e)
 							{
-								logger.error("Association already exist "+e.getStackTrace());
+								logger.error("Association already exist "+ Arrays.toString(e.getStackTrace()));
 							}
 						}
 					}
@@ -649,7 +642,7 @@ public class DocumentChangeSendNotificationBehaviour implements NodeServicePolic
 							}
 							catch (InvalidNodeRefException e)
 							{
-								logger.error("InvalidNodeRefException "+e.getStackTrace());
+								logger.error("InvalidNodeRefException "+ Arrays.toString(e.getStackTrace()));
 							}
 						}
 					}

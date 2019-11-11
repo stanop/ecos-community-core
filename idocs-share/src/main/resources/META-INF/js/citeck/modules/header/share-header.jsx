@@ -5,6 +5,7 @@ import UserMenu from './components/user-menu';
 import SitesMenu from './components/sites-menu';
 import Search from './components/search';
 import SwitchHintMenu from './components/hints-switcher';
+import LanguageSwitcher from './components/language-switcher';
 import "xstyle!js/citeck/modules/header/share-header.css";
 
 import CustomModal from './components/custom-modal';
@@ -28,6 +29,7 @@ const ShareHeader = ({ isMobile }) => {
                 <UserMenu />
                 <SwitchHintMenu />
                 <SitesMenu />
+                <LanguageSwitcher />
                 <Search />
             </div>
             <CustomModal />

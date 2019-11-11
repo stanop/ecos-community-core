@@ -105,7 +105,7 @@ public class ListOfValuesConstraint extends AbstractConstraint
     public List<String> getAllowedValues()
     {
         List<String> rawValues = getRawAllowedValues(); 
-        if (sorted == true)
+        if (sorted)
         {
             List<String> values = new ArrayList<String>(rawValues);
             Collections.sort(values);

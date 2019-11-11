@@ -7,7 +7,17 @@
     </imports>
 
     <journal id="ecos-forms">
-        <datasource>eform</datasource>
+        <datasource>eapps/module</datasource>
+        <predicate>{"t": "eq", "att": "type", "val": "form"}</predicate>
+        <create>
+            <variant title="Create Form">
+                <recordRef>eapps/module@form$</recordRef>
+            </variant>
+            <variant title="Upload Form">
+                <recordRef>eapps/module@form$</recordRef>
+                <formKey>ecos-module-upload</formKey>
+            </variant>
+        </create>
         <option name="actionFormatter">
             [
                 {
@@ -23,8 +33,8 @@
                     onclick: {
                         fn: function () {
                             var record = Citeck.Records.get(oRecord.getData('nodeRef'));
-                            record.load({ formKey: 'formKey', json:'.json' }, true).then(data => {
-                                Citeck.utils.downloadText(JSON.stringify(data.json), data.formKey + '.json', 'text/json');
+                            record.load({ module_id: 'module_id', json:'.json' }, true).then(data => {
+                                Citeck.utils.downloadText(JSON.stringify(data.json), data.module_id + '.json', 'text/json');
                             });
                         }
                     }
@@ -62,6 +72,7 @@
             ]
         </option>
         <headers>
+            <header key="module_id" default="true" />
             <header key="formKey" default="true" />
             <header key="title" default="true" />
             <header key="description" default="true" />

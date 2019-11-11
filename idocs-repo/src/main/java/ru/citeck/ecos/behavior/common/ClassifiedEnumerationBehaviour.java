@@ -24,6 +24,7 @@ package ru.citeck.ecos.behavior.common;
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.node.NodeServicePolicies;
 import org.alfresco.repo.policy.Behaviour;
+import org.apache.commons.lang.StringUtils;
 import ru.citeck.ecos.behavior.OrderedBehaviour;
 import org.alfresco.repo.policy.PolicyComponent;
 import org.alfresco.service.ServiceRegistry;
@@ -60,14 +61,13 @@ public class ClassifiedEnumerationBehaviour implements NodeServicePolicies.OnCre
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME,
                 className, new OrderedBehaviour(this, "onCreateNode",
                         Behaviour.NotificationFrequency.TRANSACTION_COMMIT, order));
-        if(enumerationStateField == null) {
+        if (enumerationStateField == null) {
             enumerationStateField = numberField;
         }
     }
 
     @Override
-    public void onCreateNode(ChildAssociationRef childAssocRef)
-    {
+    public void onCreateNode(ChildAssociationRef childAssocRef) {
         NodeRef nodeRef = childAssocRef.getChildRef();
         if (!nodeService.exists(nodeRef)) {
             return;
@@ -83,9 +83,19 @@ public class ClassifiedEnumerationBehaviour implements NodeServicePolicies.OnCre
         }
         // check if enumeration is enabled
         Object enumerationState = nodeService.getProperty(nodeRef, enumerationStateField);
-        if (!Objects.equals(enabledState, enumerationState)) {
+        if (enabledState != null && !enabledState.equals(enumerationState)) {
             return;
         }
+
+        if (enumerationState instanceof String) { // Fix for work in new form. Because the hidden property still exists and it is not empty
+            String enumState = (String) enumerationState;
+            if (enabledState == null && StringUtils.isNotBlank(enumState)) {
+                return;
+            }
+        } else if ((enabledState == null && enumerationState != null)) {
+            return;
+        }
+
         NodeRef template = enumerationService.getTemplate(templateName);
         NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo(nodeRef);
 

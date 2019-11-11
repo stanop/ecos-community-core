@@ -85,10 +85,15 @@ public class EcosCommentServiceImpl implements EcosCommentService {
 
     private NodeRef toNodeRef(String recordId) {
         String ref = recordId;
+        if (ref != null) {
+            int idx = ref.lastIndexOf('@');
+            if (idx > -1 && idx < ref.length() - 1) {
+                ref = ref.substring(idx + 1);
+            }
+        }
         if (!StringUtils.contains(ref, WORKSPACE_PREFIX)) {
             ref = WORKSPACE_PREFIX + ref;
         }
         return new NodeRef(ref);
     }
-
 }

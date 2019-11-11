@@ -27,6 +27,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.context.support.ServletContextResourcePatternResolver;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class ResourceResolver extends ServletContextResourcePatternResolver {
 
 	public List<String> getResources(String... locationPatterns) throws IOException
 	{
-		logger.debug("Got location patterns: " + locationPatterns);
+		logger.debug("Got location patterns: " + Arrays.toString(locationPatterns));
 		LinkedList<String> result = new LinkedList<String>();
 		for (String locationPattern : locationPatterns)
 		{

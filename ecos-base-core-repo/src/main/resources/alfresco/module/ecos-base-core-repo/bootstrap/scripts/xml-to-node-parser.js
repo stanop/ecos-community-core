@@ -1,7 +1,7 @@
 /**
  * @author Roman Makarskiy
  */
-const METHOD_CREATE = "create";
+const METHOD_SAVE = "save";
 const METHOD_DELETE = "delete";
 const STATUS_NEW = "New";
 const STATUS_READY = "Ready";
@@ -25,11 +25,12 @@ var parser = {
             ru: ""
         },
         path: "",
-        type: ""
+        type: "",
+        updateEnabled: false,
+        identityProp: ""
     },
     processNodes: function (method, xmlData) {
         var xmlDataNode = search.findNode(xmlData);
-
         if (!xmlDataNode || xmlDataNode.typeShort != "xni:data") {
             logger.warn(this.parserScriptName + ": failed find xml data - " + xmlData);
             return false;
@@ -42,7 +43,6 @@ var parser = {
         this.parserData.type = xml.type;
 
         var root = this.helper.getRootNodeByPath(this.parserData.path);
-
         if (!root) {
             return false;
         }
@@ -54,6 +54,8 @@ var parser = {
         this.parserData.uuidPrefix = xml.uuidPrefix;
         this.parserData.cmTitleRuFromProp = xml.cmTitle_RU_fromProp;
         this.parserData.cmTitleEnFromProp = xml.cmTitle_EN_fromProp;
+        this.parserData.updateEnabled = xml.updateEnabled === "true";
+        this.parserData.identityProp = xml.identityProp;
 
         var objects = this.helper.getObjects(xml);
         var objCount = objects.length;
@@ -62,9 +64,9 @@ var parser = {
         logger.warn(this.parserScriptName + " Found " + objCount + " objects in XNI data. Processing in progress...");
 
 
-        switch (method+"") {
-            case METHOD_CREATE:
-                this.createNodes(root, objects);
+        switch (method + "") {
+            case METHOD_SAVE:
+                this.saveNodes(root, objects);
                 status = STATUS_COMPLETE;
                 break;
             case METHOD_DELETE:
@@ -81,30 +83,61 @@ var parser = {
         logger.warn(this.parserScriptName + " Processing ends in " + this.helper.millisToMinAndSeconds(executedTime)
             + " (min:sec)" + " (" + executedTime + " ms)");
     },
-    createNodes: function(root, objects) {
+    saveNodes: function (root, objects) {
         batchExecuter.processArray({
             items: objects,
             batchSize: 200,
             //TODO: Fix multi threads import. In Alfresco 5 multithreaded javascript batch processor does not work correctly - SQL Duplicate key exception.
             threads: 1,
-            onNode: function(row) {
+            onNode: function (row) {
                 var propObj = parser.getProperties(row);
 
-                if (parser.helper.uuidExists(propObj)) {
-                    logger.warn(parser.parserScriptName + " Cannot create node, because node with uuid: '"
-                        + propObj['sys:node-uuid'] +"' already exists.");
-                    status = STATUS_ERROR;
-                } else if (parser.helper.cmNameExists(parser.parserData.path, propObj)) {
-                    logger.warn(parser.parserScriptName + " Cannot create node, because node with cm:name - '"
-                        + propObj['cm:name'] +"' already exists.");
-                    status = STATUS_ERROR;
+                var existingNode = parser.helper.searchByUuid(propObj);
+                if (existingNode) {
+                    if (parser.parserData.updateEnabled) {
+                        parser.updateNode(existingNode, propObj, row);
+                        return;
+                    } else {
+                        logger.warn(parser.parserScriptName + " Cannot create node, because node with uuid: '"
+                            + propObj['sys:node-uuid'] + "' already exists.");
+                        status = STATUS_ERROR;
+                        return;
+                    }
+                }
+
+                existingNode = parser.helper.searchByCmName(parser.parserData.path, propObj);
+                if (existingNode) {
+                    if (parser.parserData.updateEnabled) {
+                        parser.updateNode(existingNode, propObj, row);
+                        return;
+                    } else {
+                        logger.warn(parser.parserScriptName + " Cannot create node, because node with cm:name - '"
+                            + propObj['cm:name'] + "' already exists.");
+                        status = STATUS_ERROR;
+                        return;
+                    }
+                }
+
+                existingNode = parser.helper.searchByIdentityProp(parser.parserData.path,
+                    parser.parserData.identityProp, propObj);
+                if (existingNode) {
+                    parser.updateNode(existingNode, propObj, row);
                 } else {
-                    var createdNode = root.createNode(null, parser.parserData.type, propObj, "cm:contains");
-                    parser.helper.fillNodeTitle(createdNode);
-                    parser.helper.fillAssocs(row, createdNode);
+                    parser.createNode(root, parser.parserData.type, "cm:contains", propObj, row);
                 }
             }
         });
+    },
+    createNode: function (root, type, assocType, props, row) {
+        var createdNode = root.createNode(null, type, props, assocType);
+        parser.helper.fillNodeTitle(createdNode);
+        parser.helper.fillAssocs(row, createdNode);
+    },
+    updateNode: function (node, props, row) {
+        this.mergeProperties(node, props);
+        node.save();
+        parser.helper.fillNodeTitle(node);
+        parser.helper.fillAssocs(row, node);
     },
     deleteNodes: function (rootFolder) {
         logger.warn(this.parserScriptName + " Actual object count: " + rootFolder.children.length);
@@ -112,7 +145,7 @@ var parser = {
             items: rootFolder.children,
             batchSize: 100,
             threads: 4,
-            onNode: function(row) {
+            onNode: function (row) {
                 row.remove();
             }
         });
@@ -157,6 +190,11 @@ var parser = {
 
         return propObj;
     },
+    mergeProperties: function (node, propObj) {
+        for (var key in propObj) {
+            node.properties[key] = propObj[key];
+        }
+    },
     helper: {
         getObjects: function (xml) {
             var objects = [];
@@ -165,7 +203,7 @@ var parser = {
             }
             return objects;
         },
-        fillAssocs: function(obj, node) {
+        fillAssocs: function (obj, node) {
             var assocsData = obj.associations.association;
 
             if (assocsData.length() == 0) {
@@ -189,7 +227,9 @@ var parser = {
                     }
 
                     var groupNode = search.findNode(targetGroup.groupNodeRef);
-                    node.createAssociation(groupNode, assocData.assocType);
+                    if (!this.isAssocExists(node, groupNode, assocData.assocType)) {
+                        node.createAssociation(groupNode, assocData.assocType);
+                    }
 
                     if (assocData.cm_authority.parent_groups.group.length() > 0) {
                         var parentGroups = assocData.cm_authority.parent_groups.group;
@@ -248,7 +288,9 @@ var parser = {
                             "\ntargetNodeRoot: " + targetNodeRoot.nodeRef + " prop id: "
                             + assocData.propId + " prop value: " + assocData.propValue + " uuid: " + assocData.uuid);
                     } else {
-                        node.createAssociation(targetNode, assocData.assocType);
+                        if (!this.isAssocExists(node, targetNode, assocData.assocType)) {
+                            node.createAssociation(targetNode, assocData.assocType);
+                        }
                     }
                 }
 
@@ -331,10 +373,10 @@ var parser = {
                 parser.parserData.titles.en = propValue;
             }
         },
-        getCmNameValue: function(propValue, prop) {
+        getCmNameValue: function (propValue, prop) {
             var cmNameValue = "";
             if (parser.parserData.cmNameFromProp && parser.parserData.cmNameFromProp.toString().length > 0) {
-                if (parser.parserData.cmNameFromProp.toString() == prop.name().toString()){
+                if (parser.parserData.cmNameFromProp.toString() == prop.name().toString()) {
                     if (parser.parserData.cmNamePrefix && parser.parserData.cmNamePrefix.toString().length > 0) {
                         cmNameValue = parser.parserData.cmNamePrefix.toString();
                     }
@@ -349,7 +391,7 @@ var parser = {
         getUuidValue: function (propValue, prop) {
             var uuidValue = "";
             if (parser.parserData.uuidFromProp && parser.parserData.uuidFromProp.toString().length > 0) {
-                if (parser.parserData.uuidFromProp.toString() == prop.name().toString()){
+                if (parser.parserData.uuidFromProp.toString() == prop.name().toString()) {
                     if (parser.parserData.uuidPrefix && parser.parserData.uuidPrefix.toString().length > 0) {
                         uuidValue = parser.parserData.uuidPrefix.toString();
                     }
@@ -381,30 +423,48 @@ var parser = {
             }
             return rootNode;
         },
-        uuidExists: function (propObj) {
-            var uuidExists = false;
+        searchByUuid: function (propObj) {
             if (propObj['sys:node-uuid']) {
-                var node = search.findNode("workspace://SpacesStore/" + propObj['sys:node-uuid']);
-                if (node) {
-                    uuidExists = true
-                }
+                return search.findNode("workspace://SpacesStore/" + propObj['sys:node-uuid']);
             }
-            return uuidExists;
+            return null;
         },
-        cmNameExists: function(path, propObj) {
-            var cmNameExists = false;
+        searchByCmName: function (path, propObj) {
             if (propObj['cm:name']) {
                 var root = this.getRootNodeByPath(path);
                 if (root) {
-                    var node = root.childByNamePath(propObj['cm:name']);
-                    if (node) {
-                        cmNameExists = true;
-                    }
+                    return root.childByNamePath(propObj['cm:name']);
                 }
             }
-            return cmNameExists;
+            return null;
         },
-        millisToMinAndSeconds: function(millis) {
+        searchByIdentityProp: function (path, propName, propObj) {
+            if (propName && propObj[propName]) {
+                var root = this.getRootNodeByPath(path);
+                if (root) {
+                    return this.getChildByProperty(root, propName, propObj[propName]);
+                }
+            }
+            return null;
+        },
+        isAssocExists: function (sourceNode, targetNode, assocType) {
+            if (!sourceNode || !targetNode || !assocType) {
+                return false;
+            }
+
+            var assocs = sourceNode.assocs[assocType];
+            if (!assocs || assocs.length == 0) {
+                return false;
+            }
+
+            for (var i in assocs) {
+                if (assocs[i] == targetNode) {
+                    return true;
+                }
+            }
+            return false;
+        },
+        millisToMinAndSeconds: function (millis) {
             var minutes = Math.floor(millis / 60000);
             var seconds = ((millis % 60000) / 1000).toFixed(0);
             return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
@@ -417,7 +477,7 @@ function setStatusAsync(node, status) {
         items: [node],
         batchSize: 1,
         threads: 1,
-        onNode: function(row) {
+        onNode: function (row) {
             row.properties["xni:status"] = status;
             row.save();
         }
