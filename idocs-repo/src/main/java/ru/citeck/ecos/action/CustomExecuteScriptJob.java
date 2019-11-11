@@ -37,30 +37,26 @@ public class CustomExecuteScriptJob implements Job {
     private static final String PARAMS = "params";
 
 
-    public void execute(JobExecutionContext context) throws JobExecutionException
-    {
+    public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap jobData = context.getJobDetail().getJobDataMap();
 
         // Get the script service from the job map
         Object scriptServiceObj = jobData.get(PARAM_SCRIPT_SERVICE);
-        if (scriptServiceObj == null || !(scriptServiceObj instanceof ScriptService))
-        {
+        if (!(scriptServiceObj instanceof ScriptService)) {
             throw new AlfrescoRuntimeException(
                     "ExecuteScriptJob data must contain valid script service");
         }
 
         // Get the script location from the job map
         Object scriptLocationObj = jobData.get(PARAM_SCRIPT_LOCATION);
-        if (scriptLocationObj == null || !(scriptLocationObj instanceof ScriptLocation))
-        {
+        if (!(scriptLocationObj instanceof ScriptLocation)) {
             throw new AlfrescoRuntimeException(
                     "ExecuteScriptJob data must contain valid script location");
         }
 
         // Get the authentication component from the job map
         Object authenticationComponentObj = jobData.get(PARAM_AUTHENTICATION_COMPONENT);
-        if (authenticationComponentObj == null || !(authenticationComponentObj instanceof AuthenticationComponent))
-        {
+        if (!(authenticationComponentObj instanceof AuthenticationComponent)) {
             throw new AlfrescoRuntimeException(
                     "ExecuteScriptJob data must contain valid authentication component");
         }

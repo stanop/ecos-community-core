@@ -91,7 +91,7 @@
                 "inputMask": "",
                 "wysiwyg": false,
                 "editor": "",
-                "id": "ecpsjrm"
+                "id": "edi5045"
               }
             ],
             "width": 6,
@@ -110,6 +110,7 @@
             "lg": 0,
             "xl": 0,
             "classes": "",
+            "index": 0,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -150,7 +151,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eoshomw"
+            "id": "etr0gha"
           },
           {
             "components": [
@@ -232,7 +233,7 @@
                 "inputMask": "",
                 "wysiwyg": false,
                 "editor": "",
-                "id": "ec6gp8r"
+                "id": "eq8fq4f"
               }
             ],
             "width": 6,
@@ -251,6 +252,7 @@
             "lg": 0,
             "xl": 0,
             "classes": "",
+            "index": 1,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -291,7 +293,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "esqk20p"
+            "id": "eo2lzfm"
           }
         ],
         "mask": false,
@@ -346,9 +348,10 @@
           "custom": "",
           "customPrivate": false
         },
+        "inlineColumns": false,
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "eg1a3pd"
+        "id": "ey2viar"
       },
       {
         "conditional": {
@@ -403,7 +406,7 @@
         "inputType": "horizontalLine",
         "useNegativeIndents": true,
         "addVerticalIndents": false,
-        "id": "eqfi0wz"
+        "id": "eqrjh4v"
       },
       {
         "label": "Columns",
@@ -503,7 +506,7 @@
                 "fuseOptions": {},
                 "customOptions": {},
                 "refreshEventName": "",
-                "id": "ervviip"
+                "id": "ebyocyw"
               }
             ],
             "width": 6,
@@ -522,6 +525,7 @@
             "lg": 0,
             "xl": 0,
             "classes": "",
+            "index": 0,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -562,7 +566,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "esm4qz"
+            "id": "ejqpxwn"
           },
           {
             "components": [
@@ -631,7 +635,7 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "id": "ew7sw1m"
+                "id": "ew81r1p"
               }
             ],
             "width": 6,
@@ -650,6 +654,7 @@
             "lg": 0,
             "xl": 0,
             "classes": "",
+            "index": 1,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -690,7 +695,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e13bw33a"
+            "id": "e7z277a"
           },
           {
             "xs": 0,
@@ -771,9 +776,10 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "id": "edq0xm4"
+                "id": "etz28g"
               }
             ],
+            "index": 2,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -814,7 +820,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "edi9ml"
+            "id": "eoknw6a"
           },
           {
             "xs": 0,
@@ -896,9 +902,10 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
-                "id": "egtq05h"
+                "id": "e9dxuhj"
               }
             ],
+            "index": 3,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -939,7 +946,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "etz22z"
+            "id": "e3zlwn"
           },
           {
             "xs": 0,
@@ -963,7 +970,7 @@
                 "dataSrc": "custom",
                 "data": {
                   "url": "/citeck/ecos/records/query",
-                  "custom": "for (var i in data.unit.records) {\n    values.push({label: data.unit.records[i].title,value: data.unit.records[i].id})\n}",
+                  "custom": "for (var i in data.unit.records) {\n    values.push({label: data.unit.records[i].unitShortName,value: data.unit.records[i].id})\n}",
                   "values": [],
                   "json": "",
                   "resource": ""
@@ -1038,9 +1045,10 @@
                 "fuseOptions": {},
                 "customOptions": {},
                 "refreshEventName": "",
-                "id": "e1npr2o"
+                "id": "eddisaw"
               }
             ],
+            "index": 4,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -1081,7 +1089,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "egpanv5"
+            "id": "ex4q9lc"
           },
           {
             "xs": 0,
@@ -1180,9 +1188,10 @@
                 "searchThreshold": 0.3,
                 "fuseOptions": {},
                 "customOptions": {},
-                "id": "e90posa"
+                "id": "eo4w1wb"
               }
             ],
+            "index": 5,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -1223,7 +1232,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "esim6vr"
+            "id": "ebcxadhh"
           }
         ],
         "mask": false,
@@ -1278,9 +1287,10 @@
           "custom": "",
           "customPrivate": false
         },
+        "inlineColumns": false,
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "eydsrmls"
+        "id": "e7z87dx"
       },
       {
         "label": "Columns",
@@ -1374,7 +1384,7 @@
                 "mask": false,
                 "inputType": "asyncData",
                 "executionCondition": "",
-                "id": "eha0u7g"
+                "id": "ei8uia"
               },
               {
                 "label": "unit",
@@ -1382,7 +1392,8 @@
                   "type": "recordsQuery",
                   "recordsQuery": {
                     "attributes": {
-                      "title": "cm:title"
+                      "title": "cm:title",
+                      "unitShortName": "pas:unitShortName"
                     },
                     "query": "var value = {\r\n  query: 'TYPE:\"pas:unit\"',\r\n  language: 'fts-alfresco'\r\n}",
                     "isSingle": false
@@ -1462,7 +1473,7 @@
                 "inputType": "asyncData",
                 "eventName": "",
                 "executionCondition": "",
-                "id": "e4bfdn"
+                "id": "ed6f7nm"
               }
             ],
             "width": 3,
@@ -1475,6 +1486,13 @@
             "key": "column1",
             "tableView": true,
             "label": "",
+            "xs": 0,
+            "sm": 12,
+            "md": 6,
+            "lg": 0,
+            "xl": 0,
+            "classes": "",
+            "index": 0,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -1515,7 +1533,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "exzbyeo"
+            "id": "ectra6v"
           },
           {
             "width": 3,
@@ -1589,9 +1607,10 @@
                 "disableOnInvalid": false,
                 "theme": "default",
                 "removeIndents": false,
-                "id": "e0dmqmd"
+                "id": "eewp7u5"
               }
             ],
+            "index": 1,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -1632,7 +1651,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e3z3cw"
+            "id": "e37zz3b"
           },
           {
             "components": [
@@ -1703,7 +1722,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "removeIndents": false,
-                "id": "ejcw6oh"
+                "id": "e7naf9o"
               }
             ],
             "width": 3,
@@ -1716,6 +1735,7 @@
             "key": "column3",
             "tableView": true,
             "label": "",
+            "index": 2,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -1756,7 +1776,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e5t4vbc"
+            "id": "ev1by3k"
           },
           {
             "width": 3,
@@ -1770,6 +1790,7 @@
             "push": 0,
             "pull": 0,
             "components": [],
+            "index": 3,
             "placeholder": "",
             "prefix": "",
             "customClass": "",
@@ -1810,7 +1831,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e17r9xd"
+            "id": "eni9th8"
           }
         ],
         "autoAdjust": true,
@@ -1859,8 +1880,9 @@
           "when": null,
           "eq": ""
         },
+        "inlineColumns": false,
         "hideOnChildrenHidden": false,
-        "id": "eqty86y"
+        "id": "eavyz78"
       }
     ]
   },

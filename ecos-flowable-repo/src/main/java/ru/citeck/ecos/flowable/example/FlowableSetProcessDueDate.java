@@ -15,7 +15,6 @@ import java.util.Date;
  */
 public class FlowableSetProcessDueDate implements ExecutionListener {
 
-    private DueDateHelper helper = new DueDateHelper();
     private Expression calendar;
     private Expression variable;
     private Expression dueDate;

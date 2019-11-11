@@ -56,11 +56,10 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
         InputStream newIS = new ByteArrayInputStream(os.toByteArray());
 
         try {
-			os.close();
-		} catch (IOException e) {
-			Logger.getLogger(ReportParametersFilter.class).error(e.getMessage(), e);
-		}
-
+            os.close();
+        } catch (IOException e) {
+            Logger.getLogger(ReportParametersFilter.class).error(e.getMessage(), e);
+        }
         DataBundle copyDB = new DataBundle(copyIS, model);
 
         ContentReader contentReader = helper.getContentReader(copyDB);
@@ -73,33 +72,33 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
     }
 
     private HashMap<String, Object> insertReportParams(Object criteriaObj, HashMap<String, Object> model) {
-    	JSONObject criteriaJSON = null;
+        JSONObject criteriaJSON = null;
 
-    	if (criteriaObj instanceof String) {
+        if (criteriaObj instanceof String) {
             try {
-            	criteriaJSON = new JSONObject((String) criteriaObj);
+                criteriaJSON = new JSONObject((String) criteriaObj);
             } catch (JSONException e) {
             }
         } else if (criteriaObj instanceof JSONObject) {
-        	criteriaJSON = (JSONObject) criteriaObj;
+            criteriaJSON = (JSONObject) criteriaObj;
         }
 
-    	if (criteriaJSON != null) {
-			Iterator criteriaKeys = criteriaJSON.sortedKeys();
-	        while (criteriaKeys.hasNext()) {
-	            String name = (String) criteriaKeys.next();
-	            if (name.startsWith("report")) {
-	                try {
-	                	if (name.equals("reportFilename"))
-	                		model.put(ProcessorConstants.KEY_FILENAME, simpleJSON2Java(criteriaJSON.get(name)));
-	                	model.put(name, simpleJSON2Java(criteriaJSON.get(name)));
-	                } catch (JSONException e) {
-	                }
-	            }
-	        }
-    	}
+        if (criteriaJSON != null) {
+            Iterator criteriaKeys = criteriaJSON.sortedKeys();
+            while (criteriaKeys.hasNext()) {
+                String name = (String) criteriaKeys.next();
+                if (name.startsWith("report")) {
+                    try {
+                        if (name.equals("reportFilename"))
+                            model.put(ProcessorConstants.KEY_FILENAME, simpleJSON2Java(criteriaJSON.get(name)));
+                        model.put(name, simpleJSON2Java(criteriaJSON.get(name)));
+                    } catch (JSONException e) {
+                    }
+                }
+            }
+        }
 
-    	return model;
+        return model;
     }
 
     private Object simpleJSON2Java(Object o) {
@@ -130,22 +129,23 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
     	        }
 
     	        return map;
-    		} else
+    		} else{
     			return o;
     	}
+}
 
-    	return null;
+        return null;
     }
 
     private ByteArrayOutputStream copyInputStream(InputStream is) {
-    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    	try {
-    		IOUtils.copy(is, baos);
-    	} catch (IOException e) {
-    		Logger.getLogger(ReportParametersFilter.class).error("Cannot copy input stream", e);
-    	}
+        try {
+            IOUtils.copy(is, baos);
+        } catch (IOException e) {
+            Logger.getLogger(ReportParametersFilter.class).error("Cannot copy input stream", e);
+        }
 
-    	return baos;
+        return baos;
     }
 }

@@ -29,13 +29,15 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.CONTAINS;
+import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.EQ;
 
 @Component
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
     private static final Log logger = LogFactory.getLog(PredicateToFtsAlfrescoConverter.class);
+    public static final String COMMA_DELIMER = ",";
 
     private DictUtils dictUtils;
     private SearchService searchService;
@@ -106,7 +108,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                 case "PARENT":
                 case "_parent":
 
-                    query.parent(new NodeRef(value.toString()));
+                    query.parent(new NodeRef(toValidNodeRef(valueStr)));
 
                     break;
                 case "TYPE":
@@ -145,6 +147,22 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                         break;
                     }
 
+                    // accepting multiple values by comma
+                    if (valueStr.contains(COMMA_DELIMER) &&
+                            (valuePred.getType().equals(EQ) || valuePred.getType().equals(CONTAINS))) {
+                        String[] values = valueStr.split(COMMA_DELIMER);
+                        ComposedPredicate orPredicate = new OrPredicate();
+                        for (String s : values) {
+                            orPredicate.addPredicate(new ValuePredicate(valuePred.getAttribute(), valuePred.getType(), s));
+                        }
+                        processPredicate(orPredicate, query);
+                        break;
+                    }
+
+                    if (isNodeRefAtt(attDef)) {
+                        valueStr = toValidNodeRef(valueStr);
+                    }
+
                     switch (valuePred.getType()) {
                         case EQ:
                             query.exact(field, valueStr);
@@ -161,13 +179,17 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                             if (attDef instanceof PropertyDefinition) {
 
                                 DataTypeDefinition dataType = ((PropertyDefinition) attDef).getDataType();
-                                if (dataType != null && (DataTypeDefinition.TEXT.equals(dataType.getName()) ||
-                                                         DataTypeDefinition.MLTEXT.equals(dataType.getName())) ) {
+                                QName typeName = dataType != null ? dataType.getName() : null;
+
+                                if (DataTypeDefinition.TEXT.equals(typeName) ||
+                                    DataTypeDefinition.MLTEXT.equals(typeName)) {
+
                                     query.value(field, "*" + valueStr + "*");
+
                                 } else {
+
                                     query.value(field, valueStr);
                                 }
-
                             } else if (attDef instanceof AssociationDefinition) {
 
                                 if (NodeRef.isNodeRef(valueStr)) {
@@ -277,6 +299,36 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
         } else {
             throw new RuntimeException("Unknown predicate type: " + predicate);
         }
+    }
+
+    private boolean isNodeRefAtt(ClassAttributeDefinition attDef) {
+
+        if (attDef == null) {
+            return false;
+        }
+
+        if (attDef instanceof PropertyDefinition) {
+            PropertyDefinition propDef = (PropertyDefinition) attDef;
+            DataTypeDefinition dataType = propDef.getDataType();
+            if (dataType != null) {
+                return DataTypeDefinition.NODE_REF.equals(dataType.getName());
+            } else {
+                return false;
+            }
+        } else if (attDef instanceof AssociationDefinition) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private String toValidNodeRef(String value) {
+
+        int idx = value.lastIndexOf("@workspace://");
+        if (idx > -1 && idx < value.length() - 1) {
+            value = value.substring(idx + 1);
+        }
+        return value;
     }
 
     private String convertTime(String time) {

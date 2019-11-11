@@ -14,12 +14,25 @@ public class EcosU18NUtils {
             Locale.ENGLISH
     };
 
+    public static MLText getMLText(String key, Object... args) {
+
+        MLText mlText = getMLText(key);
+
+        if (args == null || args.length == 0) {
+            return mlText;
+        }
+
+        MLText result = new MLText();
+        mlText.forEach((k, v) -> result.put(k, String.format(v, args)));
+        return result;
+    }
+
     public static MLText getMLText(String key) {
 
         MLText result = new MLText();
 
         for (Locale locale : LOCALES) {
-            String msg = I18NUtil.getMessage(key, Locale.ENGLISH);
+            String msg = I18NUtil.getMessage(key, locale);
             if (msg != null) {
                 result.put(locale, msg);
             }
