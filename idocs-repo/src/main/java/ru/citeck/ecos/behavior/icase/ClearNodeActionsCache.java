@@ -5,7 +5,7 @@ import org.alfresco.repo.policy.Behaviour;
 import org.alfresco.service.cmr.repository.AssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.citeck.ecos.action.NodeActionsService;
+import ru.citeck.ecos.action.node.NodeActionsService;
 import ru.citeck.ecos.behavior.base.AbstractBehaviour;
 import ru.citeck.ecos.behavior.base.PolicyMethod;
 import ru.citeck.ecos.model.EventModel;

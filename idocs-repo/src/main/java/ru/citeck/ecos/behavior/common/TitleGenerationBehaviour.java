@@ -84,15 +84,8 @@ public class TitleGenerationBehaviour implements NodeServicePolicies.OnUpdatePro
             return;
         }
 
-        Map<NodeRef, Date> updateTime = TransactionalResourceHelper.getMap(TITLE_UPDATE_TIME_KEY);
-        Date updated = updateTime.get(nodeRef);
-        Date modified = (Date) nodeService.getProperty(nodeRef, ContentModel.PROP_MODIFIED);
-
-        if (modified == null || updated == null || modified.after(updated)) {
-            setProperty(nodeRef, ContentModel.PROP_TITLE, titleMLTemplate);
-            setProperty(nodeRef, ContentModel.PROP_DESCRIPTION, descriptionMLTemplate);
-            updateTime.put(nodeRef, modified);
-        }
+        setProperty(nodeRef, ContentModel.PROP_TITLE, titleMLTemplate);
+        setProperty(nodeRef, ContentModel.PROP_DESCRIPTION, descriptionMLTemplate);
     }
 
     private MLText getProcessedMLText(final NodeRef nodeRef, final Map<Locale, String> mlText) {

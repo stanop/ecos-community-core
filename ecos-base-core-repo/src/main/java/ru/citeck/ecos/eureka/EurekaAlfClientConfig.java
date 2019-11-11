@@ -3,22 +3,24 @@ package ru.citeck.ecos.eureka;
 import com.netflix.discovery.DefaultEurekaClientConfig;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.shared.transport.EurekaTransportConfig;
-import ru.citeck.ecos.records2.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-public class EurekaAlfClientConfig implements EurekaClientConfig {
+public class EurekaAlfClientConfig extends AbstractEurekaConfig implements EurekaClientConfig {
 
-    private static final String CONFIG_PREFIX = "ecos.eureka.";
+    private static final String ENV_PROP_SHOULD_REGISTER = "ECOS_EUREKA_REGISTRATION_ENABLED";
 
     private EurekaClientConfig defaultConfig = new DefaultEurekaClientConfig();
 
-    private Properties globalProperties;
-
     public EurekaAlfClientConfig(Properties globalProperties) {
-        this.globalProperties = globalProperties;
+        super(globalProperties);
+    }
+
+    boolean isEurekaEnabled() {
+        return getBoolParam("enabled", () -> true);
     }
 
     @Override
@@ -113,7 +115,11 @@ public class EurekaAlfClientConfig implements EurekaClientConfig {
 
     @Override
     public boolean shouldRegisterWithEureka() {
-        return false;
+        String shouldRegisterFromEnv = System.getenv(ENV_PROP_SHOULD_REGISTER);
+        if (StringUtils.isNotBlank(shouldRegisterFromEnv)) {
+            return Boolean.TRUE.toString().equals(shouldRegisterFromEnv);
+        }
+        return getBoolParam("registration.enabled", defaultConfig::shouldRegisterWithEureka);
     }
 
     @Override
@@ -154,19 +160,30 @@ public class EurekaAlfClientConfig implements EurekaClientConfig {
     @Override
     public List<String> getEurekaServerServiceUrls(String myZone) {
 
-        String configKey = CONFIG_PREFIX + "serviceUrl." + myZone;
-
-        String serviceUrls = globalProperties.getProperty(configKey, null);
-        if (serviceUrls == null || serviceUrls.isEmpty()) {
-            configKey = CONFIG_PREFIX + "serviceUrl.default";
-            serviceUrls = globalProperties.getProperty(configKey, null);
+        String serviceUrls = System.getenv("EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE");
+        String password = System.getenv("ECOS_REGISTRY_PASSWORD");
+        if (password == null || password.isEmpty()) {
+            password = System.getenv("JHIPSTER_REGISTRY_PASSWORD");
         }
 
-        if (serviceUrls != null) {
-            return Arrays.asList(serviceUrls.split(DefaultEurekaClientConfig.URL_SEPARATOR));
+        if (StringUtils.isBlank(serviceUrls)) {
+            serviceUrls = getStrParam("serviceUrl." + myZone, () ->
+                    getStrParam("serviceUrl.default", () -> null)
+            );
+            if (serviceUrls == null) {
+                Boolean isDevEnv = getGlobalBoolParam("ecos.environment.dev", () -> false);
+                if (isDevEnv) {
+                    serviceUrls = "http://admin:admin@127.0.0.1:8761/eureka";
+                } else {
+                    serviceUrls = "http://admin:admin@jhipster-registry:8761/eureka";
+                }
+            }
         } else {
-            return defaultConfig.getEurekaServerServiceUrls(myZone);
+            serviceUrls = serviceUrls.replaceAll("\\$?\\$\\{ecos\\.registry\\.password}", password);
+            serviceUrls = serviceUrls.replaceAll("\\$?\\$\\{jhipster\\.registry\\.password}", password);
         }
+
+        return Arrays.asList(serviceUrls.split(DefaultEurekaClientConfig.URL_SEPARATOR));
     }
 
     @Override
@@ -231,11 +248,7 @@ public class EurekaAlfClientConfig implements EurekaClientConfig {
 
     @Override
     public String getDecoderName() {
-        String value = globalProperties.getProperty(CONFIG_PREFIX + "decoderName");
-        if (StringUtils.isNotBlank(value)) {
-            return value;
-        }
-        return defaultConfig.getDecoderName();
+        return getStrParam("decoderName", defaultConfig::getDecoderName);
     }
 
     @Override

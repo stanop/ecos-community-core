@@ -37,31 +37,30 @@ import ru.citeck.ecos.model.ICaseModel;
  * This action associates case element with case.
  * It can be added to case child folder, so that any documents added to this folder, 
  *  are automatically associated with case.
- * 
+ *
  * @author Sergey Tiunov
  *
  */
 public class AddToCaseActionExecuter extends ActionExecuterAbstractBase {
 
-	private NodeService nodeService;
-	private RuleService ruleService;
-	private CaseElementService caseElementService;
+    private NodeService nodeService;
+    private  CaseElementService caseElementService;
 	private DictionaryService dictionaryService;
-	
+
 	@Override
 	protected void executeImpl(Action action, NodeRef documentNode) {
-		
+
 		QName documentType = nodeService.getType(documentNode);
 		if(!dictionaryService.isSubClass(documentType, ContentModel.TYPE_CONTENT)) {
 			return;
 		}
-		
+
 		NodeRef caseFolder = nodeService.getPrimaryParent(documentNode).getParentRef();
 		QName caseFolderType = nodeService.getType(caseFolder);
 		if(!dictionaryService.isSubClass(caseFolderType, ContentModel.TYPE_FOLDER)) {
 			return;
 		}
-		
+
 		NodeRef caseNode = nodeService.getPrimaryParent(caseFolder).getParentRef();
 		String caseFolderName = (String) nodeService.getProperty(caseFolder, ContentModel.PROP_NAME);
 		NodeRef elementConfig = CaseUtils.getConfigByPropertyValue(caseNode, ICaseModel.PROP_FOLDER_NAME, caseFolderName, nodeService, caseElementService);
@@ -79,29 +78,30 @@ public class AddToCaseActionExecuter extends ActionExecuterAbstractBase {
 			nodeService.setType(documentNode, elementType);
 		}
 
-		String elementConfigName = (String) nodeService.getProperty(elementConfig, ContentModel.PROP_NAME);
-		caseElementService.addElement(documentNode, caseNode, elementConfigName);
-	}
+        String elementConfigName = (String) nodeService.getProperty(elementConfig, ContentModel.PROP_NAME);
+        caseElementService.addElement(documentNode, caseNode, elementConfigName);
+    }
 
-	@Override
-	protected void addParameterDefinitions(List<ParameterDefinition> paramList) {
-		// no parameters
-	}
+    @Override
+    protected void addParameterDefinitions(List<ParameterDefinition> paramList) {
+        // no parameters
+    }
 
-	public void setNodeService(NodeService nodeService) {
-		this.nodeService = nodeService;
-	}
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
 
-	public void setRuleService(RuleService ruleService) {
-		this.ruleService = ruleService;
-	}
+    @Deprecated
+    public void setRuleService(RuleService ruleService) {
+        // not used
+    }
 
-	public void setCaseElementService(CaseElementService caseElementService) {
-		this.caseElementService = caseElementService;
-	}
+    public void setCaseElementService(CaseElementService caseElementService) {
+        this.caseElementService = caseElementService;
+    }
 
-	public void setDictionaryService(DictionaryService dictionaryService) {
-		this.dictionaryService = dictionaryService;
-	}
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
+    }
 
 }

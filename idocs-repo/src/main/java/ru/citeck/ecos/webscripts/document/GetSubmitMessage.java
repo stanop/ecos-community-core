@@ -23,7 +23,7 @@ public class GetSubmitMessage extends AbstractWebScript {
     private DictionaryService dictionaryService;
     private MappingRegistry<String, String> documentToMessage;
 
-    public static String NODE_REF = "nodeRef";
+    public final static String NODE_REF = "nodeRef";
 
     @Override
     public void execute(WebScriptRequest req, WebScriptResponse res) {

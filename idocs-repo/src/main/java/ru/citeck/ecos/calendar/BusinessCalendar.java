@@ -71,25 +71,11 @@ public class BusinessCalendar extends GregorianCalendar {
 	{
 		if(this.get(DAY_OF_WEEK)==1 || this.get(DAY_OF_WEEK)==7)
 		{
-			if(!mapContainsDate(extraWorkingDays, this))
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
+			return mapContainsDate(extraWorkingDays, this);
 		}
 		else
 		{
-			if(mapContainsDate(extraDayOff, this))
-			{
-				return false;
-			}
-			else
-			{
-				return true;
-			}
+			return !mapContainsDate(extraDayOff, this);
 		}
 	}
 

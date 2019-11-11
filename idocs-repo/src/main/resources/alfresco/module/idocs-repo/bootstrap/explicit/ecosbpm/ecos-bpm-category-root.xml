@@ -13,6 +13,18 @@
                 <view:mlvalue view:locale="ru_RU">Ecos BPM Category root</view:mlvalue>
             </cm:title>
         </view:properties>
+        <cm:subcategories>
+            <cm:category>
+                <view:properties>
+                    <sys:node-uuid>cat-doc-kind-ecos-bpm-default</sys:node-uuid>
+                    <cm:name>Default</cm:name>
+                    <cm:title>
+                        <view:mlvalue view:locale="en_US">Default</view:mlvalue>
+                        <view:mlvalue view:locale="ru_RU">По умолчанию</view:mlvalue>
+                    </cm:title>
+                </view:properties>
+            </cm:category>
+        </cm:subcategories>
     </cm:category>
 
 </view:view>
