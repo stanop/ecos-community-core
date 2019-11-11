@@ -431,8 +431,8 @@
     <bean id="webscript.ru.citeck.people.upcoming-birthdays.get"
           class="ru.citeck.ecos.webscripts.people.UpcomingBirthdaysGet"
           parent="webscript">
-        <property name="searchService" ref="searchService" />
-        <property name="nodeService" ref="nodeService" />
+        <property name="nodeService" ref="nodeService"/>
+        <property name="birthdaysUtils" ref="birthdaysUtils"/>
     </bean>
 
     <bean id="webscript.ru.citeck.cardlets.cardlets.get"

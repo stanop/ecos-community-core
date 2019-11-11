@@ -18,7 +18,7 @@
       <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${wfcf_confirmers}" activiti:elementVariable="wfcf_confirmer">
         <completionCondition>${(wfcf_terminateOnReject &amp;&amp; wfcf_notAllConfirmed) || (wfcf_terminateOnPartialConfirms &amp;&amp; (wfcf_confirmCounts == wfcf_partialConfirmsCount))}</completionCondition>
       </multiInstanceLoopCharacteristics>
-      <userTask id="confirm" name="Confirm Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfcf:confirmTask">
+      <userTask id="confirm" name="Confirm Task" activiti:dueDate="${dueDate.get(document, bpm_workflowDueDate, 'confirm', wfcf_confirmer)}" activiti:formKey="wfcf:confirmTask">
         <extensionElements>
           <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
             <activiti:field name="authority">
@@ -94,7 +94,7 @@
           </activiti:taskListener>
         </extensionElements>
       </userTask>
-      <userTask id="correct" name="Correct Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfcf:correctTask">
+      <userTask id="correct" name="Correct Task" activiti:dueDate="${dueDate.get(document, bpm_workflowDueDate, 'correct', wfcf_corrector)}" activiti:formKey="wfcf:correctTask">
         <extensionElements>
           <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
             <activiti:field name="authority">

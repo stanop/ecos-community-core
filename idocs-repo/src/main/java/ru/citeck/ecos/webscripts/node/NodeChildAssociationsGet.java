@@ -55,7 +55,7 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
         String nodeRefUuid = req.getParameter(NODE_REF);
         String assocType = req.getParameter(ASSOC_TYPE);
         String childNamesValue = req.getParameter(CHILD_NAMES);
-        String childNames[] = new String[]{};
+        String[] childNames = new String[]{};
         if (!StringUtils.isEmpty(childNamesValue)) {
             childNames = childNamesValue.split(DELIMITER);
         }
@@ -82,7 +82,7 @@ public class NodeChildAssociationsGet extends DeclarativeWebScript {
      * @return List of child associations data transfer object
      */
     private List<ChildAssociationDto> buildChildAssociations(NodeRef topNodeRef, List<ChildAssociationRef> associations,
-                                                             String childNames[]) {
+                                                             String[] childNames) {
         List<ChildAssociationDto> childAssociationDtos = new ArrayList<>(associations.size());
         Set<QName> childQNames = parseQNames(childNames);
         /** Build associations */
