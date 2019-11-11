@@ -71,6 +71,14 @@ public class JournalServiceJS extends AlfrescoScopableProcessorExtension {
         return impl.getRecordsCount(journal);
     }
 
+    public String getPredicate(String journal) {
+        JournalType type = impl.getJournalType(journal);
+        if (type == null) {
+            return "";
+        }
+        return type.getPredicate();
+    }
+
     public String getCreateVariantsJson(String journal) {
         JournalType type = impl.getJournalType(journal);
         if (type == null) {

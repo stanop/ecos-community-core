@@ -4,7 +4,7 @@
     <extensionElements>
       <activiti:executionListener event="start" class="ru.citeck.ecos.workflow.listeners.DocumentSetListener"></activiti:executionListener>
     </extensionElements>
-    <userTask id="usertask1" name="Correction Task" activiti:dueDate="${bpm_workflowDueDate}" activiti:formKey="wfcr:correctionTask">
+    <userTask id="usertask1" name="Correction Task" activiti:dueDate="${dueDate.get(document, bpm_workflowDueDate, '', wfcr_corrector)}" activiti:formKey="wfcr:correctionTask">
       <extensionElements>
         <activiti:taskListener event="create" class="ru.citeck.ecos.workflow.listeners.AssignTaskToAuthority">
           <activiti:field name="authority">

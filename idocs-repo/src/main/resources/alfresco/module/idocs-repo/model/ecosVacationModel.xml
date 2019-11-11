@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<model name="ecosvm:ecosVacationModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <description>Ecos Vacation Model</description>
+    <author>Citeck</author>
+    <version>1.0</version>
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <import uri="http://www.alfresco.org/model/datalist/1.0" prefix="dl"/>
+    </imports>
+
+    <namespaces>
+        <namespace uri="http://www.citeck.ru/model/content/ecosvm/1.0" prefix="ecosvm"/>
+    </namespaces>
+
+    <aspects>
+        <aspect name="ecosvm:vacationSchedule">
+            <title>Vacation schedule</title>
+            <properties>
+                <property name="ecosvm:isScheduledVacation">
+                    <title>Is scheduled vacation</title>
+                    <type>d:boolean</type>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+
+</model>

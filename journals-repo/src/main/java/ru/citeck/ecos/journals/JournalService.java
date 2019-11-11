@@ -41,6 +41,8 @@ public interface JournalService {
 
     JournalType getJournalType(String id);
 
+    JournalType getJournalType(NodeRef nodeRef);
+
     JournalType needJournalType(String journalId);
 
     Optional<JournalType> getJournalForType(QName typeName);
