@@ -549,3 +549,16 @@
     margin-top: 10px;
     width: 100%;
 }
+
+.alfresco-header__language-switcher {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0 10px;
+    height: 40px;
+}
+
+.alfresco-header__language-switcher:hover {
+    background-color: #88a5c3;
+}

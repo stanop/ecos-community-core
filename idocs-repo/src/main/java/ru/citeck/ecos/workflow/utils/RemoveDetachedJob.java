@@ -48,7 +48,7 @@ public class RemoveDetachedJob extends AbstractLockedJob
 				ResultSet rs = null;
 				DateTime dateTime = new DateTime().minusDays(minusDayz);
 				
-				SimpleDateFormat dt1 = new SimpleDateFormat("YYYY-MM-dd");
+				SimpleDateFormat dt1 = new SimpleDateFormat("yyyy-MM-dd");
 		    	String query = String.format("PATH:\"/cm:attachmentsRoot/*\" AND @cm\\:created:[MIN TO \"%s\"]", dt1.format(dateTime.toDate()));
 				
 				rs = searchService.query(StoreRef.STORE_REF_WORKSPACE_SPACESSTORE, SearchService.LANGUAGE_LUCENE, query);

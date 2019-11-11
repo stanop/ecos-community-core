@@ -1,8 +1,8 @@
 {
   "id": "93061f4c-cd59-4d37-bf74-0b4801bb8332",
   "title": "Esign Task form",
-  "description": "",
-  "formKey": "alf_ctrwf:esignTask",
+  "description": "Remove '_disabled' postfix after form will be fixed. Now form is broken, signing not performed.",
+  "formKey": "alf_ctrwf:esignTask_disabled",
   "formMode": null,
   "customModule": null,
   "definition": {
@@ -600,7 +600,7 @@
       "Reject": "Reject"
     },
     "ru": {
-      "Comment": "Комментировать",
+      "Comment": "Комментарий",
       "Complete": "Подписать",
       "Rework": "На доработку",
       "Reject": "Аннулировать"

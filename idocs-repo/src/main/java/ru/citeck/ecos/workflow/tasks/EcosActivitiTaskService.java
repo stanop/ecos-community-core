@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.model.CiteckWorkflowModel;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.utils.WorkflowUtils;
 
@@ -126,6 +127,9 @@ public class EcosActivitiTaskService implements EngineTaskService {
             taskVariables.put("bpm_comment", comment);
         }
 
+        String lastCommentProp = workflowUtils.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
+        taskVariables.put(lastCommentProp, comment);
+
         //TODO: transient variables should be saved in execution
         taskVariables.putAll(transientVariables);
         taskService.complete(taskId, taskVariables, true);
@@ -168,7 +172,10 @@ public class EcosActivitiTaskService implements EngineTaskService {
 
     @Override
     public TaskInfo getTaskInfo(String taskId) {
-        return new ActivitiTaskInfo(taskId);
+        if (taskExists(taskId)) {
+            return new ActivitiTaskInfo(taskId);
+        }
+        return null;
     }
 
     private String getOutcomeProperty(String taskId) {
@@ -215,6 +222,12 @@ public class EcosActivitiTaskService implements EngineTaskService {
         public String getTitle() {
             WorkflowTask task = workflowService.getTaskById(ENGINE_PREFIX + getId());
             return workflowUtils.getTaskTitle(task);
+        }
+
+        @Override
+        public String getDescription() {
+            WorkflowTask task = workflowService.getTaskById(ENGINE_PREFIX + getId());
+            return task.getDescription();
         }
 
         @Override

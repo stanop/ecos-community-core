@@ -7,6 +7,7 @@ import org.springframework.extensions.webscripts.AbstractWebScript;
 import org.springframework.extensions.webscripts.Status;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.extensions.webscripts.WebScriptResponse;
+import ru.citeck.ecos.workflow.EcosBpmAppModelUtils;
 
 public class DeployBpmProcessPost extends AbstractWebScript {
 
@@ -20,7 +21,7 @@ public class DeployBpmProcessPost extends AbstractWebScript {
         String nodeRefStr = req.getParameter(PARAM_NODE_REF);
         ParameterCheck.mandatoryString(PARAM_NODE_REF, nodeRefStr);
 
-        ecosBpmAppModelUtils.deployProcessModel(new NodeRef(nodeRefStr));
+        ecosBpmAppModelUtils.deployProcess(new NodeRef(nodeRefStr));
 
         res.setStatus(Status.STATUS_OK);
     }

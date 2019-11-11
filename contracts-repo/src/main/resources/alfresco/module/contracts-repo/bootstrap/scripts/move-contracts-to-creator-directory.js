@@ -5,6 +5,10 @@ if(!document.parent.isContainer) return;
 
 var ecosConfigService = services.get("ecosConfigService");
 var moveToCreatorDirectory = ecosConfigService.getParamValue("contractsFolderPermissionConfig") == "true";
+var currentName = document.properties['cm:name'];
+
+document.properties['cm:name'] = services.get('nodeUtils').getValidChildName(document.parent.nodeRef, currentName);
+document.save();
 
 var moduleService = services.get("moduleService");
 var ecosEntInstalled = (moduleService.getModule("ecos-enterprise-repo"));

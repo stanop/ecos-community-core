@@ -221,17 +221,6 @@ public class AlfNodesRecordsDAO extends LocalRecordsDAO
                 String name = (String) props.get(ContentModel.PROP_NAME);
 
                 if (StringUtils.isBlank(name)) {
-
-                    JsonNode contentProp = contentProps.get(ContentModel.PROP_CONTENT);
-                    if (contentProp != null && contentProp.isObject()) {
-                        JsonNode filenameProp = contentProp.path("filename");
-                        if (filenameProp.isTextual()) {
-                            name = filenameProp.asText();
-                        }
-                    }
-                }
-
-                if (StringUtils.isBlank(name)) {
                     name = GUID.generate();
                 }
 

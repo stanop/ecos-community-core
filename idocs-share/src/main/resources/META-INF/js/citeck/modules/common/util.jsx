@@ -1,3 +1,6 @@
+export const COOKIE_KEY_LOCALE = "alf_share_locale";
+export const COOKIE_KEY_LOCALE_MAX_AGE = 30 * 24 * 60 * 60;
+
 export function t(messageId, multipleValues, scope = 'global') {
     // https://dev.alfresco.com/resource/docs/aikau-jsdoc/Core.js.html
     if (!messageId) {
@@ -12,6 +15,11 @@ export function t(messageId, multipleValues, scope = 'global') {
 }
 
 export function getCurrentLocale() {
+    const manualLocale = getCookie(COOKIE_KEY_LOCALE);
+    if (manualLocale) {
+        return manualLocale;
+    }
+
     if (!window.navigator) {
         return "en";
     }
@@ -30,5 +38,35 @@ export function generateSearchTerm(terms, hiddenSearchTerms) {
     let searchTerm = hiddenSearchTerms ? "(" + terms + ") " + hiddenSearchTerms : terms;
 
     return encodeURIComponent(searchTerm);
+}
+
+export function getCookie(name) {
+    let matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+export function setCookie(name, value, options = {}) {
+    options = {
+        path: '/',
+        ...options
+    };
+
+    if (options.expires && options.expires.toUTCString) {
+        options.expires = options.expires.toUTCString();
+    }
+
+    let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+    for (let optionKey in options) {
+        updatedCookie += "; " + optionKey;
+        let optionValue = options[optionKey];
+        if (optionValue !== true) {
+            updatedCookie += "=" + optionValue;
+        }
+    }
+
+    document.cookie = updatedCookie;
 }
 
