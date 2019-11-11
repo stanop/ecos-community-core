@@ -107,43 +107,39 @@ public class ReportParametersFilter extends AbstractDataBundleLine {
     }
 
     private Object simpleJSON2Java(Object o) {
-        if (o == null) {
-            return null;
-        }
+        if (o != null) {
+            if (o instanceof JSONArray) {
+                JSONArray arr = (JSONArray) o;
+                List<Object> list = new ArrayList<Object>();
 
-        if (o instanceof JSONArray) {
-            JSONArray arr = (JSONArray) o;
-            List<Object> list = new ArrayList<>();
-
-            for (int i = 0; i < arr.length(); i++) {
-                try {
-                    list.add(simpleJSON2Java(arr.get(i)));
-                } catch (JSONException ignored) {
-                    // empty
+                for (int i = 0; i < arr.length(); i++) {
+                    try {
+                        list.add(simpleJSON2Java(arr.get(i)));
+                    } catch (JSONException e) {
+                    }
                 }
-            }
 
-            return list;
-        }
+                return list;
+            } else if (o instanceof JSONObject) {
+                JSONObject obj = (JSONObject) o;
+                Map<String, Object> map = new HashMap<String, Object>();
+                Iterator keys = obj.sortedKeys();
 
-        if (o instanceof JSONObject) {
-            JSONObject obj = (JSONObject) o;
-            Map<String, Object> map = new HashMap<>();
-            Iterator keys = obj.sortedKeys();
-
-            while (keys.hasNext()) {
-                String name = (String) keys.next();
-                try {
-                    map.put(name, simpleJSON2Java(obj.get(name)));
-                } catch (JSONException ignored) {
-                    // empty
+                while (keys.hasNext()) {
+                    String name = (String) keys.next();
+                    try {
+                        map.put(name, simpleJSON2Java(obj.get(name)));
+                    } catch (JSONException e) {
+                    }
                 }
-            }
 
-            return map;
+                return map;
+            } else {
+                return o;
+            }
         }
 
-        return o;
+        return null;
     }
 
     private ByteArrayOutputStream copyInputStream(InputStream is) {

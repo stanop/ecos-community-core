@@ -84,11 +84,7 @@ public enum SearchPredicate {
     },
     STRING_NOT_EMPTY("string-not-empty") {
         public boolean match(Serializable nodeValue, Serializable criterionValue) {
-            if (nodeValue == null || String.valueOf(nodeValue).isEmpty()) {
-                return false;
-            }
-            return true;
-
+            return nodeValue != null && !String.valueOf(nodeValue).isEmpty();
         }
     },
     TYPE_EQUALS("type-equals") {

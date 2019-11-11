@@ -1664,7 +1664,7 @@ public class ImporterComponent implements ImporterService
         {
             ResourceLoader loader = new DefaultResourceLoader();
             Resource resource = loader.getResource(content);
-            if (resource.exists() == false)
+            if (!resource.exists())
             {
                 throw new ImporterException("Content URL " + content + " does not exist.");
             }

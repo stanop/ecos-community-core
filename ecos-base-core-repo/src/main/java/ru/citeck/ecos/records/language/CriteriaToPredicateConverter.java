@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Component
 public class CriteriaToPredicateConverter implements QueryLangConverter {
 
-    private Pattern FIX_VALUE_PATTERN = Pattern.compile("([=@])?([^\"]+):\"?(.+?)\"?$");
+    private Pattern FIX_VALUE_PATTERN = Pattern.compile("([=@])?([^\"]+):\"?(.*?)\"?$");
 
     private FTSQueryBuilder ftsQueryBuilder;
     private SearchCriteriaParser criteriaParser;
@@ -98,7 +98,14 @@ public class CriteriaToPredicateConverter implements QueryLangConverter {
             return convertCriteriaTerm(group);
         }
 
-        Matcher matcher = FIX_VALUE_PATTERN.matcher(fixedTerm.getValue());
+        String fixedTermValue = fixedTerm.getValue();
+            boolean isInverse = fixedTerm.isInverse();
+            if (fixedTermValue.startsWith("NOT ")) {
+                isInverse = true;
+                fixedTermValue = fixedTermValue.substring("NOT ".length());
+            }
+
+            Matcher matcher = FIX_VALUE_PATTERN.matcher(fixedTermValue);
 
         if (!matcher.matches()) {
             throw new RuntimeException("Unknown fixed term: " + fixedTerm.getValue());
@@ -119,7 +126,7 @@ public class CriteriaToPredicateConverter implements QueryLangConverter {
             pred.setValue(value);
         }
 
-        return fixedTerm.isInverse() ? new NotPredicate(pred) : pred;
+        return isInverse ? new NotPredicate(pred) : pred;
     }
 
     @Override

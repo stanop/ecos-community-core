@@ -181,7 +181,8 @@
                         "hideCreateButton": false,
                         "hideEditRowButton": false,
                         "hideDeleteRowButton": false,
-                        "id": "e9eh0ip"
+                        "isFullScreenWidthModal": false,
+                        "id": "ezr57k"
                       },
                       {
                         "useNegativeIndents": false,
@@ -236,7 +237,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eghwcv7"
+                        "id": "e9dnuv"
                       },
                       {
                         "label": "contracts:contractor",
@@ -358,7 +359,8 @@
                         "hideCreateButton": false,
                         "hideEditRowButton": false,
                         "hideDeleteRowButton": false,
-                        "id": "e6j0yr9"
+                        "isFullScreenWidthModal": false,
+                        "id": "ewguj9b"
                       },
                       {
                         "useNegativeIndents": false,
@@ -413,7 +415,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eg1rif5"
+                        "id": "ea88zgd"
                       },
                       {
                         "label": "contracts:contractWith",
@@ -507,7 +509,7 @@
                         "fuseOptions": {},
                         "customOptions": {},
                         "refreshEventName": "",
-                        "id": "efm6la"
+                        "id": "e71rdx9"
                       },
                       {
                         "useNegativeIndents": false,
@@ -562,7 +564,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "en4iyqe"
+                        "id": "ed7kx8"
                       },
                       {
                         "label": "Type of contract",
@@ -647,7 +649,7 @@
                         "searchThreshold": 0.3,
                         "fuseOptions": {},
                         "customOptions": {},
-                        "id": "er2lk5m"
+                        "id": "er5r7eg"
                       },
                       {
                         "useNegativeIndents": false,
@@ -702,7 +704,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "euf95fm"
+                        "id": "e28b1or"
                       },
                       {
                         "label": "contracts:agreementSubject",
@@ -795,7 +797,8 @@
                         "hideCreateButton": false,
                         "hideEditRowButton": false,
                         "hideDeleteRowButton": false,
-                        "id": "e3vp8b8"
+                        "isFullScreenWidthModal": false,
+                        "id": "ex2r65"
                       },
                       {
                         "useNegativeIndents": false,
@@ -850,7 +853,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eodgni"
+                        "id": "ejq50xk"
                       },
                       {
                         "label": "Columns",
@@ -979,7 +982,7 @@
                                 "mask": false,
                                 "inputType": "text",
                                 "inputMask": "",
-                                "id": "eoone2m"
+                                "id": "e33uy4m"
                               }
                             ],
                             "width": 6,
@@ -998,6 +1001,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "",
+                            "index": 0,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -1038,7 +1042,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "ejv0tx8"
+                            "id": "esjxrg7"
                           },
                           {
                             "components": [
@@ -1103,7 +1107,7 @@
                                 "inputType": "checkbox",
                                 "value": "",
                                 "name": "",
-                                "id": "ecz5ydm"
+                                "id": "ec5cmbi"
                               }
                             ],
                             "width": 6,
@@ -1122,6 +1126,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "d-flex justify-content-start align-items-center",
+                            "index": 1,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -1162,7 +1167,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "efuzzl"
+                            "id": "erduw8y"
                           }
                         ],
                         "mask": false,
@@ -1217,9 +1222,10 @@
                           "custom": "",
                           "customPrivate": false
                         },
+                        "inlineColumns": false,
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "efj9c1a"
+                        "id": "e9kph5f"
                       },
                       {
                         "label": "Columns",
@@ -1330,31 +1336,47 @@
                                           "next": "Next",
                                           "previous": "Previous",
                                           "cancel": "Cancel",
-                                          "submit": "Submit Form"
-                                        }
-                                      },
-                                      "ru": {
-                                        "translation": {
-                                          "invalid_email": "{{field}} некорректный email.",
-                                          "next": "Далее",
-                                          "complete": "Сохранение прошло успешно",
-                                          "previous": "Назад",
-                                          "min": "{{field}} не может быть меньше чем {{min}}.",
-                                          "pattern": "{{field}} не совпадает с паттерном {{pattern}}",
-                                          "or": "или",
-                                          "minLength": "{{field}} должен быть длиннее чем {{length}} символов.",
-                                          "error": "Пожалуйста, исправьте следующие ошибки перед отправкой:",
-                                          "invalid_date": "{{field}} некорректная дата.",
-                                          "browse": "выбрать",
-                                          "maxLength": "{{field}} должен быть короче чем {{length}} символов.",
-                                          "max": "{{field}} не может быть больше чем {{max}}.",
-                                          "mask": "{{field}} не совпадает с маской.",
-                                          "invalid_regex": "{{field}} не соответствует паттерну {{regex}}.",
-                                          "File Name": "Имя файла",
-                                          "Type": "Тип",
-                                          "required": "Поле {{field}} не может быть пустым",
-                                          "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
-                                          "Size": "Размер"
+                                          "submit": "Submit Form",
+                                          "or": "or",
+                                          "browse": "browse",
+                                          "File Name": "File Name",
+                                          "Type": "Type",
+                                          "Drop files to attach, or": "Drop files to attach, or",
+                                          "Size": "Size",
+                                          "contracts:agreementLegalEntity": "Legal entity",
+                                          "contracts:contractor": "Contractor",
+                                          "contracts:contractWith": "Contract with",
+                                          "contracts:agreementSubject": "Contract subject",
+                                          "contracts:agreementNumber": "Contract number",
+                                          "Generate": "Generate",
+                                          "contracts:agreementDate": "Contract date",
+                                          "contracts:duration": "End date",
+                                          "contracts:agreementCurrency": "Currency",
+                                          "contracts:agreementAmount": "Contract value",
+                                          "contracts:VAT": "VAT",
+                                          "payments:payments": "Payment schedule",
+                                          "idocs:summary": "Summary",
+                                          "dms:updateContent": "Generate from template",
+                                          "cm:content": "Content",
+                                          "idocs:note": "Note",
+                                          "icase:documents": "Documents",
+                                          "idocs:signatory": "Signatory",
+                                          "contracts:digiSign": "Electronically signed",
+                                          "idocs:performer": "Performer",
+                                          "idocs:supervisor": "Supervisor",
+                                          "docTypeList": "docTypeList",
+                                          "currencyList": "currencyList",
+                                          "caseStatus": "caseStatus",
+                                          "isEntInstalled": "isEntInstalled",
+                                          "Basic": "Basic",
+                                          "Finance": "Finance",
+                                          "Content": "Content",
+                                          "Additionally": "Additionally",
+                                          "Cancel": "Cancel",
+                                          "Save": "Save",
+                                          "Create": "Create",
+                                          "rest": "Rest",
+                                          "Type of contract": "Type of contract"
                                         }
                                       }
                                     }
@@ -1402,7 +1424,7 @@
                                   "mousewheel": true,
                                   "arrowkeys": true
                                 },
-                                "id": "eomi2w"
+                                "id": "e7wy9un"
                               }
                             ],
                             "width": 6,
@@ -1421,6 +1443,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "",
+                            "index": 0,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -1461,7 +1484,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "eo973r5"
+                            "id": "e55x2y"
                           },
                           {
                             "components": [
@@ -1569,31 +1592,47 @@
                                           "next": "Next",
                                           "previous": "Previous",
                                           "cancel": "Cancel",
-                                          "submit": "Submit Form"
-                                        }
-                                      },
-                                      "ru": {
-                                        "translation": {
-                                          "invalid_email": "{{field}} некорректный email.",
-                                          "next": "Далее",
-                                          "complete": "Сохранение прошло успешно",
-                                          "previous": "Назад",
-                                          "min": "{{field}} не может быть меньше чем {{min}}.",
-                                          "pattern": "{{field}} не совпадает с паттерном {{pattern}}",
-                                          "or": "или",
-                                          "minLength": "{{field}} должен быть длиннее чем {{length}} символов.",
-                                          "error": "Пожалуйста, исправьте следующие ошибки перед отправкой:",
-                                          "invalid_date": "{{field}} некорректная дата.",
-                                          "browse": "выбрать",
-                                          "maxLength": "{{field}} должен быть короче чем {{length}} символов.",
-                                          "max": "{{field}} не может быть больше чем {{max}}.",
-                                          "mask": "{{field}} не совпадает с маской.",
-                                          "invalid_regex": "{{field}} не соответствует паттерну {{regex}}.",
-                                          "File Name": "Имя файла",
-                                          "Type": "Тип",
-                                          "required": "Поле {{field}} не может быть пустым",
-                                          "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
-                                          "Size": "Размер"
+                                          "submit": "Submit Form",
+                                          "or": "or",
+                                          "browse": "browse",
+                                          "File Name": "File Name",
+                                          "Type": "Type",
+                                          "Drop files to attach, or": "Drop files to attach, or",
+                                          "Size": "Size",
+                                          "contracts:agreementLegalEntity": "Legal entity",
+                                          "contracts:contractor": "Contractor",
+                                          "contracts:contractWith": "Contract with",
+                                          "contracts:agreementSubject": "Contract subject",
+                                          "contracts:agreementNumber": "Contract number",
+                                          "Generate": "Generate",
+                                          "contracts:agreementDate": "Contract date",
+                                          "contracts:duration": "End date",
+                                          "contracts:agreementCurrency": "Currency",
+                                          "contracts:agreementAmount": "Contract value",
+                                          "contracts:VAT": "VAT",
+                                          "payments:payments": "Payment schedule",
+                                          "idocs:summary": "Summary",
+                                          "dms:updateContent": "Generate from template",
+                                          "cm:content": "Content",
+                                          "idocs:note": "Note",
+                                          "icase:documents": "Documents",
+                                          "idocs:signatory": "Signatory",
+                                          "contracts:digiSign": "Electronically signed",
+                                          "idocs:performer": "Performer",
+                                          "idocs:supervisor": "Supervisor",
+                                          "docTypeList": "docTypeList",
+                                          "currencyList": "currencyList",
+                                          "caseStatus": "caseStatus",
+                                          "isEntInstalled": "isEntInstalled",
+                                          "Basic": "Basic",
+                                          "Finance": "Finance",
+                                          "Content": "Content",
+                                          "Additionally": "Additionally",
+                                          "Cancel": "Cancel",
+                                          "Save": "Save",
+                                          "Create": "Create",
+                                          "rest": "Rest",
+                                          "Type of contract": "Type of contract"
                                         }
                                       }
                                     }
@@ -1641,7 +1680,7 @@
                                   "mousewheel": true,
                                   "arrowkeys": true
                                 },
-                                "id": "ew3ln8e"
+                                "id": "ed9exh"
                               }
                             ],
                             "width": 6,
@@ -1660,6 +1699,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "",
+                            "index": 1,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -1700,7 +1740,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "eep1f5e"
+                            "id": "eccplq3h"
                           }
                         ],
                         "mask": false,
@@ -1755,9 +1795,10 @@
                           "custom": "",
                           "customPrivate": false
                         },
+                        "inlineColumns": false,
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "euckvx9"
+                        "id": "expg1"
                       }
                     ],
                     "tags": [],
@@ -1799,7 +1840,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "e4jlsh"
+                    "id": "ey2znxk"
                   },
                   {
                     "label": "Panel",
@@ -1905,7 +1946,7 @@
                         "searchThreshold": 0.3,
                         "fuseOptions": {},
                         "customOptions": {},
-                        "id": "emdsmrcj"
+                        "id": "eb366f"
                       },
                       {
                         "useNegativeIndents": false,
@@ -1960,7 +2001,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e5lf7l"
+                        "id": "eg3t1cs"
                       },
                       {
                         "label": "Columns",
@@ -2031,7 +2072,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "e4z57lp"
+                                "id": "e2dlyeu"
                               }
                             ],
                             "width": 6,
@@ -2050,6 +2091,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "",
+                            "index": 0,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -2090,7 +2132,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "e4ga54g"
+                            "id": "eke2o4"
                           },
                           {
                             "components": [
@@ -2158,7 +2200,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "efdaxo5"
+                                "id": "ee54qzb"
                               }
                             ],
                             "width": 6,
@@ -2177,6 +2219,7 @@
                             "lg": 0,
                             "xl": 0,
                             "classes": "",
+                            "index": 1,
                             "placeholder": "",
                             "prefix": "",
                             "customClass": "",
@@ -2217,7 +2260,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "enl6zur"
+                            "id": "ef8h67n"
                           }
                         ],
                         "mask": false,
@@ -2272,9 +2315,10 @@
                           "custom": "",
                           "customPrivate": false
                         },
+                        "inlineColumns": false,
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "eseeyk"
+                        "id": "efp9gln"
                       },
                       {
                         "useNegativeIndents": false,
@@ -2329,7 +2373,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "ec2dksf"
+                        "id": "eesdc7a"
                       },
                       {
                         "label": "payments:payments",
@@ -2423,7 +2467,7 @@
                         "clearOnRefresh": false,
                         "validateOn": "change",
                         "eventName": "",
-                        "id": "ehmlub3"
+                        "id": "ea4uwl"
                       }
                     ],
                     "tags": [],
@@ -2465,7 +2509,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "ew997ig"
+                    "id": "efnrq6i"
                   }
                 ],
                 "width": 6,
@@ -2484,6 +2528,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 0,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -2524,7 +2569,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e5vqwop"
+                "id": "ef4m8m"
               },
               {
                 "components": [
@@ -2624,7 +2669,7 @@
                         "inputMask": "",
                         "wysiwyg": false,
                         "editor": "",
-                        "id": "ec5wygm"
+                        "id": "em2nfne"
                       },
                       {
                         "label": "dms:updateContent",
@@ -2689,7 +2734,7 @@
                         "inputType": "checkbox",
                         "value": "",
                         "name": "",
-                        "id": "e9elvyb"
+                        "id": "en8ttbl"
                       },
                       {
                         "useNegativeIndents": false,
@@ -2744,7 +2789,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e024ku"
+                        "id": "emir1gm"
                       },
                       {
                         "label": "cm:content",
@@ -2824,7 +2869,7 @@
                         "uploadOnly": false,
                         "defaultOverlayWidth": 200,
                         "defaultOverlayHeight": 200,
-                        "id": "evzefki"
+                        "id": "e8n386c"
                       },
                       {
                         "label": "idocs:note",
@@ -2902,7 +2947,7 @@
                         "inputMask": "",
                         "wysiwyg": false,
                         "editor": "",
-                        "id": "enifmu7"
+                        "id": "ezt00ko"
                       },
                       {
                         "useNegativeIndents": false,
@@ -2957,7 +3002,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "e7l8dc"
+                        "id": "exv35l"
                       },
                       {
                         "label": "icase:documents",
@@ -3038,7 +3083,7 @@
                         "uploadOnly": false,
                         "defaultOverlayWidth": 200,
                         "defaultOverlayHeight": 200,
-                        "id": "e9uihlf"
+                        "id": "e6i40bo"
                       }
                     ],
                     "tags": [],
@@ -3080,7 +3125,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "eyk4o7q"
+                    "id": "e4hmu8"
                   },
                   {
                     "label": "Panel",
@@ -3165,7 +3210,7 @@
                         "refreshOn": "",
                         "clearOnRefresh": false,
                         "validateOn": "change",
-                        "id": "eocab5l"
+                        "id": "esr911"
                       },
                       {
                         "useNegativeIndents": false,
@@ -3220,13 +3265,13 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "ex5er1k"
+                        "id": "elid5g"
                       },
                       {
                         "label": "contracts:digiSign",
-                        "labelPosition": "",
                         "shortcut": "",
                         "mask": false,
+                        "disabled": true,
                         "tableView": true,
                         "alwaysEnabled": false,
                         "defaultValue": false,
@@ -3249,7 +3294,28 @@
                           "eq": ""
                         },
                         "customConditional": "",
-                        "logic": [],
+                        "logic": [
+                          {
+                            "name": "enableEvent",
+                            "trigger": {
+                              "type": "javascript",
+                              "javascript": "result = data.isEntInstalled.isEntInstalled == 'true';"
+                            },
+                            "actions": [
+                              {
+                                "name": "enable",
+                                "type": "property",
+                                "property": {
+                                  "label": "Disabled",
+                                  "value": "disabled",
+                                  "type": "boolean"
+                                },
+                                "state": "false"
+                              }
+                            ]
+                          }
+                        ],
+                        "attributes": {},
                         "type": "checkbox",
                         "input": true,
                         "tags": [],
@@ -3264,6 +3330,7 @@
                         "hidden": false,
                         "clearOnHide": true,
                         "dataGridLabel": true,
+                        "labelPosition": "right",
                         "labelWidth": 30,
                         "labelMargin": 3,
                         "description": "",
@@ -3271,7 +3338,6 @@
                         "tooltip": "",
                         "hideLabel": false,
                         "tabindex": "",
-                        "disabled": false,
                         "autofocus": false,
                         "dbIndex": false,
                         "customDefaultValue": "",
@@ -3284,7 +3350,7 @@
                         "inputType": "checkbox",
                         "value": "",
                         "name": "",
-                        "id": "ewt459a"
+                        "id": "ej7pxq"
                       },
                       {
                         "useNegativeIndents": false,
@@ -3339,7 +3405,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "etiiny"
+                        "id": "eah38ur"
                       },
                       {
                         "label": "idocs:performer",
@@ -3404,7 +3470,7 @@
                         "refreshOn": "",
                         "clearOnRefresh": false,
                         "validateOn": "change",
-                        "id": "emk6hdq"
+                        "id": "eh8plf9"
                       },
                       {
                         "conditional": {
@@ -3459,7 +3525,7 @@
                         "inputType": "horizontalLine",
                         "useNegativeIndents": true,
                         "addVerticalIndents": false,
-                        "id": "ezz1o8b"
+                        "id": "e2s9bss"
                       },
                       {
                         "label": "idocs:supervisor",
@@ -3524,7 +3590,7 @@
                         "refreshOn": "",
                         "clearOnRefresh": false,
                         "validateOn": "change",
-                        "id": "euwqb7e"
+                        "id": "e5grvww"
                       },
                       {
                         "label": "docTypeList",
@@ -3612,7 +3678,7 @@
                         "mask": false,
                         "inputType": "asyncData",
                         "executionCondition": "",
-                        "id": "ev22i9"
+                        "id": "eahufx"
                       },
                       {
                         "useNegativeIndents": false,
@@ -3667,7 +3733,7 @@
                         "mask": false,
                         "inputType": "horizontalLine",
                         "addVerticalIndents": false,
-                        "id": "eh1ei96"
+                        "id": "e0i7rrh"
                       },
                       {
                         "label": "docTypeList",
@@ -3675,7 +3741,7 @@
                           "type": "recordsQuery",
                           "recordsQuery": {
                             "attributes": {
-                              "key": "cm:title"
+                              "key": "cm:name"
                             },
                             "query": "var value = {\n  query: 'PARENT: \"workspace://SpacesStore/contracts-cat-doctype-contract\"',\n  language: 'fts-alfresco'\n}",
                             "isSingle": false
@@ -3707,12 +3773,12 @@
                         },
                         "refreshOn": [],
                         "triggerEventOnChange": true,
+                        "eventName": "docTypeEvent",
                         "key": "docTypeList",
                         "type": "asyncData",
                         "input": true,
                         "tableView": true,
                         "tags": [],
-                        "eventName": "docTypeEvent",
                         "placeholder": "",
                         "prefix": "",
                         "customClass": "",
@@ -3755,7 +3821,7 @@
                         "mask": false,
                         "inputType": "asyncData",
                         "executionCondition": "",
-                        "id": "euch01e"
+                        "id": "ew5vazi"
                       }
                     ],
                     "tags": [],
@@ -3797,7 +3863,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "esqnmsl"
+                    "id": "eanxrxb"
                   },
                   {
                     "label": "currencyList",
@@ -3885,7 +3951,7 @@
                     "mask": false,
                     "inputType": "asyncData",
                     "executionCondition": "",
-                    "id": "ehnsz1a"
+                    "id": "emlhhn"
                   },
                   {
                     "label": "caseStatus",
@@ -3905,7 +3971,7 @@
                       },
                       "custom": {
                         "syncData": "value = recordId",
-                        "asyncData": "function getCaseStatus(recordId, attemptsNumber, period = 2000) {\r\n    return new Promise(function(resolve, reject) {\r\n        (function attempt(attemptsLeft) {\r\n        \twindow.Citeck.Records.get(data).load('icase:caseStatusAssoc.cm:name', true).then(status => {\r\n        \t\tif (status !== null) {\r\n        \t\t\treturn resolve(status);\r\n        \t\t}\r\n        \t\tif (attemptsLeft < 1) {\r\n        \t\t\treturn resolve(null);\r\n        \t\t}\r\n        \t\t\r\n        \t\tsetTimeout(attempt.bind(null, attemptsLeft - 1), period);\r\n        \t}).catch(reject);\r\n        })(attemptsNumber);\r\n    });\r\n}\r\n\r\nconst isViewMode = instance.options.readOnly && instance.options.viewAsHtml;\r\nconst formMode = instance.options.formMode;\r\n\r\nif (!isViewMode && formMode === 'EDIT') {\r\n  value = getCaseStatus(data, 10); \r\n} else {\r\n  value = null\r\n}"
+                        "asyncData": "function getCaseStatus(recordId, attemptsNumber, period = 2000) {\r\n    return new Promise(function(resolve, reject) {\r\n        (function attempt(attemptsLeft) {\r\n        \twindow.Citeck.Records.get(data).load('icase:caseStatusAssoc.cm:name', true).then(status => {\r\n        \t\tif (status !== null) {\r\n        \t\t\treturn resolve(status);\r\n        \t\t}\r\n        \t\tif (attemptsLeft < 1) {\r\n        \t\t\treturn resolve(null);\r\n        \t\t}\r\n        \t\t\r\n        \t\tsetTimeout(attempt.bind(null, attemptsLeft - 1), period);\r\n        \t}).catch(reject);\r\n        })(attemptsNumber);\r\n    });\r\n}\r\n\r\nconst isViewMode = instance.options.readOnly && instance.options.viewAsHtml;\r\nconst formMode = instance.options.formMode;\r\n\r\nif (!isViewMode && formMode === 'EDIT') {\r\n  value = getCaseStatus(data, 10); \r\n} else {\r\n  value = 'status is null';\r\n}"
                       },
                       "recordsArray": {
                         "id": "",
@@ -3973,7 +4039,93 @@
                     "inputType": "asyncData",
                     "eventName": "",
                     "executionCondition": "",
-                    "id": "e27li8t"
+                    "id": "e2ym59"
+                  },
+                  {
+                    "label": "isEntInstalled",
+                    "source": {
+                      "type": "ajax",
+                      "ajax": {
+                        "method": "GET",
+                        "url": "/citeck/info/is-ent-installed",
+                        "data": "value = {}",
+                        "mapping": ""
+                      },
+                      "record": {
+                        "id": "",
+                        "attributes": {}
+                      },
+                      "recordsArray": {
+                        "id": "",
+                        "attributes": {}
+                      },
+                      "recordsQuery": {
+                        "query": "",
+                        "attributes": {},
+                        "isSingle": false
+                      },
+                      "custom": {
+                        "syncData": {},
+                        "asyncData": {}
+                      }
+                    },
+                    "update": {
+                      "type": "any-change",
+                      "event": "",
+                      "rate": 100,
+                      "force": false
+                    },
+                    "refreshOn": [],
+                    "triggerEventOnChange": false,
+                    "key": "isEntInstalled",
+                    "type": "asyncData",
+                    "input": true,
+                    "tableView": true,
+                    "tags": [],
+                    "placeholder": "",
+                    "prefix": "",
+                    "customClass": "",
+                    "suffix": "",
+                    "multiple": false,
+                    "defaultValue": null,
+                    "protected": false,
+                    "unique": false,
+                    "persistent": true,
+                    "hidden": false,
+                    "clearOnHide": true,
+                    "dataGridLabel": false,
+                    "labelPosition": "top",
+                    "labelWidth": 30,
+                    "labelMargin": 3,
+                    "description": "",
+                    "errorLabel": "",
+                    "tooltip": "",
+                    "hideLabel": false,
+                    "tabindex": "",
+                    "disabled": false,
+                    "autofocus": false,
+                    "dbIndex": false,
+                    "customDefaultValue": "",
+                    "calculateValue": "",
+                    "allowCalculateOverride": false,
+                    "widget": null,
+                    "clearOnRefresh": false,
+                    "validateOn": "change",
+                    "validate": {
+                      "required": false,
+                      "custom": "",
+                      "customPrivate": false
+                    },
+                    "conditional": {
+                      "show": null,
+                      "when": null,
+                      "eq": ""
+                    },
+                    "mask": false,
+                    "inputType": "asyncData",
+                    "eventName": "",
+                    "executionCondition": "",
+                    "id": "eozdhls"
                   }
                 ],
                 "width": 6,
@@ -3992,6 +4144,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 1,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4032,7 +4185,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eogjtlr"
+                "id": "evxpysc"
               }
             ],
             "mask": false,
@@ -4087,9 +4240,10 @@
               "custom": "",
               "customPrivate": false
             },
+            "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "ebgnltc"
+            "id": "e86t0xw"
           }
         ],
         "tags": [],
@@ -4127,7 +4281,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "ew48i2"
+        "id": "ei95b3"
       },
       {
         "label": "Container",
@@ -4230,7 +4384,7 @@
                     "rightIcon": "",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "ehj77p"
+                    "id": "eit0es"
                   }
                 ],
                 "width": 6,
@@ -4249,6 +4403,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 0,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4289,7 +4444,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e7xjrck"
+                "id": "emhh4vy"
               },
               {
                 "components": [],
@@ -4309,6 +4464,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 1,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4349,7 +4505,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "epnkrb"
+                "id": "eihidoa"
               },
               {
                 "xs": 0,
@@ -4432,9 +4588,10 @@
                     "action": "submit",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "ezg8mm"
+                    "id": "efvvkdn"
                   }
                 ],
+                "index": 2,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4475,7 +4632,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ehe73f"
+                "id": "e7kz46p"
               },
               {
                 "xs": 0,
@@ -4558,9 +4715,10 @@
                     "rightIcon": "",
                     "action": "submit",
                     "disableOnInvalid": false,
-                    "id": "ew0gz07"
+                    "id": "erxalu"
                   }
                 ],
+                "index": 3,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4601,7 +4759,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "etzsi5j"
+                "id": "ejqj0p"
               }
             ],
             "mask": false,
@@ -4656,9 +4814,10 @@
               "custom": "",
               "customPrivate": false
             },
+            "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "e7uptka"
+            "id": "e5r4iis"
           },
           {
             "label": "Columns",
@@ -4681,6 +4840,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 0,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4721,7 +4881,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "el2nlqe"
+                "id": "esnjuc"
               },
               {
                 "components": [
@@ -4794,7 +4954,7 @@
                     "rightIcon": "",
                     "disableOnInvalid": false,
                     "theme": "default",
-                    "id": "ezk42i"
+                    "id": "e08pu47"
                   }
                 ],
                 "width": 6,
@@ -4813,6 +4973,7 @@
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
+                "index": 1,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4853,7 +5014,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "egv0l0j"
+                "id": "ex0h0hd"
               },
               {
                 "xs": 0,
@@ -4936,9 +5097,10 @@
                     "rightIcon": "",
                     "action": "submit",
                     "disableOnInvalid": false,
-                    "id": "e9a066b"
+                    "id": "en7z50v"
                   }
                 ],
+                "index": 2,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -4979,7 +5141,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eq5u8rn"
+                "id": "e44pgw6"
               },
               {
                 "xs": 0,
@@ -4995,6 +5157,7 @@
                 "tableView": true,
                 "label": "Column",
                 "components": [],
+                "index": 3,
                 "placeholder": "",
                 "prefix": "",
                 "customClass": "",
@@ -5035,7 +5198,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ebg03ui"
+                "id": "evke3na"
               }
             ],
             "mask": false,
@@ -5090,9 +5253,10 @@
               "custom": "",
               "customPrivate": false
             },
+            "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "esz6j1"
+            "id": "eaqkis9"
           }
         ],
         "tags": [],
@@ -5126,7 +5290,7 @@
         "clearOnRefresh": false,
         "validateOn": "change",
         "tree": true,
-        "id": "e6e3al5"
+        "id": "ep985gv"
       }
     ]
   },

@@ -42,8 +42,7 @@ public class LifeCycleDocumentChecker extends AbstractLockedJob {
 
         // Get the lifecycle service from the job map
         Object lifeCycleServiceObj = jobData.get(PARAM_LIFECYCLE_SERVICE);
-        if (lifeCycleServiceObj == null || !(lifeCycleServiceObj instanceof LifeCycleService))
-        {
+        if (!(lifeCycleServiceObj instanceof LifeCycleService)) {
             throw new AlfrescoRuntimeException(
                     "ExecuteScriptJob data must contain valid lifecycle service");
         }

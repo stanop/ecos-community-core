@@ -24,4 +24,8 @@ public interface EcosCalendarEntry extends CalendarEntry {
     void setLinkToEntry(String linkToEntry);
 
     String getLinkToEntry();
+
+    String getTransparency();
+
+    void setTransparency(String transparency);
 }

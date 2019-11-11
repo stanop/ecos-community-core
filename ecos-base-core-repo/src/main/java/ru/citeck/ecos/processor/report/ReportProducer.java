@@ -26,11 +26,14 @@ import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.util.ClassUtils;
 import ru.citeck.ecos.attr.NodeAttributeService;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
 import ru.citeck.ecos.processor.DataBundle;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.service.AlfrescoServices;
 import ru.citeck.ecos.service.CiteckServices;
 import ru.citeck.ecos.template.TemplateNodeService;
@@ -53,17 +56,21 @@ public class ReportProducer extends AbstractDataBundleLine {
     private static final String REPORT_COLUMNS = "reportColumns";
     private static final String COLUMN_ATTR = "attribute";
     private static final String COLUMN_DATE_FORMAT = "dateFormat";
-    private static final String ROW_NUM = "rowNum";
     private static final String DEFAULT_DATE_FORMAT = "dd.MM.yyyy HH:mm";
 
     public static final String DATA_TYPE_ATTR = "type";
     public static final String DATA_VALUE_ATTR = "value";
+
+    private static final String ROW_NUM = "rowNum";
+    private static final String TASK_TYPE = "wfm:taskType";
 
     private TemplateNodeService templateNodeService;
     private NodeAttributeService nodeAttributeService;
     private NamespaceService namespaceService;
     private MessageService messageService;
     private DictionaryService dictionaryService;
+    private RecordsService recordsService;
+
     private String personFirstName;
     private String personLastName;
     private String personMiddleName;
@@ -75,6 +82,11 @@ public class ReportProducer extends AbstractDataBundleLine {
         messageService = (MessageService) serviceRegistry.getService(AlfrescoServices.MESSAGE_SERVICE);
         namespaceService = serviceRegistry.getNamespaceService();
         dictionaryService = serviceRegistry.getDictionaryService();
+    }
+
+    @Autowired
+    public void setRecordsService(RecordsService recordsService) {
+        this.recordsService = recordsService;
     }
 
     @SuppressWarnings("unchecked")
@@ -130,6 +142,10 @@ public class ReportProducer extends AbstractDataBundleLine {
                                 data.put(DATA_TYPE_ATTR, "Integer");
                             }
                         }
+                                if (colAttribute.equals(TASK_TYPE)) {
+                                    value = recordsService.getAttribute(RecordRef.valueOf(node.toString()),
+                                                                        TASK_TYPE).asText();
+                                }
 
                         data.put(DATA_VALUE_ATTR, getFormattedValue(colAttrQName, value, colDateFormat));
                     }

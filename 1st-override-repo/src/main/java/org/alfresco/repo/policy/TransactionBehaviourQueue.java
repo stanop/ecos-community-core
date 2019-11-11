@@ -241,9 +241,7 @@ public class TransactionBehaviourQueue implements TransactionListener {
     private void execute(ExecutionContext context) {
         try {
             context.method.invoke(context.policyInterface, context.args);
-        } catch (IllegalArgumentException e) {
-            throw new AlfrescoRuntimeException(e.getMessage(), e);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
             throw new AlfrescoRuntimeException(e.getMessage(), e);
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
