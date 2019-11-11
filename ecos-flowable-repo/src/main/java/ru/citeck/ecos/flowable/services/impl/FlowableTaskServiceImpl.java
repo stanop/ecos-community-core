@@ -59,12 +59,9 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
     @Autowired
     private NamespaceService namespaceService;
 
-    private WorkflowQNameConverter converter;
-
     @PostConstruct
     public void init() {
         ecosTaskService.register(FlowableConstants.ENGINE_ID, this);
-        converter = new WorkflowQNameConverter(namespaceService);
     }
 
     /**
@@ -220,8 +217,13 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
         Map<String, Object> executionVariables = new HashMap<>(transientVariables);
 
-        String lastCommentProp = converter.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
-        variables.put(lastCommentProp, variables.get(EcosTaskService.FIELD_COMMENT));
+        Object comment = variables.get(EcosTaskService.FIELD_COMMENT);
+        if (comment != null) {
+            taskVariables.put("bpm_comment", comment);
+        }
+
+        String lastCommentProp = workflowUtils.mapQNameToName(CiteckWorkflowModel.PROP_LASTCOMMENT);
+        taskVariables.put(lastCommentProp, comment);
 
         taskService.complete(taskId, taskVariables, executionVariables);
     }
@@ -241,7 +243,10 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     @Override
     public TaskInfo getTaskInfo(String taskId) {
-        return new FlowableTaskInfo(taskId);
+        if (taskExists(taskId)) {
+            return new FlowableTaskInfo(taskId);
+        }
+        return null;
     }
 
     private class FlowableTaskInfo implements TaskInfo {
@@ -256,6 +261,12 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
         public String getTitle() {
             WorkflowTask task = workflowService.getTaskById(FlowableConstants.ENGINE_PREFIX + getId());
             return workflowUtils.getTaskTitle(task);
+        }
+
+        @Override
+        public String getDescription() {
+            WorkflowTask task = workflowService.getTaskById(FlowableConstants.ENGINE_PREFIX + id);
+            return task.getDescription();
         }
 
         @Override

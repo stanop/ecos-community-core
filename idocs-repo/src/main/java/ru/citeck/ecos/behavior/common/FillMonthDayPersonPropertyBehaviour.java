@@ -51,7 +51,7 @@ public class FillMonthDayPersonPropertyBehaviour extends AbstractBehaviour
         Integer monthDay = null;
         try {
             monthDay = Integer.parseInt(monthDayString);
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             logger.warn(e.getMessage());
         }
         nodeService.setProperty(nodeRef, EcosModel.PROP_BIRTH_MONTH_DAY, monthDay);

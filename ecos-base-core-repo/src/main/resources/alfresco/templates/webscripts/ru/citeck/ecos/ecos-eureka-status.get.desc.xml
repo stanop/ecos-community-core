@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>Status API</shortname>
+    <description>Status API</description>
+    <url>/citeck/ecos/eureka-status</url>
+    <authentication>none</authentication>
+    <format default="json" />
+    <transaction allow="readonly">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>

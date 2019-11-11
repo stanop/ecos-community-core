@@ -153,11 +153,9 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 							}
 						}
 					}
-				} catch (JAXBException e) {
+				} catch (JAXBException | Docx4JException e) {
 					logger.error(e.getLocalizedMessage(), e);
-				} catch (Docx4JException e) {
-                    logger.error(e.getLocalizedMessage(), e);
-                }
+				}
 			}
 		}
 
@@ -477,24 +475,31 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
+			}
+
+			if (obj == null || getClass() != obj.getClass()) {
 				return false;
-			if (getClass() != obj.getClass())
-				return false;
+			}
+
 			TextIndex other = (TextIndex) obj;
-			if (!getOuterType().equals(other.getOuterType()))
+			if (!getOuterType().equals(other.getOuterType())) {
 				return false;
-			if (newLineIndex != other.newLineIndex)
+			}
+
+			if (newLineIndex != other.newLineIndex) {
 				return false;
-			if (text == null) {
-				if (other.text != null)
-					return false;
-			} else if (!text.equals(other.text))
+			}
+
+			if (!Objects.equals(text, other.text)) {
 				return false;
-			if (textIndex != other.textIndex)
+			}
+
+			if (textIndex != other.textIndex) {
 				return false;
+			}
+
 			return true;
 		}
 

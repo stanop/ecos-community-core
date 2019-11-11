@@ -390,8 +390,9 @@ public class LifeCycleServiceImpl implements LifeCycleService {
 	                }
 	    		}
 	        }
-    	} else
-    		filteredStateList = stateList;
+    	} else {
+            filteredStateList = stateList;
+        }
 
     	if (filteredStateList.size() == 1)
     		return filteredStateList.get(0);
@@ -427,7 +428,7 @@ public class LifeCycleServiceImpl implements LifeCycleService {
                 if ((code != null) && (!code.trim().isEmpty())) {
                     Object jsResult = doJS(nodeRef, code);
 
-                    if ((jsResult != null) && (jsResult instanceof Boolean)) {
+                    if (jsResult instanceof Boolean) {
                         conditionResult = (Boolean) jsResult;
                     } else {
                         logger.error("Condition should return boolean, but instead returned " + jsResult);

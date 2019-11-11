@@ -153,7 +153,7 @@ public class CaseActivityGet extends DeclarativeWebScript {
 
         AccessStatus writePermission = permissionService.hasPermission(nodeRef, "Write");
 
-        boolean hasWritePermission = writePermission != null && (writePermission == AccessStatus.ALLOWED);
+        boolean hasWritePermission = (writePermission == AccessStatus.ALLOWED);
         objectNode.put("editable", hasWritePermission);
 
         boolean startable = hasWritePermission && ((manualStarted && repeatable) || actualStartDate == null);
@@ -164,7 +164,7 @@ public class CaseActivityGet extends DeclarativeWebScript {
 
 
         AccessStatus deletePermission = permissionService.hasPermission(nodeRef, "Delete");
-        objectNode.put("removable", deletePermission != null && (deletePermission == AccessStatus.ALLOWED));
+        objectNode.put("removable", (deletePermission == AccessStatus.ALLOWED));
         objectNode.put("composite", nodeService.hasAspect(nodeRef, ActivityModel.ASPECT_HAS_ACTIVITIES));
         return objectNode;
     }

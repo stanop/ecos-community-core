@@ -570,4 +570,20 @@
         <property name="namespaceService" ref="NamespaceService" />
     </bean>
 
+    <bean id="activiti.due-date-resolvers.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
+
+    <bean id="additional.activitiBeanRegistry" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean"
+          depends-on="activitiBeanRegistry">
+        <property name="targetObject">
+            <ref bean="activitiBeanRegistry"/>
+        </property>
+        <property name="targetMethod" value="put"/>
+        <property name="arguments">
+            <list>
+                <value>dueDate</value>
+                <ref bean="activitiDueDateService"/>
+            </list>
+        </property>
+    </bean>
+
 </beans>

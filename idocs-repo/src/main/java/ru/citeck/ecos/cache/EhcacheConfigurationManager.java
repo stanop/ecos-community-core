@@ -7,8 +7,8 @@ import static org.ehcache.config.builders.CacheManagerBuilder.newCacheManagerBui
 
 public class EhcacheConfigurationManager {
 
-    public static long cacheSize = 10000L;
-    public static long timeToLive = 600L;
+    public final static long cacheSize = 10000L;
+    public final static long timeToLive = 600L;
 
     private CacheManager cacheManager;
 
