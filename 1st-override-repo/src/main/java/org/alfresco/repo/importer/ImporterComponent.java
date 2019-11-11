@@ -616,7 +616,7 @@ public class ImporterComponent implements ImporterService
             // apply aspects
             for (QName aspect : context.getNodeAspects())
             {
-                if (nodeService.hasAspect(nodeRef, aspect) == false)
+                if (!nodeService.hasAspect(nodeRef, aspect))
                 {
                     nodeService.addAspect(nodeRef, aspect, null);   // all properties previously added
                     reportAspectAdded(nodeRef, aspect);
@@ -1717,7 +1717,7 @@ public class ImporterComponent implements ImporterService
         {
             ResourceLoader loader = new DefaultResourceLoader();
             Resource resource = loader.getResource(content);
-            if (resource.exists() == false)
+            if (!resource.exists())
             {
                 throw new ImporterException("Content URL " + content + " does not exist.");
             }

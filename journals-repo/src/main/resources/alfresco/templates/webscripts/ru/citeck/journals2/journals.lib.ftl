@@ -1,12 +1,15 @@
 <#import "/ru/citeck/invariants/invariants.lib.ftl" as invariants />
 
-<#macro renderJournal journal full=true customCreateVariantsJson="[]">
+<#macro renderJournal journal full=true customCreateVariantsJson="[]" predicate="">
 {
     "nodeRef": "${journal.nodeRef}"
     , "title": "${journal.properties["cm:title"]!}"
     , "type": "${journal.properties["journal:journalType"]}"
     <#if full>
     , "criteria": <@renderCriteria journal.childAssocs["journal:searchCriteria"]![] />
+    <#if predicate?has_content>
+    , "predicate": ${predicate}
+    </#if>
     , "createVariants":
         <#if customCreateVariantsJson != "[]">
             ${customCreateVariantsJson}

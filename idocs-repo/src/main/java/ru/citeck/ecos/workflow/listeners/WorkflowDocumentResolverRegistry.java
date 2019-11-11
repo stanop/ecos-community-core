@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WorkflowDocumentResolverRegistry {
-    public static String BEAN_NAME = "ecos.workflowDocumentResolverRegistry";
+    public final static String BEAN_NAME = "ecos.workflowDocumentResolverRegistry";
 
     private NodeService nodeService;
     private WorkflowService workflowService;

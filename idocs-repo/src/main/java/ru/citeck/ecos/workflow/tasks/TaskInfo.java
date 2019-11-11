@@ -11,6 +11,8 @@ public interface TaskInfo {
 
     String getTitle();
 
+    String getDescription();
+
     String getAssignee();
 
     String getCandidate();

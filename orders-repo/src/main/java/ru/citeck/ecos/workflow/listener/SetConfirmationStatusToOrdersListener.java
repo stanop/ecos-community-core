@@ -19,7 +19,6 @@ import java.util.Objects;
 public class SetConfirmationStatusToOrdersListener extends AbstractExecutionListener {
 
     private NodeService nodeService;
-    private WorkflowService workflowService;
     private WorkflowDocumentResolverRegistry documentResolverRegistry;
     private QName requiredDocType;
     private String requiredWorkflowName;
@@ -61,8 +60,9 @@ public class SetConfirmationStatusToOrdersListener extends AbstractExecutionList
         this.nodeService = nodeService;
     }
 
+    @Deprecated
     public void setWorkflowService(WorkflowService workflowService) {
-        this.workflowService = workflowService;
+        // not used
     }
 
     public void setRequiredDocType(QName requiredDocType) {

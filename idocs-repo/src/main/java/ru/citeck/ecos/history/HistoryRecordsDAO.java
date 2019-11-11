@@ -42,7 +42,15 @@ public class HistoryRecordsDAO extends LocalRecordsDAO
 
         Query queryData = query.getQuery(Query.class);
 
-        List<ObjectNode> events = historyGet.getHistoryEvents(queryData.nodeRef,
+        String nodeRef = queryData.nodeRef;
+        if (nodeRef != null){
+            int idx = nodeRef.lastIndexOf('@');
+            if (idx > -1 && idx < nodeRef.length() - 1) {
+                nodeRef = nodeRef.substring(idx + 1);
+            }
+        }
+
+        List<ObjectNode> events = historyGet.getHistoryEvents(nodeRef,
                 queryData.filter,
                 queryData.events,
                 queryData.taskTypes);

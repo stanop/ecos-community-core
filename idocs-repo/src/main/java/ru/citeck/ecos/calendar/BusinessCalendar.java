@@ -70,17 +70,9 @@ public class BusinessCalendar extends GregorianCalendar {
 	public boolean isBusinessDay()
 	{
 		if (this.get(DAY_OF_WEEK) == Calendar.SUNDAY || this.get(DAY_OF_WEEK) == Calendar.SATURDAY) {
-			if (!mapContainsDate(extraWorkingDays, this)) {
-				return false;
-			} else {
-				return true;
-			}
+			return mapContainsDate(extraWorkingDays, this);
 		} else {
-			if (mapContainsDate(extraDayOff, this)) {
-				return false;
-			} else {
-				return true;
-			}
+			return !mapContainsDate(extraDayOff, this);
 		}
 		//return false;
 	}

@@ -54,8 +54,8 @@ public class TextPropertyValueComparator implements PropertyValueComparator
         
         if (operation == null)
         {
-            boolean strictBegin = compareText.startsWith(STAR) == false;
-            boolean strictEnd = compareText.endsWith(STAR) == false;
+            boolean strictBegin = !compareText.startsWith(STAR);
+            boolean strictEnd = !compareText.endsWith(STAR);
             
             operation = strictBegin ?
                     (strictEnd ? ComparePropertyValueOperation.EQUALS : ComparePropertyValueOperation.BEGINS) :

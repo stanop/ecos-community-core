@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
+import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.security.AuthorityService;
 import org.alfresco.service.cmr.security.AuthorityType;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
+import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,7 @@ import ru.citeck.ecos.records2.source.dao.MutableRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.LocalRecordsDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsMetaLocalDAO;
 import ru.citeck.ecos.records2.source.dao.local.RecordsQueryLocalDAO;
+import ru.citeck.ecos.utils.AuthorityUtils;
 import ru.citeck.ecos.utils.WorkflowUtils;
 import ru.citeck.ecos.workflow.owner.OwnerAction;
 import ru.citeck.ecos.workflow.owner.OwnerService;
@@ -64,13 +68,20 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     private final OwnerService ownerService;
     private final DocSumResolveRegistry docSumResolveRegistry;
     private final WorkflowUtils workflowUtils;
+    private final AuthorityUtils authorityUtils;
+    private final NamespaceService namespaceService;
+    private final DictionaryService dictionaryService;
 
     @Autowired
     public WorkflowTaskRecords(EcosTaskService ecosTaskService,
                                WorkflowTaskRecordsUtils workflowTaskRecordsUtils,
                                AuthorityService authorityService, OwnerService ownerService,
                                DocSumResolveRegistry docSumResolveRegistry,
-                               WorkflowUtils workflowUtils) {
+                               WorkflowUtils workflowUtils, AuthorityUtils authorityUtils,
+                               NamespaceService namespaceService,
+                               DictionaryService dictionaryService) {
+        this.namespaceService = namespaceService;
+        this.dictionaryService = dictionaryService;
         setId(ID);
         this.ecosTaskService = ecosTaskService;
         this.workflowTaskRecordsUtils = workflowTaskRecordsUtils;
@@ -78,6 +89,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         this.ownerService = ownerService;
         this.docSumResolveRegistry = docSumResolveRegistry;
         this.workflowUtils = workflowUtils;
+        this.authorityUtils = authorityUtils;
     }
 
     @Override
@@ -125,7 +137,11 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
             } else {
 
                 if (v.isTextual()) {
-                    taskProps.put(n, v.asText());
+                    String value = v.asText();
+                    if (isDate(n) && StringUtils.isEmpty(value)) {
+                        value = null;
+                    }
+                    taskProps.put(n, value);
                 } else if (v.isBoolean()) {
                     taskProps.put(n, v.asBoolean());
                 } else if (v.isDouble()) {
@@ -136,6 +152,15 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     taskProps.put(n, v.asLong());
                 } else if (v.isNull()) {
                     taskProps.put(n, null);
+                } else if (v.isArray()) {
+                    Set<NodeRef> nodeRefs = new HashSet<>();
+                    for (JsonNode jsonNode : v) {
+                        String stringNode = jsonNode.asText();
+                        if (NodeRef.isNodeRef(stringNode)) {
+                            nodeRefs.add(new NodeRef(stringNode));
+                        }
+                    }
+                    taskProps.put(n, nodeRefs);
                 }
             }
         });
@@ -171,6 +196,10 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         String owner = null;
         if (changeOwner.has(ATT_OWNER)) {
             String ownerParam = changeOwner.get(ATT_OWNER).asText();
+            if (NodeRef.isNodeRef(ownerParam)) {
+                ownerParam = authorityUtils.getAuthorityName(new NodeRef(ownerParam));
+            }
+
             owner = CURRENT_USER.equals(ownerParam) ? AuthenticationUtil.getRunAsUser() : ownerParam;
         }
 
@@ -181,9 +210,72 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         return name.substring(DOCUMENT_FIELD_PREFIX.length()).replaceAll("_", ":");
     }
 
+    private boolean isDate(String fieldName) {
+
+        if (fieldName == null) {
+            return false;
+        }
+
+        if (fieldName.startsWith(DOCUMENT_FIELD_PREFIX)) {
+            fieldName = getEcmFieldName(fieldName);
+        }
+
+        if (fieldName.contains("_")) {
+            fieldName = fieldName.replace("_", ":");
+        }
+
+        QName fieldQName = QName.resolveToQName(namespaceService, fieldName);
+        PropertyDefinition property = dictionaryService.getProperty(fieldQName);
+
+        if (property != null) {
+            QName dataTypeQName = property.getDataType().getName();
+            return DataTypeDefinition.DATE.equals(dataTypeQName);
+        }
+
+        return false;
+    }
+
     @Override
     public RecordsDelResult delete(RecordsDeletion deletion) {
         throw new UnsupportedOperationException();
+    }
+
+    private List<WorkflowTask> getRecordsByWfService(WorkflowTaskRecords.TasksQuery query) {
+
+        if (query == null) {
+            return null;
+        }
+
+        String document = query.document;
+        if (StringUtils.isBlank(document)) {
+            return null;
+        }
+
+        int idx = document.lastIndexOf('@');
+        if (idx > -1 && idx < document.length() - 1) {
+            document = document.substring(idx + 1);
+        }
+
+        NodeRef docRef = null;
+        if (NodeRef.isNodeRef(document)) {
+            docRef = new NodeRef(document);
+        }
+
+        if (docRef == null) {
+            return null;
+        }
+
+        if ((query.actors != null && query.actors.size() == 1)) {
+
+            String actor = query.actors.get(0);
+            boolean isCurrentUser = CURRENT_USER.equals(actor);
+
+            if (isCurrentUser) {
+                return workflowUtils.getDocumentTasks(docRef, query.active, query.engine, isCurrentUser);
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -191,31 +283,18 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
         WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
 
-        if (tasksQuery.actors != null
-                && tasksQuery.actors.size() == 1
-                && StringUtils.isNotBlank(tasksQuery.document)) {
+        //try to search by workflow service to avoid problems with solr
+        List<WorkflowTask> tasks = getRecordsByWfService(tasksQuery);
 
-            String actor = tasksQuery.actors.get(0);
-            String document = tasksQuery.document;
+        if (tasks != null) {
 
-            if (CURRENT_USER.equals(actor) && NodeRef.isNodeRef(document)) {
+            List<RecordRef> taskRefs = tasks.stream()
+                    .map(t -> RecordRef.valueOf(t.getId()))
+                    .collect(Collectors.toList());
 
-                List<WorkflowTask> tasks;
-
-                if (tasksQuery.active == null) {
-                    tasks = workflowUtils.getDocumentUserTasks(new NodeRef(document));
-                } else {
-                    tasks = workflowUtils.getDocumentUserTasks(new NodeRef(document), tasksQuery.active);
-                }
-
-                List<RecordRef> taskRefs = tasks.stream()
-                        .map(t -> RecordRef.valueOf(t.getId()))
-                        .collect(Collectors.toList());
-
-                RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
-                result.setRecords(taskRefs);
-                return result;
-            }
+            RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
+            result.setRecords(taskRefs);
+            return result;
         }
 
         ComposedPredicate predicate = workflowTaskRecordsUtils.buildPredicateQuery(tasksQuery);
@@ -239,11 +318,17 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
     public static class TaskIdQuery {
         @MetaAtt("cm:name")
         @Getter @Setter public String taskId;
+
+        @Override
+        public String toString() {
+            return taskId;
+        }
     }
 
     public static class TasksQuery {
 
         @Getter @Setter public String workflowId;
+        @Getter @Setter public String engine;
         @Getter @Setter public List<String> assignees;
         @Getter @Setter public List<String> actors;
         @Getter @Setter public Boolean active;
@@ -288,6 +373,7 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
 
         @Override
         public <T extends QueryContext> void init(T context, MetaField field) {
+
             Map<String, String> documentAttributes = new HashMap<>();
             RecordRef documentRef = getDocumentRef();
             Map<String, String> attributesMap = field.getInnerAttributesMap();
@@ -439,6 +525,8 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
                     return attributes.get("cwf_lastcomment");
                 case ATT_TITLE:
                     return taskInfo.getTitle();
+                case ATT_DESCRIPTION:
+                    return taskInfo.getDescription();
                 case ATT_REASSIGNABLE:
                     return workflowTaskRecordsUtils.isReassignable(attributes, hasOwner, hasClaimOwner);
                 case ATT_CLAIMABLE:

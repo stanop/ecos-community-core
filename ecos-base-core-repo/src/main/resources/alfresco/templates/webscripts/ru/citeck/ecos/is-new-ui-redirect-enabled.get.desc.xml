@@ -1,0 +1,9 @@
+<webscript>
+    <shortname>is-new-ui-redirect-enabled</shortname>
+    <description>Check new UI redirect enabled or not</description>
+    <url>/citeck/ecos/is-new-ui-redirect-enabled</url>
+    <authentication>none</authentication>
+    <format default="json" />
+    <transaction allow="readonly">required</transaction>
+    <lifecycle>public_api</lifecycle>
+</webscript>
