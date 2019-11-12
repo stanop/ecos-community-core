@@ -20,12 +20,15 @@ package ru.citeck.ecos.processor.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.ContentWriter;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -38,8 +41,11 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfWriter;
 
 
+import org.springframework.stereotype.Component;
+import ru.citeck.ecos.barcode.BarcodeAttributeRegistry;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
 import ru.citeck.ecos.processor.DataBundle;
+import ru.citeck.ecos.records2.RecordRef;
 
 /**
  * PDF Barcode is a Data Bundle Generator, that is used to generate specified barcode.
@@ -53,10 +59,13 @@ import ru.citeck.ecos.processor.DataBundle;
  * @author Sergey Tiunov
  *
  */
+@Component
+@Slf4j
 public class PDFBarcode extends AbstractDataBundleLine implements ApplicationContextAware
 {
 	private ContentService contentService;
-	
+	private BarcodeAttributeRegistry barcodeAttributeRegistry;
+
 	private String barcodeNameExpr;
 	private String barcodeInputExpr;
 	private String marginsExpr;
@@ -67,11 +76,18 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
 		this.contentService = serviceRegistry.getContentService();
 	}
 
+	@Autowired
+	public void setBarcodeAttributeRegistry(BarcodeAttributeRegistry barcodeAttributeRegistry) {
+		this.barcodeAttributeRegistry = barcodeAttributeRegistry;
+	}
+
 	@Override
 	public DataBundle process(DataBundle input) {
 
 		// get input model
 		Map<String,Object> model = input.getModel();
+
+		handleProperty(model);
 		
 		// get temp writer
 		ContentWriter writer = contentService.getTempWriter();
@@ -81,6 +97,23 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
 		printBarcode(writer.getContentOutputStream(), model);
 		
 		return helper.getDataBundle(writer.getReader(), model);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void handleProperty(Map<String,Object> model) {
+		try {
+			Object argsObj = model.get("args");
+			if (argsObj instanceof HashMap) {
+				Map<String,String> args = (HashMap<String,String>) argsObj;
+				args.computeIfAbsent("property", e -> {
+					String nodeRef = args.get("nodeRef");
+					RecordRef recordRef = RecordRef.create("", nodeRef);
+					return barcodeAttributeRegistry.getAttribute(recordRef);
+				});
+			}
+		} catch (ClassCastException cce) {
+			log.error("Unable to put 'property' in request's params. " + cce.getLocalizedMessage());
+		}
 	}
 
 	private void printBarcode(OutputStream outputStream, Map<String,Object> model) {
