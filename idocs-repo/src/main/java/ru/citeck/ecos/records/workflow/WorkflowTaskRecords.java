@@ -240,48 +240,72 @@ public class WorkflowTaskRecords extends LocalRecordsDAO
         throw new UnsupportedOperationException();
     }
 
+    private List<WorkflowTask> getRecordsByWfService(WorkflowTaskRecords.TasksQuery query) {
+
+        if (query == null) {
+            return null;
+        }
+
+        String document = query.document;
+        if (StringUtils.isBlank(document)) {
+            return null;
+        }
+
+        int idx = document.lastIndexOf('@');
+        if (idx > -1 && idx < document.length() - 1) {
+            document = document.substring(idx + 1);
+        }
+
+        NodeRef docRef = null;
+        if (NodeRef.isNodeRef(document)) {
+            docRef = new NodeRef(document);
+        }
+
+        if (docRef == null) {
+            return null;
+        }
+
+        if (query.actors != null) {
+
+            if (query.actors.size() == 1) {
+                String actor = query.actors.get(0);
+                if (CURRENT_USER.equals(actor)) {
+
+                    if (query.active == null) {
+                        return workflowUtils.getDocumentUserTasks(docRef);
+                    } else {
+                        return workflowUtils.getDocumentUserTasks(docRef, query.active);
+                    }
+                }
+            }
+        } else {
+            if (query.active == null) {
+                return workflowUtils.getDocumentTasks(docRef);
+            } else {
+                return workflowUtils.getDocumentTasks(docRef, query.active);
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public RecordsQueryResult<RecordRef> getLocalRecords(RecordsQuery query) {
 
         WorkflowTaskRecords.TasksQuery tasksQuery = query.getQuery(WorkflowTaskRecords.TasksQuery.class);
-        String document = tasksQuery.document;
 
-        if (StringUtils.isNotBlank(document) && NodeRef.isNodeRef(document)) {
+        //try to search by workflow service to avoid problems with solr
+        List<WorkflowTask> tasks = getRecordsByWfService(tasksQuery);
 
-            List<WorkflowTask> tasks = null;
-            NodeRef docRef = new NodeRef(document);
+        if (tasks != null) {
 
-            if (tasksQuery.actors != null) {
+            List<RecordRef> taskRefs = tasks.stream()
+                    .map(t -> RecordRef.valueOf(t.getId()))
+                    .collect(Collectors.toList());
 
-                if (tasksQuery.actors.size() == 1) {
-                    String actor = tasksQuery.actors.get(0);
-                    if (CURRENT_USER.equals(actor)) {
-
-                        if (tasksQuery.active == null) {
-                            tasks = workflowUtils.getDocumentUserTasks(docRef);
-                        } else {
-                            tasks = workflowUtils.getDocumentUserTasks(docRef, tasksQuery.active);
-                        }
-                    }
-                }
-            } else {
-                if (tasksQuery.active == null) {
-                    tasks = workflowUtils.getDocumentTasks(docRef);
-                } else {
-                    tasks = workflowUtils.getDocumentTasks(docRef, tasksQuery.active);
-                }
-            }
-
-            if (tasks != null) {
-
-                List<RecordRef> taskRefs = tasks.stream()
-                        .map(t -> RecordRef.valueOf(t.getId()))
-                        .collect(Collectors.toList());
-
-                RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
-                result.setRecords(taskRefs);
-                return result;
-            }
+            RecordsQueryResult<RecordRef> result = new RecordsQueryResult<>();
+            result.setRecords(taskRefs);
+            return result;
         }
 
         ComposedPredicate predicate = workflowTaskRecordsUtils.buildPredicateQuery(tasksQuery);

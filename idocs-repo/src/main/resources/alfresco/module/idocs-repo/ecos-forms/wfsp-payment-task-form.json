@@ -1,8 +1,8 @@
 {
-  "id": "55c78735-d87a-4a08-91eb-5edd97bff9ae",
-  "title": "Affirm task form",
+  "id": "3784f71c-5557-4123-b751-84e38c6157a1",
+  "title": "Payment task form",
   "description": "",
-  "formKey": "alf_wfsa:affirmTask",
+  "formKey": "alf_wfsp:paymentTask",
   "formMode": null,
   "customModule": null,
   "definition": {
@@ -43,7 +43,7 @@
               {
                 "components": [
                   {
-                    "label": "Payment Date",
+                    "label": "New Payment Date",
                     "format": "dd-MM-yyyy",
                     "mask": false,
                     "tableView": true,
@@ -69,9 +69,9 @@
                       "custom": "",
                       "customPrivate": false
                     },
-                    "key": "wfsa_affirmDate",
+                    "key": "wfsp_extendDate",
                     "properties": {
-                      "attribute": "wfsa_affirmDate"
+                      "attribute": "wfsp:extendDate"
                     },
                     "conditional": {
                       "show": "",
@@ -219,12 +219,12 @@
                       "mousewheel": true,
                       "arrowkeys": true
                     },
-                    "id": "ep3yfsu"
+                    "id": "e3r8frf"
                   }
                 ],
                 "xs": 0,
                 "sm": 12,
-                "md": 4,
+                "md": 6,
                 "lg": 0,
                 "xl": 0,
                 "classes": "",
@@ -275,7 +275,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "eif10v"
+                "id": "ehwpeg"
               }
             ],
             "mask": false,
@@ -284,9 +284,9 @@
             "key": "columns",
             "properties": {},
             "conditional": {
+              "json": "",
               "show": "",
               "when": "",
-              "json": "",
               "eq": ""
             },
             "customConditional": "",
@@ -333,7 +333,7 @@
             "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "ew1ed2b"
+            "id": "ejyz0yo"
           },
           {
             "label": "Comment",
@@ -361,9 +361,9 @@
             "key": "comment",
             "properties": {},
             "conditional": {
+              "json": "",
               "show": "",
               "when": "",
-              "json": "",
               "eq": ""
             },
             "customConditional": "",
@@ -411,7 +411,7 @@
             "inputMask": "",
             "wysiwyg": false,
             "editor": "",
-            "id": "e26f2sn"
+            "id": "ehe7rrh"
           }
         ],
         "tags": [],
@@ -449,7 +449,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "eb8cwda"
+        "id": "e7o373"
       },
       {
         "label": "Columns",
@@ -458,11 +458,9 @@
           {
             "components": [
               {
-                "label": "Declined",
-                "removeIndents": true,
+                "label": "To postpone the date of payment",
                 "state": "",
                 "theme": "primary",
-                "size": "sm",
                 "shortcut": "",
                 "block": true,
                 "disableOnInvalid": true,
@@ -477,7 +475,7 @@
                   "custom": "",
                   "customPrivate": false
                 },
-                "key": "outcome_Declined",
+                "key": "outcome_Extend",
                 "properties": {},
                 "conditional": {
                   "show": "",
@@ -521,10 +519,12 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
+                "size": "md",
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "eboqb2l"
+                "removeIndents": false,
+                "id": "eoeq65"
               }
             ],
             "width": 6,
@@ -539,7 +539,7 @@
             "label": "Column",
             "xs": 0,
             "sm": 12,
-            "md": 4,
+            "md": 3,
             "lg": 0,
             "xl": 0,
             "classes": "",
@@ -584,16 +584,14 @@
               "when": null,
               "eq": ""
             },
-            "id": "edzqxan"
+            "id": "epc5d2f"
           },
           {
             "components": [
               {
-                "label": "Affirmed",
-                "removeIndents": true,
+                "label": "Paid",
                 "state": "",
                 "theme": "primary",
-                "size": "sm",
                 "shortcut": "",
                 "block": true,
                 "disableOnInvalid": true,
@@ -608,7 +606,7 @@
                   "custom": "",
                   "customPrivate": false
                 },
-                "key": "outcome_Affirmed",
+                "key": "outcome_Paid",
                 "properties": {},
                 "conditional": {
                   "show": "",
@@ -652,10 +650,12 @@
                 "refreshOn": "",
                 "clearOnRefresh": false,
                 "validateOn": "change",
+                "size": "md",
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "e7fr02o"
+                "removeIndents": false,
+                "id": "enfpd8"
               }
             ],
             "width": 6,
@@ -670,7 +670,7 @@
             "label": "Column",
             "xs": 0,
             "sm": 12,
-            "md": 4,
+            "md": 3,
             "xl": 0,
             "classes": "",
             "lg": 0,
@@ -715,7 +715,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e2u0io"
+            "id": "edf2sk"
           }
         ],
         "mask": false,
@@ -772,22 +772,22 @@
         },
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e1h8y2"
+        "id": "ed99bu6"
       }
     ]
   },
   "i18n": {
     "en": {
-      "Affirmed": "Affirmed",
-      "Declined": "Declined",
-      "Comment": "Comment",
-      "Payment Date": "Payment Date"
+      "New Payment Date": "New Payment Date",
+      "Paid": "Paid",
+      "To postpone the date of payment": "To postpone the date of payment",
+      "Comment": "Comment"
     },
     "ru": {
-      "Affirmed": "Подтвердить",
-      "Declined": "Отклонить",
-      "Comment": "Комментарий",
-      "Payment Date": "Дата оплаты"
+      "New Payment Date": "Новая дата платежа",
+      "Paid": "Оплатить",
+      "To postpone the date of payment": "Перенести дату платежа",
+      "Comment": "Комментарий"
     }
   }
 }
