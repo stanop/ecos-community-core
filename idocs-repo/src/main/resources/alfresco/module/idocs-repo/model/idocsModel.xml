@@ -546,6 +546,20 @@
                     <type>d:text</type>
                 </property>
             </properties>
+            <associations>
+                <association name="idocs:legalFormCountry">
+                    <title>Country</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:countryISO3166</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
         </type>
 
         <type name="idocs:abstractAttorney">
@@ -606,9 +620,17 @@
         </type>
 
         <type name="idocs:countryISO3166">
-            <title>ISO 3166 Codes</title>
+            <title>Country</title>
             <parent>dl:dataListItem</parent>
             <properties>
+                <property name="idocs:countryISO3166Name">
+                    <title>Country Name</title>
+                    <type>d:mltext</type>
+                </property>
+                <property name="idocs:countryISO31661Code">
+                    <title>Code ISO 3166-1</title>
+                    <type>d:text</type>
+                </property>
                 <property name="idocs:countryISO3166Alpha2">
                     <title>Alpha 2</title>
                     <type>d:text</type>

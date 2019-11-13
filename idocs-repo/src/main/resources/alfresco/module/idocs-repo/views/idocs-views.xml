@@ -337,6 +337,7 @@
     <view class="idocs:legalForm">
         <field prop="idocs:legalFormName"/>
         <field prop="idocs:legalFormDescription"/>
+        <field assoc="idocs:legalFormCountry"/>
     </view>
 
     <view class="idocs:personAttorney">
@@ -358,9 +359,8 @@
 
     <view class="idocs:countryISO3166">
         <field prop="cm:title"/>
-        <field prop="idocs:countryISO3166Alpha2"/>
-        <field prop="idocs:countryISO3166Alpha3"/>
-        <field prop="idocs:countryISO3166Number"/>
+        <field prop="idocs:countryISO3166Name"/>
+        <field prop="idocs:countryISO31661Code"/>
     </view>
 
     <view class="idocs:currencyRateRecord">
