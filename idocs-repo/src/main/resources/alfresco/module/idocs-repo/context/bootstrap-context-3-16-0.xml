@@ -21,5 +21,12 @@
         <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/rename-countries-journal.js"/>
     </bean>
 
+    <bean id="idocs.module-component.rename-currency-rates-journal" parent="idocs.import-scripts.3-16-0">
+        <property name="executeOnceOnly" value="true" />
+        <property name="name" value="rename-currency-rates-journal" />
+        <property name="description" value="rename-currency-rates-journal" />
+        <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/rename-currency-rates-journal.js"/>
+    </bean>
+
 </beans>
 

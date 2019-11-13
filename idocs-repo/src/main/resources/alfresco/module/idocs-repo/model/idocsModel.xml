@@ -424,7 +424,7 @@
         </type>
 
         <type name="idocs:currencyRateRecord">
-            <title>Курс валюты</title>
+            <title>Курс валюты ЦБ</title>
             <parent>dl:dataListItem</parent>
             <properties>
                 <property name="idocs:crrValue">
@@ -454,6 +454,51 @@
                     </target>
                 </association>
                 <association name="idocs:crrTargetCurrency">
+                    <title>Конвертируемая валюта</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:currency</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+            </associations>
+        </type>
+
+        <type name="idocs:currencyRateInternalRecord">
+            <title>Курс валюты внутренний</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:crrInternalValue">
+                    <title>Курс</title>
+                    <type>d:double</type>
+                </property>
+                <property name="idocs:crrInternalMonth">
+                    <title>Месяц</title>
+                    <type>d:text</type>
+                </property>
+                <property name="idocs:crrInternalYear">
+                    <title>Год</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="idocs:crrInternalBaseCurrency">
+                    <title>Базовая валюта</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:currency</class>
+                        <mandatory>false</mandatory>
+                        <many>false</many>
+                    </target>
+                </association>
+                <association name="idocs:crrInternalTargetCurrency">
                     <title>Конвертируемая валюта</title>
                     <source>
                         <mandatory>false</mandatory>
@@ -644,6 +689,31 @@
                     <type>d:text</type>
                 </property>
             </properties>
+        </type>
+
+        <type name="idocs:groupOfCountries">
+            <title>Group of Countries</title>
+            <parent>dl:dataListItem</parent>
+            <properties>
+                <property name="idocs:gocName">
+                    <title>Group Of Countries Name</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <associations>
+                <association name="idocs:gocCountries">
+                    <title>Countries</title>
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:countryISO3166</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
         </type>
 
         <type name="idocs:abstractContractor">
@@ -984,7 +1054,35 @@
                     <title>Organization name in English</title>
                     <type>d:text</type>
                 </property>
+                <property name="idocs:organizationName">
+                    <title>Organization name</title>
+                    <type>d:mltext</type>
+                </property>
             </properties>
+            <associations>
+                <association name="idocs:orgCountry">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:countryISO3166</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+                <association name="idocs:orgCurrency">
+                    <source>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </source>
+                    <target>
+                        <class>idocs:currency</class>
+                        <mandatory>false</mandatory>
+                        <many>true</many>
+                    </target>
+                </association>
+            </associations>
         </aspect>
         
         <aspect name="idocs:communicationInfo">

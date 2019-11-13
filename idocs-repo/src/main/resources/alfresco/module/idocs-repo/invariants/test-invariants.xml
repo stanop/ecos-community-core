@@ -80,7 +80,6 @@
 		
 		<property name="cm:content">
 			<invariant on="title" language="explicit">Scan of document</invariant>
-			<invariant on="mandatory" language="explicit">true</invariant>
 		</property>
 		
 	</type>
