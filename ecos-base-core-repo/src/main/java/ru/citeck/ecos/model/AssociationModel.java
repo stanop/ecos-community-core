@@ -6,6 +6,7 @@ public interface AssociationModel {
 
     String NAMESPACE = "http://www.citeck.ru/model/content/associations/1.0";
 
+    QName ASSOC_PRIMARY = QName.createQName(NAMESPACE, "primary");
     QName ASSOC_ASSOCIATED_WITH = QName.createQName(NAMESPACE, "associatedWith");
 
 }
