@@ -2,16 +2,15 @@ package ru.citeck.ecos.barcode;
 
 import com.netflix.servo.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.records2.RecordsService;
+import ru.citeck.ecos.spring.registry.MappingRegistry;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class BarcodeAttributeRegistry {
@@ -21,16 +20,14 @@ public class BarcodeAttributeRegistry {
 
     private RecordsService recordsService;
 
-    private ConcurrentMap<String, String> registry = new ConcurrentHashMap<>();
+    private MappingRegistry<String, String> registry;
 
     @Autowired
-    public BarcodeAttributeRegistry(RecordsService recordsService) {
+    public BarcodeAttributeRegistry(RecordsService recordsService,
+                                    @Qualifier("core.barcode-attribute.type-to-property.mappingRegistry")
+                                            MappingRegistry<String, String> registry) {
         this.recordsService = recordsService;
-    }
-
-    @PostConstruct
-    public void init() {
-        registry.putIfAbsent("contracts-cat-doctype-contract", "contracts:barcode");
+        this.registry = registry;
     }
 
     public String getAttribute(RecordRef recordRef) {
@@ -43,7 +40,8 @@ public class BarcodeAttributeRegistry {
             if (ecosType.contains(SLASH_DELIMITER)) {
                 result = registry.get(ecosType);
             } else {
-                result = registry.getOrDefault(ecosType, DEFAULT_VALUE);
+                result = registry.get(ecosType);
+                result = result == null ? DEFAULT_VALUE : result;
             }
 
             if (result == null) {

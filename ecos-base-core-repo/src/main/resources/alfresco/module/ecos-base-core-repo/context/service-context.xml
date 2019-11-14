@@ -442,4 +442,16 @@
         <property name="extensionName" value="base64Image"/>
     </bean>
 
+    <bean id="core.barcode-attribute.type-to-property.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
+
+    <bean id="core.barcode-attribute.type-to-property.mapping"
+          class="ru.citeck.ecos.spring.registry.MappingRegistrar">
+        <constructor-arg ref="core.barcode-attribute.type-to-property.mappingRegistry"/>
+        <property name="mapping">
+            <map>
+                <entry key="contracts-cat-doctype-contract" value="contracts:barcode"/>
+            </map>
+        </property>
+    </bean>
+
 </beans>
