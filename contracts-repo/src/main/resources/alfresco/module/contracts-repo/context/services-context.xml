@@ -69,8 +69,6 @@
         </property>
     </bean>
 
-    <bean id="records.contracts.barcode-attribute.type-to-property.mappingRegistry" class="ru.citeck.ecos.spring.registry.MappingRegistry"/>
-
     <bean id="records.contracts.barcode-attribute.type-to-property.mapping"
           class="ru.citeck.ecos.spring.registry.MappingRegistrar">
         <constructor-arg ref="records.contracts.barcode-attribute.type-to-property.mappingRegistry"/>
