@@ -32,13 +32,14 @@ import org.alfresco.repo.solr.Transaction;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
 import org.alfresco.util.PropertyCheck;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * DAO support for SOLR web scripts.
@@ -51,8 +52,15 @@ public class SOLRDAOImpl implements SOLRDAO {
     private static final String SELECT_TRANSACTIONS = "alfresco.solr.select_Txns_custom";
     private static final String SELECT_NODES = "alfresco.solr.select_Txn_Nodes";
 
+    private static final String SOLR_TRANSACTIONS_LIMIT_KEY = "alfresco.solr.transactions.query.limit";
+    private static final int DEFAULT_SOLR_TRANSACTIONS_LIMIT = 5000;
+
     private SqlSessionTemplate template;
     private QNameDAO qnameDAO;
+
+    @Autowired
+    @Qualifier("global-properties")
+    private Properties globalProperties;
 
     public final void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
         this.template = sqlSessionTemplate;
@@ -150,12 +158,14 @@ public class SOLRDAOImpl implements SOLRDAO {
     @Override
     public List<Transaction> getTransactions(Long minTxnId, Long fromCommitTime, Long maxTxnId,
                                              Long toCommitTime, int maxResults) {
-        if (maxResults <= 0 || maxResults == Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Maximum results must be a reasonable number.");
+
+        int limit = getTransactionsLimit();
+        if (maxResults > limit) {
+            maxResults = limit;
         }
 
-        if (maxResults > 1000) {
-            maxResults = 1000;
+        if (maxResults <= 0 || maxResults == Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Maximum results must be a reasonable number.");
         }
 
         // We simulate an ID for the sys:deleted type
@@ -170,6 +180,19 @@ public class SOLRDAOImpl implements SOLRDAO {
         params.setLimit(maxResults);
 
         return template.selectList(SELECT_TRANSACTIONS, params, new RowBounds(0, maxResults));
+    }
+
+    private int getTransactionsLimit() {
+        if (globalProperties == null) {
+            return DEFAULT_SOLR_TRANSACTIONS_LIMIT;
+        }
+
+        String rawLimit = globalProperties.getProperty(SOLR_TRANSACTIONS_LIMIT_KEY);
+        if (StringUtils.isBlank(rawLimit)) {
+            return DEFAULT_SOLR_TRANSACTIONS_LIMIT;
+        }
+
+        return NumberUtils.toInt(rawLimit, DEFAULT_SOLR_TRANSACTIONS_LIMIT);
     }
 
     /**
