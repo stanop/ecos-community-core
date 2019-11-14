@@ -16,11 +16,6 @@ public class ComposedPredicateProcessor implements PredicateProcessor<ComposedPr
 
     private PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter;
 
-    @Autowired
-    public void setPredicateToFtsAlfrescoConverter(PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter) {
-        this.predicateToFtsAlfrescoConverter = predicateToFtsAlfrescoConverter;
-    }
-
     @Override
     public void process(ComposedPredicate predicate, FTSQuery query) {
 
@@ -42,5 +37,10 @@ public class ComposedPredicateProcessor implements PredicateProcessor<ComposedPr
         }
 
         query.close();
+    }
+
+    @Autowired
+    public void setPredicateToFtsAlfrescoConverter(PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter) {
+        this.predicateToFtsAlfrescoConverter = predicateToFtsAlfrescoConverter;
     }
 }

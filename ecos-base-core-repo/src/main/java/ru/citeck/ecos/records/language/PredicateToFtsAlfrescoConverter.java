@@ -4,9 +4,8 @@ import groovy.lang.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.predicate.model.*;
-import ru.citeck.ecos.records.processor.exception.PredicateTypeNotSupportedException;
 import ru.citeck.ecos.records.processor.PredicateProcessor;
-import ru.citeck.ecos.records.processor.impl.ComposedPredicateProcessor;
+import ru.citeck.ecos.records.processor.exception.PredicateTypeNotSupportedException;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 
 @Component

@@ -12,14 +12,15 @@ public class NotPredicateProcessor implements PredicateProcessor<NotPredicate> {
 
     private PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter;
 
-    @Autowired
-    public void setPredicateToFtsAlfrescoConverter(PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter) {
-        this.predicateToFtsAlfrescoConverter = predicateToFtsAlfrescoConverter;
-    }
-
     @Override
     public void process(NotPredicate predicate, FTSQuery query) {
         query.not();
         predicateToFtsAlfrescoConverter.processPredicate(predicate.getPredicate(), query);
     }
+
+    @Autowired
+    public void setPredicateToFtsAlfrescoConverter(PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter) {
+        this.predicateToFtsAlfrescoConverter = predicateToFtsAlfrescoConverter;
+    }
+
 }

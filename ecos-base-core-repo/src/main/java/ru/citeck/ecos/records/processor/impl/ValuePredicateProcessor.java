@@ -12,34 +12,33 @@ import ru.citeck.ecos.predicate.model.ComposedPredicate;
 import ru.citeck.ecos.predicate.model.OrPredicate;
 import ru.citeck.ecos.predicate.model.ValuePredicate;
 import ru.citeck.ecos.records.language.PredicateToFtsAlfrescoConverter;
-import ru.citeck.ecos.records.processor.utils.AttributeConstants;
 import ru.citeck.ecos.records.processor.PredicateProcessor;
 import ru.citeck.ecos.records.processor.exception.UnknownValuePredicateTypeException;
+import ru.citeck.ecos.records.processor.utils.AttributeConstants;
 import ru.citeck.ecos.records.processor.utils.ProcessorUtils;
 import ru.citeck.ecos.search.ftsquery.BinOperator;
 import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.utils.DictUtils;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.*;
+import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.CONTAINS;
+import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.EQ;
 
 @Component
 public class ValuePredicateProcessor implements PredicateProcessor<ValuePredicate> {
 
-    private static final String COMMA_DELIMER = ",";
+    private static final String COMMA_DELIMITER = ",";
+    private static final int QUERY_MAX_ITEMS_BATCH_SIZE = 20;
 
     private PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter;
     private final ProcessorUtils processorUtils;
     private final DictUtils dictUtils;
     private final SearchService searchService;
-
-    @Autowired
-    public void setPredicateToFtsAlfrescoConverter(PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter) {
-        this.predicateToFtsAlfrescoConverter = predicateToFtsAlfrescoConverter;
-    }
 
     @Autowired
     public ValuePredicateProcessor(ProcessorUtils processorUtils,
@@ -97,7 +96,7 @@ public class ValuePredicateProcessor implements PredicateProcessor<ValuePredicat
     }
 
     private void handleMultipleValues(ValuePredicate predicate, FTSQuery query) {
-        String[] values = predicate.getValue().toString().split(COMMA_DELIMER);
+        String[] values = predicate.getValue().toString().split(COMMA_DELIMITER);
         ComposedPredicate orPredicate = new OrPredicate();
         for (String s : values) {
             orPredicate.addPredicate(new ValuePredicate(predicate.getAttribute(), predicate.getType(), s));
@@ -125,7 +124,7 @@ public class ValuePredicateProcessor implements PredicateProcessor<ValuePredicat
         }
 
         // accepting multiple values by comma
-        if (valueStr.contains(COMMA_DELIMER) &&
+        if (valueStr.contains(COMMA_DELIMITER) &&
                 (predicate.getType().equals(EQ) || predicate.getType().equals(CONTAINS))) {
             handleMultipleValues(predicate, query);
             return;
@@ -231,7 +230,7 @@ public class ValuePredicateProcessor implements PredicateProcessor<ValuePredicat
         QName field = processorUtils.getQueryField(attDef);
 
         FTSQuery innerQuery = FTSQuery.createRaw();
-        innerQuery.maxItems(20);
+        innerQuery.maxItems(QUERY_MAX_ITEMS_BATCH_SIZE);
 
         ClassDefinition targetClass = null;
         if (attDef instanceof AssociationDefinition) {
@@ -302,7 +301,9 @@ public class ValuePredicateProcessor implements PredicateProcessor<ValuePredicat
         }
     }
 
-    private void searchStrByText() {
-
+    @Autowired
+    public void setPredicateToFtsAlfrescoConverter(PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter) {
+        this.predicateToFtsAlfrescoConverter = predicateToFtsAlfrescoConverter;
     }
+
 }

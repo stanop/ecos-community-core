@@ -38,11 +38,6 @@ public class ProcessorUtils implements QueryLangConverter {
     private PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter;
 
     @Autowired
-    public void setPredicateToFtsAlfrescoConverter(PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter) {
-        this.predicateToFtsAlfrescoConverter = predicateToFtsAlfrescoConverter;
-    }
-
-    @Autowired
     public ProcessorUtils(NamespaceService namespaceService,
                           PredicateService predicateService,
                           AssociationIndexPropertyRegistry associationIndexPropertyRegistry,
@@ -72,11 +67,10 @@ public class ProcessorUtils implements QueryLangConverter {
             } else {
                 return false;
             }
-        } else if (attDef instanceof AssociationDefinition) {
-            return true;
+        } else {
+            return attDef instanceof AssociationDefinition;
         }
 
-        return false;
     }
 
     public String toValidNodeRef(String value) {
@@ -122,16 +116,6 @@ public class ProcessorUtils implements QueryLangConverter {
         }
     }
 
-    public QName getQueryField(ClassAttributeDefinition def) {
-        if (def == null) {
-            return null;
-        }
-        if (def instanceof AssociationDefinition) {
-            return associationIndexPropertyRegistry.getAssociationIndexProperty(def.getName());
-        }
-        return def.getName();
-    }
-
     @Override
     public JsonNode convert(JsonNode predicateQuery) {
 
@@ -142,4 +126,20 @@ public class ProcessorUtils implements QueryLangConverter {
 
         return TextNode.valueOf(query.getQuery());
     }
+
+    public QName getQueryField(ClassAttributeDefinition def) {
+        if (def == null) {
+            return null;
+        }
+        if (def instanceof AssociationDefinition) {
+            return associationIndexPropertyRegistry.getAssociationIndexProperty(def.getName());
+        }
+        return def.getName();
+    }
+
+    @Autowired
+    public void setPredicateToFtsAlfrescoConverter(PredicateToFtsAlfrescoConverter predicateToFtsAlfrescoConverter) {
+        this.predicateToFtsAlfrescoConverter = predicateToFtsAlfrescoConverter;
+    }
+
 }

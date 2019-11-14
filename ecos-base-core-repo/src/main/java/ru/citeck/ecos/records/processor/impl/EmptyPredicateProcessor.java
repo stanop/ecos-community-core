@@ -12,14 +12,15 @@ public class EmptyPredicateProcessor implements PredicateProcessor<EmptyPredicat
 
     private ProcessorUtils processorUtils;
 
-    @Autowired
-    public void setProcessorUtils(ProcessorUtils processorUtils) {
-        this.processorUtils = processorUtils;
-    }
-
     @Override
     public void process(EmptyPredicate predicate, FTSQuery query) {
         String attribute = predicate.getAttribute();
         processorUtils.consumeQueryField(attribute, query::empty);
     }
+
+    @Autowired
+    public void setProcessorUtils(ProcessorUtils processorUtils) {
+        this.processorUtils = processorUtils;
+    }
+
 }
