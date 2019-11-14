@@ -198,9 +198,11 @@ public class NodeUtils {
                 } else {
                     for (NodeRef removeRef : toRemove) {
                         nodeService.removeAssociation(nodeRef, removeRef, assocName);
+                        nodeService.removeAssociation(removeRef, nodeRef, assocName);
                     }
                     for (NodeRef addRef : toAdd) {
                         nodeService.createAssociation(nodeRef, addRef, assocName);
+                        nodeService.createAssociation(addRef, nodeRef, assocName);
                     }
                 }
 
