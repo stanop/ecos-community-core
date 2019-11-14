@@ -16,10 +16,10 @@ import java.util.concurrent.ConcurrentMap;
 @Component
 public class BarcodeAttributeRegistry {
 
-    private RecordsService recordsService;
-
-    private static final String SLASH_DELIMER = "/";
+    private static final String SLASH_DELIMITER = "/";
     private static final String DEFAULT_VALUE = "idocs:barcode";
+
+    private RecordsService recordsService;
 
     private ConcurrentMap<String, String> registry = new ConcurrentHashMap<>();
 
@@ -30,7 +30,7 @@ public class BarcodeAttributeRegistry {
 
     @PostConstruct
     public void init() {
-        registry.putIfAbsent("contracts-cat-doctype-contract","contracts:barcode");
+        registry.putIfAbsent("contracts-cat-doctype-contract", "contracts:barcode");
     }
 
     public String getAttribute(RecordRef recordRef) {
@@ -40,7 +40,7 @@ public class BarcodeAttributeRegistry {
         String result = null;
         while (result == null) {
 
-            if (ecosType.contains(SLASH_DELIMER)) {
+            if (ecosType.contains(SLASH_DELIMITER)) {
                 result = registry.get(ecosType);
             } else {
                 result = registry.getOrDefault(ecosType, DEFAULT_VALUE);
@@ -55,10 +55,10 @@ public class BarcodeAttributeRegistry {
     }
 
     private String splitAndGet(String ecosType) {
-        if (ecosType.contains(SLASH_DELIMER)) {
-            List<String> parts = new ArrayList<>(Arrays.asList(ecosType.split(SLASH_DELIMER)));
-            parts.remove(parts.size()-1);
-            return Strings.join(SLASH_DELIMER, parts.iterator());
+        if (ecosType.contains(SLASH_DELIMITER)) {
+            List<String> parts = new ArrayList<>(Arrays.asList(ecosType.split(SLASH_DELIMITER)));
+            parts.remove(parts.size() - 1);
+            return Strings.join(SLASH_DELIMITER, parts.iterator());
         }
         return ecosType;
     }
