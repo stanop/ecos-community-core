@@ -2,7 +2,6 @@ package ru.citeck.ecos.flowable.services.impl;
 
 import lombok.extern.log4j.Log4j;
 import org.alfresco.repo.workflow.WorkflowModel;
-import org.alfresco.repo.workflow.WorkflowQNameConverter;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.cmr.workflow.WorkflowService;
@@ -243,10 +242,7 @@ public class FlowableTaskServiceImpl implements FlowableTaskService, EngineTaskS
 
     @Override
     public TaskInfo getTaskInfo(String taskId) {
-        if (taskExists(taskId)) {
-            return new FlowableTaskInfo(taskId);
-        }
-        return null;
+        return new FlowableTaskInfo(taskId);
     }
 
     private class FlowableTaskInfo implements TaskInfo {
