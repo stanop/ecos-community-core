@@ -24,7 +24,7 @@ public class BarcodeAttributeRegistry {
 
     @Autowired
     public BarcodeAttributeRegistry(RecordsService recordsService,
-                                    @Qualifier("core.barcode-attribute.type-to-property.mappingRegistry")
+                                    @Qualifier("records.contracts.barcode-attribute.type-to-property.mappingRegistry")
                                             MappingRegistry<String, String> registry) {
         this.recordsService = recordsService;
         this.registry = registry;
