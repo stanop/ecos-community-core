@@ -18,4 +18,8 @@ public class MappingRegistry<K, V> {
     public Map<K, V> getMapping() {
         return Collections.unmodifiableMap(mapping);
     }
+
+    public V get(K key) {
+        return mapping.get(key);
+    }
 }
