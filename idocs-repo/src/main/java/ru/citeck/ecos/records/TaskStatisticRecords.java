@@ -67,7 +67,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
     private static final String PRED_STR_EQUALS = SearchPredicate.STRING_EQUALS.getValue();
 
     private static final Log logger = LogFactory.getLog(TaskStatisticRecords.class);
-    public static final int TOTAL_COUNT_PAGE_SKIP_COUNT = 0;
+    private static final int TOTAL_COUNT_PAGE_SKIP_COUNT = 0;
 
     private PersonService personService;
     private SearchService searchService;
