@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 import ru.citeck.ecos.barcode.BarcodeAttributeRegistry;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
 import ru.citeck.ecos.processor.DataBundle;
+import ru.citeck.ecos.processor.exception.BarcodeInputException;
 import ru.citeck.ecos.records2.RecordRef;
 
 import java.io.IOException;
@@ -113,7 +114,12 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
         String barcodeName = super.evaluateExpression(barcodeNameExpr, model).toString();
 
         // generate barcode input
-        String barcodeInput = super.evaluateExpression(barcodeInputExpr, model).toString();
+        String barcodeInput;
+        try {
+            barcodeInput = super.evaluateExpression(barcodeInputExpr, model).toString();
+        } catch (Exception e) {
+            throw new BarcodeInputException();
+        }
 
         float scaleFactor = 1.0f;
         if (scaleFactorExpr != null) {
