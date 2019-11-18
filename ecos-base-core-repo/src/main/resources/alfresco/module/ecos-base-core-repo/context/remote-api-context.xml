@@ -67,6 +67,22 @@
         </property>
     </bean>
 
+    <bean id="webscript.ru.citeck.image.image-barcode.get" parent="dbp.webscript.view">
+        <property name="processors">
+            <list>
+                <ref bean="dbp.image.barcode.webscript" />
+                <bean parent="dbp.switch">
+                    <property name="expression" value="${args.output!'png'}" />
+                    <property name="cases">
+                        <map>
+                            <entry key="png" value-ref="dbp.transform.png" />
+                        </map>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
     <bean id="webscript.ru.citeck.print.printpdf.get" parent="dbp.webscript.view">
         <property name="processors">
             <list>

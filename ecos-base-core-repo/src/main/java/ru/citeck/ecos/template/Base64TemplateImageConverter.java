@@ -1,15 +1,12 @@
 package ru.citeck.ecos.template;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.*;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.template.BaseTemplateProcessorExtension;
 import org.alfresco.repo.template.TemplateNode;
 import org.alfresco.service.cmr.repository.*;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,12 +30,11 @@ import java.util.List;
  */
 public class Base64TemplateImageConverter extends BaseTemplateProcessorExtension {
 
-    private static final String IMAGE_SRC_FORMAT = "data:image/%s;base64,%s";
-
     private static final List<String> SUPPORT_IMAGES_EXTENSIONS = Arrays.asList("bmp", "gif", "jpeg", "jpg", "png");
 
-    private static final String QR_CODE_FORMAT = "png";
-    private static final String QR_CODE_CONTENT_ENCODING = "UTF-8";
+    private static final String IMAGE_SRC_FORMAT = "data:image/%s;base64,%s";
+    private static final String PNG_IMAGE_FORMAT = "png";
+    private static final String UTF8_CONTENT_ENCODING = "UTF-8";
 
     private NodeService nodeService;
     private ContentService contentService;
@@ -93,6 +89,39 @@ public class Base64TemplateImageConverter extends BaseTemplateProcessorExtension
     }
 
     /**
+     * Convert barcode into BASE64 string.
+     *
+     * @param content barcode content
+     * @param width   barcode width
+     * @param height  barcode height
+     * @param format  barcode format
+     */
+    public String fromBarcode(String content, int width, int height, BarcodeFormat format) {
+
+        BitMatrix matrix;
+        try {
+            Hashtable<EncodeHintType, String> hints = new Hashtable<>(1);
+            hints.put(EncodeHintType.CHARACTER_SET, UTF8_CONTENT_ENCODING);
+
+            Writer writer = new MultiFormatWriter();
+            matrix = writer.encode(content, format, width, height, hints);
+        } catch (WriterException e) {
+            throw new RuntimeException("Error encode barcode", e);
+        }
+
+        String base64;
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            MatrixToImageWriter.writeToStream(matrix, PNG_IMAGE_FORMAT, out);
+
+            base64 = DatatypeConverter.printBase64Binary(out.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException("Error encode barcode", e);
+        }
+
+        return String.format(IMAGE_SRC_FORMAT, PNG_IMAGE_FORMAT, base64);
+    }
+
+    /**
      * Convert generated QR code.
      *
      * @param content QR code content
@@ -101,27 +130,26 @@ public class Base64TemplateImageConverter extends BaseTemplateProcessorExtension
      */
     public String fromQrCode(String content, int width, int height) {
         BitMatrix matrix;
-        com.google.zxing.Writer writer = new MultiFormatWriter();
+        Writer writer = new MultiFormatWriter();
 
         try {
             Hashtable<EncodeHintType, String> hints = new Hashtable<>(1);
-            hints.put(EncodeHintType.CHARACTER_SET, QR_CODE_CONTENT_ENCODING);
-            matrix = writer.encode(content,
-                    BarcodeFormat.QR_CODE, width, height, hints);
-        } catch (com.google.zxing.WriterException e) {
+            hints.put(EncodeHintType.CHARACTER_SET, UTF8_CONTENT_ENCODING);
+            matrix = writer.encode(content, BarcodeFormat.QR_CODE, width, height, hints);
+        } catch (WriterException e) {
             throw new RuntimeException("Error encode QR code", e);
         }
 
         ByteArrayOutputStream out;
         try {
             out = new ByteArrayOutputStream();
-            MatrixToImageWriter.writeToStream(matrix, QR_CODE_FORMAT, out);
+            MatrixToImageWriter.writeToStream(matrix, PNG_IMAGE_FORMAT, out);
         } catch (IOException e) {
             throw new RuntimeException("Error encode QR code", e);
         }
 
         String base64 = DatatypeConverter.printBase64Binary(out.toByteArray());
-        return String.format(IMAGE_SRC_FORMAT, QR_CODE_FORMAT, base64);
+        return String.format(IMAGE_SRC_FORMAT, PNG_IMAGE_FORMAT, base64);
     }
 
     @Autowired

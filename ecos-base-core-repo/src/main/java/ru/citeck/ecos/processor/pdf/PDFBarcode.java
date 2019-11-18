@@ -36,6 +36,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.barcode.BarcodeAttributeRegistry;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
+import ru.citeck.ecos.processor.BarcodeProcessor;
 import ru.citeck.ecos.processor.DataBundle;
 import ru.citeck.ecos.processor.exception.BarcodeInputException;
 import ru.citeck.ecos.records2.RecordRef;
@@ -56,12 +57,10 @@ import java.util.Map;
  *
  * @author Sergey Tiunov
  */
-@Component
 @Slf4j
-public class PDFBarcode extends AbstractDataBundleLine implements ApplicationContextAware {
+public class PDFBarcode extends BarcodeProcessor implements ApplicationContextAware {
 
     private ContentService contentService;
-    private BarcodeAttributeRegistry barcodeAttributeRegistry;
 
     private String barcodeNameExpr;
     private String barcodeInputExpr;
@@ -91,23 +90,6 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
         return helper.getDataBundle(writer.getReader(), model);
     }
 
-    @SuppressWarnings("unchecked")
-    private void handleProperty(Map<String, Object> model) {
-        try {
-            Object argsObj = model.get("args");
-            if (argsObj instanceof HashMap) {
-                Map<String, String> args = (HashMap<String, String>) argsObj;
-                args.computeIfAbsent("property", e -> {
-                    String nodeRef = args.get("nodeRef");
-                    RecordRef recordRef = RecordRef.create("", nodeRef);
-                    return barcodeAttributeRegistry.getAttribute(recordRef);
-                });
-            }
-        } catch (ClassCastException cce) {
-            log.error("Unable to put 'property' in request's params. " + cce.getLocalizedMessage());
-        }
-    }
-
     private void printBarcode(OutputStream outputStream, Map<String, Object> model) {
 
         // get barcode name
@@ -130,7 +112,7 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
             Barcode barcode = applicationContext.getBean(barcodeName, Barcode.class);
             barcode.setCode(barcodeInput);
 
-            Document document = null;
+            Document document;
 
             Rectangle barcodeSize = barcode.getBarcodeSize();
             float marginLeft = 0,
@@ -147,7 +129,9 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
                 if (marginStrings.length > 2) marginTop = Float.parseFloat(marginStrings[2]);
                 if (marginStrings.length > 3) marginBottom = Float.parseFloat(marginStrings[3]);
             }
-            document = new Document(new Rectangle(barcodeWidth + marginLeft + marginRight, barcodeHeight + marginTop + marginBottom));
+            document = new Document(new Rectangle(
+                    barcodeWidth + marginLeft + marginRight,
+                    barcodeHeight + marginTop + marginBottom));
             document.setMargins(marginLeft, marginRight, marginTop, marginBottom);
 
             PdfWriter writer = PdfWriter.getInstance(document, outputStream);
@@ -175,7 +159,7 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
 
     @Autowired
     public void setBarcodeAttributeRegistry(BarcodeAttributeRegistry barcodeAttributeRegistry) {
-        this.barcodeAttributeRegistry = barcodeAttributeRegistry;
+        super.barcodeAttributeRegistry = barcodeAttributeRegistry;
     }
 
     /**

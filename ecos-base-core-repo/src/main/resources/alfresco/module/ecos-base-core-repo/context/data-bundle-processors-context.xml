@@ -383,6 +383,41 @@
         </property>
     </bean>
 
+    <bean id="barcodeImageProcessor" name="dbp.image.barcode" parent="AbstractDataBundleLine" class="ru.citeck.ecos.processor.image.BarcodeImageProcessor" abstract="true">
+    </bean>
+
+    <bean id="imageBarcode" name="dbp.image.barcode.webscript" parent="dbp.switch">
+        <property name="expression" value="${args.barcodeType!'code-128'}" />
+        <property name="cases">
+            <map>
+                <entry key="code-128">
+                    <bean parent="dbp.image.barcode">
+                        <property name="barcodeName" value="Barcode.code128" />
+                        <property name="nodeProperty" value="${companyhome.nodeByReference[args.nodeRef].properties[args.property]}" />
+                        <property name="barcodeWidth" value="${args.width!'100'}" />
+                        <property name="barcodeHeight" value="${args.height!'50'}" />
+                    </bean>
+                </entry>
+                <entry key="code-39">
+                    <bean parent="dbp.image.barcode">
+                        <property name="barcodeName" value="Barcode.code39" />
+                        <property name="nodeProperty" value="${companyhome.nodeByReference[args.nodeRef].properties[args.property]?c}" />
+                        <property name="barcodeWidth" value="${args.width!'100'}" />
+                        <property name="barcodeHeight" value="${args.height!'50'}" />
+                    </bean>
+                </entry>
+                <entry key="ean-13">
+                    <bean parent="dbp.image.barcode">
+                        <property name="barcodeName" value="Barcode.ean13" />
+                        <property name="nodeProperty" value="${companyhome.nodeByReference[args.nodeRef].properties[args.property]?c}" />
+                        <property name="barcodeWidth" value="${args.width!'100'}" />
+                        <property name="barcodeHeight" value="${args.height!'50'}" />
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
     <!-- barcode code-128 prototype -->
     <!-- note that code is not set, that is why we need prototype -->
     <bean id="Barcode.code128" class="com.itextpdf.text.pdf.Barcode128" scope="prototype" />

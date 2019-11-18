@@ -1,0 +1,8 @@
+<webscript>
+	<shortname>Getting barcode image</shortname>
+	<description>Getting barcode image</description>
+	<url>/citeck/image/barcode?nodeRef={nodeRef}&amp;property={property}&amp;barcodeType={barcodeType?}</url>
+	<format default="json"/>
+	<authentication>user</authentication>
+	<transaction allow="readonly">required</transaction>
+</webscript>
