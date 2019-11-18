@@ -1,6 +1,5 @@
 package ru.citeck.ecos.records.language;
 
-import groovy.lang.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.predicate.model.*;
@@ -11,24 +10,9 @@ import ru.citeck.ecos.search.ftsquery.FTSQuery;
 @Component
 public class PredicateToFtsAlfrescoConverter {
 
-    /*
-    *   Using @Lazy init here, because we have circular dependencies
-    * */
-
-    @Autowired
-    @Lazy
     private PredicateProcessor<ComposedPredicate> composedPredicateProcessor;
-
-    @Autowired
-    @Lazy
     private PredicateProcessor<EmptyPredicate> emptyPredicateProcessor;
-
-    @Autowired
-    @Lazy
     private PredicateProcessor<NotPredicate> notPredicateProcessor;
-
-    @Autowired
-    @Lazy
     private PredicateProcessor<ValuePredicate> valuePredicateProcessor;
 
     public void processPredicate(Predicate predicate, FTSQuery query) {
@@ -50,5 +34,25 @@ public class PredicateToFtsAlfrescoConverter {
 
         // TODO: (HIGH) THINK ABOUT REWORKING CURRENT SOLUTION WITHOUT CALLING 'processPredicate' METHOD FROM DEPENDENCIES
         // TODO: (LOW)  THINK ABOUT FLEXIBLE VARIANT OF HANDLING SWITCHING PROCESSOR
+    }
+
+    @Autowired
+    public void setComposedPredicateProcessor(PredicateProcessor<ComposedPredicate> composedPredicateProcessor) {
+        this.composedPredicateProcessor = composedPredicateProcessor;
+    }
+
+    @Autowired
+    public void setEmptyPredicateProcessor(PredicateProcessor<EmptyPredicate> emptyPredicateProcessor) {
+        this.emptyPredicateProcessor = emptyPredicateProcessor;
+    }
+
+    @Autowired
+    public void setNotPredicateProcessor(PredicateProcessor<NotPredicate> notPredicateProcessor) {
+        this.notPredicateProcessor = notPredicateProcessor;
+    }
+
+    @Autowired
+    public void setValuePredicateProcessor(PredicateProcessor<ValuePredicate> valuePredicateProcessor) {
+        this.valuePredicateProcessor = valuePredicateProcessor;
     }
 }
