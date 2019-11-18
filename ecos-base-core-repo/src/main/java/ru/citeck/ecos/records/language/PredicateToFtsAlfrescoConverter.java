@@ -1,6 +1,5 @@
 package ru.citeck.ecos.records.language;
 
-import groovy.lang.Lazy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.citeck.ecos.predicate.model.*;
@@ -37,17 +36,9 @@ public class PredicateToFtsAlfrescoConverter {
         // TODO: (LOW)  THINK ABOUT FLEXIBLE VARIANT OF HANDLING SWITCHING PROCESSOR
     }
 
-    public PredicateProcessor<ComposedPredicate> getComposedPredicateProcessor() {
-        return composedPredicateProcessor;
-    }
-
     @Autowired
     public void setComposedPredicateProcessor(PredicateProcessor<ComposedPredicate> composedPredicateProcessor) {
         this.composedPredicateProcessor = composedPredicateProcessor;
-    }
-
-    public PredicateProcessor<EmptyPredicate> getEmptyPredicateProcessor() {
-        return emptyPredicateProcessor;
     }
 
     @Autowired
@@ -55,17 +46,9 @@ public class PredicateToFtsAlfrescoConverter {
         this.emptyPredicateProcessor = emptyPredicateProcessor;
     }
 
-    public PredicateProcessor<NotPredicate> getNotPredicateProcessor() {
-        return notPredicateProcessor;
-    }
-
     @Autowired
     public void setNotPredicateProcessor(PredicateProcessor<NotPredicate> notPredicateProcessor) {
         this.notPredicateProcessor = notPredicateProcessor;
-    }
-
-    public PredicateProcessor<ValuePredicate> getValuePredicateProcessor() {
-        return valuePredicateProcessor;
     }
 
     @Autowired
