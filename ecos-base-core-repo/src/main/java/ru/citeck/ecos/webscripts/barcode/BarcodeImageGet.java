@@ -4,7 +4,6 @@ import com.google.zxing.BarcodeFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
@@ -25,6 +24,7 @@ public class BarcodeImageGet extends DeclarativeWebScript {
     private static final String PARAM_NODE_REF = "nodeRef";
     private static final String PARAM_BARCODE_WIDTH = "width";
     private static final String PARAM_BARCODE_HEIGHT = "height";
+    private static final String DATA_JSON_PROPERTY = "data";
 
     private BarcodeAttributeRegistry barcodeAttributeRegistry;
     private Base64TemplateImageConverter converter;
@@ -68,7 +68,7 @@ public class BarcodeImageGet extends DeclarativeWebScript {
 
         String result = converter.fromBarcode(barcodeInput, barcodeWidth, barcodeHeight, BarcodeFormat.CODE_128);
         Map<String, Object> model = new HashMap<>();
-        model.put("image", result);
+        model.put(DATA_JSON_PROPERTY, result);
         return model;
     }
 
@@ -81,7 +81,6 @@ public class BarcodeImageGet extends DeclarativeWebScript {
         this.barcodeAttributeRegistry = barcodeAttributeRegistry;
     }
 
-    @Autowired
     public void setConverter(Base64TemplateImageConverter converter) {
         this.converter = converter;
     }

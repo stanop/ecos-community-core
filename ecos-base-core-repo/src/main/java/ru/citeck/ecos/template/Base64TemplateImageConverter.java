@@ -118,7 +118,7 @@ public class Base64TemplateImageConverter extends BaseTemplateProcessorExtension
             throw new RuntimeException("Error encode barcode", e);
         }
 
-        return String.format(IMAGE_SRC_FORMAT, PNG_IMAGE_FORMAT, base64);
+        return base64;
     }
 
     /**

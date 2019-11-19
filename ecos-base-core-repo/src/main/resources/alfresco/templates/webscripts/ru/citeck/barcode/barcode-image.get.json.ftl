@@ -1,3 +1,3 @@
 <#escape x as jsonUtils.encodeJSONString(x)>
-{"image" : <#if image??>"${image}"<#else>null</#if>}
+{"data" : <#if data??>"${data}"<#else>null</#if>}
 </#escape>
