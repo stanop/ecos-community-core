@@ -208,10 +208,8 @@
     <bean id="webscript.ru.citeck.barcode.barcode-image.get"
           class="ru.citeck.ecos.webscripts.barcode.BarcodeImageGet"
           parent="webscript">
-        <property name="barcodeAttributeRegistry" ref="barcodeAttributeRegistry"/>
-        <property name="prefixResolver" ref="namespaceService"/>
-        <property name="nodeUtils" ref="nodeUtils"/>
-        <property name="converter" ref="base64TemplateImageConverterTemplate"/>
+        <constructor-arg ref="barcodeWebScriptRequestHandler"/>
+        <constructor-arg ref="barcodeService"/>
     </bean>
 
     <bean id="webscript.ru.citeck.search.search-query.get"
