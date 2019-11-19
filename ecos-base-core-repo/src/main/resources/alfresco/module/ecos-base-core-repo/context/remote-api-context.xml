@@ -210,6 +210,8 @@
           parent="webscript">
         <constructor-arg ref="barcodeWebScriptRequestHandler"/>
         <constructor-arg ref="barcodeService"/>
+        <constructor-arg ref="nodeUtils"/>
+        <constructor-arg ref="namespaceService"/>
     </bean>
 
     <bean id="webscript.ru.citeck.search.search-query.get"

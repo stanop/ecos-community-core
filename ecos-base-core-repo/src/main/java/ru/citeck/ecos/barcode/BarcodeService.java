@@ -1,56 +1,72 @@
 package ru.citeck.ecos.barcode;
 
-import com.google.zxing.BarcodeFormat;
+import com.google.zxing.*;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.barcode.exception.UnsupportedBarcodeTypeException;
 import ru.citeck.ecos.processor.exception.BarcodeInputException;
-import ru.citeck.ecos.records2.RecordRef;
-import ru.citeck.ecos.template.Base64TemplateImageConverter;
 import ru.citeck.ecos.utils.NodeUtils;
+
+import javax.xml.bind.DatatypeConverter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Hashtable;
 
 @Service
 public class BarcodeService {
 
+    private static final String UTF8_CONTENT_ENCODING = "UTF-8";
+    private static final String PNG_IMAGE_FORMAT = "png";
+
     private NodeUtils nodeUtils;
-    private NamespacePrefixResolver prefixResolver;
-    private Base64TemplateImageConverter base64ImageConverter;
-    private BarcodeAttributeRegistry barcodeAttributeRegistry;
 
     @Autowired
-    public BarcodeService(NodeUtils nodeUtils,
-                          @Qualifier("namespaceService") NamespacePrefixResolver prefixResolver,
-                          Base64TemplateImageConverter base64ImageConverter,
-                          BarcodeAttributeRegistry barcodeAttributeRegistry) {
+    public BarcodeService(NodeUtils nodeUtils) {
         this.nodeUtils = nodeUtils;
-        this.prefixResolver = prefixResolver;
-        this.base64ImageConverter = base64ImageConverter;
-        this.barcodeAttributeRegistry = barcodeAttributeRegistry;
     }
 
-    public String getBarcodeAsBase64(String nodeRef, String propertyName, int width, int height, String barcodetype) {
+    public String getBarcodeAsBase64(NodeRef nodeRef, QName propertyQName, int width, int height, String barcodeType) {
+
         String barcodePropertyValue;
         try {
-            NodeRef targetNodeRef = nodeUtils.getNodeRef(nodeRef);
-            QName propertyQName = QName.resolveToQName(prefixResolver, propertyName);
-            barcodePropertyValue = nodeUtils.getProperty(targetNodeRef, propertyQName);
+            barcodePropertyValue = nodeUtils.getProperty(nodeRef, propertyQName);
         } catch (Exception e) {
-            throw new BarcodeInputException();
+            throw new BarcodeInputException(e);
         }
 
-        BarcodeFormat barcodeFormat = getBarcodeFormatByType(barcodetype);
+        BarcodeFormat barcodeFormat = getBarcodeFormatByType(barcodeType);
 
-        return base64ImageConverter.fromBarcode(barcodePropertyValue, width, height, barcodeFormat);
+        return encodeBarcodeContentToBase64String(barcodePropertyValue, width, height, barcodeFormat);
     }
 
+    private String encodeBarcodeContentToBase64String(String barcodeContent, int width, int height,
+                                                      BarcodeFormat format) {
 
-    public String getProperty(String nodeRef) {
-        RecordRef recordRef = RecordRef.create("", nodeRef);
-        return barcodeAttributeRegistry.getAttribute(recordRef);
+        BitMatrix matrix;
+        try {
+            Hashtable<EncodeHintType, String> hints = new Hashtable<>(1);
+            hints.put(EncodeHintType.CHARACTER_SET, UTF8_CONTENT_ENCODING);
+
+            Writer writer = new MultiFormatWriter();
+            matrix = writer.encode(barcodeContent, format, width, height, hints);
+        } catch (WriterException e) {
+            throw new RuntimeException("Error encode barcode", e);
+        }
+
+        String base64;
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            MatrixToImageWriter.writeToStream(matrix, PNG_IMAGE_FORMAT, out);
+
+            base64 = DatatypeConverter.printBase64Binary(out.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException("Error encode barcode", e);
+        }
+
+        return base64;
     }
 
     private BarcodeFormat getBarcodeFormatByType(String barcodeType) {

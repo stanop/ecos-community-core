@@ -89,39 +89,6 @@ public class Base64TemplateImageConverter extends BaseTemplateProcessorExtension
     }
 
     /**
-     * Convert barcode into BASE64 string.
-     *
-     * @param content barcode content
-     * @param width   barcode width
-     * @param height  barcode height
-     * @param format  barcode format
-     */
-    public String fromBarcode(String content, int width, int height, BarcodeFormat format) {
-
-        BitMatrix matrix;
-        try {
-            Hashtable<EncodeHintType, String> hints = new Hashtable<>(1);
-            hints.put(EncodeHintType.CHARACTER_SET, UTF8_CONTENT_ENCODING);
-
-            Writer writer = new MultiFormatWriter();
-            matrix = writer.encode(content, format, width, height, hints);
-        } catch (WriterException e) {
-            throw new RuntimeException("Error encode barcode", e);
-        }
-
-        String base64;
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            MatrixToImageWriter.writeToStream(matrix, PNG_IMAGE_FORMAT, out);
-
-            base64 = DatatypeConverter.printBase64Binary(out.toByteArray());
-        } catch (IOException e) {
-            throw new RuntimeException("Error encode barcode", e);
-        }
-
-        return base64;
-    }
-
-    /**
      * Convert generated QR code.
      *
      * @param content QR code content

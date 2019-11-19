@@ -1,11 +1,13 @@
 package ru.citeck.ecos.webscripts.handler.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.extensions.surf.util.ParameterCheck;
 import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.stereotype.Service;
-import ru.citeck.ecos.barcode.BarcodeService;
+import ru.citeck.ecos.barcode.BarcodeAttributeRegistry;
+import ru.citeck.ecos.records2.RecordRef;
+import ru.citeck.ecos.records2.utils.StringUtils;
 import ru.citeck.ecos.webscripts.handler.WebScriptRequestHandler;
-import ru.citeck.ecos.webscripts.handler.exception.MissingRequiredParamException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,24 +21,23 @@ public class BarcodeWebScriptRequestHandler implements WebScriptRequestHandler {
     private static final int DEFAULT_BARCODE_WIDTH = 100;
     private static final String DEFAULT_BARCODE_TYPE = "code-128";
 
-    private BarcodeService barcodeService;
+    private BarcodeAttributeRegistry barcodeAttributeRegistry;
 
     @Autowired
-    public BarcodeWebScriptRequestHandler(BarcodeService barcodeService) {
-        this.barcodeService = barcodeService;
+    public BarcodeWebScriptRequestHandler(BarcodeAttributeRegistry barcodeAttributeRegistry) {
+        this.barcodeAttributeRegistry = barcodeAttributeRegistry;
     }
 
     @Override
     public Map<String, Object> handleRequest(WebScriptRequest req) {
+
         String nodeRef = req.getParameter(NODE_REF_PARAM);
         String barcodeWidthStr = req.getParameter(BARCODE_WIDTH_PARAM);
         String barcodeHeightStr = req.getParameter(BARCODE_HEIGHT_PARAM);
         String barcodeTypeStr = req.getParameter(BARCODE_TYPE_PARAM);
         String property = req.getParameter(PROPERTY_PARAM);
 
-        if (nodeRef == null) {
-            throw new MissingRequiredParamException(NODE_REF_PARAM);
-        }
+        ParameterCheck.mandatoryString(NODE_REF_PARAM, nodeRef);
 
         int barcodeHeight;
         if (barcodeHeightStr == null) {
@@ -59,8 +60,9 @@ public class BarcodeWebScriptRequestHandler implements WebScriptRequestHandler {
             barcodeType = barcodeTypeStr;
         }
 
-        if (property == null || property.isEmpty()) {
-            property = barcodeService.getProperty(nodeRef);
+        if (StringUtils.isBlank(property)) {
+            RecordRef recordRef = RecordRef.create("", nodeRef);
+            property = barcodeAttributeRegistry.getAttribute(recordRef);
         }
 
         Map<String, Object> input = new HashMap<>();
@@ -71,4 +73,5 @@ public class BarcodeWebScriptRequestHandler implements WebScriptRequestHandler {
         input.put(BARCODE_TYPE_PARAM, barcodeType);
         return input;
     }
+
 }
