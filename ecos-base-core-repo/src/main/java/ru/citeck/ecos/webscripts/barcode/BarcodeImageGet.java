@@ -1,5 +1,6 @@
 package ru.citeck.ecos.webscripts.barcode;
 
+import com.google.zxing.BarcodeFormat;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.NamespacePrefixResolver;
 import org.alfresco.service.namespace.QName;
@@ -46,13 +47,14 @@ public class BarcodeImageGet extends DeclarativeWebScript {
 
         NodeRef nodeRef = nodeUtils.getNodeRef((String) input.get(NODE_REF_PARAM));
         QName propertyQName = QName.resolveToQName(prefixResolver, (String) input.get(PROPERTY_PARAM));
+        BarcodeFormat barCodeFormat = barcodeService.getBarcodeFormatByType((String) input.get(BARCODE_TYPE_PARAM));
 
-        String base64 = barcodeService.getBarcodeAsBase64(
+        String base64 = barcodeService.getBarcodeAsBase64FromProp(
                 nodeRef,
                 propertyQName,
                 (int) input.get(BARCODE_WIDTH_PARAM),
                 (int) input.get(BARCODE_HEIGHT_PARAM),
-                (String) input.get(BARCODE_TYPE_PARAM));
+                barCodeFormat);
 
         status.setCode(HttpStatus.OK.value());
 

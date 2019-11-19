@@ -29,7 +29,8 @@ public class BarcodeService {
         this.nodeUtils = nodeUtils;
     }
 
-    public String getBarcodeAsBase64(NodeRef nodeRef, QName propertyQName, int width, int height, String barcodeType) {
+    public String getBarcodeAsBase64FromProp(NodeRef nodeRef, QName propertyQName, int width, int height,
+                                             BarcodeFormat format) {
 
         String barcodePropertyValue;
         try {
@@ -38,13 +39,11 @@ public class BarcodeService {
             throw new BarcodeInputException(e);
         }
 
-        BarcodeFormat barcodeFormat = getBarcodeFormatByType(barcodeType);
-
-        return encodeBarcodeContentToBase64String(barcodePropertyValue, width, height, barcodeFormat);
+        return getBarcodeAsBase64FromContent(barcodePropertyValue, width, height, format);
     }
 
-    private String encodeBarcodeContentToBase64String(String barcodeContent, int width, int height,
-                                                      BarcodeFormat format) {
+    public String getBarcodeAsBase64FromContent(String barcodeContent, int width, int height,
+                                                BarcodeFormat format) {
 
         BitMatrix matrix;
         try {
@@ -69,7 +68,8 @@ public class BarcodeService {
         return base64;
     }
 
-    private BarcodeFormat getBarcodeFormatByType(String barcodeType) {
+    //TODO: implement mapping for all formats
+    public BarcodeFormat getBarcodeFormatByType(String barcodeType) {
         switch (barcodeType) {
             case "code-128":
                 return BarcodeFormat.CODE_128;
