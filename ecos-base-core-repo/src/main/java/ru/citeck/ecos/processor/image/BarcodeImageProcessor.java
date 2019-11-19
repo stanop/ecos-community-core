@@ -1,10 +1,6 @@
 package ru.citeck.ecos.processor.image;
 
 import com.google.zxing.BarcodeFormat;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.pdf.Barcode;
-import com.itextpdf.text.pdf.PdfContentByte;
-import com.itextpdf.text.pdf.PdfWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.service.cmr.repository.ContentService;
@@ -13,17 +9,13 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 import ru.citeck.ecos.barcode.BarcodeAttributeRegistry;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
-import ru.citeck.ecos.processor.BarcodeProcessor;
 import ru.citeck.ecos.processor.DataBundle;
 import ru.citeck.ecos.processor.exception.BarcodeInputException;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.template.Base64TemplateImageConverter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +27,6 @@ public class BarcodeImageProcessor extends AbstractDataBundleLine implements App
     private ApplicationContext applicationContext;
     private Base64TemplateImageConverter converter;
 
-    private String barcodeName;
     private String barcodeWidth;
     private String barcodeHeight;
     private String nodeProperty;
@@ -106,10 +97,6 @@ public class BarcodeImageProcessor extends AbstractDataBundleLine implements App
 
     public void setContentService(ContentService contentService) {
         this.contentService = contentService;
-    }
-
-    public void setBarcodeName(String barcodeName) {
-        this.barcodeName = barcodeName;
     }
 
     public void setNodeProperty(String nodeProperty) {
