@@ -33,7 +33,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 import ru.citeck.ecos.barcode.BarcodeAttributeRegistry;
 import ru.citeck.ecos.processor.AbstractDataBundleLine;
 import ru.citeck.ecos.processor.DataBundle;
@@ -56,7 +55,6 @@ import java.util.Map;
  *
  * @author Sergey Tiunov
  */
-@Component
 @Slf4j
 public class PDFBarcode extends AbstractDataBundleLine implements ApplicationContextAware {
 
@@ -118,7 +116,7 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
         try {
             barcodeInput = super.evaluateExpression(barcodeInputExpr, model).toString();
         } catch (Exception e) {
-            throw new BarcodeInputException();
+            throw new BarcodeInputException(e);
         }
 
         float scaleFactor = 1.0f;
@@ -130,7 +128,7 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
             Barcode barcode = applicationContext.getBean(barcodeName, Barcode.class);
             barcode.setCode(barcodeInput);
 
-            Document document = null;
+            Document document;
 
             Rectangle barcodeSize = barcode.getBarcodeSize();
             float marginLeft = 0,
@@ -147,7 +145,9 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
                 if (marginStrings.length > 2) marginTop = Float.parseFloat(marginStrings[2]);
                 if (marginStrings.length > 3) marginBottom = Float.parseFloat(marginStrings[3]);
             }
-            document = new Document(new Rectangle(barcodeWidth + marginLeft + marginRight, barcodeHeight + marginTop + marginBottom));
+            document = new Document(new Rectangle(
+                    barcodeWidth + marginLeft + marginRight,
+                    barcodeHeight + marginTop + marginBottom));
             document.setMargins(marginLeft, marginRight, marginTop, marginBottom);
 
             PdfWriter writer = PdfWriter.getInstance(document, outputStream);
