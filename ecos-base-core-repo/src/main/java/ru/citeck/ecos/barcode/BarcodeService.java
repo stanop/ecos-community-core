@@ -7,6 +7,7 @@ import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.citeck.ecos.barcode.exception.UnsupportedBarcodeTypeException;
 import ru.citeck.ecos.processor.exception.BarcodeInputException;
 import ru.citeck.ecos.records2.RecordRef;
 import ru.citeck.ecos.template.Base64TemplateImageConverter;
@@ -61,7 +62,7 @@ public class BarcodeService {
             case "code-93":
                 return BarcodeFormat.CODE_93;
             default:
-                throw new RuntimeException("Unsupported barcode type: " + barcodeType);
+                throw new UnsupportedBarcodeTypeException(barcodeType);
         }
     }
 }

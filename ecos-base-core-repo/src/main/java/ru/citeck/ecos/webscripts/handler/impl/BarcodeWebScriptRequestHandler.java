@@ -5,6 +5,7 @@ import org.springframework.extensions.webscripts.WebScriptRequest;
 import org.springframework.stereotype.Service;
 import ru.citeck.ecos.barcode.BarcodeService;
 import ru.citeck.ecos.webscripts.handler.WebScriptRequestHandler;
+import ru.citeck.ecos.webscripts.handler.exception.MissingRequiredParamException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,11 +31,11 @@ public class BarcodeWebScriptRequestHandler implements WebScriptRequestHandler {
         String nodeRef = req.getParameter(NODE_REF_PARAM);
         String barcodeWidthStr = req.getParameter(BARCODE_WIDTH_PARAM);
         String barcodeHeightStr = req.getParameter(BARCODE_HEIGHT_PARAM);
-        String barcodeTypeStr = req.getParameter(BARCODE_HEIGHT_PARAM);
+        String barcodeTypeStr = req.getParameter(BARCODE_TYPE_PARAM);
         String property = req.getParameter(PROPERTY_PARAM);
 
         if (nodeRef == null) {
-            throw new RuntimeException("NODE REF IS REQUERED PARAM!");
+            throw new MissingRequiredParamException(NODE_REF_PARAM);
         }
 
         int barcodeHeight;
