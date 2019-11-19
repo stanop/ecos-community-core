@@ -116,7 +116,7 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
         try {
             barcodeInput = super.evaluateExpression(barcodeInputExpr, model).toString();
         } catch (Exception e) {
-            throw new BarcodeInputException();
+            throw new BarcodeInputException(e);
         }
 
         float scaleFactor = 1.0f;
