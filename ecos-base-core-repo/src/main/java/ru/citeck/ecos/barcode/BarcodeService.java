@@ -92,7 +92,7 @@ public class BarcodeService {
     }
 
     /**
-     * Supported types of barcode, that was converted in {@link BarcodeFormat}
+     * Converting barcode type from string into {@link BarcodeFormat}
      *
      * @param barcodeType type of barcode
      */
