@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Registry for mapping node's value of attribute '_etype' to property.
+ */
 @Component
 public class BarcodeAttributeRegistry {
 
