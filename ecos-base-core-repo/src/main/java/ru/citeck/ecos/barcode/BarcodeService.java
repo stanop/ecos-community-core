@@ -39,7 +39,7 @@ public class BarcodeService {
      * Common method to generate and get barcode as string in BASE64 format.
      *
      * @param nodeRef node reference in alfresco
-     * @param propertyQName node's property as {@link QName}
+     * @param propertyQName node's property as {@link QName} based on which will be generated barcode
      * @param width width of result image of barcode
      * @param height height of result image of barcode
      * @param format format of barcode
