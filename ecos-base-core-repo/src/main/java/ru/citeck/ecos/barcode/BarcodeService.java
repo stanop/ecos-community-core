@@ -16,6 +16,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Hashtable;
 
+/**
+ * This service needed to work with barcode in business logic layer.
+ * <p>
+ * It's very required to bring here new logic to interact and handle barcodes.
+ * <p>
+ */
 @Service
 public class BarcodeService {
 
@@ -29,6 +35,15 @@ public class BarcodeService {
         this.nodeUtils = nodeUtils;
     }
 
+    /**
+     * Common method to generate and get barcode as string in BASE64 format.
+     *
+     * @param nodeRef node reference in alfresco
+     * @param propertyQName node's property as {@link QName} based on which will be generated barcode
+     * @param width width of result image of barcode
+     * @param height height of result image of barcode
+     * @param format format of barcode
+     */
     public String getBarcodeAsBase64FromProp(NodeRef nodeRef, QName propertyQName, int width, int height,
                                              BarcodeFormat format) {
 
@@ -42,6 +57,14 @@ public class BarcodeService {
         return getBarcodeAsBase64FromContent(barcodePropertyValue, width, height, format);
     }
 
+    /**
+     * Convert content of barcode to barcode and then return String in BASE64 format.
+     *
+     * @param barcodeContent barcode content
+     * @param width   barcode width
+     * @param height  barcode height
+     * @param format  format of barcode
+     */
     public String getBarcodeAsBase64FromContent(String barcodeContent, int width, int height,
                                                 BarcodeFormat format) {
 
@@ -68,6 +91,11 @@ public class BarcodeService {
         return base64;
     }
 
+    /**
+     * Converting barcode type from string into {@link BarcodeFormat}
+     *
+     * @param barcodeType type of barcode
+     */
     //TODO: implement mapping for all formats
     public BarcodeFormat getBarcodeFormatByType(String barcodeType) {
         switch (barcodeType) {
