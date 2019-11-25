@@ -14,6 +14,7 @@ import ru.citeck.ecos.records2.QueryContext;
 import ru.citeck.ecos.records2.RecordsService;
 import ru.citeck.ecos.records2.RecordsServiceFactory;
 import ru.citeck.ecos.records2.graphql.RecordsMetaGql;
+import ru.citeck.ecos.records2.graphql.meta.value.MetaValuesConverter;
 import ru.citeck.ecos.records2.meta.RecordsMetaService;
 import ru.citeck.ecos.records2.request.rest.RestHandler;
 import ru.citeck.ecos.records2.resolver.RecordsResolver;
@@ -33,12 +34,14 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     private RestTemplate eurekaRestTemplate;
 
     @Bean
-    public RecordsService createRecordsServiceBean() {
+    @Override
+    protected RecordsService createRecordsService() {
         return new RecordsServiceImpl(this);
     }
 
     @Bean
-    public RecordsResolver createRecordsResolver() {
+    @Override
+    protected RecordsResolver createRecordsResolver() {
         return super.createRecordsResolver();
     }
 
@@ -54,23 +57,33 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     }
 
     @Bean
-    public QueryLangService createQueryLangService() {
+    @Override
+    protected QueryLangService createQueryLangService() {
         return super.createQueryLangService();
     }
 
     @Bean
-    public PredicateService createPredicateService() {
+    @Override
+    protected PredicateService createPredicateService() {
         return super.createPredicateService();
     }
 
     @Bean
-    public RecordsMetaService createRecordsMetaService() {
+    @Override
+    protected RecordsMetaService createRecordsMetaService() {
         return super.createRecordsMetaService();
     }
 
     @Bean
-    public RestHandler createRestHandler(RecordsService recordsService) {
-        return new RestHandler(recordsService);
+    @Override
+    protected RestHandler createRestHandler() {
+        return new RestHandler(this);
+    }
+
+    @Bean
+    @Override
+    protected MetaValuesConverter createMetaValuesConverter() {
+        return super.createMetaValuesConverter();
     }
 
     @Override
@@ -79,7 +92,7 @@ public class RecordsConfiguration extends RecordsServiceFactory {
     }
 
     @Override
-    public RecordsMetaGql createRecordsMetaGql() {
+    protected RecordsMetaGql createRecordsMetaGql() {
         return super.createRecordsMetaGql();
     }
 }

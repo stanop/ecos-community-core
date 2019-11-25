@@ -150,7 +150,7 @@
                         "inputMask": "",
                         "wysiwyg": false,
                         "editor": "",
-                        "id": "ezkjujr"
+                        "id": "e5aopu"
                       },
                       {
                         "label": "Columns",
@@ -303,7 +303,8 @@
                                 "hideCreateButton": false,
                                 "hideEditRowButton": false,
                                 "hideDeleteRowButton": false,
-                                "id": "eiuzg9"
+                                "isFullScreenWidthModal": false,
+                                "id": "ezgl1khc"
                               }
                             ],
                             "xs": 0,
@@ -359,7 +360,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "ed6nubh"
+                            "id": "e5i4ua"
                           },
                           {
                             "xs": 0,
@@ -538,7 +539,8 @@
                                 "hideCreateButton": false,
                                 "hideEditRowButton": false,
                                 "hideDeleteRowButton": false,
-                                "id": "eo61tp5"
+                                "isFullScreenWidthModal": false,
+                                "id": "ese7x3"
                               }
                             ],
                             "placeholder": "",
@@ -581,7 +583,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "etplkz"
+                            "id": "ebootlj"
                           }
                         ],
                         "mask": false,
@@ -639,7 +641,7 @@
                         "inlineColumns": false,
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "edrwh2q"
+                        "id": "elut4e9"
                       },
                       {
                         "label": "Columns",
@@ -736,7 +738,8 @@
                                 "hideCreateButton": false,
                                 "hideEditRowButton": false,
                                 "hideDeleteRowButton": false,
-                                "id": "eqmopbc"
+                                "isFullScreenWidthModal": false,
+                                "id": "els57aq"
                               }
                             ],
                             "xs": 0,
@@ -792,7 +795,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "ekk0vg"
+                            "id": "enqv0t"
                           },
                           {
                             "xs": 0,
@@ -872,7 +875,7 @@
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
-                                "id": "ewes3e4"
+                                "id": "e5vm3c"
                               }
                             ],
                             "placeholder": "",
@@ -915,7 +918,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "e0m8bb"
+                            "id": "ep2p5f"
                           }
                         ],
                         "mask": false,
@@ -973,7 +976,7 @@
                         "inlineColumns": false,
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "e33itxg"
+                        "id": "e4mg6s"
                       },
                       {
                         "label": "Columns",
@@ -996,52 +999,51 @@
                                 "ecos": {
                                   "dataType": "assoc"
                                 },
-                                "calculateValue": "value = data.DocumentData.legalEntity;",
-                                "allowCalculateOverride": true,
+                                "defaultValue": "",
                                 "encrypted": false,
                                 "displayColumnsAsyncData": [
                                   {
-                                    "label": "Полное наименование",
+                                    "label": "Full name",
                                     "value": "idocs:fullOrganizationName"
                                   },
                                   {
-                                    "label": "Альтернативное наименование",
+                                    "label": "Alternative name",
                                     "value": "idocs:shortOrganizationName"
                                   },
                                   {
-                                    "label": "ИНН",
+                                    "label": "INN",
                                     "value": "idocs:inn"
                                   },
                                   {
-                                    "label": "КПП",
+                                    "label": "KPP",
                                     "value": "idocs:kpp"
                                   },
                                   {
-                                    "label": "ОКПО",
+                                    "label": "OKPO",
                                     "value": "idocs:okpo"
                                   },
                                   {
-                                    "label": "ОГРН",
+                                    "label": "OGRN",
                                     "value": "idocs:ogrn"
                                   },
                                   {
-                                    "label": "Юридический адрес",
+                                    "label": "Juridical address",
                                     "value": "idocs:juridicalAddress"
                                   },
                                   {
-                                    "label": "Фактический адрес",
+                                    "label": "Post address",
                                     "value": "idocs:postAddress"
                                   },
                                   {
-                                    "label": "Генеральный директор",
+                                    "label": "CEO name",
                                     "value": "idocs:generalDirector"
                                   },
                                   {
-                                    "label": "Главный бухгалтер",
+                                    "label": "Chief Accountant",
                                     "value": "idocs:accountantGeneral"
                                   },
                                   {
-                                    "label": "Номер телефона",
+                                    "label": "Phone number",
                                     "value": "idocs:phoneNumber"
                                   }
                                 ],
@@ -1093,7 +1095,6 @@
                                 "type": "selectJournal",
                                 "input": true,
                                 "tags": [],
-                                "defaultValue": "",
                                 "placeholder": "",
                                 "prefix": "",
                                 "customClass": "",
@@ -1117,13 +1118,16 @@
                                 "autofocus": false,
                                 "dbIndex": false,
                                 "customDefaultValue": "",
+                                "calculateValue": "",
+                                "allowCalculateOverride": false,
                                 "widget": null,
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
                                 "validateOn": "change",
                                 "hideCreateButton": false,
                                 "hideDeleteRowButton": false,
-                                "id": "emzz2c"
+                                "isFullScreenWidthModal": false,
+                                "id": "e7ubya"
                               }
                             ],
                             "xs": 0,
@@ -1179,7 +1183,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "ebmav"
+                            "id": "ehlb7x3"
                           },
                           {
                             "xs": 0,
@@ -1211,52 +1215,51 @@
                                 "ecos": {
                                   "dataType": "assoc"
                                 },
-                                "calculateValue": "value = data.DocumentData.contractor;",
-                                "allowCalculateOverride": true,
+                                "defaultValue": "",
                                 "encrypted": false,
                                 "displayColumnsAsyncData": [
                                   {
-                                    "label": "Полное наименование",
+                                    "label": "Full name",
                                     "value": "idocs:fullOrganizationName"
                                   },
                                   {
-                                    "label": "Альтернативное наименование",
+                                    "label": "Alternative name",
                                     "value": "idocs:shortOrganizationName"
                                   },
                                   {
-                                    "label": "Тип контрагента",
+                                    "label": "Contractor type",
                                     "value": "idocs:contractorType"
                                   },
                                   {
-                                    "label": "ИНН",
+                                    "label": "INN",
                                     "value": "idocs:inn"
                                   },
                                   {
-                                    "label": "КПП",
+                                    "label": "KPP",
                                     "value": "idocs:kpp"
                                   },
                                   {
-                                    "label": "Юридический адрес",
+                                    "label": "Juridical address",
                                     "value": "idocs:juridicalAddress"
                                   },
                                   {
-                                    "label": "Фактический адрес",
+                                    "label": "Post address",
                                     "value": "idocs:postAddress"
                                   },
                                   {
-                                    "label": "Телефон",
+                                    "label": "Phone",
                                     "value": "idocs:phone"
                                   },
                                   {
-                                    "label": "Мобильный телефон",
+                                    "label": "Mobile phone",
                                     "value": "idocs:fax"
                                   },
                                   {
-                                    "label": "Адрес электронной почты",
+                                    "label": "Email address",
                                     "value": "idocs:email"
                                   },
                                   {
-                                    "label": "Генеральный директор",
+                                    "label": "CEO name",
                                     "value": "idocs:CEOname"
                                   }
                                 ],
@@ -1308,7 +1311,6 @@
                                 "type": "selectJournal",
                                 "input": true,
                                 "tags": [],
-                                "defaultValue": "",
                                 "placeholder": "",
                                 "prefix": "",
                                 "customClass": "",
@@ -1332,6 +1334,8 @@
                                 "autofocus": false,
                                 "dbIndex": false,
                                 "customDefaultValue": "",
+                                "calculateValue": "",
+                                "allowCalculateOverride": false,
                                 "widget": null,
                                 "refreshOn": "",
                                 "clearOnRefresh": false,
@@ -1339,7 +1343,8 @@
                                 "hideCreateButton": false,
                                 "hideEditRowButton": false,
                                 "hideDeleteRowButton": false,
-                                "id": "eih6bkg"
+                                "isFullScreenWidthModal": false,
+                                "id": "e3nond"
                               }
                             ],
                             "placeholder": "",
@@ -1382,7 +1387,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "eld7t2f"
+                            "id": "e4xpmgq"
                           }
                         ],
                         "mask": false,
@@ -1440,7 +1445,7 @@
                         "inlineColumns": false,
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "ef6mzw4"
+                        "id": "ew8g2r"
                       },
                       {
                         "label": "Columns",
@@ -1530,7 +1535,7 @@
                                 "searchThreshold": 0.3,
                                 "fuseOptions": {},
                                 "customOptions": {},
-                                "id": "emgvlx3"
+                                "id": "esgrlwu"
                               }
                             ],
                             "xs": 0,
@@ -1586,7 +1591,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "e9wa63"
+                            "id": "ehz6jm3"
                           },
                           {
                             "xs": 0,
@@ -1708,31 +1713,13 @@
                                           "next": "Next",
                                           "previous": "Previous",
                                           "cancel": "Cancel",
-                                          "submit": "Submit Form"
-                                        }
-                                      },
-                                      "ru": {
-                                        "translation": {
-                                          "invalid_email": "{{field}} некорректный email.",
-                                          "next": "Далее",
-                                          "complete": "Сохранение прошло успешно",
-                                          "previous": "Назад",
-                                          "min": "{{field}} не может быть меньше чем {{min}}.",
-                                          "pattern": "{{field}} не совпадает с паттерном {{pattern}}",
-                                          "or": "или",
-                                          "minLength": "{{field}} должен быть длиннее чем {{length}} символов.",
-                                          "error": "Пожалуйста, исправьте следующие ошибки перед отправкой:",
-                                          "invalid_date": "{{field}} некорректная дата.",
-                                          "browse": "выбрать",
-                                          "maxLength": "{{field}} должен быть короче чем {{length}} символов.",
-                                          "max": "{{field}} не может быть больше чем {{max}}.",
-                                          "mask": "{{field}} не совпадает с маской.",
-                                          "invalid_regex": "{{field}} не соответствует паттерну {{regex}}.",
-                                          "File Name": "Имя файла",
-                                          "Type": "Тип",
-                                          "required": "Поле {{field}} не может быть пустым",
-                                          "Drop files to attach, or": "Перетащите файлы для прикрепления, или",
-                                          "Size": "Размер"
+                                          "submit": "Submit Form",
+                                          "or": "or",
+                                          "browse": "browse",
+                                          "File Name": "File Name",
+                                          "Type": "Type",
+                                          "Drop files to attach, or": "Drop files to attach, or",
+                                          "Size": "Size"
                                         }
                                       }
                                     }
@@ -1780,7 +1767,7 @@
                                   "mousewheel": true,
                                   "arrowkeys": true
                                 },
-                                "id": "e3nbdsk"
+                                "id": "e3dzdin"
                               }
                             ],
                             "placeholder": "",
@@ -1823,7 +1810,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "e0ryz49"
+                            "id": "e4r10dj"
                           }
                         ],
                         "mask": false,
@@ -1881,7 +1868,7 @@
                         "inlineColumns": false,
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "et3se7k"
+                        "id": "e15xgi"
                       },
                       {
                         "label": "Columns",
@@ -2002,7 +1989,7 @@
                                 "mask": false,
                                 "inputType": "text",
                                 "inputMask": "",
-                                "id": "erodo2a"
+                                "id": "euy14lo"
                               }
                             ],
                             "xs": 0,
@@ -2058,7 +2045,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "efowxn"
+                            "id": "e33oz2u"
                           },
                           {
                             "xs": 0,
@@ -2136,7 +2123,7 @@
                                 "inputType": "checkbox",
                                 "value": "",
                                 "name": "",
-                                "id": "e012x3"
+                                "id": "ew88xzt"
                               }
                             ],
                             "placeholder": "",
@@ -2179,7 +2166,7 @@
                               "when": null,
                               "eq": ""
                             },
-                            "id": "e5wachg"
+                            "id": "e4cafsm"
                           }
                         ],
                         "mask": false,
@@ -2237,7 +2224,7 @@
                         "inlineColumns": false,
                         "autoAdjust": false,
                         "hideOnChildrenHidden": false,
-                        "id": "e9sqtod"
+                        "id": "ehchyvk"
                       }
                     ],
                     "tags": [],
@@ -2274,7 +2261,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "egveuf"
+                    "id": "e3jyf1g"
                   }
                 ],
                 "xs": 0,
@@ -2330,7 +2317,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "exhzfw6"
+                "id": "e7546eq"
               },
               {
                 "xs": 0,
@@ -2485,7 +2472,7 @@
                         "searchThreshold": 0.3,
                         "fuseOptions": {},
                         "customOptions": {},
-                        "id": "e9x3v4i"
+                        "id": "e9gv8fu"
                       }
                     ],
                     "tags": [],
@@ -2522,7 +2509,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "etxihmt"
+                    "id": "em1h0k"
                   },
                   {
                     "label": "Panel",
@@ -2617,7 +2604,7 @@
                         "inputType": "checkbox",
                         "value": "",
                         "name": "",
-                        "id": "eza5bi"
+                        "id": "ex1u9kf"
                       },
                       {
                         "label": "cm:content",
@@ -2699,7 +2686,7 @@
                         "uploadOnly": false,
                         "defaultOverlayWidth": 200,
                         "defaultOverlayHeight": 200,
-                        "id": "e2xwtf7"
+                        "id": "egrer9"
                       }
                     ],
                     "tags": [],
@@ -2736,7 +2723,7 @@
                     "theme": "default",
                     "breadcrumb": "default",
                     "lazyLoad": false,
-                    "id": "e8hgibe"
+                    "id": "em4pr4l"
                   }
                 ],
                 "placeholder": "",
@@ -2779,7 +2766,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e9u9orb"
+                "id": "eng9b4"
               }
             ],
             "mask": false,
@@ -2837,7 +2824,7 @@
             "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "ewv2tpq"
+            "id": "eurwsjk"
           },
           {
             "label": "tk:type",
@@ -2913,7 +2900,7 @@
             "mask": false,
             "inputType": "text",
             "inputMask": "",
-            "id": "ebej1gl"
+            "id": "eg2432a"
           }
         ],
         "tags": [],
@@ -2951,7 +2938,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "elluvza"
+        "id": "eek56co"
       },
       {
         "label": "Panel",
@@ -3075,7 +3062,7 @@
                     "mask": false,
                     "inputType": "asyncData",
                     "executionCondition": "",
-                    "id": "enz979s"
+                    "id": "el1xs5q"
                   }
                 ],
                 "xs": 0,
@@ -3131,7 +3118,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e9tmid"
+                "id": "ek91tnie"
               },
               {
                 "xs": 0,
@@ -3232,7 +3219,7 @@
                     "inputType": "asyncData",
                     "eventName": "",
                     "executionCondition": "",
-                    "id": "efz2rzf"
+                    "id": "eeneymx"
                   }
                 ],
                 "placeholder": "",
@@ -3275,7 +3262,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "euscapd"
+                "id": "ex9ap4p"
               },
               {
                 "xs": 0,
@@ -3378,7 +3365,7 @@
                     "mask": false,
                     "inputType": "asyncData",
                     "executionCondition": "",
-                    "id": "e4d5ht"
+                    "id": "eyd799c"
                   }
                 ],
                 "placeholder": "",
@@ -3421,7 +3408,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "epf86jd"
+                "id": "eu4803f"
               },
               {
                 "xs": 0,
@@ -3524,7 +3511,7 @@
                     "inputType": "asyncData",
                     "eventName": "",
                     "executionCondition": "",
-                    "id": "ez83n8m"
+                    "id": "e1zhb99"
                   }
                 ],
                 "placeholder": "",
@@ -3567,7 +3554,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "ea5owr"
+                "id": "ebb9oe"
               },
               {
                 "xs": 0,
@@ -3624,7 +3611,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e6fytr6"
+                "id": "ewe5fwm"
               },
               {
                 "xs": 0,
@@ -3734,7 +3721,7 @@
                     "mask": false,
                     "inputType": "asyncData",
                     "executionCondition": "",
-                    "id": "eeacqp7"
+                    "id": "eupt96t"
                   }
                 ],
                 "placeholder": "",
@@ -3777,7 +3764,7 @@
                   "when": null,
                   "eq": ""
                 },
-                "id": "e1u3l2a"
+                "id": "eultar"
               }
             ],
             "mask": false,
@@ -3835,7 +3822,7 @@
             "inlineColumns": false,
             "autoAdjust": false,
             "hideOnChildrenHidden": false,
-            "id": "ee8dhfd"
+            "id": "e0azn9j"
           }
         ],
         "tags": [],
@@ -3871,7 +3858,7 @@
         "theme": "default",
         "breadcrumb": "default",
         "lazyLoad": false,
-        "id": "epyr31k"
+        "id": "e9bs4xy"
       },
       {
         "label": "Columns",
@@ -3947,7 +3934,7 @@
                 "rightIcon": "",
                 "disableOnInvalid": false,
                 "theme": "default",
-                "id": "ejsyope"
+                "id": "e9uy4bm"
               }
             ],
             "xs": 0,
@@ -4003,7 +3990,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e8gmvd8"
+            "id": "ekrxcy5"
           },
           {
             "xs": 0,
@@ -4060,7 +4047,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e4zucc9"
+            "id": "enn99n"
           },
           {
             "xs": 0,
@@ -4144,7 +4131,7 @@
                 "rightIcon": "",
                 "action": "submit",
                 "theme": "default",
-                "id": "eidfs49"
+                "id": "erogfxo"
               }
             ],
             "placeholder": "",
@@ -4187,7 +4174,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eijnuxi"
+            "id": "e1976qg"
           },
           {
             "xs": 0,
@@ -4271,7 +4258,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "enu4tbr"
+                "id": "efd398t"
               }
             ],
             "placeholder": "",
@@ -4314,7 +4301,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e5p178"
+            "id": "ebef1ge"
           }
         ],
         "mask": false,
@@ -4372,7 +4359,7 @@
         "inlineColumns": false,
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "eveiod"
+        "id": "e9ocsyi"
       },
       {
         "label": "Columns",
@@ -4436,7 +4423,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "ezdgfsm"
+            "id": "e98e3la"
           },
           {
             "components": [
@@ -4509,7 +4496,7 @@
                 "rightIcon": "",
                 "disableOnInvalid": false,
                 "theme": "default",
-                "id": "eczzb3f"
+                "id": "edvru5a"
               }
             ],
             "width": 6,
@@ -4569,7 +4556,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "eg3itcn"
+            "id": "ef2c238"
           },
           {
             "xs": 0,
@@ -4652,7 +4639,7 @@
                 "leftIcon": "",
                 "rightIcon": "",
                 "action": "submit",
-                "id": "evqicdp"
+                "id": "erq7arh"
               }
             ],
             "index": 2,
@@ -4696,7 +4683,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "epq3xge"
+            "id": "eopahbq"
           },
           {
             "xs": 0,
@@ -4753,7 +4740,7 @@
               "when": null,
               "eq": ""
             },
-            "id": "e4e9qe"
+            "id": "e4wp51vf"
           }
         ],
         "mask": false,
@@ -4811,7 +4798,7 @@
         "inlineColumns": false,
         "autoAdjust": false,
         "hideOnChildrenHidden": false,
-        "id": "e7vxdsb"
+        "id": "e9a54z5"
       }
     ]
   },

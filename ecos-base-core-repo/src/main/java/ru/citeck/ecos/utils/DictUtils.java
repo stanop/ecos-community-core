@@ -8,6 +8,7 @@ import org.alfresco.service.cmr.dictionary.*;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.alfresco.util.Pair;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -78,6 +79,10 @@ public class DictUtils {
     }
 
     public ClassAttributeDefinition getAttDefinition(String name) {
+
+        if (StringUtils.isBlank(name)) {
+            return null;
+        }
 
         QName field = QName.resolveToQName(namespaceService, name);
         if (field == null) {

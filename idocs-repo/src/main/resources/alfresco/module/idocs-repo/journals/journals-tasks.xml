@@ -94,14 +94,14 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="wfm:taskType" default="true">
+            <header key="wfm:taskType" default="true" sortable="false">
                 <option name="customLabel">journal.task.bpm_description.title</option>
                 <option name="formatter">taskTitle</option>
                 <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" default="true" searchable="false" />
             <header key="cwf:sender" visible="false" />
-            <header key="wfm:assignee" default="true">
+            <header key="wfm:assignee" default="true" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER</param>
@@ -109,17 +109,17 @@
                 </criterion>
             </header>
             <header key="bpm:status" default="true" />
-            <header key="bpm:pooledActors">
+            <header key="bpm:pooledActors" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER, GROUP</param>
                     </region>
                 </criterion>
             </header>
-            <header key="wfm:document" default="true" searchable="false">
+            <header key="wfm:document" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:counterparty" default="true" searchable="false">
+            <header key="wfm:counterparty" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
             <header key="wfm:documentTypeTitle" default="true"/>
@@ -151,7 +151,7 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="wfm:taskType" default="true">
+            <header key="wfm:taskType" default="true"  sortable="false">
                 <option name="customLabel">journal.task.bpm_description.title</option>
                 <option name="formatter">taskTitle</option>
                 <option name="attributeSchema">str</option>
@@ -165,10 +165,10 @@
                     </region>
                 </criterion>
             </header>
-            <header key="wfm:document" default="true" searchable="false">
+            <header key="wfm:document" default="true" searchable="false"  sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:counterparty" default="true" searchable="false">
+            <header key="wfm:counterparty" default="true" searchable="false"  sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
             <header key="wfm:documentTypeTitle" default="true"/>
@@ -248,14 +248,14 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="wfm:taskType" default="true">
+            <header key="wfm:taskType" default="true" sortable="false">
                 <option name="customLabel">journal.task.bpm_description.title</option>
                 <option name="formatter">taskTitle</option>
                 <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" searchable="false" />
             <header key="cwf:sender" visible="false" />
-            <header key="wfm:assignee" default="true">
+            <header key="wfm:assignee" default="true" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER</param>
@@ -263,17 +263,17 @@
                 </criterion>
             </header>
             <header key="bpm:status" default="true" />
-            <header key="bpm:pooledActors">
+            <header key="bpm:pooledActors" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER, GROUP</param>
                     </region>
                 </criterion>
             </header>
-            <header key="wfm:document" default="true" searchable="false">
+            <header key="wfm:document" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:counterparty" default="true" searchable="false">
+            <header key="wfm:counterparty" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
             <header key="wfm:documentTypeTitle" default="true"/>
@@ -309,14 +309,14 @@
             <header key="bpm:priority" default="true">
                 <option name="formatter">workflowPriority</option>
             </header>
-            <header key="wfm:taskType" default="true">
+            <header key="wfm:taskType" default="true" sortable="false">
                 <option name="customLabel">journal.task.bpm_description.title</option>
                 <option name="formatter">taskTitle</option>
                 <option name="attributeSchema">str</option>
             </header>
             <header key="cwf:senderName" searchable="false"/>
             <header key="cwf:sender" visible="false" />
-            <header key="wfm:assignee" default="true">
+            <header key="wfm:assignee" default="true" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER</param>
@@ -324,17 +324,17 @@
                 </criterion>
             </header>
             <header key="bpm:status" default="true" />
-            <header key="bpm:pooledActors">
+            <header key="bpm:pooledActors" sortable="false">
                 <criterion>
                     <region name="select" template="orgstruct">
                         <param name="allowedAuthorityType">USER, GROUP</param>
                     </region>
                 </criterion>
             </header>
-            <header key="wfm:document" default="true" searchable="false">
+            <header key="wfm:document" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
-            <header key="wfm:counterparty" default="true" searchable="false">
+            <header key="wfm:counterparty" default="true" searchable="false" sortable="false">
                 <option name="formatter">documentLink</option>
             </header>
             <header key="wfm:documentTypeTitle" default="true"/>

@@ -1,5 +1,6 @@
 package ru.citeck.ecos.records.meta;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ru.citeck.ecos.records2.QueryContext;
@@ -44,7 +45,11 @@ public class MetaUtils {
             Method method = clazz.getMethod(methodName);
             return method.invoke(scope);
         } catch (NoSuchMethodException e) {
-            logger.error("Method " + methodName + " not found in " + clazz.getName(), e);
+            try {
+                return PropertyUtils.getProperty(scope, methodName);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException ex) {
+                logger.error("Attribute " + methodName + " is not found in " + clazz.getName(), e);
+            }
         } catch (IllegalAccessException | InvocationTargetException e) {
             logger.error("Error while method invocation. Method: " + methodName + " Class: " + clazz, e);
         }

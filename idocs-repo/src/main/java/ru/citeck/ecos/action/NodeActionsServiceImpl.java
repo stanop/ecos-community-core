@@ -1,5 +1,7 @@
 package ru.citeck.ecos.action;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheStats;
@@ -13,10 +15,11 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
-import ru.citeck.ecos.action.dto.ActionDTO;
 import ru.citeck.ecos.action.node.NodeActionDefinition;
 import ru.citeck.ecos.action.node.NodeActionsProvider;
 import ru.citeck.ecos.action.node.NodeActionsService;
+import ru.citeck.ecos.action.v2.NodeActionsV2Provider;
+import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +32,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class NodeActionsServiceImpl implements NodeActionsService {
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private static final String PARAM_ACTION_ID = "actionId";
     private static final String PARAM_ACTION_TITLE = "title";
     private static final String PARAM_ACTION_TYPE = "actionType";
@@ -36,7 +41,8 @@ public class NodeActionsServiceImpl implements NodeActionsService {
     private static final List<String> EXCLUDE_FROM_CONFIG = Arrays.asList(PARAM_ACTION_ID, PARAM_ACTION_TITLE,
             PARAM_ACTION_TYPE);
 
-    private List<NodeActionsProvider> providerList = new ArrayList<>();
+    private List<NodeActionsV2Provider> v2providersList = new ArrayList<>();
+    private List<NodeActionsProvider> providersList = new ArrayList<>();
 
     private LoadingCache<Pair<String, NodeRef>, NodeActions> cache;
     private long cacheAge = 600;
@@ -70,15 +76,15 @@ public class NodeActionsServiceImpl implements NodeActionsService {
     }
 
     @Override
-    public List<ActionDTO> getNodeActions(NodeRef nodeRef) {
+    public List<ActionDto> getNodeActions(NodeRef nodeRef) {
         List<Map<String, String>> rawActions = getNodeActionsRaw(nodeRef);
 
-        List<ActionDTO> result = new ArrayList<>();
+        List<ActionDto> result = new ArrayList<>();
 
         for (Map<String, String> actionRaw : rawActions) {
-            ActionDTO action = new ActionDTO();
+            ActionDto action = new ActionDto();
             action.setId(actionRaw.get("actionId"));
-            action.setTitle(actionRaw.get("title"));
+            action.setName(actionRaw.get("title"));
             action.setType(actionRaw.get("actionType"));
 
             Map<String, String> config = actionRaw.entrySet()
@@ -86,9 +92,16 @@ public class NodeActionsServiceImpl implements NodeActionsService {
                     .filter(x -> !EXCLUDE_FROM_CONFIG.contains(x.getKey()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            action.setParams(config);
+            JsonNode configNode = OBJECT_MAPPER.convertValue(config, JsonNode.class);
+
+            action.setConfig(configNode);
             result.add(action);
         }
+
+        //todo: cache?
+        result.addAll(v2providersList.stream()
+                                     .flatMap(p -> p.getActions(nodeRef).stream())
+                                     .collect(Collectors.toList()));
 
         return result;
     }
@@ -98,7 +111,7 @@ public class NodeActionsServiceImpl implements NodeActionsService {
         List<Map<String, String>> actionsData = new ArrayList<>();
 
         int id = 0;
-        for (NodeActionsProvider provider : providerList) {
+        for (NodeActionsProvider provider : providersList) {
             List<ru.citeck.ecos.action.node.NodeActionDefinition> list = provider.getNodeActions(userNode.getSecond());
             for (NodeActionDefinition action : list) {
                 action.setActionId(Integer.toString(id++));
@@ -152,7 +165,7 @@ public class NodeActionsServiceImpl implements NodeActionsService {
     }
 
     public void addActionProvider(NodeActionsProvider actionsProvider) {
-        providerList.add(actionsProvider);
+        providersList.add(actionsProvider);
     }
 
     @Autowired
@@ -160,11 +173,16 @@ public class NodeActionsServiceImpl implements NodeActionsService {
         this.nodeService = serviceRegistry.getNodeService();
     }
 
+    @Autowired
+    public void setV2providersList(List<NodeActionsV2Provider> v2providersList) {
+        this.v2providersList = v2providersList;
+    }
+
     public void setCacheAge(long cacheAge) {
         this.cacheAge = cacheAge;
     }
 
-    private class NodeActions {
+    private static class NodeActions {
 
         final Date lastModified;
         final List<Map<String, String>> actionsData;

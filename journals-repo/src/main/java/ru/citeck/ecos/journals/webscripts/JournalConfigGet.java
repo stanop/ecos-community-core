@@ -29,8 +29,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.extensions.surf.util.I18NUtil;
 import org.springframework.extensions.webscripts.*;
-import ru.citeck.ecos.action.dto.ActionDTO;
-import ru.citeck.ecos.action.dto.EvaluatorDTO;
+import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
+import ru.citeck.ecos.apps.app.module.type.type.action.EvaluatorDto;
 import ru.citeck.ecos.journals.*;
 import ru.citeck.ecos.model.JournalsModel;
 import ru.citeck.ecos.predicate.PredicateService;
@@ -352,21 +352,21 @@ public class JournalConfigGet extends AbstractWebScript {
         }
     }
 
-    private List<ActionDTO> getActions(JournalType journal) {
+    private List<ActionDto> getActions(JournalType journal) {
         return journal.getActions()
                 .stream()
                 .map(journalAction -> {
-                    ActionDTO action = new ActionDTO();
+                    ActionDto action = new ActionDto();
                     action.setId(journalAction.getId());
-                    action.setTitle(journalAction.getTitle());
+                    action.setName(journalAction.getTitle());
                     action.setType(journalAction.getType());
-                    action.setParams(journalAction.getOptions());
+                    action.setConfig(optionsToNode(journalAction.getOptions()));
 
                     JournalActionEvaluator evaluator = journalAction.getEvaluator();
                     if (evaluator != null) {
-                        EvaluatorDTO ev = new EvaluatorDTO();
+                        EvaluatorDto ev = new EvaluatorDto();
                         ev.setId(evaluator.getId());
-                        ev.setParams(evaluator.getOptions());
+                        ev.setConfig(optionsToNode(evaluator.getOptions()));
 
                         action.setEvaluator(ev);
                     }
@@ -374,6 +374,10 @@ public class JournalConfigGet extends AbstractWebScript {
                     return action;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private JsonNode optionsToNode(Map<String, String> options) {
+        return objectMapper.convertValue(options, JsonNode.class);
     }
 
     private List<GroupAction> getGroupActions(JournalType type) {
@@ -568,7 +572,7 @@ public class JournalConfigGet extends AbstractWebScript {
         JsonNode groupBy;
         String metaRecord;
         List<CreateVariantsGet.ResponseVariant> createVariants;
-        List<ActionDTO> actions;
+        List<ActionDto> actions;
         List<GroupAction> groupActions;
     }
 

@@ -197,7 +197,7 @@ public class ChainingJavaBehaviour extends BaseBehaviour {
         public boolean equals(Object obj) {
             if (obj == this) {
                 return true;
-            } else if (obj == null || !(obj instanceof JavaMethodInvocationHandler)) {
+            } else if (!(obj instanceof JavaMethodInvocationHandler)) {
                 return false;
             }
             JavaMethodInvocationHandler other = (JavaMethodInvocationHandler) obj;

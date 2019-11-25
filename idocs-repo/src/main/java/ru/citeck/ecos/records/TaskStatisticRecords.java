@@ -161,8 +161,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
                                                     Boolean showUnassignedInStatisticConfig,
                                                     AlfGqlContext context) {
 
-        List<GqlAlfNode> taskEvents = showUnassignedInStatisticConfig ? getCreateAssignCompleteEvents(taskId, context)
-                : getCreateCompleteEvents(taskId, context);
+        List<GqlAlfNode> taskEvents = getEvents(taskId, context);
 
         Optional<GqlAlfNode> startEvent = Optional.empty();
         Optional<GqlAlfNode> completeEvent = Optional.empty();
@@ -172,7 +171,7 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
             String name = (String) node.getProperties().get(HistoryModel.PROP_NAME);
             if (HistoryEventType.TASK_CREATE.equals(name)) {
                 startEvent = Optional.of(node);
-            } else if (HistoryEventType.TASK_ASSIGN.equals(name)) {
+            } else if (showUnassignedInStatisticConfig && HistoryEventType.TASK_ASSIGN.equals(name)) {
                 assignEvent = Optional.of(node);
             } else if (HistoryEventType.TASK_COMPLETE.equals(name)) {
                 completeEvent = Optional.of(node);
@@ -188,29 +187,10 @@ public class TaskStatisticRecords extends AbstractRecordsDAO implements RecordsQ
                          context);
     }
 
-    private List<GqlAlfNode> getCreateCompleteEvents(String taskId, AlfGqlContext context) {
-        return FTSQuery.create()
-                .value(HistoryModel.PROP_TASK_INSTANCE_ID, taskId).and()
-                .open()
-                .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_CREATE).or()
-                .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_COMPLETE)
-                .close()
-                .query(searchService)
-                .stream()
-                .map(context::getNode)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
-    }
+    private List<GqlAlfNode> getEvents(String taskId, AlfGqlContext context) {
 
-    private List<GqlAlfNode> getCreateAssignCompleteEvents(String taskId, AlfGqlContext context) {
         return FTSQuery.create()
-                .value(HistoryModel.PROP_TASK_INSTANCE_ID, taskId).and()
-                .open()
-                .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_CREATE).or()
-                .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_ASSIGN).or()
-                .value(HistoryModel.PROP_NAME, HistoryEventType.TASK_COMPLETE)
-                .close()
+                .value(HistoryModel.PROP_TASK_INSTANCE_ID, taskId)
                 .query(searchService)
                 .stream()
                 .map(context::getNode)

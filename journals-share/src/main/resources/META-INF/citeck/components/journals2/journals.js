@@ -636,6 +636,7 @@ Journal
     .property('type', JournalType)
     .property('criteria', [ Criterion ])
     .property('createVariants', [ CreateVariant ])
+    .property('predicate', o)
 
     .computed('availableCreateVariants', function() {
         return _.filter(this.createVariants(), function(variant) {
@@ -1468,6 +1469,42 @@ JournalsWidget
     .property('newJournalsPageEnable', b)
 
     .computed('fullscreenLink', function() {
+        var isCurrentUserInGroup = function isCurrentUserInGroup(group) {
+            var currentPersonName = Alfresco.constants.USERNAME;
+            return Citeck.Records.queryOne({
+                "query": 'TYPE:"cm:authority" AND =cm:authorityName:"' + group + '"',
+                "language": "fts-alfresco"
+            }, 'cm:member[].cm:userName').then(function (usernames) {
+                return (usernames || []).indexOf(currentPersonName) != -1
+            });
+        };
+        var checkJournalsAvailability = function isShouldDisplayJournals() {
+            return Citeck.Records.get("ecos-config@default-ui-new-journals-access-groups")
+                .load(".str").then(function(groupsInOneString) {
+
+                    if (!groupsInOneString) {
+                        return false;
+                    }
+
+                    var groups = groupsInOneString.split(',');
+                    var results = [];
+                    for(var groupsCounter = 0; groupsCounter < groups.length; ++groupsCounter) {
+                        results.push(isCurrentUserInGroup.call(this, groups[groupsCounter]));
+                    }
+                    return Promise.all(results).then(function (values) {
+                        return values.indexOf(false) == -1;
+                    });
+                });
+        };
+        var checkJournalsAvailabilityForUser = function isShouldDisplayJournalForUser() {
+            return Citeck.Records.get("ecos-config@default-ui-main-menu").load(".str").then(function(result) {
+                if (result == "left") {
+                    return checkJournalsAvailability.call(this);
+                }
+                return false;
+            });
+        };
+
         var self = this;
         var newJournalsPageEnable = this.newJournalsPageEnable();
         
@@ -1503,9 +1540,12 @@ JournalsWidget
 
         if (newJournalsPageEnable === null) {
             self.newJournalsPageEnable(false);
-            
-            Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool').then(function(isEnable){
-                self.newJournalsPageEnable(isEnable);
+
+            var isNewJournalsPageEnable = Citeck.Records.get('ecos-config@new-journals-page-enable').load('.bool');
+            var isJournalAvailibleForUser = checkJournalsAvailabilityForUser.call(this);
+
+            Promise.all([isNewJournalsPageEnable, isJournalAvailibleForUser]).then(function (values) {
+                self.newJournalsPageEnable(values[0] || values[1]);
             }).catch(function(){});
         } else if (newJournalsPageEnable === true) {
             link = menuApi.getNewJournalPageUrl({
@@ -1563,6 +1603,7 @@ JournalsWidget
         }
 
         var result = {
+            journalId: this.journalId(),
             query: recordsQuery,
             pageInfo: {
                 sortBy: this.sortByQuery(),
@@ -2086,19 +2127,28 @@ JournalsWidget
             if (datasource.indexOf('/') >= 0) {
 
                 var queryImpl = function () {
+
+                    var query = {
+                        sourceId: datasource,
+                        page: {
+                            maxItems: recordsQuery.pageInfo.maxItems,
+                            skipCount: recordsQuery.pageInfo.skipCount
+                        },
+                        sortBy: recordsQuery.sortBy
+                    };
+
+                    if (self.journal().predicate()) {
+                        query.language = 'predicate';
+                        query.query = self.journal().predicate();
+                    } else {
+                        query.language = 'criteria';
+                        query.query = recordsQuery.query;
+                    }
+
                     Alfresco.util.Ajax.jsonPost({
                         url: '/share/api/records/query',
                         dataObj: {
-                            query: {
-                                sourceId: datasource,
-                                query: recordsQuery.query,
-                                language: 'criteria',
-                                page: {
-                                    maxItems: recordsQuery.pageInfo.maxItems,
-                                    skipCount: recordsQuery.pageInfo.skipCount
-                                },
-                                sortBy: recordsQuery.sortBy
-                            },
+                            query: query,
                             schema: journalType.gqlschema()
                         },
                         successCallback: {
@@ -2129,6 +2179,9 @@ JournalsWidget
                 }
 
             } else {
+
+                delete recordsQuery.journalId;
+
                 Alfresco.util.Ajax.jsonPost({
                     url: Alfresco.constants.PROXY_URI + "/api/journals/records?journalId=" + journalType.id(),
                     dataObj: recordsQuery,

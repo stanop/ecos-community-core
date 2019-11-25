@@ -1,10 +1,9 @@
-package ru.citeck.ecos.rabbit.sender;
+package ru.citeck.ecos.eapps;
 
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.repo.module.ModuleVersionNumber;
 import org.alfresco.service.cmr.module.ModuleDetails;
 import org.alfresco.service.cmr.module.ModuleService;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationListener;
@@ -14,11 +13,12 @@ import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
+import ru.citeck.ecos.apps.EcosAppsApiFactory;
 import ru.citeck.ecos.apps.app.EcosApp;
 import ru.citeck.ecos.apps.app.EcosAppMetaDto;
 import ru.citeck.ecos.apps.app.EcosAppVersion;
+import ru.citeck.ecos.apps.app.api.EcosAppDeployMsg;
 import ru.citeck.ecos.apps.app.io.EcosAppIO;
-import ru.citeck.ecos.apps.queue.EcosAppQueues;
 import ru.citeck.ecos.utils.ResourceResolver;
 
 import java.io.File;
@@ -33,23 +33,24 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class RabbitMQEcosAppPackagesSender implements ApplicationListener<ContextRefreshedEvent> {
+public class EcosAppDeployer implements ApplicationListener<ContextRefreshedEvent> {
 
-    private final RabbitTemplate rabbitTemplate;
     private RetryTemplate retryTemplate;
 
     private List<File> modules;
     private EcosAppIO ecosAppIO;
     private ModuleService moduleService;
+    private EcosAppsApiFactory apiFactory;
 
     @Autowired
-    public RabbitMQEcosAppPackagesSender(@Qualifier("historyRabbitTemplate") RabbitTemplate rabbitTemplate,
-                                         @Qualifier("resourceResolver") ResourceResolver resolver,
-                                         EcosAppIO ecosAppIO,
-                                         ModuleService moduleService) {
+    public EcosAppDeployer(EcosAppsApiFactory apiFactory,
+                           @Qualifier("resourceResolver") ResourceResolver resolver,
+                           EcosAppIO ecosAppIO,
+                           ModuleService moduleService) {
+
+        this.apiFactory = apiFactory;
         this.ecosAppIO = ecosAppIO;
         this.moduleService = moduleService;
-        this.rabbitTemplate = rabbitTemplate;
         try {
             Resource[] modulesResources = resolver.getResources("classpath*:alfresco/module/*");
             modules = Arrays.stream(modulesResources)
@@ -79,11 +80,11 @@ public class RabbitMQEcosAppPackagesSender implements ApplicationListener<Contex
         onApplicationEvent(null);
     }
 
-    private boolean sendAppsImpl() {
+    private void sendAppsImpl() {
 
         if (modules == null) {
             log.warn("Modules is not initialized");
-            return false;
+            return;
         }
 
         for (File moduleDir : modules) {
@@ -108,15 +109,11 @@ public class RabbitMQEcosAppPackagesSender implements ApplicationListener<Contex
             meta.setDependencies(Collections.emptyMap());
 
             try {
-                if (!sendApplication(ecosAppIO.read(moduleDir, meta))) {
-                    return false;
-                }
+                sendApplication(ecosAppIO.read(moduleDir, meta));
             } catch (Exception e) {
                 log.warn("Application parsing/sending error: " + module.getId(), e);
             }
         }
-
-        return true;
     }
 
     private boolean sendApplication(EcosApp app) {
@@ -126,15 +123,16 @@ public class RabbitMQEcosAppPackagesSender implements ApplicationListener<Contex
             return true;
         }
 
-        log.info("Sending application " + app.getId() + " (" + app.getName() + ") to MQ");
-
-        byte[] data = ecosAppIO.writeToBytes(app);
+        log.info("Deploying application: " + app.getId() + " (" + app.getName() + ")");
 
         RetryTemplate retryTemplate = getRetryTemplate();
         Object result = retryTemplate.execute(
-                t -> rabbitTemplate.convertSendAndReceive(EcosAppQueues.ECOS_APPS_UPLOAD_ID, data),
+                t -> {
+                    apiFactory.getAppApi().deployApp("alfresco", app);
+                    return null;
+                },
                 c -> {
-                    log.error("Application isn't send to MQ: " + app.getId() + " (" + app.getName() + ") to MQ");
+                    log.error("Deploying application: " + app.getId() + " (" + app.getName() + ")");
                     return c.getLastThrowable();
                 });
 
@@ -149,11 +147,7 @@ public class RabbitMQEcosAppPackagesSender implements ApplicationListener<Contex
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        if (rabbitTemplate != null) {
-            sendApplications();
-        } else {
-            log.warn("Bean \"historyRabbitTemplate\" wasn't initialized, packages not send");
-        }
+        sendApplications();
     }
 
     private RetryTemplate getRetryTemplate() {

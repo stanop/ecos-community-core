@@ -171,7 +171,7 @@ public class EurekaAlfClientConfig extends AbstractEurekaConfig implements Eurek
                     getStrParam("serviceUrl.default", () -> null)
             );
             if (serviceUrls == null) {
-                Boolean isDevEnv = getBoolParam("ecos.environment.dev", () -> false);
+                Boolean isDevEnv = getGlobalBoolParam("ecos.environment.dev", () -> false);
                 if (isDevEnv) {
                     serviceUrls = "http://admin:admin@127.0.0.1:8761/eureka";
                 } else {

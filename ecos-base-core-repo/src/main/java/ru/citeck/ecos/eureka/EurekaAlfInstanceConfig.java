@@ -154,7 +154,19 @@ public class EurekaAlfInstanceConfig extends AbstractEurekaConfig implements Eur
         if (StringUtils.isNotEmpty(envValue)) {
             return envValue;
         }
-        return getStrParam("instance.ip", () -> hostInfo.getIpAddress());
+
+        return getStrParam("instance.ip", () -> {
+
+            Boolean isDev = getGlobalBoolParam("ecos.environment.dev", () -> false);
+            if (isDev) {
+                String osName = StringUtils.defaultString(System.getProperty("os.name"));
+                if (osName.contains("Windows")) {
+                    return "host.docker.internal";
+                }
+            }
+
+            return hostInfo.getIpAddress();
+        });
     }
 
     @Override

@@ -14,7 +14,7 @@ import org.alfresco.service.namespace.QName;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.extensions.surf.util.I18NUtil;
 import ru.citeck.ecos.action.node.NodeActionsService;
-import ru.citeck.ecos.action.dto.ActionDTO;
+import ru.citeck.ecos.apps.app.module.type.type.action.ActionDto;
 import ru.citeck.ecos.attr.prov.VirtualScriptAttributes;
 import ru.citeck.ecos.graphql.AlfGqlContext;
 import ru.citeck.ecos.node.AlfNodeContentPathRegistry;
@@ -42,8 +42,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AlfNodeRecord implements MetaValue {
-
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static final String VIRTUAL_SCRIPT_ATTS_ID = "virtualScriptAttributesProvider";
     private static final String DEFAULT_VERSION_LABEL = "1.0";
@@ -183,9 +181,12 @@ public class AlfNodeRecord implements MetaValue {
             case ATTR_PARENT:
             case RecordConstants.ATT_PARENT:
 
-                AlfNodeAttValue parentValue = new AlfNodeAttValue(node.getParent());
-                parentValue.init(context, field);
-                attribute = Collections.singletonList(parentValue);
+                GqlAlfNode parent = node.getParent();
+                if (parent != null) {
+                    MetaValue parentValue = new AlfNodeRecord(RecordRef.valueOf(parent.nodeRef()));
+                    parentValue.init(context, field);
+                    attribute = Collections.singletonList(parentValue);
+                }
                 break;
 
             case RecordConstants.ATT_FORM_KEY:
@@ -237,9 +238,8 @@ public class AlfNodeRecord implements MetaValue {
             case RecordConstants.ATT_ACTIONS:
 
                 NodeActionsService nodeActionsService = context.getService("nodeActionsService");
-                List<ActionDTO> actions = nodeActionsService.getNodeActions(nodeRef);
-                JsonNode actionsNode = OBJECT_MAPPER.valueToTree(actions);
-                attribute = MetaUtils.toMetaValues(actionsNode, context, field);
+                List<ActionDto> actions = nodeActionsService.getNodeActions(nodeRef);
+                attribute = MetaUtils.toMetaValues(actions, context, field);
                 break;
 
             default:

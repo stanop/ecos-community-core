@@ -1010,7 +1010,7 @@
                     "customDefaultValue": "value = 'cashless';",
                     "encrypted": false,
                     "validate": {
-                      "required": true,
+                      "required": false,
                       "customMessage": "",
                       "json": "",
                       "custom": "",
