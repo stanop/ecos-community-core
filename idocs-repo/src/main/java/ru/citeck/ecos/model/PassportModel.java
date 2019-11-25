@@ -27,6 +27,7 @@ public class PassportModel {
 	public static final QName PROP_SERIES = QName.createQName(NAMESPACE, "series");
 	public static final QName PROP_NUMBER = QName.createQName(NAMESPACE, "number");
 	public static final QName PROP_ISSUE_DATE = QName.createQName(NAMESPACE, "issueDate");
+	public static final QName PROP_EXPIRATION_DATE = QName.createQName(NAMESPACE, "expirationDate");
 	public static final QName PROP_ISSUING_AUTHORITY = QName.createQName(NAMESPACE, "issuingAuthority");
 	public static final QName PROP_SUBDIVISION_CODE = QName.createQName(NAMESPACE, "subdivisionCode");
 	public static final QName PROP_INFO = QName.createQName(NAMESPACE, "info");
