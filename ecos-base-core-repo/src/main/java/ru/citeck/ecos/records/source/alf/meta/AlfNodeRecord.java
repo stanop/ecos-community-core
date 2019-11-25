@@ -136,6 +136,27 @@ public class AlfNodeRecord implements MetaValue {
 
         switch (name) {
 
+            case "_etype":
+
+                NodeRef type = getNodeRefFromProp("tk:type");
+
+                if (type != null) {
+
+                    String etype = type.getId();
+
+                    NodeRef kind = getNodeRefFromProp("tk:kind");
+
+                    if (kind != null) {
+                        etype += "/" + kind.getId();
+                    }
+                    attribute = MetaUtils.toMetaValues(etype, context, field);
+
+                } else {
+                    return null;
+                }
+
+                break;
+
             case RecordConstants.ATT_TYPE:
 
                 attribute = MetaUtils.toMetaValues(node.type(), context, field);

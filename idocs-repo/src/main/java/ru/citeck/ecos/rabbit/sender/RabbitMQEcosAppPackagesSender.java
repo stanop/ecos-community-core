@@ -112,7 +112,7 @@ public class RabbitMQEcosAppPackagesSender implements ApplicationListener<Contex
                     return false;
                 }
             } catch (Exception e) {
-                log.warn("Application parsing/sending error: " + module.getId());
+                log.warn("Application parsing/sending error: " + module.getId(), e);
             }
         }
 
