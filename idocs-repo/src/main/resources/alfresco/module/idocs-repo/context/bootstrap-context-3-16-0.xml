@@ -28,5 +28,33 @@
         <property name="bootstrapScript" value="alfresco/module/idocs-repo/bootstrap/scripts/rename-currency-rates-journal.js"/>
     </bean>
 
-</beans>
+    <bean id="idocs.module-component.defaultNewFormsAccess" parent="idocs.import-spaces.3-15-0">
+        <property name="name" value="default-ui-new-forms-access-groups" />
+        <property name="description" value="default-ui-new-forms-access-groups" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/default-ui-new-forms-access-groups</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
 
+    <bean id="idocs.module-component.defaultNewJournalsAccess" parent="idocs.import-spaces.3-15-0">
+        <property name="name" value="default-ui-new-journals-access-groups" />
+        <property name="description" value="default-ui-new-journals-access-groups" />
+        <property name="bootstrapViews">
+            <list>
+                <props>
+                    <prop key="path">/app:company_home/app:dictionary</prop>
+                    <prop key="location">alfresco/templates/bootstrap/ru/citeck/ecosConfig.xml</prop>
+                    <prop key="messages">alfresco/module/idocs-repo/bootstrap/configs/default-ui-new-journals-access-groups</prop>
+                    <prop key="encoding">UTF-8</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+</beans>
