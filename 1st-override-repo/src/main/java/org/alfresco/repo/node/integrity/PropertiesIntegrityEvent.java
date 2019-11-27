@@ -42,21 +42,15 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
         super(nodeService, dictionaryService, nodeRef, null, null);
     }
     
-    public void checkIntegrity(List<IntegrityRecord> eventResults)
-    {
+    public void checkIntegrity(List<IntegrityRecord> eventResults) {
         NodeRef nodeRef = getNodeRef();
-        if (!nodeService.exists(nodeRef))
-        {
+        if (!nodeService.exists(nodeRef)) {
             // node has gone
-            if (logger.isDebugEnabled())
-            {
+            if (logger.isDebugEnabled()) {
                 logger.debug("Event ignored - node gone: " + this);
             }
             eventResults.clear();
-            return;
-        }
-        else
-        {
+        } else {
             checkAllProperties(getNodeRef(), eventResults);
         }
     }
@@ -127,14 +121,16 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
             Collection<IntegrityRecord> eventResults)
     {
         // check for null or empty definitions
-        if (propertyDefs == null || propertyDefs.isEmpty()) {
+        if (propertyDefs == null || propertyDefs.isEmpty())
+        {
             return;
         }
-
-        for (PropertyDefinition propertyDef : propertyDefs) {
+        for (PropertyDefinition propertyDef : propertyDefs)
+        {
             QName propertyQName = propertyDef.getName();
             // check that enforced, mandatoryproperties are set
-            if (propertyDef.isMandatory() && propertyDef.isMandatoryEnforced() && !nodeProperties.containsKey(propertyQName)) {
+            if (propertyDef.isMandatory() && propertyDef.isMandatoryEnforced() && !nodeProperties.containsKey(propertyQName))
+            {
                 IntegrityRecord result = new IntegrityRecord(
                         "Mandatory property not set: \n" +
                         "   Node: " + nodeRef + "\n" +
@@ -144,11 +140,12 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
                 // next one
                 continue;
             }
-
             Serializable propertyValue = nodeProperties.get(propertyQName);
             // Check for encryption first
-            if (propertyDef.getDataType().getName().equals(DataTypeDefinition.ENCRYPTED)) {
-                if (propertyValue != null && !(propertyValue instanceof SealedObject)) {
+            if (propertyDef.getDataType().getName().equals(DataTypeDefinition.ENCRYPTED))
+            {
+                if (propertyValue != null && !(propertyValue instanceof SealedObject))
+                {
                     IntegrityRecord result = new IntegrityRecord(
                             "Property must be encrypted: \n" +
                             "   Node: " + nodeRef + "\n" +
@@ -157,7 +154,6 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
                     eventResults.add(result);
                 }
             }
-
             // check constraints
             List<ConstraintDefinition> constraintDefs = propertyDef.getConstraints();
             for (ConstraintDefinition constraintDef : constraintDefs) {
@@ -176,8 +172,6 @@ public class PropertiesIntegrityEvent extends AbstractIntegrityEvent
                             "   Property: " + propertyQName + "\n" +
                             "   Constraint: " + e.getMessage());
                     eventResults.add(result);
-                    // next one
-                    continue;
                 }
             }
         }

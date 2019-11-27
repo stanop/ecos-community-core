@@ -600,18 +600,24 @@ public class ImporterComponent implements ImporterService
          * @see org.alfresco.repo.importer.Importer#importNode(org.alfresco.repo.importer.ImportNode)
          */
         @SuppressWarnings("unchecked")
-        public NodeRef importNode(ImportNode context) {
+        public NodeRef importNode(ImportNode context)
+        {
             // import node
             NodeRef nodeRef;
-            if (context.isReference()) {
+            if (context.isReference())
+            {
                 nodeRef = linkNode(context);
-            } else {
+            }
+            else
+            {
                 nodeRef = importStrategy.importNode(context);
             }
 
             // apply aspects
-            for (QName aspect : context.getNodeAspects()) {
-                if (!nodeService.hasAspect(nodeRef, aspect)) {
+            for (QName aspect : context.getNodeAspects())
+            {
+                if (!nodeService.hasAspect(nodeRef, aspect))
+                {
                     nodeService.addAspect(nodeRef, aspect, null);   // all properties previously added
                     reportAspectAdded(nodeRef, aspect);
                 }
@@ -621,27 +627,32 @@ public class ImporterComponent implements ImporterService
             hiddenAspect.checkHidden(nodeRef, false, false);
 
             // import content, if applicable
-            for (Map.Entry<QName,Serializable> property : context.getProperties().entrySet()) {
+            for (Map.Entry<QName,Serializable> property : context.getProperties().entrySet())
+            {
                 // filter out content properties (they're imported later)
                 DataTypeDefinition valueDataType = context.getPropertyDataType(property.getKey());
-                if (valueDataType == null || !valueDataType.getName().equals(DataTypeDefinition.CONTENT)) {
-                    continue;
-                }
-
-                // the property may be a single value or a collection - handle both
-                Object objVal = property.getValue();
-                if (objVal instanceof String) {
-                    importContent(nodeRef, property.getKey(), (String)objVal);
-                } else if (objVal instanceof Collection) {
-                    for (String value : (Collection<String>) objVal) {
-                        importContent(nodeRef, property.getKey(), value);
+                if (valueDataType != null && valueDataType.getName().equals(DataTypeDefinition.CONTENT))
+                {
+                    // the property may be a single value or a collection - handle both
+                    Object objVal = property.getValue();
+                    if (objVal instanceof String)
+                    {
+                        importContent(nodeRef, property.getKey(), (String)objVal);
+                    }
+                    else if (objVal instanceof Collection)
+                    {
+                        for (String value : (Collection<String>)objVal)
+                        {
+                            importContent(nodeRef, property.getKey(), value);
+                        }
                     }
                 }
             }
 
             // if the node has the versionable aspect applied to it,
             //  create an initial version for it
-            if (context.getNodeAspects().contains(ContentModel.ASPECT_VERSIONABLE)) {
+            if(context.getNodeAspects().contains(ContentModel.ASPECT_VERSIONABLE))
+            {
                 generateVersioningForVersionableNode(nodeRef);
             }
 
@@ -754,44 +765,46 @@ public class ImporterComponent implements ImporterService
 
             // bind import content data description
             importContentData = bindPlaceHolder(importContentData, binding);
-            if (importContentData == null || importContentData.isEmpty()) {
-                return;
+            if (importContentData != null && importContentData.length() > 0)
+            {
+                DataTypeDefinition dataTypeDef = dictionaryService.getDataType(DataTypeDefinition.CONTENT);
+                ContentData contentData = (ContentData)DefaultTypeConverter.INSTANCE.convert(dataTypeDef, importContentData);
+                String contentUrl = contentData.getContentUrl();
+                if (contentUrl != null && contentUrl.length() > 0)
+                {
+                    Map<QName, Serializable> propsBefore = null;
+                    if (contentUsageImpl != null && contentUsageImpl.getEnabled())
+                    {
+                        propsBefore = nodeService.getProperties(nodeRef);
+                    }
+
+                    if (contentCache != null)
+                    {
+                        // import content from source
+                        ContentData cachedContentData = contentCache.getContent(streamHandler, contentData);
+                        nodeService.setProperty(nodeRef, propertyName, cachedContentData);
+                    }
+                    else
+                    {
+                        // import the content from the import source file
+                        InputStream contentStream = streamHandler.importStream(contentUrl);
+                        ContentWriter writer = contentService.getWriter(nodeRef, propertyName, true);
+                        writer.setEncoding(contentData.getEncoding());
+                        writer.setMimetype(contentData.getMimetype());
+                        writer.putContent(contentStream);
+                    }
+
+                    if (contentUsageImpl != null && contentUsageImpl.getEnabled())
+                    {
+                        // Since behaviours for content nodes have all been disabled,
+                        // it is necessary to update the user's usage stats.
+                        Map<QName, Serializable> propsAfter = nodeService.getProperties(nodeRef);
+                        contentUsageImpl.onUpdateProperties(nodeRef, propsBefore, propsAfter);
+                    }
+
+                    reportContentCreated(nodeRef, contentUrl);
+                }
             }
-
-            DataTypeDefinition dataTypeDef = dictionaryService.getDataType(DataTypeDefinition.CONTENT);
-            ContentData contentData = (ContentData)DefaultTypeConverter.INSTANCE.convert(dataTypeDef, importContentData);
-            String contentUrl = contentData.getContentUrl();
-
-            if (contentUrl == null || contentUrl.isEmpty()) {
-                return;
-            }
-
-            Map<QName, Serializable> propsBefore = null;
-            if (contentUsageImpl != null && contentUsageImpl.getEnabled()) {
-                propsBefore = nodeService.getProperties(nodeRef);
-            }
-
-            if (contentCache != null) {
-                // import content from source
-                ContentData cachedContentData = contentCache.getContent(streamHandler, contentData);
-                nodeService.setProperty(nodeRef, propertyName, cachedContentData);
-            } else {
-                // import the content from the import source file
-                InputStream contentStream = streamHandler.importStream(contentUrl);
-                ContentWriter writer = contentService.getWriter(nodeRef, propertyName, true);
-                writer.setEncoding(contentData.getEncoding());
-                writer.setMimetype(contentData.getMimetype());
-                writer.putContent(contentStream);
-            }
-
-            if (contentUsageImpl != null && contentUsageImpl.getEnabled()) {
-                // Since behaviours for content nodes have all been disabled,
-                // it is necessary to update the user's usage stats.
-                Map<QName, Serializable> propsAfter = nodeService.getProperties(nodeRef);
-                contentUsageImpl.onUpdateProperties(nodeRef, propsBefore, propsAfter);
-            }
-
-            reportContentCreated(nodeRef, contentUrl);
         }
 
         /* (non-Javadoc)
@@ -839,25 +852,31 @@ public class ImporterComponent implements ImporterService
         public void end()
         {
             // Bind all node references to destination space
-            for (ImportedNodeRef importedRef : nodeRefs) {
+            for (ImportedNodeRef importedRef : nodeRefs)
+            {
                 Serializable refProperty = null;
-                if (importedRef.value != null) {
-                    if (importedRef.value instanceof Collection) {
+                if (importedRef.value != null)
+                {
+                    if (importedRef.value instanceof Collection)
+                    {
                         Collection<String> unresolvedRefs = (Collection<String>)importedRef.value;
                         List<NodeRef> resolvedRefs = new ArrayList<NodeRef>(unresolvedRefs.size());
-                        for (String unresolvedRef : unresolvedRefs) {
-                            if (unresolvedRef == null) {
-                                continue;
-                            }
-
-                            NodeRef nodeRef = resolveImportedNodeRef(importedRef.context.getNodeRef(), unresolvedRef);
-                            // TODO: Provide a better mechanism for invalid references? e.g. report warning
-                            if (nodeRef != null) {
-                                resolvedRefs.add(nodeRef);
+                        for (String unresolvedRef : unresolvedRefs)
+                        {
+                            if (unresolvedRef != null)
+                            {
+                                NodeRef nodeRef = resolveImportedNodeRef(importedRef.context.getNodeRef(), unresolvedRef);
+                                // TODO: Provide a better mechanism for invalid references? e.g. report warning
+                                if (nodeRef != null)
+                                {
+                                    resolvedRefs.add(nodeRef);
+                                }
                             }
                         }
                         refProperty = (Serializable)resolvedRefs;
-                    } else {
+                    }
+                    else
+                    {
                         refProperty = resolveImportedNodeRef(importedRef.context.getNodeRef(), (String)importedRef.value);
                         // TODO: Provide a better mechanism for invalid references? e.g. report warning
                     }
@@ -865,16 +884,22 @@ public class ImporterComponent implements ImporterService
 
                 // Set node reference on source node
                 Set<QName> nodeTypeAndAspects = getNodeTypeAndAspects(importedRef.context);
-                try {
-                    for (QName typeOrAspect: nodeTypeAndAspects) {
+                try
+                {
+                    for (QName typeOrAspect: nodeTypeAndAspects)
+                    {
                         behaviourFilter.disableBehaviour(importedRef.context.getNodeRef(), typeOrAspect);
                     }
                     nodeService.setProperty(importedRef.context.getNodeRef(), importedRef.property, refProperty);
-                    if (progress != null) {
+                    if (progress != null)
+                    {
                         progress.propertySet(importedRef.context.getNodeRef(), importedRef.property, refProperty);
                     }
-                } finally {
-                    for (QName typeOrAspect: nodeTypeAndAspects) {
+                }
+                finally
+                {
+                    for (QName typeOrAspect: nodeTypeAndAspects)
+                    {
                         behaviourFilter.enableBehaviour(importedRef.context.getNodeRef(), typeOrAspect);
                     }
                 }
@@ -952,7 +977,8 @@ public class ImporterComponent implements ImporterService
         private QName getAssocType(ImportNode context)
         {
             QName assocType = context.getParentContext().getAssocType();
-            if (assocType != null) {
+            if (assocType != null)
+            {
                 // return explicitly set association type
                 return assocType;
             }
@@ -974,19 +1000,23 @@ public class ImporterComponent implements ImporterService
             QName parentType = nodeService.getType(context.getParentContext().getParentRef());
             ClassDefinition classDef = dictionaryService.getClass(parentType);
             Map<QName, ChildAssociationDefinition> childAssocDefs = classDef.getChildAssociations();
-            for (ChildAssociationDefinition childAssocDef : childAssocDefs.values()) {
+            for (ChildAssociationDefinition childAssocDef : childAssocDefs.values())
+            {
                 targetTypes.put(childAssocDef.getTargetClass().getName(), childAssocDef.getName());
             }
             Set<QName> parentAspects = nodeService.getAspects(context.getParentContext().getParentRef());
-            for (QName parentAspect : parentAspects) {
+            for (QName parentAspect : parentAspects)
+            {
                 classDef = dictionaryService.getClass(parentAspect);
-                if (classDef == null) {
+                if (classDef == null)
+                {
                     throw new InvalidClassException(
                             "Failed import for context '" + context.getParentContext() + "'.  Unknown aspect: " + parentAspect,
                             parentAspect);
                 }
                 childAssocDefs = classDef.getChildAssociations();
-                for (ChildAssociationDefinition childAssocDef : childAssocDefs.values()) {
+                for (ChildAssociationDefinition childAssocDef : childAssocDefs.values())
+                {
                     targetTypes.put(childAssocDef.getTargetClass().getName(), childAssocDef.getName());
                 }
             }
@@ -994,13 +1024,17 @@ public class ImporterComponent implements ImporterService
             // find target class that is closest to node type or aspects
             QName closestAssocType = null;
             int closestHit = 1;
-            for (QName nodeType : nodeTypes) {
-                for (QName targetType : targetTypes.keySet()) {
+            for (QName nodeType : nodeTypes)
+            {
+                for (QName targetType : targetTypes.keySet())
+                {
                     QName testType = nodeType;
                     int howClose = 1;
-                    while (testType != null) {
+                    while (testType != null)
+                    {
                         howClose--;
-                        if (targetType.equals(testType) && howClose < closestHit) {
+                        if (targetType.equals(testType) && howClose < closestHit)
+                        {
                             closestAssocType = targetTypes.get(targetType);
                             closestHit = howClose;
                             break;
@@ -1163,32 +1197,50 @@ public class ImporterComponent implements ImporterService
             NodeRef nodeRef = null;
             importedRef = bindPlaceHolder(importedRef, binding);
 
-            if (importedRef.equals("/")) {
-                return sourceNodeRef;
-            } else if (importedRef.startsWith("/")) {
+            if (importedRef.equals("/"))
+            {
+                nodeRef = sourceNodeRef;
+            }
+            else if (importedRef.startsWith("/"))
+            {
                 String path = createValidPath(importedRef);
                 List<NodeRef> nodeRefs = searchService.selectNodes(sourceNodeRef, path, null, namespaceService, false);
-                if (!nodeRefs.isEmpty()) {
-                    return nodeRefs.get(0);
+                if (nodeRefs.size() > 0)
+                {
+                    nodeRef = nodeRefs.get(0);
                 }
-            } else if (NodeRef.isNodeRef(importedRef)) {
-                return new NodeRef(importedRef);
-            } else {
-                // resolve relative path
-                try {
-                    String path = createValidPath(importedRef);
-                    List<NodeRef> nodeRefs = searchService.selectNodes(sourceNodeRef, path, null, namespaceService, false);
-                    if (!nodeRefs.isEmpty()) {
-                        return nodeRefs.get(0);
+            }
+            else
+            {
+                // determine if node reference
+                if (NodeRef.isNodeRef(importedRef))
+                {
+                    nodeRef = new NodeRef(importedRef);
+                }
+                else
+                {
+                    // resolve relative path
+                    try
+                    {
+                        String path = createValidPath(importedRef);
+                        List<NodeRef> nodeRefs = searchService.selectNodes(sourceNodeRef, path, null, namespaceService, false);
+                        if (nodeRefs.size() > 0)
+                        {
+                            nodeRef = nodeRefs.get(0);
+                        }
                     }
-                } catch(XPathException e) {
-                    return new NodeRef(importedRef);
-                } catch(AlfrescoRuntimeException e1) {
-                    // Note: Invalid reference format - try path search instead
+                    catch(XPathException e)
+                    {
+                        nodeRef = new NodeRef(importedRef);
+                    }
+                    catch(AlfrescoRuntimeException e1)
+                    {
+                        // Note: Invalid reference format - try path search instead
+                    }
                 }
             }
 
-            return null;
+            return nodeRef;
         }
 
         /**
@@ -1531,86 +1583,87 @@ public class ImporterComponent implements ImporterService
          * Note: this will only allow incremental update of an existing node - it does not
          *       delete properties or associations.
          */
-        private class UpdateExistingNodeImporterStrategy implements NodeImporterStrategy {
+        private class UpdateExistingNodeImporterStrategy implements NodeImporterStrategy
+        {
             private NodeImporterStrategy createNewStrategy = new CreateNewNodeImporterStrategy(false);
-
-            private NodeRef getExistingNodeRef(String uuid, ImportNode node) {
-                if (uuid != null || location.getPath() == null) {
-                    return null;
-                }
-
-                NodeRef parentNodeRef = node.getParentContext().getParentRef();
-
-                // Resolve to path within node, if one specified
-                String path = location.getPath() + "/" + QName.createQName(node.getTypeDefinition().getName().getNamespaceURI(), node.getChildName()).toPrefixString();
-                // Search the node by name
-                List<NodeRef> nodeRefs = searchService.selectNodes(parentNodeRef, path, null, namespaceService, false);
-
-                return nodeRefs.isEmpty() ? null : nodeRefs.get(0);
-            }
 
             /*
              *  (non-Javadoc)
              * @see org.alfresco.repo.importer.ImporterComponent.NodeImporterStrategy#importNode(org.alfresco.repo.importer.ImportNode)
              */
-            public NodeRef importNode(ImportNode node) {
+            public NodeRef importNode(ImportNode node)
+            {
                 // replace existing node, if node to import has a UUID and an existing node of the same
                 // uuid already exists
                 String uuid = node.getUUID();
+                NodeRef existingNodeRef = null;
+                if (uuid == null && location.getPath() != null ) //need a valid location where to search
+                {
+                    NodeRef parentNodeRef = node.getParentContext().getParentRef();
 
-                //need a valid location where to search
-                NodeRef existingNodeRef = getExistingNodeRef(uuid, node);
-
-                // import as if a new node
-                if ((uuid == null || uuid.isEmpty()) && existingNodeRef == null) {
-                    return createNewStrategy.importNode(node);
-                }
-
-                if (existingNodeRef == null) {
-                    existingNodeRef = new NodeRef(rootRef.getStoreRef(), uuid);
-                }
-
-                // import as if a new node
-                if (!nodeService.exists(existingNodeRef)) {
-                    return createNewStrategy.importNode(node);
-                }
-
-                // do the update
-                Map<QName, Serializable> existingProperties = nodeService.getProperties(existingNodeRef);
-                Map<QName, Serializable> updateProperties = bindProperties(node);
-                if (updateProperties != null && !updateProperties.isEmpty()) {
-                    existingProperties.putAll(updateProperties);
-                    nodeService.setProperties(existingNodeRef, existingProperties);
-                }
-
-                // Apply permissions
-                List<AccessPermission> permissions = null;
-                AccessStatus writePermission = permissionService.hasPermission(existingNodeRef, PermissionService.CHANGE_PERMISSIONS);
-
-                // from Thor
-                if (AuthenticationUtil.isRunAsUserTheSystemUser() || writePermission.equals(AccessStatus.ALLOWED)) {
-                    boolean inheritPermissions = node.getInheritPermissions();
-                    if (!inheritPermissions) {
-                        permissionService.setInheritParentPermissions(existingNodeRef, false);
-                    }
-
-                    permissions = bindPermissions(node.getAccessControlEntries());
-
-                    for (AccessPermission permission : permissions) {
-                        permissionService.setPermission(existingNodeRef, permission.getAuthority(), permission.getPermission(), permission.getAccessStatus().equals(AccessStatus.ALLOWED));
+                    // Resolve to path within node, if one specified
+                    String path = location.getPath() + "/" + QName.createQName(node.getTypeDefinition().getName().getNamespaceURI(), node.getChildName()).toPrefixString();
+                    // Search the node by name
+                    List<NodeRef> nodeRefs = searchService.selectNodes(parentNodeRef, path, null, namespaceService, false);
+                    if (!nodeRefs.isEmpty())
+                    {
+                        existingNodeRef = nodeRefs.get(0);
                     }
                 }
+                if (uuid != null && uuid.length() > 0 || existingNodeRef != null)
+                {
+                    if (existingNodeRef == null)
+                    {
+                        existingNodeRef = new NodeRef(rootRef.getStoreRef(), uuid);
+                    }
+                    if (nodeService.exists(existingNodeRef))
+                    {
+                        // do the update
+                        Map<QName, Serializable> existingProperties = nodeService.getProperties(existingNodeRef);
+                        Map<QName, Serializable> updateProperties = bindProperties(node);
+                        if (updateProperties != null && updateProperties.size() > 0)
+                        {
+                            existingProperties.putAll(updateProperties);
+                            nodeService.setProperties(existingNodeRef, existingProperties);
+                        }
 
-                if(logger.isDebugEnabled()) {
-                    logger.debug("Updating existing node " + existingNodeRef + " at " +
-                            nodeService.getPath(existingNodeRef) + " for " + node.toString());
+                        // Apply permissions
+                        List<AccessPermission> permissions = null;
+                        AccessStatus writePermission = permissionService.hasPermission(existingNodeRef, PermissionService.CHANGE_PERMISSIONS);
+
+                        // from Thor
+                        if (AuthenticationUtil.isRunAsUserTheSystemUser() || writePermission.equals(AccessStatus.ALLOWED))
+                        {
+                            boolean inheritPermissions = node.getInheritPermissions();
+                            if (!inheritPermissions)
+                            {
+                                permissionService.setInheritParentPermissions(existingNodeRef, false);
+                            }
+
+                            permissions = bindPermissions(node.getAccessControlEntries());
+
+                            for (AccessPermission permission : permissions)
+                            {
+                                permissionService.setPermission(existingNodeRef, permission.getAuthority(), permission.getPermission(), permission.getAccessStatus().equals(AccessStatus.ALLOWED));
+                            }
+                        }
+
+                        if(logger.isDebugEnabled())
+                        {
+                            logger.debug("Updating existing node " + existingNodeRef + " at " +
+                                    nodeService.getPath(existingNodeRef) + " for " + node.toString());
+                        }
+
+                        // report update
+                        reportPropertySet(existingNodeRef, updateProperties);
+                        reportPermissionSet(existingNodeRef, permissions);
+
+                        return existingNodeRef;
+                    }
                 }
 
-                // report update
-                reportPropertySet(existingNodeRef, updateProperties);
-                reportPermissionSet(existingNodeRef, permissions);
-
-                return existingNodeRef;
+                // import as if a new node
+                return createNewStrategy.importNode(node);
             }
         }
 
