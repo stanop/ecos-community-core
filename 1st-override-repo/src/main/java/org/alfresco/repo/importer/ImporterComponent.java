@@ -354,7 +354,7 @@ public class ImporterComponent implements ImporterService
      */
     private String createValidPath(String path)
     {
-        StringBuilder validPath = new StringBuilder(path.length());
+        StringBuffer validPath = new StringBuffer(path.length());
         String[] segments = StringUtils.delimitedListToStringArray(path, "/");
         for (int i = 0; i < segments.length; i++)
         {
