@@ -1,11 +1,16 @@
 package ru.citeck.ecos.icase.completeness;
 
+import org.alfresco.service.cmr.dictionary.DictionaryService;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.namespace.QName;
+import org.apache.commons.lang.StringUtils;
+import ru.citeck.ecos.icase.CaseUtils;
 import ru.citeck.ecos.icase.completeness.current.CurrentLevelsResolver;
+import ru.citeck.ecos.icase.completeness.dto.CaseDocumentDto;
 import ru.citeck.ecos.icase.element.CaseElementDAO;
 import ru.citeck.ecos.icase.element.CaseElementServiceImpl;
-import ru.citeck.ecos.icase.CaseUtils;
 import ru.citeck.ecos.icase.element.config.ElementConfigDto;
 import ru.citeck.ecos.model.RequirementModel;
 import ru.citeck.ecos.pred.PredicateService;
@@ -14,6 +19,8 @@ import ru.citeck.ecos.utils.RepoUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.citeck.ecos.constants.RequirementsConstants.*;
+
 public class CaseCompletenessServiceImpl implements CaseCompletenessService {
 
     private static final String MODEL_CONTAINER = "space";
@@ -21,6 +28,7 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
 
     private NodeService nodeService;
     private PredicateService predicateService;
+    private DictionaryService dictionaryService;
     private CaseElementServiceImpl caseElementService;
 
     private final List<CurrentLevelsResolver> currentLevelsResolvers = new ArrayList<>();
@@ -73,15 +81,15 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
     @Override
     public Set<NodeRef> getCompletedLevels(NodeRef caseRef) {
         return getAllLevels(caseRef).stream()
-                                    .filter(levelRef -> isLevelCompleted(caseRef, levelRef))
-                                    .collect(Collectors.toSet());
+                .filter(levelRef -> isLevelCompleted(caseRef, levelRef))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public Set<NodeRef> getLevelRequirements(NodeRef levelRef) {
         List<NodeRef> requirements = RepoUtils.getChildrenByAssoc(levelRef,
-                                                                  RequirementModel.ASSOC_LEVEL_REQUIREMENT,
-                                                                  nodeService);
+                RequirementModel.ASSOC_LEVEL_REQUIREMENT,
+                nodeService);
         return toSet(requirements);
     }
 
@@ -162,6 +170,65 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
         this.currentLevelsResolvers.add(resolver);
     }
 
+    @Override
+    public List<CaseDocumentDto> getCaseDocuments(NodeRef nodeRef) {
+
+        List<CaseDocumentDto> resultDtos = new ArrayList<>();
+
+        Set<NodeRef> currentLevels = this.getCurrentLevels(nodeRef);
+        Set<NodeRef> allLevels = this.getAllLevels(nodeRef);
+
+        for (NodeRef levelNodeRef : allLevels) {
+
+            Set<NodeRef> levelRequirements = getLevelRequirements(levelNodeRef);
+
+            for (NodeRef requirement : levelRequirements) {
+
+                String quantifier = (String) nodeService.getProperty(requirement, QName.createQName(PRED_QUANTIFIER));
+
+                List<ChildAssociationRef> childAssociations =
+                        nodeService.getChildAssocs(requirement, Collections.singleton(QName.createQName(PRED_CONSEQUENT)));
+
+                childAssociations.stream()
+                        .filter(child ->
+                                RepoUtils.isSubType(child.getChildRef(),
+                                        QName.createQName(PRED_KIND_PREDICATE), nodeService, dictionaryService))
+                        .forEach(child -> {
+
+                            boolean mandatory = false;
+                            if ((quantifier.equals("EXACTLY_ONE") || quantifier.equals("EXISTS")) &&
+                                    currentLevels.contains(levelNodeRef)) {
+                                mandatory = true;
+                            }
+
+                            boolean multiple = false;
+                            if (!quantifier.equals("EXACTLY_ONE") && !quantifier.equals("SINGLE")) {
+                                multiple = true;
+                            }
+
+                            String documentKind = removeNodeRefPrefix((String) nodeService.getProperty(child.getChildRef(),
+                                    QName.createQName(PRED_REQUIRED_KIND)));
+                            String documentType = removeNodeRefPrefix((String) nodeService.getProperty(child.getChildRef(),
+                                    QName.createQName(PRED_REQUIRED_TYPE)));
+
+                            String type = documentType;
+                            if (StringUtils.isNotBlank(documentKind)) {
+                                type += "/" + documentKind;
+                            }
+
+                            resultDtos.add(new CaseDocumentDto(type, multiple, mandatory));
+
+                        });
+            }
+        }
+
+        return resultDtos;
+    }
+
+    private String removeNodeRefPrefix(String nodeRef) {
+        return nodeRef.replace("workspace://SpacesStore/", "");
+    }
+
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
     }
@@ -172,5 +239,9 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
 
     public void setCaseElementService(CaseElementServiceImpl caseElementService) {
         this.caseElementService = caseElementService;
+    }
+
+    public void setDictionaryService(DictionaryService dictionaryService) {
+        this.dictionaryService = dictionaryService;
     }
 }

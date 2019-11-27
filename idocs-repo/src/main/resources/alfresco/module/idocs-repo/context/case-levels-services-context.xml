@@ -8,6 +8,7 @@
 		<property name="nodeService" ref="nodeService" />
 		<property name="predicateService" ref="predicateService" />
 		<property name="caseElementService" ref="caseElementService" />
+        <property name="dictionaryService" ref="dictionaryService" />
 	</bean>
 
     <bean id="caseCompletenessService_cache_interceptor" class="ru.citeck.ecos.cache.GlobalCacheInterceptor" />
