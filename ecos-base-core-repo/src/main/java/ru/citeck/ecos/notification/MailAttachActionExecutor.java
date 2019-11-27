@@ -46,38 +46,28 @@ public class MailAttachActionExecutor extends MailActionExecuter {
     public MimeMessageHelper prepareEmail(Action ruleAction, NodeRef actionedUponNodeRef, Pair<String, Locale> recipient, Pair<InternetAddress, Locale> sender) {
         MimeMessageHelper mimeMessageHelper = super.prepareEmail(ruleAction, actionedUponNodeRef, recipient, sender);
         MimeMessageHelper helper = mimeMessageHelper;
-        logger.debug("actionedUponNodeRef "+ actionedUponNodeRef);
-        logger.debug("ruleAction.getParameterValues "+ ruleAction.getParameterValues());
-        Map<String, Object> template_modelParameterValue = (Map<String, Object>) ruleAction.getParameterValue("template_model");
-
-        if (template_modelParameterValue == null) {
-            return helper;
-        }
-
-
-        Map<String, Object> argsParameterValues = (Map<String, Object>) template_modelParameterValue.get("args");
-
-        if (argsParameterValues == null) {
-            return helper;
-        }
-
-        ArrayList attachments = (ArrayList)argsParameterValues.get("attachments");
-        String enc = helper.getEncoding();
-        logger.debug("helper.getEncoding() 1 " + enc);
-
-        if (attachments == null) {
-            return helper;
-        }
-
-        try {
-            logger.debug("attachments != null");
-            MimeMessage attachment = mimeMessageHelper.getMimeMessage();
-            helper = new MimeMessageHelper(new MimeMessage(attachment), true, enc);
-            Object name = attachment.getContent();
-            logger.debug("name "+ name);
-            if (name == null) {
-                throw new AlfrescoRuntimeException("You need to set body of the message");
-            }
+        logger.debug("actionedUponNodeRef "+actionedUponNodeRef);
+        logger.debug("ruleAction.getParameterValues "+ruleAction.getParameterValues());
+        Map<String, Object> template_modelParameterValue = (Map<String, Object>)ruleAction.getParameterValue("template_model");
+        if(template_modelParameterValue!=null)
+        {
+            Map<String, Object> argsParameterValues = (Map<String, Object>)template_modelParameterValue.get("args");
+            if(argsParameterValues!=null)
+            {
+                ArrayList attachments = (ArrayList)argsParameterValues.get("attachments");
+                logger.debug("helper.getEncoding() 1 "+helper.getEncoding());
+                String enc = helper.getEncoding();
+                if (attachments != null) {
+                    try {
+                        logger.debug("attachments != null");
+                        MimeMessage attachment = mimeMessageHelper.getMimeMessage();
+                        MimeMessage attach = new MimeMessage(attachment);
+                        helper = new MimeMessageHelper(attach, true, enc);
+                        Object name = attachment.getContent();
+                        logger.debug("name "+name);
+                        if (name == null) {
+                            throw new AlfrescoRuntimeException("You need to set body of the message");
+                        }
 
             helper.setText(name.toString(), true);
         } catch (MessagingException var15) {

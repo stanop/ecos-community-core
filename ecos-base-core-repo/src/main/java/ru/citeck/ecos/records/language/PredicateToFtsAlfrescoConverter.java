@@ -37,7 +37,7 @@ import static ru.citeck.ecos.predicate.model.ValuePredicate.Type.EQ;
 public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
     private static final Log logger = LogFactory.getLog(PredicateToFtsAlfrescoConverter.class);
-    public static final String COMMA_DELIMER = ",";
+    private static final String COMMA_DELIMER = ",";
 
     private DictUtils dictUtils;
     private SearchService searchService;
@@ -182,7 +182,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
                                 QName typeName = dataType != null ? dataType.getName() : null;
 
                                 if (DataTypeDefinition.TEXT.equals(typeName) ||
-                                    DataTypeDefinition.MLTEXT.equals(typeName)) {
+                                        DataTypeDefinition.MLTEXT.equals(typeName)) {
 
                                     query.value(field, "*" + valueStr + "*");
 
@@ -214,7 +214,7 @@ public class PredicateToFtsAlfrescoConverter implements QueryLangConverter {
 
                                     Map<QName, PropertyDefinition> props = new HashMap<>(targetClass.getProperties());
                                     targetClass.getDefaultAspects(true)
-                                               .forEach(a -> props.putAll(a.getProperties()));
+                                            .forEach(a -> props.putAll(a.getProperties()));
 
                                     props.forEach((name, def) -> {
 
