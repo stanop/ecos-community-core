@@ -62,7 +62,8 @@ public class MailAttachActionExecutor extends MailActionExecuter {
                     try {
                         logger.debug("attachments != null");
                         MimeMessage attachment = mimeMessageHelper.getMimeMessage();
-                        helper = new MimeMessageHelper(attachment, true, enc);
+                        MimeMessage attach = new MimeMessage(attachment);
+                        helper = new MimeMessageHelper(attach, true, enc);
                         Object name = attachment.getContent();
                         logger.debug("name "+name);
                         if (name == null) {
