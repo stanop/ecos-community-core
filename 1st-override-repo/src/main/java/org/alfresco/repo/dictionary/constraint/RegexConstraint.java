@@ -111,7 +111,7 @@ public class RegexConstraint extends AbstractConstraint
     @Override
     public Map<String, Object> getParameters()
     {
-        Map<String, Object> params = new HashMap<>(2);
+        Map<String, Object> params = new HashMap<String, Object>(2);
         
         params.put("expression", this.expression);
         params.put("requiresMatch", this.requiresMatch);

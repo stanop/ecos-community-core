@@ -314,7 +314,6 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
     private void fillAdditionalInfo(EventDto eventDto, NodeRef eventRef) {
         if (eventDto instanceof UserActionEventDto) {
             fillAdditionalUserActionEventInfo((UserActionEventDto) eventDto, eventRef);
-            return;
         }
     }
 

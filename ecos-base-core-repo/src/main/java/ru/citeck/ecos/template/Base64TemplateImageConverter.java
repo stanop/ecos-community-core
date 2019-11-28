@@ -1,22 +1,17 @@
 package ru.citeck.ecos.template;
 
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.common.BitMatrix;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.template.BaseTemplateProcessorExtension;
 import org.alfresco.repo.template.TemplateNode;
 import org.alfresco.service.cmr.repository.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.citeck.ecos.barcode.BarcodeService;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -32,16 +27,15 @@ import java.util.List;
  */
 public class Base64TemplateImageConverter extends BaseTemplateProcessorExtension {
 
-    private static final String IMAGE_SRC_FORMAT = "data:image/%s;base64,%s";
-
     private static final List<String> SUPPORT_IMAGES_EXTENSIONS = Arrays.asList("bmp", "gif", "jpeg", "jpg", "png");
 
-    private static final String QR_CODE_FORMAT = "png";
-    private static final String QR_CODE_CONTENT_ENCODING = "UTF-8";
+    private static final String IMAGE_SRC_FORMAT = "data:image/%s;base64,%s";
+    private static final String PNG_IMAGE_FORMAT = "png";
 
     private NodeService nodeService;
     private ContentService contentService;
     private MimetypeService mimetypeService;
+    private BarcodeService barcodeService;
 
     /**
      * Convert Document {@link ContentModel#PROP_CONTENT}
@@ -99,28 +93,8 @@ public class Base64TemplateImageConverter extends BaseTemplateProcessorExtension
      * @param height  QR code height
      */
     public String fromQrCode(String content, int width, int height) {
-        BitMatrix matrix;
-        com.google.zxing.Writer writer = new MultiFormatWriter();
-
-        try {
-            Hashtable<EncodeHintType, String> hints = new Hashtable<>(1);
-            hints.put(EncodeHintType.CHARACTER_SET, QR_CODE_CONTENT_ENCODING);
-            matrix = writer.encode(content,
-                    BarcodeFormat.QR_CODE, width, height, hints);
-        } catch (com.google.zxing.WriterException e) {
-            throw new RuntimeException("Error encode QR code", e);
-        }
-
-        ByteArrayOutputStream out;
-        try {
-            out = new ByteArrayOutputStream();
-            MatrixToImageWriter.writeToStream(matrix, QR_CODE_FORMAT, out);
-        } catch (IOException e) {
-            throw new RuntimeException("Error encode QR code", e);
-        }
-
-        String base64 = DatatypeConverter.printBase64Binary(out.toByteArray());
-        return String.format(IMAGE_SRC_FORMAT, QR_CODE_FORMAT, base64);
+        String base64 = barcodeService.getBarcodeAsBase64FromContent(content, width, height, BarcodeFormat.QR_CODE);
+        return String.format(IMAGE_SRC_FORMAT, PNG_IMAGE_FORMAT, base64);
     }
 
     @Autowired
@@ -136,5 +110,10 @@ public class Base64TemplateImageConverter extends BaseTemplateProcessorExtension
     @Autowired
     public void setMimetypeService(MimetypeService mimetypeService) {
         this.mimetypeService = mimetypeService;
+    }
+
+    @Autowired
+    public void setBarcodeService(BarcodeService barcodeService) {
+        this.barcodeService = barcodeService;
     }
 }

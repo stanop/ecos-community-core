@@ -197,7 +197,7 @@ public class DocxFreeMarkerProcessor extends BaseProcessor implements TemplatePr
 		}
 	}
 
-	private static enum LexerState {
+	private enum LexerState {
 		TEXT,
 		EXPR,
 		STRING

@@ -140,7 +140,7 @@ public class ListenerUtils {
         ArrayList<NodeRef> target = new ArrayList<>(source.size());
         for (Object item : source) {
             if (item == null) {
-                continue;
+                // empty
             } else if (item instanceof NodeRef) {
                 target.add((NodeRef) item);
             } else if (item instanceof ScriptNode) {
