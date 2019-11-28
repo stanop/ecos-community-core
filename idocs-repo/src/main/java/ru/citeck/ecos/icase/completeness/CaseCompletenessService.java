@@ -5,7 +5,6 @@ import ru.citeck.ecos.icase.completeness.current.CurrentLevelsResolver;
 import ru.citeck.ecos.icase.completeness.dto.CaseDocumentDto;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 public interface CaseCompletenessService {
@@ -65,5 +64,5 @@ public interface CaseCompletenessService {
      */
     void register(CurrentLevelsResolver resolver);
 
-    List<CaseDocumentDto> getCaseDocuments(NodeRef nodeRef);
+    Set<CaseDocumentDto> getCaseDocuments(NodeRef nodeRef);
 }

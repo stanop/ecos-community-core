@@ -25,6 +25,9 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
 
     private static final String MODEL_CONTAINER = "space";
     private static final String MODEL_ELEMENT = "document";
+    private static final String EXACTLY_ONE_QUANTIFIER_VALUE = "EXACTLY_ONE";
+    private static final String EXISTS_QUANTIFIER_VALUE = "EXISTS";
+    private static final String SINGLE_QUANTIFIER_VALUE = "SINGLE";
 
     private NodeService nodeService;
     private PredicateService predicateService;
@@ -171,10 +174,9 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
     }
 
     @Override
-    public List<CaseDocumentDto> getCaseDocuments(NodeRef nodeRef) {
+    public Set<CaseDocumentDto> getCaseDocuments(NodeRef nodeRef) {
 
-        List<CaseDocumentDto> resultDtos = new ArrayList<>();
-
+        Set<CaseDocumentDto> resultDtos = new HashSet<>();
         Set<NodeRef> currentLevels = this.getCurrentLevels(nodeRef);
         Set<NodeRef> allLevels = this.getAllLevels(nodeRef);
 
@@ -189,40 +191,46 @@ public class CaseCompletenessServiceImpl implements CaseCompletenessService {
                 List<ChildAssociationRef> childAssociations =
                         nodeService.getChildAssocs(requirement, Collections.singleton(QName.createQName(PRED_CONSEQUENT)));
 
-                childAssociations.stream()
-                        .filter(child ->
-                                RepoUtils.isSubType(child.getChildRef(),
-                                        QName.createQName(PRED_KIND_PREDICATE), nodeService, dictionaryService))
-                        .forEach(child -> {
+                Set<CaseDocumentDto> extractedCaseDocumentDtos = childAssociations.stream()
+                        .map(ChildAssociationRef::getChildRef)
+                        .filter(this::isKindPredicate)
+                        .map(childNodeRef -> childNodeRefToCaseDocumentDto(childNodeRef, quantifier,
+                                currentLevels.contains(levelNodeRef)))
+                        .collect(Collectors.toSet());
 
-                            boolean mandatory = false;
-                            if ((quantifier.equals("EXACTLY_ONE") || quantifier.equals("EXISTS")) &&
-                                    currentLevels.contains(levelNodeRef)) {
-                                mandatory = true;
-                            }
-
-                            boolean multiple = false;
-                            if (!quantifier.equals("EXACTLY_ONE") && !quantifier.equals("SINGLE")) {
-                                multiple = true;
-                            }
-
-                            String documentKind = removeNodeRefPrefix((String) nodeService.getProperty(child.getChildRef(),
-                                    QName.createQName(PRED_REQUIRED_KIND)));
-                            String documentType = removeNodeRefPrefix((String) nodeService.getProperty(child.getChildRef(),
-                                    QName.createQName(PRED_REQUIRED_TYPE)));
-
-                            String type = documentType;
-                            if (StringUtils.isNotBlank(documentKind)) {
-                                type += "/" + documentKind;
-                            }
-
-                            resultDtos.add(new CaseDocumentDto(type, multiple, mandatory));
-
-                        });
+                resultDtos.addAll(extractedCaseDocumentDtos);
             }
         }
 
         return resultDtos;
+    }
+
+    private boolean isKindPredicate(NodeRef nodeRef) {
+        return RepoUtils.isSubType(nodeRef, QName.createQName(PRED_KIND_PREDICATE), nodeService, dictionaryService);
+    }
+
+    private CaseDocumentDto childNodeRefToCaseDocumentDto(NodeRef nodeRef, String quantifier, boolean hasLevel) {
+        boolean mandatory = false;
+        if ((quantifier.equals(EXACTLY_ONE_QUANTIFIER_VALUE) || quantifier.equals(EXISTS_QUANTIFIER_VALUE)) && hasLevel) {
+            mandatory = true;
+        }
+
+        boolean multiple = false;
+        if (!quantifier.equals(EXACTLY_ONE_QUANTIFIER_VALUE) && !quantifier.equals(SINGLE_QUANTIFIER_VALUE)) {
+            multiple = true;
+        }
+
+        String documentKind = removeNodeRefPrefix((String) nodeService.getProperty(nodeRef,
+                QName.createQName(PRED_REQUIRED_KIND)));
+        String documentType = removeNodeRefPrefix((String) nodeService.getProperty(nodeRef,
+                QName.createQName(PRED_REQUIRED_TYPE)));
+
+        String type = documentType;
+        if (StringUtils.isNotBlank(documentKind)) {
+            type += "/" + documentKind;
+        }
+
+        return new CaseDocumentDto(type, multiple, mandatory);
     }
 
     private String removeNodeRefPrefix(String nodeRef) {

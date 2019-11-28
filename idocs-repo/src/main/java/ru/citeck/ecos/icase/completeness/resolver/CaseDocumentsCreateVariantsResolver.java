@@ -49,7 +49,7 @@ public class CaseDocumentsCreateVariantsResolver implements CreateVariantsResolv
 
         NodeRef nodeRef = new NodeRef(recordRef.getId());
 
-        List<CaseDocumentDto> documentDtos = caseCompletenessService.getCaseDocuments(nodeRef);
+        Set<CaseDocumentDto> documentDtos = caseCompletenessService.getCaseDocuments(nodeRef);
 
         for (CaseDocumentDto documentDto : documentDtos) {
             String documentType = documentDto.getType();

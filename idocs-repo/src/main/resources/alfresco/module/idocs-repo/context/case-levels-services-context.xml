@@ -1,17 +1,18 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
-		  "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+        "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 <beans>
 
-	<!-- case levels services -->
-	<bean name="caseCompletenessService" class="ru.citeck.ecos.icase.completeness.CaseCompletenessServiceImpl" init-method="init" depends-on="idocs.dictionaryBootstrap">
-		<property name="nodeService" ref="nodeService" />
-		<property name="predicateService" ref="predicateService" />
-		<property name="caseElementService" ref="caseElementService" />
-        <property name="dictionaryService" ref="dictionaryService" />
-	</bean>
+    <!-- case levels services -->
+    <bean name="caseCompletenessService" class="ru.citeck.ecos.icase.completeness.CaseCompletenessServiceImpl"
+          init-method="init" depends-on="idocs.dictionaryBootstrap">
+        <property name="nodeService" ref="nodeService"/>
+        <property name="predicateService" ref="predicateService"/>
+        <property name="caseElementService" ref="caseElementService"/>
+        <property name="dictionaryService" ref="dictionaryService"/>
+    </bean>
 
-    <bean id="caseCompletenessService_cache_interceptor" class="ru.citeck.ecos.cache.GlobalCacheInterceptor" />
+    <bean id="caseCompletenessService_cache_interceptor" class="ru.citeck.ecos.cache.GlobalCacheInterceptor"/>
 
     <bean id="caseCompletenessServiceCached" class="org.springframework.aop.framework.ProxyFactoryBean">
         <property name="proxyInterfaces">
@@ -19,33 +20,35 @@
                 <value>ru.citeck.ecos.icase.completeness.CaseCompletenessService</value>
             </list>
         </property>
-        <property name="target" ref="caseCompletenessService" />
+        <property name="target" ref="caseCompletenessService"/>
         <property name="interceptorNames">
             <list>
                 <idref bean="caseCompletenessService_cache_interceptor"/>
             </list>
         </property>
     </bean>
-	
-	<bean name="caseCompletenessServiceJS" class="ru.citeck.ecos.icase.completeness.CaseCompletenessServiceJS" parent="baseJavaScriptExtension">
-		<property name="extensionName" value="completeness" />
-		<property name="serviceRegistry" ref="ServiceRegistry" />
-		<property name="impl" ref="caseCompletenessService" />
-	</bean>
+
+    <bean name="caseCompletenessServiceJS" class="ru.citeck.ecos.icase.completeness.CaseCompletenessServiceJS"
+          parent="baseJavaScriptExtension">
+        <property name="extensionName" value="completeness"/>
+        <property name="serviceRegistry" ref="ServiceRegistry"/>
+        <property name="impl" ref="caseCompletenessService"/>
+    </bean>
 
     <bean id="completeLevelsChecker"
           class="ru.citeck.ecos.icase.levels.api.CompleteLevelsCheckerImpl">
-        <property name="caseCompletenessService" ref="caseCompletenessService" />
+        <property name="caseCompletenessService" ref="caseCompletenessService"/>
     </bean>
 
     <bean id="completeLevelsCheckerJS" name="CompleteLevelsCheckerJS"
           class="ru.citeck.ecos.icase.levels.api.CompleteLevelsCheckerJSImpl"
           parent="baseJavaScriptExtension">
-        <property name="extensionName" value="completeLevelsChecker" />
-        <property name="completeLevelsChecker" ref="completeLevelsChecker" />
+        <property name="extensionName" value="completeLevelsChecker"/>
+        <property name="completeLevelsChecker" ref="completeLevelsChecker"/>
     </bean>
 
-    <bean id="idocs.CaseCompletenessStageBehavior" class="ru.citeck.ecos.behavior.CaseCompletenessStageBehavior" init-method="init">
+    <bean id="idocs.CaseCompletenessStageBehavior" class="ru.citeck.ecos.behavior.CaseCompletenessStageBehavior"
+          init-method="init">
         <property name="caseActivityService" ref="caseActivityService"/>
         <property name="policyComponent" ref="policyComponent"/>
         <property name="nodeService" ref="nodeService"/>
@@ -53,7 +56,7 @@
     </bean>
 
     <bean id="copyCompletenessLevelsIgnoreBehaviour" parent="CopyDocumentIgnoreFieldBehaviour">
-        <property name="className" value="req:hasCompletenessLevels" />
+        <property name="className" value="req:hasCompletenessLevels"/>
         <property name="ignoredAssociations">
             <list>
                 <value>req_passedRequirements</value>
