@@ -598,49 +598,4 @@ public class HistoryService {
         }
         nodeService.addProperties(historyEvent, additionalProperties);
     }
-
-    /**
-     * History batch process worker
-     */
-    private static class HistoryTransferWorker extends BatchProcessor.BatchProcessWorkerAdaptor<NodeRef> {
-
-        private HistoryRemoteService historyService;
-
-        HistoryTransferWorker(HistoryRemoteService historyService) {
-            this.historyService = historyService;
-        }
-
-        @Override
-        public void process(NodeRef eventRef) throws Throwable {
-            historyService.sendHistoryEventToRemoteService(eventRef);
-        }
-    }
-
-    /**
-     * History transfer provider
-     */
-    private static class HistoryTransferProvider implements BatchProcessWorkProvider<NodeRef> {
-
-        private Collection<NodeRef> events;
-        private boolean hasMore = true;
-
-        HistoryTransferProvider(Collection<NodeRef> events) {
-            this.events = events;
-        }
-
-        @Override
-        public int getTotalEstimatedWorkSize() {
-            return events.size();
-        }
-
-        @Override
-        public Collection<NodeRef> getNextWork() {
-            if (hasMore) {
-                hasMore = false;
-                return events;
-            } else {
-                return Collections.emptyList();
-            }
-        }
-    }
 }
