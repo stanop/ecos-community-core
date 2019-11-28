@@ -990,7 +990,10 @@ public class ImporterComponent implements ImporterService
             // build type and aspect list for node
             List<QName> nodeTypes = new ArrayList<QName>();
             nodeTypes.add(context.getTypeDefinition().getName());
-            nodeTypes.addAll(context.getNodeAspects());
+            for (QName aspect : context.getNodeAspects())
+            {
+                nodeTypes.add(aspect);
+            }
 
             // build target class types for parent
             Map<QName, QName> targetTypes = new HashMap<QName, QName>();
