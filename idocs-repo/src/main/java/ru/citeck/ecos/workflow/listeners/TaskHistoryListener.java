@@ -160,6 +160,7 @@ public class TaskHistoryListener extends AbstractTaskListener {
         String taskTitleProp = qNameConverter.mapQNameToName(CiteckWorkflowModel.PROP_TASK_TITLE);
         eventProperties.put(HistoryModel.PROP_TASK_TITLE, (String) task.getVariable(taskTitleProp));
 
+        eventProperties.put(HistoryModel.PROP_TASK_FORM_KEY, ListenerUtils.getTaskFormKey(task));
         eventProperties.put(HistoryModel.PROP_WORKFLOW_INSTANCE_ID, ACTIVITI_PREFIX + task.getProcessInstanceId());
         eventProperties.put(HistoryModel.PROP_WORKFLOW_DESCRIPTION, (Serializable) task.getExecution().getVariable(
                 VAR_DESCRIPTION));
