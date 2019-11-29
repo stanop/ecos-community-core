@@ -7,4 +7,6 @@ public interface RecordConstants {
     String ATT_TYPE = "_type";
     String ATT_FORM_KEY = "_formKey";
     String ATT_VIEW_FORM_KEY = "_viewFormKey";
+    String ATT_TK_TYPE = "tk:type";
+    String ATT_TK_KIND = "tk:kind";
 }
