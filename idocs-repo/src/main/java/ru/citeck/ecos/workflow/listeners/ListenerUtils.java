@@ -36,6 +36,7 @@ import org.alfresco.service.cmr.workflow.WorkflowDefinition;
 import org.alfresco.service.cmr.workflow.WorkflowService;
 import org.alfresco.service.cmr.workflow.WorkflowTask;
 import org.alfresco.service.namespace.RegexQNamePattern;
+import org.apache.commons.lang3.StringUtils;
 import ru.citeck.ecos.utils.ReflectionUtils;
 
 import java.util.*;
@@ -45,6 +46,7 @@ public class ListenerUtils {
     public static final String ACTIVITI_PREFIX = ActivitiConstants.ENGINE_ID + "$";
     public static final String VAR_PACKAGE = "bpm_package";
     public static final String VAR_ATTACHMENTS = "cwf_taskAttachments";
+    private static final String TASK_FORM_KEY = "formKey";
 
     // get workflow package
     public static NodeRef getWorkflowPackage(VariableScope execution) {
@@ -152,5 +154,24 @@ public class ListenerUtils {
             }
         }
         return target;
+    }
+
+    public static String getTaskFormKey(DelegateTask task) {
+        String formKey = task.getFormKey();
+        if (StringUtils.isNotBlank(formKey)) {
+            return formKey;
+        }
+
+        formKey = (String) task.getVariable(ActivitiConstants.PROP_TASK_FORM_KEY);
+        if (StringUtils.isNotBlank(formKey)) {
+            return formKey;
+        }
+
+        formKey = (String) task.getVariable(TASK_FORM_KEY);
+        if (StringUtils.isNotBlank(formKey)) {
+            return formKey;
+        }
+
+        throw new RuntimeException("Failed get taskForm, from task: " + task.getId());
     }
 }
