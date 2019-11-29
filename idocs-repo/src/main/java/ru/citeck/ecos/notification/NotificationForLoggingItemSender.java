@@ -46,11 +46,6 @@ public class NotificationForLoggingItemSender extends AbstractNotificationSender
 {
 	public static final String ARG_ITEM = "item";
 	public static final String ARG_AUTO_SENT = "autoSent";
-
-	@Override
-	public void setServiceRegistry(ServiceRegistry services) {
-		super.setServiceRegistry(services);
-	}
 	
 	@Override
 	protected NodeRef getNotificationTemplate(NodeRef item) {
@@ -64,11 +59,6 @@ public class NotificationForLoggingItemSender extends AbstractNotificationSender
 		args.put(ARG_ITEM, item);
 		args.put(ARG_AUTO_SENT, "true");
 		return args;
-	}
-	
-	public void sendNotification(NodeRef item)
-	{
-		super.sendNotification(item);
 	}
 
 	protected void sendToAssignee(NodeRef item, Set<String> authorities)

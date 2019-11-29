@@ -45,6 +45,7 @@ import ru.citeck.ecos.utils.TransactionUtils;
 import javax.transaction.UserTransaction;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -59,7 +60,6 @@ public class HistoryService {
      */
     public static final String KEY_PENDING_DELETE_NODES = "DbNodeServiceImpl.pendingDeleteNodes";
     public static final String SYSTEM_USER = "system";
-    public static final String UNKNOWN_USER = "unknown-user";
 
     private static final String ENABLED_REMOTE_HISTORY_SERVICE = "ecos.citeck.history.service.enabled";
     private static final String ALFRESCO_NAMESPACE = "http://www.alfresco.org/model/content/1.0";
@@ -92,7 +92,12 @@ public class HistoryService {
     private static final String PROPERTY_PREFIX = "event";
     private static final String HISTORY_ROOT = "/" + "history:events";
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    private static final SimpleDateFormat dateFormat;
+
+    static {
+        dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        dateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of("UTC")));
+    }
 
     private boolean isHistoryTransferring = false;
     private boolean isHistoryTransferringInterrupted = false;
@@ -156,7 +161,7 @@ public class HistoryService {
         this.historyRoot = historyRoot;
     }
 
-    public NodeRef  persistEvent(final QName type, final Map<QName, Serializable> properties) {
+    public NodeRef persistEvent(final QName type, final Map<QName, Serializable> properties) {
         Date creationDate = new Date();
         TransactionUtils.doAfterCommit(() -> {
             if (isEnabledRemoteHistoryService()) {
@@ -256,7 +261,7 @@ public class HistoryService {
         /* Event time */
         Date now = (Date) creationDate.clone();
         if ("assoc.added".equals(properties.get(HistoryModel.PROP_NAME))
-                    || "task.assign".equals(properties.get(HistoryModel.PROP_NAME))) {
+                || "task.assign".equals(properties.get(HistoryModel.PROP_NAME))) {
             now.setTime(now.getTime() + 5000);
         }
         if ("node.created".equals(properties.get(HistoryModel.PROP_NAME))
@@ -267,11 +272,11 @@ public class HistoryService {
         /* Expected perform time */
         NodeRef taskCaseRef = (NodeRef) properties.get(HistoryModel.PROP_CASE_TASK);
         if (taskCaseRef != null) {
-           Integer expectedPerformTime = (Integer) nodeService.getProperty(taskCaseRef,
-                                                                           ActivityModel.PROP_EXPECTED_PERFORM_TIME);
-           if (expectedPerformTime == null) {
-               expectedPerformTime = getDefaultSLA();
-           }
+            Integer expectedPerformTime = (Integer) nodeService.getProperty(taskCaseRef,
+                    ActivityModel.PROP_EXPECTED_PERFORM_TIME);
+            if (expectedPerformTime == null) {
+                expectedPerformTime = getDefaultSLA();
+            }
             requestParams.put(EXPECTED_PERFORM_TIME, expectedPerformTime != null ? expectedPerformTime.toString() : null);
         }
         /* Event properties */
@@ -306,7 +311,7 @@ public class HistoryService {
     }
 
     private boolean isDocumentForDelete(NodeRef documentRef) {
-        if(AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
+        if (AlfrescoTransactionSupport.getTransactionReadState() != AlfrescoTransactionSupport.TxnReadState.TXN_READ_WRITE) {
             return false;
         } else {
             Set<NodeRef> nodesPendingDelete = TransactionalResourceHelper.getSet(KEY_PENDING_DELETE_NODES);
@@ -380,7 +385,7 @@ public class HistoryService {
         }
     }
 
-    private void sendEventsByDocumentRef(NodeRef documentRef)  {
+    private void sendEventsByDocumentRef(NodeRef documentRef) {
         UserTransaction trx = transactionService.getNonPropagatingUserTransaction(false);
         /** Do processing in transaction */
         try {
@@ -592,50 +597,5 @@ public class HistoryService {
             additionalProperties.put(historyProp, nodeService.getProperty(document, documentProp));
         }
         nodeService.addProperties(historyEvent, additionalProperties);
-    }
-
-    /**
-     * History batch process worker
-     */
-    private static class HistoryTransferWorker extends BatchProcessor.BatchProcessWorkerAdaptor<NodeRef> {
-
-        private HistoryRemoteService historyService;
-
-        HistoryTransferWorker(HistoryRemoteService historyService) {
-            this.historyService = historyService;
-        }
-
-        @Override
-        public void process(NodeRef eventRef) throws Throwable {
-            historyService.sendHistoryEventToRemoteService(eventRef);
-        }
-    }
-
-    /**
-     * History transfer provider
-     */
-    private static class HistoryTransferProvider implements BatchProcessWorkProvider<NodeRef> {
-
-        private Collection<NodeRef> events;
-        private boolean hasMore = true;
-
-        HistoryTransferProvider(Collection<NodeRef> events) {
-            this.events = events;
-        }
-
-        @Override
-        public int getTotalEstimatedWorkSize() {
-            return events.size();
-        }
-
-        @Override
-        public Collection<NodeRef> getNextWork() {
-            if (hasMore) {
-                hasMore = false;
-                return events;
-            } else {
-                return Collections.emptyList();
-            }
-        }
     }
 }
