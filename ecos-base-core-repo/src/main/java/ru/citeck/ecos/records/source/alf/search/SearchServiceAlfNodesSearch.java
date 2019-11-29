@@ -28,7 +28,7 @@ public class SearchServiceAlfNodesSearch {
 
     private static final Log logger = LogFactory.getLog(SearchServiceAlfNodesSearch.class);
 
-    private static final String FROM_DB_ID_FTS_QUERY = "(%s) AND @sys\\:node\\-dbid:[%d TO MAX]";
+    private static final String FROM_DB_ID_FTS_QUERY = "(%s) AND @sys\\:node\\-dbid:<%d TO MAX]";
 
     private SearchService searchService;
     private NamespaceService namespaceService;
