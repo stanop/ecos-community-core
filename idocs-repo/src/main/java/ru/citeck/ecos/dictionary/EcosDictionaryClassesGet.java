@@ -104,7 +104,7 @@ import java.util.*;
             }
 
             List<ClassDefinition> classDefinitions = new ArrayList<ClassDefinition>(classdef.values());
-            Collections.sort(classDefinitions, new DictionaryComparators.ClassDefinitionComparator(dictionaryservice));
+            classDefinitions.sort(new DictionaryComparators.ClassDefinitionComparator(dictionaryservice));
             model.put(MODEL_PROP_KEY_CLASS_DEFS, classDefinitions);
             model.put(MODEL_PROP_KEY_PROP_DETAILS, reorderedValues(classDefinitions, propdef));
             model.put(MODEL_PROP_KEY_ASSOC_DETAILS, reorderedValues(classDefinitions, assocdef));

@@ -1,10 +1,11 @@
 package ru.citeck.ecos.icase.completeness;
 
-import java.util.Collection;
-import java.util.Set;
-
 import org.alfresco.service.cmr.repository.NodeRef;
 import ru.citeck.ecos.icase.completeness.current.CurrentLevelsResolver;
+import ru.citeck.ecos.icase.completeness.dto.CaseDocumentDto;
+
+import java.util.Collection;
+import java.util.Set;
 
 public interface CaseCompletenessService {
 
@@ -12,7 +13,7 @@ public interface CaseCompletenessService {
      * Get all completeness levels, available for the specified case.
      */
     Set<NodeRef> getAllLevels(NodeRef caseNode);
-    
+
     /**
      * Get all completeness levels, that are completed for the specified case.
      */
@@ -62,4 +63,6 @@ public interface CaseCompletenessService {
      * Register new current levels resolver
      */
     void register(CurrentLevelsResolver resolver);
+
+    Set<CaseDocumentDto> getCaseDocuments(NodeRef nodeRef);
 }
