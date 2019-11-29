@@ -82,9 +82,12 @@ class NotAvailableTaskNotificationSender extends DelegateTaskNotificationSender 
         String originalOwner = (String) task.getVariable("taskOriginalOwner");
 
         String lastTaskOwner = (String) task.getVariable(lastTaskOwnerVar);
-        if (((lastTaskOwner != null && lastTaskOwner.equals(owner) && originalOwner != null && originalOwner.equals(lastTaskOwner)) || (lastTaskOwner == null && owner != null && originalOwner != null && owner.equals(originalOwner))) && isSendToInitiator(template)) {
+        boolean ownerIsOriginal = originalOwner != null && originalOwner.equals(owner);
+        boolean checkOwner = ownerIsOriginal && (lastTaskOwner == null || originalOwner.equals(lastTaskOwner));
+        if (checkOwner && isSendToInitiator(template)) {
             return;
         }
+
         if (isSendToInitiator(template)) {
             Set<String> assignees = getAssignee(task);
             for (String assignee : assignees) {
