@@ -87,6 +87,7 @@ public class HistoryService {
     private static final String DOCUMENT_VERSION = "documentVersion";
     private static final String PROPERTY_NAME = "propertyName";
     private static final String EXPECTED_PERFORM_TIME = "expectedPerformTime";
+    private static final String TASK_FORM_KEY = "taskFormKey";
 
     private static Log logger = LogFactory.getLog(HistoryService.class);
     private static final String PROPERTY_PREFIX = "event";
@@ -289,6 +290,7 @@ public class HistoryService {
         requestParams.put(TASK_TYPE, taskType != null ? taskType.getLocalName() : "");
         requestParams.put(FULL_TASK_TYPE, taskType != null ? taskType.toString() : "");
         requestParams.put(TASK_TITLE, properties.get(HistoryModel.PROP_TASK_TITLE));
+        requestParams.put(TASK_FORM_KEY, properties.get(HistoryModel.PROP_TASK_FORM_KEY));
         /* Workflow properties */
         requestParams.put(INITIATOR, properties.get(HistoryModel.ASSOC_INITIATOR));
         requestParams.put(WORKFLOW_INSTANCE_ID, properties.get(HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
