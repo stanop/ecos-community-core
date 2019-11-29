@@ -172,10 +172,7 @@ public class EcosActivitiTaskService implements EngineTaskService {
 
     @Override
     public TaskInfo getTaskInfo(String taskId) {
-        if (taskExists(taskId)) {
-            return new ActivitiTaskInfo(taskId);
-        }
-        return null;
+        return new ActivitiTaskInfo(taskId);
     }
 
     private String getOutcomeProperty(String taskId) {

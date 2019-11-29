@@ -51,9 +51,9 @@ export default class {
             }, 'cm:member[].cm:userName').then(function (usernames) {
                 return (usernames || []).indexOf(currentPersonName) != -1
             });
-        }
+        };
         var checkJournalsAvailability = function isShouldDisplayJournals() {
-            return Citeck.Records.get("ecos-config@default-ui-left-menu-access-groups")
+            return Citeck.Records.get("ecos-config@default-ui-new-journals-access-groups")
                 .load(".str").then(function(groupsInOneString) {
 
                     if (!groupsInOneString) {

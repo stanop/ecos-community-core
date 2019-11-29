@@ -511,7 +511,7 @@ require([
     }
 
     function isShouldDisplayForms() {
-        return Citeck.Records.get("ecos-config@default-ui-left-menu-access-groups")
+        return Citeck.Records.get("ecos-config@default-ui-new-forms-access-groups")
             .load(".str").then(function(groupsInOneString) {
 
                 if (!groupsInOneString) {
