@@ -165,7 +165,7 @@ public abstract class AmountInWordConverter {
                     resources.DECLINATION[amt][2])).append(resources.INDENT);
             amt--;
         }
-        result.append("").append(fractions).append(resources.INDENT).append(getDeclination(fraction,
+        result.append(fractions).append(resources.INDENT).append(getDeclination(fraction,
                 resources.DECLINATION[0][0],
                 resources.DECLINATION[0][1], resources.DECLINATION[0][2]));
         result = new StringBuilder(result.toString().replaceAll(" {2,}", resources.INDENT));
