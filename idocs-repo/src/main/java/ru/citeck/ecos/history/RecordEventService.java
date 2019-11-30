@@ -62,6 +62,11 @@ public class RecordEventService {
     }
 
     public void emitAttrChanged(RecordEventType eventType, String docId, Set<String> attrChanged) {
+        if (eventConnection == null) {
+            throw new RuntimeException("Sending event of updating attributes is required," +
+                    " but connection to event server is not enabled. Check you configs.");
+        }
+
         if (CollectionUtils.isEmpty(attrChanged) || !emitEnabled(RecordEventType.UPDATE)) {
             return;
         }
