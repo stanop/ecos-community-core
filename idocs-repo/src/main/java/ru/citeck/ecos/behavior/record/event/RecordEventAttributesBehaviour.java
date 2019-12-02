@@ -113,6 +113,8 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
         atts.addAll(assocAtts);
 
+        log.debug("RecordEventPropertiesBehaviour onCreateNode=" + atts);
+
         if (CollectionUtils.isEmpty(atts)) {
             return;
         }
@@ -190,6 +192,8 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
         Set<String> atts = new HashSet<>(1);
         atts.add(assocType.toPrefixString(namespaceService));
 
+        log.debug("assocUpdated=" + atts);
+
         TransactionUtils.processAfterBehaviours(TXN_RECORD_EVENT_UPDATE, atts, attributes ->
                 recordEventService.emitAttrChanged(
                         RecordEventType.UPDATE,
@@ -242,6 +246,8 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
             atts.add(key.toPrefixString(namespaceService));
         }
+
+        log.debug("RecordEventPropertiesBehaviour onUpdateProperties=" + atts);
 
         if (CollectionUtils.isEmpty(atts)) {
             return;
