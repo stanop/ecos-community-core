@@ -151,7 +151,13 @@ public class AlfNodeRecord implements MetaValue {
                     if (kind != null) {
                         etype += "/" + kind.getId();
                     }
-                    attribute = MetaUtils.toMetaValues(etype, context, field);
+
+                    MetaValue value = context.getServiceFactory()
+                            .getMetaValuesConverter()
+                            .toMetaValue(RecordRef.create("emodel", "type", etype));
+                    value.init(context, field);
+
+                    attribute = Collections.singletonList(value);
 
                 } else {
                     return null;
