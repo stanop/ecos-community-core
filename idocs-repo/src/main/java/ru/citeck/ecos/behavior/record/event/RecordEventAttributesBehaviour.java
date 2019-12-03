@@ -44,6 +44,7 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
     private QName type;
     private List<QName> allowedAttributes = new ArrayList<>();
+    private List<String> alwaysUpdate = new ArrayList<>();
 
     public void init() {
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME,
@@ -105,6 +106,9 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
                 .collect(Collectors.toSet());
 
         atts.addAll(assocAtts);
+        if (CollectionUtils.isNotEmpty(atts)) {
+            atts.addAll(alwaysUpdate);
+        }
 
         log.debug("RecordEventPropertiesBehaviour onCreateNode. Atts:{}", atts);
 
@@ -164,8 +168,9 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
             return;
         }
 
-        Set<String> atts = new HashSet<>(1);
+        Set<String> atts = new HashSet<>();
         atts.add(assocType.toPrefixString(namespaceService));
+        atts.addAll(alwaysUpdate);
 
         log.debug("assocUpdated, atts:{}", atts);
 
@@ -219,6 +224,10 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
             atts.add(key.toPrefixString(namespaceService));
         }
 
+        if (CollectionUtils.isNotEmpty(atts)) {
+            atts.addAll(alwaysUpdate);
+        }
+
         log.debug("RecordEventPropertiesBehaviour onUpdateProperties, atts:{}", atts);
 
         if (CollectionUtils.isEmpty(atts)) {
@@ -259,5 +268,9 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
     public void setAllowedAttributes(List<QName> allowedAttributes) {
         this.allowedAttributes = allowedAttributes;
+    }
+
+    public void setAlwaysUpdate(List<String> alwaysUpdate) {
+        this.alwaysUpdate = alwaysUpdate;
     }
 }
