@@ -37,8 +37,6 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
     private static final String TXN_RECORD_EVENT_UPDATE = "RECORD_EVENT_ATTS_UPDATE";
 
-    private static final Map<String, Long> createdNodes = new HashMap<>();
-
     private PolicyComponent policyComponent;
     private NodeService nodeService;
     private RecordEventService recordEventService;
@@ -80,23 +78,18 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
     //TODO: send delete event to facade?
     @Override
     public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchived) {
-        log.debug("RecordEventPropertiesBehaviour onDeleteNode=" + this);
-        log.debug("onDeleteNode event");
+        log.debug("RecordEventPropertiesBehaviour onDeleteNode={}" +
+                "\nchildAssocRef:{}", this, childAssocRef);
 
         assocUpdated(childAssocRef.getTypeQName(), childAssocRef.getParentRef());
     }
 
     @Override
     public void onCreateNode(ChildAssociationRef childAssocRef) {
-        log.debug("RecordEventPropertiesBehaviour onCreateNode=" + this);
-        log.debug("RecordEventPropertiesBehaviour onCreateNode=" + childAssocRef);
+        log.debug("RecordEventPropertiesBehaviour onCreateNode={}" +
+                "\nchildAssocRef:{}", this, childAssocRef);
 
         NodeRef nodeRef = childAssocRef.getChildRef();
-        NodeRef.Status status = nodeService.getNodeStatus(nodeRef);
-        synchronized (createdNodes) {
-            createdNodes.put(nodeRef.getId(), status.getDbTxnId());
-        }
-        log.debug("RecordEventPropertiesBehaviour onCreateNode=" + isNewNode(nodeRef));
 
         Set<String> atts = nodeService.getProperties(nodeRef).keySet()
                 .stream()
@@ -113,7 +106,7 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
         atts.addAll(assocAtts);
 
-        log.debug("RecordEventPropertiesBehaviour onCreateNode=" + atts);
+        log.debug("RecordEventPropertiesBehaviour onCreateNode. Atts:{}", atts);
 
         if (CollectionUtils.isEmpty(atts)) {
             return;
@@ -127,44 +120,26 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
                 ));
     }
 
-    private boolean isNewNode(NodeRef nodeRef) {
-        NodeRef.Status status = nodeService.getNodeStatus(nodeRef);
-        synchronized (createdNodes) {
-            Long createdDbTxnId = createdNodes.get(nodeRef.getId());
-            if (createdDbTxnId == null) {
-                return false;
-            }
-
-            if (createdDbTxnId.equals(status.getDbTxnId())) {
-                return true;
-            } else {
-                // Remove from cache if not new
-                createdNodes.remove(nodeRef.getId());
-                return false;
-            }
-        }
-    }
-
     @Override
     public void onCreateAssociation(AssociationRef nodeAssocRef) {
-        log.debug("RecordEventPropertiesBehaviour onCreateAssociation=" + this);
-        log.debug("onCreateAssociation event");
+        log.debug("RecordEventPropertiesBehaviour onCreateAssociation={}" +
+                "\nnodeAssocRef:{}", this, nodeAssocRef);
 
         assocUpdated(nodeAssocRef.getTypeQName(), nodeAssocRef.getSourceRef());
     }
 
     @Override
     public void onDeleteAssociation(AssociationRef nodeAssocRef) {
-        log.debug("RecordEventPropertiesBehaviour onDeleteAssociation=" + this);
-        log.debug("onDeleteAssociation event");
+        log.debug("RecordEventPropertiesBehaviour onDeleteAssociation={}" +
+                "\nnodeAssocRef:{}", this, nodeAssocRef);
 
         assocUpdated(nodeAssocRef.getTypeQName(), nodeAssocRef.getSourceRef());
     }
 
     @Override
     public void onCreateChildAssociation(ChildAssociationRef childAssocRef, boolean isNewNode) {
-        log.debug("RecordEventPropertiesBehaviour onCreateChildAssociation=" + this);
-        log.debug("onCreateChildAssociation event");
+        log.debug("RecordEventPropertiesBehaviour onDeleteAssociation={}" +
+                "\nchildAssocRef:{}", this, childAssocRef);
 
         assocUpdated(childAssocRef.getTypeQName(), childAssocRef.getParentRef());
     }
@@ -172,8 +147,8 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
     @Override
     public void onDeleteChildAssociation(ChildAssociationRef childAssocRef) {
-        log.debug("RecordEventPropertiesBehaviour onDeleteChildAssociation=" + this);
-        log.debug("onDeleteChildAssociation event");
+        log.debug("RecordEventPropertiesBehaviour onDeleteChildAssociation={}" +
+                "\nchildAssocRef:{}", this, childAssocRef);
 
         assocUpdated(childAssocRef.getTypeQName(), childAssocRef.getParentRef());
     }
@@ -192,7 +167,7 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
         Set<String> atts = new HashSet<>(1);
         atts.add(assocType.toPrefixString(namespaceService));
 
-        log.debug("assocUpdated=" + atts);
+        log.debug("assocUpdated, atts:{}", atts);
 
         TransactionUtils.processAfterBehaviours(TXN_RECORD_EVENT_UPDATE, atts, attributes ->
                 recordEventService.emitAttrChanged(
@@ -204,13 +179,10 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
-        log.debug("RecordEventPropertiesBehaviour onUpdateProperties=" + this);
-        log.debug("RecordEventPropertiesBehaviour onUpdateProperties=" + nodeRef);
-        log.debug("RecordEventPropertiesBehaviour onUpdateProperties=" + isNewNode(nodeRef));
+        log.debug("RecordEventPropertiesBehaviour onUpdateProperties={}" +
+                "\nnodeRef:{}", this, nodeRef);
 
-        log.debug("onUpdateProperties event");
-
-        if (type == null || !nodeService.exists(nodeRef) || isNewNode(nodeRef)) {
+        if (type == null || !nodeService.exists(nodeRef)) {
             return;
         }
 
@@ -223,8 +195,6 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
         if (uuid == null) {
             return;
         }
-
-        log.debug("HistoricalPropertiesBehaviour edit mode");
 
         Set<String> atts = new HashSet<>();
 
@@ -242,12 +212,14 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
                 continue;
             }
 
-            log.debug("HistoricalPropertiesBehaviour propBefore " + propBefore + " propAfter " + propAfter);
+            log.debug("RecordEventPropertiesBehaviour " +
+                    "\npropBefore:{}," +
+                    "\npropAfter:{}", propBefore, propAfter);
 
             atts.add(key.toPrefixString(namespaceService));
         }
 
-        log.debug("RecordEventPropertiesBehaviour onUpdateProperties=" + atts);
+        log.debug("RecordEventPropertiesBehaviour onUpdateProperties, atts:{}", atts);
 
         if (CollectionUtils.isEmpty(atts)) {
             return;
