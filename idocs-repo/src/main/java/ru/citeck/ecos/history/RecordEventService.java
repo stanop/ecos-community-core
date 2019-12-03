@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 /**
  * @author Roman Makarskiy
  */
+@Slf4j
 @Service
 public class RecordEventService {
 
@@ -38,7 +40,6 @@ public class RecordEventService {
 
     private static final List<String> commonAttr = Arrays.asList(
             AlfNodeRecord.ATTR_DOC_SUM,
-            "cm:title",
             ATTR_CASE_STATUS,
             RecordConstants.ATT_TYPE
     );
@@ -70,6 +71,8 @@ public class RecordEventService {
         if (CollectionUtils.isEmpty(attrChanged) || !emitEnabled(RecordEventType.UPDATE)) {
             return;
         }
+
+        log.debug("Record event emit, docId:{}, atts:{}", docId, attrChanged);
 
         List<Attribute> attr = getAttributesFromRecord(docId, attrChanged);
         if (attr.isEmpty()) {
@@ -143,15 +146,19 @@ public class RecordEventService {
     }
 
     private boolean emitEnabled(RecordEventType type) {
+        boolean enabled = false;
+
         if (RecordEventType.UPDATE.equals(type)) {
-            return eventRecordUpdateEnabled;
+            enabled = eventRecordUpdateEnabled;
         }
 
         if (RecordEventType.CREATE.equals(type)) {
-            return eventRecordCreateEnabled;
+            enabled = eventRecordCreateEnabled;
         }
 
-        return false;
+        log.debug("Record event emit, type:{}, enabled:{}", type.toString(), enabled);
+
+        return enabled;
     }
 
 }
