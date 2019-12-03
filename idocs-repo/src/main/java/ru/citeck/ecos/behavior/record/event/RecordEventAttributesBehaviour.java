@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 /**
  * @author Roman Makarskiy
+ * <p>
+ * TODO: optimization - after behaviour merge all atts in 1 collection?
  */
 @Slf4j
 public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCreateNodePolicy,
@@ -37,6 +39,8 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
     private static final String TXN_RECORD_EVENT_UPDATE = "RECORD_EVENT_ATTS_UPDATE";
 
+    private static final Map<String, Long> createdNodes = new HashMap<>();
+
     private PolicyComponent policyComponent;
     private NodeService nodeService;
     private RecordEventService recordEventService;
@@ -44,7 +48,6 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
     private QName type;
     private List<QName> allowedAttributes = new ArrayList<>();
-    private List<String> alwaysUpdate = new ArrayList<>();
 
     public void init() {
         policyComponent.bindClassBehaviour(NodeServicePolicies.OnCreateNodePolicy.QNAME,
@@ -91,6 +94,11 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
                 "\nchildAssocRef:{}", this, childAssocRef);
 
         NodeRef nodeRef = childAssocRef.getChildRef();
+        NodeRef.Status status = nodeService.getNodeStatus(nodeRef);
+        synchronized (createdNodes) {
+            createdNodes.put(nodeRef.getId(), status.getDbTxnId());
+        }
+        log.debug("RecordEventPropertiesBehaviour onCreateNode=" + isNewNode(nodeRef));
 
         Set<String> atts = nodeService.getProperties(nodeRef).keySet()
                 .stream()
@@ -106,9 +114,6 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
                 .collect(Collectors.toSet());
 
         atts.addAll(assocAtts);
-        if (CollectionUtils.isNotEmpty(atts)) {
-            atts.addAll(alwaysUpdate);
-        }
 
         log.debug("RecordEventPropertiesBehaviour onCreateNode. Atts:{}", atts);
 
@@ -122,6 +127,24 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
                         nodeRef.toString(),
                         attributes
                 ));
+    }
+
+    private boolean isNewNode(NodeRef nodeRef) {
+        NodeRef.Status status = nodeService.getNodeStatus(nodeRef);
+        synchronized (createdNodes) {
+            Long createdDbTxnId = createdNodes.get(nodeRef.getId());
+            if (createdDbTxnId == null) {
+                return false;
+            }
+
+            if (createdDbTxnId.equals(status.getDbTxnId())) {
+                return true;
+            } else {
+                // Remove from cache if not new
+                createdNodes.remove(nodeRef.getId());
+                return false;
+            }
+        }
     }
 
     @Override
@@ -168,9 +191,8 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
             return;
         }
 
-        Set<String> atts = new HashSet<>();
+        Set<String> atts = new HashSet<>(1);
         atts.add(assocType.toPrefixString(namespaceService));
-        atts.addAll(alwaysUpdate);
 
         log.debug("assocUpdated, atts:{}", atts);
 
@@ -185,7 +207,7 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
     @Override
     public void onUpdateProperties(NodeRef nodeRef, Map<QName, Serializable> before, Map<QName, Serializable> after) {
         log.debug("RecordEventPropertiesBehaviour onUpdateProperties={}" +
-                "\nnodeRef:{}", this, nodeRef);
+                "\nnodeRef:{}, isNewNode:{}", this, nodeRef, isNewNode(nodeRef));
 
         if (type == null || !nodeService.exists(nodeRef)) {
             return;
@@ -203,29 +225,32 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
         Set<String> atts = new HashSet<>();
 
-        Map<QName, Serializable> properties = nodeService.getProperties(nodeRef);
-        for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
-            QName key = entry.getKey();
-            if (!allowedAttributes.contains(key)) {
-                continue;
+        if (isNewNode(nodeRef)) {
+            atts.addAll(allowedAttributes
+                    .stream()
+                    .map(qName -> qName.toPrefixString(namespaceService))
+                    .collect(Collectors.toList()));
+        } else {
+            Map<QName, Serializable> properties = nodeService.getProperties(nodeRef);
+            for (Map.Entry<QName, Serializable> entry : properties.entrySet()) {
+                QName key = entry.getKey();
+                if (!allowedAttributes.contains(key)) {
+                    continue;
+                }
+
+                Object propBefore = before.get(key);
+                Object propAfter = after.get(key);
+
+                if (Objects.equals(propAfter, propBefore)) {
+                    continue;
+                }
+
+                log.debug("RecordEventPropertiesBehaviour " +
+                        "\npropBefore:{}," +
+                        "\npropAfter:{}", propBefore, propAfter);
+
+                atts.add(key.toPrefixString(namespaceService));
             }
-
-            Object propBefore = before.get(key);
-            Object propAfter = after.get(key);
-
-            if (Objects.equals(propAfter, propBefore)) {
-                continue;
-            }
-
-            log.debug("RecordEventPropertiesBehaviour " +
-                    "\npropBefore:{}," +
-                    "\npropAfter:{}", propBefore, propAfter);
-
-            atts.add(key.toPrefixString(namespaceService));
-        }
-
-        if (CollectionUtils.isNotEmpty(atts)) {
-            atts.addAll(alwaysUpdate);
         }
 
         log.debug("RecordEventPropertiesBehaviour onUpdateProperties, atts:{}", atts);
@@ -268,9 +293,5 @@ public class RecordEventAttributesBehaviour implements NodeServicePolicies.OnCre
 
     public void setAllowedAttributes(List<QName> allowedAttributes) {
         this.allowedAttributes = allowedAttributes;
-    }
-
-    public void setAlwaysUpdate(List<String> alwaysUpdate) {
-        this.alwaysUpdate = alwaysUpdate;
     }
 }
