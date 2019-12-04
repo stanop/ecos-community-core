@@ -1,5 +1,7 @@
 package ru.citeck.ecos.utils;
 
+import ecos.com.google.common.cache.Cache;
+import ecos.com.google.common.cache.CacheBuilder;
 import org.alfresco.repo.dictionary.constraint.ListOfValuesConstraint;
 import org.alfresco.repo.i18n.MessageService;
 import org.alfresco.repo.transaction.TransactionalResourceHelper;
@@ -12,9 +14,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class DictUtils {
@@ -22,10 +26,13 @@ public class DictUtils {
     public static final QName QNAME = QName.createQName("", "dictUtils");
 
     private static String TXN_CONSTRAINTS_CACHE = DictUtils.class.getName();
+    private static int CACHE_AGE_SECONDS = 600;
 
     private DictionaryService dictionaryService;
     private NamespaceService namespaceService;
     private MessageService messageService;
+
+    private Cache<QName, Map<String, String>> cachedDisplayNameMapping;
 
     /**
      * Search property definition in specified container or associated default aspects
@@ -135,6 +142,31 @@ public class DictUtils {
         });
     }
 
+    public Map<String, String> getPropertyDisplayNameMappingWithChildren(QName parent, QName field) {
+
+        Cache<QName, Map<String, String>> cache = this.getCachedMapping();
+
+        return cache.asMap().computeIfAbsent(parent, n -> {
+
+            Map<String, String> result = new HashMap<>();
+
+            Map<String, String> parentMapping = this.getPropertyDisplayNameMapping(parent, field);
+            if (parentMapping != null) {
+                result.putAll(parentMapping);
+            }
+
+            Collection<QName> children = this.getChildClassNames(parent, false);
+            for (QName child : children) {
+                Map<String, String> childMapping = this.getPropertyDisplayNameMapping(child, field);
+                if (childMapping != null) {
+                    result.putAll(childMapping);
+                }
+            }
+
+            return result;
+        });
+    }
+
     /**
      * Returns a list of constraints for the specified property
      * @param propertyName property name. Must be not null
@@ -161,6 +193,30 @@ public class DictUtils {
         }
 
         return null;
+    }
+
+    public Cache<QName, Map<String, String>> getCachedMapping() {
+        if (cachedDisplayNameMapping == null) {
+            synchronized (DictUtils.class) {
+                if (cachedDisplayNameMapping == null) {
+                    this.cachedDisplayNameMapping = CacheBuilder.newBuilder()
+                            .expireAfterWrite(CACHE_AGE_SECONDS, TimeUnit.SECONDS)
+                            .build();
+                }
+            }
+        }
+        return this.cachedDisplayNameMapping;
+    }
+
+    public Collection<QName> getChildClassNames(QName className, boolean recursive) {
+        ClassDefinition classDef = dictionaryService.getClass(className);
+        if(classDef == null) {
+            throw new IllegalArgumentException("Class is not registered: " + className);
+        } else if(classDef.isAspect()) {
+            return dictionaryService.getSubAspects(className, recursive);
+        } else {
+            return dictionaryService.getSubTypes(className, recursive);
+        }
     }
 
     @Autowired
