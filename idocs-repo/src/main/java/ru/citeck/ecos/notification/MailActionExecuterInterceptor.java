@@ -98,7 +98,6 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 	{
 		logger.debug("!!!!createLoggingItem");
 		NodeInfo nodeInfo = nodeInfoFactory.createNodeInfo();
-		Map<String, Serializable> parameterValues = act.getParameterValues();
 		logger.debug("act.getParameterValue "+act.getParameterValues());
 		Map<String, Serializable> template_modelParameterValue = (Map<String, Serializable>)act.getParameterValue("template_model");
 		if(template_modelParameterValue!=null)
@@ -117,7 +116,6 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 				}
 				Map<String, Serializable> taskParameterValues = (Map<String, Serializable>)argsParameterValues.get("task");
 				Map<String, Serializable> workflowParameterValues = (Map<String, Serializable>)argsParameterValues.get("workflow");
-				Map<String, Serializable> sentOnCancelWFValues = (Map<String, Serializable>)argsParameterValues.get("sentOnCancelWF");
 				if(taskParameterValues!=null)
 				{
 					NodeRef task = workflowMirrorService.getTaskMirror("activiti$"+(String)taskParameterValues.get("id"));

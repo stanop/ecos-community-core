@@ -724,7 +724,6 @@ public class DeputyServiceImpl implements DeputyService
 		if (isRoleDeputiedByMembers(roleFullName)) {
 			return true;
 		}
-		NodeRef role = authorityHelper.needRole(roleFullName);
 
 		// zero - all roles are deputied by admins
 		if (authorityService.isAdminAuthority(getCurrentUserName())) {

@@ -195,7 +195,6 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
 	{
 		NodeRef template = null;
         if (!tags.isEmpty()) {
-			SearchParameters sp = new SearchParameters();
 			StringBuilder sb = new StringBuilder();
 			sb.append("TYPE:\"").append(DmsModel.TYPE_TEMPLATE).append("\" AND (");
 			for (NodeRef tag : tags) {

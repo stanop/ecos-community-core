@@ -70,7 +70,6 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 	@Override
 	public void onCreateChildAssociation(ChildAssociationRef childAssociationRef, boolean isNew) {
 		logger.debug("onCreateChildAssociation event");
-		NodeRef nodeNewSource = null;
 		List<NodeRef> suppFiles = new ArrayList<>();
 		NodeRef nodeTarget = childAssociationRef.getChildRef(); //supp file
 		if(nodeService.exists(nodeTarget) && (ignoredTypes==null || !ignoredTypes.contains(nodeService.getType(nodeTarget))))
@@ -85,7 +84,6 @@ public class CreateSupplementaryFilesAssocBehaviour implements NodeServicePolici
 				NodeRef docNode = child.getChildRef();
 				if(nodeService.exists(docNode) && allowedDocTypes!=null && allowedDocTypes.size()>0 && allowedDocTypes.contains(nodeService.getType(docNode)) && !nodeTarget.equals(docNode))
 				{
-					String nameTemplate = null;
 					QName folderType = nodeService.getType(nodeSource);
 					if(folderType!=null && className!=null && folderType.equals(className))
 					{
