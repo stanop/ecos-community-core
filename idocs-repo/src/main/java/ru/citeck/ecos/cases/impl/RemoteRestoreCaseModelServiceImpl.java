@@ -16,7 +16,6 @@ import ru.citeck.ecos.cases.RemoteRestoreCaseModelService;
 import ru.citeck.ecos.dto.*;
 import ru.citeck.ecos.model.*;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
@@ -75,16 +74,16 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
             List<CaseModelDto> childCaseModels = loadChildCases(caseModelDto);
             caseModelDto.setChildCases(childCaseModels);
         }
-        /** Restore data */
+        /* Restore data */
         Map<CaseModelDto, NodeRef> restoreMap = new HashMap<>();
         for (CaseModelDto caseModelDto : caseModels) {
             restoreCaseModelNodeRef(caseModelDto, documentRef, restoreMap);
         }
-        /** Restore events data */
+        /* Restore events data */
         for (CaseModelDto caseModelDto : caseModels) {
             restoreCaseEventsNodeRefs(caseModelDto, restoreMap);
         }
-        /** Remote useless data and set flags */
+        /* Remote useless data and set flags */
         nodeService.setProperty(documentRef, IdocsModel.PROP_DOCUMENT_CASE_COMPLETED, false);
         nodeService.setProperty(documentRef, IdocsModel.PROP_CASE_MODELS_SENT, false);
         remoteCaseModelService.deleteCaseModelsByDocumentId(documentRef.getId());
@@ -111,7 +110,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
      * @param restoreMap Restore map
      */
     private void restoreCaseModelNodeRef(CaseModelDto caseModelDto, NodeRef parentNodeRef, Map<CaseModelDto, NodeRef> restoreMap) {
-        /** Create properties map */
+        /* Create properties map */
         Map<QName, Serializable> properties = new HashMap<>();
         properties.put(ContentModel.PROP_CREATED, caseModelDto.getCreated());
         properties.put(ContentModel.PROP_CREATOR, caseModelDto.getCreator());
@@ -119,7 +118,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         properties.put(ContentModel.PROP_MODIFIER, caseModelDto.getModifier());
         properties.put(ContentModel.PROP_TITLE, caseModelDto.getTitle());
         properties.put(ContentModel.PROP_DESCRIPTION, caseModelDto.getDescription());
-        /** Case model properties */
+        /* Case model properties */
         properties.put(ActivityModel.PROP_PLANNED_START_DATE, caseModelDto.getPlannedStartDate());
         properties.put(ActivityModel.PROP_PLANNED_END_DATE, caseModelDto.getPlannedEndDate());
         properties.put(ActivityModel.PROP_ACTUAL_START_DATE, caseModelDto.getActualStartDate());
@@ -131,14 +130,14 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         properties.put(ActivityModel.PROP_AUTO_EVENTS, caseModelDto.getAutoEvents());
         properties.put(ActivityModel.PROP_REPEATABLE, caseModelDto.getRepeatable());
         properties.put(ActivityModel.PROP_TYPE_VERSION, caseModelDto.getTypeVersion());
-        /** Create node */
+        /* Create node */
         QName caseType = getCaseModelType(caseModelDto);
         ChildAssociationRef childAssociationRef = nodeService.createNode(parentNodeRef,
                 ActivityModel.ASSOC_ACTIVITIES, ActivityModel.ASSOC_ACTIVITIES, caseType, properties);
         NodeRef caseModelRef = childAssociationRef.getChildRef();
         fillAdditionalInfo(caseModelDto, caseModelRef);
         restoreMap.put(caseModelDto, caseModelRef);
-        /** Restore child cases */
+        /* Restore child cases */
         for (CaseModelDto childCaseModel : caseModelDto.getChildCases()) {
             restoreCaseModelNodeRef(childCaseModel, caseModelRef, restoreMap);
         }
@@ -154,26 +153,26 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         if (caseModelRef == null) {
             return;
         }
-        /** Start events */
+        /* Start events */
         for (EventDto eventDto : caseModelDto.getStartEvents()) {
             restoreEvent(eventDto, caseModelRef, ICaseEventModel.ASSOC_ACTIVITY_START_EVENTS, restoreMap);
         }
 
-        /** End events */
+        /* End events */
         for (EventDto eventDto : caseModelDto.getEndEvents()) {
             restoreEvent(eventDto, caseModelRef, ICaseEventModel.ASSOC_ACTIVITY_END_EVENTS, restoreMap);
         }
 
-        /** Restart events */
+        /* Restart events */
         for (EventDto eventDto : caseModelDto.getRestartEvents()) {
             restoreEvent(eventDto, caseModelRef, ICaseEventModel.ASSOC_ACTIVITY_RESTART_EVENTS, restoreMap);
         }
 
-        /** Reset events */
+        /* Reset events */
         for (EventDto eventDto : caseModelDto.getResetEvents()) {
             restoreEvent(eventDto, caseModelRef, ICaseEventModel.ASSOC_ACTIVITY_RESET_EVENTS, restoreMap);
         }
-        /** Restore child cases */
+        /* Restore child cases */
         for (CaseModelDto childCaseModel : caseModelDto.getChildCases()) {
             restoreCaseEventsNodeRefs(childCaseModel, restoreMap);
         }
@@ -187,7 +186,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
      * @param restoreMap Restore map
      */
     private void restoreEvent(EventDto eventDto, NodeRef parentCaseModelRef, QName assocType, Map<CaseModelDto, NodeRef> restoreMap) {
-        /** Create properties map */
+        /* Create properties map */
         Map<QName, Serializable> properties = new HashMap<>();
         properties.put(ContentModel.PROP_CREATED, eventDto.getCreated());
         properties.put(ContentModel.PROP_CREATOR, eventDto.getCreator());
@@ -195,12 +194,12 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         properties.put(ContentModel.PROP_MODIFIER, eventDto.getModifier());
         properties.put(ContentModel.PROP_TITLE, eventDto.getTitle());
         properties.put(ContentModel.PROP_DESCRIPTION, eventDto.getDescription());
-        /** Create node */
+        /* Create node */
         QName eventType = getEventType(eventDto);
         ChildAssociationRef childAssociationRef = nodeService.createNode(parentCaseModelRef,
                 assocType, assocType, eventType, properties);
         NodeRef eventRef = childAssociationRef.getChildRef();
-        /** Source */
+        /* Source */
         NodeRef sourceRef = null;
         if (eventDto.getSourceCaseId() != null) {
             if (eventDto.getIsSourceCase() != null && eventDto.getIsSourceCase()) {
@@ -216,7 +215,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
             nodeService.createAssociation(eventRef, sourceRef, EventModel.ASSOC_EVENT_SOURCE);
         }
         fillAdditionalInfo(eventDto, eventRef);
-        /** Conditions */
+        /* Conditions */
         for (ConditionDto conditionDto : eventDto.getConditions()) {
             restoreCondition(conditionDto, eventRef);
         }
@@ -228,7 +227,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
      * @param parentEventRef Parent event node reference
      */
     private void restoreCondition(ConditionDto conditionDto, NodeRef parentEventRef) {
-        /** Create properties map */
+        /* Create properties map */
         Map<QName, Serializable> properties = new HashMap<>();
         properties.put(ContentModel.PROP_CREATED, conditionDto.getCreated());
         properties.put(ContentModel.PROP_CREATOR, conditionDto.getCreator());
@@ -236,7 +235,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         properties.put(ContentModel.PROP_MODIFIER, conditionDto.getModifier());
         properties.put(ContentModel.PROP_TITLE, conditionDto.getTitle());
         properties.put(ContentModel.PROP_DESCRIPTION, conditionDto.getDescription());
-        /** Create node */
+        /* Create node */
         QName conditionType = getConditionType(conditionDto);
         ChildAssociationRef childAssociationRef = nodeService.createNode(parentEventRef,
                 EventModel.ASSOC_CONDITIONS, EventModel.ASSOC_CONDITIONS, conditionType, properties);
@@ -376,14 +375,14 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
     private void fillAdditionalUserActionEventInfo(UserActionEventDto eventDto, NodeRef eventRef) {
         nodeService.setProperty(eventRef, EventModel.PROP_ADDITIONAL_DATA_TYPE, eventDto.getAdditionalDataType());
         nodeService.setProperty(eventRef, EventModel.PROP_CONFIRMATION_MESSAGE, eventDto.getConfirmationMessage());
-        /** Roles */
+        /* Roles */
         for (RoleDto roleDto : eventDto.getRoles()) {
             NodeRef roleNodeRef = new NodeRef(WORKSPACE_PREFIX + roleDto.getNodeUUID());
             if (nodeService.exists(roleNodeRef)) {
                 nodeService.createAssociation(eventRef, roleNodeRef, EventModel.ASSOC_AUTHORIZED_ROLES);
             }
         }
-        /** Additional data item */
+        /* Additional data item */
         for (AdditionalDataItemDto dataItemDto : eventDto.getAdditionalDataItems()) {
             restoreAdditionalDataItem(dataItemDto, eventRef);
         }
@@ -395,7 +394,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
      * @param eventRef Parent event reference
      */
     private void restoreAdditionalDataItem(AdditionalDataItemDto dataItemDto, NodeRef eventRef) {
-        /** Create properties map */
+        /* Create properties map */
         Map<QName, Serializable> properties = new HashMap<>();
         properties.put(ContentModel.PROP_CREATED, dataItemDto.getCreated());
         properties.put(ContentModel.PROP_CREATOR, dataItemDto.getCreator());
@@ -404,7 +403,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         properties.put(ContentModel.PROP_TITLE, dataItemDto.getTitle());
         properties.put(ContentModel.PROP_DESCRIPTION, dataItemDto.getDescription());
         properties.put(EventModel.PROP_COMMENT, dataItemDto.getComment());
-        /** Create node */
+        /* Create node */
         QName dataItemType = getAdditionalItemType(dataItemDto);
         ChildAssociationRef childAssociationRef = nodeService.createNode(eventRef,
                 EventModel.ASSOC_ADDITIONAL_DATA_ITEMS, EventModel.ASSOC_ADDITIONAL_DATA_ITEMS, dataItemType, properties);
@@ -636,7 +635,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
         nodeService.setProperty(caseModelRef, ICaseTaskModel.PROP_DEADLINE, caseModelDto.getDueDate());
         nodeService.setProperty(caseModelRef, ICaseTaskModel.PROP_PRIORITY, caseModelDto.getPriority());
 
-        /** BPM Package */
+        /* BPM Package */
         if (caseModelDto.getBpmPackage() != null) {
             NodeRef packageNodeRef = new NodeRef(WORKSPACE_PREFIX + caseModelDto.getBpmPackage().getNodeUUID());
             if (nodeService.exists(packageNodeRef)) {
@@ -658,7 +657,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
             for (int i = 0; i < arrayNode.size(); i++) {
                 JsonNode paramNode =  arrayNode.get(i);
                 TaskAssocDto assocDto =  objectMapper.treeToValue(paramNode, TaskAssocDto.class);
-                /** Create property */
+                /* Create property */
                 QName assocTypeName = QName.createQName(assocDto.getAssocType());
                 NodeRef nodeRef = new NodeRef(WORKSPACE_PREFIX + assocDto.getNodeRef());
                 if (nodeService.exists(nodeRef)) {
@@ -682,7 +681,7 @@ public class RemoteRestoreCaseModelServiceImpl implements RemoteRestoreCaseModel
             for (int i = 0; i < arrayNode.size(); i++) {
                 JsonNode paramNode =  arrayNode.get(i);
                 TaskPropertyDto propertyDto =  objectMapper.treeToValue(paramNode, TaskPropertyDto.class);
-                /** Create property */
+                /* Create property */
                 QName typeName = QName.createQName(propertyDto.getTypeName());
                 Class clazz = Class.forName(propertyDto.getValueClass());
                 Serializable propertyValue = getPropertyValue(clazz, propertyDto.getValue());

@@ -44,7 +44,7 @@ public class ContentNodeBehaviorImpl implements
 
 	private PolicyComponent policyComponent;
 	private NodeService nodeService;
-	private Map<QName, Long> sizeLimits = new HashMap<QName, Long>();
+	private Map<QName, Long> sizeLimits = new HashMap<>();
 
 	@Override
 	public void onUpdateNode(NodeRef nodeRef) {
@@ -56,7 +56,7 @@ public class ContentNodeBehaviorImpl implements
 
 	@Override
 	public void registerSizeLimits(Map<QName, Long> sizeLimits) {
-		Set<QName> addedKeys = new HashSet<QName>(sizeLimits.keySet());
+		Set<QName> addedKeys = new HashSet<>(sizeLimits.keySet());
 		addedKeys.removeAll(this.sizeLimits.keySet());
 		for (QName type : addedKeys) {
 			policyComponent.bindClassBehaviour(

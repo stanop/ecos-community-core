@@ -32,8 +32,6 @@ import org.alfresco.service.cmr.repository.NodeService;
 import org.alfresco.service.namespace.NamespaceService;
 import ru.citeck.ecos.utils.LazyQName;
 import org.alfresco.service.namespace.QName;
-import org.alfresco.service.namespace.RegexQNamePattern;
-import org.alfresco.service.cmr.repository.ChildAssociationRef;
 import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import ru.citeck.ecos.security.NodeOwnerDAO;
 import org.alfresco.service.cmr.security.PersonService;
@@ -95,7 +93,7 @@ public class SubscribersMigration extends BaseScopableProcessorExtension {
 		WorkflowQNameConverter qNameConverter = new WorkflowQNameConverter(namespaceService);
 		String assocQName = assocDocSubsTypeName.get(qNameConverter.mapQNameToName(nodeService.getType(document)));
 		List<AssociationRef> assocs = nodeService.getTargetAssocs(document, qNameConverter.mapNameToQName(assocQName));
-		List<NodeRef> nodes = new ArrayList<NodeRef>(assocs.size());
+		List<NodeRef> nodes = new ArrayList<>(assocs.size());
 		for(AssociationRef assoc : assocs) {
 			NodeRef file = assoc.getTargetRef();
 			nodes.add(file);
@@ -113,7 +111,7 @@ public class SubscribersMigration extends BaseScopableProcessorExtension {
 	public List<NodeRef> getExistingSubscribers(NodeRef document) {
 		WorkflowQNameConverter qNameConverter = new WorkflowQNameConverter(namespaceService);
 		List<AssociationRef> assocs = nodeService.getTargetAssocs(document, qNameConverter.mapNameToQName(assocTypeName));
-		List<NodeRef> nodeRefs = new ArrayList<NodeRef>(assocs.size());
+		List<NodeRef> nodeRefs = new ArrayList<>(assocs.size());
 		for(AssociationRef assoc : assocs) {
 			NodeRef file = assoc.getTargetRef();
 			nodeRefs.add(file);
@@ -123,13 +121,13 @@ public class SubscribersMigration extends BaseScopableProcessorExtension {
 	
 	public void setSubscribersToAssoc(NodeRef document, List<NodeRef> subscribersNodes) {
 		
-		HashSet<NodeRef> existingSubscribers = new HashSet<NodeRef>();
-		HashSet<NodeRef> allSubscribers = new HashSet<NodeRef>();
+		HashSet<NodeRef> existingSubscribers = new HashSet<>();
+		HashSet<NodeRef> allSubscribers = new HashSet<>();
 		existingSubscribers.addAll(getExistingSubscribers(document));
 		allSubscribers.addAll(subscribersNodes);
 		
 		// get lists of subscribers to add:
-		List<NodeRef> subsToAdd = new ArrayList<NodeRef>(allSubscribers.size());
+		List<NodeRef> subsToAdd = new ArrayList<>(allSubscribers.size());
 		for(NodeRef sub : allSubscribers) {
 			if(!existingSubscribers.contains(sub)) {
 				subsToAdd.add(sub);

@@ -75,7 +75,7 @@ public class CreateFromTemplateBehaviour implements NodeServicePolicies.OnCreate
             return;
         }
 
-        Set<NodeRef> tags = new HashSet<NodeRef>();
+        Set<NodeRef> tags = new HashSet<>();
 
         List<AssociationRef> associations = nodeService.getTargetAssocs(childAssocRef.getChildRef(), RegexQNamePattern.MATCH_ALL);
         for (AssociationRef association : associations) {

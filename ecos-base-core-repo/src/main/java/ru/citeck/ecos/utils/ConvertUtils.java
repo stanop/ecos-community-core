@@ -67,7 +67,7 @@ public class ConvertUtils implements BeanFactoryAware {
 
     public static <T> List<T> convertMultipleValues(Collection<?> values, Class<T> requiredClass) {
         if(values == null || values.isEmpty()) return Collections.emptyList();
-        List<T> convertedList = new ArrayList<T>(values.size());
+        List<T> convertedList = new ArrayList<>(values.size());
         for(Object value : values) {
             convertedList.add(convertSingleValue(value, requiredClass));
         }

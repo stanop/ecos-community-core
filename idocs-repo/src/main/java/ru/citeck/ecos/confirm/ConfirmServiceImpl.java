@@ -179,7 +179,7 @@ public class ConfirmServiceImpl implements ConfirmService {
 	private void setVersionProperties(final NodeRef nodeRef) {
 		AuthenticationUtil.runAsSystem(new AuthenticationUtil.RunAsWork<Object>() {
 			public Object doWork() throws Exception {
-				Map<QName, Serializable> versionProperties = new HashMap<QName, Serializable>();
+				Map<QName, Serializable> versionProperties = new HashMap<>();
 				versionProperties.put(ContentModel.PROP_AUTO_VERSION, true);
 				versionProperties.put(ContentModel.PROP_AUTO_VERSION_PROPS, false);
 				versionService.ensureVersioningEnabled(nodeRef, versionProperties);

@@ -118,7 +118,7 @@ public class AdditionalFieldBehaviour implements OnUpdatePropertiesPolicy {
     }
 
     private void updateAdditionalField(String newValue, NodeRef nodeRef) throws JSONException {
-        HashMap<String, String> parameters = new HashMap<String, String>();
+        HashMap<String, String> parameters = new HashMap<>();
         parameters.put(queryParameterName, newValue);
         JSONObject json = queryExecutor.executeQuery(parameters);
         String additionalFieldValue = json.getJSONArray(SQLSelectExecutor.RESULT).getJSONObject(0).getString(resultFieldName);

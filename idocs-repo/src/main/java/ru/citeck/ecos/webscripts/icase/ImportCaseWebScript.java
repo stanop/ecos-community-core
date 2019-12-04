@@ -1,6 +1,5 @@
 package ru.citeck.ecos.webscripts.icase;
 
-import org.alfresco.service.cmr.repository.NodeRef;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -19,7 +19,6 @@
 package ru.citeck.ecos.lifecycle;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,8 +40,8 @@ public class LifeCycleDefinition {
 	private List<LifeCycleTransition> transitionList;
 
 	public LifeCycleDefinition() {
-		stateList = new ArrayList<LifeCycleState>();
-		transitionList = new ArrayList<LifeCycleTransition>();
+		stateList = new ArrayList<>();
+		transitionList = new ArrayList<>();
 	}
 
 	public String getDocType() {
@@ -99,7 +98,7 @@ public class LifeCycleDefinition {
 		private Map<String, String> eventParams;
 
 		public LifeCycleEvent() {
-			eventParams = new HashMap<String, String>();
+			eventParams = new HashMap<>();
 		}
 
 		@SuppressWarnings("rawtypes")
@@ -173,7 +172,7 @@ public class LifeCycleDefinition {
         private Map<String, String> params;
 
         public LifeCycleParamContainer() {
-            params = new HashMap<String, String>();
+            params = new HashMap<>();
         }
 
         public LifeCycleParamContainer(String type) {
@@ -248,8 +247,8 @@ public class LifeCycleDefinition {
 		private List<LifeCycleAction> endActionList;
 
 		public LifeCycleState() {
-            startActionList = new ArrayList<LifeCycleAction>();
-            endActionList = new ArrayList<LifeCycleAction>();
+            startActionList = new ArrayList<>();
+            endActionList = new ArrayList<>();
         }
 
 		public String getId() {
@@ -295,8 +294,8 @@ public class LifeCycleDefinition {
 		private List<LifeCycleAction> actionList;
 
 		public LifeCycleTransition() {
-			conditionList = new ArrayList<LifeCycleCondition>();
-			actionList = new ArrayList<LifeCycleAction>();
+			conditionList = new ArrayList<>();
+			actionList = new ArrayList<>();
 		}
 
 		public String getFromState() {

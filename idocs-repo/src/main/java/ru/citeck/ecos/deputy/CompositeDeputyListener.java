@@ -25,8 +25,7 @@ import java.util.List;
 
 public class CompositeDeputyListener implements DeputyListener
 {
-	private List<DeputyListener> listeners = new ArrayList<DeputyListener>();
-
+	private List<DeputyListener> listeners = new ArrayList<>();
 	public void addDeputyListener(DeputyListener listener) {
 		listeners.add(listener);
 		listeners.sort((a, b) -> a.getPriority() - b.getPriority());

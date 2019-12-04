@@ -34,7 +34,7 @@ public abstract class AbstractDataBundleSplit extends AbstractDataBundleProcesso
 	@Override
 	public List<DataBundle> process(List<DataBundle> inputs) {
 
-		List<DataBundle> outputs = new ArrayList<DataBundle>(inputs.size());
+		List<DataBundle> outputs = new ArrayList<>(inputs.size());
 		for(DataBundle input : inputs) {
 			outputs.addAll(split(input));
 		}
