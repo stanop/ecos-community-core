@@ -5,7 +5,6 @@ import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.namespace.QName;
 import ru.citeck.ecos.service.CiteckServices;
 
-import java.util.List;
 import java.util.Set;
 
 /**

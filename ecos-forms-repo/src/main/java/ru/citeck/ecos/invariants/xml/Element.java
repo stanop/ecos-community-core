@@ -75,7 +75,7 @@ public class Element {
      */
     public List<Param> getParam() {
         if (param == null) {
-            param = new ArrayList<Param>();
+            param = new ArrayList<>();
         }
         return this.param;
     }

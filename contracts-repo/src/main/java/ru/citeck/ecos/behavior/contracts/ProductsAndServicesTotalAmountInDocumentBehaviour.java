@@ -36,7 +36,6 @@ import ru.citeck.ecos.utils.RepoUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

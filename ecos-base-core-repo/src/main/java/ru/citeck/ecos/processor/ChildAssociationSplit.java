@@ -48,7 +48,7 @@ public class ChildAssociationSplit extends AbstractAssociationSplit
 		} else {
 			assocs = nodeService.getChildAssocs(nodeRef, assocName, RegexQNamePattern.MATCH_ALL);
 		}
-		List<Object> results = new ArrayList<Object>(assocs.size());
+		List<Object> results = new ArrayList<>(assocs.size());
 		if(parent) {
 			for(ChildAssociationRef assoc : assocs) {
 				results.add(assoc.getParentRef());

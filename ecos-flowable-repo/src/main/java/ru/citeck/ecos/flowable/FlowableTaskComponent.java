@@ -305,7 +305,7 @@ public class FlowableTaskComponent implements TaskComponent, InitializingBean {
      */
     @Override
     public WorkflowTask getStartTask(String workflowInstanceId) {
-        /** Load process instance */
+        /* Load process instance */
         ProcessInstance processInstance = flowableProcessInstanceService.getProcessInstanceById(getLocalValue(workflowInstanceId));
         if (processInstance != null) {
             return flowableTransformService.transformStartTask(

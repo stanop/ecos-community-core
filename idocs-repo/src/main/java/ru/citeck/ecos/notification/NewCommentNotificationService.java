@@ -108,7 +108,7 @@ public class NewCommentNotificationService {
                 )
         );
         Set<String> assignedAuthorities = getNotificationListeners(nodeRef);
-	    assignedAuthorities.addAll(new HashSet<String>(Arrays.asList(subscribersString.split(","))));
+	    assignedAuthorities.addAll(new HashSet<>(Arrays.asList(subscribersString.split(","))));
         for (String authority : assignedAuthorities) {
             notificationContext.addTo(authority);
         }
@@ -118,7 +118,7 @@ public class NewCommentNotificationService {
     }
 
     private Map<String, Serializable> getNewCommentNotificationTemplateArgs(NodeRef nodeRef, String comment, String commentLink, String author) {
-        Map<String, Serializable> templateArgs = new HashMap<String, Serializable>();
+        Map<String, Serializable> templateArgs = new HashMap<>();
         templateArgs.put(TemplateArgAlias.COMMENT_TEXT, comment);
         templateArgs.put(TemplateArgAlias.COMMENT_LINK, commentLink);
         templateArgs.put(TemplateArgAlias.FILE_NAME, getFileName(nodeRef));
@@ -127,7 +127,7 @@ public class NewCommentNotificationService {
     }
 
     private Set<String> getNotificationListeners(NodeRef nodeRef) {
-        Set<String> authorities = new HashSet<String>();
+        Set<String> authorities = new HashSet<>();
         authorities.addAll(getNodeOwners(nodeRef));
         return authorities;
     }

@@ -35,7 +35,7 @@ import org.springframework.extensions.surf.site.AlfrescoUser;
  */
 public class DecoratedUserFactory extends SlingshotUserFactory
 {
-	private List<UserDecorator> userDecorators = new ArrayList<UserDecorator>();
+	private List<UserDecorator> userDecorators = new ArrayList<>();
 
 	@Override
     protected AlfrescoUser buildAlfrescoUser(JSONObject json)

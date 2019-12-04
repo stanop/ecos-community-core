@@ -71,7 +71,7 @@ public abstract class Style {
     @XmlSchemaType(name = "ID")
     protected String id;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<QName, String>();
+    private Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the extension property.
@@ -193,7 +193,7 @@ public abstract class Style {
          */
         public List<Object> getAny() {
             if (any == null) {
-                any = new ArrayList<Object>();
+                any = new ArrayList<>();
             }
             return this.any;
         }

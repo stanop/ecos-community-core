@@ -108,7 +108,7 @@ class ContentFromTemplateGeneratorImpl implements ContentFromTemplateGenerator {
             contentWriter = contentService.getWriter(nodeRef, ContentModel.PROP_CONTENT, true);
             contentWriter.setMimetype(mimetype);
 
-            /**
+            /*
              * Do not change specified character-set ISO-8859-1, because of
              * output stream returns bytes, but writer returns characters.
              * So we should not change that output stream. This character-set

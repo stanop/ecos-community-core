@@ -131,12 +131,12 @@ public class PDFBarcode extends AbstractDataBundleLine implements ApplicationCon
             Document document;
 
             Rectangle barcodeSize = barcode.getBarcodeSize();
-            float marginLeft = 0,
-                    marginRight = 0,
-                    marginTop = 0,
-                    marginBottom = 0,
-                    barcodeWidth = barcodeSize.getWidth() * scaleFactor,
-                    barcodeHeight = barcodeSize.getHeight() * scaleFactor;
+            float marginLeft = 0;
+			float marginRight = 0;
+			float marginTop = 0;
+			float marginBottom = 0;
+			float barcodeWidth = barcodeSize.getWidth() * scaleFactor;
+			float barcodeHeight = barcodeSize.getHeight() * scaleFactor;
             if (marginsExpr != null) {
                 String marginsString = (String) super.evaluateExpression(marginsExpr, model);
                 String[] marginStrings = marginsString.split(",");

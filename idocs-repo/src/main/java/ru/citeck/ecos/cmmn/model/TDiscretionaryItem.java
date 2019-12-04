@@ -107,7 +107,7 @@ public class TDiscretionaryItem
      */
     public List<TEntryCriterion> getEntryCriterion() {
         if (entryCriterion == null) {
-            entryCriterion = new ArrayList<TEntryCriterion>();
+            entryCriterion = new ArrayList<>();
         }
         return this.entryCriterion;
     }
@@ -136,7 +136,7 @@ public class TDiscretionaryItem
      */
     public List<TExitCriterion> getExitCriterion() {
         if (exitCriterion == null) {
-            exitCriterion = new ArrayList<TExitCriterion>();
+            exitCriterion = new ArrayList<>();
         }
         return this.exitCriterion;
     }

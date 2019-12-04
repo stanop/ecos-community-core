@@ -3,7 +3,6 @@ package ru.citeck.ecos.forms;
 import org.alfresco.service.namespace.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.citeck.ecos.invariants.view.NodeView;
 
 import java.util.Collections;
 import java.util.List;

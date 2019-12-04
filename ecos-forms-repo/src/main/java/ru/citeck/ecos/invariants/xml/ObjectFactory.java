@@ -265,7 +265,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.citeck.ru/ecos/views/1.0", name = "views")
     public JAXBElement<ViewRoot> createViews(ViewRoot value) {
-        return new JAXBElement<ViewRoot>(_Views_QNAME, ViewRoot.class, null, value);
+        return new JAXBElement<>(_Views_QNAME, ViewRoot.class, null, value);
     }
 
     /**
@@ -274,7 +274,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.citeck.ru/ecos/invariants/1.0", name = "item", scope = Invariant.class)
     public JAXBElement<String> createInvariantItem(String value) {
-        return new JAXBElement<String>(_InvariantItem_QNAME, String.class, Invariant.class, value);
+        return new JAXBElement<>(_InvariantItem_QNAME, String.class, Invariant.class, value);
     }
 
     /**
@@ -283,7 +283,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.citeck.ru/ecos/invariants/1.0", name = "criterion", scope = Invariant.class)
     public JAXBElement<Criterion> createInvariantCriterion(Criterion value) {
-        return new JAXBElement<Criterion>(_InvariantCriterion_QNAME, Criterion.class, Invariant.class, value);
+        return new JAXBElement<>(_InvariantCriterion_QNAME, Criterion.class, Invariant.class, value);
     }
 
 }

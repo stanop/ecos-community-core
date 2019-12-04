@@ -127,7 +127,7 @@ public class Invariants {
      */
     public List<Scope> getScopes() {
         if (scopes == null) {
-            scopes = new ArrayList<Scope>();
+            scopes = new ArrayList<>();
         }
         return this.scopes;
     }
@@ -194,7 +194,7 @@ public class Invariants {
          */
         public List<Invariants.Imports.Import> getImport() {
             if (_import == null) {
-                _import = new ArrayList<Invariants.Imports.Import>();
+                _import = new ArrayList<>();
             }
             return this._import;
         }

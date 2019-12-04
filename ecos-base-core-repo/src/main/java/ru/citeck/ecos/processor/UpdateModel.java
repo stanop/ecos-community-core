@@ -37,7 +37,7 @@ public class UpdateModel extends AbstractDataBundleLine
 	@Override
 	public DataBundle process(DataBundle input) {
 		Map<String,Object> inputModel = input.needModel();
-		Map<String,Object> newModel = new HashMap<String,Object>(inputModel.size() + templateModel.size());
+		Map<String,Object> newModel = new HashMap<>(inputModel.size() + templateModel.size());
 		newModel.putAll(inputModel);
 		newModel.putAll(this.processTemplateMap(templateModel, inputModel));
 		return new DataBundle(input, newModel);
@@ -47,7 +47,7 @@ public class UpdateModel extends AbstractDataBundleLine
 	private Map<String,Object> processTemplateMap(Map<String,Object> templateMap, 
 			Map<String,Object> inputModel) 
 	{
-		Map<String,Object> map = new HashMap<String,Object>(templateMap.size());
+		Map<String,Object> map = new HashMap<>(templateMap.size());
 		for(String key : templateMap.keySet()) {
 			Object template = templateMap.get(key);
 			Object value = this.processTemplateObject(template, inputModel);
@@ -60,7 +60,7 @@ public class UpdateModel extends AbstractDataBundleLine
 	private Collection<Object> processTemplateCollection(Collection<Object> templateCollection,
 			Map<String, Object> inputModel) 
 	{
-		Collection<Object> collection = new ArrayList<Object>(templateCollection.size());
+		Collection<Object> collection = new ArrayList<>(templateCollection.size());
 		for(Object template : templateCollection) {
 			Object value = this.processTemplateObject(template, inputModel);
 			collection.add(value);
