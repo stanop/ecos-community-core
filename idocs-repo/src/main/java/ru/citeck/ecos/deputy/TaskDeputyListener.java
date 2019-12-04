@@ -300,7 +300,7 @@ public class TaskDeputyListener extends AbstractDeputyListener {
             deputies.addAll(deputyService.getUserDeputies(userName));
         }
         deputies.add(userName);
-        return new ArrayList<String>(deputies);
+        return new ArrayList<>(deputies);
     }
 
     private void addPooledActors(List<WorkflowTask> tasks, List<String> actors) {

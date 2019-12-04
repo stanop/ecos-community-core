@@ -51,8 +51,8 @@ public class IDocsPageViewResolver extends SlingshotPageViewResolver
                 List<ConfigElement> uriElements = uriConfig.getChildren("uri-template");
                 if (uriElements != null)
                 {
-                    uriTemplates = new ArrayList<UriTemplate>(uriElements.size());
-                    HashMap<String,UriTemplate> templatesByName = new HashMap<String, UriTemplate>(uriElements.size());
+                    uriTemplates = new ArrayList<>(uriElements.size());
+                    HashMap<String,UriTemplate> templatesByName = new HashMap<>(uriElements.size());
 
                     for (ConfigElement uriElement : uriElements)
                     {

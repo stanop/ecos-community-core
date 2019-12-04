@@ -111,7 +111,7 @@ public class SlingshotWebScriptEvaluator extends AbstractUniversalEvaluator
 			}
 			
 			// extract params
-			Map<String, String> paramValues = new HashMap<String, String>(params.size());
+			Map<String, String> paramValues = new HashMap<>(params.size());
 			for(String key : params.keySet()) {
 				String paramValue = substitute(params.get(key), rc.getParameters());
 				paramValues.put(key, paramValue);

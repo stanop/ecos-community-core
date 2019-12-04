@@ -716,7 +716,7 @@ public class RepoUtils {
         // walk through assocs, that we should add
         for (Map.Entry<QName, List<NodeRef>> entry : assocs.entrySet()) {
             QName name = entry.getKey();
-            Set<NodeRef> nodesToLink = new HashSet<NodeRef>(entry.getValue());
+            Set<NodeRef> nodesToLink = new HashSet<>(entry.getValue());
             List<NodeRef> linkedNodes = existingAssocs.containsKey(name)
                     ? existingAssocs.get(name)
                     : Collections.emptyList();

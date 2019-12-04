@@ -226,7 +226,7 @@ public class FlowableRestTemplate {
 
             String cookie = cookieList.get(0);
 
-            loginToken = cookie.substring(cookie.indexOf("=") + 1, cookie.indexOf(";"));
+            loginToken = cookie.substring(cookie.indexOf('=') + 1, cookie.indexOf(';'));
             tokenExpired = System.currentTimeMillis() + TOKEN_AGE;
 
             return loginToken;

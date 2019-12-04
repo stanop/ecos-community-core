@@ -42,7 +42,7 @@ public class DeleteAssociation extends AbstractWebScript {
 			throws IOException {
 		NodeRef aggNodeRef = new NodeRef(req.getParameter("nodeRef"));
 		String[] filesNodeRefs =  req.getParameter("filesNodeRefs").split(",");
-		List<NodeRef> files = new ArrayList<NodeRef>(filesNodeRefs.length);
+		List<NodeRef> files = new ArrayList<>(filesNodeRefs.length);
 		for(String file : filesNodeRefs) {
 			files.add(new NodeRef(file));
 		}

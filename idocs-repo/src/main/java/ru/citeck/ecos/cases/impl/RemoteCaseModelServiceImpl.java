@@ -164,7 +164,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         transactionService.getRetryingTransactionHelper().doInTransaction(() -> {
             ArrayNode arrayNode = objectMapper.createArrayNode();
             List<NodeRef> forDelete = new ArrayList<>();
-            /** Create json array */
+            /* Create json array */
             for (NodeRef caseRef : getCaseModelsByNode(documentRef)) {
                 ObjectNode objectNode = createObjectNodeFromCaseModel(caseRef);
                 if (objectNode != null) {
@@ -173,9 +173,9 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
                 forDelete.add(caseRef);
             }
             nodeService.setProperty(documentRef, IdocsModel.PROP_CASE_MODELS_SENT, true);
-            /** Send request */
+            /* Send request */
             postForObject(SAVE_CASE_MODELS_METHOD, arrayNode.toString(), String.class);
-            /** Delete nodes */
+            /* Delete nodes */
             for (NodeRef caseNodeRef : forDelete) {
                 nodeService.addAspect(caseNodeRef, ContentModel.ASPECT_TEMPORARY, Collections.emptyMap());
                 nodeService.deleteNode(caseNodeRef);
@@ -193,12 +193,12 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         if (caseModelRef == null) {
             return null;
         }
-        /** Base properties */
+        /* Base properties */
         ObjectNode objectNode = objectMapper.createObjectNode();
         String dtoType = getCaseModelType(nodeService.getType(caseModelRef));
         objectNode.put("dtoType", dtoType);
         fillBaseNodeInfo(caseModelRef, objectNode);
-        /** Document id */
+        /* Document id */
         ChildAssociationRef parentAssoc = nodeService.getPrimaryParent(caseModelRef);
         if (parentAssoc != null && parentAssoc.getParentRef() != null) {
             if (dictionaryService.isSubClass(
@@ -207,7 +207,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
                 objectNode.put("documentId", parentAssoc.getParentRef().getId());
             }
         }
-        /** Case info */
+        /* Case info */
         if (nodeService.getProperty(caseModelRef, ActivityModel.PROP_PLANNED_START_DATE) != null) {
             objectNode.put("plannedStartDate", dateFormat.format((Date) nodeService.getProperty(caseModelRef, ActivityModel.PROP_PLANNED_START_DATE)));
         }
@@ -227,10 +227,10 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         objectNode.put("autoEvents", (Boolean) nodeService.getProperty(caseModelRef, ActivityModel.PROP_AUTO_EVENTS));
         objectNode.put("repeatable", (Boolean) nodeService.getProperty(caseModelRef, ActivityModel.PROP_REPEATABLE));
         objectNode.put("typeVersion", (Integer) nodeService.getProperty(caseModelRef, ActivityModel.PROP_TYPE_VERSION));
-        /** Additional info */
+        /* Additional info */
         fillEventsInfo(caseModelRef, objectNode);
         fillAdditionalInfo(dtoType, caseModelRef, objectNode);
-        /** Child activities */
+        /* Child activities */
         ArrayNode arrayNode = objectMapper.createArrayNode();
         for (NodeRef childCaseRef : getCaseModelsByNode(caseModelRef)) {
             ObjectNode childCaseNode = createObjectNodeFromCaseModel(childCaseRef);
@@ -313,11 +313,11 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
         String dtoType = getEventType(nodeService.getType(eventNodeRef));
         fillBaseNodeInfo(eventNodeRef, eventNode);
         eventNode.put("dtoType", dtoType);
-        /** Event info */
+        /* Event info */
         eventNode.put("type", (String) nodeService.getProperty(eventNodeRef, ICaseEventModel.PROPERTY_TYPE));
         fillAdditionalEventInfo(dtoType, eventNodeRef, eventNode);
         fillConditionsInfo(eventNodeRef, eventNode);
-        /** Source info */
+        /* Source info */
         List<AssociationRef> sourcesAssocs = nodeService.getTargetAssocs(eventNodeRef, EventModel.ASSOC_EVENT_SOURCE);
         if (!CollectionUtils.isEmpty(sourcesAssocs)) {
             NodeRef sourceRef = sourcesAssocs.get(0).getTargetRef();
@@ -467,7 +467,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
     private void fillAdditionalUserActionEventInfo(NodeRef eventNodeRef, ObjectNode objectNode) {
         objectNode.put("additionalDataType", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_ADDITIONAL_DATA_TYPE));
         objectNode.put("confirmationMessage", (String) nodeService.getProperty(eventNodeRef, EventModel.PROP_CONFIRMATION_MESSAGE));
-        /** Roles */
+        /* Roles */
         ArrayNode rolesNode = objectMapper.createArrayNode();
         List<AssociationRef> rolesAssocs = nodeService.getTargetAssocs(eventNodeRef, EventModel.ASSOC_AUTHORIZED_ROLES);
         for (AssociationRef associationRef : rolesAssocs) {
@@ -478,7 +478,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             rolesNode.add(roleNode);
         }
         objectNode.put("roles", rolesNode);
-        /** Additional items */
+        /* Additional items */
         ArrayNode additionalItems = objectMapper.createArrayNode();
         List<ChildAssociationRef> childAssocs = nodeService.getChildAssocs(eventNodeRef);
         for (ChildAssociationRef childAssociationRef : childAssocs) {
@@ -604,7 +604,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             if (statusRef != null) {
                 ObjectNode statusObjectNode = objectMapper.createObjectNode();
                 fillBaseNodeInfo(statusRef, statusObjectNode);
-                /** Set status */
+                /* Set status */
                 objectNode.set("caseStatus", statusObjectNode);
             }
         }
@@ -684,7 +684,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             if (statusRef != null) {
                 ObjectNode statusObjectNode = objectMapper.createObjectNode();
                 fillBaseNodeInfo(statusRef, statusObjectNode);
-                /** Set status */
+                /* Set status */
                 objectNode.set("caseStatus", statusObjectNode);
             }
         }
@@ -720,7 +720,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             objectNode.put("dueDate", dateTimeFormat.format((Date) nodeService.getProperty(caseModelRef, ICaseTaskModel.PROP_DEADLINE)));
         }
         objectNode.put("priority", (Integer) nodeService.getProperty(caseModelRef, ICaseTaskModel.PROP_PRIORITY));
-        /** BPM Package */
+        /* BPM Package */
         List<AssociationRef> packageAssocs = nodeService.getTargetAssocs(caseModelRef, ICaseTaskModel.ASSOC_WORKFLOW_PACKAGE);
         if (!CollectionUtils.isEmpty(packageAssocs)) {
             if (packageAssocs.get(0).getTargetRef() != null) {
@@ -734,7 +734,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
                 objectNode.set("bpmPackage", packageNode);
             }
         }
-        /** Task properties */
+        /* Task properties */
         ArrayNode taskPropertiesNode = objectMapper.createArrayNode();
         Map<QName, Serializable> properties = nodeService.getProperties(caseModelRef);
         List<QName> excludeProperties = Arrays.asList(EXCLUDE_PROPERTIES);
@@ -750,7 +750,7 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
             }
         }
         objectNode.put("taskProperties", taskPropertiesNode.toString());
-        /** Task assocs */
+        /* Task assocs */
         List<QName> excludeAssocs = Arrays.asList(EXCLUDE_ASSOCS);
         List<AssociationRef> assocs =  nodeService.getTargetAssocs(caseModelRef, RegexQNamePattern.MATCH_ALL);
         ArrayNode assocsNode = objectMapper.createArrayNode();
@@ -1001,10 +1001,10 @@ public class RemoteCaseModelServiceImpl implements RemoteCaseModelService {
      * @return Return object
      */
     protected <T> T postForObject(String serviceMethod, String requestBody, Class<T> objectClass) {
-        /** Header */
+        /* Header */
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        /** Body params */
+        /* Body params */
         HttpEntity requestEntity = new HttpEntity<>(requestBody, headers);
         return restTemplate.postForObject(properties.getProperty(CASE_MODELS_SERVICE_HOST) + serviceMethod, requestEntity, objectClass);
     }

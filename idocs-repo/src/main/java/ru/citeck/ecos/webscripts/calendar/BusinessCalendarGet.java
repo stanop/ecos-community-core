@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.webscripts.calendar;
 
-import org.alfresco.service.cmr.repository.NodeRef;
 import org.springframework.extensions.webscripts.Cache;
 import org.springframework.extensions.webscripts.DeclarativeWebScript;
 import org.springframework.extensions.webscripts.Status;
@@ -79,7 +78,7 @@ public class BusinessCalendarGet extends DeclarativeWebScript
 		
 		int amount = Integer.parseInt(add_amount);
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 		BusinessCalendar calendar = new BusinessCalendar();
 		calendar.setSearchService(searchService);
 		calendar.setWorkingDays();

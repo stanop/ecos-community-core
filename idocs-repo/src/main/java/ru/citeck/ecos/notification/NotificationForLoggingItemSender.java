@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.QName;
 
 /**
  * Notification Sender for documents (ItemType = NodeRef).
@@ -55,7 +54,7 @@ public class NotificationForLoggingItemSender extends AbstractNotificationSender
 
 	@Override
 	protected Map<String, Serializable> getNotificationArgs(NodeRef item) {
-		Map<String, Serializable> args = new HashMap<String, Serializable>();
+		Map<String, Serializable> args = new HashMap<>();
 		args.put(ARG_ITEM, item);
 		args.put(ARG_AUTO_SENT, "true");
 		return args;

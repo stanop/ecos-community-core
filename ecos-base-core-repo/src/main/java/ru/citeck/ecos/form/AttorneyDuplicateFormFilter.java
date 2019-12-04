@@ -37,7 +37,7 @@ public class AttorneyDuplicateFormFilter extends AbstractFilter<Object, NodeRef>
     private static final Log logger = LogFactory.getLog(AttorneyDuplicateFormFilter.class);
 
     // fields list that will be filtered
-    protected Map<String, Map<String, Object>> config = new HashMap<String, Map<String, Object>>();
+    protected Map<String, Map<String, Object>> config = new HashMap<>();
 
     //public static final String FIELD_DATA_ASSOC = "assoc_";
     public static final String FIELD_DATA_PROP  = "prop_";

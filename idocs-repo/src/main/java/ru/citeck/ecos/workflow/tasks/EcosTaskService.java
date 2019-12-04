@@ -93,7 +93,7 @@ public class EcosTaskService {
         @Getter private final String localId;
 
         TaskId(String taskId) {
-            int delimIdx = taskId.indexOf("$");
+            int delimIdx = taskId.indexOf('$');
             if (delimIdx == -1) {
                 throw new IllegalArgumentException("Task id should has engine prefix. Task: '" + taskId + "'");
             }

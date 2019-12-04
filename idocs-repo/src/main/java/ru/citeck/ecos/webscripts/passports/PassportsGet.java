@@ -47,7 +47,7 @@ public class PassportsGet extends DeclarativeWebScript
 	private PersonService personService;
 	
     protected Map<String, Object> executeImpl(WebScriptRequest req, Status status, Cache cache) {
-    	Map<String, Object> model = new HashMap<String, Object>();
+    	Map<String, Object> model = new HashMap<>();
     	
     	String userName = req.getParameter(PARAM_USERNAME);
     	NodeRef person = null;
@@ -61,9 +61,9 @@ public class PassportsGet extends DeclarativeWebScript
     	List<AssociationRef> passportRefs = nodeService.getSourceAssocs(person, PassportModel.ASSOC_PERSON);
     	
     	@SuppressWarnings("rawtypes")
-		List<Map> passports = new ArrayList<Map>(passportRefs.size());
+		List<Map> passports = new ArrayList<>(passportRefs.size());
     	for(AssociationRef passportRef : passportRefs) {
-    		Map<String, Object> passportModel = new HashMap<String, Object>();
+    		Map<String, Object> passportModel = new HashMap<>();
     		passportModel.put(MODEL_NODE, passportRef.getSourceRef());
     		passportModel.put(MODEL_CREATED, nodeService.getProperty(passportRef.getSourceRef(), ContentModel.PROP_CREATED));
     		passports.add(passportModel);

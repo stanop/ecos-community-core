@@ -27,7 +27,6 @@ import java.util.ArrayList;
 
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.QName;
 
 /**
  * Notification Sender for documents (ItemType = NodeRef).
@@ -55,7 +54,7 @@ public class ReportWithAttachmentSender extends AbstractNotificationSender<Array
 	
 	@Override
 	protected Map<String, Serializable> getNotificationArgs(ArrayList<Map<String, Serializable>> item) {
-		Map<String, Serializable> args = new HashMap<String, Serializable>();
+		Map<String, Serializable> args = new HashMap<>();
 		args.put(ARG_ATTACHMENTS, item);
 		return args;
 	}

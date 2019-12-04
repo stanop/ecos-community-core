@@ -67,7 +67,7 @@ public class PropResolver {
             return;
         }
         NodeRef parent = nodeService.getPrimaryParent(nodeRef).getParentRef();
-        int dotIndex = fileName.lastIndexOf(".");
+        int dotIndex = fileName.lastIndexOf('.');
         String name = (dotIndex > -1)? fileName.substring(0, dotIndex) : fileName;
         String ex = (dotIndex > -1)? fileName.substring(dotIndex, fileName.length()) : "";
         String resultValue = fileName;

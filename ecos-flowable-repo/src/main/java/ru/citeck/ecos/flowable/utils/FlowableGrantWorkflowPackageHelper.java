@@ -265,7 +265,7 @@ public class FlowableGrantWorkflowPackageHelper {
      * @return Set of actors username
      */
     private Set<String> getTaskActors(WorkflowTask task) {
-        Set<String> actors = new HashSet<String>();
+        Set<String> actors = new HashSet<>();
         String actor = (String) task.getProperties().get(ContentModel.PROP_OWNER);
         if (actor != null) {
             actors.add(actor);

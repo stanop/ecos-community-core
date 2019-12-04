@@ -20,9 +20,11 @@ public class EurekaRequestInterceptor implements ClientHttpRequestInterceptor {
     private static final Log logger = LogFactory.getLog(EurekaRequestInterceptor.class);
 
     private EcosEurekaClient client;
+    private boolean forceLocalHost;
 
-    public EurekaRequestInterceptor(EcosEurekaClient client) {
+    public EurekaRequestInterceptor(EcosEurekaClient client, boolean forceLocalhost) {
         this.client = client;
+        this.forceLocalHost = forceLocalhost;
     }
 
     @Override
@@ -66,7 +68,7 @@ public class EurekaRequestInterceptor implements ClientHttpRequestInterceptor {
                 return uri;
             }
 
-            String resolvedHost = info.getHostName() + ":" + info.getPort();
+            String resolvedHost = (forceLocalHost ? "localhost" : info.getHostName()) + ":" + info.getPort();
             String newUriStr = uri.toString().replace("://" + host, "://" + resolvedHost);
 
             try {

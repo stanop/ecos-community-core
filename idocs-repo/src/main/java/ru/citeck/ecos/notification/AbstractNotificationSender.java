@@ -463,7 +463,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
     }
 
     public Set<String> getRecipients(ItemType task, NodeRef template, NodeRef document) {
-        Set<String> authorities = new HashSet<String>();
+        Set<String> authorities = new HashSet<>();
         Boolean sendToAssigneeProp = isSendToAssignee(template);
         if (sendToAssigneeProp != null && Boolean.TRUE.equals(sendToAssigneeProp)) {
             sendToAssignee(task, authorities);
@@ -487,7 +487,7 @@ public abstract class AbstractNotificationSender<ItemType> implements Notificati
                 qNameConverter.mapNameToQName("dms_additionRecipients"));
         if (additionRecipientsStr != null && !"".equals(additionRecipientsStr)) {
             String[] additionRecipientsArr = additionRecipientsStr.split(",");
-            ArrayList<String> additionRecipients = new ArrayList<String>(Arrays.asList(additionRecipientsArr));
+            ArrayList<String> additionRecipients = new ArrayList<>(Arrays.asList(additionRecipientsArr));
 
             if (additionRecipients != null && additionRecipients.size() > 0) {
                 authorities.addAll(additionRecipients);

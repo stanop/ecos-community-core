@@ -122,7 +122,7 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 
   // get notification template arguments for the task
 	protected Map<String, Serializable> getNotificationArgs(ExecutionEntity task) {
-		Map<String, Serializable> args = new HashMap<String, Serializable>();
+		Map<String, Serializable> args = new HashMap<>();
 		//args.put(ARG_TASK, getTaskInfo(task));
 		args.put(ARG_WORKFLOW, getWorkflowInfo(task));
 		String userName = authenticationService.getCurrentUserName();
@@ -152,10 +152,10 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	}*/
 	
 	private Serializable getWorkflowInfo(ExecutionEntity task) {
-		HashMap<String, Object> workflowInfo = new HashMap<String, Object>();
+		HashMap<String, Object> workflowInfo = new HashMap<>();
 		//workflowInfo.put(ARG_WORKFLOW_ID, "activiti$" +task.getId());
 		workflowInfo.put(ARG_WORKFLOW_ID, task.getId());
-		HashMap<String, Serializable> properties = new HashMap<String, Serializable>();
+		HashMap<String, Serializable> properties = new HashMap<>();
 		workflowInfo.put(ARG_WORKFLOW_PROPERTIES, properties);
 		for(Map.Entry<String, Object> entry : task.getVariables().entrySet()) {
 			if(entry.getValue()!=null)
@@ -182,7 +182,7 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	{
 		String subject = null;
 		NodeRef workflowPackage = null;
-		Vector<String> recipient = new Vector<String>();
+		Vector<String> recipient = new Vector<>();
 		//ExecutionEntity executionEntity = ((ExecutionEntity)task.getExecution()).getProcessInstance();
 		ActivitiScriptNode scriptNode = (ActivitiScriptNode)task.getVariable("bpm_package");
 		if (scriptNode != null)
@@ -224,13 +224,13 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 					if(subjectTemplates!=null)
 					{
 						String processDef = task.getProcessDefinitionId();
-						String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(":"));
+						String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(':'));
 						if(subjectTemplates.containsKey(wfkey))
 						{
 							Map<String,String> taskSubjectTemplate = subjectTemplates.get(wfkey);
 							if(taskSubjectTemplate.containsKey(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo()))))
 							{
-								HashMap<String,Object> model = new HashMap<String,Object>(1);
+								HashMap<String,Object> model = new HashMap<>(1);
 								model.put(nodeVariable, getDocsInfo());
 								subject = templateService.processTemplateString(templateEngine, taskSubjectTemplate.get(qNameConverter.mapQNameToName(nodeService.getType(getDocsInfo()))), model);
 							}
@@ -267,7 +267,7 @@ class ExecutionEntityNotificationSender extends AbstractNotificationSender<Execu
 	public NodeRef getNotificationTemplate(ExecutionEntity task)
 	{
 		String processDef = task.getProcessDefinitionId();
-		String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(":"));
+		String wfkey = "activiti$"+processDef.substring(0,processDef.indexOf(':'));
 		String tkey = (String)task.getVariableLocal("taskFormKey");
 		logger.debug("template for notification "+getNotificationTemplate(wfkey, tkey));
 		return getNotificationTemplate(wfkey, tkey, nodeService.getType(getDocsInfo()));

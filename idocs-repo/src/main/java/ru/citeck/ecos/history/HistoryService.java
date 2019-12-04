@@ -87,6 +87,7 @@ public class HistoryService {
     private static final String DOCUMENT_VERSION = "documentVersion";
     private static final String PROPERTY_NAME = "propertyName";
     private static final String EXPECTED_PERFORM_TIME = "expectedPerformTime";
+    private static final String TASK_FORM_KEY = "taskFormKey";
 
     private static Log logger = LogFactory.getLog(HistoryService.class);
     private static final String PROPERTY_PREFIX = "event";
@@ -208,7 +209,7 @@ public class HistoryService {
                 assocType = HistoryModel.ASSOC_EVENT_CONTAINED;
             }
 
-            /** Modifier */
+            /* Modifier */
             String currentUsername = authenticationService.getCurrentUserName();
             if (currentUsername != null) {
                 properties.put(HistoryModel.MODIFIER_PROPERTY, currentUsername);
@@ -289,6 +290,7 @@ public class HistoryService {
         requestParams.put(TASK_TYPE, taskType != null ? taskType.getLocalName() : "");
         requestParams.put(FULL_TASK_TYPE, taskType != null ? taskType.toString() : "");
         requestParams.put(TASK_TITLE, properties.get(HistoryModel.PROP_TASK_TITLE));
+        requestParams.put(TASK_FORM_KEY, properties.get(HistoryModel.PROP_TASK_FORM_KEY));
         /* Workflow properties */
         requestParams.put(INITIATOR, properties.get(HistoryModel.ASSOC_INITIATOR));
         requestParams.put(WORKFLOW_INSTANCE_ID, properties.get(HistoryModel.PROP_WORKFLOW_INSTANCE_ID));
@@ -342,13 +344,13 @@ public class HistoryService {
         logger.info("History transferring started from position - " + offset);
         logger.info("History transferring. Max load size - " + maxItemsCount);
         try {
-            /** Load first documents */
+            /* Load first documents */
             int documentsTransferred = 0;
             int skipCount = offset;
             ResultSet resultSet = getDocumentsResultSetByOffset(skipCount, maxItemsCount);
             boolean hasMore;
 
-            /** Start processing */
+            /* Start processing */
             do {
                 if (isHistoryTransferringInterrupted) {
                     logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
@@ -356,7 +358,7 @@ public class HistoryService {
                 }
                 List<NodeRef> documents = resultSet.getNodeRefs();
                 hasMore = resultSet.hasMore();
-                /** Process each document */
+                /* Process each document */
                 for (NodeRef documentRef : documents) {
                     if (isHistoryTransferringInterrupted) {
                         logger.info("History transferring - documents have been transferred - " + (documentsTransferred + offset));
@@ -385,7 +387,7 @@ public class HistoryService {
 
     private void sendEventsByDocumentRef(NodeRef documentRef) {
         UserTransaction trx = transactionService.getNonPropagatingUserTransaction(false);
-        /** Do processing in transaction */
+        /* Do processing in transaction */
         try {
             trx.setTransactionTimeout(1000);
             trx.begin();
@@ -480,7 +482,7 @@ public class HistoryService {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void addHistoricalProperty(NodeRef nodeRef, QName sourceProp, QName historyProp) {
         Object oldValue = nodeService.getProperty(nodeRef, HistoryModel.PROP_ADDITIONAL_PROPERTIES);
-        HashMap<QName, QName> propertyMapping = new HashMap<QName, QName>();
+        HashMap<QName, QName> propertyMapping = new HashMap<>();
         if (oldValue instanceof Map) {
             propertyMapping.putAll((Map) oldValue);
         }
@@ -589,7 +591,7 @@ public class HistoryService {
         }
         @SuppressWarnings("unchecked")
         Map<QName, QName> propertyMapping = (Map<QName, QName>) mapping;
-        Map<QName, Serializable> additionalProperties = new HashMap<QName, Serializable>(propertyMapping.size());
+        Map<QName, Serializable> additionalProperties = new HashMap<>(propertyMapping.size());
         for (QName documentProp : propertyMapping.keySet()) {
             QName historyProp = propertyMapping.get(documentProp);
             additionalProperties.put(historyProp, nodeService.getProperty(document, documentProp));
