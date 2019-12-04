@@ -53,14 +53,14 @@ public class InactiveWorkflowInstancesForNodeGet extends AbstractWorkflowWebscri
         // list all active workflows for nodeRef
         List<WorkflowInstance> workflows = workflowService.getWorkflowsForContent(nodeRef, false);
         
-        List<Map<String, Object>> results = new ArrayList<Map<String, Object>>(workflows.size());
+        List<Map<String, Object>> results = new ArrayList<>(workflows.size());
 
         for (WorkflowInstance workflow : workflows)
         {
             results.add(modelBuilder.buildSimple(workflow));
         }
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         // build the model for ftl
         model.put("workflowInstances", results);
 

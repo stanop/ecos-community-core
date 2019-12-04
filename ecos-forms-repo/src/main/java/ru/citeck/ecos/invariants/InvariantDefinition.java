@@ -495,7 +495,7 @@ public class InvariantDefinition {
         }
         
         private List<Serializable> filterContent(List<Serializable> content) {
-            List<Serializable> filtered = new ArrayList<Serializable>(content.size());
+            List<Serializable> filtered = new ArrayList<>(content.size());
             for(Serializable element : content) {
                 if(element instanceof String) {
                     String string = (String) element;
@@ -511,7 +511,7 @@ public class InvariantDefinition {
 
         @SuppressWarnings("unchecked")
         private <T> List<T> getElementList(List<Serializable> contents, Class<T> elementClass) {
-            List<T> elementList = new ArrayList<T>(contents.size());
+            List<T> elementList = new ArrayList<>(contents.size());
             for(Serializable content : contents) {
                 if(!(content instanceof JAXBElement)) {
                     throw new IllegalStateException("Expected JAXBElement, but got " + 

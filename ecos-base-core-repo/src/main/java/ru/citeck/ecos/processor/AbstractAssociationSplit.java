@@ -53,9 +53,9 @@ public abstract class AbstractAssociationSplit extends AbstractDataBundleSplit
 		
 		List<Object> assocs = this.getAssociatedObjects(nodeRef);
 		
-		List<DataBundle> outputs = new ArrayList<DataBundle>(assocs.size());
+		List<DataBundle> outputs = new ArrayList<>(assocs.size());
 		for(Object assoc : assocs) {
-			Map<String,Object> outputModel = new HashMap<String,Object>(model.size() + 1);
+			Map<String,Object> outputModel = new HashMap<>(model.size() + 1);
 			outputModel.putAll(model);
 			outputModel.put(assocRefKey, assoc);
 			outputs.add(new DataBundle(outputModel));

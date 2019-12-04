@@ -97,7 +97,7 @@ public class VersionsCommentFormFilter extends AbstractFilter<Object, NodeRef> {
                 // ensure this is the last listener executed
                 AlfrescoTransactionSupport.bindListener(new TransactionListenerAdapter() {
                     public void beforeCommit(boolean readOnly) {
-                        Map<String, Serializable> versionProperties = new HashMap<String, Serializable>(3);
+                        Map<String, Serializable> versionProperties = new HashMap<>(3);
                         versionProperties.put(VersionModel.PROP_DESCRIPTION, historyMessage);
                         RepoUtils.createVersion(persistedObject, versionProperties, nodeService, versionService);
                     }

@@ -44,7 +44,7 @@ public class ParallelDataBundleProcessor extends AbstractCompositeDataBundleProc
 	@Override
 	public List<DataBundle> process(List<DataBundle> inputs) {
 		// backup input streams, because they will be opened many times
-		List<DataBundle> backups = new ArrayList<DataBundle>(inputs.size());
+		List<DataBundle> backups = new ArrayList<>(inputs.size());
 		for(DataBundle input : inputs) {
 			DataBundle backup = helper.backupDataBundle(input);
 			if(backup != null) {
@@ -53,7 +53,7 @@ public class ParallelDataBundleProcessor extends AbstractCompositeDataBundleProc
 		}
 
 		// process backups instead of inputs
-		List<DataBundle> outputs = new ArrayList<DataBundle>(processors.size());
+		List<DataBundle> outputs = new ArrayList<>(processors.size());
 		for(DataBundleProcessor processor : processors) {
 			outputs.addAll(processor.process(backups));
 		}

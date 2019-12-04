@@ -33,7 +33,7 @@ public class IdBasedElement extends GenericConfigElement {
 	private static final String ID = "id";
 	private static final String REPLACE = "replace";
 	private static final Object TRUE = "true";
-	private Map<String, ConfigElement> childMap = new HashMap<String, ConfigElement>();
+	private Map<String, ConfigElement> childMap = new HashMap<>();
 
 	public IdBasedElement(String name) {
 		super(name);

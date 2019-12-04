@@ -21,7 +21,7 @@ public class FlowableSetContextStartListener implements ApplicationListener<Cont
      */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        /** Set services after context initialization */
+        /* Set services after context initialization */
         TaskCreateListener taskCreateListener = ApplicationContextProvider.getBean(TaskCreateListener.class);
         if (taskCreateListener != null) {
             taskCreateListener.setFormService(ApplicationContextProvider.getBean(FormService.class));

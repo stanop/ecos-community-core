@@ -61,7 +61,7 @@ public class PersonFormNodeBuilder extends AbstractFormNodeBuilder
 		}
 		
 		// create authority:
-		Map<QName, Serializable> properties = new HashMap<QName, Serializable>();
+		Map<QName, Serializable> properties = new HashMap<>();
 		properties.put(ContentModel.PROP_USERNAME, name);
 		NodeRef person = personService.createPerson(properties);
 		if(person == null) {

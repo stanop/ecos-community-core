@@ -60,7 +60,7 @@ public class HistoricalPropertiesBehaviour implements
 	private List<QName> allowedProperties;
 	private List<QName> ignoreAssocsWithTypes;
 	private DictionaryService dictionaryService;
-	private static Map<String,Long> createdNodes = new HashMap<String,Long>();
+	private static Map<String,Long> createdNodes = new HashMap<>();
 	protected boolean enableHistoryOnCreateNode;
 	protected boolean enableHistoryOnUpdateProps;
 	protected boolean enableHistoryOnAddAssocs;

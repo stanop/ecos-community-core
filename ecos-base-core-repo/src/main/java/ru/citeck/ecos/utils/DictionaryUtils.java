@@ -29,7 +29,7 @@ import java.util.*;
 public class DictionaryUtils {
 
     public static List<ClassDefinition> getClasses(Collection<QName> classNames, DictionaryService dictionaryService) {
-        List<ClassDefinition> classes = new ArrayList<ClassDefinition>(classNames.size());
+        List<ClassDefinition> classes = new ArrayList<>(classNames.size());
         for(QName className : classNames) {
             ClassDefinition classDef = dictionaryService.getClass(className);
             if(classDef == null) continue;
@@ -39,7 +39,7 @@ public class DictionaryUtils {
     }
     
     public static List<QName> getClassNames(Collection<? extends ClassDefinition> classes) {
-        List<QName> classNames = new ArrayList<QName>(classes.size());
+        List<QName> classNames = new ArrayList<>(classes.size());
         for(ClassDefinition classDef : classes) {
             if(classDef == null) continue;
             classNames.add(classDef.getName());
@@ -68,7 +68,7 @@ public class DictionaryUtils {
      * @return list of class names
      */
     public static List<QName> getNodeClassNames(NodeRef nodeRef, NodeService nodeService) {
-        List<QName> classNames = new ArrayList<QName>();
+        List<QName> classNames = new ArrayList<>();
         classNames.add(nodeService.getType(nodeRef));
         classNames.addAll(nodeService.getAspects(nodeRef));
         return classNames;
@@ -82,7 +82,7 @@ public class DictionaryUtils {
      * @return list of class definitions
      */
     public static List<ClassDefinition> getNodeClasses(NodeRef nodeRef, NodeService nodeService, DictionaryService dictionaryService) {
-        List<ClassDefinition> classes = new LinkedList<ClassDefinition>();
+        List<ClassDefinition> classes = new LinkedList<>();
         QName typeName = nodeService.getType(nodeRef);
         classes.add(dictionaryService.getClass(typeName));
         classes.addAll(getClasses(nodeService.getAspects(nodeRef), dictionaryService));
@@ -90,7 +90,7 @@ public class DictionaryUtils {
     }
     
     public static List<ClassDefinition> getAllNodeClasses(NodeRef nodeRef, NodeService nodeService, DictionaryService dictionaryService) {
-        List<ClassDefinition> classes = new LinkedList<ClassDefinition>();
+        List<ClassDefinition> classes = new LinkedList<>();
         QName typeName = nodeService.getType(nodeRef);
         TypeDefinition typeDef = dictionaryService.getType(typeName);
         expandClasses(typeDef, classes, dictionaryService);
@@ -155,7 +155,7 @@ public class DictionaryUtils {
     }
     
     public static List<ClassDefinition> expandClasses(Collection<ClassDefinition> classes, DictionaryService dictionaryService) {
-        List<ClassDefinition> expandedClasses = new LinkedList<ClassDefinition>();
+        List<ClassDefinition> expandedClasses = new LinkedList<>();
         for(ClassDefinition classDef : classes) {
             expandClasses(classDef, expandedClasses, dictionaryService);
         }

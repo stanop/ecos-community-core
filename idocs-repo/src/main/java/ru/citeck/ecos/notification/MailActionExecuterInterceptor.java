@@ -183,8 +183,8 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 		}
 		else if(mailToMany!=null)
 		{
-			LinkedList<NodeRef> recipients = new LinkedList<NodeRef>();
-			ArrayList<String> emails = new ArrayList<String>();
+			LinkedList<NodeRef> recipients = new LinkedList<>();
+			ArrayList<String> emails = new ArrayList<>();
 			for(int i=0; i<mailToMany.size(); i++)
 			{
 				NodeRef recipient = authorityService.getAuthorityNodeRef((String)mailToMany.get(i));
@@ -223,7 +223,7 @@ public class MailActionExecuterInterceptor implements MethodInterceptor {
 	
 	public ArrayList<String> getEmailsForGroupMembers(NodeRef recipient)
 	{
-		ArrayList<String> emails = new ArrayList<String>();
+		ArrayList<String> emails = new ArrayList<>();
 		List<ChildAssociationRef> memberAssocs = nodeService.getChildAssocs(recipient, ContentModel.ASSOC_MEMBER, RegexQNamePattern.MATCH_ALL);
 		for (ChildAssociationRef memberAssoc : memberAssocs)
 		{

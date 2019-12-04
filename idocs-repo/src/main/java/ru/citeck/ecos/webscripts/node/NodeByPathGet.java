@@ -61,7 +61,7 @@ public class NodeByPathGet extends DeclarativeWebScript {
 			status.setCode(Status.STATUS_INTERNAL_SERVER_ERROR, "Nodes length > 1: " + nodes.length());
 			return null;
 		}
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 		if(nodes.length() == 0) {
 			result.put("found", false);
 			return result;

@@ -76,7 +76,7 @@ public class TRelationship
      */
     public List<QName> getSource() {
         if (source == null) {
-            source = new ArrayList<QName>();
+            source = new ArrayList<>();
         }
         return this.source;
     }
@@ -105,7 +105,7 @@ public class TRelationship
      */
     public List<QName> getTarget() {
         if (target == null) {
-            target = new ArrayList<QName>();
+            target = new ArrayList<>();
         }
         return this.target;
     }

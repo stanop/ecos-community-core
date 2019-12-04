@@ -74,7 +74,7 @@ public abstract class TTableItem
      */
     public List<Object> getApplicabilityRuleRefs() {
         if (applicabilityRuleRefs == null) {
-            applicabilityRuleRefs = new ArrayList<Object>();
+            applicabilityRuleRefs = new ArrayList<>();
         }
         return this.applicabilityRuleRefs;
     }
@@ -103,7 +103,7 @@ public abstract class TTableItem
      */
     public List<Object> getAuthorizedRoleRefs() {
         if (authorizedRoleRefs == null) {
-            authorizedRoleRefs = new ArrayList<Object>();
+            authorizedRoleRefs = new ArrayList<>();
         }
         return this.authorizedRoleRefs;
     }
