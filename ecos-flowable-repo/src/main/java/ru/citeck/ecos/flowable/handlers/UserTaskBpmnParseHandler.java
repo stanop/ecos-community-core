@@ -39,27 +39,27 @@ public class UserTaskBpmnParseHandler implements BpmnParseHandler {
     public void parse(BpmnParse bpmnParse, BaseElement baseElement) {
         UserTask userTask = (UserTask) baseElement;
         List<FlowableListener> listeners = userTask.getTaskListeners();
-        /** All */
+        /* All */
         Collection<String> allTaskListeners = ApplicationContextProvider.getBeansNames(GlobalAllTaskListener.class);
         for (String taskListener : allTaskListeners) {
             listeners.add(createFlowableListener(taskListener, TaskListener.EVENTNAME_ALL_EVENTS));
         }
-        /** Assignment */
+        /* Assignment */
         Collection<String> assignmentTaskListeners = ApplicationContextProvider.getBeansNames(GlobalAssignmentTaskListener.class);
         for (String taskListener : assignmentTaskListeners) {
             listeners.add(createFlowableListener(taskListener, TaskListener.EVENTNAME_ASSIGNMENT));
         }
-        /** Complete */
+        /* Complete */
         Collection<String> completeTaskListeners = ApplicationContextProvider.getBeansNames(GlobalCompleteTaskListener.class);
         for (String taskListener : completeTaskListeners) {
             listeners.add(createFlowableListener(taskListener, TaskListener.EVENTNAME_COMPLETE));
         }
-        /** Create */
+        /* Create */
         Collection<String> createTaskListeners = ApplicationContextProvider.getBeansNames(GlobalCreateTaskListener.class);
         for (String taskListener : createTaskListeners) {
             listeners.add(createFlowableListener(taskListener, TaskListener.EVENTNAME_CREATE));
         }
-        /** Delete */
+        /* Delete */
         Collection<String> deleteTaskListeners = ApplicationContextProvider.getBeansNames(GlobalDeleteTaskListener.class);
         for (String taskListener : deleteTaskListeners) {
             listeners.add(createFlowableListener(taskListener, TaskListener.EVENTNAME_DELETE));

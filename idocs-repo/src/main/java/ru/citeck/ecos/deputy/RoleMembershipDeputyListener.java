@@ -79,7 +79,6 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 	@Override
 	public void onRoleAssistantAdded(String roleFullName, String assistantName) {
 		RoleMembersContainer roleMembersContainer = new RoleMembersContainer(roleFullName).getAssistantsUsersAndMembers();
-		Set<String> memberUsers = roleMembersContainer.getMemberUsers();
 		Set<String> deputyUsers = roleMembersContainer.getDeputyUsers();
 		deputy(roleFullName, deputyUsers);
 	}
@@ -87,7 +86,6 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 	@Override
 	public void onRoleAssistantRemoved(String roleFullName, String assistantName) {
 		RoleMembersContainer roleMembersContainer = new RoleMembersContainer(roleFullName).getAssistantsUsersAndMembers();
-		Set<String> memberUsers = roleMembersContainer.getMemberUsers();
 		Set<String> deputyUsers = roleMembersContainer.getDeputyUsers();
 		undeputy(roleFullName, deputyUsers);
 	}
@@ -178,10 +176,10 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 			// get deputies of role
 			List<String> deputiesList = deputyService.getRoleDeputies(roleFullName);
 
-			deputyUsers = new HashSet<String>(deputiesList.size());
+			deputyUsers = new HashSet<>(deputiesList.size());
 			deputyUsers.addAll(deputiesList);
 
-			memberUsers = new HashSet<String>(allUsers.size());
+			memberUsers = new HashSet<>(allUsers.size());
 			for (String user : allUsers) {
 				if (!deputyUsers.contains(user)) {
 					memberUsers.add(user);
@@ -197,10 +195,10 @@ public class RoleMembershipDeputyListener extends AbstractDeputyListener
 			// get deputies of role
 			List<String> deputiesList = deputyService.getRoleAssistants(roleFullName);
 
-			deputyUsers = new HashSet<String>(deputiesList.size());
+			deputyUsers = new HashSet<>(deputiesList.size());
 			deputyUsers.addAll(deputiesList);
 
-			memberUsers = new HashSet<String>(allUsers.size());
+			memberUsers = new HashSet<>(allUsers.size());
 			for (String user : allUsers) {
 				if (!deputyUsers.contains(user)) {
 					memberUsers.add(user);

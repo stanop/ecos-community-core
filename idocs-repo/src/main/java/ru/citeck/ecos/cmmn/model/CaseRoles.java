@@ -68,7 +68,7 @@ public class CaseRoles
      */
     public List<Role> getRole() {
         if (role == null) {
-            role = new ArrayList<Role>();
+            role = new ArrayList<>();
         }
         return this.role;
     }

@@ -234,7 +234,7 @@ public class GrantWorkflowPackageHelper {
 
     // get task actors (authorities)
     private Set<String> getTaskActors(DelegateTask task) {
-        Set<String> actors = new HashSet<String>();
+        Set<String> actors = new HashSet<>();
         // add actor
         String actor = task.getAssignee();
         if(actor != null) {
@@ -257,7 +257,7 @@ public class GrantWorkflowPackageHelper {
 
     // get task actors (authorities)
     private Set<String> getTaskActors(WorkflowTask task) {
-        Set<String> actors = new HashSet<String>();
+        Set<String> actors = new HashSet<>();
         // add actor
         String actor = (String) task.getProperties().get(ContentModel.PROP_OWNER);
         if (actor != null) {

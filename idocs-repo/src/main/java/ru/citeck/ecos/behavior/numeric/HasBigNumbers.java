@@ -77,7 +77,7 @@ public class HasBigNumbers
     		return;
     	}
     	
-    	Set<QName> props = new HashSet<QName>();
+    	Set<QName> props = new HashSet<>();
     	props.addAll(before.keySet());
     	props.addAll(after.keySet());
     	

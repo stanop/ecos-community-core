@@ -111,7 +111,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
                     "not initialised or model table is not exist");
         }
 
-        /** Read process definition from input stream */
+        /* Read process definition from input stream */
         BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
         XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
         XMLStreamReader xmlStreamReader;
@@ -122,7 +122,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
             throw new IllegalStateException("Could not create XML streamReader.", e);
         }
 
-        /** Parse process definition */
+        /* Parse process definition */
         BpmnModel bpmnModel = xmlConverter.convertToBpmnModel(xmlStreamReader);
         if (CollectionUtils.isEmpty(bpmnModel.getProcesses())) {
             throw new IllegalArgumentException("No process found in metadata");
@@ -144,7 +144,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
         String description = process.getDocumentation();
         String key = process.getId();
 
-        /** Fill dto */
+        /* Fill dto */
         Model model = new Model();
         model.setId(UUID.randomUUID().toString());
         model.setName(name);
@@ -158,7 +158,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
         model.setModelEditorJson(modelNode.toString());
         model.setModelType(AbstractModel.MODEL_TYPE_BPMN);
 
-        /** Insert or update model in flowable-modeler */
+        /* Insert or update model in flowable-modeler */
         if (existProcessModel(key)) {
             updateProcessModelToNewVersion(model);
         } else {
@@ -238,7 +238,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
     }
 
     private boolean existProcessModel(String modelKey) {
-        /** Load process models by model key */
+        /* Load process models by model key */
         CustomSqlExecution<ModelMapper, Long> countExecution =
                 new AbstractCustomSqlExecution<ModelMapper, Long>(ModelMapper.class) {
                     @Override
@@ -302,7 +302,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
         logger.info("Start import process to Flowable Modeler from locations");
 
-        /** Get all locations */
+        /* Get all locations */
         List<String> bootstrapLocations = getBootstrapDefinitions();
         Set<String> allLocations = new HashSet<>(bootstrapLocations);
         allLocations.addAll(locations);
@@ -312,7 +312,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
             return;
         }
 
-        /** Import process definitions */
+        /* Import process definitions */
         allLocations.forEach(location -> {
             try {
                 Resource resource = location.contains(":") ? new UrlResource(location) : new ClassPathResource(location);
@@ -367,7 +367,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
     private boolean isModelDeployed(String location) {
         Resource resource = new ClassPathResource(location);
-        /** Read process definition from input stream */
+        /* Read process definition from input stream */
         BpmnXMLConverter xmlConverter = new BpmnXMLConverter();
         XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
         XMLStreamReader xmlStreamReader;
@@ -378,7 +378,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
             throw new IllegalStateException("Could not create XML streamReader.", e);
         }
 
-        /** Parse process definition */
+        /* Parse process definition */
         BpmnModel bpmnModel = xmlConverter.convertToBpmnModel(xmlStreamReader);
         if (CollectionUtils.isEmpty(bpmnModel.getProcesses())) {
             throw new IllegalArgumentException("No process found in metadata");
@@ -391,7 +391,7 @@ public class FlowableModelerServiceImpl implements FlowableModelerService {
 
         org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
         String key = process.getId();
-        /** Check model existing */
+        /* Check model existing */
         return existProcessModel(key);
     }
 

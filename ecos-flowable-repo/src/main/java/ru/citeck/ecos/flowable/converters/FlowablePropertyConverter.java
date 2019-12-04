@@ -92,7 +92,7 @@ public class FlowablePropertyConverter {
         Map<QName, Serializable> properties = mapArbitraryProperties(variables, localVariables, taskProperties,
                 taskAssociations);
 
-        /** Set task instance properties */
+        /* Set task instance properties */
         properties.put(WorkflowModel.PROP_TASK_ID, task.getId());
         properties.put(WorkflowModel.PROP_START_DATE, task.getCreateTime());
         properties.put(WorkflowModel.PROP_COMPLETION_DATE, null);
@@ -383,7 +383,7 @@ public class FlowablePropertyConverter {
             }
 
             Map<QName, Serializable> existingProperties = getTaskProperties(task);
-            /** Added properties */
+            /* Added properties */
             if (add != null) {
                 for (Map.Entry<QName, List<NodeRef>> toAdd : add.entrySet()) {
 
@@ -411,7 +411,7 @@ public class FlowablePropertyConverter {
                     }
                 }
             }
-            /** Removed properties */
+            /* Removed properties */
             if (remove != null) {
                 for (Map.Entry<QName, List<NodeRef>> toRemove : remove.entrySet()) {
                     Serializable existingRemove = newProperties.get(toRemove.getKey());

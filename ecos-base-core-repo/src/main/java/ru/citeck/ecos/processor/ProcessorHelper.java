@@ -81,7 +81,7 @@ public class ProcessorHelper {
 	}
 	
 	public Map<String,Object> getContentProperties(ContentAccessor accessor) {
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		model.put(ProcessorConstants.KEY_ENCODING, accessor.getEncoding());
 		model.put(ProcessorConstants.KEY_MIMETYPE, accessor.getMimetype());
 		return model;

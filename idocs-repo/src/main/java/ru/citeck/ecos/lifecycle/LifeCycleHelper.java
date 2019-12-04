@@ -18,7 +18,6 @@
  */
 package ru.citeck.ecos.lifecycle;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,9 +29,6 @@ import org.alfresco.repo.action.evaluator.ComparePropertyValueEvaluator;
 import org.alfresco.repo.action.executer.MailActionExecuter;
 import org.alfresco.repo.action.executer.SetPropertyValueActionExecuter;
 import org.alfresco.repo.workflow.StartWorkflowActionExecuter;
-import org.alfresco.service.ServiceRegistry;
-import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
@@ -54,7 +50,7 @@ public class LifeCycleHelper {
     private static Log logger = LogFactory.getLog(LifeCycleHelper.class);
 
 	public static List<LifeCycleState> getStatesByStateId(LifeCycleDefinition lcd, String stateId) {
-		List<LifeCycleState> result = new ArrayList<LifeCycleState>();
+		List<LifeCycleState> result = new ArrayList<>();
 
 		if (stateId != null) {
 			for (LifeCycleState lcState : lcd.getStateList()) {
@@ -67,7 +63,7 @@ public class LifeCycleHelper {
 	}
 
 	public static List<LifeCycleTransition> getTransitionsByFromStateId(LifeCycleDefinition lcd, String fromState) {
-		List<LifeCycleTransition> result = new ArrayList<LifeCycleTransition>();
+		List<LifeCycleTransition> result = new ArrayList<>();
 
 		if (fromState != null) {
 			for (LifeCycleTransition transition : lcd.getTransitionList()) {
@@ -80,7 +76,7 @@ public class LifeCycleHelper {
 	}
 
 	public static List<LifeCycleState> filterStatesByEventType(List<LifeCycleState> states, Set<String> eventTypes) {
-		List<LifeCycleState> filteredStates = new ArrayList<LifeCycleState>();
+		List<LifeCycleState> filteredStates = new ArrayList<>();
 
 		for (LifeCycleState state : states) {
 			LifeCycleEvent lcEvent = state.getEvent();
@@ -97,7 +93,7 @@ public class LifeCycleHelper {
 	}
 
 	public static List<LifeCycleTransition> filterTransitionsByEventType(List<LifeCycleTransition> transitions, Set<String> eventTypes) {
-		List<LifeCycleTransition> filteredTransitions = new ArrayList<LifeCycleTransition>();
+		List<LifeCycleTransition> filteredTransitions = new ArrayList<>();
 
 		for (LifeCycleTransition transition : transitions) {
 			LifeCycleEvent lcEvent = transition.getEvent();
@@ -117,7 +113,7 @@ public class LifeCycleHelper {
 	    try {
             JSONArray jsonArr = new JSONArray(jsonString);
 
-            List<String> resultList = new ArrayList<String>();
+            List<String> resultList = new ArrayList<>();
 
             for (int i = 0; i < jsonArr.length(); i++)
                 resultList.add(jsonArr.getString(i));
@@ -136,7 +132,7 @@ public class LifeCycleHelper {
             JSONObject jsonObj = new JSONObject(jsonString);
             Iterator jsonKeys = jsonObj.keys();
 
-            Map<String, Object> resultMap = new HashMap<String, Object>();
+            Map<String, Object> resultMap = new HashMap<>();
 
             while (jsonKeys.hasNext()) {
                 String key = (String) jsonKeys.next();

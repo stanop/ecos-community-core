@@ -7,7 +7,6 @@ import org.activiti.engine.impl.persistence.entity.ExecutionEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntityManager;
 import org.activiti.engine.impl.pvm.process.ActivityImpl;
-import org.alfresco.repo.transaction.TransactionalResourceHelper;
 import org.alfresco.repo.workflow.activiti.ActivitiConstants;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.NodeRef;

@@ -79,7 +79,7 @@ public abstract class AbstractCaseElementDAO<ConfigType extends ElementConfigDto
     }
 
     protected List<NodeRef> filterByClass(List<NodeRef> nodeRefs, QName className) {
-		List<NodeRef> result = new LinkedList<NodeRef>();
+		List<NodeRef> result = new LinkedList<>();
 		ClassDefinition classDef = dictionaryService.getClass(className);
 		if(classDef.isAspect()) {
             for(NodeRef nodeRef : nodeRefs) {

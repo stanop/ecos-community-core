@@ -270,10 +270,10 @@ public class DeputyServiceImpl implements DeputyService
         List<NodeRef> deputiedRoles = getRolesDeputiedToUserImpl(user);
 
         // use HashSet for fast search
-        Set<NodeRef> deputiedRoleSet = new HashSet<NodeRef>(deputiedRoles.size());
+        Set<NodeRef> deputiedRoleSet = new HashSet<>(deputiedRoles.size());
         deputiedRoleSet.addAll(deputiedRoles);
 
-        List<String> nonDeputiedRoles = new ArrayList<String>(deputiedRoles.size());
+        List<String> nonDeputiedRoles = new ArrayList<>(deputiedRoles.size());
         for(String roleName : userRoles) {
             NodeRef role = authorityHelper.getRole(roleName);
             if(!deputiedRoleSet.contains(role)) {
@@ -295,11 +295,11 @@ public class DeputyServiceImpl implements DeputyService
 
         // and exclude those, that are deputies
         List<String> deputies = this.getRoleDeputies(roleFullName);
-        Set<String> deputiesSet = new HashSet<String>(deputies);
+        Set<String> deputiesSet = new HashSet<>(deputies);
         List<String> assistants = getRoleAssistants(roleFullName);
         deputiesSet.addAll(deputies);
         deputiesSet.addAll(assistants);
-        List<String> fullMembers = new ArrayList<String>(members.size());
+        List<String> fullMembers = new ArrayList<>(members.size());
         for(String member : members) {
             if(!deputiesSet.contains(member)) {
                 fullMembers.add(member);
@@ -319,10 +319,10 @@ public class DeputyServiceImpl implements DeputyService
         List<NodeRef> deputiedRoles = getRolesDeputiedToUserImpl(user);
 
         // use HashSet for fast search
-        Set<NodeRef> deputiedRoleSet = new HashSet<NodeRef>(deputiedRoles.size());
+        Set<NodeRef> deputiedRoleSet = new HashSet<>(deputiedRoles.size());
         deputiedRoleSet.addAll(deputiedRoles);
 
-        List<String> managedRoles = new ArrayList<String>(userRoles.size());
+        List<String> managedRoles = new ArrayList<>(userRoles.size());
         for(String roleName : userRoles) {
             NodeRef role = authorityHelper.getRole(roleName);
             // role should be not deputied to user
@@ -485,7 +485,7 @@ public class DeputyServiceImpl implements DeputyService
     }
 
     private List<NodeRef> getAuthorities(Collection<String> authorityNames) {
-        List<NodeRef> authorities = new ArrayList<NodeRef>(authorityNames.size());
+        List<NodeRef> authorities = new ArrayList<>(authorityNames.size());
         for(String authorityName : authorityNames) {
             NodeRef authority = authorityHelper.getAuthority(authorityName);
             if(authority != null) {
@@ -496,7 +496,7 @@ public class DeputyServiceImpl implements DeputyService
     }
 
     private List<String> getAuthorityNames(Collection<NodeRef> authorities) {
-        List<String> authorityNames = new ArrayList<String>(authorities.size());
+        List<String> authorityNames = new ArrayList<>(authorities.size());
         for(NodeRef authority : authorities) {
             String authorityName = authorityHelper.getAuthorityName(authority);
             if(authorityName != null) {
@@ -512,7 +512,7 @@ public class DeputyServiceImpl implements DeputyService
                 searchDeputationRecords(DeputyModel.ASSOC_DEPUTIED_AUTHORITY, authority, isAssistants);
         Map<NodeRef, NodeRef> deputyMap = mapDeputationRecordsAssocs(deputationRecords,
                 DeputyModel.ASSOC_DEPUTY);
-        List<NodeRef> deputies = new ArrayList<NodeRef>(deputyMap.size());
+        List<NodeRef> deputies = new ArrayList<>(deputyMap.size());
         deputies.addAll(deputyMap.values());
         return deputies;
     }
@@ -535,7 +535,7 @@ public class DeputyServiceImpl implements DeputyService
     }
 
     private List<NodeRef> filterAuthoritiesByType(Collection<NodeRef> authorities, QName requiredType) {
-        List<NodeRef> filtered = new ArrayList<NodeRef>(authorities.size());
+        List<NodeRef> filtered = new ArrayList<>(authorities.size());
         for(NodeRef authority : authorities) {
             QName type = nodeService.getType(authority);
             if(requiredType.equals(type)) {
@@ -551,7 +551,7 @@ public class DeputyServiceImpl implements DeputyService
             return Collections.emptyList();
         }
         List<AssociationRef> assocs = nodeService.getSourceAssocs(assocValue, searchAssoc);
-        List<NodeRef> deputationRecords = new ArrayList<NodeRef>(assocs.size());
+        List<NodeRef> deputationRecords = new ArrayList<>(assocs.size());
         for(AssociationRef assoc : assocs) {
             if (isAssistantDeputyRecord(assoc.getSourceRef()).equals(isAssistants)) {
                 deputationRecords.add(assoc.getSourceRef());
@@ -564,7 +564,7 @@ public class DeputyServiceImpl implements DeputyService
     private Map<NodeRef, NodeRef> mapDeputationRecordsAssocs(Collection<NodeRef> deputationRecords,
                                                              QName assocName)
     {
-        Map<NodeRef, NodeRef> results = new HashMap<NodeRef, NodeRef>(deputationRecords.size());
+        Map<NodeRef, NodeRef> results = new HashMap<>(deputationRecords.size());
         for(NodeRef deputationRecord : deputationRecords) {
             List<AssociationRef> assocs = nodeService.getTargetAssocs(deputationRecord, assocName);
             if(assocs == null || assocs.size() == 0) {
@@ -649,7 +649,7 @@ public class DeputyServiceImpl implements DeputyService
     // add deputation records and return nodeRefs of them
     private List<NodeRef> addDeputationRecords(NodeRef deputiedAuthority,
                                                Collection<NodeRef> deputies, boolean deputiedRole, boolean isAssistants) {
-        List<NodeRef> deputationRecords = new ArrayList<NodeRef>(deputies.size());
+        List<NodeRef> deputationRecords = new ArrayList<>(deputies.size());
         // then add all deputation records
         for (NodeRef deputy : deputies) {
             NodeRef deputationRecord = addDeputationRecord(deputiedAuthority, deputy, deputiedRole, isAssistants);
@@ -721,7 +721,7 @@ public class DeputyServiceImpl implements DeputyService
         if (isRoleDeputiedByMembers(roleFullName)) {
             return true;
         }
-        NodeRef role = authorityHelper.needRole(roleFullName);
+
 
         // zero - all roles are deputied by admins
         if (authorityService.isAdminAuthority(getCurrentUserName())) {

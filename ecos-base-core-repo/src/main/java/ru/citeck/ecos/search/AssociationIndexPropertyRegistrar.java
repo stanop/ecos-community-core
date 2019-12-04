@@ -29,7 +29,8 @@ public class AssociationIndexPropertyRegistrar {
     private AssociationIndexPropertyRegistry registry;
     private NamespaceService namespaceService;
     private Map<String, String> assocsMapping;
-    private String assocName, indexName;
+    private String assocName;
+    private String indexName;
 
     public AssociationIndexPropertyRegistrar(AssociationIndexPropertyRegistry registry) {
         this.registry = registry;

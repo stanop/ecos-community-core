@@ -9,6 +9,7 @@ import ecos.com.google.common.cache.LoadingCache;
 import lombok.extern.slf4j.Slf4j;
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.node.MLPropertyInterceptor;
+import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.ServiceRegistry;
 import org.alfresco.service.cmr.repository.MLText;
 import org.alfresco.service.cmr.repository.NodeRef;
@@ -25,10 +26,7 @@ import ru.citeck.ecos.search.ftsquery.FTSQuery;
 import ru.citeck.ecos.template.CardTemplateService;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -51,31 +49,44 @@ public class CardTemplateActionsProvider implements NodeActionsV2Provider {
     private CardTemplateActionsProvider() {
         titleByTemplateType = CacheBuilder.newBuilder()
                 .expireAfterWrite(5, TimeUnit.MINUTES)
-                .build(CacheLoader.from(this::getTemplateTypeTitleImpl));
+                .build(CacheLoader.from(this::getTemplateTypeTitleAsSystem));
+    }
+
+    private MLText getTemplateTypeTitleAsSystem(String type) {
+        return AuthenticationUtil.runAsSystem(() -> getTemplateTypeTitleImpl(type));
     }
 
     private MLText getTemplateTypeTitleImpl(String type) {
 
-        NodeRef typeRef = FTSQuery.create()
-                                  .type(CDLModel.TYPE_CARD_TEMPLATE_TYPE).and()
-                                  .exact(ContentModel.PROP_NAME, type)
-                                  .transactional()
-                                  .queryOne(searchService)
-                                  .orElse(null);
-        if (typeRef == null) {
-            return new MLText("");
-        }
-
         MLPropertyInterceptor.setMLAware(true);
         try {
 
-            MLText title = (MLText) nodeService.getProperty(typeRef, ContentModel.PROP_TITLE);
-            if (title == null) {
-                return new MLText("");
-            } else {
-                return title;
+            //For some reasons search by TYPE AND =cm:name doesn't work in transactional mode
+            //so we search all types and filter by name after that
+            Map<QName, Serializable> typeProps;
+            typeProps = FTSQuery.create()
+                                .type(CDLModel.TYPE_CARD_TEMPLATE_TYPE).and()
+                                .exact(ContentModel.PROP_NAME, type)
+                                .transactional()
+                                .query(searchService)
+                                .stream()
+                                .map(nodeService::getProperties)
+                                .filter(props -> Objects.equals(props.get(ContentModel.PROP_NAME), type))
+                                .findFirst()
+                                .orElse(null);
+
+            if (typeProps == null) {
+                return new MLText(type);
             }
 
+            Serializable rawTitle = typeProps.get(ContentModel.PROP_TITLE);
+            if (rawTitle instanceof MLText) {
+                return (MLText) rawTitle;
+            } else if (rawTitle == null) {
+                return new MLText(type);
+            } else {
+                return new MLText(rawTitle.toString());
+            }
         } finally {
             MLPropertyInterceptor.setMLAware(false);
         }
@@ -128,7 +139,7 @@ public class CardTemplateActionsProvider implements NodeActionsV2Provider {
             action.setName(templateType);
         }
 
-        action.setKey("card-template");
+        action.setKey("card-template." + templateType + "." + format);
         action.setType("download");
 
         String url = String.format(URL, nodeRef.toString(), templateType, format);

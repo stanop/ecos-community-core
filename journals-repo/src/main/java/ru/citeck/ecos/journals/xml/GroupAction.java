@@ -72,7 +72,7 @@ public class GroupAction {
      */
     public List<Option> getParam() {
         if (param == null) {
-            param = new ArrayList<Option>();
+            param = new ArrayList<>();
         }
         return this.param;
     }

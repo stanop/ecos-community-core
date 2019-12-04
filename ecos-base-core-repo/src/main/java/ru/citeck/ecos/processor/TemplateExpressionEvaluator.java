@@ -44,7 +44,7 @@ public class TemplateExpressionEvaluator implements ExpressionEvaluator
 		NodeRef person = repositoryHelper.getPerson();
 		NodeRef userHome = repositoryHelper.getUserHome(person);
 
-		Map<String, Object> newModel = new HashMap<String, Object>();
+		Map<String, Object> newModel = new HashMap<>();
 		newModel.putAll(model);
 		newModel.putAll(templateService.buildDefaultModel(person, companyHome, userHome, null, null));
 

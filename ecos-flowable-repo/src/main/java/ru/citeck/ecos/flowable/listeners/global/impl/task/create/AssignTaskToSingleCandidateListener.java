@@ -43,10 +43,10 @@ public class AssignTaskToSingleCandidateListener implements GlobalCreateTaskList
      * @return Set of username
      */
     private Set<String> getCandidateUsers(Set<IdentityLink> candidates) {
-        Set<String> userNames = new HashSet<String>();
+        Set<String> userNames = new HashSet<>();
         for(IdentityLink candidate : candidates) {
-            String groupId = candidate.getGroupId(),
-                    userId = candidate.getUserId();
+            String groupId = candidate.getGroupId();
+            String userId = candidate.getUserId();
             if(groupId != null) {
                 Set<String> users = authorityService.getContainedAuthorities(AuthorityType.USER, groupId, false);
                 userNames.addAll(users);

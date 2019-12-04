@@ -208,7 +208,7 @@ public class GrantPermissionServiceImpl implements
             nodeService.addAspect(nodeRef, GrantModel.ASPECT_GRANTED, null);
         }
         // add permission nodeRef
-        Map<QName, Serializable> permissionProps = new HashMap<QName, Serializable>();
+        Map<QName, Serializable> permissionProps = new HashMap<>();
         permissionProps.put(GrantModel.PROP_PERMISSION, permission);
         permissionProps.put(GrantModel.PROP_AUTHORITY, authority);
         permissionProps.put(GrantModel.PROP_PROVIDER, provider);
@@ -260,8 +260,8 @@ public class GrantPermissionServiceImpl implements
         }
 
         // get granted permissions and revoked permissions
-        Set<Permission> grantedPermissionInfo = new HashSet<Permission>();
-        Set<Permission> revokedPermissionInfo = new HashSet<Permission>();
+        Set<Permission> grantedPermissionInfo = new HashSet<>();
+        Set<Permission> revokedPermissionInfo = new HashSet<>();
         for(ChildAssociationRef grantedPermission : grantedPermissions) {
             Permission perm = new Permission(grantedPermission);
             if(providerPattern.isMatch(grantedPermission.getQName())) {
@@ -374,7 +374,8 @@ public class GrantPermissionServiceImpl implements
 
     private class Permission {
 
-        private String authority, permission;
+        private String authority;
+		private String permission;
         private ChildAssociationRef permissionRef;
 
         public Permission(ChildAssociationRef permissionRef) {

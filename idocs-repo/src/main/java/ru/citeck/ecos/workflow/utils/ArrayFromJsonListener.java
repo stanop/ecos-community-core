@@ -45,7 +45,7 @@ public class ArrayFromJsonListener extends AbstractExecutionListener {
 
 	@Override
 	protected void notifyImpl(DelegateExecution execution) throws Exception {
-		List<Object> result = new ArrayList<Object>();
+		List<Object> result = new ArrayList<>();
 		String variableName = (String)var.getValue(execution);
 		Object jsonObject = json.getValue(execution);
 		String pathLine = (String)path.getValue(execution);
@@ -59,7 +59,7 @@ public class ArrayFromJsonListener extends AbstractExecutionListener {
 			return;
 		String element = null;
 		String pathRest = null;
-		int pos = path.indexOf(".");
+		int pos = path.indexOf('.');
 		if (pos < 0) {
 			element = path;
 		}

@@ -106,7 +106,7 @@ public class DefaultFormNodeBuilder extends AbstractFormNodeBuilder {
 			}
 
 			// create the node
-			Map<QName, Serializable> nodeProps = new HashMap<QName, Serializable>(1);
+			Map<QName, Serializable> nodeProps = new HashMap<>(1);
 			nodeProps.put(ContentModel.PROP_NAME, nodeName);
 			nodeRef = this.nodeService.createNode(
 					parentRef,
